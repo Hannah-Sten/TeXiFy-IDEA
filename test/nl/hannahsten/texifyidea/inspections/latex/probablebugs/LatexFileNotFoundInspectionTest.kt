@@ -3,12 +3,10 @@ package nl.hannahsten.texifyidea.inspections.latex.probablebugs
 import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
-import com.intellij.psi.PsiFile
 import io.mockk.every
 import io.mockk.mockkStatic
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.gutter.LatexNavigationGutter
-import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
@@ -34,11 +32,7 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
         mockkStatic(LatexNavigationGutter::collectNavigationMarkers)
     }
 
-    private fun configureByFiles(vararg files: String): Array<out PsiFile> {
-        return myFixture.configureByFiles(*files).also {
-            LatexProjectStructure.testOnlyUpdateFilesets(project)
-        }
-    }
+
 
     override fun getTestDataPath(): String {
         return "test/resources/inspections/latex/filenotfound"
@@ -150,20 +144,20 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
     }
 
     fun testImportAbsolutePathIncludedFile() {
-        val files = configureByFiles("ImportPackageAbsolutePath.tex", "chapters/included.tex", "chapters/included2.tex")
+        val files = configureByFilesAndBuildFilesets("ImportPackageAbsolutePath.tex", "chapters/included.tex", "chapters/included2.tex")
         myFixture.type("$absoluteWorkingPath/chapters/")
         myFixture.openFileInEditor(files[1].virtualFile)
         myFixture.checkHighlighting()
     }
 
     fun testImportRelativePathIncludedFile() {
-        configureByFiles("chapters/included.tex", "ImportPackageRelativePath.tex", "chapters/included2.tex")
+        configureByFilesAndBuildFilesets("chapters/included.tex", "ImportPackageRelativePath.tex", "chapters/included2.tex")
 
         myFixture.checkHighlighting()
     }
 
     fun testInvalidImportRelativePathIncludedFile() {
-        configureByFiles("chapters/notincluded.tex", "ImportPackageRelativePathInvalid.tex", "chapters/included2.tex")
+        configureByFilesAndBuildFilesets("chapters/notincluded.tex", "ImportPackageRelativePathInvalid.tex", "chapters/included2.tex")
         val highlightings = myFixture.doHighlighting().filter {
             it.severity == HighlightSeverity.ERROR
         }
@@ -172,17 +166,17 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
     }
 
     fun `test command expansion in root file`() {
-        configureByFiles("commandexpansion/main.tex", "commandexpansion/main.bib", "commandexpansion/nest/sub.tex")
+        configureByFilesAndBuildFilesets("commandexpansion/main.tex", "commandexpansion/main.bib", "commandexpansion/nest/sub.tex")
         myFixture.checkHighlighting()
     }
 
     fun `test command expansion in subfile`() {
-        configureByFiles("commandexpansion/nest/sub.tex", "commandexpansion/main.tex", "commandexpansion/nest/sub2.tex")
+        configureByFilesAndBuildFilesets("commandexpansion/nest/sub.tex", "commandexpansion/main.tex", "commandexpansion/nest/sub2.tex")
         myFixture.checkHighlighting()
     }
 
     fun testSubfilesInclusions() {
-        configureByFiles("subfilestest/subdir/onedown.tex", "subfilestest/subdir/subsubdir/twodown.tex", "subfilestest/main.tex", "subfilestest/subfiles.cls")
+        configureByFilesAndBuildFilesets("subfilestest/subdir/onedown.tex", "subfilestest/subdir/subsubdir/twodown.tex", "subfilestest/main.tex", "subfilestest/subfiles.cls")
         myFixture.checkHighlighting()
     }
 

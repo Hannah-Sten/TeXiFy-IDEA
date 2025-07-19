@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea
 
+import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture
 import io.mockk.every
@@ -13,4 +14,14 @@ fun CodeInsightTestFixture.configureByFilesWithMockCache(vararg filenames: Strin
     mockkObject(LatexProjectStructure)
     every { LatexProjectStructure.getFilesetScopeFor(any(), any()) } returns GlobalSearchScope.filesScope(project, files.map { it.virtualFile })
     openFileInEditor(files.first().virtualFile)
+}
+
+fun CodeInsightTestFixture.updateFilesets() {
+    LatexProjectStructure.testOnlyUpdateFilesets(project)
+}
+
+fun CodeInsightTestFixture.configureByFilesAndBuildFilesets(vararg filenames: String): Array<out PsiFile> {
+    return configureByFiles(*filenames).also {
+        updateFilesets()
+    }
 }
