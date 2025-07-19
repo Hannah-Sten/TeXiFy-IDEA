@@ -16,7 +16,10 @@ import nl.hannahsten.texifyidea.run.pdfviewer.SumatraViewer
 class TexifySettings : PersistentStateComponent<TexifySettingsState> {
 
     companion object {
-
+        /**
+         * Default expiration time for filesets in milliseconds.
+         */
+        const val DEFAULT_FILESET_EXPIRATION_TIME_MS = 2000 // Default expiration time for filesets in milliseconds, 2 seconds
         /**
          * Warning: don't retrieve the settings on class initialization (e.g. storing it in a companion object), as that is not unlikely to throw a ProcessCanceledException.
          */
@@ -65,7 +68,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
     var autoCompileOption = AutoCompile.OFF
     var pathToSumatra: String? = null
 
-    var filesetExpirationTimeMs: Long = 2000
+    var filesetExpirationTimeMs: Int = DEFAULT_FILESET_EXPIRATION_TIME_MS
 
     var hasApprovedDetexify = false
 

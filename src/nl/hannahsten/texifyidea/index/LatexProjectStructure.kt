@@ -55,6 +55,7 @@ import kotlin.io.path.pathString
 // May be modified in the future
 /**
  * A fileset is a set of files that are related to each other, e.g. a main file and its included files (including itself).
+ * One file can belong to multiple filesets, e.g. if it is included in multiple main files.
  *
  * When resolving subfiles, we must use the relative path from the root file rather than the file that contains the input command.
  */
@@ -64,14 +65,23 @@ data class Fileset(
 )
 
 /**
- * Descriptions of filesets
+ * Integrated descriptions of all filesets that are related to a specific file.
  */
 data class FilesetData(
     val filesets: Set<Fileset>,
+    /**
+     * The union of all files in the related [filesets].
+     */
     val relatedFiles: Set<VirtualFile>,
+    /**
+     * The scope that contains all files in [relatedFiles].
+     */
     val filesetScope: GlobalSearchScope,
 )
 
+/**
+ * Describes the filesets of a project, containing all filesets and a mapping from files to their fileset data.
+ */
 data class LatexProjectFilesets(
     val filesets: Set<Fileset>,
     val mapping: Map<VirtualFile, FilesetData>,
@@ -91,6 +101,11 @@ fun pathOrNull(pathText: String?): Path? {
     }
 }
 
+/**
+ * A utility object that provides methods to build and manage the fileset structure for LaTeX files.
+ *
+ *
+ */
 object LatexProjectStructure {
     /**
      * The count of building operations, used for debugging purposes.
@@ -98,10 +113,8 @@ object LatexProjectStructure {
     val countOfBuilding = AtomicInteger(0)
     val totalBuildTime = AtomicLong(0)
 
-    const val DEFAULT_CACHE_EXPIRATION_IN_MS = 2_000L
-
     private val expirationTimeInMs: Long
-        get() = TexifySettings.getInstance().filesetExpirationTimeMs
+        get() = TexifySettings.getInstance().filesetExpirationTimeMs.toLong()
 
     private object UserDataKeys {
         /**
@@ -589,6 +602,10 @@ object LatexProjectStructure {
         }
     }
 
+
+    /**
+     * Calls to update the filesets for the given project, can be used in a periodic background task.
+     */
     suspend fun updateFilesetsSuspend(project: Project) {
         TexifyProjectCacheService.getInstance(project).computeAndUpdate(CACHE_KEY, ::buildFilesetsSuspend)
     }

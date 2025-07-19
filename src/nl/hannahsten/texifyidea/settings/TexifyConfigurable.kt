@@ -186,8 +186,8 @@ class TexifyConfigurable : SearchableConfigurable {
 
         label.toolTipText = tips
         filesetExpirationTimeMs = IntegerField("Fileset expiration time (ms)", 0, Int.MAX_VALUE).apply {
-            defaultValue = 2000
-            value = settings.filesetExpirationTimeMs.toInt()
+            defaultValue = TexifySettings.DEFAULT_FILESET_EXPIRATION_TIME_MS
+            value = settings.filesetExpirationTimeMs
             preferredSize = Dimension(150, preferredSize.height)
             toolTipText = tips
             subPanel.add(this)
@@ -203,7 +203,7 @@ class TexifyConfigurable : SearchableConfigurable {
             htmlPasteTranslator?.selectedIndex != settings.htmlPasteTranslator.ordinal ||
             autoCompileOption?.selectedIndex != settings.autoCompileOption.ordinal ||
             getUISumatraPath() != settings.pathToSumatra ||
-            filesetExpirationTimeMs?.value?.toLong() != settings.filesetExpirationTimeMs
+            filesetExpirationTimeMs?.value != settings.filesetExpirationTimeMs
     }
 
     override fun apply() {
@@ -222,7 +222,7 @@ class TexifyConfigurable : SearchableConfigurable {
             }
         }
         settings.pathToSumatra = path
-        settings.filesetExpirationTimeMs = filesetExpirationTimeMs?.value?.toLong() ?: 2000L
+        settings.filesetExpirationTimeMs = filesetExpirationTimeMs?.value ?: 2000
     }
 
     override fun reset() {
@@ -235,6 +235,6 @@ class TexifyConfigurable : SearchableConfigurable {
         htmlPasteTranslator?.selectedIndex = settings.htmlPasteTranslator.ordinal
         autoCompileOption?.selectedIndex = settings.autoCompileOption.ordinal
         sumatraPath?.text = settings.pathToSumatra ?: ""
-        filesetExpirationTimeMs?.value = settings.filesetExpirationTimeMs.toInt()
+        filesetExpirationTimeMs?.value = settings.filesetExpirationTimeMs
     }
 }

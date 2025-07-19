@@ -26,6 +26,9 @@ class CacheValueTimed<T>(
     }
 }
 
+/**
+ * Provides a cache service for a project that allows storing and retrieving values with expiration.
+ */
 abstract class ProjectCacheService(val project: Project, private val coroutineScope: CoroutineScope) {
 
     interface TypedKey<T>
@@ -87,7 +90,7 @@ abstract class ProjectCacheService(val project: Project, private val coroutineSc
      * Gets a cached value by its key, or computes it if it does not exist or is expired.
      *
      * The computation is done immediately in the current thread.
-     * If multiple threads call this method with the same key simultaneously, multiple computations may occur.
+     * If multiple threads call this method with the same key simultaneously, multiple computations may occur, so [f] must be thread-safe.
      */
     fun <T> getOrComputeNow(key: TypedKey<T>, expirationInMs: Long = 1000L, f: (Project) -> T): T {
         val cachedValue = getCachedValueOrNull(key, expirationInMs)
@@ -103,7 +106,7 @@ abstract class ProjectCacheService(val project: Project, private val coroutineSc
     }
 
     /**
-     * Gets a cached value (possibly expired) by its key or the instant result if no cache exists.
+     * Gets a cached value (possibly expired) by its key or the [instantResult] if no cache exists.
      * If the cache does not exist or is expired, it schedules the computation to be run later, not blocking the current thread.
      *
      *
@@ -119,7 +122,7 @@ abstract class ProjectCacheService(val project: Project, private val coroutineSc
         val cachedValue = getTimed(key)
         if(cachedValue == null || cachedValue.isExpired(expirationInMs)) {
             // If the value is not cached or expired, schedule the computation
-            scheduleCompute(key, suspendComputation)
+            scheduleComputation(key, suspendComputation)
         }
         return cachedValue?.value ?: instantResult // Return the instant result while computation is in progress
     }
@@ -140,15 +143,15 @@ abstract class ProjectCacheService(val project: Project, private val coroutineSc
      * Schedules a computation to be run later in a coroutine.
      * If the computation is already running, nothing happens.
      *
-     * It is guaranteed that [f] will not run in parallel with itself for the same key.
+     * It is guaranteed that [suspendComputation] will not run in parallel with itself for the same key.
      *
-     * @param f the computation to run. It should return a value of type T or null if no value is available.
+     * @param suspendComputation the computation to run. It should return a value of type T or null if no value is available.
      */
-    fun <T : Any> scheduleCompute(
-        key: TypedKey<T>, f: suspend (Project) -> T?
+    fun <T : Any> scheduleComputation(
+        key: TypedKey<T>, suspendComputation: suspend (Project) -> T?
     ) {
         coroutineScope.launch {
-            computeAndUpdate(key, f)
+            computeAndUpdate(key, suspendComputation)
         }
     }
 
@@ -159,18 +162,22 @@ abstract class ProjectCacheService(val project: Project, private val coroutineSc
      * You may use this method to manually compute a value and update the cache in some background task,
      * such as [com.intellij.openapi.startup.ProjectActivity].
      *
-     * It is guaranteed that [f] will not run in parallel with itself for the same key.
+     * It is guaranteed that [suspendComputation] will not run in parallel with itself for the same key.
      */
     suspend fun <T : Any> computeAndUpdate(
-        key: TypedKey<T>, f: suspend (Project) -> T?
+        key: TypedKey<T>, suspendComputation: suspend (Project) -> T?
     ) {
         val computing = getComputingState(key)
         computing.lockOrSkip {
-            val result = f(project)
+            val result = suspendComputation(project)
             if (result != null) put(key, result)
         }
     }
 
+    /**
+     * Test-only method to ensure that the cache is updated with the result of the computation.
+     * This method will block the current thread until the computation is done, so it should only be used in tests.
+     */
     @TestOnly
     fun <T> testOnlyEnsureUpdate(key: TypedKey<T>, f: suspend (Project) -> T) {
         val computing = getComputingState(key)
@@ -195,18 +202,6 @@ class TexifyProjectCacheService(project: Project, coroutineScope: CoroutineScope
     companion object {
         fun getInstance(project: Project): TexifyProjectCacheService {
             return project.service()
-        }
-
-        fun <T> getOrCompute(
-            project: Project, expirationInMs: Long = 1000L, f: (Project) -> T
-        ): T {
-            return getInstance(project).getOrComputeNow(expirationInMs, f)
-        }
-
-        fun <T> getOrCompute(
-            project: Project, key: TypedKey<T>, expirationInMs: Long = 1000L, f: (Project) -> T
-        ): T {
-            return getInstance(project).getOrComputeNow(key, expirationInMs, f)
         }
     }
 }
