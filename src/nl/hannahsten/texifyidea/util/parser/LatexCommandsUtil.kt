@@ -155,15 +155,6 @@ fun LatexCommands.findIndentation(): String {
 }
 
 /**
- * Looks up all the required parameters of this command.
- *
- * @return A list of all required parameters.
- */
-fun LatexCommands.requiredParameters(): List<LatexRequiredParam> {
-    return parameterList.mapNotNull { it.requiredParam }
-}
-
-/**
  * Returns the forced first required parameter of a command as a command.
  *
  * This allows both example constructs `\\usepackage{\\foo}}` and `\\usepackage\\foo`,

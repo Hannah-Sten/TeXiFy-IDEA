@@ -236,7 +236,7 @@ open class LatexAnnotator : Annotator {
             else -> return
         }
 
-        command.requiredParameters().firstOrNull()?.let {
+        command.firstRequiredParameter()?.let {
             annotationHolder.annotateRequiredParameter(it, style)
         }
     }
@@ -257,7 +257,7 @@ open class LatexAnnotator : Annotator {
             else -> return
         }
 
-        command.requiredParameters().firstOrNull()?.let {
+        command.firstRequiredParameter()?.let {
             annotationHolder.annotateRequiredParameter(it, style)
         }
     }

@@ -16,8 +16,6 @@ class NewCommandsIndexEx : NewLatexCompositeStubIndex<LatexCommands>(LatexComman
 
 /**
  * The index for all commands.
- *
- *
  */
 val NewCommandsIndex = NewCommandsIndexEx()
 
