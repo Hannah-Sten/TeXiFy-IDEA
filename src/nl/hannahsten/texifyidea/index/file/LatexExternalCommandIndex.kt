@@ -7,6 +7,7 @@ import com.intellij.util.indexing.ID
 import com.intellij.util.io.DataExternalizer
 import com.intellij.util.io.EnumeratorStringDescriptor
 import com.intellij.util.io.KeyDescriptor
+import nl.hannahsten.texifyidea.index.LatexFileBasedIndexKeys
 
 /**
  * Index of all defined commands in source files (dtx) of LaTeX packages.
@@ -20,16 +21,11 @@ import com.intellij.util.io.KeyDescriptor
  *
  * @author Thomas
  */
-class LatexExternalCommandIndex : FileBasedIndexExtension<String, String>() {
-
-    object Cache {
-        val id = ID.create<String, String>("nl.hannahsten.texifyidea.external.commands")
-    }
-
+class LatexExternalCommandIndexEx : FileBasedIndexExtension<String, String>() {
     private val indexer = LatexExternalCommandDataIndexer()
 
     override fun getName(): ID<String, String> {
-        return Cache.id
+        return LatexFileBasedIndexKeys.EXTERNAL_COMMANDS
     }
 
     override fun getIndexer(): DataIndexer<String, String, FileContent> {
@@ -52,3 +48,5 @@ class LatexExternalCommandIndex : FileBasedIndexExtension<String, String>() {
 
     override fun traceKeyHashToVirtualFileMapping() = true
 }
+
+object LatexExternalCommandIndex : FileBasedIndexRetriever<String, String>(LatexFileBasedIndexKeys.EXTERNAL_COMMANDS)

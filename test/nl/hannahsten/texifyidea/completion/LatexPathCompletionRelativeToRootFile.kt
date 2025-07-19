@@ -4,6 +4,7 @@ import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.codeInsight.lookup.Lookup
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.index.LatexProjectStructure
 
 /**
  * File inclusions in the test files in test/resources/completion/relativetoroot/
@@ -28,6 +29,7 @@ class LatexPathCompletionRelativeToRootFile : BasePlatformTestCase() {
     override fun setUp() {
         super.setUp()
         myFixture.copyDirectoryToProject("", "")
+        LatexProjectStructure.testOnlyUpdateFilesets(project)
     }
 
     fun `test completion in directory of root file`() {

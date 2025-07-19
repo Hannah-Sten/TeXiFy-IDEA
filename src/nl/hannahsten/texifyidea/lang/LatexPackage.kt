@@ -10,7 +10,7 @@ import nl.hannahsten.texifyidea.util.files.removeFileExtension
  * @author Hannah Schellekens
  */
 @FileModifier.SafeTypeForPreview
-open class LatexPackage @JvmOverloads constructor(
+class LatexPackage @JvmOverloads constructor(
     val name: String,
     vararg val parameters: String = emptyArray(),
     /**

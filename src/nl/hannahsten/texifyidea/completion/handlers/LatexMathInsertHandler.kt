@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.lang.commands.Argument
 class LatexMathInsertHandler(val arguments: List<Argument>?) : InsertHandler<LookupElement> {
 
     override fun handleInsert(context: InsertionContext, item: LookupElement) {
-        LatexNoMathInsertHandler.removeWhiteSpaces(context)
+        LatexCommandInsertHandler.removeWhiteSpaces(context)
         LatexCommandArgumentInsertHandler(arguments).handleInsert(context, item)
         LatexCommandPackageIncludeHandler().handleInsert(context, item)
         RightInsertHandler().handleInsert(context, item)

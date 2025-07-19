@@ -7,19 +7,21 @@ import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.TreeUtil
-import nl.hannahsten.texifyidea.index.file.LatexExternalPackageInclusionCache
+import com.intellij.psi.search.GlobalSearchScope
+import nl.hannahsten.texifyidea.index.LatexProjectStructure.getFilesetScopeFor
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
+import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.settings.TexifySettings
-import nl.hannahsten.texifyidea.util.PackageUtils.insertUsepackage
 import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
+import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
-import nl.hannahsten.texifyidea.util.parser.firstParentOfType
-import nl.hannahsten.texifyidea.util.parser.toStringMap
+import kotlin.collections.forEach
 
 /**
  * @author Hannah Schellekens
@@ -112,7 +114,7 @@ object PackageUtils {
         for (cmd in commands) {
             if (commandName == cmd.commandToken.text) {
                 // Do not insert below the subfiles package, it should stay last
-                if (cmd.getRequiredParameters().contains("subfiles")) {
+                if (cmd.requiredParametersText().contains("subfiles")) {
                     break
                 }
                 else {
@@ -183,7 +185,7 @@ object PackageUtils {
             return true
         }
 
-        if (file.includedPackages(useCache = true).contains(pack)) {
+        if (file.includedPackages().contains(pack)) {
             return true
         }
 
@@ -191,7 +193,7 @@ object PackageUtils {
         if (PackageMagic.conflictingPackages.any { it.contains(pack) }) {
             for (conflicts in PackageMagic.conflictingPackages) {
                 // Assuming the package is not already included
-                if (conflicts.contains(pack) && file.includedPackages(useCache = true).toSet().intersect(conflicts).isNotEmpty()) {
+                if (conflicts.contains(pack) && file.includedPackages().toSet().intersect(conflicts).isNotEmpty()) {
                     return false
                 }
             }
@@ -207,6 +209,41 @@ object PackageUtils {
         return true
     }
 
+    private fun extractPackageNames(text: String, result: MutableCollection<String>) {
+        text.split(PatternMagic.parameterSplit).forEach { param ->
+            val packageName = param.trim()
+            if (packageName.isNotEmpty()) {
+                result.add(packageName)
+            }
+        }
+    }
+
+    fun getPackagesFromCommands(
+        commands: Iterable<LatexCommands>,
+    ): List<String> {
+        val result = mutableListOf<String>()
+        commands.forEach { cmd ->
+            // since we must use stub-based resolution, we can not skip for something like ONLYIFSTANDALONE
+            cmd.requiredParametersText().forEach { extractPackageNames(it, result) }
+            cmd.optionalParameterTextMap().keys.forEach { extractPackageNames(it, result) }
+        }
+        return result
+    }
+
+    fun getIncludedPackages(project: Project, scope: GlobalSearchScope): List<String> {
+        // possibly can be improved
+        val commands = NewSpecialCommandsIndex.getAllPackageIncludes(project, scope)
+        return getPackagesFromCommands(commands)
+    }
+
+    /**
+     * Gets a list of all packages that are included in the fileset of the given PsiFile, which may contain duplicates.
+     */
+    fun getIncludedPackagesInFileset(file: PsiFile): List<String> {
+        val project = file.project
+        return getIncludedPackages(project, getFilesetScopeFor(file))
+    }
+
     /**
      * Analyses the given file to finds all the imported tikz libraries in the included file set.
      *
@@ -214,8 +251,8 @@ object PackageUtils {
      */
     @JvmStatic
     fun getIncludedTikzLibraries(baseFile: PsiFile): Set<String> {
-        val commands = baseFile.commandsInFileSet()
-        return getIncludedTikzLibraries(commands, HashSet())
+        val commands = NewCommandsIndex.getByNamesInFileSet(CommandMagic.tikzLibraryInclusionCommands, baseFile)
+        return getPackagesFromCommands(commands).toSet()
     }
 
     /**
@@ -225,86 +262,15 @@ object PackageUtils {
      */
     @JvmStatic
     fun getIncludedPgfLibraries(baseFile: PsiFile): Set<String> {
-        val commands = baseFile.commandsInFileSet()
-        return getIncludedPgfLibraries(commands, HashSet())
-    }
-
-    /**
-     * Gets all packages imported with tikz library import commands.
-     */
-    @JvmStatic
-    fun <T : MutableCollection<String>> getIncludedTikzLibraries(
-        commands: Collection<LatexCommands>,
-        result: T
-    ) = getPackagesFromCommands(commands, CommandMagic.tikzLibraryInclusionCommands, result)
-
-    /**
-     * Gets all packages imported with pgf library import commands.
-     */
-    @JvmStatic
-    fun <T : MutableCollection<String>> getIncludedPgfLibraries(
-        commands: Collection<LatexCommands>,
-        result: T
-    ) = getPackagesFromCommands(commands, CommandMagic.pgfplotsLibraryInclusionCommands, result)
-
-    /**
-     * Analyses all the given commands and reduces it to a set of all included packages, libraries or whatever is imported
-     * with the given [packageCommands].
-     * Classes will be included.
-     *
-     * Note that not all elements returned may be valid package names.
-     */
-    fun <T : MutableCollection<String>> getPackagesFromCommands(
-        commands: Collection<LatexCommands>,
-        packageCommands: Set<String>,
-        initial: T
-    ): T {
-        for (cmd in commands) {
-            if (cmd.name !in packageCommands) {
-                continue
-            }
-
-            // Just skip conditionally included packages, because it is too expensive to determine whether
-            // they are really included or not
-            if (cmd.parent?.firstParentOfType(LatexCommands::class)?.name == "\\" + LatexGenericRegularCommand.ONLYIFSTANDALONE.command) {
-                continue
-            }
-
-            // Assume packages can be included in both optional and required parameters
-            // Technically a class is not a package, but LatexCommand doesn't separate those things yet so we ignore that here as well
-            val packages = setOf(
-                cmd.getRequiredParameters(),
-                cmd.getOptionalParameterMap().toStringMap().keys.toList()
-            )
-
-            for (list in packages) {
-                if (list.isEmpty()) {
-                    continue
-                }
-
-                val packageName = list[0]
-
-                // Multiple includes.
-                if (packageName.contains(",")) {
-                    initial.addAll(
-                        packageName.split(",").dropLastWhile(String::isNullOrEmpty)
-                    )
-                }
-                // Single include.
-                else {
-                    initial.add(packageName)
-                }
-            }
-        }
-
-        return initial
+        val commands = NewCommandsIndex.getByNamesInFileSet(CommandMagic.pgfplotsLibraryInclusionCommands, baseFile)
+        return getPackagesFromCommands(commands).toSet()
     }
 }
 
 /**
  * @see PackageUtils.insertUsepackage
  */
-fun PsiFile.insertUsepackage(pack: LatexPackage) = insertUsepackage(this, pack)
+fun PsiFile.insertUsepackage(pack: LatexPackage) = PackageUtils.insertUsepackage(this, pack)
 
 /**
  * Find all included LaTeX packages in the file set of this file.
@@ -315,16 +281,22 @@ fun PsiFile.insertUsepackage(pack: LatexPackage) = insertUsepackage(this, pack)
  * @param onlyDirectInclusions If true, only packages included directly are returned.
  * @return List of all included packages. Those who are directly included, may contain duplicates.
  */
-fun PsiFile.includedPackages(onlyDirectInclusions: Boolean = false, useCache: Boolean = false): List<LatexPackage> {
-    val commands = this.commandsInFileSet(useCache)
-    return includedPackages(commands, project, onlyDirectInclusions)
+fun PsiFile.includedPackages(onlyDirectInclusions: Boolean = false): Set<LatexPackage> {
+    val scope = if (onlyDirectInclusions) {
+        GlobalSearchScope.fileScope(this)
+    }
+    else {
+        getFilesetScopeFor(this)
+    }
+    val packageNames = PackageUtils.getIncludedPackages(project, scope)
+    return packageNames.map { LatexPackage(it) }.toSet()
 }
 
-/**
- * See [includedPackages].
- */
-fun includedPackages(commands: Collection<LatexCommands>, project: Project, onlyDirectInclusions: Boolean = false): List<LatexPackage> {
-    val directIncludes = PackageUtils.getPackagesFromCommands(commands, CommandMagic.packageInclusionCommands, mutableListOf())
-        .map { LatexPackage(it) }
-    return if (onlyDirectInclusions) directIncludes else LatexExternalPackageInclusionCache.getAllIndirectlyIncludedPackages(directIncludes, project).toList()
-}
+// /**
+// * See [includedPackages].
+// */
+// fun includedPackages(commands: Collection<LatexCommands>, project: Project, onlyDirectInclusions: Boolean = false): Set<LatexPackage> {
+//    val directIncludes = PackageUtils.getPackagesFromCommands(commands, CommandMagic.packageInclusionCommands, mutableListOf())
+//        .map { LatexPackage(it) }.toSet()
+//    return if (onlyDirectInclusions) directIncludes else LatexExternalPackageInclusionCache.getAllIndirectlyIncludedPackages(directIncludes, project).toSet()
+// }

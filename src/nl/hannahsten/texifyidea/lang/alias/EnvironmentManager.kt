@@ -8,7 +8,6 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.containsAny
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
 
 /**
  * Similar to the [CommandManager], this manages aliases of environments.
@@ -27,20 +26,20 @@ object EnvironmentManager : AliasManager() {
         // Assume the environment that is defined is the first parameter, and that the first part of the definition is in the second
         // e.g. \newenvironment{mytabl}{\begin{tabular}{cc}}{\end{tabular}}
         val definitions = indexedDefinitions.filter { definition ->
-            definition.requiredParameter(1)?.containsAny(aliasSet.map { "\\begin{$it}" }.toSet()) == true
+            definition.requiredParameterText(1)?.containsAny(aliasSet.map { "\\begin{$it}" }.toSet()) == true
                 // This command always defines an alias for the listings environment
                 || (definition.name == LatexNewDefinitionCommand.LSTNEWENVIRONMENT.cmd && aliasSet.contains(DefaultEnvironment.LISTINGS.environmentName))
         }
         definitions
-            .mapNotNull { it.requiredParameter(0) }
+            .mapNotNull { it.requiredParameterText(0) }
             .forEach { registerAlias(firstAlias, it) }
 
         // Update label parameter position information
         if (aliasSet.intersect(EnvironmentMagic.labelAsParameter).isNotEmpty()) {
             definitions.forEach {
-                val definedEnvironment = it.requiredParameter(0) ?: return@forEach
+                val definedEnvironment = it.requiredParameterText(0) ?: return@forEach
                 // The label may be in an optional parameter of an environment, but it may also be in other places like a \lstset, so for now we do a text-based search
-                val text = it.requiredParameter(1) ?: return@forEach
+                val text = it.requiredParameterText(1) ?: return@forEach
                 val index = "label\\s*=\\s*\\{?\\s*#(\\d)".toRegex().find(text)?.groupValues?.getOrNull(1)?.toInt() ?: return@forEach
                 labelAliasesInfo[definedEnvironment] = LabelingEnvironmentInformation(nonEmptyListOf(index - 1))
             }

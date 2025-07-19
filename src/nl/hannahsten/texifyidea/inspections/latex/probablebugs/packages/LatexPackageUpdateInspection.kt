@@ -22,7 +22,6 @@ import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
 import nl.hannahsten.texifyidea.util.files.rerunInspections
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
 import nl.hannahsten.texifyidea.util.runCommand
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 
@@ -60,9 +59,9 @@ class LatexPackageUpdateInspection : TexifyInspectionBase() {
                 .associate { it }
         }
         return file.collectSubtreeTyped<LatexCommands> {
-            it.name in CommandMagic.packageInclusionCommands && it.requiredParameter(0) in Cache.availablePackageUpdates!!.keys
+            it.name in CommandMagic.packageInclusionCommands && it.requiredParameterText(0) in Cache.availablePackageUpdates!!.keys
         }.mapNotNull {
-            val packageName = it.requiredParameter(0) ?: return@mapNotNull null
+            val packageName = it.requiredParameterText(0) ?: return@mapNotNull null
             val packageVersions = Cache.availablePackageUpdates!![packageName] ?: return@mapNotNull null
             manager.createProblemDescriptor(
                 it,

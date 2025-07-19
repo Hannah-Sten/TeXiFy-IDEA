@@ -7,12 +7,12 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.files.commandsInFile
-import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.findAtLeast
 import nl.hannahsten.texifyidea.util.includedPackages
 
@@ -39,8 +39,7 @@ open class BibtexDuplicateBibliographystyleInspection : TexifyInspectionBase() {
         val descriptors = descriptorList()
 
         // Check if a bibliography is present.
-        val commands = file.commandsInFileSet(useIndexCache = false)
-        commands.find { it.name == "\\bibliography" } ?: return descriptors
+        val commands = NewCommandsIndex.getByNameInFileSet("\\bibliography", file)
 
         if (commands.findAtLeast(2) { it.name == "\\bibliographystyle" }) {
             file.commandsInFile().asSequence()
@@ -75,8 +74,8 @@ open class BibtexDuplicateBibliographystyleInspection : TexifyInspectionBase() {
             val command = descriptor.psiElement as LatexCommands
             val file = command.containingFile
 
-            file.commandsInFileSet(useIndexCache = false).asSequence()
-                .filter { it.name == "\\bibliographystyle" && it != command }
+            NewCommandsIndex.getByNameInFileSet("\\bibliographystyle", file)
+                .filter { it != command }
                 .forEach {
                     it.delete()
                 }

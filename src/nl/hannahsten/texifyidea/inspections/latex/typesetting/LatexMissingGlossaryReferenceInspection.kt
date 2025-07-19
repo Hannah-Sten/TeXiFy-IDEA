@@ -6,7 +6,7 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.index.LatexGlossaryEntryIndex
+import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.commands.LatexGlossariesCommand
@@ -25,7 +25,8 @@ class LatexMissingGlossaryReferenceInspection : TexifyInspectionBase() {
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = mutableListOf<ProblemDescriptor>()
-        val names = LatexGlossaryEntryIndex.Util.getItemsInFileSet(file).mapNotNull { LatexGlossariesCommand.extractGlossaryName(it) }
+
+        val names = NewSpecialCommandsIndex.getAllGlossaryEntries(file).mapNotNull { LatexGlossariesCommand.extractGlossaryName(it) }
         // Unfortunately the lowest level we have is a block of text, so we have to do a text-based search
         file.collectSubtreeTyped<LatexNormalText>().forEach { textElement ->
             val text = textElement.text

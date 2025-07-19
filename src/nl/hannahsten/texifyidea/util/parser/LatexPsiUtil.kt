@@ -5,12 +5,12 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiRecursiveElementVisitor
 import nl.hannahsten.texifyidea.file.LatexFile
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 
 /**
  * Checks if the environment contains the given context.
@@ -72,14 +72,16 @@ fun LatexNoMathContent.isDisplayMath() = children.firstOrNull() is LatexMathEnvi
  *
  * @return `true` when the fileset has a bibliography included, `false` otherwise.
  */
-fun PsiFile.hasBibliography() = this.commandsInFileSet().any { it.name == "\\bibliography" }
+fun PsiFile.hasBibliography(): Boolean {
+    return NewCommandsIndex.getByNameInFileSet("\\bibliography", this).isNotEmpty()
+}
 
 /**
  * Checks if the fileset for this file uses \printbibliography, in which case the user probably wants to use biber.
  *
  * @return `true` when the fileset has a bibliography included, `false` otherwise.
  */
-fun PsiFile.usesBiber() = this.commandsInFileSet().any { it.name == "\\printbibliography" }
+fun PsiFile.usesBiber() = NewCommandsIndex.getByNameInFileSet("\\printbibliography", this).isNotEmpty()
 
 /**
  * Looks up the first parent of a given child that has the given class.
@@ -145,7 +147,7 @@ fun PsiElement.findDependencies(): Set<LatexPackage> {
         val dependency = when (e) {
             is LatexCommands -> {
                 // If the command is a known command, add its dependency.
-                LatexCommand.lookup(e)?.firstOrNull()?.dependency
+                LatexCommand.lookupInAll(e)?.firstOrNull()?.dependency
             }
             is LatexEnvironment -> {
                 // If the environment is a known environment, add its dependency.

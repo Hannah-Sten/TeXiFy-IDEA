@@ -11,12 +11,12 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPointerManager
 import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.util.siblings
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexGroup
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
+import nl.hannahsten.texifyidea.psi.forEachCommand
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import org.jetbrains.annotations.Nls
 
@@ -42,21 +42,19 @@ class LatexPrimitiveStyleInspection : TexifyInspectionBase() {
         isOntheFly: Boolean
     ): List<ProblemDescriptor> {
         val descriptors = mutableListOf<ProblemDescriptor>()
-        val commands = LatexCommandsIndex.Util.getItems(file)
-        for (command in commands) {
-            val index = CommandMagic.stylePrimitives.indexOf(command.name)
-            if (index < 0) {
-                continue
-            }
-            descriptors.add(
-                manager.createProblemDescriptor(
-                    command,
-                    "Use of TeX primitive " + CommandMagic.stylePrimitives[index] + " is discouraged",
-                    InspectionFix(SmartPointerManager.createPointer(command)),
-                    ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                    isOntheFly
+        file.forEachCommand { command ->
+            val name = command.name
+            if(name in CommandMagic.stylePrimitives) {
+                descriptors.add(
+                    manager.createProblemDescriptor(
+                        command,
+                        "Use of TeX primitive $name is discouraged",
+                        InspectionFix(SmartPointerManager.createPointer(command)),
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                        isOntheFly
+                    )
                 )
-            )
+            }
         }
         return descriptors
     }
@@ -79,7 +77,7 @@ class LatexPrimitiveStyleInspection : TexifyInspectionBase() {
             val newCommandName = CommandMagic.stylePrimitiveReplacements[command.name] ?: return
 
             // Convert {help \bf this is content} to "help \textbf{this is content}", but leave \bf{this is bold} alone.
-            if (command.getRequiredParameters().isEmpty()) {
+            if (command.requiredParametersText().isEmpty()) {
                 val commandInFile = file.findElementAt(oldCommand.range?.startOffset ?: return) ?: return
 
                 // Find the LaTeX group surrounding this command, so we can separate its content in all the siblings
