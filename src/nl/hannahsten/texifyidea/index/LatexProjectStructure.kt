@@ -602,7 +602,6 @@ object LatexProjectStructure {
         }
     }
 
-
     /**
      * Calls to update the filesets for the given project, can be used in a periodic background task.
      */

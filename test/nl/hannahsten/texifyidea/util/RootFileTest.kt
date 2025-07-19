@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.util
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.configureByFilesAndBuildFilesets
-import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexFileNotFoundInspection
 
 class RootFileTest : BasePlatformTestCase() {

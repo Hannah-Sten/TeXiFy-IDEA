@@ -20,6 +20,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
          * Default expiration time for filesets in milliseconds.
          */
         const val DEFAULT_FILESET_EXPIRATION_TIME_MS = 2000 // Default expiration time for filesets in milliseconds, 2 seconds
+
         /**
          * Warning: don't retrieve the settings on class initialization (e.g. storing it in a companion object), as that is not unlikely to throw a ProcessCanceledException.
          */

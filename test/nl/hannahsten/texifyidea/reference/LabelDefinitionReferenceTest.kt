@@ -104,16 +104,17 @@ class LabelDefinitionReferenceTest : BasePlatformTestCase() {
             \label{file1_label}
         """.trimIndent()
 
-
         myFixture.createFile("main.tex", main)
         myFixture.createFile("file1.tex", file1)
         myFixture.createFile("file1_nested.tex", file1Nested)
         myFixture.configureByText("file2.tex", "\\ref{file1<caret>}")
         myFixture.updateFilesets()
         myFixture.completeBasic()
-        myFixture.checkResult("""
+        myFixture.checkResult(
+            """
             \ref{file1_label}<caret>
-        """.trimIndent())
+            """.trimIndent()
+        )
 
         myFixture.configureByText("file2.tex", "\\ref{file1_label<caret>}")
         myFixture.renameElementAtCaret("label_renamed")

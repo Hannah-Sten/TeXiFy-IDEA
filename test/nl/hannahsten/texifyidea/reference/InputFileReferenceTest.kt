@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.reference
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.updateFilesets
 
 class InputFileReferenceTest : BasePlatformTestCase() {

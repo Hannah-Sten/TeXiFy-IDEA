@@ -32,8 +32,6 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
         mockkStatic(LatexNavigationGutter::collectNavigationMarkers)
     }
 
-
-
     override fun getTestDataPath(): String {
         return "test/resources/inspections/latex/filenotfound"
     }
