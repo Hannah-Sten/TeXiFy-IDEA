@@ -20,20 +20,7 @@ class LatexCommandsStubElementType(debugName: String) :
     IStubElementType<LatexCommandsStub, LatexCommands>(debugName, LatexLanguage) {
 
     override fun createPsi(latexCommandsStub: LatexCommandsStub): LatexCommands {
-        return object : LatexCommandsImpl(latexCommandsStub, this) {
-
-            override fun getElementType(): IStubElementType<*, *> {
-                return this@LatexCommandsStubElementType
-            }
-
-            override fun getStub(): LatexCommandsStub {
-                return latexCommandsStub
-            }
-
-            override fun setName(newName: String): PsiElement {
-                return this
-            }
-        }
+        return LatexCommandsImpl(latexCommandsStub,this)
     }
 
     override fun createStub(latexCommands: LatexCommands, parent: StubElement<*>?): LatexCommandsStub {
