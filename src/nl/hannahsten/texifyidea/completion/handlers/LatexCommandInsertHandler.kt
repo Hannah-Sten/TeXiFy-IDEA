@@ -27,7 +27,6 @@ class LatexCommandInsertHandler(val arguments: List<Argument>? = null) : InsertH
     override fun handleInsert(context: InsertionContext, item: LookupElement) {
         removeWhiteSpaces(context)
         val command = item.`object` as LatexCommand
-
         when (command.command) {
             LatexGenericRegularCommand.BEGIN.command -> {
                 insertBegin(context)
@@ -41,6 +40,8 @@ class LatexCommandInsertHandler(val arguments: List<Argument>? = null) : InsertH
                 LatexCommandArgumentInsertHandler(arguments).handleInsert(context, item)
             }
         }
+
+
 
         RightInsertHandler().handleInsert(context, item)
         LatexCommandPackageIncludeHandler().handleInsert(context, item)

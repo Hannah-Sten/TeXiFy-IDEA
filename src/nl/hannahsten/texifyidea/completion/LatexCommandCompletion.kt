@@ -88,7 +88,9 @@ abstract class LatexCommandCompletionProviderBase : CompletionProvider<Completio
         result.addAllElements(lookupElements)
     }
 
-    abstract fun createInsertHandler(args: List<Argument>): InsertHandler<LookupElement>
+    fun createInsertHandler(args: List<Argument>): InsertHandler<LookupElement>{
+            return LatexCommandInsertHandler(args)
+    }
 
     protected fun packageName(dependend: Dependend): String {
         val name = dependend.dependency.name
@@ -115,6 +117,12 @@ abstract class LatexCommandCompletionProviderBase : CompletionProvider<Completio
     companion object {
 
         private fun Array<out Argument>.optionalPowerSet(): List<List<Argument>> {
+            if (this.isEmpty()) {
+                return listOf(emptyList())
+            }
+            if (this.all { it is RequiredArgument }) {
+                return listOf(this.toList())
+            }
             var result = listOf<MutableList<Argument>>(mutableListOf())
             for (arg in this) {
                 if (arg is RequiredArgument) {
@@ -146,17 +154,10 @@ object LatexNormalCommandCompletionProvider : LatexCommandCompletionProviderBase
         )
         result.addLookupAdvertisement(getKindWords())
     }
-
-    override fun createInsertHandler(args: List<Argument>): InsertHandler<LookupElement> {
-        return LatexCommandInsertHandler(args)
-    }
 }
 
 object LatexMathCommandCompletionProvider : LatexCommandCompletionProviderBase() {
 
-    override fun createInsertHandler(args: List<Argument>): InsertHandler<LookupElement> {
-        return LatexCommandInsertHandler(args)
-    }
 
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
         val project = parameters.editor.project ?: return
