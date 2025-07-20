@@ -11,7 +11,9 @@ import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.icons.AllIcons
-import com.intellij.openapi.application.*
+import com.intellij.openapi.application.readAction
+import com.intellij.openapi.application.smartReadAction
+import com.intellij.openapi.application.writeAction
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
@@ -46,6 +48,7 @@ import nl.hannahsten.texifyidea.util.parser.allCommands
 import nl.hannahsten.texifyidea.util.parser.hasBibliography
 import nl.hannahsten.texifyidea.util.parser.usesBiber
 import nl.hannahsten.texifyidea.util.runInBackgroundNonBlocking
+import nl.hannahsten.texifyidea.util.runInBackgroundWithoutProgress
 import org.jdom.Element
 import java.io.File
 import java.nio.file.InvalidPathException
@@ -106,24 +109,26 @@ class LatexRunConfiguration(
     var environmentVariables: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT
     var beforeRunCommand: String? = null
 
+    /** Use [setMainFile] to make sure the content root macro value is up to date. */
     var mainFile: VirtualFile? = null
-        set(value) {
-            field = value
-            this.outputPath.mainFile = value
-            this.outputPath.contentRoot = getMainFileContentRoot()
-            this.auxilPath.mainFile = value
-            this.auxilPath.contentRoot = getMainFileContentRoot()
-        }
+
+    suspend fun setMainFile(mainFile: VirtualFile?) {
+        this.mainFile = mainFile
+        this.outputPath.mainFile = mainFile
+        this.outputPath.contentRoot = getMainFileContentRoot()
+        this.auxilPath.mainFile = mainFile
+        this.auxilPath.contentRoot = getMainFileContentRoot()
+    }
 
     // Save the psifile which can be used to check whether to create a bibliography based on which commands are in the psifile
     // This is not done when creating the template run configuration in order to delay the expensive bibtex check
     var psiFile: SmartPsiElementPointer<PsiFile>? = null
 
     /** Path to the directory containing the output files. */
-    var outputPath = LatexOutputPath("out", getMainFileContentRoot(), mainFile, project)
+    var outputPath = LatexOutputPath("out", null, mainFile, project)
 
     /** Path to the directory containing the auxiliary files. */
-    var auxilPath = LatexOutputPath("auxil", getMainFileContentRoot(), mainFile, project)
+    var auxilPath = LatexOutputPath("auxil", null, mainFile, project)
 
     var compileTwice = false
     var outputFormat: Format = Format.PDF
@@ -310,25 +315,27 @@ class LatexRunConfiguration(
 
         // Read main file.
         val filePath = parent.getChildText(MAIN_FILE)
-        setMainFile(filePath)
+        runInBackgroundWithoutProgress {
+            setMainFile(filePath)
 
-        // Read output path
-        val outputPathString = parent.getChildText(OUTPUT_PATH)
-        if (outputPathString != null) {
-            if (outputPathString.endsWith("/bin")) {
-                this.outputPath = LatexOutputPath("out", getMainFileContentRoot(), mainFile, project)
+            // Read output path
+            val outputPathString = parent.getChildText(OUTPUT_PATH)
+            if (outputPathString != null) {
+                if (outputPathString.endsWith("/bin")) {
+                    this.outputPath = LatexOutputPath("out", getMainFileContentRoot(), mainFile, project)
+                }
+                else {
+                    this.outputPath = LatexOutputPath("out", getMainFileContentRoot(), mainFile, project)
+                    this.outputPath.pathString = outputPathString
+                }
             }
-            else {
-                this.outputPath = LatexOutputPath("out", getMainFileContentRoot(), mainFile, project)
-                this.outputPath.pathString = outputPathString
-            }
-        }
 
-        // Read auxil path
-        val auxilPathString = parent.getChildText(AUXIL_PATH)
-        if (auxilPathString != null) {
-            this.auxilPath = LatexOutputPath("auxil", getMainFileContentRoot(), mainFile, project)
-            this.auxilPath.pathString = auxilPathString
+            // Read auxil path
+            val auxilPathString = parent.getChildText(AUXIL_PATH)
+            if (auxilPathString != null) {
+                this.auxilPath = LatexOutputPath("auxil", getMainFileContentRoot(), mainFile, project)
+                this.auxilPath.pathString = auxilPathString
+            }
         }
 
         // Backwards compatibility
@@ -520,9 +527,9 @@ class LatexRunConfiguration(
      * See [readExternal]: NOTE: do not use runReadAction here as it may cause deadlock when other threads try to get run configurations from a write lock
      *
      */
-    fun setMainFile(mainFilePath: String) {
+    suspend fun setMainFile(mainFilePath: String) {
         if (mainFilePath.isBlank()) {
-            this.mainFile = null
+            setMainFile(null)
             return
         }
         val fileSystem = LocalFileSystem.getInstance()
@@ -530,7 +537,7 @@ class LatexRunConfiguration(
         val mainFile = fileSystem.findFileByPath(mainFilePath)
 
         if (mainFile?.extension == "tex") {
-            this.mainFile = mainFile
+            setMainFile(mainFile)
             return
         }
         // Maybe it is a relative path
@@ -542,11 +549,11 @@ class LatexRunConfiguration(
             // Check if the file exists in the content root
             val file = contentRoot.findFileByRelativePath(mainFilePath)
             if (file?.extension == "tex") {
-                this.mainFile = file
+                setMainFile(file)
                 return
             }
         }
-        this.mainFile = null
+        setMainFile(null)
     }
 
     fun setDefaultCompiler() {
@@ -629,11 +636,11 @@ class LatexRunConfiguration(
     /**
      * Get the content root of the main file.
      */
-    fun getMainFileContentRoot(): VirtualFile? {
+    suspend fun getMainFileContentRoot(): VirtualFile? {
         if (mainFile == null) return null
         if (!project.isInitialized) return null
-        return runReadAction {
-            return@runReadAction ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile!!)
+        return smartReadAction(project) {
+            ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile!!)
         }
     }
 
