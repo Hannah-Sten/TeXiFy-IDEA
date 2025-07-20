@@ -10,7 +10,6 @@ import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.module.ModuleType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.search.ProjectScope
@@ -71,16 +70,16 @@ fun Project.findAvailableDocumentClasses(): Set<String> {
 /**
  * Get all the virtual files that are in the project of a given file type.
  */
-fun Project.allFiles(type: FileType): Collection<VirtualFile> {
-    if (!isInitialized) return emptyList()
+fun Project.containsFileOfType(type: FileType): Boolean {
+    if (!isInitialized) return false
     try {
         val scope = GlobalSearchScope.projectScope(this)
-        return FileTypeIndex.getFiles(type, scope)
+        return FileTypeIndex.containsFileOfType(type, scope)
     }
     catch (e: IllegalStateException) {
         // Doesn't happen very often, and afaik there's no proper way of checking whether this index is initialized. See #2855
         if (e.message?.contains("Index is not created for `filetypes`") == true) {
-            return emptyList()
+            return false
         }
         else {
             throw e
@@ -146,7 +145,7 @@ fun Project.hasLatexModule(): Boolean {
 fun Project.isLatexProject(): Boolean {
     return hasLatexModule() ||
         getLatexRunConfigurations().isNotEmpty() ||
-        (ApplicationNamesInfo.getInstance().scriptName != "idea" && allFiles(LatexFileType).isNotEmpty())
+        (ApplicationNamesInfo.getInstance().scriptName != "idea" && containsFileOfType(LatexFileType))
 }
 
 /**

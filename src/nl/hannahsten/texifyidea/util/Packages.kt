@@ -245,6 +245,20 @@ object PackageUtils {
     }
 
     /**
+     * Gets a list of all packages that are explicitly included in the fileset of the given PsiFile.
+     *
+     * This does not include packages that are included indirectly (e.g. via other packages).
+     */
+    fun getExplicitlyIncludedPackagesInFileset(file: PsiFile): List<String> {
+        // Get all packages that are explicitly included in the fileset of the given file.
+        // This does not include packages that are included indirectly (e.g. via other packages).
+        val project = file.project
+        val fs = getFilesetScopeFor(file)
+        val scope = fs.intersectWith(project.contentSearchScope) // only the files in the project, not libraries
+        return getIncludedPackages(project, scope)
+    }
+
+    /**
      * Analyses the given file to finds all the imported tikz libraries in the included file set.
      *
      * @return A set containing all used package names.

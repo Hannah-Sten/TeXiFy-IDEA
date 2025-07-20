@@ -13,7 +13,6 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.findDirectory
 import com.intellij.openapi.vfs.findFile
-import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.search.FilenameIndex
@@ -588,17 +587,15 @@ object LatexProjectStructure {
     private val CACHE_KEY = ProjectCacheService.createKey<LatexProjectFilesets>()
 
     private suspend fun buildFilesetsSuspend(project: Project): LatexProjectFilesets {
-        return withBackgroundProgress(project, "Building filesets") {
-            smartReadAction(project) {
-                buildFilesets(project)
-            }.also {
-                // refresh the inspections
-                if (!ApplicationManager.getApplication().isUnitTestMode) {
-                    DaemonCodeAnalyzer.getInstance(project).restart()
-                }
-                // there will be an exception if we try to restart the daemon in unit tests
-                // see FileStatusMap.CHANGES_NOT_ALLOWED_DURING_HIGHLIGHTING
+        return smartReadAction(project) {
+            buildFilesets(project)
+        }.also {
+            // refresh the inspections
+            if (!ApplicationManager.getApplication().isUnitTestMode) {
+                DaemonCodeAnalyzer.getInstance(project).restart()
             }
+            // there will be an exception if we try to restart the daemon in unit tests
+            // see FileStatusMap.CHANGES_NOT_ALLOWED_DURING_HIGHLIGHTING
         }
     }
 

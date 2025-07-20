@@ -4,6 +4,7 @@ import com.intellij.grazie.grammar.strategy.StrategyUtils
 import com.intellij.grazie.text.TextContent
 import com.intellij.grazie.text.TextExtractor
 import com.intellij.lang.tree.util.children
+import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
@@ -150,6 +151,7 @@ class LatexTextExtractor : TextExtractor() {
      * Special case: if the command does not have parameters but the definition contains a text command, we assume the command itself will fit into the sentence (as we can't do a text replacement before sending to Grazie).
      */
     private fun isUserDefinedTextCommand(commandName: String, project: Project): Boolean {
+        if (DumbService.isDumb(project)) return false
         return NewDefinitionIndex.getByName(commandName, project).any {
             it.text.containsAny(CommandMagic.allTextCommands)
         }
