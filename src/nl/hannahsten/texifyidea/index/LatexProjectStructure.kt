@@ -159,11 +159,16 @@ object LatexProjectStructure {
         rootDirs: MutableSet<VirtualFile>, bibInputPaths: MutableSet<VirtualFile>,
         timestamp: Long,
         val root: VirtualFile,
-        val files: MutableSet<VirtualFile> = mutableSetOf(root),
-        var declareGraphicsExtensions: Set<String>? = null,
-        var graphicsSuffix: Set<Path> = emptySet(),
-        var luatexPaths: Set<VirtualFile> = emptySet(),
-    ) : ProjectInfo(project, rootDirs, bibInputPaths, timestamp)
+    ) : ProjectInfo(project, rootDirs, bibInputPaths, timestamp) {
+        /**
+         * The current root directory, particularly for subfiles package as each `subfile` assigns a new root directory.
+         */
+        var currentRootDir: VirtualFile? = root.parent
+        val files: MutableSet<VirtualFile> = mutableSetOf(root)
+        var declareGraphicsExtensions: Set<String>? = null
+        var graphicsSuffix: Set<Path> = emptySet()
+        var luatexPaths: Set<VirtualFile> = emptySet()
+    }
 
     private fun Path.findVirtualFile(): VirtualFile? = LocalFileSystem.getInstance().findFileByNioFile(this)
 
@@ -205,8 +210,13 @@ object LatexProjectStructure {
     ) {
         processElementsWithPaths0(elements, refInfoMap, info, nextFile) { path, func ->
             if (path.isAbsolute) path.findVirtualFile()?.apply(func)
-            else rootDirs.forEach { sourcePath ->
-                sourcePath.findFileByRelativePath(path.invariantSeparatorsPathString)?.apply(func)
+            else {
+                val pathString = path.invariantSeparatorsPathString
+                info.currentRootDir?.findFileByRelativePath(pathString)?.apply(func)
+
+                rootDirs.forEach { sourcePath ->
+                    sourcePath.findFileByRelativePath(pathString)?.apply(func)
+                }
             }
         }
     }
@@ -342,56 +352,70 @@ object LatexProjectStructure {
         updateOrMergeRefData(command, savedData, info)
     }
 
-    /**
-     * Add new information such as declared graphics extensions and luatex paths to the given fileset info.
-     */
-    private fun processNewInformation(
-        project: Project, file: VirtualFile, info: FilesetInfo
-    ) {
+    private fun addGraphicsPathsToInfo(project: Project, file: VirtualFile, info: FilesetInfo,) {
         // Declare graphics extensions
         NewCommandsIndex.getByName(LatexGenericRegularCommand.DECLAREGRAPHICSEXTENSIONS.command, project, file)
-            .lastOrNull()
-            ?.requiredParameterText(0)
-            ?.split(",")
+            .lastOrNull()?.requiredParameterText(0)?.split(",")
             // Graphicx requires the dot to be included
-            ?.map { it.trim(' ', '.') }?.toSet()?.let {
-                info.declareGraphicsExtensions = it
+            ?.map { it.trim(' ', '.') }?.let {
+                info.declareGraphicsExtensions = it.toSet()
             }
 
         NewCommandsIndex.getByNames(CommandMagic.graphicPathsCommandNames, project, file)
-            .lastOrNull()
-            ?.getGraphicsPaths()
-            ?.mapNotNull { pathOrNull(it) }
-            ?.toSet()
+            .lastOrNull()?.getGraphicsPaths()?.mapNotNull { pathOrNull(it) }
             ?.let {
-                info.graphicsSuffix = it
+                info.graphicsSuffix = it.toSet()
             }
+    }
 
-        run {
-            // addtoluatexpath
-            val direct = NewCommandsIndex.getByName(LatexGenericRegularCommand.ADDTOLUATEXPATH.cmd, project, file)
-                .mapNotNull { it.requiredParameterText(0) }
-                .flatMap { it.split(",") }
-            val viaUsepackage = NewSpecialCommandsIndex.getPackageIncludes(project, file)
-                .filter { it.requiredParameterText(0) == LatexPackage.ADDTOLUATEXPATH.name }
-                .flatMap { it.optionalParameterTextMap().keys }
-                .flatMap { it.split(",") }
-            val directories = (direct + viaUsepackage).flatMap {
-                val basePath = LocalFileSystem.getInstance().findFileByPath(it.trimEnd('/', '*')) ?: return@flatMap emptyList()
-                if (it.endsWith("/**")) {
-                    basePath.allChildDirectories()
-                }
-                else if (it.endsWith("/*")) {
-                    basePath.children.filter { child -> child.isDirectory }
-                }
-                else {
-                    listOf(basePath)
-                }
+    private fun addLuatexPathsToInfo(project: Project, file: VirtualFile, info: FilesetInfo) {
+        // addtoluatexpath
+        val direct = NewCommandsIndex.getByName(LatexGenericRegularCommand.ADDTOLUATEXPATH.cmd, project, file)
+            .mapNotNull { it.requiredParameterText(0) }
+            .flatMap { it.split(",") }
+        val viaUsepackage = NewSpecialCommandsIndex.getPackageIncludes(project, file)
+            .filter { it.requiredParameterText(0) == LatexPackage.ADDTOLUATEXPATH.name }
+            .flatMap { it.optionalParameterTextMap().keys }
+            .flatMap { it.split(",") }
+        val directories = (direct + viaUsepackage).flatMap {
+            val basePath = LocalFileSystem.getInstance().findFileByPath(it.trimEnd('/', '*')) ?: return@flatMap emptyList()
+            if (it.endsWith("/**")) {
+                basePath.allChildDirectories()
             }
-            if (directories.isNotEmpty()) {
-                info.luatexPaths = info.luatexPaths + directories
+            else if (it.endsWith("/*")) {
+                basePath.children.filter { child -> child.isDirectory }
+            }
+            else {
+                listOf(basePath)
             }
         }
+        if (directories.isNotEmpty()) {
+            info.luatexPaths = info.luatexPaths + directories
+        }
+    }
+
+    /**
+     * Add new information such as declared graphics extensions and luatex paths to the given fileset info,
+     * perform the given callback, and then restore the original information.
+     */
+    private inline fun withNewInformation(
+        project: Project, file: VirtualFile, info: FilesetInfo,
+        callback: () -> Unit
+    ) {
+        addGraphicsPathsToInfo(project, file, info)
+        addLuatexPathsToInfo(project, file, info)
+
+        val docClass = NewCommandsIndex.getByName(LatexGenericRegularCommand.DOCUMENTCLASS.commandWithSlash, project, file)
+            .lastOrNull()?.requiredParameterText(0)
+        val oldRoot = info.currentRootDir
+        if (docClass != null && docClass.endsWith(SUBFILES.name)) {
+            // subfiles package sets the root directory to the parent of the file
+            info.currentRootDir = file.parent
+        }
+
+        callback()
+
+        info.currentRootDir = oldRoot
     }
 
     private fun updateOrMergeRefData(command: PsiElement, refInfoMap: Pair<List<String>, List<MutableSet<VirtualFile>>>, info: FilesetInfo) {
@@ -429,12 +453,11 @@ object LatexProjectStructure {
     ) {
         if (!file.isValid) return
         val project = info.project
-        val fileInputCommands = NewSpecialCommandsIndex.getAllFileInputs(project, file)
-
-        processNewInformation(project, file, info)
-
-        fileInputCommands.forEach {
-            findReferredFiles(it, file, info, nextFile)
+        withNewInformation(project, file, info) {
+            val fileInputCommands = NewSpecialCommandsIndex.getAllFileInputs(project, file)
+            fileInputCommands.forEach {
+                findReferredFiles(it, file, info, nextFile)
+            }
         }
     }
 
