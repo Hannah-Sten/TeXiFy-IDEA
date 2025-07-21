@@ -254,6 +254,15 @@ fun LatexRequiredParam.getParameterTexts(): Sequence<LatexParameterText> {
 fun LatexOptionalParam.getParameterTexts(): Sequence<LatexParameterText> {
     return getParameterTexts0()
 }
+
 fun LatexCommandWithParams.getParameterTexts(): Sequence<LatexParameterText> {
     return getParameterTexts0()
+}
+
+fun LatexRequiredParam.contentText(): String {
+    var text = this.text
+    if(text.length >= 2) {
+        text = text.substring(1, text.length - 1)
+    }
+    return text.trim()
 }

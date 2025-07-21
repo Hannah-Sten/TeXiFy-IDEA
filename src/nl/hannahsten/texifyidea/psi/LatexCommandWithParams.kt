@@ -62,11 +62,7 @@ interface LatexCommandWithParams : LatexComposite {
      */
     fun requiredParametersText(): List<String> {
         return parameterList.mapNotNull {
-            val param = it.requiredParam ?: return@mapNotNull null
-            val text = param.text
-            text.trim { c ->
-                c == '{' || c == '}' || c.isWhitespace()
-            }
+            it.requiredParam?.contentText()
         }
     }
 

@@ -6,7 +6,6 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.containsAny
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
-import nl.hannahsten.texifyidea.util.parser.requiredParameters
 import java.io.Serializable
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap

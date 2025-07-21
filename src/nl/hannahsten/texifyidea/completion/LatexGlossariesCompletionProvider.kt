@@ -12,7 +12,6 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexRequiredParam
 import nl.hannahsten.texifyidea.psi.LatexStrictKeyValPair
 import nl.hannahsten.texifyidea.util.magic.cmd
-import nl.hannahsten.texifyidea.util.parser.requiredParameters
 import nl.hannahsten.texifyidea.util.parser.toStringMap
 
 object LatexGlossariesCompletionProvider : CompletionProvider<CompletionParameters>() {

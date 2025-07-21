@@ -63,16 +63,18 @@ fun insertCommandDefinition(file: PsiFile, commandText: String, newCommandName: 
  */
 fun expandCommandsOnce(inputText: String, project: Project, file: VirtualFile?): String {
     file ?: return inputText
-    if(!inputText.contains('\\')) return inputText // No commands to expand, return the text as is
+    if (!inputText.contains('\\')) return inputText // No commands to expand, return the text as is
     var text = inputText
     // Get all the commands that are used in the input text.
-    val commandsInText = LatexPsiHelper(project).createFromText(inputText).traverseTyped<LatexCommands>()
+    val psi = LatexPsiHelper(project).createFromText(inputText)
+    val commandsInText = psi.traverseTyped<LatexCommands>()
     for (command in commandsInText) {
         // Expand the command once, and replace the command with the expanded text
         val name = command.name ?: continue
-        val commandExpansion = NewDefinitionIndex.getByName(name, project, file).firstOrNull()
-            ?.getRequiredArgumentValueByName("def")
-        text = text.replace(command.text, commandExpansion ?: command.text)
+        NewDefinitionIndex.getByName(name, project, file).firstOrNull()?.getRequiredArgumentValueByName("def")
+            ?.let { commandExpansion ->
+                text = text.replace(command.text, commandExpansion)
+            }
     }
     return text
 }

@@ -24,7 +24,7 @@ import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
 import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.Kindness.getKindWords
-import nl.hannahsten.texifyidea.util.LatexStructure
+import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 import nl.hannahsten.texifyidea.util.PackageUtils
 import nl.hannahsten.texifyidea.util.files.isClassFile
 import nl.hannahsten.texifyidea.util.files.isStyleFile
@@ -70,7 +70,7 @@ abstract class LatexCommandCompletionProviderBase : CompletionProvider<Completio
         val isClassOrStyleFile = file.isClassFile() || file.isStyleFile()
         val lookupElements = mutableListOf<LookupElementBuilder>()
         for (defCmd in definitionCommands) {
-            val cmd = LatexStructure.getDefinedCommandName(defCmd) ?: continue
+            val cmd = LatexPsiUtil.getDefinedCommandName(defCmd) ?: continue
             if (!isClassOrStyleFile) {
                 if (cmd.contains('@')) {
                     // skip internal commands for regular files

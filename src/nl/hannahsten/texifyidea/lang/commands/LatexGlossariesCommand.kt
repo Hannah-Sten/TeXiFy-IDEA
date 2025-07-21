@@ -7,7 +7,6 @@ import nl.hannahsten.texifyidea.psi.LatexParameterText
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
-import nl.hannahsten.texifyidea.util.parser.requiredParameters
 
 /**
  * See CommandMagic#glossaryReference

@@ -4,7 +4,7 @@ import com.intellij.psi.stubs.IndexSink
 import com.intellij.psi.stubs.StubIndexKey
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.LatexStructure
+import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 class NewCommandsIndexEx : NewLatexCompositeStubIndex<LatexCommands>(LatexCommands::class.java) {
@@ -30,7 +30,7 @@ class NewDefinitionIndexEx : NewLatexCompositeTransformedStubIndex<LatexCommands
     override fun sinkIndex(stub: LatexCommandsStub, sink: IndexSink) {
         val command = stub.commandToken
         if (command !in CommandMagic.definitions) return
-        LatexStructure.getDefinedCommandName(stub)?.let {
+        LatexPsiUtil.getDefinedCommandName(stub)?.let {
             sink.occurrence(key, it)
         }
     }

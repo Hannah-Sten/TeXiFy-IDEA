@@ -1,11 +1,8 @@
 package nl.hannahsten.texifyidea.index.stub
 
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElement
 import com.intellij.psi.stubs.*
 import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import nl.hannahsten.texifyidea.index.*
-import nl.hannahsten.texifyidea.index.file.LatexIndexableSetContributor
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.impl.LatexCommandsImpl
 import nl.hannahsten.texifyidea.util.parser.toStringMap
@@ -20,7 +17,7 @@ class LatexCommandsStubElementType(debugName: String) :
     IStubElementType<LatexCommandsStub, LatexCommands>(debugName, LatexLanguage) {
 
     override fun createPsi(latexCommandsStub: LatexCommandsStub): LatexCommands {
-        return LatexCommandsImpl(latexCommandsStub,this)
+        return LatexCommandsImpl(latexCommandsStub, this)
     }
 
     override fun createStub(latexCommands: LatexCommands, parent: StubElement<*>?): LatexCommandsStub {
@@ -105,14 +102,5 @@ class LatexCommandsStubElementType(debugName: String) :
         private val LIST_ELEMENT_SEPARATOR =
             Pattern.compile("\u1923\u9123\u2d20 hello\u0012")
         private val KEY_VALUE_SEPARATOR = "=".toRegex()
-
-        private var projectRootsCache: List<String>? = null
-
-        fun getAdditionalProjectRoots(project: Project?): List<String> {
-            if (projectRootsCache == null && project != null) {
-                projectRootsCache = LatexIndexableSetContributor().getAdditionalProjectRootsToIndex(project).map { it.path }
-            }
-            return projectRootsCache ?: emptyList()
-        }
     }
 }

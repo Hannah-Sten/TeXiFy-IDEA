@@ -4,7 +4,7 @@ import com.intellij.openapi.project.DumbService
 import com.intellij.psi.*
 import nl.hannahsten.texifyidea.index.NewDefinitionIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.LatexStructure
+import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 import nl.hannahsten.texifyidea.util.parser.definitionCommand
 
 /**
@@ -23,7 +23,7 @@ class LatexCommandDefinitionReference(element: LatexCommands) : PsiReferenceBase
         // Don't resolve to a definition when you are in a \newcommand,
         // and if this element is the element that is being defined
         val element = myElement
-        if (LatexStructure.isInsideDefinition(element)) {
+        if (LatexPsiUtil.isInsideDefinition(element)) {
             return ResolveResult.EMPTY_ARRAY
         }
         val name = element.name ?: return ResolveResult.EMPTY_ARRAY

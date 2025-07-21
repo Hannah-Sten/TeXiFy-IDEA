@@ -225,7 +225,7 @@ object LatexProjectStructure {
 
     private fun pathTextExtraProcessing(
         text: String, command: LatexCommands, file: VirtualFile, info: FilesetInfo
-    ): String {
+    ): String? {
         var result = expandCommandsOnce(text, info.project, file)
         result = result.trim()
         return result
@@ -261,6 +261,11 @@ object LatexProjectStructure {
         }
         cmd.requiredArguments.zip(reqParamTexts).mapNotNullTo(rangesAndTextsWithExt) { (argument, contentText) ->
             if (argument !is RequiredFileArgument) return@mapNotNullTo null
+            if (contentText.contains(LatexGenericRegularCommand.SUBFIX.commandWithSlash)) {
+                // \input{\subfix{file.tex}}
+                // do not deal with \input, but leave it to the \subfix command
+                return@mapNotNullTo null
+            }
             val paramTexts = if (argument.commaSeparatesArguments) {
                 contentText.split(PatternMagic.parameterSplit)
             }
