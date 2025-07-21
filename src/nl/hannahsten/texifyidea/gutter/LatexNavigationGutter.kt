@@ -36,7 +36,7 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
         if(idx < 0) return
         val virtualFiles = filesList[idx]
         val manager = PsiManager.getInstance(element.project)
-        val files = virtualFiles.mapNotNull { manager.findFile(it) }
+        val files = virtualFiles.mapNotNull { f -> f.takeIf { it.isValid }?.let { manager.findFile(it) } }
         val extension = virtualFiles.firstOrNull()?.let {
             if (it.name.endsWith("synctex.gz")) "synctex.gz" else it.extension
         }

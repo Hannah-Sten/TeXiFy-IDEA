@@ -24,6 +24,9 @@ class InputFileReference(
      * This is used to replace the file name when renaming the file.
      */
     val range: TextRange,
+    /**
+     * The known set of files that this command refers to, which may be invalid.
+     */
     val files: Set<VirtualFile>
 ) : PsiReferenceBase<LatexCommands>(element) {
 
@@ -108,11 +111,11 @@ class InputFileReference(
 
     override fun resolve(): PsiFile? {
         if (!element.isValid) return null
-//        val refInfo = LatexProjectStructure.commandFileReferenceInfo(element)
         val project = element.project
-//        val virtualFiles = refInfo[range] ?: return null
         val psiManager = PsiManager.getInstance(project)
-        return files.firstNotNullOfOrNull { psiManager.findFile(it) }
+        return files.firstNotNullOfOrNull { f ->
+            f.takeIf { it.isValid }?.let { psiManager.findFile(it) }
+        }
     }
 
     override fun handleElementRename(newElementName: String): PsiElement {
