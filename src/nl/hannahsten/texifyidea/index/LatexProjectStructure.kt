@@ -352,7 +352,7 @@ object LatexProjectStructure {
         updateOrMergeRefData(command, savedData, info)
     }
 
-    private fun addGraphicsPathsToInfo(project: Project, file: VirtualFile, info: FilesetInfo,) {
+    private fun addGraphicsPathsToInfo(project: Project, file: VirtualFile, info: FilesetInfo) {
         // Declare graphics extensions
         NewCommandsIndex.getByName(LatexGenericRegularCommand.DECLAREGRAPHICSEXTENSIONS.command, project, file)
             .lastOrNull()?.requiredParameterText(0)?.split(",")
