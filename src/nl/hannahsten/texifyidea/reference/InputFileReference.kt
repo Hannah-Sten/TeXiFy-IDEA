@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.reference
 
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
@@ -35,6 +36,13 @@ class InputFileReference(
     }
 
     companion object {
+
+        fun findValidPSIFiles(files: Iterable<VirtualFile>, project: Project): List<PsiFile> {
+            val psiManager = PsiManager.getInstance(project)
+            return files.mapNotNull { file ->
+                file.takeIf { it.isValid }?.let { psiManager.findFile(it) }
+            }
+        }
 
         /**
          * Handle element rename, but taking into account whether the given
@@ -90,8 +98,7 @@ class InputFileReference(
         fun getIncludedFiles(command: LatexCommands, includePackages: Boolean = true): List<PsiFile> {
             val proj = command.project
             val refInfo = LatexProjectStructure.commandFileReferenceInfo(command, proj) ?: return emptyList()
-            val manager = PsiManager.getInstance(proj)
-            return refInfo.second.flatten().mapNotNull { f -> manager.findFile(f) }
+            return findValidPSIFiles(refInfo.second.flatten(), proj)
         }
 
         /**
