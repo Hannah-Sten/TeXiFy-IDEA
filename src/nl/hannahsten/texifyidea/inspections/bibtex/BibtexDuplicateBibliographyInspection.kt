@@ -15,7 +15,7 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.reference.InputFileReference
-import nl.hannahsten.texifyidea.util.includedPackages
+import nl.hannahsten.texifyidea.util.includedPackagesInFileset
 
 /**
  * @author Sten Wessel
@@ -33,7 +33,7 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         // Chapterbib allows multiple bibliographies
-        if (file.includedPackages().any { it == LatexPackage.CHAPTERBIB }) {
+        if (file.includedPackagesInFileset().any { it == LatexPackage.CHAPTERBIB }) {
             return emptyList()
         }
 

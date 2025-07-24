@@ -1,16 +1,16 @@
 package nl.hannahsten.texifyidea.util
 
 import com.intellij.lang.ASTNode
-import com.intellij.openapi.project.Project
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.TreeUtil
-import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.index.LatexProjectStructure.getFilesetScopeFor
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
+import nl.hannahsten.texifyidea.index.file.LatexExternalPackageIndex
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
@@ -185,7 +185,7 @@ object PackageUtils {
             return true
         }
 
-        if (file.includedPackages().contains(pack)) {
+        if (file.includedPackagesInFileset().contains(pack)) {
             return true
         }
 
@@ -193,7 +193,7 @@ object PackageUtils {
         if (PackageMagic.conflictingPackages.any { it.contains(pack) }) {
             for (conflicts in PackageMagic.conflictingPackages) {
                 // Assuming the package is not already included
-                if (conflicts.contains(pack) && file.includedPackages().toSet().intersect(conflicts).isNotEmpty()) {
+                if (conflicts.contains(pack) && file.includedPackagesInFileset().toSet().intersect(conflicts).isNotEmpty()) {
                     return false
                 }
             }
@@ -218,30 +218,32 @@ object PackageUtils {
         }
     }
 
-    fun getPackagesFromCommands(
+    private fun <T : MutableCollection<String>> getPackagesFromCommands(
         commands: Iterable<LatexCommands>,
-    ): List<String> {
-        val result = mutableListOf<String>()
+        results: T,
+    ): T {
         commands.forEach { cmd ->
             // since we must use stub-based resolution, we can not skip for something like ONLYIFSTANDALONE
-            cmd.requiredParametersText().forEach { extractPackageNames(it, result) }
-            cmd.optionalParameterTextMap().keys.forEach { extractPackageNames(it, result) }
+            cmd.requiredParametersText().forEach { extractPackageNames(it, results) }
+            cmd.optionalParameterTextMap().keys.forEach { extractPackageNames(it, results) }
         }
-        return result
-    }
-
-    fun getIncludedPackages(project: Project, scope: GlobalSearchScope): List<String> {
-        // possibly can be improved
-        val commands = NewSpecialCommandsIndex.getAllPackageIncludes(project, scope)
-        return getPackagesFromCommands(commands)
+        return results
     }
 
     /**
      * Gets a list of all packages that are included in the fileset of the given PsiFile, which may contain duplicates.
      */
-    fun getIncludedPackagesInFileset(file: PsiFile): List<String> {
+    fun getIncludedPackagesInFileset(file: PsiFile): Set<String> {
         val project = file.project
-        return getIncludedPackages(project, getFilesetScopeFor(file))
+        val scope = getFilesetScopeFor(file)
+        val commands = NewSpecialCommandsIndex.getAllPackageIncludes(project, scope)
+        val result = mutableSetOf<String>()
+        getPackagesFromCommands(commands, result)
+        if(!ApplicationManager.getApplication().isUnitTestMode) {
+            // do not use file-based index in tests, as it is not updated
+            result.addAll(LatexExternalPackageIndex.getAllPackageInclusions(scope))
+        }
+        return result
     }
 
     /**
@@ -255,7 +257,8 @@ object PackageUtils {
         val project = file.project
         val fs = getFilesetScopeFor(file)
         val scope = fs.intersectWith(project.contentSearchScope) // only the files in the project, not libraries
-        return getIncludedPackages(project, scope)
+        val commands = NewSpecialCommandsIndex.getAllPackageIncludes(project, scope)
+        return getPackagesFromCommands(commands, mutableListOf())
     }
 
     /**
@@ -266,7 +269,7 @@ object PackageUtils {
     @JvmStatic
     fun getIncludedTikzLibraries(baseFile: PsiFile): Set<String> {
         val commands = NewCommandsIndex.getByNamesInFileSet(CommandMagic.tikzLibraryInclusionCommands, baseFile)
-        return getPackagesFromCommands(commands).toSet()
+        return getPackagesFromCommands(commands, mutableSetOf())
     }
 
     /**
@@ -277,7 +280,7 @@ object PackageUtils {
     @JvmStatic
     fun getIncludedPgfLibraries(baseFile: PsiFile): Set<String> {
         val commands = NewCommandsIndex.getByNamesInFileSet(CommandMagic.pgfplotsLibraryInclusionCommands, baseFile)
-        return getPackagesFromCommands(commands).toSet()
+        return getPackagesFromCommands(commands, mutableSetOf())
     }
 }
 
@@ -295,15 +298,8 @@ fun PsiFile.insertUsepackage(pack: LatexPackage) = PackageUtils.insertUsepackage
  * @param onlyDirectInclusions If true, only packages included directly are returned.
  * @return List of all included packages. Those who are directly included, may contain duplicates.
  */
-fun PsiFile.includedPackages(onlyDirectInclusions: Boolean = false): Set<LatexPackage> {
-    val scope = if (onlyDirectInclusions) {
-        GlobalSearchScope.fileScope(this)
-    }
-    else {
-        getFilesetScopeFor(this)
-    }
-    val packageNames = PackageUtils.getIncludedPackages(project, scope)
-    return packageNames.map { LatexPackage(it) }.toSet()
+fun PsiFile.includedPackagesInFileset(): Set<LatexPackage> {
+    return PackageUtils.getIncludedPackagesInFileset(this).map { LatexPackage(it) }.toSet()
 }
 
 // /**

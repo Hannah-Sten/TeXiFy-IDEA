@@ -36,7 +36,7 @@ import nl.hannahsten.texifyidea.util.currentTextEditor
 import nl.hannahsten.texifyidea.util.files.findTectonicTomlFile
 import nl.hannahsten.texifyidea.util.files.hasTectonicTomlFile
 import nl.hannahsten.texifyidea.util.files.psiFile
-import nl.hannahsten.texifyidea.util.includedPackages
+import nl.hannahsten.texifyidea.util.includedPackagesInFileset
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
 import java.io.File
 import kotlin.io.path.Path
@@ -190,7 +190,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             // If no index package is used, we assume we won't have to run makeindex
             val includedPackages = runConfig.mainFile
                 ?.psiFile(runConfig.project)
-                ?.includedPackages()
+                ?.includedPackagesInFileset()
                 ?: setOf()
 
             isMakeindexNeeded = includedPackages.intersect(PackageMagic.index + PackageMagic.glossary).isNotEmpty() && runConfig.compiler?.includesMakeindex == false && !usesTexForGlossaries

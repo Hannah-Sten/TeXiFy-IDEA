@@ -6,6 +6,7 @@ import io.mockk.mockkStatic
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import nl.hannahsten.texifyidea.testutils.writeCommand
+import nl.hannahsten.texifyidea.updateFilesets
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 
 class LatexMissingImportInspectionTest : TexifyInspectionTestBase(LatexMissingImportInspection()) {
@@ -28,7 +29,9 @@ class LatexMissingImportInspectionTest : TexifyInspectionTestBase(LatexMissingIm
             """
             <error descr="Command requires color, or xcolor package">\color</error>{blue}
             """.trimIndent()
+
         )
+        myFixture.updateFilesets()
         myFixture.checkHighlighting()
     }
 
@@ -45,7 +48,7 @@ class LatexMissingImportInspectionTest : TexifyInspectionTestBase(LatexMissingIm
             \end{document}
             """.trimIndent()
         )
-
+        myFixture.updateFilesets()
         val quickFixes = myFixture.getAllQuickFixes()
         assertEquals(2, quickFixes.size)
         writeCommand(myFixture.project) {

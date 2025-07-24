@@ -1,11 +1,13 @@
 package nl.hannahsten.texifyidea.index.file
 
+import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.*
 import com.intellij.util.io.DataExternalizer
 import com.intellij.util.io.EnumeratorStringDescriptor
 import com.intellij.util.io.KeyDescriptor
 import nl.hannahsten.texifyidea.file.ClassFileType
 import nl.hannahsten.texifyidea.file.StyleFileType
+import nl.hannahsten.texifyidea.index.LatexFileBasedIndexKeys
 
 /**
  * Indexes which packages and classes load which other packages.
@@ -17,16 +19,12 @@ import nl.hannahsten.texifyidea.file.StyleFileType
  *
  * See [nl.hannahsten.texifyidea.inspections.latex.probablebugs.packages.LatexMissingImportInspection].
  */
-class LatexExternalPackageInclusionIndex : FileBasedIndexExtension<String, String>() {
-
-    object Cache {
-        val id = ID.create<String, String>("nl.hannahsten.texifyidea.external.package.inclusions")
-    }
+class LatexExternalPackageInclusionIndexEx : FileBasedIndexExtension<String, String>() {
 
     private val indexer = LatexExternalPackageInclusionDataIndexer()
 
     override fun getName(): ID<String, String> {
-        return Cache.id
+        return LatexFileBasedIndexKeys.PACKAGE_INCLUSIONS
     }
 
     override fun getIndexer(): DataIndexer<String, String, FileContent> {
@@ -41,11 +39,18 @@ class LatexExternalPackageInclusionIndex : FileBasedIndexExtension<String, Strin
         return EnumeratorStringDescriptor.INSTANCE
     }
 
-    override fun getVersion() = 2
+    override fun getVersion() = 3
 
     override fun getInputFilter(): FileBasedIndex.InputFilter {
         return DefaultFileTypeSpecificInputFilter(StyleFileType, ClassFileType)
     }
 
     override fun dependsOnFileContent() = true
+}
+
+object LatexExternalPackageIndex : FileBasedIndexRetriever<String, String>(LatexFileBasedIndexKeys.PACKAGE_INCLUSIONS) {
+
+    fun getAllPackageInclusions(scope: GlobalSearchScope): Set<String> {
+        return getAllKeys(scope)
+    }
 }

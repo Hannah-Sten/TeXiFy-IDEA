@@ -14,7 +14,7 @@ import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.findAtLeast
-import nl.hannahsten.texifyidea.util.includedPackages
+import nl.hannahsten.texifyidea.util.includedPackagesInFileset
 
 /**
  * @author Hannah Schellekens
@@ -32,7 +32,7 @@ open class BibtexDuplicateBibliographystyleInspection : TexifyInspectionBase() {
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         // Chapterbib allows multiple bibliographies
-        if (file.includedPackages().any { it == LatexPackage.CHAPTERBIB }) {
+        if (file.includedPackagesInFileset().any { it == LatexPackage.CHAPTERBIB }) {
             return mutableListOf()
         }
 

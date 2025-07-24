@@ -80,7 +80,7 @@ open class LatexEllipsisInspection : TexifyInspectionBase() {
 
             document.replaceString(range.startOffset, range.endOffset, if (inMathMode) "\\dots" else "\\ldots")
 
-            if (inMathMode && AMSMATH !in file.includedPackages()) {
+            if (inMathMode && AMSMATH !in file.includedPackagesInFileset()) {
                 file.insertUsepackage(AMSMATH)
             }
         }

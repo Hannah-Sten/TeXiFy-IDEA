@@ -41,7 +41,7 @@ import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.files.findFile
 import nl.hannahsten.texifyidea.util.files.findVirtualFileByAbsoluteOrRelativePath
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
-import nl.hannahsten.texifyidea.util.includedPackages
+import nl.hannahsten.texifyidea.util.includedPackagesInFileset
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.hasBibliography
 import nl.hannahsten.texifyidea.util.parser.usesBiber
@@ -477,7 +477,7 @@ class LatexRunConfiguration(
         }
 
         // When chapterbib is used, every chapter has its own bibliography and needs its own run config
-        val usesChapterbib = psiFile.includedPackages().contains(LatexPackage.CHAPTERBIB)
+        val usesChapterbib = psiFile.includedPackagesInFileset().contains(LatexPackage.CHAPTERBIB)
 
         if (!usesChapterbib) {
             addBibRunConfig(defaultCompiler, mainFile, compilerFromMagicComment?.second)

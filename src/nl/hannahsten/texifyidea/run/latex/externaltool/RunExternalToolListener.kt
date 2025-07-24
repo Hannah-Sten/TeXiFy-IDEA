@@ -15,7 +15,7 @@ import nl.hannahsten.texifyidea.run.compiler.ExternalTool
 import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.util.files.psiFile
-import nl.hannahsten.texifyidea.util.includedPackages
+import nl.hannahsten.texifyidea.util.includedPackagesInFileset
 
 /**
  * Run the external tool.
@@ -32,7 +32,7 @@ class RunExternalToolListener(
          */
         fun getRequiredExternalTools(mainFile: VirtualFile?, project: Project): Set<ExternalTool> {
             val usedPackages = runReadAction {
-                mainFile?.psiFile(project)?.includedPackages() ?: emptySet()
+                mainFile?.psiFile(project)?.includedPackagesInFileset() ?: emptySet()
             }
 
             val externalTools = mutableSetOf<ExternalTool>()

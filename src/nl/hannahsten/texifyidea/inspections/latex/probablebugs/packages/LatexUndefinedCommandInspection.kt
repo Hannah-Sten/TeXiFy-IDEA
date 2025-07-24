@@ -13,7 +13,7 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
 import nl.hannahsten.texifyidea.util.files.commandsInFile
-import nl.hannahsten.texifyidea.util.includedPackages
+import nl.hannahsten.texifyidea.util.includedPackagesInFileset
 import nl.hannahsten.texifyidea.util.insertUsepackage
 import nl.hannahsten.texifyidea.util.magic.cmd
 
@@ -35,7 +35,7 @@ class LatexUndefinedCommandInspection : TexifyInspectionBase() {
     override fun getDisplayName() = "Command is not defined"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        val includedPackages = file.includedPackages().toSet().plus(LatexPackage.DEFAULT)
+        val includedPackages = file.includedPackagesInFileset().toSet().plus(LatexPackage.DEFAULT)
 
         val commandsInFile = file.commandsInFile()
         val commandNamesInFile = commandsInFile.map { it.name }.toSet()

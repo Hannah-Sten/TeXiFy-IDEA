@@ -25,7 +25,7 @@ import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.PackageUtils
 import nl.hannahsten.texifyidea.util.files.definitionsAndRedefinitionsInFileSet
-import nl.hannahsten.texifyidea.util.includedPackages
+import nl.hannahsten.texifyidea.util.includedPackagesInFileset
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
 import nl.hannahsten.texifyidea.util.parser.*
 import java.util.*
@@ -55,7 +55,7 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
 
         val descriptors = descriptorList()
 
-        val includedPackages = file.includedPackages()
+        val includedPackages = file.includedPackagesInFileset()
         analyseCommands(file, includedPackages, descriptors, manager, isOntheFly)
         analyseEnvironments(file, includedPackages, descriptors, manager, isOntheFly)
 

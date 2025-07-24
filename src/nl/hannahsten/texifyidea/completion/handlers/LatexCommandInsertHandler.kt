@@ -134,7 +134,7 @@ class LatexCommandInsertHandler(val arguments: List<Argument>? = null) : InsertH
                 .toSet()
 
             // Include packages.
-            if (!file.includedPackages().contains(pack) && envName !in envDefinitions) {
+            if (!file.includedPackagesInFileset().contains(pack) && envName !in envDefinitions) {
                 file.insertUsepackage(pack)
             }
 
