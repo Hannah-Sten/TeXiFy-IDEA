@@ -24,8 +24,12 @@ class LatexMissingGlossaryReferenceInspection : TexifyInspectionBase() {
     override fun getDisplayName() = "Missing glossary reference"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        val descriptors = mutableListOf<ProblemDescriptor>()
         val entries = NewSpecialCommandsIndex.getAllGlossaryEntries(file)
+        if(entries.isEmpty()) {
+            // No glossary entries, so no need to check for missing references
+            return emptyList()
+        }
+        val descriptors = mutableListOf<ProblemDescriptor>()
         val names = entries.mapNotNull { LatexGlossariesCommand.extractGlossaryName(it) }
         val regexes = names.map { name ->
             // Ensure the regex is valid, assuming that regular words don't contain e.g. braces

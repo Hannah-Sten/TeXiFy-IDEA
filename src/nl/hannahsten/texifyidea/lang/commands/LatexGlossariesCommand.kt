@@ -183,23 +183,28 @@ enum class LatexGlossariesCommand(
             return command.requiredParameters()[0].findFirstChildOfType(LatexParameterText::class)
         }
 
+        private val glossaryEntryCommands: Set<String> = setOf(NEWGLOSSARYENTRY, LONGNEWGLOSSARYENTRY).map { it.cmd }.toSet()
+        private val acronymEntryCommands: Set<String> = setOf(NEWACRONYM, NEWABBREVIATION).map { it.cmd }.toSet()
+        private val acroEntryCommands: Set<String> = setOf(NEWACRO, ACRO, ACRODEF).map { it.cmd }.toSet()
+
         /**
          * Find the name, which is the text that will appear in the document, from the given glossary entry definition.
          */
         fun extractGlossaryName(command: LatexCommands): String? {
-            if (setOf(NEWGLOSSARYENTRY, LONGNEWGLOSSARYENTRY).map { it.cmd }.contains(command.name)) {
-                val keyValueList = command.requiredParameterText(1) ?: return null
-                return "name=\\{([^}]+)}".toRegex().find(keyValueList)?.groupValues?.get(1)
+            when(command.name) {
+                in glossaryEntryCommands -> {
+                    val keyValueList = command.requiredParameterText(1) ?: return null
+                    return "name=\\{([^}]+)}".toRegex().find(keyValueList)?.groupValues?.get(1)
+                }
+                in acronymEntryCommands -> {
+                    return command.requiredParameterText(1)
+                }
+                in acroEntryCommands -> {
+                    // For acro commands, the name is the first parameter
+                    return command.requiredParameterText(0)
+                }
             }
-            else if (setOf(NEWACRONYM, NEWABBREVIATION).map { it.cmd }.contains(command.name)) {
-                return command.requiredParameterText(1)
-            }
-            else if (setOf(NEWACRO, ACRO, ACRODEF).map { it.cmd }.contains(command.name)) {
-                return command.requiredParameterText(0)
-            }
-            else {
-                return null
-            }
+            return null
         }
     }
 }
