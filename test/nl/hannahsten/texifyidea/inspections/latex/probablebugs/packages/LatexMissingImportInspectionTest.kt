@@ -78,4 +78,50 @@ class LatexMissingImportInspectionTest : TexifyInspectionTestBase(LatexMissingIm
         myFixture.configureByFiles("missingsub.tex", "missingmain.tex")
         myFixture.checkHighlighting()
     }
+
+    fun testNestedImport() {
+        myFixture.configureByText(
+            "mypackage.sty",
+            """
+            \ProvidesPackage{mypackage}
+            \RequirePackage{xcolor}
+            """.trimIndent()
+        )
+        myFixture.configureByText(
+            "main.tex",
+            """
+            \documentclass{article}
+            \usepackage{mypackage}
+            \begin{document}
+                \color{blue}
+            \end{document}
+            """.trimIndent(),
+        )
+        myFixture.updateFilesets()
+        myFixture.checkHighlighting()
+    }
+
+    fun testNestedImportWithSubfile() {
+        myFixture.configureByText(
+            "mypackage.sty",
+            """
+            \ProvidesPackage{mypackage}
+            \RequirePackage{xcolor}
+            """.trimIndent()
+        )
+        myFixture.configureByText(
+            "main.tex",
+            """
+            \documentclass{article}
+            \usepackage{mypackage}
+            \usepackage{subfiles}
+            \begin{document}
+                \input{sub1/one.tex}
+            \end{document}
+            """.trimIndent(),
+        )
+        myFixture.configureByFiles("sub1/sub2/two.tex", "sub1/one.tex")
+        myFixture.updateFilesets()
+        myFixture.checkHighlighting()
+    }
 }

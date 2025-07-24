@@ -9,6 +9,7 @@ import io.mockk.every
 import io.mockk.mockkStatic
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.updateFilesets
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 
 class LatexGutterTest : BasePlatformTestCase() {
@@ -21,6 +22,26 @@ class LatexGutterTest : BasePlatformTestCase() {
 
     override fun getTestDataPath(): String {
         return "test/resources/gutter"
+    }
+
+    fun testPackageGutter() {
+        for (i in 1..3) {
+            myFixture.addFileToProject(
+                "amsmath$i.sty",
+                """
+                \ProvidesPackage{amsmath$i}
+                """.trimIndent()
+            )
+        }
+        myFixture.configureByText(
+            "main.tex",
+            """
+            \usepackage{amsmath1,amsmath2,amsmath3}
+            """.trimIndent()
+        )
+        myFixture.updateFilesets()
+        val gutters = myFixture.findAllGutters()
+        assertEquals(1, gutters.size) // only one gutter for the \usepackage command
     }
 
     fun testShowCompileGutter() {
