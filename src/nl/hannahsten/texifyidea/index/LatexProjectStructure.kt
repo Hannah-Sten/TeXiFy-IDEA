@@ -277,7 +277,7 @@ object LatexProjectStructure {
                 return@mapNotNullTo null
             }
             val paramTexts = if (argument.commaSeparatesArguments) {
-                contentText.split(PatternMagic.parameterSplit)
+                contentText.split(PatternMagic.parameterSplit).filter { it.isNotBlank() }
             }
             else listOf(contentText)
 
