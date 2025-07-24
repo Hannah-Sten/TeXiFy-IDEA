@@ -41,4 +41,23 @@ class LatexMultipleIncludesInspectionTest : TexifyInspectionTestBase(LatexMultip
             """.trimIndent()
         )
     }
+
+    fun testNoWarningForRequiredPackages() {
+        myFixture.configureByText(
+            "mypackage.sty",
+            """
+            \RequirePackage{amsmath}
+            \ProvidesPackage{mypackage}
+            """.trimIndent()
+        )
+        myFixture.configureByText(
+            "main.tex",
+            """
+            \documentclass{article}
+            \usepackage{mypackage}
+            \usepackage{amsmath}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
 }

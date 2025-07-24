@@ -34,7 +34,7 @@ open class LatexMultipleIncludesInspection : TexifyInspectionBase() {
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         // Find all explicit imported packages in the fileset
-        val packagesWithDuplicate = PackageUtils.getExplicitlyIncludedPackagesInFileset(file)
+        val packagesWithDuplicate = PackageUtils.getExplicitUsedPackagesInFileset(file)
         // When using the subfiles package, there will be multiple \documentclass{subfiles} commands
         val ignoredPackages = setOf(LatexPackage.SUBFILES.name)
         val packages = mutableSetOf<String>()

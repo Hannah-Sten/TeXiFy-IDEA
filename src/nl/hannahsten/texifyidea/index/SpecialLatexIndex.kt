@@ -72,7 +72,7 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexBase<LatexCommands>(LatexCo
         return getByName(SpecialKeys.FILE_INPUTS, project, GlobalSearchScope.fileScope(project, file))
     }
 
-    fun getAllPackageIncludes(project: Project, scope: GlobalSearchScope = project.contentSearchScope): Collection<LatexCommands> {
+    fun getAllPackageIncludes(project: Project, scope: GlobalSearchScope): Collection<LatexCommands> {
         return getByName(SpecialKeys.PACKAGE_INCLUDES, project, scope)
     }
 
@@ -113,10 +113,11 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexBase<LatexCommands>(LatexCo
     }
 
     /**
-     * Get all glossary entries in the fileset of the given file.
+     * Get all glossary entries in the project fileset of the given file, considering only `.tex` files.
      */
     fun getAllGlossaryEntries(originalFile: PsiFile): Collection<LatexCommands> {
-        return getByNameInFileSet(SpecialKeys.GLOSSARY_ENTRY, originalFile)
+        val scope = LatexProjectStructure.getFilesetScopeFor(originalFile, onlyTexFiles = true)
+        return getByName(SpecialKeys.GLOSSARY_ENTRY, scope)
     }
 }
 

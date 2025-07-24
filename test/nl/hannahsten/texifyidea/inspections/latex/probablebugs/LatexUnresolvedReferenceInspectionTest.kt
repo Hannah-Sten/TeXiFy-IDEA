@@ -4,7 +4,7 @@ import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockkStatic
 import io.mockk.unmockkAll
-import nl.hannahsten.texifyidea.configureByFilesWithMockCache
+import nl.hannahsten.texifyidea.configureByFilesAndBuildFilesets
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
@@ -48,7 +48,7 @@ class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnr
     fun testBibtexReference() {
         try {
             val name = getTestName(false) + ".tex"
-            myFixture.configureByFilesWithMockCache(name, "references.bib")
+            myFixture.configureByFilesAndBuildFilesets(name, "references.bib")
 
             myFixture.checkHighlighting()
         }

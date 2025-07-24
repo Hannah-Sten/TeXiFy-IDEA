@@ -76,6 +76,10 @@ data class FilesetData(
      * The scope that contains all files in [relatedFiles].
      */
     val filesetScope: GlobalSearchScope,
+    /**
+     * The scope that contains all `.tex` files.
+     */
+    val texFileScope: GlobalSearchScope
 )
 
 /**
@@ -603,8 +607,10 @@ object LatexProjectStructure {
 
         val dataMapping = mapping.mapValues { (file, filesets) ->
             val allFiles = filesets.flatMapTo(mutableSetOf(file)) { it.files }
+            val texFiles = allFiles.filter { it.fileType == LatexFileType }
             val scope = GlobalSearchScope.filesWithLibrariesScope(project, allFiles)
-            FilesetData(filesets, allFiles, scope)
+            val texScope = GlobalSearchScope.filesWithoutLibrariesScope(project, texFiles) // only .tex files in the project, do not search in libraries
+            FilesetData(filesets, allFiles, scope, texScope)
         }
 
         val elapsedTime = System.currentTimeMillis() - startTime
@@ -668,15 +674,21 @@ object LatexProjectStructure {
 
     /**
      * Gets the search scope containing all the filesets that contain the given PsiFile.
+     *
+     * @param onlyTexFiles if true, only `.tex` files in the project will be included. Sometimes we do not want to search in other files.
      */
-    fun getFilesetScopeFor(file: PsiFile): GlobalSearchScope {
+    fun getFilesetScopeFor(file: PsiFile, onlyTexFiles: Boolean = false): GlobalSearchScope {
         val virtualFile = file.virtualFile ?: return GlobalSearchScope.fileScope(file)
         val project = file.project
-        return getFilesetScopeFor(virtualFile, project)
+        return getFilesetScopeFor(virtualFile, project, onlyTexFiles)
     }
 
-    fun getFilesetScopeFor(file: VirtualFile, project: Project): GlobalSearchScope {
-        return getFilesets(project)?.getData(file)?.filesetScope ?: GlobalSearchScope.fileScope(project, file)
+    fun getFilesetScopeFor(file: VirtualFile, project: Project, onlyTexFiles: Boolean = false): GlobalSearchScope {
+        val data = getFilesets(project)?.getData(file) ?: return GlobalSearchScope.fileScope(project, file)
+        if (onlyTexFiles) {
+            return data.texFileScope
+        }
+        return data.filesetScope
     }
 
     fun getRootfilesFor(file: PsiFile): Set<VirtualFile> {

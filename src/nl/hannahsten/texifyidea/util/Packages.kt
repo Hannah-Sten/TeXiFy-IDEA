@@ -247,17 +247,13 @@ object PackageUtils {
     }
 
     /**
-     * Gets a list of all packages that are explicitly included in the fileset of the given PsiFile.
+     * Gets a list of all packages that are explicitly included via `\usepackage`.
      *
-     * This does not include packages that are included indirectly (e.g. via other packages).
+     * This does not include packages that are included in packages.
      */
-    fun getExplicitlyIncludedPackagesInFileset(file: PsiFile): List<String> {
-        // Get all packages that are explicitly included in the fileset of the given file.
-        // This does not include packages that are included indirectly (e.g. via other packages).
-        val project = file.project
-        val fs = getFilesetScopeFor(file)
-        val scope = fs.intersectWith(project.contentSearchScope) // only the files in the project, not libraries
-        val commands = NewSpecialCommandsIndex.getAllPackageIncludes(project, scope)
+    fun getExplicitUsedPackagesInFileset(file: PsiFile): List<String> {
+        val scope = getFilesetScopeFor(file, onlyTexFiles = true)
+        val commands = NewCommandsIndex.getByName(LatexGenericRegularCommand.USEPACKAGE.commandWithSlash, scope)
         return getPackagesFromCommands(commands, mutableListOf())
     }
 
@@ -295,18 +291,8 @@ fun PsiFile.insertUsepackage(pack: LatexPackage) = PackageUtils.insertUsepackage
  * These may be packages that are in the project, installed in the LateX distribution or somewhere else.
  * This includes packages that are included indirectly (via other packages).
  *
- * @param onlyDirectInclusions If true, only packages included directly are returned.
- * @return List of all included packages. Those who are directly included, may contain duplicates.
+ * @return List of all included packages, including those that are included indirectly.
  */
 fun PsiFile.includedPackagesInFileset(): Set<LatexPackage> {
     return PackageUtils.getIncludedPackagesInFileset(this).map { LatexPackage(it) }.toSet()
 }
-
-// /**
-// * See [includedPackages].
-// */
-// fun includedPackages(commands: Collection<LatexCommands>, project: Project, onlyDirectInclusions: Boolean = false): Set<LatexPackage> {
-//    val directIncludes = PackageUtils.getPackagesFromCommands(commands, CommandMagic.packageInclusionCommands, mutableListOf())
-//        .map { LatexPackage(it) }.toSet()
-//    return if (onlyDirectInclusions) directIncludes else LatexExternalPackageInclusionCache.getAllIndirectlyIncludedPackages(directIncludes, project).toSet()
-// }
