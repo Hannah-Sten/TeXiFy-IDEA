@@ -5,6 +5,8 @@
 ### Added
 
 ### Fixed
+* Fix a few cases which could freeze the UI.
+* Fix exception when running LaTeX on WSL with PyCharm 2025.1+ 
 * Fix a caching issue when building the file set
 * Fix a rare case where an autocompile rerun would try to start before the previous run finished
 * Fix incorrect slashes in path on Windows after pasting image
