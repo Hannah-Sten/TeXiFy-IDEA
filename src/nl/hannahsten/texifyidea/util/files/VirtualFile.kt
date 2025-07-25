@@ -10,7 +10,6 @@ import com.intellij.psi.PsiManager
 import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.appendExtension
 import java.io.File
-import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * Looks up the PsiFile that corresponds to the Virtual File.
