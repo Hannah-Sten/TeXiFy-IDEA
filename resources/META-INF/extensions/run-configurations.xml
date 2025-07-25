@@ -5,6 +5,6 @@
         <configurationType implementation="nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType"/>
         <configurationType implementation="nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfigurationType"/>
         <runConfigurationProducer implementation="nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer"/>
-        <projectTaskRunner implementation="nl.hannahsten.texifyidea.run.LatexProjectTaskRunner" />
+<!--        <projectTaskRunner implementation="nl.hannahsten.texifyidea.run.LatexProjectTaskRunner" />-->
     </extensions>
 </idea-plugin>

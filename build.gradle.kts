@@ -94,20 +94,14 @@ dependencies {
         testFramework(TestFrameworkType.Platform)
         testFramework(TestFrameworkType.Plugin.Java)
 
-        intellijIdeaCommunity("2024.3")
+        pycharmCommunity("2024.3")
 
         // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
         // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
 //        intellijIdeaCommunity("243.20847-EAP-CANDIDATE-SNAPSHOT", useInstaller = false)
 //        jetbrainsRuntime() // https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html#target-versions-multi-os-archives
 
-        // Example to use a different, locally installed, IDE
-        // If you get the error "Cannot find builtin plugin java for IDE", remove the "java" plugin above
-        // Also disable "version" above
-        // If it doesn't work (Could not resolve all files for configuration ':detachedConfiguration4'.), specify 'version' instead
-//    localPath.set("/home/thomas/.local/share/JetBrains/Toolbox/apps/PyCharm-P/ch-0/213.6777.50/")
-
-        bundledPlugin("com.intellij.java")
+//        bundledPlugin("com.intellij.java")
         bundledPlugin("tanvd.grazi")
         plugin("com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.17.0")
         plugin("com.jetbrains.hackathon.indices.viewer:1.29")

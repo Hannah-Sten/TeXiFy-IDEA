@@ -17,7 +17,7 @@ import com.intellij.serviceContainer.AlreadyDisposedException
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
-import nl.hannahsten.texifyidea.modules.LatexModuleType
+//import nl.hannahsten.texifyidea.modules.LatexModuleType
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
@@ -114,14 +114,14 @@ fun Project.currentTextEditor(): TextEditor? {
  *     directories, not by checking type of the current module.
  */
 fun Project.hasLatexModule(): Boolean {
-    if (isDisposed) return false
-    return try {
-        ModuleManager.getInstance(this).modules
-            .any { ModuleType.get(it).id == LatexModuleType.ID }
-    }
-    catch (e: AlreadyDisposedException) {
-        false
-    }
+    return false
+//    return try {
+//        ModuleManager.getInstance(this).modules
+//            .any { ModuleType.get(it).id == LatexModuleType.ID }
+//    }
+//    catch (e: AlreadyDisposedException) {
+//        false
+//    }
 }
 
 /**

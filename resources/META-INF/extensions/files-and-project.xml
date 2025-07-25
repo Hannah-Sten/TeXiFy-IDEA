@@ -1,6 +1,6 @@
 <idea-plugin>
     <extensions defaultExtensionNs="com.intellij">
-        <moduleBuilder builderClass="nl.hannahsten.texifyidea.modules.LatexModuleBuilder" />
+<!--        <moduleBuilder builderClass="nl.hannahsten.texifyidea.modules.LatexModuleBuilder" />-->
         <!-- The fieldName="INSTANCE" is required since 2021.2, if not present then all tests relying on automatic file type detection based on file name will fail if run all together via gradle check, and succeed when run a single test at a time,  -->
         <fileType implementationClass="nl.hannahsten.texifyidea.file.LatexFileType" name="LaTeX source file" language="Latex" extensions="tex;glstex" fieldName="INSTANCE" />
         <fileType implementationClass="nl.hannahsten.texifyidea.file.StyleFileType" name="LaTeX style file" language="Latex" extensions="sty;dbx;bbx;cbx" fieldName="INSTANCE" /> <!-- dbx is a Biblatex Data Model, bbx a Biblatex Style -->
