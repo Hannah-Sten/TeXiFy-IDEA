@@ -228,6 +228,7 @@ where the plugin id and version should match that given in `updatePlugins.xml` a
 ### Debugging
 
 ***TypeScript*** When the pdf viewer plugin is running, right click on an open PDF to open the dev tools.
+You can also use 'search everywhere' to search for 'Open DevTools'.
 This will open the ordinary dev tools that is in any browser, and you can print stuff to the console here by using `console.log(...)`.
 
 ***Kotlin*** The Kotlin part of the plugin can be debugged as usual.
