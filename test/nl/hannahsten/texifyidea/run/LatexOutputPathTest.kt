@@ -23,7 +23,7 @@ class LatexOutputPathTest : BasePlatformTestCase() {
         runConfig.psiFile = mainFile.createSmartPointer()
         runBlocking {
             runConfig.setMainFile("main.tex")
-            val outPath = LatexOutputPath("out", runConfig.getMainFileContentRoot(), runConfig.mainFile, project)
+            val outPath = LatexOutputPath("out", runConfig.getMainFileContentRoot(runConfig.mainFile), runConfig.mainFile, project)
             // Cannot mkdirs in test, so will default to src
             assertEquals("/src", outPath.getAndCreatePath()?.path)
         }

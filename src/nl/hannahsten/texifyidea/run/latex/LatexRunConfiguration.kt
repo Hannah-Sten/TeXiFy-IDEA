@@ -115,9 +115,9 @@ class LatexRunConfiguration(
     suspend fun setMainFile(mainFile: VirtualFile?) {
         this.mainFile = mainFile
         this.outputPath.mainFile = mainFile
-        this.outputPath.contentRoot = getMainFileContentRoot()
+        this.outputPath.contentRoot = getMainFileContentRoot(mainFile)
         this.auxilPath.mainFile = mainFile
-        this.auxilPath.contentRoot = getMainFileContentRoot()
+        this.auxilPath.contentRoot = getMainFileContentRoot(mainFile)
     }
 
     // Save the psifile which can be used to check whether to create a bibliography based on which commands are in the psifile
@@ -322,10 +322,10 @@ class LatexRunConfiguration(
             val outputPathString = parent.getChildText(OUTPUT_PATH)
             if (outputPathString != null) {
                 if (outputPathString.endsWith("/bin")) {
-                    this.outputPath = LatexOutputPath("out", getMainFileContentRoot(), mainFile, project)
+                    this.outputPath = LatexOutputPath("out", getMainFileContentRoot(mainFile), mainFile, project)
                 }
                 else {
-                    this.outputPath = LatexOutputPath("out", getMainFileContentRoot(), mainFile, project)
+                    this.outputPath = LatexOutputPath("out", getMainFileContentRoot(mainFile), mainFile, project)
                     this.outputPath.pathString = outputPathString
                 }
             }
@@ -333,7 +333,7 @@ class LatexRunConfiguration(
             // Read auxil path
             val auxilPathString = parent.getChildText(AUXIL_PATH)
             if (auxilPathString != null) {
-                this.auxilPath = LatexOutputPath("auxil", getMainFileContentRoot(), mainFile, project)
+                this.auxilPath = LatexOutputPath("auxil", getMainFileContentRoot(mainFile), mainFile, project)
                 this.auxilPath.pathString = auxilPathString
             }
         }
@@ -636,11 +636,11 @@ class LatexRunConfiguration(
     /**
      * Get the content root of the main file.
      */
-    suspend fun getMainFileContentRoot(): VirtualFile? {
+    suspend fun getMainFileContentRoot(mainFile: VirtualFile?): VirtualFile? {
         if (mainFile == null) return null
         if (!project.isInitialized) return null
         return smartReadAction(project) {
-            ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile!!)
+            ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)
         }
     }
 

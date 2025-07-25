@@ -29,7 +29,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         override fun createCommand(
             runConfig: LatexRunConfiguration,
             auxilPath: String?,
-            outputPath: String?,
+            outputPath: String,
             moduleRoot: VirtualFile?,
             moduleRoots: Array<VirtualFile>
         ): MutableList<String> {
@@ -66,7 +66,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         override fun createCommand(
             runConfig: LatexRunConfiguration,
             auxilPath: String?,
-            outputPath: String?,
+            outputPath: String,
             moduleRoot: VirtualFile?,
             moduleRoots: Array<VirtualFile>
         ): MutableList<String> {
@@ -104,7 +104,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         override fun createCommand(
             runConfig: LatexRunConfiguration,
             auxilPath: String?,
-            outputPath: String?,
+            outputPath: String,
             moduleRoot: VirtualFile?,
             moduleRoots: Array<VirtualFile>
         ): MutableList<String> {
@@ -149,7 +149,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         override fun createCommand(
             runConfig: LatexRunConfiguration,
             auxilPath: String?,
-            outputPath: String?,
+            outputPath: String,
             moduleRoot: VirtualFile?,
             moduleRoots: Array<VirtualFile>
         ): MutableList<String> {
@@ -195,7 +195,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         override fun createCommand(
             runConfig: LatexRunConfiguration,
             auxilPath: String?,
-            outputPath: String?,
+            outputPath: String,
             moduleRoot: VirtualFile?,
             moduleRoots: Array<VirtualFile>
         ): MutableList<String> {
@@ -211,9 +211,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             // commands can be passed to those compilers with the arguments flag, however apparently IntelliJ cannot handle quotes so we cannot pass multiple arguments to pdflatex.
             // Fortunately, -synctex=1 and -interaction=nonstopmode are on by default in texliveonfly
             // Since adding one will work without any quotes, we choose the output directory.
-            if (outputPath != null) {
-                command.add("--arguments=--output-directory=$outputPath")
-            }
+            command.add("--arguments=--output-directory=$outputPath")
 
             return command
         }
@@ -230,7 +228,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         override fun createCommand(
             runConfig: LatexRunConfiguration,
             auxilPath: String?,
-            outputPath: String?,
+            outputPath: String,
             moduleRoot: VirtualFile?,
             moduleRoots: Array<VirtualFile>
         ): MutableList<String> {
@@ -243,9 +241,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
                 command.add("--outfmt=${runConfig.outputFormat.name.lowercase(Locale.getDefault())}")
 
-                if (outputPath != null) {
-                    command.add("--outdir=$outputPath")
-                }
+                command.add("--outdir=$outputPath")
             }
             else {
                 command.add("-X")
@@ -267,7 +263,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         override fun createCommand(
             runConfig: LatexRunConfiguration,
             auxilPath: String?,
-            outputPath: String?,
+            outputPath: String,
             moduleRoot: VirtualFile?,
             moduleRoots: Array<VirtualFile>
         ): MutableList<String> {
@@ -318,7 +314,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             "/out"
         }
         else {
-            runConfig.outputPath.getAndCreatePath()?.path?.toWslPathIfNeeded(runConfig.getLatexDistributionType())
+            (runConfig.outputPath.getAndCreatePath() ?: mainFile.parent ).path.toWslPathIfNeeded(runConfig.getLatexDistributionType())
         }
 
         val auxilPath = if (runConfig.getLatexDistributionType() == LatexDistributionType.DOCKER_MIKTEX) {
@@ -450,7 +446,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
     protected open fun createCommand(
         runConfig: LatexRunConfiguration,
         auxilPath: String?,
-        outputPath: String?,
+        outputPath: String,
         moduleRoot: VirtualFile?,
         moduleRoots: Array<VirtualFile>
     ): MutableList<String> = error("Not implemented for $this")
