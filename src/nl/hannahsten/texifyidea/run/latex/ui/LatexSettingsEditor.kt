@@ -33,7 +33,6 @@ import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.SumatraViewer
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
-import nl.hannahsten.texifyidea.util.runInBackgroundWithoutProgress
 import java.awt.Cursor
 import java.awt.event.ItemEvent
 import java.awt.event.MouseAdapter
@@ -214,9 +213,7 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
         val txtFile = mainFile.component as TextFieldWithBrowseButton
         val filePath = txtFile.text
 
-        runInBackgroundWithoutProgress {
-            runConfiguration.setMainFile(filePath)
-        }
+        runConfiguration.setMainFile(filePath)
 
         val outputPathTextField = outputPath.component as TextFieldWithBrowseButton
         if (!outputPathTextField.text.endsWith("/bin")) {

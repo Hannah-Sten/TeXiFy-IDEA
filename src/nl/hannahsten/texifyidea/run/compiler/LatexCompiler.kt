@@ -285,7 +285,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
     fun getCommand(runConfig: LatexRunConfiguration, project: Project): List<String>? {
         val mainFile = runConfig.mainFile ?: return null
         // Getting the content root is an expensive operation (See WorkspaceFileIndexDataImpl#ensureIsUpToDate), and since it probably won't change often we reuse a cached value
-        val moduleRoot = runConfig.outputPath.contentRoot
+        val moduleRoot = runConfig.outputPath.getMainFileContentRoot(runConfig.mainFile)
         // For now we disable module roots with Docker
         // Could be improved by mounting them to the right directory
         val moduleRoots = if (runConfig.getLatexDistributionType().isDocker()) {
@@ -314,7 +314,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             "/out"
         }
         else {
-            (runConfig.outputPath.getAndCreatePath() ?: mainFile.parent ).path.toWslPathIfNeeded(runConfig.getLatexDistributionType())
+            (runConfig.outputPath.getAndCreatePath() ?: mainFile.parent).path.toWslPathIfNeeded(runConfig.getLatexDistributionType())
         }
 
         val auxilPath = if (runConfig.getLatexDistributionType() == LatexDistributionType.DOCKER_MIKTEX) {
