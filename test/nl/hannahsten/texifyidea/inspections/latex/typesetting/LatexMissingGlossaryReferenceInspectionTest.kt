@@ -27,6 +27,18 @@ class LatexMissingGlossaryReferenceInspectionTest : TexifyInspectionTestBase(Lat
         myFixture.checkHighlighting()
     }
 
+    fun testNoWarningForUnfinishedGlossaryEntry() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+                \newglossaryentry{}{}{}
+                \newglossaryentry
+                some text
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
     fun testNoWarning() {
         myFixture.configureByText(
             "mypackage.sty",

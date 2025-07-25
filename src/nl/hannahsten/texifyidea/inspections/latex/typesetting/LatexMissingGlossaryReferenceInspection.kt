@@ -23,17 +23,23 @@ class LatexMissingGlossaryReferenceInspection : TexifyInspectionBase() {
     override val inspectionId = "MissingGlossaryReference"
     override fun getDisplayName() = "Missing glossary reference"
 
+    private val nameLetterRegex = "[^a-zA-Z]+".toRegex()
+
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val entries = NewSpecialCommandsIndex.getAllGlossaryEntries(file)
-        if(entries.isEmpty()) {
-            // No glossary entries, so no need to check for missing references
+        val extractedNames = entries.asSequence().mapNotNull { LatexGlossariesCommand.extractGlossaryName(it) }
+            .map {
+                // Ensure the regex is valid, assuming that regular words don't contain e.g. braces
+                it.replace(nameLetterRegex, "")
+            }.filter {
+                it.isNotBlank()
+            }.toList()
+        if (extractedNames.isEmpty()) {
+            // No valid glossary names, so no need to check for missing references
             return emptyList()
         }
-        val descriptors = mutableListOf<ProblemDescriptor>()
-        val names = entries.mapNotNull { LatexGlossariesCommand.extractGlossaryName(it) }
-        val regexes = names.map { name ->
-            // Ensure the regex is valid, assuming that regular words don't contain e.g. braces
-            val nameLetters = name.replace("[^a-zA-Z]+".toRegex(), "")
+        val descriptors = descriptorList()
+        val regexes = extractedNames.map { nameLetters ->
             val nameLetterRegex = nameLetters.toRegex()
             val glsRegex = "\\\\gls[^{]+\\{($nameLetters)}".toRegex()
             nameLetterRegex to glsRegex

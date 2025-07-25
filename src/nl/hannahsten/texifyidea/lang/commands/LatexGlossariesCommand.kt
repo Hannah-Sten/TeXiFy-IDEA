@@ -194,7 +194,7 @@ enum class LatexGlossariesCommand(
             when(command.name) {
                 in glossaryEntryCommands -> {
                     val keyValueList = command.requiredParameterText(1) ?: return null
-                    return "name=\\{([^}]+)}".toRegex().find(keyValueList)?.groupValues?.get(1)
+                    return "name=\\{([^}]+)}".toRegex().find(keyValueList)?.groupValues?.getOrNull(1)
                 }
                 in acronymEntryCommands -> {
                     return command.requiredParameterText(1)
