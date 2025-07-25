@@ -16,6 +16,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
 import nl.hannahsten.texifyidea.util.parser.inMathContext
 
 /**
@@ -61,7 +62,8 @@ open class LatexMathFunctionTextInspection : TexifyInspectionBase() {
             val textCommand = textCommandPointer.element ?: return
             val mathFunction = extractFunction(textCommand) ?: return
             textCommand.node.removeChild(textCommand.parameterList[0].node)
-            textCommand.node.replaceChild(textCommand.commandToken.node, LatexPsiHelper(project).createFromText(mathFunction).firstChild.node)
+            val newCmdToken = LatexPsiHelper(project).createFromText(mathFunction).firstChild.findFirstChildTyped<LatexCommands>()?.commandToken ?: return
+            textCommand.node.replaceChild(textCommand.commandToken.node, newCmdToken.node)
         }
 
         override fun generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo {
