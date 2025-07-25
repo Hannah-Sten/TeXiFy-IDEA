@@ -7,8 +7,10 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
+import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.appendExtension
 import java.io.File
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * Looks up the PsiFile that corresponds to the Virtual File.
@@ -106,6 +108,11 @@ fun VirtualFile.allChildDirectories(): Set<VirtualFile> {
 
 private fun VirtualFile.allChildDirectories(dirs: MutableSet<VirtualFile>) {
     if (isDirectory) {
+        // If there are a lot of directories, the UI would freeze more than a few seconds, so abort in that case
+        if (dirs.size > 1000) {
+            Log.debug("Found more than 1000 directories, skipping the rest")
+            return
+        }
         dirs.add(this)
         children.forEach {
             it.allChildDirectories(dirs)
