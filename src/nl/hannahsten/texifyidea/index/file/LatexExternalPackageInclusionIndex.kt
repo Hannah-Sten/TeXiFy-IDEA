@@ -46,6 +46,11 @@ class LatexExternalPackageInclusionIndexEx : FileBasedIndexExtension<String, Str
     }
 
     override fun dependsOnFileContent() = true
+
+    override fun traceKeyHashToVirtualFileMapping(): Boolean {
+        // important, otherwise GlobalSearchScope will not work properly
+        return true
+    }
 }
 
 object LatexExternalPackageIndex : FileBasedIndexRetriever<String, String>(LatexFileBasedIndexKeys.PACKAGE_INCLUSIONS) {

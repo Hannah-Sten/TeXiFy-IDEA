@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.util
 
 import com.intellij.lang.ASTNode
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
@@ -239,10 +238,7 @@ object PackageUtils {
         val commands = NewSpecialCommandsIndex.getAllPackageIncludes(project, scope)
         val result = mutableSetOf<String>()
         getPackagesFromCommands(commands, result)
-        if(!ApplicationManager.getApplication().isUnitTestMode) {
-            // do not use file-based index in tests, as it is not updated
-            result.addAll(LatexExternalPackageIndex.getAllPackageInclusions(scope))
-        }
+        result.addAll(LatexExternalPackageIndex.getAllPackageInclusions(scope))
         return result
     }
 
