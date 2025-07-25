@@ -641,9 +641,9 @@ object LatexProjectStructure {
     }
 
     @TestOnly
-    fun testOnlyUpdateFilesets(project: Project) {
+    suspend fun testOnlyUpdateFilesets(project: Project) {
         // This is only for testing purposes, to update the filesets without suspending
-        TexifyProjectCacheService.getInstance(project).testOnlyEnsureUpdate(CACHE_KEY, ::buildFilesets)
+        TexifyProjectCacheService.getInstance(project).testOnlyEnsureUpdate(CACHE_KEY, ::buildFilesetsSuspend)
     }
 
     /**

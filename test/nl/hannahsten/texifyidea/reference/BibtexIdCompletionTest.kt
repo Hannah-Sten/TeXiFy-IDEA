@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.reference
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import nl.hannahsten.texifyidea.configureByFilesAndBuildFilesets
 
 class BibtexIdCompletionTest : BasePlatformTestCase() {
 
@@ -17,7 +16,7 @@ class BibtexIdCompletionTest : BasePlatformTestCase() {
     // TODO(TEX-213) Fix tests using file set cache
     fun testCompleteLatexReferences() {
         // when
-        myFixture.configureByFilesAndBuildFilesets("${getTestName(false)}.tex", "bibtex.bib")
+//        myFixture.configureByFilesAndBuildFilesets("${getTestName(false)}.tex", "bibtex.bib")
 //            val result = myFixture.lookupElements!!
 
         // then

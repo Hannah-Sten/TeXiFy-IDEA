@@ -7,8 +7,8 @@ import com.intellij.openapi.project.Project
 import com.jetbrains.rd.util.ConcurrentHashMap
 import com.jetbrains.rd.util.concurrentMapOf
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.jetbrains.annotations.TestOnly
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.reflect.KClass
@@ -176,18 +176,18 @@ abstract class ProjectCacheService(val project: Project, private val coroutineSc
 
     /**
      * Test-only method to ensure that the cache is updated with the result of the computation.
-     * This method will block the current thread until the computation is done, so it should only be used in tests.
+     * This method will block the current coroutine until the computation is done, so it should only be used in tests.
      */
     @TestOnly
-    fun <T> testOnlyEnsureUpdate(key: TypedKey<T>, f: suspend (Project) -> T) {
+    suspend fun <T> testOnlyEnsureUpdate(key: TypedKey<T>, f: suspend (Project) -> T) {
         val computing = getComputingState(key)
         while(!computing.compareAndSet(false, true)) {
             // Wait until the computation is done
-            Thread.sleep(1)
+            delay(1L)
         }
         try {
             // Force update the cache
-            val result = runBlocking { f(project) }
+            val result = f(project)
             put(key, result)
         }
         finally {
