@@ -5,6 +5,7 @@
 ### Added
 
 ### Fixed
+* Fix a possible UI freeze when an output directory is used with more than 10000 subdirectories
 * Fix a few cases which could freeze the UI.
 * Fix exception when running LaTeX on WSL with PyCharm 2025.1+ 
 * Fix a caching issue when building the file set
