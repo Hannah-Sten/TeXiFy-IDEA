@@ -16,9 +16,9 @@ class LatexProjectStructureCacheInitializer : ProjectActivity {
 
     override suspend fun execute(project: Project) {
         if(ApplicationManager.getApplication().isUnitTestMode) return
-        // Not sure on which thread this is run, run in background to be sure
         if(!project.isLatexProject()) return
         withContext(Dispatchers.Default) {
+            // Not sure on which thread this is run, run in background to be sure
             LatexPackageLocation.updateLocationWithKpsewhichSuspend(project)
             LatexProjectStructure.updateFilesetsSuspend(project)
         }
