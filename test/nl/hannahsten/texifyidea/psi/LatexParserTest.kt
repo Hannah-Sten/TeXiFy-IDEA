@@ -271,6 +271,7 @@ class LatexParserTest : BasePlatformTestCase() {
                 \begin{multicols}{2}
             }
             \newcommand{\cmd}{${'$'}x${'$'}}
+            \newcommand\MnMissing{$\times$} % MnSymbol package
             
             \AfterEndEnvironment{minted}{
                 \end{tcolorbox}
