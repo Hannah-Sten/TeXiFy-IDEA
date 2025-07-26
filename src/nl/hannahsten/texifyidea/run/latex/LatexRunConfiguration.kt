@@ -518,22 +518,18 @@ class LatexRunConfiguration(
 
     /**
      * Looks up the corresponding [VirtualFile] and sets [LatexRunConfiguration.mainFile].
+     *
+     * See [readExternal]: NOTE: do not use runReadAction here as it may cause deadlock when other threads try to get run configurations from a write lock
+     *
      */
     fun setMainFile(mainFilePath: String) {
         if (mainFilePath.isBlank()) {
             this.mainFile = null
             return
         }
-        val isDispatchThread = ApplicationManager.getApplication().isDispatchThread
         val fileSystem = LocalFileSystem.getInstance()
         // Check if the file is valid and exists
-        val mainFile = if (isDispatchThread) {
-            fileSystem.findFileByPath(mainFilePath)
-        }
-        else {
-            // this is a read action
-            ReadAction.compute<VirtualFile?, Throwable> { fileSystem.findFileByPath(mainFilePath) }
-        }
+        val mainFile = fileSystem.findFileByPath(mainFilePath)
 
         if (mainFile?.extension == "tex") {
             this.mainFile = mainFile
@@ -542,13 +538,8 @@ class LatexRunConfiguration(
         // Maybe it is a relative path
         val projectRootManager =
             ProjectRootManager.getInstance(project)
-        val contentRoots = if (isDispatchThread) {
-            projectRootManager.contentRoots
-        }
-        else {
-            // a read action again
-            ReadAction.compute<Array<VirtualFile>, Throwable> { projectRootManager.contentRoots }
-        }
+        val contentRoots = projectRootManager.contentRoots
+
         for (contentRoot in contentRoots) {
             // Check if the file exists in the content root
             val file = contentRoot.findFileByRelativePath(mainFilePath)

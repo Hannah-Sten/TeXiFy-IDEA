@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.util
 
 import com.intellij.execution.RunManager
 import com.intellij.execution.impl.RunManagerImpl
+import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.util.SystemInfo
@@ -21,7 +22,15 @@ class SystemEnvironment {
 
     companion object {
 
-        val wslCommand = arrayOf("wsl", "--exec", "bash", "-ic")
+        val wslCommand by lazy {
+            // PyCharm 2025.1+ does not support wsl --exec, see #4115
+            if (ApplicationInfo.getInstance().fullApplicationName.contains("IntelliJ")) {
+                arrayOf("wsl", "--exec", "bash", "-ic")
+            }
+            else {
+                arrayOf("bash", "-ic")
+            }
+        }
 
         val inkscapeMajorVersion: Int by lazy {
             "inkscape --version".runCommand()

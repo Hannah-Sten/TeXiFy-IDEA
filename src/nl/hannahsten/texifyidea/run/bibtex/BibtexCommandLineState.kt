@@ -7,11 +7,15 @@ import com.intellij.execution.process.KillableProcessHandler
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
+import com.intellij.platform.ide.progress.runWithModalProgressBlocking
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Companion.toWslPathIfNeeded
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import kotlin.io.path.Path
+import kotlin.io.path.exists
 
 /**
  * @author Sten Wessel
@@ -48,17 +52,25 @@ open class BibtexCommandLineState(
         // The fallback (if null or empty) directory is the directory of the main file.
         val bibPath = runConfig.bibWorkingDir?.path
         val mainPath = runConfig.mainFile?.parent?.path
-        val commandLine = if (!bibPath.isNullOrBlank()) {
-            GeneralCommandLine(command).withWorkingDirectory(Path((bibPath)))
+        val workingDirectory = if (!bibPath.isNullOrBlank()) {
+            Path(bibPath)
         }
         else if (!mainPath.isNullOrBlank()) {
-            GeneralCommandLine(command).withWorkingDirectory(Path(mainPath))
+            Path(mainPath)
         }
         else {
             throw ExecutionException("No working directory specified for BibTeX run configuration.")
         }
+        if (workingDirectory.exists().not()) {
+            Notification("LaTeX", "Could not find working directory", "The directory containing the main file could not be found: $workingDirectory", NotificationType.ERROR).notify(environment.project)
+            throw ExecutionException("Could not find working directory $workingDirectory for file $mainPath with given path $bibPath")
+        }
 
-        val handler: ProcessHandler = KillableProcessHandler(commandLine.withEnvironment(runConfig.environmentVariables.envs))
+        val commandLine = GeneralCommandLine(command).withWorkingDirectory(workingDirectory)
+
+        val handler = runWithModalProgressBlocking(environment.project, "Creating command line process...") {
+            KillableProcessHandler(commandLine.withEnvironment(runConfig.environmentVariables.envs))
+        }
 
         // Reports exit code to run output window when command is terminated
         ProcessTerminatedListener.attach(handler, environment.project)
