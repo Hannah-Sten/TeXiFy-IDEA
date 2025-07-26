@@ -10,6 +10,7 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBLabel
+import com.intellij.ui.components.fields.IntegerField
 import nl.hannahsten.texifyidea.run.pdfviewer.SumatraViewer
 import java.awt.Dimension
 import java.awt.FlowLayout
@@ -42,6 +43,7 @@ class TexifyConfigurable : SearchableConfigurable {
     private var htmlPasteTranslator: ComboBox<String>? = null
     private var autoCompileOption: ComboBox<String>? = null
     private var sumatraPath: TextFieldWithBrowseButton? = null
+    private var filesetExpirationTimeMs: IntegerField? = null
 
     /**
      * Map UI variables to underlying setting variables
@@ -87,6 +89,7 @@ class TexifyConfigurable : SearchableConfigurable {
                     automaticQuoteReplacement = addComboBox("Smart quote substitution: ", "Off", "TeX ligatures", "TeX commands", "csquotes")
                     htmlPasteTranslator = addComboBox("HTML paste translator", "Built-in", "Pandoc", "Disabled")
                     autoCompileOption = addComboBox("Automatic compilation", "Off", "Always", "After document save", "Disable in power save mode")
+                    addFilesetExpirationTimeMs(this)
                 }
             )
         }
@@ -174,6 +177,24 @@ class TexifyConfigurable : SearchableConfigurable {
         return res
     }
 
+    private fun addFilesetExpirationTimeMs(panel: JPanel) {
+        val subPanel = JPanel(FlowLayout(FlowLayout.LEFT))
+        val label = JBLabel("Fileset refresh period (ms):")
+        subPanel.add(label)
+        val tips = "The time after which the fileset (formed by \\input, \\usepackage, etc.) is considered expired and will be rebuilt. \n " +
+            "A lower value means quicker response for input files, but also a bit more CPU usage. "
+
+        label.toolTipText = tips
+        filesetExpirationTimeMs = IntegerField("Fileset expiration time (ms)", 0, Int.MAX_VALUE).apply {
+            defaultValue = TexifySettings.DEFAULT_FILESET_EXPIRATION_TIME_MS
+            value = settings.filesetExpirationTimeMs
+            preferredSize = Dimension(150, preferredSize.height)
+            toolTipText = tips
+            subPanel.add(this)
+        }
+        panel.add(subPanel)
+    }
+
     override fun isModified(): Boolean {
         return booleanSettings.any { it.first.get()?.isSelected != it.second.get() } ||
             textidoteOptions?.text != settings.textidoteOptions ||
@@ -181,7 +202,8 @@ class TexifyConfigurable : SearchableConfigurable {
             automaticQuoteReplacement?.selectedIndex != settings.automaticQuoteReplacement.ordinal ||
             htmlPasteTranslator?.selectedIndex != settings.htmlPasteTranslator.ordinal ||
             autoCompileOption?.selectedIndex != settings.autoCompileOption.ordinal ||
-            getUISumatraPath() != settings.pathToSumatra
+            getUISumatraPath() != settings.pathToSumatra ||
+            filesetExpirationTimeMs?.value != settings.filesetExpirationTimeMs
     }
 
     override fun apply() {
@@ -194,12 +216,13 @@ class TexifyConfigurable : SearchableConfigurable {
         settings.htmlPasteTranslator = TexifySettings.HtmlPasteTranslator.entries.toTypedArray()[htmlPasteTranslator?.selectedIndex ?: 0]
         settings.autoCompileOption = TexifySettings.AutoCompile.entries.toTypedArray()[autoCompileOption?.selectedIndex ?: 0]
         val path = getUISumatraPath()
-        if(path != null) {
-            if(!SumatraViewer.trySumatraPath(path)) {
+        if (path != null) {
+            if (!SumatraViewer.trySumatraPath(path)) {
                 throw RuntimeConfigurationError("Path to SumatraPDF is not valid: $path")
             }
         }
         settings.pathToSumatra = path
+        settings.filesetExpirationTimeMs = filesetExpirationTimeMs?.value ?: 2000
     }
 
     override fun reset() {
@@ -212,5 +235,6 @@ class TexifyConfigurable : SearchableConfigurable {
         htmlPasteTranslator?.selectedIndex = settings.htmlPasteTranslator.ordinal
         autoCompileOption?.selectedIndex = settings.autoCompileOption.ordinal
         sumatraPath?.text = settings.pathToSumatra ?: ""
+        filesetExpirationTimeMs?.value = settings.filesetExpirationTimeMs
     }
 }

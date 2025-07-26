@@ -13,7 +13,7 @@ import nl.hannahsten.texifyidea.lang.commands.LatexNewDefinitionCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.util.files.commandsInFile
-import nl.hannahsten.texifyidea.util.includedPackages
+import nl.hannahsten.texifyidea.util.includedPackagesInFileset
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.GeneralMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
@@ -37,7 +37,7 @@ open class LatexNonMatchingIfInspection : TexifyInspectionBase() {
         val descriptors = descriptorList()
 
         // etoolbox has many \if... commands without a \fi
-        if (file.includedPackages().contains(LatexPackage.ETOOLBOX)) {
+        if (file.includedPackagesInFileset().contains(LatexPackage.ETOOLBOX)) {
             return emptyList()
         }
 

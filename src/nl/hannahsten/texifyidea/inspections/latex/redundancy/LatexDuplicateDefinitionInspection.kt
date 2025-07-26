@@ -5,10 +5,11 @@ import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.index.LatexProjectStructure
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.util.files.definitions
-import nl.hannahsten.texifyidea.util.files.definitionsInFileSet
+import nl.hannahsten.texifyidea.psi.traverseCommands
 import nl.hannahsten.texifyidea.util.isInConditionalBranch
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.definedCommandName
@@ -31,7 +32,8 @@ open class LatexDuplicateDefinitionInspection : TexifyInspectionBase() {
 
         // Find all defined commands.
         val defined = HashMultiset.create<String>()
-        val definitions = file.definitionsInFileSet().filter { it.name in CommandMagic.regularStrictCommandDefinitions }
+        val fileSetScope = LatexProjectStructure.getFilesetScopeFor(file)
+        val definitions = NewCommandsIndex.getByNames(CommandMagic.regularStrictCommandDefinitions, file.project, fileSetScope)
         for (command in definitions) {
             if (isInConditionalBranch(command)) continue
             val name = command.definedCommandName() ?: continue
@@ -39,22 +41,23 @@ open class LatexDuplicateDefinitionInspection : TexifyInspectionBase() {
         }
 
         // Go monkeys.
-        file.definitions()
-            .forEach {
-                if (isInConditionalBranch(it)) return@forEach
-                val definedCmd = it.definedCommandName() ?: return@forEach
-                if (defined.count(definedCmd) > 1) {
-                    descriptors.add(
-                        manager.createProblemDescriptor(
-                            it,
-                            "Command '$definedCmd' is defined multiple times",
-                            true,
-                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                            isOntheFly
-                        )
+        file.traverseCommands().filter {
+            it.name in CommandMagic.definitions
+        }.forEach {
+            if (isInConditionalBranch(it)) return@forEach
+            val definedCmd = it.definedCommandName() ?: return@forEach
+            if (defined.count(definedCmd) > 1) {
+                descriptors.add(
+                    manager.createProblemDescriptor(
+                        it,
+                        "Command '$definedCmd' is defined multiple times",
+                        true,
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                        isOntheFly
                     )
-                }
+                )
             }
+        }
 
         return descriptors
     }

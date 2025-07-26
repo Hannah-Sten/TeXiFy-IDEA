@@ -60,7 +60,7 @@ abstract class LatexSdk(name: String) : SdkType(name) {
 
     /**
      * Default path to the location of package style (.sty) files.
-     * Example: texlive/2020/texmf-dist/tex/latex
+     * Example: texlive/2020/texmf-dist/tex
      */
     open fun getDefaultStyleFilesPath(homePath: String): VirtualFile? = null
 }

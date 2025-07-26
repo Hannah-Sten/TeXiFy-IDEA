@@ -8,21 +8,20 @@ import com.intellij.navigation.NavigationItem
 import com.intellij.openapi.application.smartReadAction
 import com.intellij.psi.*
 import com.intellij.psi.impl.source.tree.LeafPsiElement
-import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.file.*
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexTypes
+import nl.hannahsten.texifyidea.psi.traverseCommands
+import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewElement
 import nl.hannahsten.texifyidea.structure.latex.SectionNumbering.DocumentClass
 import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommandsNoUpdate
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
-import nl.hannahsten.texifyidea.util.parser.allCommands
-import nl.hannahsten.texifyidea.util.parser.getIncludedFiles
 import nl.hannahsten.texifyidea.util.runInBackgroundWithoutProgress
 import nl.hannahsten.texifyidea.util.updateAndGetIncludeCommands
 import java.util.*
@@ -37,12 +36,12 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
     }
 
     // Get document class, this can take over one second but does not change frequently, and is only used for the correct sectioning levels, so cache it
-    val docClass by lazy {
-        LatexCommandsIndex.Util.getItems(element.project, GlobalSearchScope.fileScope(element as PsiFile)).asSequence()
-            .filter { cmd -> cmd.name == LatexGenericRegularCommand.DOCUMENTCLASS.commandWithSlash && cmd.getRequiredParameters().isNotEmpty() }
-            .mapNotNull { cmd -> cmd.getRequiredParameters().firstOrNull() }
-            .firstOrNull() ?: "article"
-    }
+    val docClass: String
+        get() {
+            return NewCommandsIndex.getByName(LatexGenericRegularCommand.DOCUMENTCLASS.commandWithSlash, element.containingFile).firstNotNullOfOrNull {
+                it.requiredParametersText().firstOrNull()
+            } ?: "article"
+        }
 
     override fun getValue() = element
 
@@ -84,7 +83,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
 
         // Fetch all commands in the active file.
         val numbering = SectionNumbering(DocumentClass.getClassByName(docClass))
-        val commands = element.allCommands()
+        val commands = element.traverseCommands()
         val treeElements = ArrayList<LatexStructureViewCommandElement>()
 
         val includeCommands = updateAndGetIncludeCommands(element.project)
@@ -132,16 +131,21 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         // This can take a long time (a minute for a large file), but it is not crucial for the structure view, so we get the info in the background.
         // This function may be called for every editor action, so cache this as well to reduce cpu usage
         val includeCommandsElements = commands.filter { it.name in includeCommands }
-        if (includeCommandsElements.size != Cache.includedFiles.size) {
+        if (includeCommandsElements.count() != Cache.includedFiles.size) {
             runInBackgroundWithoutProgress {
-                val newIncludes = includeCommandsElements.associate {
-                    smartReadAction(element.project) {
-                        Pair(it.createSmartPointer(), it.getIncludedFiles(includeInstalledPackages = TexifySettings.getInstance().showPackagesInStructureView).map { it.createSmartPointer() })
+                smartReadAction(element.project) {
+                    val showPackages = TexifySettings.getInstance().showPackagesInStructureView
+                    val newIncludes = includeCommandsElements.associate {
+                        var allIncludeFiles = InputFileReference.getIncludedFiles(it)
+                        if(!showPackages) {
+                            allIncludeFiles = allIncludeFiles.filter { it.name.endsWith(".tex") || it.name.endsWith(".bib") }
+                        }
+                        Pair(it.createSmartPointer(), allIncludeFiles.map { it.createSmartPointer() })
                     }
+                    // Clear cache to avoid it becoming outdated too much
+                    Cache.includedFiles.clear()
+                    Cache.includedFiles.putAll(newIncludes)
                 }
-                // Clear cache to avoid it becoming outdated too much
-                Cache.includedFiles.clear()
-                Cache.includedFiles.putAll(newIncludes)
             }
         }
 
@@ -170,7 +174,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         treeElements: ArrayList<LatexStructureViewCommandElement>,
         numbering: SectionNumbering
     ) {
-        if (command.getRequiredParameters().isEmpty()) {
+        if (command.requiredParametersText().isEmpty()) {
             return
         }
 
@@ -267,7 +271,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
 
     private fun updateNumbering(cmd: LatexCommands, numbering: SectionNumbering) {
         val token = cmd.commandToken.text
-        val required = cmd.getRequiredParameters()
+        val required = cmd.requiredParametersText()
         if (required.size < 2) {
             return
         }

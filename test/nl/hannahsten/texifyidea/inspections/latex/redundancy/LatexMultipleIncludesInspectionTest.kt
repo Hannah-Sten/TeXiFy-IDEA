@@ -24,7 +24,37 @@ class LatexMultipleIncludesInspectionTest : TexifyInspectionTestBase(LatexMultip
             
             \onlyifstandalone{
             \usepackage{amsmath}
+            \usepackage{amsmath}
             }
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testDuplicatesInOneCommand() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \documentclass{article}
+            \usepackage{<error descr="Package has already been included">amsmath</error>, <error descr="Package has already been included">amsmath</error>}
+            \usepackage{amssymb,<error descr="Package has already been included">amsmath</error>}
+            """.trimIndent()
+        )
+    }
+
+    fun testNoWarningForRequiredPackages() {
+        myFixture.configureByText(
+            "mypackage.sty",
+            """
+            \RequirePackage{amsmath}
+            \ProvidesPackage{mypackage}
+            """.trimIndent()
+        )
+        myFixture.configureByText(
+            "main.tex",
+            """
+            \documentclass{article}
+            \usepackage{mypackage}
             \usepackage{amsmath}
             """.trimIndent()
         )

@@ -46,7 +46,7 @@ class LatexDocumentationProvider : DocumentationProvider {
             return false
         }
 
-        val command = LatexCommand.lookup(element)
+        val command = LatexCommand.lookupInAll(element)
         if (command.isNullOrEmpty()) return false
         return command.first().commandWithSlash in CommandMagic.packageInclusionCommands
     }
@@ -60,13 +60,13 @@ class LatexDocumentationProvider : DocumentationProvider {
             return@either null
         }
 
-        val command = LatexCommand.lookup(element)
+        val command = LatexCommand.lookupInAll(element)
 
         if (command.isNullOrEmpty()) return@either null
 
         // Special case for package inclusion commands
         if (isPackageInclusionCommand(element)) {
-            val pkg = element.getRequiredParameters().getOrNull(0) ?: return@either null
+            val pkg = element.requiredParametersText().getOrNull(0) ?: return@either null
             return runTexdoc(LatexPackage(pkg))
         }
 
@@ -104,7 +104,7 @@ class LatexDocumentationProvider : DocumentationProvider {
         // In that case we shouldn't reassign lookup because then we would show documentation for the wrong item next time
         val lookupItem = lookup ?: when(element) {
             is LatexCommands -> {
-                LatexCommand.lookup(element)?.firstOrNull()
+                LatexCommand.lookupInAll(element)?.firstOrNull()
             }
             is LatexEnvIdentifier -> {
                 element.name?.let { envName ->

@@ -4,7 +4,7 @@ import com.intellij.util.indexing.DataIndexer
 import com.intellij.util.indexing.FileContent
 
 /**
- * Index file contents for [LatexExternalPackageInclusionIndex].
+ * Index file contents for [LatexExternalPackageInclusionIndexEx].
  */
 class LatexExternalPackageInclusionDataIndexer : DataIndexer<String, String, FileContent> {
 

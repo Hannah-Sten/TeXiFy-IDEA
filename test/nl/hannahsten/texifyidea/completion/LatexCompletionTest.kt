@@ -21,7 +21,12 @@ class LatexCompletionTest : BasePlatformTestCase() {
         val result = myFixture.complete(CompletionType.BASIC)
 
         // then
-        assertTrue("LaTeX autocompletion should be available", result.any { it.lookupString.startsWith("appendix") })
+        if(result == null) {
+            // single candidate autocompletion
+            myFixture.checkResult("\\appendix<caret>")
+        } else {
+            assertTrue("LaTeX autocompletion should be available", result.any { it.lookupString.startsWith("\\appendix") })
+        }
     }
 
     @Test
@@ -38,8 +43,13 @@ class LatexCompletionTest : BasePlatformTestCase() {
         // when
         val result = myFixture.complete(CompletionType.BASIC)
 
-        // then
-        assertTrue("LaTeX autocompletion of custom commands should be available", result.any { it.lookupString == "hi" })
+        if(result == null) {
+            // single candidate autocompletion
+            myFixture.checkResult("\\hi<caret>")
+        } else {
+            // when multiple candidates are available
+            assertTrue("LaTeX autocompletion of custom commands should be available", result.any { it.lookupString == "\\hi" })
+        }
     }
 
     fun testCompleteCustomColorDefinitions() {
@@ -67,7 +77,7 @@ class LatexCompletionTest : BasePlatformTestCase() {
 
         val result = myFixture.complete(CompletionType.BASIC)
 
-        assertTrue(result.any { it.lookupString.startsWith("textbf") })
+        assertTrue(result.any { it.lookupString.startsWith("\\textbf") })
     }
 
     // fun testCustomCommandAliasCompletion() {
@@ -113,13 +123,11 @@ class LatexCompletionTest : BasePlatformTestCase() {
     //     assertTrue(result.any { it.lookupString == "testkey" })
     // }
 
-    fun testCustomLabelAliasCompletion() {
+    fun testLabelCompletion() {
         myFixture.configureByText(
             LatexFileType,
             """
-            \newcommand{\mylabel}[1]{\label{#1}}
-
-            \mylabel{label1}
+            \label{label1}
             \label{label2}
 
             ~\ref{la<caret>}
@@ -129,7 +137,27 @@ class LatexCompletionTest : BasePlatformTestCase() {
         val result = myFixture.complete(CompletionType.BASIC)
 
         assertTrue(result.any { it.lookupString == "label1" })
+        assertTrue(result.any { it.lookupString == "label2" })
     }
+
+    // TODO: We should implement this functionality in the future in more efficient ways.
+//    fun testCustomLabelAliasCompletion() {
+//        myFixture.configureByText(
+//            LatexFileType,
+//            """
+//            \newcommand{\mylabel}[1]{\label{#1}}
+//
+//            \mylabel{label1}
+//            \label{label2}
+//
+//            ~\ref{la<caret>}
+//            """.trimIndent()
+//        )
+//
+//        val result = myFixture.complete(CompletionType.BASIC)
+//
+//        assertTrue(result.any { it.lookupString == "label1" })
+//    }
 
     // Test only works when no other tests are run
     // fun testCustomLabelPositionAliasCompletion() {

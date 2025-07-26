@@ -106,7 +106,7 @@ open class TexliveSdk(name: String = "TeX Live SDK") : LatexSdk(name) {
     }
 
     override fun getDefaultStyleFilesPath(homePath: String): VirtualFile? {
-        return LocalFileSystem.getInstance().findFileByPath("$homePath/texmf-dist/tex/latex")
+        return LocalFileSystem.getInstance().findFileByPath("$homePath/texmf-dist/tex")
     }
 
     override fun getExecutableName(executable: String, homePath: String): String {

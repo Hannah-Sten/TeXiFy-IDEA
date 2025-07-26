@@ -10,6 +10,7 @@ import com.intellij.psi.PsiManager
 import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.appendExtension
 import java.io.File
+import kotlin.io.path.Path
 
 /**
  * Looks up the PsiFile that corresponds to the Virtual File.
@@ -21,7 +22,7 @@ fun VirtualFile.psiFile(project: Project): PsiFile? {
 
 fun VirtualFile.findVirtualFileByAbsoluteOrRelativePath(filePath: String): VirtualFile? {
     if (filePath.isBlank()) return null
-    val isAbsolute = File(filePath).isAbsolute
+    val isAbsolute = Path(filePath).isAbsolute
     return if (!isAbsolute) {
         findFileByRelativePath(filePath)
     }

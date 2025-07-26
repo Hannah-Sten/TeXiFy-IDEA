@@ -6,19 +6,15 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.util.indexing.FileBasedIndex
+import nl.hannahsten.texifyidea.index.NewDefinitionIndex
 import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
-import nl.hannahsten.texifyidea.util.parser.definedCommandName
 import nl.hannahsten.texifyidea.util.files.commandsInFile
-import nl.hannahsten.texifyidea.util.files.definitionsInFileSet
-import nl.hannahsten.texifyidea.util.includedPackages
+import nl.hannahsten.texifyidea.util.includedPackagesInFileset
 import nl.hannahsten.texifyidea.util.insertUsepackage
-import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
 
 /**
@@ -39,21 +35,20 @@ class LatexUndefinedCommandInspection : TexifyInspectionBase() {
     override fun getDisplayName() = "Command is not defined"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        val includedPackages = file.includedPackages().toSet().plus(LatexPackage.DEFAULT)
+        val includedPackages = file.includedPackagesInFileset().toSet().plus(LatexPackage.DEFAULT)
+
         val commandsInFile = file.commandsInFile()
-        val commandNamesInFile = commandsInFile.map { it.name }
+        val commandNamesInFile = commandsInFile.map { it.name }.toSet()
         // The number of indexed commands can be quite large (50k+) so we filter the large set based on the small one (in this file).
-        val indexedCommands = FileBasedIndex.getInstance().getAllKeys(LatexExternalCommandIndex.Cache.id, file.project)
+        val indexedCommands = LatexExternalCommandIndex.getAllKeys(file.project)
             .filter { it in commandNamesInFile }
             .associateWith { command ->
-                val containingPackages = FileBasedIndex.getInstance().getContainingFiles(LatexExternalCommandIndex.Cache.id, command, GlobalSearchScope.everythingScope(file.project))
-                    .map { LatexPackage.create(it) }
-                    .toSet()
+                val containingPackages =
+                    LatexExternalCommandIndex.getContainingFiles(command, file.project).map { LatexPackage.create(it) }.toSet()
                 containingPackages
             }
         val magicCommands = LatexRegularCommand.ALL.associate { Pair(it.cmd, setOf(it.dependency)) }
-        val userDefinedCommands = file.definitionsInFileSet().filter { it.name in CommandMagic.commandDefinitions }
-            .map { it.definedCommandName() }
+        val userDefinedCommands = NewDefinitionIndex.getAllKeys(file.project) // TODO filter only project file, not all files
             .associateWith { setOf(LatexPackage.DEFAULT) }
 
         // Join all the maps, map command name (with backslash) to all packages it is defined in
