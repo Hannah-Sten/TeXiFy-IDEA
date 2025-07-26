@@ -9,7 +9,9 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
-import nl.hannahsten.texifyidea.util.files.*
+import nl.hannahsten.texifyidea.util.files.FileUtil
+import nl.hannahsten.texifyidea.util.files.allChildDirectories
+import nl.hannahsten.texifyidea.util.files.createExcludedDir
 import java.io.File
 
 /**
@@ -22,7 +24,7 @@ import java.io.File
  *
  * @param variant: out or auxil
  */
-class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?, var mainFile: VirtualFile?, private val project: Project) {
+class LatexOutputPath(private val variant: String, var mainFile: VirtualFile?, private val project: Project) {
 
     companion object {
 
@@ -31,7 +33,7 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
     }
 
     fun clone(): LatexOutputPath {
-        return LatexOutputPath(variant, contentRoot, mainFile, project).apply { if (this@LatexOutputPath.pathString.isNotBlank()) this.pathString = this@LatexOutputPath.pathString }
+        return LatexOutputPath(variant, mainFile, project).apply { if (this@LatexOutputPath.pathString.isNotBlank()) this.pathString = this@LatexOutputPath.pathString }
     }
 
     // Acts as a sort of cache
@@ -60,7 +62,7 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
     }
 
     private fun getPath(): VirtualFile? {
-        // When we previously made the mistake of calling findRelativePath with an empty string, the output path will be set to thee /bin folder of IntelliJ. Fix that here, to be sure
+        // When we previously made the mistake of calling findRelativePath with an empty string, the output path will be set to the /bin folder of IntelliJ. Fix that here, to be sure
         if (virtualFile?.path?.endsWith("/bin") == true) {
             virtualFile = null
         }
@@ -69,6 +71,7 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
             return virtualFile!!
         }
         else {
+            val contentRoot = getMainFileContentRoot(mainFile)
             val pathString = if (pathString.contains(PROJECT_DIR_STRING)) {
                 if (contentRoot == null) return if (mainFile != null) mainFile?.parent else null
                 pathString.replace(PROJECT_DIR_STRING, contentRoot?.path ?: return null)
@@ -100,6 +103,17 @@ class LatexOutputPath(private val variant: String, var contentRoot: VirtualFile?
             }
 
             return null
+        }
+    }
+
+    /**
+     * Get the content root of the main file.
+     */
+    fun getMainFileContentRoot(mainFile: VirtualFile?): VirtualFile? {
+        if (mainFile == null) return null
+        if (!project.isInitialized) return null
+        return runReadAction {
+            ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)
         }
     }
 
