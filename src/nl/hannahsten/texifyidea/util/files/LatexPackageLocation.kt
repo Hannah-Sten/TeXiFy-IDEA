@@ -32,7 +32,7 @@ object LatexPackageLocation {
      * Note: this can take a long time.
      */
     suspend fun updateLocationWithKpsewhichSuspend(project: Project) {
-        TexifyProjectCacheService.getInstance(project).computeAndUpdate(cacheKey, ::computeLocationWithKpsewhich)
+        TexifyProjectCacheService.getInstance(project).computeOrSkip(cacheKey, ::computeLocationWithKpsewhich)
     }
 
     /**

@@ -2,15 +2,13 @@ package nl.hannahsten.texifyidea.util
 
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
-import com.intellij.openapi.observable.util.lockOrSkip
 import com.intellij.openapi.project.Project
 import com.jetbrains.rd.util.ConcurrentHashMap
 import com.jetbrains.rd.util.concurrentMapOf
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.jetbrains.annotations.TestOnly
-import java.util.concurrent.atomic.AtomicBoolean
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlin.reflect.KClass
 
 class CacheValueTimed<T>(
@@ -25,6 +23,8 @@ class CacheValueTimed<T>(
         return !isExpired(expirationInMs)
     }
 }
+
+
 
 /**
  * Provides a cache service for a project that allows storing and retrieving values with expiration.
@@ -44,10 +44,23 @@ abstract class ProjectCacheService(val project: Project, private val coroutineSc
         private fun <T> createKeyFromFunction(f: suspend (Project) -> T?): TypedKey<T> {
             return TypedKeyFromFunction(f::class)
         }
+
+        /**
+         * Tries to lock the mutex and runs the action if successful.
+         * If the mutex is already locked, it skips the action.
+         */
+        private suspend inline fun Mutex.tryLockOrSkip(action: suspend () -> Unit) {
+            if(!tryLock()) return
+            try{
+                action()
+            } finally {
+                unlock()
+            }
+        }
     }
 
     protected val caches: MutableMap<TypedKey<*>, CacheValueTimed<*>> = concurrentMapOf()
-    protected val computingState = ConcurrentHashMap<TypedKey<*>, AtomicBoolean>()
+    protected val computingState = ConcurrentHashMap<TypedKey<*>, Mutex>()
 
     /**
      * Puts a value in the cache with the given key instantly.
@@ -76,8 +89,8 @@ abstract class ProjectCacheService(val project: Project, private val coroutineSc
         return getTimed(key)?.value
     }
 
-    private fun getComputingState(key: TypedKey<*>): AtomicBoolean {
-        return computingState.computeIfAbsent(key) { AtomicBoolean(false) }
+    private fun getComputingState(key: TypedKey<*>): Mutex {
+        return computingState.computeIfAbsent(key) { Mutex() }
     }
 
     private fun <T> getCachedValueOrNull(key: TypedKey<T>, expirationInMs: Long): CacheValueTimed<T>? {
@@ -151,7 +164,7 @@ abstract class ProjectCacheService(val project: Project, private val coroutineSc
         key: TypedKey<T>, suspendComputation: suspend (Project) -> T?
     ) {
         coroutineScope.launch {
-            computeAndUpdate(key, suspendComputation)
+            computeOrSkip(key, suspendComputation)
         }
     }
 
@@ -159,39 +172,32 @@ abstract class ProjectCacheService(val project: Project, private val coroutineSc
      * Calls to compute a value and updates the cache if the computation is successful.
      * If there is already a computation in progress for the same key, it will not wait for it to finish and will skip the computation.
      *
-     * You may use this method to manually compute a value and update the cache in some background task,
-     * such as [com.intellij.openapi.startup.ProjectActivity].
+
      *
      * It is guaranteed that [suspendComputation] will not run in parallel with itself for the same key.
      */
-    suspend fun <T : Any> computeAndUpdate(
+    suspend fun <T : Any> computeOrSkip(
         key: TypedKey<T>, suspendComputation: suspend (Project) -> T?
     ) {
         val computing = getComputingState(key)
-        computing.lockOrSkip {
+        computing.tryLockOrSkip {
             val result = suspendComputation(project)
             if (result != null) put(key, result)
         }
     }
 
     /**
-     * Test-only method to ensure that the cache is updated with the result of the computation.
-     * This method will block the current coroutine until the computation is done, so it should only be used in tests.
+     * Computes a value and updates the cache if the computation is successful.
+     * If there is already a computation in progress for the same key, it will wait for it to finish and re-compute the value.
+     *
+     * It is guaranteed that [suspendComputation] will not run in parallel with itself for the same key.
      */
-    @TestOnly
-    suspend fun <T> testOnlyEnsureUpdate(key: TypedKey<T>, f: suspend (Project) -> T) {
+    suspend fun <T:Any> ensureRefresh(
+        key: TypedKey<T>, suspendComputation: suspend (Project) -> T?
+    ): T? {
         val computing = getComputingState(key)
-        while(!computing.compareAndSet(false, true)) {
-            // Wait until the computation is done
-            delay(1L)
-        }
-        try {
-            // Force update the cache
-            val result = f(project)
-            put(key, result)
-        }
-        finally {
-            computing.set(false) // Reset the computing state
+        computing.withLock {
+            return suspendComputation(project)?.also { put(key, it) }
         }
     }
 }

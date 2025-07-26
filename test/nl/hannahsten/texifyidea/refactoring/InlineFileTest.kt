@@ -144,7 +144,7 @@ class InlineFileTest : LightPlatformCodeInsightTestCase() {
             }
         }
         timeoutRunBlocking(1.seconds) {
-            LatexProjectStructure.testOnlyUpdateFilesets(project)
+            LatexProjectStructure.updateFilesetsSuspend(project)
         }
         return fileName
     }

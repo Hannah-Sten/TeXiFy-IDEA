@@ -634,16 +634,11 @@ object LatexProjectStructure {
     }
 
     /**
-     * Calls to update the filesets for the given project, can be used in a periodic background task.
+     * Calls to update the filesets for the given project.
+     * This will ensure that the filesets are up-to-date and recomputed if necessary.
      */
     suspend fun updateFilesetsSuspend(project: Project) {
-        TexifyProjectCacheService.getInstance(project).computeAndUpdate(CACHE_KEY, ::buildFilesetsSuspend)
-    }
-
-    @TestOnly
-    suspend fun testOnlyUpdateFilesets(project: Project) {
-        // This is only for testing purposes, to update the filesets without suspending
-        TexifyProjectCacheService.getInstance(project).testOnlyEnsureUpdate(CACHE_KEY, ::buildFilesetsSuspend)
+        TexifyProjectCacheService.getInstance(project).ensureRefresh(CACHE_KEY, ::buildFilesetsSuspend)
     }
 
     /**

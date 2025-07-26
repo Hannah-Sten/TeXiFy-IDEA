@@ -4,10 +4,12 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.ProjectActivity
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.util.files.LatexPackageLocation
 import nl.hannahsten.texifyidea.util.isLatexProject
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Initialize package location cache, because filling it takes a long time, we do not want to do that only at the moment we need it (when resolving references).

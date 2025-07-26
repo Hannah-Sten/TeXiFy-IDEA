@@ -9,7 +9,7 @@ import kotlin.time.Duration.Companion.seconds
 
 fun CodeInsightTestFixture.updateFilesets() {
     timeoutRunBlocking(1.seconds) {
-        LatexProjectStructure.testOnlyUpdateFilesets(project)
+        LatexProjectStructure.updateFilesetsSuspend(project)
     }
 }
 
