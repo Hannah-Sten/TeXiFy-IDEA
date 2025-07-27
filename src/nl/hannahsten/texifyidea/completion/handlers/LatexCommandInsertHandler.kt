@@ -41,8 +41,6 @@ class LatexCommandInsertHandler(val arguments: List<Argument>? = null) : InsertH
             }
         }
 
-
-
         RightInsertHandler().handleInsert(context, item)
         LatexCommandPackageIncludeHandler().handleInsert(context, item)
     }

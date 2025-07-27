@@ -10,7 +10,6 @@ import nl.hannahsten.texifyidea.lang.LatexPackage
 object LatexMathCommand {
 
     private val GREEK_ALPHABET: Set<LatexCommand> = LatexGreekCommand.entries.toSet()
-    private val OPERATORS: Set<LatexCommand> = LatexOperatorCommand.entries.toSet()
     private val MATHTOOLS_COLONEQ: Set<LatexCommand> = LatexColoneqCommand.entries.toSet()
     private val DELIMITERS: Set<LatexCommand> = LatexDelimiterCommand.entries.toSet()
     private val ARROWS: Set<LatexCommand> = LatexArrowCommand.entries.toSet()
@@ -21,8 +20,9 @@ object LatexMathCommand {
     private val REGULAR_ALSO_IN_MATH =
         setOf(LatexGenericRegularCommand.BEGIN, LatexGenericRegularCommand.END, LatexGenericRegularCommand.LABEL)
 
-    private val ALL: Set<LatexCommand> = GREEK_ALPHABET + OPERATORS + MATHTOOLS_COLONEQ + DELIMITERS + ARROWS +
-        GENERIC_COMMANDS + UNCATEGORIZED_STMARYRD_SYMBOLS + DIFFCOEFF + UPGREEK + REGULAR_ALSO_IN_MATH
+    private val ALL: Set<LatexCommand> = emptySet()
+//        GREEK_ALPHABET + OPERATORS + MATHTOOLS_COLONEQ + DELIMITERS + ARROWS +
+//        GENERIC_COMMANDS + UNCATEGORIZED_STMARYRD_SYMBOLS + DIFFCOEFF + UPGREEK + REGULAR_ALSO_IN_MATH
 
     val defaultCommands: Set<LatexCommand> = ALL.filter { it.dependency == LatexPackage.DEFAULT }.toSet()
 
@@ -56,4 +56,11 @@ object LatexMathCommand {
 
     @JvmStatic
     fun findByDisplay(display: String) = lookupDisplay[display]
+
+
 }
+
+
+//fun main() {
+//
+//}

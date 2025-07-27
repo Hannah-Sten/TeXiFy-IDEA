@@ -248,3 +248,4 @@ enum class LatexOperatorCommand(
     override val identifier: String
         get() = name
 }
+

@@ -18,14 +18,12 @@ interface LatexContext {
     val name: String
 }
 
-abstract class LatexContextBase(
+open class LatexContextBase(
     final override val name: String
 ) : LatexContext
 
-/**
- * The label
- */
-object LLabelContext : LatexContextBase("label")
+
+object LBibtexKeyContext : LatexContextBase("bibtex.key")
 
 object LMathContext : LatexContextBase("math")
 
@@ -51,11 +49,14 @@ object LPackageNamesContext : LatexContextBase("packages"), ILFileInputContext
  */
 object LClassNameContext : LatexContextBase("class"), ILFileInputContext
 
-
-open class LFileInputContextBase(
+class LFileInputContext(
     name: String,
     val isCommaSeparated: Boolean = false,
     val supportedExtensions: Set<String> = emptySet(),
+) : LatexContextBase(name), ILFileInputContext
+
+class LFolderInputContext(
+    name: String,
 ) : LatexContextBase(name), ILFileInputContext
 
 /**
@@ -64,57 +65,107 @@ open class LFileInputContextBase(
  */
 interface LLiteralContext : LatexContext
 
-object LContexts {
+object LatexContexts {
     val PACKAGE_NAMES get() = LPackageNamesContext
     val CLASS_NAME get() = LClassNameContext
-    val LABEL get() = LLabelContext
 
-    val SINGLE_FILE = LFileInputContextBase(
-        "file.general",
-        isCommaSeparated = false,
-        supportedExtensions = emptySet(),
+    val PREAMBLE = LatexContextBase("preamble")
+
+
+    val LABEL_DEF = LatexContextBase("label.def")
+    val LABEL_REF = LatexContextBase("label.ref")
+
+    /**
+     * A command and only a command. Used in `\newcommand{...}`.
+     */
+    val COMMAND = LatexContextBase("command")
+
+    /**
+     * An identifier, such as a command name without slash or environment name.
+     *
+     * Used in `\newenvironment{...}`.
+     */
+    val IDENTIFIER = LatexContextBase("identifier")
+
+    /**
+     * Some string literal that may be meaningful, such as `cc` in `\begin{tabular}{cc}`.
+     */
+    val LITERAL = LatexContextBase("literal")
+
+
+    /**
+     * Plain text content, such as in `\text{...}`.
+     */
+    val TEXT = LTextContext
+
+    /**
+     * A number is expected, for example in `\setcounter{...}{...}`.
+     */
+    val NUMERIC = LatexContextBase("numeric")
+
+    val LIST_TYPE = LatexContextBase("list.type")
+
+    val SINGLE_FILE = LFileInputContext(
+        "file.general", isCommaSeparated = false, supportedExtensions = emptySet(),
     )
-    val MULTIPLE_FILES = LFileInputContextBase(
-        "files.general",
-        isCommaSeparated = true,
-        supportedExtensions = emptySet(),
+    val MULTIPLE_FILES = LFileInputContext(
+        "files.general", isCommaSeparated = true, supportedExtensions = emptySet(),
+    )
+    val SINGLE_TEX_FILE = LFileInputContext(
+        "file.tex", isCommaSeparated = false, supportedExtensions = setOf("tex"),
+    )
+    val MULTIPLE_TEX_FILES = LFileInputContext(
+        "files.tex", isCommaSeparated = true, supportedExtensions = setOf("tex"),
     )
 
-    val SINGLE_TEX_FILE = LFileInputContextBase(
-        "file.tex",
-        isCommaSeparated = false,
-        supportedExtensions = setOf("tex"),
+    val SINGLE_BIB_FILE = LFileInputContext(
+        "file.bib", isCommaSeparated = false, supportedExtensions = setOf("bib"),
     )
 
-    val SINGLE_BIB_FILE = LFileInputContextBase(
-        "file.bib",
-        isCommaSeparated = false,
-        supportedExtensions = setOf("bib"),
+    val MULTIPLE_BIB_FILES = LFileInputContext(
+        "files.bib", isCommaSeparated = true, supportedExtensions = setOf("bib"),
     )
+
+    val FOLDER = LFolderInputContext("folder")
+
+    val BIBTEX_KEY = LBibtexKeyContext
+    val BIB_STYLE = LatexContextBase("style")
+
+    val URL = LFileInputContext("url")
+
+    val ALGORITHMICX = LatexContextBase("algorithmicx")
+
+    val MINTED_FUNTIME_LAND = LatexContextBase("minted.funtime.land")
+
+
 
 }
 
-typealias LContextInfo = Set<LatexContext>
+typealias LContextSet = Set<LatexContext>
 
 /**
  * Describes how contexts are introduced.
  */
-sealed interface LContextSignature {
-    fun applyTo(outerCtx: LContextInfo): LContextInfo
+sealed interface LContextIntro {
+    fun applyTo(outerCtx: LContextSet): LContextSet
+
+    companion object {
+
+    }
 }
 
 /**
  * Inherits the context from the outer scope.
  * This is the default behavior, so it can be used to reset the context to the outer scope.
  */
-object LContextInherit : LContextSignature {
-    override fun applyTo(outerCtx: LContextInfo): LContextInfo {
+object LContextInherit : LContextIntro {
+    override fun applyTo(outerCtx: LContextSet): LContextSet {
         return outerCtx
     }
 }
 
-object LClearContext : LContextSignature {
-    override fun applyTo(outerCtx: LContextInfo): LContextInfo {
+object LClearContext : LContextIntro {
+    override fun applyTo(outerCtx: LContextSet): LContextSet {
         return emptySet()
     }
 }
@@ -122,12 +173,12 @@ object LClearContext : LContextSignature {
 /**
  * Sets the context to the given [LatexContext], discarding any previous context.
  */
-class LContextAssign(val contexts: Set<LatexContext>) : LContextSignature {
+class LAssignContext(val contexts: Set<LatexContext>) : LContextIntro {
 
     constructor(contexts: LatexContext) : this(setOf(contexts))
     constructor(vararg contexts: LatexContext) : this(contexts.toSet())
 
-    override fun applyTo(outerCtx: LContextInfo): LContextInfo {
+    override fun applyTo(outerCtx: LContextSet): LContextSet {
         return contexts
     }
 }
@@ -135,36 +186,32 @@ class LContextAssign(val contexts: Set<LatexContext>) : LContextSignature {
 /**
  * Adds [toAdd] and removes [toRemove] contexts from the current context.
  */
-class LContextModify(val toAdd: Set<LatexContext>, val toRemove: Set<LatexContext>) : LContextSignature {
-    override fun applyTo(outerCtx: LContextInfo): LContextInfo {
-        if (toAdd.isEmpty() && toRemove.isEmpty()) {
-            return outerCtx
+class LModifyContext(val toAdd: Set<LatexContext>, val toRemove: Set<LatexContext>) : LContextIntro {
+    override fun applyTo(outerCtx: LContextSet): LContextSet {
+        val res = outerCtx.toMutableSet()
+        if (toAdd.isNotEmpty()) {
+            res += toAdd
         }
-        if (toRemove.isEmpty()) {
-            // If no contexts are removed, we just add the specified contexts.
-            return outerCtx + toAdd
+        if (toRemove.isNotEmpty()) {
+            res -= toRemove
         }
-        if (toAdd.isEmpty()) {
-            // If no contexts are added, we just remove the specified contexts.
-            return outerCtx - toRemove
-        }
-        return (outerCtx + toAdd) - toRemove
+        return res
     }
 }
 
-object LContextInLContextSignatures {
-    val MATH = LContextAssign(LMathContext)
-    val TEXT = LContextAssign(LTextContext)
+object LContextIntros {
+    val MATH = LAssignContext(LMathContext)
+    val TEXT = LAssignContext(LTextContext)
     val INHERIT = LContextInherit
-    val LABEL = LContextAssign(LLabelContext)
-    val PACKAGE = LContextAssign(LPackageNamesContext)
+    val LABEL_REF = LAssignContext(LatexContexts.LABEL_REF)
+    val BIBTEX_KEY = LAssignContext(LBibtexKeyContext)
+    val PACKAGE = LAssignContext(LPackageNamesContext)
 }
-
 
 enum class LArgumentType {
-    REQUIRED, OPTIONAL
+    REQUIRED,
+    OPTIONAL
 }
-
 
 class LArgument(
     /**
@@ -183,12 +230,37 @@ class LArgument(
      *
      * For example, a file name argument might introduce a file input context.
      */
-    val contextSignature: LContextSignature = LContextInherit,
+    val contextSignature: LContextIntro = LContextInherit,
 
     val description: String = "",
-)
+) {
 
+    companion object {
+        fun required(
+            name: String, ctx: LContextIntro = LContextInherit, description: String = ""
+        ): LArgument {
+            return LArgument(name, LArgumentType.REQUIRED, ctx, description)
+        }
 
+        fun required(
+            name: String, ctx: LatexContext, description: String = ""
+        ): LArgument {
+            return LArgument(name, LArgumentType.REQUIRED, LAssignContext(ctx), description)
+        }
+
+        fun optional(
+            name: String, ctx: LContextIntro = LContextInherit, description: String = ""
+        ): LArgument {
+            return LArgument(name, LArgumentType.OPTIONAL, ctx, description)
+        }
+
+        fun optional(
+            name: String, ctx: LatexContext, description: String = ""
+        ): LArgument {
+            return LArgument(name, LArgumentType.OPTIONAL, LAssignContext(ctx), description)
+        }
+    }
+}
 
 abstract class LEntity(
     /**
@@ -196,28 +268,30 @@ abstract class LEntity(
      *
      * This is the name without the leading backslash for commands.
      */
-    val name: String, val dependency: LatexPackage,
-    val requiredContext : LContextInfo = emptySet(),
+    val name: String,
+    /**
+     * The namespace of the entity, i.e., the package or class it belongs to.
+     */
+    val namespace: String = "",
+    val requiredContext: LContextSet = emptySet(),
     var description: String = ""
 ) {
-    val fqName: String = "${dependency.name}.$name"
-
+    val fqName: String = if (namespace.isEmpty()) name else "$namespace.$name"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is LEntity) return false
 
         if (name != other.name) return false
-        if (dependency != other.dependency) return false
+        if (namespace != other.namespace) return false
         return true
     }
 
     override fun hashCode(): Int {
         var result = name.hashCode()
-        result = 31 * result + dependency.hashCode()
+        result = 31 * result + namespace.hashCode()
         return result
     }
-
 }
 
 class NewLatexCommand(
@@ -225,8 +299,8 @@ class NewLatexCommand(
      * The name of the command without the leading backslash.
      */
     name: String,
-    dependency: LatexPackage,
-    requiredContext : LContextInfo = emptySet(),
+    namespace: String,
+    requiredContext: LContextSet = emptySet(),
     /**
      * The list of arguments in order of appearance, including optional arguments.
      */
@@ -238,24 +312,22 @@ class NewLatexCommand(
 
     val display: String? = null,
     val nameWithSlash: String = "\\$name",
-) : LEntity(name, dependency, requiredContext, description) {
-
-}
+) : LEntity(name, namespace, requiredContext, description)
 
 class NewLatexEnvironment(
     name: String,
-    dependency: LatexPackage,
-    requiredContext : LContextInfo = emptySet(),
+    namespace: String,
+    requiredContext: LContextSet = emptySet(),
     /**
      * The list of arguments in order of appearance, including optional arguments.
      */
     val arguments: List<LArgument>,
-
-    val contextSignature: LContextSignature,
+    /**
+     * The context signature that this environment introduces.
+     */
+    val contextSignature: LContextIntro,
     /**
      * The description of the environment, used for documentation.
      */
     description: String = "",
-) : LEntity(name, dependency,requiredContext, description) {
-
-}
+) : LEntity(name, namespace, requiredContext, description)

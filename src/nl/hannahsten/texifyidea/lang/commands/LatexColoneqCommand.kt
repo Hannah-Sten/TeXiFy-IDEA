@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.lang.commands
 
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MATHTOOLS
+import kotlin.io.path.Path
 
 /**
  * @author Hannah Schellekens

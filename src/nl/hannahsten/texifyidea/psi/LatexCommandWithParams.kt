@@ -26,7 +26,6 @@ interface LatexCommandWithParams : LatexComposite {
      */
     fun hasStar(): Boolean
 
-
     fun firstParameter(): LatexParameter? {
         forEachDirectChild {
             if (it is LatexParameter) return it

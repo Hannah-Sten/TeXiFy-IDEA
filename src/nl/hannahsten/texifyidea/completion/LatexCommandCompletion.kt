@@ -88,8 +88,8 @@ abstract class LatexCommandCompletionProviderBase : CompletionProvider<Completio
         result.addAllElements(lookupElements)
     }
 
-    fun createInsertHandler(args: List<Argument>): InsertHandler<LookupElement>{
-            return LatexCommandInsertHandler(args)
+    fun createInsertHandler(args: List<Argument>): InsertHandler<LookupElement> {
+        return LatexCommandInsertHandler(args)
     }
 
     protected fun packageName(dependend: Dependend): String {
@@ -157,7 +157,6 @@ object LatexNormalCommandCompletionProvider : LatexCommandCompletionProviderBase
 }
 
 object LatexMathCommandCompletionProvider : LatexCommandCompletionProviderBase() {
-
 
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
         val project = parameters.editor.project ?: return
