@@ -92,6 +92,8 @@ NEWDOCUMENTENVIRONMENT=\\(New|Renew|Provide|Declare)DocumentEnvironment
 // These are separate to support formatting
 LEFT=\\left
 RIGHT=\\right
+// These commands can ocur in math but switch to text mode
+TEXT_IN_MATH_COMMAND=\\text | \\hbox
 
 // Verbatim commands which will be delimited by the same character
 // \path from the 'path' package
@@ -484,7 +486,7 @@ END_IFS=\\fi
     "$"                 { yypopState(); return INLINE_MATH_END; }
     // When already in inline math, when encountering a \text command we need to switch out of the math state
     // because if we encounter another $, then it will be an inline_math_start, not an inline_math_end
-    \\text              { yypushState(TEXT_INSIDE_INLINE_MATH); return COMMAND_TOKEN; }
+    {TEXT_IN_MATH_COMMAND} { yypushState(TEXT_INSIDE_INLINE_MATH); return COMMAND_TOKEN; }
     // Similarly, environments like cases* from mathtools have text as their second column, which can have inline math
     // We cannot use a single token for inline math start and end because the parser will try to parse the one that should be an 'end' as a 'start'
     // Therefore, to make sure that we cannot have a START \begin{cases*} END ... START \end{cases*} END, we use a separate state
