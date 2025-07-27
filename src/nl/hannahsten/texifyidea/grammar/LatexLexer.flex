@@ -441,6 +441,14 @@ END_IFS=\\fi
     // It is common to have an unmatches \begin or \end in a \newcommand, so ignore them
     {BEGIN_TOKEN}       { return COMMAND_TOKEN; }
     {END_TOKEN}         { return COMMAND_TOKEN; }
+    // Command may be defined without braces
+    {COMMAND_TOKEN}     {
+        if(newCommandBracesNesting == 0) {
+          yypopState();
+          yypushState(NEW_COMMAND_DEFINITION_PARAM2);
+        }
+        return COMMAND_TOKEN;
+    }
 }
 
 <NEW_COMMAND_DEFINITION_PARAM2> {

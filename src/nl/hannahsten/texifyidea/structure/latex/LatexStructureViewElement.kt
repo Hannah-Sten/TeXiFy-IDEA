@@ -252,6 +252,9 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         }
     }
 
+    /**
+     * Sometimes, we show the actual number a section would be in the structure view after the section (as 'hint').
+     */
     private fun setLevelHint(child: LatexStructureViewCommandElement, numbering: SectionNumbering) {
         if (hasStar(child.value)) {
             return

@@ -11,7 +11,7 @@
 * Fix a caching issue when building the file set
 * Fix a rare case where an autocompile rerun would try to start before the previous run finished
 * Fix incorrect slashes in path on Windows after pasting image
-* Fix exception #4116
+* Fix exceptions #4116, #4129
 
 ## [0.10.4] - 2025-07-01
 
