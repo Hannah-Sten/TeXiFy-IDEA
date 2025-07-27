@@ -5,6 +5,8 @@
 ### Added
 
 ### Fixed
+* Fix a parser issue when using inline math inside a \hbox inside inline math 
+* Fix a parser issue when using \newcommand without braces
 * Fix a possible UI freeze when an output directory is used with more than 10000 subdirectories
 * Fix a few cases which could freeze the UI.
 * Fix exception when running LaTeX on WSL with PyCharm 2025.1+ 
