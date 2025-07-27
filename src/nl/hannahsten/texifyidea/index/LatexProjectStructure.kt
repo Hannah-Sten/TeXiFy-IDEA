@@ -39,7 +39,6 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.projectSearchScope
-import org.jetbrains.annotations.TestOnly
 import java.io.File
 import java.nio.file.InvalidPathException
 import java.nio.file.Path

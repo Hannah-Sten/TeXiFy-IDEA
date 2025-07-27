@@ -24,8 +24,6 @@ class CacheValueTimed<T>(
     }
 }
 
-
-
 /**
  * Provides a cache service for a project that allows storing and retrieving values with expiration.
  */
@@ -51,7 +49,7 @@ abstract class ProjectCacheService(val project: Project, private val coroutineSc
          */
         private suspend inline fun Mutex.tryLockOrSkip(action: suspend () -> Unit) {
             if(!tryLock()) return
-            try{
+            try {
                 action()
             } finally {
                 unlock()
@@ -181,8 +179,7 @@ abstract class ProjectCacheService(val project: Project, private val coroutineSc
     ) {
         val computing = getComputingState(key)
         computing.tryLockOrSkip {
-            val result = suspendComputation(project)
-            if (result != null) put(key, result)
+            suspendComputation(project)?.also { put(key, it) }
         }
     }
 
@@ -192,7 +189,7 @@ abstract class ProjectCacheService(val project: Project, private val coroutineSc
      *
      * It is guaranteed that [suspendComputation] will not run in parallel with itself for the same key.
      */
-    suspend fun <T:Any> ensureRefresh(
+    suspend fun <T : Any> ensureRefresh(
         key: TypedKey<T>, suspendComputation: suspend (Project) -> T?
     ): T? {
         val computing = getComputingState(key)
