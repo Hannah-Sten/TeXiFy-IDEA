@@ -67,12 +67,6 @@ fun LatexCommands.definitionCommand(): LatexCommands? = forcedFirstRequiredParam
  */
 fun LatexCommands.definedCommandName() = definitionCommand()?.name
 
-/**
- * Checks whether the command has a star or not.
- */
-fun LatexCommands.hasStar() = collectSubtreeTyped<LeafPsiElement>().any {
-    it.elementType == LatexTypes.STAR
-}
 
 /**
  * Looks for the next command relative to the given command.

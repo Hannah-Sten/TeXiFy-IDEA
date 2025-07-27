@@ -8,9 +8,11 @@ import com.intellij.psi.PsiNameIdentifierOwner
 import com.intellij.psi.PsiReference
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.tree.IElementType
+import com.intellij.psi.util.elementType
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
+import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.reference.LatexCommandDefinitionReference
 import nl.hannahsten.texifyidea.structure.latex.LatexPresentationFactory
@@ -42,6 +44,14 @@ abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStu
 
     override fun getNameIdentifier(): PsiElement {
         return this
+    }
+
+    override fun hasStar(): Boolean {
+        forEachDirectChild {
+            // check Latex.bnf: commands ::= COMMAND_TOKEN STAR? parameter*
+            if(it.elementType == LatexTypes.STAR) return true
+        }
+        return false
     }
 
     /**

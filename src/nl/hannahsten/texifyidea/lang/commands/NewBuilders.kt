@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.lang.commands
 
+import nl.hannahsten.texifyidea.lang.LArgument
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.NewLatexCommand
 
@@ -20,18 +21,15 @@ class LatexCommandBuilderScope {
     }
 
     operator fun String.invoke(
-        vararg arguments: Argument,
+        vararg arguments: LArgument,
         display: String? = null,
         description: String = "",
     ): NewLatexCommand {
         val commandText = this
-        val commandWithSlash = "\\$commandText"
-        val command = LatexCommandImpl(
-            commandWithSlash,
-            command = commandText,
+        val command = NewLatexCommand(
+            name = commandText,
             dependency = dependency,
             description = description,
-            isMathMode = mathMode,
             arguments = arguments.asList(),
             display = display
         )
@@ -42,7 +40,7 @@ class LatexCommandBuilderScope {
 
     companion object{
 
-        fun buildCommands(action : LatexCommandBuilderScope.() -> Unit): List<LatexCommand> {
+        fun buildCommands(action : LatexCommandBuilderScope.() -> Unit): List<NewLatexCommand> {
             val scope = LatexCommandBuilderScope()
             scope.action()
             return scope.commands
