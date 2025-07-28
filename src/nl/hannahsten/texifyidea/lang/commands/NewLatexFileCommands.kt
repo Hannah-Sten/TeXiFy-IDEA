@@ -2,8 +2,9 @@ package nl.hannahsten.texifyidea.lang.commands
 
 
 import nl.hannahsten.texifyidea.lang.*
+import nl.hannahsten.texifyidea.lang.LatexCommandBuilderScope.optional
 
-object NewLatexFileCommands : LatexCommandSet() {
+object NewLatexFileCommands : PredefinedCommandSet() {
 
     // Predefine additional file input contexts if needed, based on common file types.
     // These can be moved to NewLang.kt if they are reusable across multiple command sets.
@@ -31,11 +32,11 @@ object NewLatexFileCommands : LatexCommandSet() {
         // Bibliography-related file inputs.
         packageOf("biblatex")
 
-        "addbibresource".cmd(required("bibliographyfile", LatexContexts.SingleBibFile)) {
+        "addbibresource".cmd("bibliographyfile".required(LatexContexts.SingleBibFile)) {
             "Add a bibliography resource file"
         }
 
-        "bibliography".cmd(required("bibliographyfile", LatexContexts.MultipleBibFiles)) {
+        "bibliography".cmd("bibliographyfile".required(LatexContexts.MultipleBibFiles)) {
             "Specify bibliography files (comma-separated)"
         }
 
@@ -43,14 +44,14 @@ object NewLatexFileCommands : LatexCommandSet() {
         // Graphics-related.
         packageOf("graphicx")
         "includegraphics".cmd(
-            optional("key-val-list", LatexContexts.Literal),
-            required("imagefile", PICTURE_FILE)
+            "key-val-list".optional(LatexContexts.Literal),
+            "imagefile".required(PICTURE_FILE)
         ) {
             "Include a graphics file"
         }
 
         "graphicspath".cmd(
-            required("foldername", LatexContexts.Folder)  // Folder path, no specific ext.
+            "foldername".required(LatexContexts.Folder)  // Folder path, no specific ext.
         ) {
             "Set the graphics search path"
         }
@@ -58,21 +59,21 @@ object NewLatexFileCommands : LatexCommandSet() {
         // SVG package.
         packageOf("svg")
         "includesvg".cmd(
-            optional("options"),
-            required("svg file", SVG_FILE)
+            "options".optional,
+            "svg file".required(SVG_FILE)
         ) {
             "Include an SVG file"
         }
 
-        "svgpath".cmd(required("foldername", LatexContexts.Folder)) {
+        "svgpath".cmd("foldername".required(LatexContexts.Folder)) {
             "Set the SVG search path"
         }
 
         // Standalone package.
         packageOf("standalone")
         "includestandalone".cmd(
-            optional("mode"),
-            required("filename", STANDALONE_FILE)
+            "mode".optional,
+            "filename".required(STANDALONE_FILE)
         ) {
             "Include a standalone TeX or graphics file"
         }
@@ -80,64 +81,64 @@ object NewLatexFileCommands : LatexCommandSet() {
         // Import package commands.
         packageOf("import")
         "import".cmd(
-            required("absolute path", LatexContexts.Folder),  // Folder-like.
-            required("filename", LatexContexts.SingleTexFile)
+            "absolute path".required(LatexContexts.Folder),  // Folder-like.
+            "filename".required(LatexContexts.SingleTexFile)
         ) {
             "Import a file from an absolute path"
         }
 
         "includefrom".cmd(
-            required("absolute path", LatexContexts.Folder),
-            required("filename", LatexContexts.SingleTexFile)
+            "absolute path".required(LatexContexts.Folder),
+            "filename".required(LatexContexts.SingleTexFile)
         ) {
             "Include from an absolute path"
         }
 
         "inputfrom".cmd(
-            required("absolute path", LatexContexts.Folder),
-            required("filename", LatexContexts.SingleTexFile)
+            "absolute path".required(LatexContexts.Folder),
+            "filename".required(LatexContexts.SingleTexFile)
         ) {
             "Input from an absolute path"
         }
 
         "subimport".cmd(
-            required("relative path", LatexContexts.Folder),
-            required("filename", LatexContexts.SingleTexFile)
+            "relative path".required(LatexContexts.Folder),
+            "filename".required(LatexContexts.SingleTexFile)
         ) {
             "Subimport from a relative path"
         }
 
         "subincludefrom".cmd(
-            required("relative path", LatexContexts.Folder),
-            required("filename", LatexContexts.SingleTexFile)
+            "relative path".required(LatexContexts.Folder),
+            "filename".required(LatexContexts.SingleTexFile)
         ) {
             "Subinclude from a relative path"
         }
 
         "subinputfrom".cmd(
-            required("relative path", LatexContexts.Folder),
-            required("filename", LatexContexts.SingleTexFile)
+            "relative path".required(LatexContexts.Folder),
+            "filename".required(LatexContexts.SingleTexFile)
         ) {
             "Subinput from a relative path"
         }
 
         // Subfiles package.
         packageOf("subfiles")
-        "subfile".cmd(required("sourcefile", LatexContexts.SingleTexFile)) {
+        "subfile".cmd("sourcefile".required(LatexContexts.SingleTexFile)) {
             "Include a subfile"
         }
 
-        "subfileinclude".cmd(required("sourcefile", LatexContexts.SingleTexFile)) {
+        "subfileinclude".cmd("sourcefile".required(LatexContexts.SingleTexFile)) {
             "Include a subfile with page break"
         }
 
-        "subfix".cmd(required("file", LatexContexts.SingleTexFile)) {
+        "subfix".cmd("file".required(LatexContexts.SingleTexFile)) {
             "Fix subfile paths"
         }
 
         // Other miscellaneous file inputs, e.g., from glossaries.
         packageOf("glossaries")
-        "loadglsentries".cmd(required("glossariesfile", LatexContexts.SingleTexFile)) {
+        "loadglsentries".cmd("glossariesfile".required(LatexContexts.SingleTexFile)) {
             "Load glossary entries from a file"
         }
 

@@ -1,21 +1,20 @@
 package nl.hannahsten.texifyidea.lang.commands
 
 import nl.hannahsten.texifyidea.lang.LArgument
-import nl.hannahsten.texifyidea.lang.LContextIntros
-import nl.hannahsten.texifyidea.lang.LatexCommandSet
+import nl.hannahsten.texifyidea.lang.PredefinedCommandSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
 
-object NewLatexGenericCommands : LatexCommandSet() {
+object NewLatexGenericCommands : PredefinedCommandSet() {
     private val textArg = LArgument.required("text", LatexContexts.Text)
     private val labelArg = LArgument.required("label", LatexContexts.LabelReference)
 
     val citation = textCommands {
         val before = "before".optional
         val after = "after".optional
-        val keys = required("keys", LatexContexts.BibtexKey)
+        val keys = "keys".required(LatexContexts.BibtexKey)
 
         "cite".cmd("extratext".optional, keys) { "CITE" }
-        "bibliographystyle".cmd(required("style", LatexContexts.BibStyle)) { "BIBLIOGRAPHYSTYLE" }
+        "bibliographystyle".cmd("style".required(LatexContexts.BibStyle)) { "BIBLIOGRAPHYSTYLE" }
 
         packageOf("natbib")
         "Citealp".cmd(before, after, keys) { "CITEALP_CAPITALIZED" }
@@ -50,7 +49,7 @@ object NewLatexGenericCommands : LatexCommandSet() {
         packageOf("biblatex")
         val prenote = "prenote".optional
         val postnote = "postnote".optional
-        val key = required("keys", LatexContexts.BibtexKey)
+        val key = "keys".required(LatexContexts.BibtexKey)
         val volume = "volume".required
         val page = "page".optional
         "Autocite".cmd(prenote, postnote, key) { "AUTOCITE_CAPITALIZED" }
@@ -135,7 +134,7 @@ object NewLatexGenericCommands : LatexCommandSet() {
 
     val reference = buildCommands {
 
-        "label".cmd(required("key", LatexContexts.LabelDefinition)) {
+        "label".cmd("key".required(LatexContexts.LabelDefinition)) {
             "Define a label for referencing"
         }
 
@@ -215,11 +214,11 @@ object NewLatexGenericCommands : LatexCommandSet() {
         packageOf("glossaries")
 
         val options = "options".optional
-        val label = required("label", LatexContexts.Text)
+        val label = "label".required(LatexContexts.Text)
         val insert = "insert".optional
 
         setCommandContext() // TODO: maybe setCommandContext(LatexContexts.Preamble)
-        "loadglsentries".cmd(required("glossariesfile", LatexContexts.SingleFile))
+        "loadglsentries".cmd("glossariesfile".required(LatexContexts.SingleFile))
         "longnewglossaryentry".cmd("name".required, "options".required, "description".required)
         "newabbreviation".cmd(options, "name".required, "short".required, "long".required)
         "newacronym".cmd(options, "name".required, "short".required, "long".required)
@@ -281,7 +280,7 @@ object NewLatexGenericCommands : LatexCommandSet() {
         packageOf("acronym")
 
         val linebreakPenalty = "linebreak penalty".optional
-        val acronym = required("acronym", LatexContexts.Text)
+        val acronym = "acronym".required(LatexContexts.Text)
 
         setCommandContext()
         "acro".cmd(acronym, "short name".optional, "full name".required)
@@ -369,15 +368,15 @@ object NewLatexGenericCommands : LatexCommandSet() {
         val numberOptional = "number".optional
         val defaultArgOptional = "default arg".optional
         val textCtx = LatexContexts.Text
-        val startingCodeRequired = required("starting code", ctx = textCtx)
-        val endingCodeRequired = required("ending code", ctx = textCtx)
+        val startingCodeRequired = "starting code".required(ctx = textCtx)
+        val endingCodeRequired = "ending code".required(ctx = textCtx)
 
         "lstnewenvironment".cmd(nameRequired, numberOptional, defaultArgOptional, startingCodeRequired, endingCodeRequired) { "Define a new listings environment" }
     }
 
     val listings = buildCommands {
         packageOf("listings")
-        "lstinputlisting".cmd("options".optional, required("filename", LatexContexts.SingleFile))
+        "lstinputlisting".cmd("options".optional, "filename".required(LatexContexts.SingleFile))
         inPackage("luacode") {
             "directlua".cmd("lua code".required)
             "luaexec".cmd("lua code".required)
@@ -399,7 +398,7 @@ object NewLatexGenericCommands : LatexCommandSet() {
         val numArgs = "num args".optional
         val leftDelimiter = "left delimiter".required
         val rightDelimiter = "right delimiter".required
-        val body = required("body", LatexContexts.Text)
+        val body = "body".required(LatexContexts.Text)
         val preCode = "pre code".required
         val postCode = "post code".required
         "DeclarePairedDelimiter".cmd(cmd, leftDelimiter, rightDelimiter) { "Declare a paired delimiter" }
@@ -414,8 +413,8 @@ object NewLatexGenericCommands : LatexCommandSet() {
 
         val typeOpt = "type".optional
         val nameReq = "name".required
-        val modelListReq = required("model-list", LatexContexts.Literal)
-        val specListReq = required("spec-list", LatexContexts.Literal)
+        val modelListReq = "model-list".required(LatexContexts.Literal)
+        val specListReq = "spec-list".required(LatexContexts.Literal)
 
         packageOf("color")
         "definecolor".cmd(typeOpt, nameReq, modelListReq, specListReq) { "Define a color" }
@@ -423,7 +422,7 @@ object NewLatexGenericCommands : LatexCommandSet() {
 
         packageOf("xcolor")
         "providecolor".cmd(typeOpt, nameReq, modelListReq, specListReq) { "Provide a color" }
-        "colorlet".cmd(typeOpt, nameReq, optional("num model"), "color".required) { "Define a color based on another" }
+        "colorlet".cmd(typeOpt, nameReq, "num model".optional, "color".required) { "Define a color based on another" }
         "definecolorset".cmd(typeOpt, modelListReq, "head".required, "tail".required, "set spec".required) { "Define a color set" }
         "providecolorset".cmd(typeOpt, modelListReq, "head".required, "tail".required, "set spec".required) { "Provide a color set" }
         "preparecolor".cmd(typeOpt, nameReq, modelListReq, specListReq) { "Prepare a color" }
@@ -434,7 +433,7 @@ object NewLatexGenericCommands : LatexCommandSet() {
             "name".required,
             "core model".required,
             "method".required,
-            optional("b-model"),
+            "b-model".optional,
             "b-spec".required,
             "s-model".required,
             "s-spec".required
@@ -494,7 +493,6 @@ object NewLatexGenericCommands : LatexCommandSet() {
 
         "enlargethispage".cmd("size".required) { "ENLARGETHISPAGE" }
         "enlargethispage*".cmd("size".required) { "ENLARGETHISPAGE_STAR" }
-        "ensuremath".cmd(textArg) { "ENSUREMATH" }
         +"evensidemargin"
 
         +"family"

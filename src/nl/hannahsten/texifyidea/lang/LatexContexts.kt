@@ -2,13 +2,32 @@ package nl.hannahsten.texifyidea.lang
 
 
 
+open class LatexContextBase(
+    final override val name: String
+) : LatexContext
 
-object LMathContext : LatexContextBase("math")
 
 /**
- * A context that describes text content, for example in `\text{...}`.
+ * A marker interface for contexts that are related to file input.
  */
-object LTextContext : LatexContextBase("text")
+interface ILFileInputContext : LatexContext
+
+class LFileInputContext(
+    name: String,
+    val isCommaSeparated: Boolean = false,
+    val supportedExtensions: Set<String> = emptySet(),
+) : LatexContextBase(name), ILFileInputContext
+
+
+
+/**
+ * A context that describes a literal, for example `cc` in `\begin{tabular}{cc}`.
+ * This is used to provide autocompletion for text content.
+ */
+interface LLiteralContext : LatexContext
+
+
+
 object LatexContexts {
 
     object Math : LatexContextBase("math")

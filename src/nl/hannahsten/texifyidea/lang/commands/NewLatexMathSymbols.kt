@@ -1,13 +1,6 @@
-import nl.hannahsten.texifyidea.lang.LatexCommandSet
-import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.lang.PredefinedCommandSet
 
-object NewLatexMathSymbols : LatexCommandSet() {
-
-    val textCommands = mathCommands {
-        packageOf("amsmath")
-        val text = required("text", LatexContexts.Text)
-        "text".cmd(text) { "Text in math" }
-    }
+object NewLatexMathSymbols : PredefinedCommandSet() {
 
     val lowercaseGreek = mathCommands {
 
@@ -340,65 +333,7 @@ object NewLatexMathSymbols : LatexCommandSet() {
         symbol("varprojlim", description = "Variant inverse limit")
     }
 
-    val defaultMathArgCommands = mathCommands {
 
-        "acute".cmd("a".required) { "Acute accent" }
-        "bar".cmd("a".required) { "Bar accent" }
-        "breve".cmd("a".required) { "Breve accent" }
-        "check".cmd("a".required) { "Check accent" }
-        "ddot".cmd("a".required) { "Double dot accent" }
-        "dot".cmd("a".required) { "Dot accent" }
-        "frac".cmd("num".required, "den".required) { "Fraction" }
-        "grave".cmd("a".required) { "Grave accent" }
-        "hat".cmd("a".required) { "Hat accent" }
-        "mathring".cmd("a".required) { "Ring accent" }
-        "overbrace".cmd("text".required) { "Overbrace" }
-        "overleftarrow".cmd("text".required) { "Over left arrow" }
-        "overrightarrow".cmd("text".required) { "Over right arrow" }
-        "overline".cmd("text".required) { "Overline" }
-        "sqrt".cmd("root".optional, "arg".required) { "Square root" }
-        "stackrel".cmd("top".required, "relation".required) { "Stacked relation" }
-        "tilde".cmd("a".required) { "Tilde accent" }
-        "underbrace".cmd("text".required) { "Underbrace" }
-        "underline".cmd("text".required) { "Underline" }
-        "vec".cmd("a".required) { "Vector accent" }
-        "widehat".cmd("text".required) { "Wide hat" }
-        "widetilde".cmd("text".required) { "Wide tilde" }
-
-        packageOf("amsmath")
-        "binom".cmd("total".required, "sample".required) { "Binomial coefficient" }
-        "ddddot".cmd("a".required) { "Quadruple dots accent" }
-        "dddot".cmd("a".required) { "Triple dots accent" }
-        "dfrac".cmd("num".required, "den".required) { "Display fraction" }
-        "intertext".cmd("text".required) { "Intertext" }
-        "overleftrightarrow".cmd("text".required) { "Over left right arrow" }
-        "underleftarrow".cmd("text".required) { "Under left arrow" }
-        "underleftrightarrow".cmd("text".required) { "Under left right arrow" }
-        "underrightarrow".cmd("text".required) { "Under right arrow" }
-        "xleftarrow".cmd("text".required) { "Above left arrow" }
-        "xrightarrow".cmd("text".required) { "Above right arrow" }
-    }
-
-    val fontCommands = mathCommands {
-        val arg = "text".required
-        "mathbf".cmd(arg) { "Bold" }
-        "mathcal".cmd(arg) { "Calligraphic" }
-        "mathds".cmd(arg) { "Double-struck" }
-        "mathit".cmd(arg) { "Italic" }
-        "mathnormal".cmd(arg) { "Normal" }
-        "mathsf".cmd(arg) { "Sans-serif" }
-        "mathrm".cmd(arg) { "Roman" }
-        "mathscr".cmd(arg) { "Script" }
-        "mathtt".cmd(arg) { "Typewriter" }
-
-        packageOf("amsfonts")
-
-        "mathbb".cmd(arg) { "Blackboard bold" }
-        "mathfrak".cmd(arg) { "Fraktur" }
-
-        packageOf("bm")
-        "bm".cmd(arg) { "Bold math" }
-    }
 
     val defaultOperatorSymbols = mathCommands {
 
@@ -776,22 +711,17 @@ object NewLatexMathSymbols : LatexCommandSet() {
         val differentiand = "differentiand".required
         val variables = "variable(s)".required
         val ptOfEval = "pt of eval".optional
-        "diff".cmd(orderSpec, differentiand, variables, ptOfEval)
-        "diff*".cmd(orderSpec, differentiand, variables, ptOfEval)
-        "diff**".cmd(orderSpec, variables, differentiand, ptOfEval)
-        "diffp".cmd(orderSpec, differentiand, variables, ptOfEval)
-        "diffp*".cmd(orderSpec, differentiand, variables, ptOfEval)
-        "diffp**".cmd(orderSpec, variables, differentiand, ptOfEval)
-        "difs".cmd(orderSpec, differentiand, variables, ptOfEval)
-        "difs*".cmd(orderSpec, differentiand, variables, ptOfEval)
-        "difs**".cmd(orderSpec, variables, differentiand, ptOfEval)
-        "difsp".cmd(orderSpec, differentiand, variables, ptOfEval)
-        "difsp*".cmd(orderSpec, differentiand, variables, ptOfEval)
-        "difsp**".cmd(orderSpec, variables, differentiand, ptOfEval)
-        "difc".cmd(orderSpec, differentiand, variables, ptOfEval)
-        "difc**".cmd(orderSpec, variables, differentiand, ptOfEval)
-        "difcp".cmd(orderSpec, differentiand, variables, ptOfEval)
-        "difcp**".cmd(orderSpec, variables, differentiand, ptOfEval)
+        val commands = setOf(
+            "diff", "diff*", "diff**",
+            "diffp", "diffp*", "diffp**",
+            "difs", "difs*", "difs**",
+            "difsp", "difsp*", "difsp**",
+            "difc", "difc**",
+            "difcp", "difcp**"
+        )
+        commands.forEach { name ->
+            name.cmd(orderSpec, differentiand, variables, ptOfEval)
+        }
     }
 
     val upgreekCommand = mathCommands {

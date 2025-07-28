@@ -18,31 +18,7 @@ interface LatexContext {
     val name: String
 }
 
-open class LatexContextBase(
-    final override val name: String
-) : LatexContext
 
-
-
-/**
- * A marker interface for contexts that are related to file input.
- */
-interface ILFileInputContext : LatexContext
-
-
-class LFileInputContext(
-    name: String,
-    val isCommaSeparated: Boolean = false,
-    val supportedExtensions: Set<String> = emptySet(),
-) : LatexContextBase(name), ILFileInputContext
-
-
-
-/**
- * A context that describes a literal, for example `cc` in `\begin{tabular}{cc}`.
- * This is used to provide autocompletion for text content.
- */
-interface LLiteralContext : LatexContext
 
 
 typealias LContextSet = Set<LatexContext>

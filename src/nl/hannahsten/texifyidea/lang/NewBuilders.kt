@@ -88,35 +88,36 @@ class LatexCommandBuilderScope : LatexBuilderDSLScope {
         return command
     }
 
-    fun required(
-        name: String, ctx: LContextIntro = LContextInherit, description: String = ""
-    ): LArgument {
-        return LArgument(name, type = LArgumentType.REQUIRED, ctx, description)
-    }
-
-    fun required(
-        name: String, ctx: LatexContext, description: String = ""
-    ): LArgument {
-        return LArgument(name, type = LArgumentType.REQUIRED, LAssignContext(ctx), description)
-    }
-
-    fun optional(
-        name: String, ctx: LContextIntro = LContextInherit, description: String = ""
-    ): LArgument {
-        return LArgument(name, type = LArgumentType.OPTIONAL, ctx, description)
-    }
-
-    fun optional(
-        name: String, ctx: LatexContext, description: String = ""
-    ): LArgument {
-        return LArgument(name, type = LArgumentType.OPTIONAL, LAssignContext(ctx), description)
-    }
-
     val String.required: LArgument
-        get() = required(this)
+        get() = LArgument.required(this)
 
     val String.optional: LArgument
-        get() = optional(this)
+        get() = LArgument.optional(this)
+
+    fun String.required(
+        ctx: LatexContext, description: String = ""
+    ): LArgument {
+        return LArgument.required(this,ctx, description)
+    }
+
+    fun String.required(
+        ctx: LContextIntro, description: String = ""
+    ): LArgument {
+        return LArgument.required(this, ctx, description)
+    }
+
+    fun String.optional(
+        ctx: LatexContext, description: String = ""
+    ): LArgument {
+        return LArgument.optional(this, ctx, description)
+    }
+
+    fun String.optional(
+        ctx: LContextIntro, description: String = ""
+    ): LArgument {
+        return LArgument.optional(this, ctx, description)
+    }
+
 
 
     companion object {
@@ -129,7 +130,7 @@ class LatexCommandBuilderScope : LatexBuilderDSLScope {
     }
 }
 
-abstract class LatexCommandSet {
+abstract class PredefinedCommandSet {
     private val myAllCommands = mutableListOf<NewLatexCommand>()
 
     protected fun buildCommands(action: LatexCommandBuilderScope.() -> Unit): List<NewLatexCommand> {

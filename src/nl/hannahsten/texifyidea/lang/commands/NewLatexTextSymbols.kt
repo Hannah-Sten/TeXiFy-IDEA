@@ -1,9 +1,10 @@
 package nl.hannahsten.texifyidea.lang.commands
 
+import nl.hannahsten.texifyidea.lang.LatexCommandBuilderScope.required
 import nl.hannahsten.texifyidea.lang.LatexContexts
-import nl.hannahsten.texifyidea.lang.LatexCommandSet
+import nl.hannahsten.texifyidea.lang.PredefinedCommandSet
 
-object NewLatexTextSymbols : LatexCommandSet() {
+object NewLatexTextSymbols : PredefinedCommandSet() {
 
     val textcomp = buildCommands {
         packageOf("textcomp")
@@ -254,7 +255,7 @@ object NewLatexTextSymbols : LatexCommandSet() {
 
 
     val loremIpsum = buildCommands {
-        val list = required("list", LatexContexts.ListType)
+        val list = "list".required(LatexContexts.ListType)
         +"Blinddocument"
         "Blindlist".cmd(list) { "LONG_BLIND_LIST" }
         "Blindlistoptional".cmd(list) { "LONG_BLIND_LIST_OPTIONAL" }
