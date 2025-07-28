@@ -7,10 +7,14 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
-class NewCommandsIndexEx : NewLatexCompositeStubIndex<LatexCommands>(LatexCommands::class.java) {
+class NewCommandsIndexEx : LatexCompositeStubIndex<LatexCommands>(LatexCommands::class.java) {
 
     override fun getKey(): StubIndexKey<String, LatexCommands> {
         return LatexStubIndexKeys.COMMANDS
+    }
+
+    override fun getVersion(): Int {
+        return 2
     }
 }
 
@@ -22,7 +26,7 @@ val NewCommandsIndex = NewCommandsIndexEx()
 /**
  * Definitions of both commands and theorems
  */
-class NewDefinitionIndexEx : NewLatexCompositeTransformedStubIndex<LatexCommandsStub, LatexCommands>(LatexCommands::class.java) {
+class NewDefinitionIndexEx : LatexCompositeTransformedStubIndex<LatexCommandsStub, LatexCommands>(LatexCommands::class.java) {
     override fun getVersion(): Int {
         return 1003
     }
@@ -41,23 +45,3 @@ class NewDefinitionIndexEx : NewLatexCompositeTransformedStubIndex<LatexCommands
 }
 
 val NewDefinitionIndex = NewDefinitionIndexEx()
-
-// class NewGlossaryEntryIndexEx : NewLatexCompositeTransformedStubIndex<LatexCommandsStub, LatexCommands>(LatexCommands::class.java) {
-//    override fun getVersion(): Int {
-//        return 1
-//    }
-//
-//    override fun sinkIndex(stub: LatexCommandsStub, sink: IndexSink) {
-//        val command = stub.commandToken
-//        if (command !in CommandMagic.glossaryEntry) return
-//        val requiredParam = stub.requiredParams
-//        if( requiredParam.isEmpty()) return
-//        sink.occurrence(key, requiredParam[0])
-//    }
-//
-//    override fun getKey(): StubIndexKey<String, LatexCommands> {
-//        return LatexStubIndexKeys.GLOSSARY_ENTRIES_KEY
-//    }
-// }
-//
-// val NewGlossaryEntryIndex = NewGlossaryEntryIndexEx()

@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.navigation
 import com.intellij.navigation.NavigationItem
 import com.intellij.util.xml.model.gotosymbol.GoToSymbolProvider
 import nl.hannahsten.texifyidea.TexifyIcons
-import nl.hannahsten.texifyidea.index.MyStringStubIndexBase
+import nl.hannahsten.texifyidea.index.StringStubIndexWrapper
 import nl.hannahsten.texifyidea.index.NewBibtexEntryIndex
 import nl.hannahsten.texifyidea.index.NewDefinitionIndex
 import nl.hannahsten.texifyidea.index.NewLabelsIndex
@@ -17,7 +17,7 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
  */
 class GotoDefinitionSymbolContributor : AbsIndexBasedChooseByNameContributor<LatexCommands>() {
 
-    override val index: MyStringStubIndexBase<LatexCommands> = NewDefinitionIndex
+    override val index: StringStubIndexWrapper<LatexCommands> = NewDefinitionIndex
 
     override fun createNavigationItem(item: LatexCommands, name: String): NavigationItem? {
         val defCommand = item.name ?: return null
@@ -32,7 +32,7 @@ class GotoDefinitionSymbolContributor : AbsIndexBasedChooseByNameContributor<Lat
 }
 
 class GotoLabelSymbolContributor : AbsIndexBasedChooseByNameContributor<LatexComposite>() {
-    override val index: MyStringStubIndexBase<LatexComposite> = NewLabelsIndex
+    override val index: StringStubIndexWrapper<LatexComposite> = NewLabelsIndex
 
     override fun createNavigationItem(item: LatexComposite, name: String): NavigationItem? {
         return GoToSymbolProvider.BaseNavigationItem(item, name, TexifyIcons.DOT_LABEL)
@@ -40,7 +40,7 @@ class GotoLabelSymbolContributor : AbsIndexBasedChooseByNameContributor<LatexCom
 }
 
 class GotoBibtexLabelSymbolContributor : AbsIndexBasedChooseByNameContributor<BibtexEntry>() {
-    override val index: MyStringStubIndexBase<BibtexEntry> = NewBibtexEntryIndex
+    override val index: StringStubIndexWrapper<BibtexEntry> = NewBibtexEntryIndex
 
     override fun createNavigationItem(item: BibtexEntry, name: String): NavigationItem? {
         return GoToSymbolProvider.BaseNavigationItem(item, name, TexifyIcons.DOT_BIB)

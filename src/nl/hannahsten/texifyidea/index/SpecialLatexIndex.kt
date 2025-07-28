@@ -22,12 +22,9 @@ object SpecialKeys {
 }
 
 /**
- * This is a temporary solution to replace the old "traversing all commands" index.
- * It will record commands used in this project and classify them into groups.
- *
- * It should be gradually removed to use more efficient methods.
+ * Records special commands in the project, such as file inputs, command definitions, environment definitions, and package includes.
  */
-class NewSpecialCommandsIndexEx : SpecialKeyStubIndexBase<LatexCommands>(LatexCommands::class.java) {
+class NewSpecialCommandsIndexEx : SpecialKeyStubIndexWrapper<LatexCommands>(LatexCommands::class.java) {
     override fun getKey(): StubIndexKey<String, LatexCommands> {
         return LatexStubIndexKeys.COMMANDS_SPECIAL
     }

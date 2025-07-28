@@ -35,11 +35,5 @@ abstract class BibtexIdImplMixin(node: ASTNode) : BibtexId, ASTWrapperPsiElement
         parent.delete()
 //        super.delete()
         // removing the reference is done separately by usage search
-//        val text = this.text ?: return
-
-//        val searchScope = GlobalSearchScope.fileScope(this.containingFile)
-//        BibtexEntryIndex().getEntryByName(text, this.project, searchScope).forEach {
-//            it.remove()
-//        }
     }
 }

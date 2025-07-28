@@ -24,13 +24,13 @@ object LatexStubIndexKeys {
     val LABELED_ELEMENT =
         StubIndexKey.createIndexKey<String, LatexComposite>("nl.hannahsten.texifyidea.labeledelement")
 
+    val MAGIC_COMMENTS_KEY =
+        StubIndexKey.createIndexKey<String, LatexMagicComment>("nl.hannahsten.texifyidea.magiccomment")
+
     // The following keys are not used
 
     val ENVIRONMENTS =
         StubIndexKey.createIndexKey<String, LatexEnvironment>("nl.hannahsten.texifyidea.environments")
-
-    val MAGIC_COMMENTS_KEY =
-        StubIndexKey.createIndexKey<String, LatexMagicComment>("nl.hannahsten.texifyidea.magiccomment")
 
     val LABELED_COMMANDS_KEY =
         StubIndexKey.createIndexKey<String, LatexCommands>("nl.hannahsten.texifyidea.parameterlabeledcommands")

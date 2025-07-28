@@ -14,9 +14,9 @@ import com.intellij.util.indexing.IdFilter
 import nl.hannahsten.texifyidea.util.contentSearchScope
 
 /**
- *
+ * A wrapper for [StringStubIndexExtension] that provides additional methods for searching and processing elements by name.
  */
-abstract class MyStringStubIndexBase<Psi : PsiElement>(
+abstract class StringStubIndexWrapper<Psi : PsiElement>(
     val clazz: Class<Psi>,
 ) : StringStubIndexExtension<Psi>() {
 
@@ -187,7 +187,7 @@ abstract class MyStringStubIndexBase<Psi : PsiElement>(
     }
 }
 
-interface MyTransformedStubIndex<Stub : StubElement<Psi>, Psi : PsiElement> : StubIndexExtension<String, Psi> {
+interface TransformedStubIndex<Stub : StubElement<Psi>, Psi : PsiElement> : StubIndexExtension<String, Psi> {
 
     fun sinkIndex(stub: Stub, sink: IndexSink)
 }

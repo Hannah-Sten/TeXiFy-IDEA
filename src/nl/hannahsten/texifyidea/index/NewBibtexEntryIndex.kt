@@ -8,7 +8,7 @@ import nl.hannahsten.texifyidea.psi.BibtexEntry
  *
  * @author Hannah Schellekens, Ernest Li
  */
-class NewBibtexEntryIndexEx : NewLatexCompositeStubIndex<BibtexEntry>(BibtexEntry::class.java) {
+class NewBibtexEntryIndexEx : LatexCompositeStubIndex<BibtexEntry>(BibtexEntry::class.java) {
     override fun getVersion(): Int {
         return 12
     }

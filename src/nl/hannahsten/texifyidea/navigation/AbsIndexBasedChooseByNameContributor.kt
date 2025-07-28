@@ -8,10 +8,10 @@ import com.intellij.util.Processor
 import com.intellij.util.indexing.DumbModeAccessType
 import com.intellij.util.indexing.FindSymbolParameters
 import com.intellij.util.indexing.IdFilter
-import nl.hannahsten.texifyidea.index.MyStringStubIndexBase
+import nl.hannahsten.texifyidea.index.StringStubIndexWrapper
 
 abstract class AbsIndexBasedChooseByNameContributor<Psi : PsiElement> : ChooseByNameContributorEx {
-    protected abstract val index: MyStringStubIndexBase<Psi>
+    protected abstract val index: StringStubIndexWrapper<Psi>
 
     protected abstract fun createNavigationItem(item: Psi, name: String): NavigationItem?
 
