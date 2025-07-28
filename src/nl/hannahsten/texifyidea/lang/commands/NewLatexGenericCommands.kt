@@ -6,16 +6,16 @@ import nl.hannahsten.texifyidea.lang.LatexCommandSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
 
 object NewLatexGenericCommands : LatexCommandSet() {
-    private val textArg = LArgument.required("text", LatexContexts.TEXT)
-    private val labelArg = LArgument.required("label", LatexContexts.LABEL_REF)
+    private val textArg = LArgument.required("text", LatexContexts.Text)
+    private val labelArg = LArgument.required("label", LatexContexts.LabelReference)
 
     val citation = textCommands {
         val before = "before".optional
         val after = "after".optional
-        val keys = required("keys", LatexContexts.BIBTEX_KEY)
+        val keys = required("keys", LatexContexts.BibtexKey)
 
         "cite".cmd("extratext".optional, keys) { "CITE" }
-        "bibliographystyle".cmd(required("style", LatexContexts.BIB_STYLE)) { "BIBLIOGRAPHYSTYLE" }
+        "bibliographystyle".cmd(required("style", LatexContexts.BibStyle)) { "BIBLIOGRAPHYSTYLE" }
 
         packageOf("natbib")
         "Citealp".cmd(before, after, keys) { "CITEALP_CAPITALIZED" }
@@ -50,7 +50,7 @@ object NewLatexGenericCommands : LatexCommandSet() {
         packageOf("biblatex")
         val prenote = "prenote".optional
         val postnote = "postnote".optional
-        val key = required("keys", LContextIntros.BIBTEX_KEY)
+        val key = required("keys", LatexContexts.BibtexKey)
         val volume = "volume".required
         val page = "page".optional
         "Autocite".cmd(prenote, postnote, key) { "AUTOCITE_CAPITALIZED" }
@@ -135,12 +135,12 @@ object NewLatexGenericCommands : LatexCommandSet() {
 
     val reference = buildCommands {
 
-        "label".cmd(required("key", LatexContexts.LABEL_DEF)) {
+        "label".cmd(required("key", LatexContexts.LabelDefinition)) {
             "Define a label for referencing"
         }
 
-        val label1 = LArgument.required("label1", LatexContexts.LABEL_REF)
-        val label2 = LArgument.required("label2", LatexContexts.LABEL_REF)
+        val label1 = LArgument.required("label1", LatexContexts.LabelReference)
+        val label2 = LArgument.required("label2", LatexContexts.LabelReference)
         "ref".cmd(labelArg) { "Reference to a label" }
         "pageref".cmd(labelArg) { "Page reference to a label" }
 
@@ -185,7 +185,7 @@ object NewLatexGenericCommands : LatexCommandSet() {
 
     val algorithm = buildCommands {
         packageOf("algpseudocode")
-        setCommandContext(LatexContexts.ALGORITHMICX)
+        setCommandContext(LatexContexts.Algorithmicx)
         "ElsIf".cmd("condition".required) { "ELSIF" }
         "EndFor".cmd()
         "EndFunction".cmd()
@@ -215,18 +215,18 @@ object NewLatexGenericCommands : LatexCommandSet() {
         packageOf("glossaries")
 
         val options = "options".optional
-        val label = required("label", LatexContexts.TEXT)
+        val label = required("label", LatexContexts.Text)
         val insert = "insert".optional
 
-        setCommandContext() // TODO: maybe setCommandContext(LatexContexts.PREAMBLE)
-        "loadglsentries".cmd(required("glossariesfile", LatexContexts.SINGLE_FILE))
+        setCommandContext() // TODO: maybe setCommandContext(LatexContexts.Preamble)
+        "loadglsentries".cmd(required("glossariesfile", LatexContexts.SingleFile))
         "longnewglossaryentry".cmd("name".required, "options".required, "description".required)
         "newabbreviation".cmd(options, "name".required, "short".required, "long".required)
         "newacronym".cmd(options, "name".required, "short".required, "long".required)
         "newglossaryentry".cmd("name".required, "options".required)
 
 
-        setCommandContext(LatexContexts.TEXT)
+        setCommandContext(LatexContexts.Text)
         "GLS".cmd(options, label, label)
         "GLSdesc".cmd(options, label, label)
         "GLSfirst".cmd(options, label, label)
@@ -281,7 +281,7 @@ object NewLatexGenericCommands : LatexCommandSet() {
         packageOf("acronym")
 
         val linebreakPenalty = "linebreak penalty".optional
-        val acronym = required("acronym", LatexContexts.TEXT)
+        val acronym = required("acronym", LatexContexts.Text)
 
         setCommandContext()
         "acro".cmd(acronym, "short name".optional, "full name".required)
@@ -289,7 +289,7 @@ object NewLatexGenericCommands : LatexCommandSet() {
         "newacro".cmd(acronym, "short name".optional, "full name".required)
 
 
-        setCommandContext(LatexContexts.TEXT)
+        setCommandContext(LatexContexts.Text)
         "Ac".cmd(linebreakPenalty, acronym)
         "Ac*".cmd(linebreakPenalty, acronym)
         "Acf".cmd(linebreakPenalty, acronym)
@@ -368,7 +368,7 @@ object NewLatexGenericCommands : LatexCommandSet() {
         val nameRequired = "name".required
         val numberOptional = "number".optional
         val defaultArgOptional = "default arg".optional
-        val textCtx = LatexContexts.TEXT
+        val textCtx = LatexContexts.Text
         val startingCodeRequired = required("starting code", ctx = textCtx)
         val endingCodeRequired = required("ending code", ctx = textCtx)
 
@@ -377,7 +377,7 @@ object NewLatexGenericCommands : LatexCommandSet() {
 
     val listings = buildCommands {
         packageOf("listings")
-        "lstinputlisting".cmd("options".optional, required("filename", LatexContexts.SINGLE_FILE))
+        "lstinputlisting".cmd("options".optional, required("filename", LatexContexts.SingleFile))
         inPackage("luacode") {
             "directlua".cmd("lua code".required)
             "luaexec".cmd("lua code".required)
@@ -394,12 +394,12 @@ object NewLatexGenericCommands : LatexCommandSet() {
 
     val mathtools = buildCommands {
         packageOf("mathtools")
-        setCommandContext(LatexContexts.PREAMBLE)
+        setCommandContext(LatexContexts.Preamble)
         val cmd = "cmd".required
         val numArgs = "num args".optional
         val leftDelimiter = "left delimiter".required
         val rightDelimiter = "right delimiter".required
-        val body = required("body", LatexContexts.TEXT)
+        val body = required("body", LatexContexts.Text)
         val preCode = "pre code".required
         val postCode = "post code".required
         "DeclarePairedDelimiter".cmd(cmd, leftDelimiter, rightDelimiter) { "Declare a paired delimiter" }
@@ -410,12 +410,12 @@ object NewLatexGenericCommands : LatexCommandSet() {
 
 
     val colorDefinitionCommands = buildCommands {
-        setCommandContext(LatexContexts.PREAMBLE)
+        setCommandContext(LatexContexts.Preamble)
 
         val typeOpt = "type".optional
         val nameReq = "name".required
-        val modelListReq = required("model-list", LatexContexts.LITERAL)
-        val specListReq = required("spec-list", LatexContexts.LITERAL)
+        val modelListReq = required("model-list", LatexContexts.Literal)
+        val specListReq = required("spec-list", LatexContexts.Literal)
 
         packageOf("color")
         "definecolor".cmd(typeOpt, nameReq, modelListReq, specListReq) { "Define a color" }
@@ -442,7 +442,7 @@ object NewLatexGenericCommands : LatexCommandSet() {
     }
 
     val genericCommands = buildCommands {
-        val titleArg = LArgument.required("title", LatexContexts.TEXT)
+        val titleArg = LArgument.required("title", LatexContexts.Text)
 
         packageOf("")
         symbol("LaTeX", "LaTeX")
@@ -737,7 +737,7 @@ object NewLatexGenericCommands : LatexCommandSet() {
 
 
         packageOf("amsmath")
-        underCmdContext(LatexContexts.PREAMBLE) {
+        underCmdContext(LatexContexts.Preamble) {
             "DeclareMathOperator".cmd("command".required, "operator".required) { "DECLARE_MATH_OPERATOR" }
         }
         "eqref".cmd(labelArg) { "EQREF" }

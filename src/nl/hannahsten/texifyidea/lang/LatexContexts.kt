@@ -1,0 +1,101 @@
+package nl.hannahsten.texifyidea.lang
+
+
+
+
+object LMathContext : LatexContextBase("math")
+
+/**
+ * A context that describes text content, for example in `\text{...}`.
+ */
+object LTextContext : LatexContextBase("text")
+object LatexContexts {
+
+    object Math : LatexContextBase("math")
+
+    /**
+     * Describes the context of package names, for example in `\usepackage{...}`.
+     *
+     * The names can be comma-separated, for example in `\usepackage{package1,package2}`.
+     */
+    object PackageNames : LatexContextBase("packages"), ILFileInputContext
+
+    /**
+     * Describes the context of class names, for example in `\documentclass{...}`.
+     */
+    object ClassName : LatexContextBase("class"), ILFileInputContext
+
+
+    val Preamble = LatexContextBase("preamble")
+
+
+    val LabelDefinition = LatexContextBase("label.def")
+    val LabelReference = LatexContextBase("label.ref")
+
+    /**
+     * A command and only a command. Used in `\newcommand{...}`.
+     */
+    val PlainCommand = LatexContextBase("command")
+
+    /**
+     * An identifier, such as a command name without slash or environment name.
+     *
+     * Used in `\newenvironment{...}`.
+     */
+    val Identifier = LatexContextBase("identifier")
+
+    /**
+     * Some string literal that may be meaningful, such as `cc` in `\begin{tabular}{cc}`.
+     */
+    val Literal = LatexContextBase("literal")
+
+
+    /**
+     * Plain text content, such as in `\text{...}`.
+     */
+    val Text = LatexContextBase("text")
+
+    /**
+     * A number is expected, for example in `\setcounter{...}{...}`.
+     */
+    val Numeric = LatexContextBase("numeric")
+
+    val ListType = LatexContextBase("list.type")
+
+    val SingleFile = LFileInputContext(
+        "file.general", isCommaSeparated = false, supportedExtensions = emptySet(),
+    )
+    val MultipleFiles = LFileInputContext(
+        "files.general", isCommaSeparated = true, supportedExtensions = emptySet(),
+    )
+    val SingleTexFile = LFileInputContext(
+        "file.tex", isCommaSeparated = false, supportedExtensions = setOf("tex"),
+    )
+    val MultipleTexFiles = LFileInputContext(
+        "files.tex", isCommaSeparated = true, supportedExtensions = setOf("tex"),
+    )
+
+    val SingleBibFile = LFileInputContext(
+        "file.bib", isCommaSeparated = false, supportedExtensions = setOf("bib"),
+    )
+
+    val MultipleBibFiles = LFileInputContext(
+        "files.bib", isCommaSeparated = true, supportedExtensions = setOf("bib"),
+    )
+
+    object Folder :  LatexContextBase("folder"), ILFileInputContext
+
+    object BibtexKey : LatexContextBase("bibtex.key"), ILFileInputContext
+
+
+    val BibStyle = LatexContextBase("style")
+
+    val URL = LFileInputContext("url")
+
+    val Algorithmicx = LatexContextBase("algorithmicx")
+
+    val MintedFuntimeLand = LatexContextBase("minted.funtime.land")
+
+
+
+}

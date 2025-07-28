@@ -7,12 +7,12 @@ import nl.hannahsten.texifyidea.lang.LatexContexts
 
 object NewLatexBasicCommands : LatexCommandSet() {
 
-    private val classArgument = LArgument.required("class", LatexContexts.CLASS_NAME)
-    private val packageArg = LArgument.required("package", LatexContexts.PACKAGE_NAMES)
-    private val texFileArg = LArgument.required("tex file", LatexContexts.SINGLE_TEX_FILE)
+    private val classArgument = LArgument.required("class", LatexContexts.ClassName)
+    private val packageArg = LArgument.required("package", LatexContexts.PackageNames)
+    private val texFileArg = LArgument.required("tex file", LatexContexts.SingleTexFile)
 
     val ifCommands = buildCommands {
-        underCmdContext(LatexContexts.PREAMBLE) {
+        underCmdContext(LatexContexts.Preamble) {
             +"if"
             +"ifcat"
             +"ifx"
@@ -37,11 +37,11 @@ object NewLatexBasicCommands : LatexCommandSet() {
     }
 
     val definitionCommands = buildCommands {
-        setCommandContext(LatexContexts.PREAMBLE)
+        setCommandContext(LatexContexts.Preamble)
 
-        val command = required("cmd", LatexContexts.COMMAND)
-        val envName = required("name", LatexContexts.IDENTIFIER)
-        val numArgs = optional("num args", LatexContexts.NUMERIC)
+        val command = required("cmd", LatexContexts.PlainCommand)
+        val envName = required("name", LatexContexts.Identifier)
+        val numArgs = optional("num args", LatexContexts.Numeric)
         val defaultOptional = "default".optional
         // The following context can be deeper
         val definition = required("def", LClearContext)
@@ -64,10 +64,10 @@ object NewLatexBasicCommands : LatexCommandSet() {
         "newenvironment".cmd(envName, numArgs, defaultOptional, begdefRequired, enddefRequired) { "Define a new environment" }
         "renewenvironment".cmd(envName, numArgs, defaultOptional, begdefRequired, enddefRequired) { "Redefine an existing environment" }
         "newtheorem".cmd(
-            envName, "numberedlike".optional, required("caption", LatexContexts.TEXT), "within".optional
+            envName, "numberedlike".optional, required("caption", LatexContexts.Text), "within".optional
         ) { "Define a new theorem-like environment" }
         "newtheorem*".cmd(
-            envName, required("caption", LatexContexts.TEXT)
+            envName, required("caption", LatexContexts.Text)
         ) { "Define a new theorem-like environment" }
 
 
@@ -84,24 +84,24 @@ object NewLatexBasicCommands : LatexCommandSet() {
 
     val basicFileInputCommands = buildCommands {
         // Most file inputs are in preamble, but can be adjusted per command if needed.
-        val name = LArgument.required("name", LatexContexts.IDENTIFIER)
-        underCmdContext(LatexContexts.PREAMBLE) {
+        val name = LArgument.required("name", LatexContexts.Identifier)
+        underCmdContext(LatexContexts.Preamble) {
             // TODO
             "documentclass".cmd(
-                optional("options", LatexContexts.LITERAL),
+                optional("options", LatexContexts.Literal),
                 classArgument
             ) {
                 "Declare the document class"
             }
 
             "usepackage".cmd(
-                optional("options", LatexContexts.LITERAL),
+                optional("options", LatexContexts.Literal),
                 packageArg,
             ) {
                 "Load a LaTeX package"
             }
             "LoadClass".cmd(
-                optional("options", LatexContexts.LITERAL),
+                optional("options", LatexContexts.Literal),
                 classArgument
             ) {
                 "Load a class file"
@@ -112,11 +112,11 @@ object NewLatexBasicCommands : LatexCommandSet() {
             "ProvidesPackage".cmd(name)
             "RequirePackage".cmd("options".optional, packageArg)
 
-            "includeonly".cmd(required("tex files", LatexContexts.MULTIPLE_TEX_FILES)) {
+            "includeonly".cmd(required("tex files", LatexContexts.MultipleTexFiles)) {
                 "Specify which files to include (comma-separated)"
             }
 
-            "addtoluatexpath".cmd(required("paths", LatexContexts.FOLDER)) {
+            "addtoluatexpath".cmd(required("paths", LatexContexts.Folder)) {
                 "Add a relative path to the LaTeX search path"
             }
         }
@@ -133,17 +133,17 @@ object NewLatexBasicCommands : LatexCommandSet() {
     }
 
     val primitives = buildCommands {
-        val envArg = LArgument.required("environment", LatexContexts.IDENTIFIER)
+        val envArg = LArgument.required("environment", LatexContexts.Identifier)
         "begin".cmd(envArg)
         "end".cmd(envArg)
     }
 
     val xparseCommands = buildCommands {
-        setCommandContext(LatexContexts.PREAMBLE)
+        setCommandContext(LatexContexts.Preamble)
 
-        val cmdName = required("name", LatexContexts.COMMAND)
-        val envName = required("name", LatexContexts.IDENTIFIER)
-        val argsSpec = required("args spec", LatexContexts.LITERAL)
+        val cmdName = required("name", LatexContexts.PlainCommand)
+        val envName = required("name", LatexContexts.Identifier)
+        val argsSpec = required("args spec", LatexContexts.Literal)
         val code = required("code", LClearContext)
         val startCode = required("start code", LClearContext)
         val endCode = required("end code", LClearContext)

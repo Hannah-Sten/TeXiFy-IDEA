@@ -126,13 +126,6 @@ class LatexCommandBuilderScope : LatexBuilderDSLScope {
             scope.action()
             return scope.commands
         }
-
-        fun mathCommands(action: LatexCommandBuilderScope.() -> Unit): List<NewLatexCommand> {
-            val scope = LatexCommandBuilderScope()
-            scope.setCommandContext(LMathContext)
-            scope.action()
-            return scope.commands
-        }
     }
 }
 
@@ -147,14 +140,14 @@ abstract class LatexCommandSet {
 
     protected fun mathCommands(action: LatexCommandBuilderScope.() -> Unit): List<NewLatexCommand> {
         return buildCommands {
-            setCommandContext(LMathContext)
+            setCommandContext(LatexContexts.Math)
             action()
         }
     }
 
     protected fun textCommands(action: LatexCommandBuilderScope.() -> Unit): List<NewLatexCommand> {
         return buildCommands {
-            setCommandContext(LTextContext)
+            setCommandContext(LatexContexts.Text)
             action()
         }
     }
@@ -163,7 +156,6 @@ abstract class LatexCommandSet {
 fun main() {
     LatexCommandBuilderScope.buildCommands {
         packageOf("my.package")
-        setCommandContext(LMathContext)
 
         symbol("alpha", "α", "Greek letter alpha")
     }

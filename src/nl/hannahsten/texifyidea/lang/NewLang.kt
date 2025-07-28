@@ -23,31 +23,12 @@ open class LatexContextBase(
 ) : LatexContext
 
 
-object LBibtexKeyContext : LatexContextBase("bibtex.key")
-
-object LMathContext : LatexContextBase("math")
-
-/**
- * A context that describes text content, for example in `\text{...}`.
- */
-object LTextContext : LatexContextBase("text")
 
 /**
  * A marker interface for contexts that are related to file input.
  */
 interface ILFileInputContext : LatexContext
 
-/**
- * Describes the context of package names, for example in `\usepackage{...}`.
- *
- * The names can be comma-separated, for example in `\usepackage{package1,package2}`.
- */
-object LPackageNamesContext : LatexContextBase("packages"), ILFileInputContext
-
-/**
- * Describes the context of class names, for example in `\documentclass{...}`.
- */
-object LClassNameContext : LatexContextBase("class"), ILFileInputContext
 
 class LFileInputContext(
     name: String,
@@ -55,91 +36,14 @@ class LFileInputContext(
     val supportedExtensions: Set<String> = emptySet(),
 ) : LatexContextBase(name), ILFileInputContext
 
-class LFolderInputContext(
-    name: String,
-) : LatexContextBase(name), ILFileInputContext
+
 
 /**
- * A context that describes a literal, for example in `\text{...}`.
+ * A context that describes a literal, for example `cc` in `\begin{tabular}{cc}`.
  * This is used to provide autocompletion for text content.
  */
 interface LLiteralContext : LatexContext
 
-object LatexContexts {
-    val PACKAGE_NAMES get() = LPackageNamesContext
-    val CLASS_NAME get() = LClassNameContext
-
-    val PREAMBLE = LatexContextBase("preamble")
-
-
-    val LABEL_DEF = LatexContextBase("label.def")
-    val LABEL_REF = LatexContextBase("label.ref")
-
-    /**
-     * A command and only a command. Used in `\newcommand{...}`.
-     */
-    val COMMAND = LatexContextBase("command")
-
-    /**
-     * An identifier, such as a command name without slash or environment name.
-     *
-     * Used in `\newenvironment{...}`.
-     */
-    val IDENTIFIER = LatexContextBase("identifier")
-
-    /**
-     * Some string literal that may be meaningful, such as `cc` in `\begin{tabular}{cc}`.
-     */
-    val LITERAL = LatexContextBase("literal")
-
-
-    /**
-     * Plain text content, such as in `\text{...}`.
-     */
-    val TEXT = LTextContext
-
-    /**
-     * A number is expected, for example in `\setcounter{...}{...}`.
-     */
-    val NUMERIC = LatexContextBase("numeric")
-
-    val LIST_TYPE = LatexContextBase("list.type")
-
-    val SINGLE_FILE = LFileInputContext(
-        "file.general", isCommaSeparated = false, supportedExtensions = emptySet(),
-    )
-    val MULTIPLE_FILES = LFileInputContext(
-        "files.general", isCommaSeparated = true, supportedExtensions = emptySet(),
-    )
-    val SINGLE_TEX_FILE = LFileInputContext(
-        "file.tex", isCommaSeparated = false, supportedExtensions = setOf("tex"),
-    )
-    val MULTIPLE_TEX_FILES = LFileInputContext(
-        "files.tex", isCommaSeparated = true, supportedExtensions = setOf("tex"),
-    )
-
-    val SINGLE_BIB_FILE = LFileInputContext(
-        "file.bib", isCommaSeparated = false, supportedExtensions = setOf("bib"),
-    )
-
-    val MULTIPLE_BIB_FILES = LFileInputContext(
-        "files.bib", isCommaSeparated = true, supportedExtensions = setOf("bib"),
-    )
-
-    val FOLDER = LFolderInputContext("folder")
-
-    val BIBTEX_KEY = LBibtexKeyContext
-    val BIB_STYLE = LatexContextBase("style")
-
-    val URL = LFileInputContext("url")
-
-    val ALGORITHMICX = LatexContextBase("algorithmicx")
-
-    val MINTED_FUNTIME_LAND = LatexContextBase("minted.funtime.land")
-
-
-
-}
 
 typealias LContextSet = Set<LatexContext>
 
@@ -197,15 +101,6 @@ class LModifyContext(val toAdd: Set<LatexContext>, val toRemove: Set<LatexContex
         }
         return res
     }
-}
-
-object LContextIntros {
-    val MATH = LAssignContext(LMathContext)
-    val TEXT = LAssignContext(LTextContext)
-    val INHERIT = LContextInherit
-    val LABEL_REF = LAssignContext(LatexContexts.LABEL_REF)
-    val BIBTEX_KEY = LAssignContext(LBibtexKeyContext)
-    val PACKAGE = LAssignContext(LPackageNamesContext)
 }
 
 enum class LArgumentType {

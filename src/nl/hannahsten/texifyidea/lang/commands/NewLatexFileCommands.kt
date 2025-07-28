@@ -31,11 +31,11 @@ object NewLatexFileCommands : LatexCommandSet() {
         // Bibliography-related file inputs.
         packageOf("biblatex")
 
-        "addbibresource".cmd(required("bibliographyfile", LatexContexts.SINGLE_BIB_FILE)) {
+        "addbibresource".cmd(required("bibliographyfile", LatexContexts.SingleBibFile)) {
             "Add a bibliography resource file"
         }
 
-        "bibliography".cmd(required("bibliographyfile", LatexContexts.MULTIPLE_BIB_FILES)) {
+        "bibliography".cmd(required("bibliographyfile", LatexContexts.MultipleBibFiles)) {
             "Specify bibliography files (comma-separated)"
         }
 
@@ -43,14 +43,14 @@ object NewLatexFileCommands : LatexCommandSet() {
         // Graphics-related.
         packageOf("graphicx")
         "includegraphics".cmd(
-            optional("key-val-list", LatexContexts.LITERAL),
+            optional("key-val-list", LatexContexts.Literal),
             required("imagefile", PICTURE_FILE)
         ) {
             "Include a graphics file"
         }
 
         "graphicspath".cmd(
-            required("foldername", LatexContexts.FOLDER)  // Folder path, no specific ext.
+            required("foldername", LatexContexts.Folder)  // Folder path, no specific ext.
         ) {
             "Set the graphics search path"
         }
@@ -64,7 +64,7 @@ object NewLatexFileCommands : LatexCommandSet() {
             "Include an SVG file"
         }
 
-        "svgpath".cmd(required("foldername", LatexContexts.FOLDER)) {
+        "svgpath".cmd(required("foldername", LatexContexts.Folder)) {
             "Set the SVG search path"
         }
 
@@ -80,71 +80,71 @@ object NewLatexFileCommands : LatexCommandSet() {
         // Import package commands.
         packageOf("import")
         "import".cmd(
-            required("absolute path", LatexContexts.FOLDER),  // Folder-like.
-            required("filename", LatexContexts.SINGLE_TEX_FILE)
+            required("absolute path", LatexContexts.Folder),  // Folder-like.
+            required("filename", LatexContexts.SingleTexFile)
         ) {
             "Import a file from an absolute path"
         }
 
         "includefrom".cmd(
-            required("absolute path", LatexContexts.FOLDER),
-            required("filename", LatexContexts.SINGLE_TEX_FILE)
+            required("absolute path", LatexContexts.Folder),
+            required("filename", LatexContexts.SingleTexFile)
         ) {
             "Include from an absolute path"
         }
 
         "inputfrom".cmd(
-            required("absolute path", LatexContexts.FOLDER),
-            required("filename", LatexContexts.SINGLE_TEX_FILE)
+            required("absolute path", LatexContexts.Folder),
+            required("filename", LatexContexts.SingleTexFile)
         ) {
             "Input from an absolute path"
         }
 
         "subimport".cmd(
-            required("relative path", LatexContexts.FOLDER),
-            required("filename", LatexContexts.SINGLE_TEX_FILE)
+            required("relative path", LatexContexts.Folder),
+            required("filename", LatexContexts.SingleTexFile)
         ) {
             "Subimport from a relative path"
         }
 
         "subincludefrom".cmd(
-            required("relative path", LatexContexts.FOLDER),
-            required("filename", LatexContexts.SINGLE_TEX_FILE)
+            required("relative path", LatexContexts.Folder),
+            required("filename", LatexContexts.SingleTexFile)
         ) {
             "Subinclude from a relative path"
         }
 
         "subinputfrom".cmd(
-            required("relative path", LatexContexts.FOLDER),
-            required("filename", LatexContexts.SINGLE_TEX_FILE)
+            required("relative path", LatexContexts.Folder),
+            required("filename", LatexContexts.SingleTexFile)
         ) {
             "Subinput from a relative path"
         }
 
         // Subfiles package.
         packageOf("subfiles")
-        "subfile".cmd(required("sourcefile", LatexContexts.SINGLE_TEX_FILE)) {
+        "subfile".cmd(required("sourcefile", LatexContexts.SingleTexFile)) {
             "Include a subfile"
         }
 
-        "subfileinclude".cmd(required("sourcefile", LatexContexts.SINGLE_TEX_FILE)) {
+        "subfileinclude".cmd(required("sourcefile", LatexContexts.SingleTexFile)) {
             "Include a subfile with page break"
         }
 
-        "subfix".cmd(required("file", LatexContexts.SINGLE_TEX_FILE)) {
+        "subfix".cmd(required("file", LatexContexts.SingleTexFile)) {
             "Fix subfile paths"
         }
 
         // Other miscellaneous file inputs, e.g., from glossaries.
         packageOf("glossaries")
-        "loadglsentries".cmd(required("glossariesfile", LatexContexts.SINGLE_TEX_FILE)) {
+        "loadglsentries".cmd(required("glossariesfile", LatexContexts.SingleTexFile)) {
             "Load glossary entries from a file"
         }
 
         packageOf("minted")
         "inputminted".cmd(
-            LArgument.required("language", LatexContexts.MINTED_FUNTIME_LAND),
-            LArgument.required("sourcefile", LatexContexts.SINGLE_FILE),
+            LArgument.required("language", LatexContexts.MintedFuntimeLand),
+            LArgument.required("sourcefile", LatexContexts.SingleFile),
         ) {
             "Input a source file with syntax highlighting"
         }

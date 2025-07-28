@@ -1,4 +1,3 @@
-import nl.hannahsten.texifyidea.lang.LContextIntros
 import nl.hannahsten.texifyidea.lang.LatexCommandSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
 
@@ -6,7 +5,7 @@ object NewLatexMathSymbols : LatexCommandSet() {
 
     val textCommands = mathCommands {
         packageOf("amsmath")
-        val text = required("text", LatexContexts.TEXT)
+        val text = required("text", LatexContexts.Text)
         "text".cmd(text) { "Text in math" }
     }
 

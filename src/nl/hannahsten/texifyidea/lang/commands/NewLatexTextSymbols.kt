@@ -254,7 +254,7 @@ object NewLatexTextSymbols : LatexCommandSet() {
 
 
     val loremIpsum = buildCommands {
-        val list = required("list", LatexContexts.LIST_TYPE)
+        val list = required("list", LatexContexts.ListType)
         +"Blinddocument"
         "Blindlist".cmd(list) { "LONG_BLIND_LIST" }
         "Blindlistoptional".cmd(list) { "LONG_BLIND_LIST_OPTIONAL" }
