@@ -129,6 +129,9 @@ class LatexCommandBuilderScope : LatexBuilderDSLScope {
 abstract class PredefinedCommandSet {
     private val myAllCommands = mutableListOf<NewLatexCommand>()
 
+    val allCommands : List<NewLatexCommand>
+        get() = myAllCommands
+
     protected fun buildCommands(action: LatexCommandBuilderScope.() -> Unit): List<NewLatexCommand> {
         val built = LatexCommandBuilderScope.buildCommands(action)
         myAllCommands.addAll(built)

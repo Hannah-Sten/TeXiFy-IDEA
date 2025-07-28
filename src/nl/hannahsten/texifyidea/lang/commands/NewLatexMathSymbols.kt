@@ -1,3 +1,5 @@
+package nl.hannahsten.texifyidea.lang.commands
+
 import nl.hannahsten.texifyidea.lang.PredefinedCommandSet
 
 object NewLatexMathSymbols : PredefinedCommandSet() {
