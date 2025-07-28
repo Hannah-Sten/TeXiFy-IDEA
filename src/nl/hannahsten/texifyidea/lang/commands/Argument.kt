@@ -6,7 +6,6 @@ import nl.hannahsten.texifyidea.completion.LatexBibliographyStyleProvider
 import nl.hannahsten.texifyidea.completion.LatexListTypeProvider
 import nl.hannahsten.texifyidea.completion.LatexMintedTypeProvider
 
-
 /**
  * @author Sten Wessel
  */

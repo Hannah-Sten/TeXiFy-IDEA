@@ -333,8 +333,6 @@ object NewLatexMathSymbols : PredefinedCommandSet() {
         symbol("varprojlim", description = "Variant inverse limit")
     }
 
-
-
     val defaultOperatorSymbols = mathCommands {
 
         symbol("forall", "∀", "Universal quantifier")
@@ -395,7 +393,6 @@ object NewLatexMathSymbols : PredefinedCommandSet() {
         symbol("perp", "⟂", "Perpendicular")
         symbol("vdash", "⊢", "Right tack")
         symbol("models", "⊧", "Models")
-
 
         packageOf("amssymb")
         symbol("nexists", "∄", "Non-existence quantifier")
@@ -555,12 +552,10 @@ object NewLatexMathSymbols : PredefinedCommandSet() {
         symbol("fallingdotseq", "≒", "Falling dots equal")
         symbol("doteq", null, "Dot equal")
 
-
         packageOf("amsmath")
         symbol("iint", "∬", "Double integral")
         symbol("iiint", "∭", "Triple integral")
         symbol("iiiint", "⨌", "Quadruple integral")
-
 
         packageOf("stmaryrd")
         symbol("trianglelefteqslant", null, "Left triangle or equal slant")

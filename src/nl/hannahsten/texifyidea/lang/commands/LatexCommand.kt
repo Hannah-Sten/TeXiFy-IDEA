@@ -263,7 +263,6 @@ interface LatexCommand : Described, Dependend {
 //                lookupInIndex(cmdWithoutSlash, command.project)
 //            }
         }
-
     }
 }
 
@@ -296,11 +295,9 @@ internal fun String.asRequired(type: Argument.Type = Argument.Type.NORMAL) = Req
 
 internal fun String.asOptional(type: Argument.Type = Argument.Type.NORMAL) = OptionalArgument(this, type)
 
-
 fun parseFor(s: Collection<LatexCommand>) {
     // Example usage of LatexOperatorCommand
     // group by dependency
-
 
     val groupedByDependency = s.groupBy { it.dependency.name }
     groupedByDependency.forEach { (dependency, commands) ->
@@ -309,15 +306,14 @@ fun parseFor(s: Collection<LatexCommand>) {
             .forEach { command ->
                 val cmdEscaped = command.command.replace("\\", "\\\\")
                 if (command.arguments.isEmpty()) {
-                    if(command.display != null){
+                    if(command.display != null) {
                         val display = command.display?.let {
                             "\"${it}\""
                         } ?: "null"
 //                        println("symbol(\"${cmdEscaped}\", $display)")
-                    }else{
+                    } else {
 //                        println("+\"${cmdEscaped}\"")
                     }
-
                 }
                 else {
                     val arguments = command.arguments
@@ -332,23 +328,20 @@ fun parseFor(s: Collection<LatexCommand>) {
                         }
                         else {
                             "TODO(\"${name}\")"
-
                         }
                     }
                     if(arguments.any { it is RequiredArgument && it.type == Argument.Type.FILE }) {
-                        if(command.description.isNotEmpty()){
+                        if(command.description.isNotEmpty()) {
                             println(
                                 "\"${cmdEscaped}\".cmd($argsString) { \"${command.description}\" }"
                             )
-                        }else{
+                        } else {
                             println(
                                 "\"${cmdEscaped}\".cmd($argsString)"
                             )
                         }
                     }
-
                 }
-
             }
         println()
     }

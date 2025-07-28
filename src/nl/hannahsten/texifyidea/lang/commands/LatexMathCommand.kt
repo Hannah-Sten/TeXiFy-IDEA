@@ -56,11 +56,8 @@ object LatexMathCommand {
 
     @JvmStatic
     fun findByDisplay(display: String) = lookupDisplay[display]
-
-
 }
 
-
-//fun main() {
+// fun main() {
 //
-//}
+// }

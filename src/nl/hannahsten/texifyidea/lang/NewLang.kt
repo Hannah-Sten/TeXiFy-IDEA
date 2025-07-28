@@ -18,9 +18,6 @@ interface LatexContext {
     val name: String
 }
 
-
-
-
 typealias LContextSet = Set<LatexContext>
 
 /**
@@ -30,7 +27,6 @@ sealed interface LContextIntro {
     fun applyTo(outerCtx: LContextSet): LContextSet
 
     companion object {
-
     }
 }
 
@@ -143,24 +139,25 @@ abstract class LEntity(
     /**
      * The namespace of the entity, i.e., the package or class it belongs to.
      */
-    val namespace: String = "",
+    val dependency: String = "",
     val requiredContext: LContextSet = emptySet(),
     var description: String = ""
 ) {
-    val fqName: String = if (namespace.isEmpty()) name else "$namespace.$name"
+    val fqName: String
+        get() = if (dependency.isEmpty()) name else "$dependency.$name"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is LEntity) return false
 
         if (name != other.name) return false
-        if (namespace != other.namespace) return false
+        if (dependency != other.dependency) return false
         return true
     }
 
     override fun hashCode(): Int {
         var result = name.hashCode()
-        result = 31 * result + namespace.hashCode()
+        result = 31 * result + dependency.hashCode()
         return result
     }
 }

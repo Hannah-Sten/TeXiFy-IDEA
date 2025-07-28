@@ -17,19 +17,18 @@ class LatexCommandBuilderScope : LatexBuilderDSLScope {
         pkg = name
     }
 
-    inline fun inPackage(name : String, action: () -> Unit) {
+    inline fun underPackage(name: String, action: () -> Unit) {
         val oldDependency = pkg
         pkg = oldDependency
         action()
         pkg = oldDependency
     }
 
-
     fun setCommandContext(vararg context: LatexContext) {
         requiredContext = context.toSet()
     }
 
-    inline fun underCmdContext(
+    inline fun underContext(
         vararg context: LatexContext,
         action: () -> Unit
     ) {
@@ -62,7 +61,6 @@ class LatexCommandBuilderScope : LatexBuilderDSLScope {
         commands.add(command)
         return command
     }
-
 
     inline fun String.cmd(
         vararg arguments: LArgument,
@@ -97,7 +95,7 @@ class LatexCommandBuilderScope : LatexBuilderDSLScope {
     fun String.required(
         ctx: LatexContext, description: String = ""
     ): LArgument {
-        return LArgument.required(this,ctx, description)
+        return LArgument.required(this, ctx, description)
     }
 
     fun String.required(
@@ -117,8 +115,6 @@ class LatexCommandBuilderScope : LatexBuilderDSLScope {
     ): LArgument {
         return LArgument.optional(this, ctx, description)
     }
-
-
 
     companion object {
 

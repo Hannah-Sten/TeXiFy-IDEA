@@ -1,8 +1,6 @@
 package nl.hannahsten.texifyidea.lang.commands
 
-
 import nl.hannahsten.texifyidea.lang.*
-import nl.hannahsten.texifyidea.lang.LatexCommandBuilderScope.optional
 
 object NewLatexFileCommands : PredefinedCommandSet() {
 
@@ -40,7 +38,6 @@ object NewLatexFileCommands : PredefinedCommandSet() {
             "Specify bibliography files (comma-separated)"
         }
 
-
         // Graphics-related.
         packageOf("graphicx")
         "includegraphics".cmd(
@@ -51,7 +48,7 @@ object NewLatexFileCommands : PredefinedCommandSet() {
         }
 
         "graphicspath".cmd(
-            "foldername".required(LatexContexts.Folder)  // Folder path, no specific ext.
+            "foldername".required(LatexContexts.Folder) // Folder path, no specific ext.
         ) {
             "Set the graphics search path"
         }
@@ -81,7 +78,7 @@ object NewLatexFileCommands : PredefinedCommandSet() {
         // Import package commands.
         packageOf("import")
         "import".cmd(
-            "absolute path".required(LatexContexts.Folder),  // Folder-like.
+            "absolute path".required(LatexContexts.Folder), // Folder-like.
             "filename".required(LatexContexts.SingleTexFile)
         ) {
             "Import a file from an absolute path"
@@ -149,7 +146,5 @@ object NewLatexFileCommands : PredefinedCommandSet() {
         ) {
             "Input a source file with syntax highlighting"
         }
-
     }
-
 }

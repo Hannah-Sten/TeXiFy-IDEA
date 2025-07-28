@@ -437,7 +437,4 @@ enum class LatexGenericRegularCommand(
 
     override val identifier: String
         get() = name
-
-
-
 }

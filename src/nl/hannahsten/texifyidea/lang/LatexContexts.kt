@@ -1,11 +1,8 @@
 package nl.hannahsten.texifyidea.lang
 
-
-
 open class LatexContextBase(
     final override val name: String
 ) : LatexContext
-
 
 /**
  * A marker interface for contexts that are related to file input.
@@ -18,15 +15,11 @@ class LFileInputContext(
     val supportedExtensions: Set<String> = emptySet(),
 ) : LatexContextBase(name), ILFileInputContext
 
-
-
 /**
  * A context that describes a literal, for example `cc` in `\begin{tabular}{cc}`.
  * This is used to provide autocompletion for text content.
  */
 interface LLiteralContext : LatexContext
-
-
 
 object LatexContexts {
 
@@ -44,9 +37,7 @@ object LatexContexts {
      */
     object ClassName : LatexContextBase("class"), ILFileInputContext
 
-
     val Preamble = LatexContextBase("preamble")
-
 
     val LabelDefinition = LatexContextBase("label.def")
     val LabelReference = LatexContextBase("label.ref")
@@ -67,7 +58,6 @@ object LatexContexts {
      * Some string literal that may be meaningful, such as `cc` in `\begin{tabular}{cc}`.
      */
     val Literal = LatexContextBase("literal")
-
 
     /**
      * Plain text content, such as in `\text{...}`.
@@ -102,10 +92,9 @@ object LatexContexts {
         "files.bib", isCommaSeparated = true, supportedExtensions = setOf("bib"),
     )
 
-    object Folder :  LatexContextBase("folder"), ILFileInputContext
+    object Folder : LatexContextBase("folder"), ILFileInputContext
 
     object BibtexKey : LatexContextBase("bibtex.key"), ILFileInputContext
-
 
     val BibStyle = LatexContextBase("style")
 
@@ -114,7 +103,4 @@ object LatexContexts {
     val Algorithmicx = LatexContextBase("algorithmicx")
 
     val MintedFuntimeLand = LatexContextBase("minted.funtime.land")
-
-
-
 }

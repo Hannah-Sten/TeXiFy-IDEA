@@ -10,22 +10,18 @@ import nl.hannahsten.texifyidea.lang.LatexPackage
  */
 object LatexRegularCommand {
 
-
     private val MATHTOOLS: Set<LatexCommand> = LatexMathtoolsRegularCommand.entries.toSet()
     private val XCOLOR: Set<LatexCommand> = LatexColorDefinitionCommand.entries.toSet()
     private val XPARSE: Set<LatexCommand> = LatexXparseCommand.entries.toSet()
 
-
     private val IFS: Set<LatexCommand> = LatexIfCommand.entries.toSet()
     private val NEW_DEFINITIONS: Set<LatexCommand> = LatexNewDefinitionCommand.entries.toSet()
 
-
     private val GENERIC: Set<LatexCommand> = LatexGenericRegularCommand.entries.toSet()
 
-    init{
+    init {
         parseFor(GENERIC)
     }
-
 
     private val LISTINGS: Set<LatexCommand> = LatexListingCommand.entries.toSet()
     private val LOREM_IPSUM: Set<LatexCommand> = LatexLoremIpsumCommand.entries.toSet()

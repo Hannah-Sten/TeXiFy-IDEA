@@ -43,7 +43,6 @@ enum class LatexIfCommand(
 }
 
 fun main() {
-
     LatexIfCommand.entries.forEach {
         println("+\"${it.command}\"")
     }

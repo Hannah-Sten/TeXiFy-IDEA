@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.lang.commands
 
-import nl.hannahsten.texifyidea.lang.LatexCommandBuilderScope.required
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.PredefinedCommandSet
 
@@ -89,7 +88,6 @@ object NewLatexTextSymbols : PredefinedCommandSet() {
         symbol("texttwosuperior", "²")
         symbol("textwon", "₩")
         symbol("textyen", "¥")
-
     }
     val euro = buildCommands {
 
@@ -253,7 +251,6 @@ object NewLatexTextSymbols : PredefinedCommandSet() {
         "unit".cmd("options".optional, "unit".required) { "UNIT" }
     }
 
-
     val loremIpsum = buildCommands {
         val list = "list".required(LatexContexts.ListType)
         +"Blinddocument"
@@ -273,5 +270,4 @@ object NewLatexTextSymbols : PredefinedCommandSet() {
         "lipsum".cmd("paragraph range".optional, "sentence range".optional) { "LIPSUM" }
         "lipsum*".cmd("paragraph range".optional, "sentence range".optional) { "LIPSUM_AS_SINGLE_PARAGRAPH" }
     }
-
 }

@@ -45,7 +45,6 @@ object NewLatexGenericCommands : PredefinedCommandSet() {
         "citeyear*".cmd(keys) { "CITEYEAR_STAR" }
         "citeyearpar".cmd(keys) { "CITEYEARPAR" }
 
-
         packageOf("biblatex")
         val prenote = "prenote".optional
         val postnote = "postnote".optional
@@ -129,7 +128,6 @@ object NewLatexGenericCommands : PredefinedCommandSet() {
         "tvolcites".cmd(prenote, volume, page, key) { "TVOLCITES" }
         "volcite".cmd(prenote, volume, page, key) { "VOLCITE" }
         "volcites".cmd(prenote, volume, page, key) { "VOLCITES" }
-
     }
 
     val reference = buildCommands {
@@ -145,7 +143,7 @@ object NewLatexGenericCommands : PredefinedCommandSet() {
 
         +"refname"
 
-        inPackage("cleveref") {
+        underPackage("cleveref") {
             "Cpageref".cmd(labelArg) { "CPAGEREF_CAPITAL" }
             "Cpagerefrange".cmd(label1, label2) { "CPAGEREFRANGE_CAPITAL" }
             "Cref".cmd(labelArg) { "CREF_CAPITAL" }
@@ -163,7 +161,7 @@ object NewLatexGenericCommands : PredefinedCommandSet() {
             "namecrefs".cmd(labelArg) { "NAMECREFS" }
         }
 
-        inPackage("hyperref"){
+        underPackage("hyperref") {
             "Autoref".cmd(labelArg) { "AUTOREF_CAPITAL" }
             "autoref".cmd(labelArg) { "AUTOREF" }
             "fullref".cmd(labelArg) { "FULLREF" }
@@ -175,7 +173,7 @@ object NewLatexGenericCommands : PredefinedCommandSet() {
             "url".cmd(urlArg) { "URL" }
         }
 
-        inPackage("varioref"){
+        underPackage("varioref") {
             "Vref".cmd(labelArg) { "VREF_CAPITAL" }
             "vref".cmd(labelArg) { "VREF" }
             "vrefrange".cmd("start".required, "end".required, "text".optional) { "VREFRANGE" }
@@ -223,7 +221,6 @@ object NewLatexGenericCommands : PredefinedCommandSet() {
         "newabbreviation".cmd(options, "name".required, "short".required, "long".required)
         "newacronym".cmd(options, "name".required, "short".required, "long".required)
         "newglossaryentry".cmd("name".required, "options".required)
-
 
         setCommandContext(LatexContexts.Text)
         "GLS".cmd(options, label, label)
@@ -276,7 +273,6 @@ object NewLatexGenericCommands : PredefinedCommandSet() {
         "glsuserv".cmd(options, label, label)
         "glsuservi".cmd(options, label, label)
 
-
         packageOf("acronym")
 
         val linebreakPenalty = "linebreak penalty".optional
@@ -286,7 +282,6 @@ object NewLatexGenericCommands : PredefinedCommandSet() {
         "acro".cmd(acronym, "short name".optional, "full name".required)
         "acrodef".cmd(acronym, "short name".optional, "full name".required)
         "newacro".cmd(acronym, "short name".optional, "full name".required)
-
 
         setCommandContext(LatexContexts.Text)
         "Ac".cmd(linebreakPenalty, acronym)
@@ -335,10 +330,7 @@ object NewLatexGenericCommands : PredefinedCommandSet() {
         "acsu*".cmd(linebreakPenalty, acronym)
         "iac".cmd(linebreakPenalty, acronym)
         "iac*".cmd(linebreakPenalty, acronym)
-
-
     }
-
 
     val tcolorboxDefinitionCommands = buildCommands {
         packageOf("tcolorbox")
@@ -360,7 +352,6 @@ object NewLatexGenericCommands : PredefinedCommandSet() {
         "ProvideTColorBox".cmd(initOptionsOptional, nameRequired, specificationRequired, optionsRequired) { "Provide a tcolorbox if not defined" }
     }
 
-
     val listingsDefinitionCommands = buildCommands {
         packageOf("listings")
 
@@ -377,11 +368,11 @@ object NewLatexGenericCommands : PredefinedCommandSet() {
     val listings = buildCommands {
         packageOf("listings")
         "lstinputlisting".cmd("options".optional, "filename".required(LatexContexts.SingleFile))
-        inPackage("luacode") {
+        underPackage("luacode") {
             "directlua".cmd("lua code".required)
             "luaexec".cmd("lua code".required)
         }
-        inPackage("pythontex") {
+        underPackage("pythontex") {
             +"py"
             +"pyb"
             +"pyc"
@@ -389,7 +380,6 @@ object NewLatexGenericCommands : PredefinedCommandSet() {
             +"pyv"
         }
     }
-
 
     val mathtools = buildCommands {
         packageOf("mathtools")
@@ -404,9 +394,7 @@ object NewLatexGenericCommands : PredefinedCommandSet() {
         "DeclarePairedDelimiter".cmd(cmd, leftDelimiter, rightDelimiter) { "Declare a paired delimiter" }
         "DeclarePairedDelimiterX".cmd(cmd, numArgs, leftDelimiter, rightDelimiter) { "Declare a paired delimiter with extended arguments" }
         "DeclarePairedDelimiterXPP".cmd(cmd, numArgs, preCode, leftDelimiter, rightDelimiter, postCode, body) { "Declare a paired delimiter with pre and post code" }
-
     }
-
 
     val colorDefinitionCommands = buildCommands {
         setCommandContext(LatexContexts.Preamble)
@@ -467,8 +455,6 @@ object NewLatexGenericCommands : PredefinedCommandSet() {
         +"bf"
         +"bfseries"
         "bibitem".cmd("label".optional, "citekey".required) { "BIBITEM" }
-
-
 
         +"bigskip"
         +"boldmath"
@@ -732,10 +718,8 @@ object NewLatexGenericCommands : PredefinedCommandSet() {
         packageOf("biblatex")
         +"printbibliography"
 
-
-
         packageOf("amsmath")
-        underCmdContext(LatexContexts.Preamble) {
+        underContext(LatexContexts.Preamble) {
             "DeclareMathOperator".cmd("command".required, "operator".required) { "DECLARE_MATH_OPERATOR" }
         }
         "eqref".cmd(labelArg) { "EQREF" }
@@ -747,8 +731,6 @@ object NewLatexGenericCommands : PredefinedCommandSet() {
         packageOf("fontenc")
         symbol("guillemotleft", "«")
         symbol("guillemotright", "»")
-
-
 
         packageOf("mathtools")
         symbol("lparen", "(")
@@ -773,8 +755,6 @@ object NewLatexGenericCommands : PredefinedCommandSet() {
         packageOf("ntheorem")
         "thref".cmd(labelArg) { "THREF" }
 
-
-
         packageOf("fontspec")
         "addfontfeature".cmd("font features".required) { "ADDFONTFEATURE" }
         "addfontfeatures".cmd("font features".required) { "ADDFONTFEATURES" }
@@ -783,10 +763,7 @@ object NewLatexGenericCommands : PredefinedCommandSet() {
         "setmainfont".cmd("font".required, "font features".optional) { "SETMAINFONT" }
         "setmonofont".cmd("font".required, "font features".optional) { "SETMONOFONT" }
         "setsansfont".cmd("font".required, "font features".optional) { "SETSANSFONT" }
-
     }
-
-
 
     val colorCommands = buildCommands {
 
