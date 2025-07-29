@@ -17,8 +17,12 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.search.FilenameIndex
 import com.intellij.psi.search.GlobalSearchScope
+import com.jetbrains.rd.util.concurrentMapOf
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexGraphicsPathProvider.getGraphicsPaths
+import nl.hannahsten.texifyidea.file.ClassFileType
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.file.LatexSourceFileType
+import nl.hannahsten.texifyidea.file.StyleFileType
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SUBFILES
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
@@ -28,6 +32,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.CacheValueTimed
 import nl.hannahsten.texifyidea.util.CacheService
+import nl.hannahsten.texifyidea.util.CacheService.TypedKey
 import nl.hannahsten.texifyidea.util.TexifyProjectCacheService
 import nl.hannahsten.texifyidea.util.expandCommandsOnce
 import nl.hannahsten.texifyidea.util.files.LatexPackageLocation
@@ -103,6 +108,113 @@ fun pathOrNull(pathText: String?): Path? {
     }
 }
 
+class LatexLibraryInfo(
+    val name: String,
+    val location: VirtualFile,
+    val files: Set<VirtualFile>,
+) {
+
+    val isPackage: Boolean
+        get() = name.endsWith(".sty")
+
+    val isClass: Boolean
+        get() = name.endsWith(".cls")
+
+    override fun toString(): String {
+        return "PackageInfo(name='$name', location=${location.path}, files=${files.size})"
+    }
+}
+
+object LatexLibraryStructure{
+    private const val LIBRARY_FILESET_EXPIRATION_TIME = 100 * 60 * 60 * 1000L // 100 hours
+
+    private val libraryFilesetCacheKey: TypedKey<MutableMap<String, LatexLibraryInfo>> = CacheService.createKey()
+
+    private val libraryCommandNameToExt: Map<String, String> = buildMap {
+        put("\\usepackage", ".sty")
+        put("\\RequirePackage", ".sty")
+        put("\\documentclass", ".cls")
+        put("\\LoadClass", ".cls")
+    }
+
+    /**
+     * Stores the files that are referenced by the latex command.
+     */
+    val userDataKeyFileReference = Key.create<
+            CacheValueTimed<
+                    Pair<List<String>, List<Set<VirtualFile>>> // List of pairs of original text and set of files in order
+                    >
+            >("latex.command.lib.reference.files")
+
+    private fun getLibraryName(current: VirtualFile, project: Project): String {
+        val fileName = current.name
+        if (current.fileType == StyleFileType) {
+            val name = NewCommandsIndex.getByName("\\ProvidesPackage", project, current).firstNotNullOfOrNull {
+                it.requiredParameterText(0)
+            } ?: return fileName
+            return "$name.sty"
+        }
+        if (current.fileType == ClassFileType) {
+            val name = NewCommandsIndex.getByName("\\ProvidesClass", project, current).firstNotNullOfOrNull {
+                it.requiredParameterText(0)
+            } ?: return fileName
+            return "$name.cls"
+        }
+        return fileName
+    }
+
+    private fun computePackageFilesets(
+        nameWithExt: String,
+        project: Project,
+        cache: MutableMap<String, LatexLibraryInfo>
+    ): LatexLibraryInfo? {
+        cache[nameWithExt]?.let { return it }
+
+        val path = LatexPackageLocation.getPackageLocation(nameWithExt, project) ?: return null
+        val file = LocalFileSystem.getInstance().findFileByNioFile(path) ?: return null
+        val files = mutableSetOf(file)
+        val commands = NewSpecialCommandsIndex.getPackageIncludes(project, file)
+        for (command in commands) {
+            val packageText = command.requiredParameterText(0) ?: continue
+            val ext = libraryCommandNameToExt[command.name] ?: continue
+            val refTexts = mutableListOf<String>()
+            val refInfos = mutableListOf<Set<VirtualFile>>()
+            for (text in packageText.split(',')) {
+                var name = text.trim()
+                if (name.isEmpty()) continue
+                refTexts.add(name)
+                if (!name.endsWith(ext)) name += ext
+                computePackageFilesets(name, project, cache)?.let {
+                    refInfos.add(setOf(it.location))
+                    files.addAll(it.files)
+                }
+            }
+            command.putUserData(
+                userDataKeyFileReference,
+                CacheValueTimed(refTexts to refInfos, System.currentTimeMillis())
+            )
+        }
+        val info = LatexLibraryInfo(nameWithExt, file, files)
+        cache[nameWithExt] = info
+        return info
+    }
+
+    fun getLibraryInfo(nameWithExt: String, project: Project): LatexLibraryInfo? {
+        val cache = TexifyProjectCacheService.getInstance(project).getOrComputeNow(libraryFilesetCacheKey, LIBRARY_FILESET_EXPIRATION_TIME) { concurrentMapOf() }
+        return computePackageFilesets(nameWithExt, project, cache)
+    }
+
+    fun getLibraryInfo(path: Path, project: Project): LatexLibraryInfo? {
+        if (path.nameCount != 1) return null
+        return getLibraryInfo(path.fileName.pathString, project)
+    }
+
+    fun getPackageInfo(name: String, project: Project): LatexLibraryInfo? {
+        val nameWithExt = if (name.endsWith(".sty")) name else "$name.sty"
+        return getLibraryInfo(nameWithExt, project)
+    }
+}
+
 
 /**
  * A utility object that provides methods to build and manage the fileset structure for LaTeX files.
@@ -119,16 +231,15 @@ object LatexProjectStructure {
     private val expirationTimeInMs: Long
         get() = TexifySettings.getInstance().filesetExpirationTimeMs.toLong()
 
-    private object UserDataKeys {
-        /**
-         * Stores the files that are referenced by the latex command.
-         */
-        val FILE_REFERENCE = Key.create<
-                CacheValueTimed<
-                        Pair<List<String>, List<Set<VirtualFile>>> // List of pairs of original text and set of files in order
-                        >
-                >("latex.command.reference.files")
-    }
+    /**
+     * Stores the files that are referenced by the latex command.
+     */
+    val userDataKeyFileReference = Key.create<
+            CacheValueTimed<
+                    Pair<List<String>, List<Set<VirtualFile>>> // List of pairs of original text and set of files in order
+                    >
+            >("latex.command.reference.files")
+
 
     fun getPossibleRootFiles(project: Project): Set<VirtualFile> {
         if (DumbService.isDumb(project)) return emptySet()
@@ -148,12 +259,22 @@ object LatexProjectStructure {
         return rootFiles
     }
 
+    fun isLatexLibraryFile(file: VirtualFile, project: Project): Boolean {
+        // Check if the file is a library file, e.g. in the texlive distribution
+        val filetype = file.fileType
+        return (filetype == StyleFileType || filetype == ClassFileType || filetype == LatexSourceFileType) &&
+                !ProjectFileIndex.getInstance(project).isInProject(file)
+    }
+
+
     private open class ProjectInfo(
         val project: Project,
         val rootDirs: Set<VirtualFile>,
         val bibInputPaths: Set<VirtualFile>,
         val timestamp: Long = System.currentTimeMillis()
     )
+
+    private fun Path.findVirtualFile(): VirtualFile? = LocalFileSystem.getInstance().findFileByNioFile(this)
 
     /**
      * Temporary information for building a fileset.
@@ -174,12 +295,7 @@ object LatexProjectStructure {
         var luatexPaths: Set<VirtualFile> = emptySet()
 
 
-        companion object {
-
-            private fun Path.findVirtualFile(): VirtualFile? = LocalFileSystem.getInstance().findFileByNioFile(this)
-        }
-
-        private fun nextFile(v: VirtualFile) {
+        private fun processNext(v: VirtualFile) {
             if (files.add(v)) {
                 // new element added, continue building the fileset
                 recursiveBuildFileset(v)
@@ -194,7 +310,7 @@ object LatexProjectStructure {
             for ((paths, refInfo) in elements.zip(refInfoList)) {
                 for (path in paths) {
                     for (file in findFiles(path)) {
-                        nextFile(file)
+                        processNext(file)
                         refInfo.add(file)
                     }
                 }
@@ -322,17 +438,18 @@ object LatexProjectStructure {
                 }
             }
 
-            val refInfoMap: List<MutableSet<VirtualFile>> = List(extractedRefTexts.size) { mutableSetOf() }
+            val refInfos: List<MutableSet<VirtualFile>> = List(extractedRefTexts.size) { mutableSetOf() }
 
             if (commandName in CommandMagic.packageInclusionCommands) {
-                processElementsWithPaths(pathWithExts, refInfoMap) {
+                processElementsWithPaths(pathWithExts, refInfos) {
+                    // TODO
                     LatexPackageLocation.getPackageLocation(it.pathString, info.project)?.findVirtualFile()
                 }
             }
 
             if (commandName in CommandMagic.bibliographyIncludeCommands) {
                 // For bibliography files, we can search in the bib input paths
-                processFilesUnderRootDirs(pathWithExts, refInfoMap, info.bibInputPaths)
+                processFilesUnderRootDirs(pathWithExts, refInfos, info.bibInputPaths)
             }
 
             if (commandName == LatexGenericRegularCommand.EXTERNALDOCUMENT.commandWithSlash) {
@@ -341,13 +458,13 @@ object LatexProjectStructure {
                 // This does not count for building the file set, because the external document is not actually in the fileset, only the label definitions are,
                 // but we still include the files anyway, so that the user can navigate to them.
                 // try to find everywhere in the project
-                processElementsWithPaths0(pathWithExts, refInfoMap) { path ->
+                processElementsWithPaths0(pathWithExts, refInfos) { path ->
                     FilenameIndex.getVirtualFilesByName(path.fileName.pathString, true, info.project.projectSearchScope)
                 }
             }
-            processFilesUnderRootDirs(pathWithExts, refInfoMap, searchDirs)
+            processFilesUnderRootDirs(pathWithExts, refInfos, searchDirs)
 
-            val savedData = extractedRefTexts to refInfoMap
+            val savedData = extractedRefTexts to refInfos
 
             updateOrMergeRefData(command, savedData, info)
         }
@@ -417,10 +534,10 @@ object LatexProjectStructure {
         }
 
         private fun updateOrMergeRefData(command: PsiElement, refInfoMap: Pair<List<String>, List<MutableSet<VirtualFile>>>, info: FilesetProcessor) {
-            val existingRef = command.getUserData(UserDataKeys.FILE_REFERENCE)
+            val existingRef = command.getUserData(userDataKeyFileReference)
             if (existingRef == null || existingRef.timestamp < info.timestamp) {
                 // overwrite the existing reference
-                command.putUserData(UserDataKeys.FILE_REFERENCE, CacheValueTimed(refInfoMap, info.timestamp))
+                command.putUserData(userDataKeyFileReference, CacheValueTimed(refInfoMap, info.timestamp))
             }
             else if (existingRef.timestamp == info.timestamp) {
                 // If the marker is the same, update the files
@@ -435,7 +552,7 @@ object LatexProjectStructure {
                         newFiles[index] + existingFiles[index]
                     }
                 }
-                command.putUserData(UserDataKeys.FILE_REFERENCE, CacheValueTimed(updatedFiles, info.timestamp))
+                command.putUserData(userDataKeyFileReference, CacheValueTimed(updatedFiles, info.timestamp))
             }
             // remark: as it is guaranteed by the cache service that the fileset update will not run in parallel with itself,
             // we can safely update the user data without interference
@@ -693,6 +810,7 @@ object LatexProjectStructure {
         val virtualFile = file.virtualFile ?: return emptySet()
         return getFilesets(project)?.getData(virtualFile)?.relatedFiles ?: setOf(virtualFile)
     }
+    
 
     /**
      * Gets the most recent file reference information for the given command, which is computed during the fileset building process.
@@ -706,7 +824,7 @@ object LatexProjectStructure {
      * @see nl.hannahsten.texifyidea.reference.InputFileReference
      */
     fun commandFileReferenceInfo(command: LatexCommands, project: Project = command.project): Pair<List<String>, List<Set<VirtualFile>>>? {
-        val data = command.getUserData(UserDataKeys.FILE_REFERENCE)
+        val data = command.getUserData(userDataKeyFileReference)
         if (data != null && data.isNotExpired(expirationTimeInMs)) {
             // If the data is already computed and not expired, return it
             return data.value
@@ -722,6 +840,6 @@ object LatexProjectStructure {
         val projectInfo = makePreparation(project)
         buildFilesetFromRoot(root, project, projectInfo)
 
-        return command.getUserData(UserDataKeys.FILE_REFERENCE)?.value
+        return command.getUserData(userDataKeyFileReference)?.value
     }
 }
