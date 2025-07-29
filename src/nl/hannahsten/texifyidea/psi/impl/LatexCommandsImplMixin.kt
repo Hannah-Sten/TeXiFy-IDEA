@@ -78,10 +78,6 @@ abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStu
         // We deal with the command itself, not its parameters
         // and the user is interested in the location of the command definition
         return result.toTypedArray()
-        // TODO: I don't understand "Only create a reference if there is something to resolve to, otherwise autocompletion won't work"
-//        if (definitionReference.multiResolve(false).isNotEmpty()) {
-//            return arrayOf(definitionReference)
-//        }
     }
 
     /**
