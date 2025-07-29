@@ -8,6 +8,7 @@ import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.module.ModuleType
+import com.intellij.openapi.project.IndexNotReadyException
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.psi.search.FileTypeIndex
@@ -84,6 +85,8 @@ fun Project.containsFileOfType(type: FileType): Boolean {
         else {
             throw e
         }
+    } catch (e: IndexNotReadyException) {
+        return false
     }
 }
 

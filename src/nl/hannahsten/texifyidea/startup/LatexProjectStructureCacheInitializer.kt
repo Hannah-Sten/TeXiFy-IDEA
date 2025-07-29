@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.startup
 
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.readAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.ProjectActivity
 import kotlinx.coroutines.Dispatchers
@@ -16,7 +17,10 @@ class LatexProjectStructureCacheInitializer : ProjectActivity {
 
     override suspend fun execute(project: Project) {
         if(ApplicationManager.getApplication().isUnitTestMode) return
-        if(!project.isLatexProject()) return
+        val isLatexProject = readAction {
+            project.isLatexProject()
+        }
+        if(!isLatexProject) return
         withContext(Dispatchers.Default) {
             // Not sure on which thread this is run, run in background to be sure
             LatexPackageLocation.updateLocationWithKpsewhichSuspend(project)
