@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.util.files
 import arrow.atomic.AtomicInt
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
+import nl.hannahsten.texifyidea.index.Fileset
 import nl.hannahsten.texifyidea.index.pathOrNull
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.settings.sdk.TectonicSdk
@@ -21,25 +22,25 @@ import kotlin.io.path.isRegularFile
  */
 object LatexPackageLocation {
 
-    const val EXPIRATION_TIME = 1 * 60 * 60 * 1000L // 1 hour, or any other time that is reasonable to keep the cache around
+    private const val EXPIRATION_TIME = 100 * 60 * 60 * 1000L // 100 hour, or any other time that is reasonable to keep the cache around
 
-    var retries = AtomicInt(0)
+    private var retries = AtomicInt(0)
 
-    val cacheKey = CacheService.createKey<Map<String, Path>>()
+    private val locationCacheKey = CacheService.createKey<Map<String, Path>>()
 
     /**
      * Fill cache with all paths of all files in the LaTeX installation.
      * Note: this can take a long time.
      */
     suspend fun updateLocationWithKpsewhichSuspend(project: Project) {
-        TexifyProjectCacheService.getInstance(project).computeOrSkip(cacheKey, ::computeLocationWithKpsewhich)
+        TexifyProjectCacheService.getInstance(project).computeOrSkip(locationCacheKey, ::computeLocationWithKpsewhich)
     }
 
     /**
      * Fill cache with all paths of all files in the LaTeX installation.
      * Note: this can take a long time.
      */
-    fun computeLocationWithKpsewhich(project: Project): Map<String, Path> {
+    private fun computeLocationWithKpsewhich(project: Project): Map<String, Path> {
         /** Map filename with extension to full path. */
         if(project.isTestProject()) return emptyMap()
         // We will get all search paths that kpsewhich has, expand them and find all files
@@ -94,7 +95,7 @@ object LatexPackageLocation {
         }
         else {
             val cache = TexifyProjectCacheService.getInstance(project).getAndComputeLater(
-                cacheKey, EXPIRATION_TIME, ::computeLocationWithKpsewhich
+                locationCacheKey, EXPIRATION_TIME, ::computeLocationWithKpsewhich
             )
             cache?.get(name)
         }
