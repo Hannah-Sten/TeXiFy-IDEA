@@ -7,7 +7,7 @@ import com.intellij.psi.PsiReference
 import com.intellij.psi.util.elementType
 import com.intellij.util.IncorrectOperationException
 import nl.hannahsten.texifyidea.file.LatexFile
-import nl.hannahsten.texifyidea.reference.LatexEnvironmentBeginReference
+import nl.hannahsten.texifyidea.reference.LatexEnvironmentBeginEndReference
 import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 
@@ -43,10 +43,10 @@ abstract class LatexEnvIdentifierImplMixin(node: ASTNode) : LatexEnvIdentifier, 
         // The environment's definition is resolved by LatexBeginCommand
         // so that we can distinguish from the block or the definition
         if(this.firstParentOfType<LatexEndCommand>(3) != null) {
-            return LatexEnvironmentBeginReference(this)
+            return LatexEnvironmentBeginEndReference(this, toBegin = true)
         }
         if(this.firstParentOfType<LatexBeginCommand>(3) != null) {
-            return LatexEnvironmentBeginReference(this)
+            return LatexEnvironmentBeginEndReference(this, toBegin = false)
         }
 
         return null

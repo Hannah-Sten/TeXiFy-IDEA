@@ -12,7 +12,7 @@ import nl.hannahsten.texifyidea.util.parser.firstParentOfType
  *
  * @author Thomas
  */
-class LatexEnvironmentBeginReference(element: LatexEnvIdentifier) : PsiReferenceBase<LatexEnvIdentifier>(element) {
+class LatexEnvironmentBeginEndReference(element: LatexEnvIdentifier, val toBegin: Boolean) : PsiReferenceBase<LatexEnvIdentifier>(element) {
 
     init {
         rangeInElement = ElementManipulators.getValueTextRange(element)
@@ -24,7 +24,13 @@ class LatexEnvironmentBeginReference(element: LatexEnvIdentifier) : PsiReference
 
     override fun resolve(): PsiElement? {
         // Navigate from the current text in \end, to the text in \begin
-        return element.firstParentOfType(LatexEnvironment::class)?.beginCommand?.envIdentifier
+        val env = element.firstParentOfType(LatexEnvironment::class) ?: return null
+        return if (toBegin) {
+            env.beginCommand.envIdentifier
+        }
+        else {
+            env.endCommand?.envIdentifier
+        }
     }
 
     override fun handleElementRename(newElementName: String): PsiElement {
