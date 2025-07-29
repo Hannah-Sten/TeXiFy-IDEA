@@ -7,7 +7,7 @@ import nl.hannahsten.texifyidea.index.pathOrNull
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.settings.sdk.TectonicSdk
 import nl.hannahsten.texifyidea.util.Log
-import nl.hannahsten.texifyidea.util.ProjectCacheService
+import nl.hannahsten.texifyidea.util.CacheService
 import nl.hannahsten.texifyidea.util.TexifyProjectCacheService
 import nl.hannahsten.texifyidea.util.isTestProject
 import nl.hannahsten.texifyidea.util.runCommand
@@ -25,7 +25,7 @@ object LatexPackageLocation {
 
     var retries = AtomicInt(0)
 
-    val cacheKey = ProjectCacheService.createKey<Map<String, Path>>()
+    val cacheKey = CacheService.createKey<Map<String, Path>>()
 
     /**
      * Fill cache with all paths of all files in the LaTeX installation.

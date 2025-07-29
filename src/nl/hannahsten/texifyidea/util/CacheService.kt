@@ -1,15 +1,13 @@
 package nl.hannahsten.texifyidea.util
 
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.components.service
-import com.intellij.openapi.project.Project
-import com.jetbrains.rd.util.ConcurrentHashMap
 import com.jetbrains.rd.util.concurrentMapOf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KClass
+
 
 class CacheValueTimed<T>(
     val value: T,
@@ -25,9 +23,9 @@ class CacheValueTimed<T>(
 }
 
 /**
- * Provides a cache service for a project that allows storing and retrieving values with expiration.
+ * Provides a cache service for a project or an application that allows storing and retrieving values with expiration.
  */
-abstract class ProjectCacheService(val project: Project, private val coroutineScope: CoroutineScope) {
+abstract class CacheService<P>(val param: P, private val coroutineScope: CoroutineScope) {
 
     interface TypedKey<T>
 
@@ -39,7 +37,7 @@ abstract class ProjectCacheService(val project: Project, private val coroutineSc
             return PlainTypedKey()
         }
 
-        private fun <T> createKeyFromFunction(f: suspend (Project) -> T?): TypedKey<T> {
+        private fun <P,T> createKeyFromFunction(f: suspend (P) -> T?): TypedKey<T> {
             return TypedKeyFromFunction(f::class)
         }
 
@@ -103,16 +101,16 @@ abstract class ProjectCacheService(val project: Project, private val coroutineSc
      * The computation is done immediately in the current thread.
      * If multiple threads call this method with the same key simultaneously, multiple computations may occur, so [f] must be thread-safe.
      */
-    fun <T> getOrComputeNow(key: TypedKey<T>, expirationInMs: Long = 1000L, f: (Project) -> T): T {
+    fun <T> getOrComputeNow(key: TypedKey<T>, expirationInMs: Long = 1000L, f: (P) -> T): T {
         val cachedValue = getCachedValueOrNull(key, expirationInMs)
         if (cachedValue != null) return cachedValue.value
 
-        val result = f(project)
+        val result = f(param)
         put(key, result)
         return result
     }
 
-    fun <T> getOrComputeNow(expirationInMs: Long = 1000L, f: (Project) -> T): T {
+    fun <T> getOrComputeNow(expirationInMs: Long = 1000L, f: (P) -> T): T {
         return getOrComputeNow(createKeyFromFunction(f), expirationInMs, f)
     }
 
@@ -128,7 +126,7 @@ abstract class ProjectCacheService(val project: Project, private val coroutineSc
     fun <S, T : S & Any> getAndComputeLater(
         key: TypedKey<T>,
         expirationInMs: Long = 1000L,
-        instantResult: S, suspendComputation: suspend (Project) -> T?
+        instantResult: S, suspendComputation: suspend (P) -> T?
     ): S {
         val cachedValue = getTimed(key)
         if(cachedValue == null || cachedValue.isExpired(expirationInMs)) {
@@ -138,15 +136,15 @@ abstract class ProjectCacheService(val project: Project, private val coroutineSc
         return cachedValue?.value ?: instantResult // Return the instant result while computation is in progress
     }
 
-    fun <T : Any> getAndComputeLater(expirationInMs: Long = 1000L, instantResult: T, f: suspend (Project) -> T?): T {
+    fun <T : Any> getAndComputeLater(expirationInMs: Long = 1000L, instantResult: T, f: suspend (P) -> T?): T {
         return getAndComputeLater(createKeyFromFunction(f), expirationInMs, instantResult, f)
     }
 
-    fun <T : Any> getAndComputeLater(expirationInMs: Long = 1000L, f: suspend (Project) -> T?): T? {
+    fun <T : Any> getAndComputeLater(expirationInMs: Long = 1000L, f: suspend (P) -> T?): T? {
         return getAndComputeLater(createKeyFromFunction(f), expirationInMs, null, f)
     }
 
-    fun <T : Any> getAndComputeLater(key: TypedKey<T>, expirationInMs: Long = 1000L, f: suspend (Project) -> T?): T? {
+    fun <T : Any> getAndComputeLater(key: TypedKey<T>, expirationInMs: Long = 1000L, f: suspend (P) -> T?): T? {
         return getAndComputeLater(key, expirationInMs, null, f)
     }
 
@@ -159,7 +157,7 @@ abstract class ProjectCacheService(val project: Project, private val coroutineSc
      * @param suspendComputation the computation to run. It should return a value of type T or null if no value is available.
      */
     fun <T : Any> scheduleComputation(
-        key: TypedKey<T>, suspendComputation: suspend (Project) -> T?
+        key: TypedKey<T>, suspendComputation: suspend (P) -> T?
     ) {
         coroutineScope.launch {
             computeOrSkip(key, suspendComputation)
@@ -175,11 +173,11 @@ abstract class ProjectCacheService(val project: Project, private val coroutineSc
      * It is guaranteed that [suspendComputation] will not run in parallel with itself for the same key.
      */
     suspend fun <T : Any> computeOrSkip(
-        key: TypedKey<T>, suspendComputation: suspend (Project) -> T?
+        key: TypedKey<T>, suspendComputation: suspend (P) -> T?
     ) {
         val computing = getComputingState(key)
         computing.tryLockOrSkip {
-            suspendComputation(project)?.also { put(key, it) }
+            suspendComputation(param)?.also { put(key, it) }
         }
     }
 
@@ -190,21 +188,11 @@ abstract class ProjectCacheService(val project: Project, private val coroutineSc
      * It is guaranteed that [suspendComputation] will not run in parallel with itself for the same key.
      */
     suspend fun <T : Any> ensureRefresh(
-        key: TypedKey<T>, suspendComputation: suspend (Project) -> T?
+        key: TypedKey<T>, suspendComputation: suspend (P) -> T?
     ): T? {
         val computing = getComputingState(key)
         computing.withLock {
-            return suspendComputation(project)?.also { put(key, it) }
-        }
-    }
-}
-
-@Service(Service.Level.PROJECT)
-class TexifyProjectCacheService(project: Project, coroutineScope: CoroutineScope) : ProjectCacheService(project, coroutineScope) {
-
-    companion object {
-        fun getInstance(project: Project): TexifyProjectCacheService {
-            return project.service()
+            return suspendComputation(param)?.also { put(key, it) }
         }
     }
 }
