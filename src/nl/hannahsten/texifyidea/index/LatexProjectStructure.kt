@@ -296,7 +296,7 @@ object LatexProjectStructure {
         var luatexPaths: Set<VirtualFile> = emptySet()
 
 
-        fun buildFileset(): Fileset {
+        fun createFileset(): Fileset {
             // sort the files to ensure a consistent order
             return Fileset(root, files, libraries)
         }
@@ -314,8 +314,7 @@ object LatexProjectStructure {
         }
 
         private inline fun processElementsWithPaths0(
-            elements: List<Sequence<Path>>,
-            refInfoList: List<MutableSet<VirtualFile>>,
+            elements: List<Sequence<Path>>, refInfoList: List<MutableSet<VirtualFile>>,
             crossinline findFiles: (Path) -> Collection<VirtualFile>
         ) {
             for ((paths, refInfo) in elements.zip(refInfoList)) {
@@ -329,11 +328,10 @@ object LatexProjectStructure {
         }
 
         private inline fun processElementsWithPaths(
-            elements: List<Sequence<Path>>,
-            refInfoMap: List<MutableSet<VirtualFile>>,
+            elements: List<Sequence<Path>>, refInfoList: List<MutableSet<VirtualFile>>,
             crossinline findFile: (Path) -> VirtualFile?
         ) {
-            for ((paths, refInfo) in elements.zip(refInfoMap)) {
+            for ((paths, refInfo) in elements.zip(refInfoList)) {
                 for (path in paths) {
                     findFile(path)?.let { file ->
                         processNext(file)
@@ -344,8 +342,7 @@ object LatexProjectStructure {
         }
 
         private fun processLibraryReferences(
-            elements: List<Sequence<Path>>,
-            refInfoList: List<MutableSet<VirtualFile>>
+            elements: List<Sequence<Path>>, refInfoList: List<MutableSet<VirtualFile>>
         ) {
             for ((paths, refInfo) in elements.zip(refInfoList)) {
                 for (path in paths) {
@@ -359,9 +356,9 @@ object LatexProjectStructure {
         }
 
         private fun processFilesUnderRootDirs(
-            elements: List<Sequence<Path>>, refInfoMap: List<MutableSet<VirtualFile>>, rootDirs: Collection<VirtualFile>,
+            elements: List<Sequence<Path>>, refInfoList: List<MutableSet<VirtualFile>>, rootDirs: Collection<VirtualFile>,
         ) {
-            processElementsWithPaths(elements, refInfoMap) { path ->
+            processElementsWithPaths(elements, refInfoList) { path ->
                 if (path.isAbsolute) path.findVirtualFile()
                 else {
                     val pathString = path.invariantSeparatorsPathString
@@ -561,19 +558,19 @@ object LatexProjectStructure {
             info.currentRootDir = oldRoot
         }
 
-        private fun updateOrMergeRefData(command: PsiElement, refInfoMap: Pair<List<String>, List<MutableSet<VirtualFile>>>, info: FilesetProcessor) {
+        private fun updateOrMergeRefData(command: PsiElement, refInfoList: Pair<List<String>, List<MutableSet<VirtualFile>>>, info: FilesetProcessor) {
             val existingRef = command.getUserData(userDataKeyFileReference)
             if (existingRef == null || existingRef.timestamp < info.timestamp) {
                 // overwrite the existing reference
-                command.putUserData(userDataKeyFileReference, CacheValueTimed(refInfoMap, info.timestamp))
+                command.putUserData(userDataKeyFileReference, CacheValueTimed(refInfoList, info.timestamp))
             }
             else if (existingRef.timestamp == info.timestamp) {
                 // If the marker is the same, update the files
                 val existingFiles = existingRef.value.second
-                val (names, newFiles) = refInfoMap
+                val (names, newFiles) = refInfoList
                 val updatedFiles = if (newFiles.size != existingFiles.size) {
                     // this should not happen as the parsing process is the same, but just in case
-                    refInfoMap
+                    refInfoList
                 }
                 else {
                     names to List(newFiles.size) { index ->
@@ -584,13 +581,6 @@ object LatexProjectStructure {
             }
             // remark: as it is guaranteed by the cache service that the fileset update will not run in parallel with itself,
             // we can safely update the user data without interference
-        }
-
-
-        private fun getDirectReferredFiles(
-            file: VirtualFile
-        ) {
-
         }
 
         /**
@@ -733,7 +723,7 @@ object LatexProjectStructure {
         }
 
         // final processing
-        val allFilesets = allFilesetInfo.map { it.buildFileset() }.toSet()
+        val allFilesets = allFilesetInfo.map { it.createFileset() }.toSet()
         val mapping: Map<VirtualFile, MutableSet<Fileset>> = buildMap {
             allFilesets.forEach {
                 it.files.forEach { file ->
