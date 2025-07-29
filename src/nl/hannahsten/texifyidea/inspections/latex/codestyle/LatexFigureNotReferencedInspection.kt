@@ -21,8 +21,6 @@ import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
 import java.util.*
 
 open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
-    // What's the point of this inspection?
-    // It is very likely that a figure is not referenced, but may be referenced in the future.
 
     override val inspectionGroup: InsightGroup = InsightGroup.LATEX
 
@@ -42,7 +40,6 @@ open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
                 descriptors.add(createDescriptor(manager, label, isOntheFly) ?: continue)
             }
         }
-
         return descriptors
     }
 
@@ -70,5 +67,3 @@ private val LatexCommands.labelName: String?
 
 private val LatexCommands.referencedLabelNames: List<String>
     get() = requiredParameterText(0)?.split(",") ?: emptyList()
-
-fun dummy() = Unit
