@@ -63,8 +63,9 @@ import kotlin.io.path.pathString
  * When resolving subfiles, we must use the relative path from the root file rather than the file that contains the input command.
  */
 data class Fileset(
-    val files: Set<VirtualFile>,
     val root: VirtualFile,
+    val files: Set<VirtualFile>,
+    val libraries: Set<String>,
 )
 
 /**
@@ -83,7 +84,9 @@ data class FilesetData(
     /**
      * The scope that contains all `.tex` files.
      */
-    val texFileScope: GlobalSearchScope
+    val texFileScope: GlobalSearchScope,
+
+    val libraries: Set<String>
 )
 
 /**
@@ -112,6 +115,7 @@ class LatexLibraryInfo(
     val name: String,
     val location: VirtualFile,
     val files: Set<VirtualFile>,
+    val dependencies: Set<String>,
 ) {
 
     val isPackage: Boolean
@@ -125,8 +129,8 @@ class LatexLibraryInfo(
     }
 }
 
-object LatexLibraryStructure{
-    private const val LIBRARY_FILESET_EXPIRATION_TIME = 100 * 60 * 60 * 1000L // 100 hours
+object LatexLibraryStructure {
+    private const val LIBRARY_FILESET_EXPIRATION_TIME = Long.MAX_VALUE // never expire unless invalidated manually
 
     private val libraryFilesetCacheKey: TypedKey<MutableMap<String, LatexLibraryInfo>> = CacheService.createKey()
 
@@ -136,15 +140,6 @@ object LatexLibraryStructure{
         put("\\documentclass", ".cls")
         put("\\LoadClass", ".cls")
     }
-
-    /**
-     * Stores the files that are referenced by the latex command.
-     */
-    val userDataKeyFileReference = Key.create<
-            CacheValueTimed<
-                    Pair<List<String>, List<Set<VirtualFile>>> // List of pairs of original text and set of files in order
-                    >
-            >("latex.command.lib.reference.files")
 
     private fun getLibraryName(current: VirtualFile, project: Project): String {
         val fileName = current.name
@@ -166,13 +161,16 @@ object LatexLibraryStructure{
     private fun computePackageFilesets(
         nameWithExt: String,
         project: Project,
-        cache: MutableMap<String, LatexLibraryInfo>
+        cache: MutableMap<String, LatexLibraryInfo>,
+        processing : MutableSet<String>
     ): LatexLibraryInfo? {
         cache[nameWithExt]?.let { return it }
+        if(!processing.add(nameWithExt)) return null // Prevent infinite recursion
 
         val path = LatexPackageLocation.getPackageLocation(nameWithExt, project) ?: return null
         val file = LocalFileSystem.getInstance().findFileByNioFile(path) ?: return null
         val files = mutableSetOf(file)
+        val dependencies = mutableSetOf(nameWithExt)
         val commands = NewSpecialCommandsIndex.getPackageIncludes(project, file)
         for (command in commands) {
             val packageText = command.requiredParameterText(0) ?: continue
@@ -180,28 +178,30 @@ object LatexLibraryStructure{
             val refTexts = mutableListOf<String>()
             val refInfos = mutableListOf<Set<VirtualFile>>()
             for (text in packageText.split(',')) {
-                var name = text.trim()
-                if (name.isEmpty()) continue
-                refTexts.add(name)
-                if (!name.endsWith(ext)) name += ext
-                computePackageFilesets(name, project, cache)?.let {
+                val trimmed = text.trim()
+                if (trimmed.isEmpty()) continue
+                val name = trimmed + ext
+                if(name in dependencies) continue
+                computePackageFilesets(name, project, cache, processing)?.let {
+                    refTexts.add(trimmed)
                     refInfos.add(setOf(it.location))
                     files.addAll(it.files)
+                    dependencies.addAll(it.dependencies)
                 }
             }
             command.putUserData(
-                userDataKeyFileReference,
-                CacheValueTimed(refTexts to refInfos, System.currentTimeMillis())
+                LatexProjectStructure.userDataKeyFileReference,
+                CacheValueTimed(refTexts to refInfos)
             )
         }
-        val info = LatexLibraryInfo(nameWithExt, file, files)
+        val info = LatexLibraryInfo(nameWithExt, file, files, dependencies)
         cache[nameWithExt] = info
         return info
     }
 
     fun getLibraryInfo(nameWithExt: String, project: Project): LatexLibraryInfo? {
         val cache = TexifyProjectCacheService.getInstance(project).getOrComputeNow(libraryFilesetCacheKey, LIBRARY_FILESET_EXPIRATION_TIME) { concurrentMapOf() }
-        return computePackageFilesets(nameWithExt, project, cache)
+        return computePackageFilesets(nameWithExt, project, cache, mutableSetOf())
     }
 
     fun getLibraryInfo(path: Path, project: Project): LatexLibraryInfo? {
@@ -209,9 +209,9 @@ object LatexLibraryStructure{
         return getLibraryInfo(path.fileName.pathString, project)
     }
 
-    fun getPackageInfo(name: String, project: Project): LatexLibraryInfo? {
-        val nameWithExt = if (name.endsWith(".sty")) name else "$name.sty"
-        return getLibraryInfo(nameWithExt, project)
+    fun invalidateLibraryCache(project: Project) {
+        TexifyProjectCacheService.getInstance(project).getOrComputeNow(libraryFilesetCacheKey, LIBRARY_FILESET_EXPIRATION_TIME) { concurrentMapOf() }
+            .clear()
     }
 }
 
@@ -290,16 +290,27 @@ object LatexProjectStructure {
          */
         var currentRootDir: VirtualFile? = root.parent
         val files: MutableSet<VirtualFile> = mutableSetOf(root)
+        val libraries: MutableSet<String> = mutableSetOf()
         var declareGraphicsExtensions: Set<String>? = null
         var graphicsSuffix: Set<Path> = emptySet()
         var luatexPaths: Set<VirtualFile> = emptySet()
 
+
+        fun buildFileset(): Fileset {
+            // sort the files to ensure a consistent order
+            return Fileset(root, files, libraries)
+        }
 
         private fun processNext(v: VirtualFile) {
             if (files.add(v)) {
                 // new element added, continue building the fileset
                 recursiveBuildFileset(v)
             }
+        }
+
+        private fun addLibrary(info: LatexLibraryInfo) {
+            files.addAll(info.files)
+            libraries.addAll(info.dependencies)
         }
 
         private inline fun processElementsWithPaths0(
@@ -322,8 +333,28 @@ object LatexProjectStructure {
             refInfoMap: List<MutableSet<VirtualFile>>,
             crossinline findFile: (Path) -> VirtualFile?
         ) {
-            processElementsWithPaths0(elements, refInfoMap) { path ->
-                setOfNotNull(findFile(path))
+            for ((paths, refInfo) in elements.zip(refInfoMap)) {
+                for (path in paths) {
+                    findFile(path)?.let { file ->
+                        processNext(file)
+                        refInfo.add(file)
+                    }
+                }
+            }
+        }
+
+        private fun processLibraryReferences(
+            elements: List<Sequence<Path>>,
+            refInfoList: List<MutableSet<VirtualFile>>
+        ) {
+            for ((paths, refInfo) in elements.zip(refInfoList)) {
+                for (path in paths) {
+                    val libraryInfo = LatexLibraryStructure.getLibraryInfo(path, project)
+                    if (libraryInfo != null) {
+                        addLibrary(libraryInfo)
+                        refInfo.add(libraryInfo.location)
+                    }
+                }
             }
         }
 
@@ -441,10 +472,7 @@ object LatexProjectStructure {
             val refInfos: List<MutableSet<VirtualFile>> = List(extractedRefTexts.size) { mutableSetOf() }
 
             if (commandName in CommandMagic.packageInclusionCommands) {
-                processElementsWithPaths(pathWithExts, refInfos) {
-                    // TODO
-                    LatexPackageLocation.getPackageLocation(it.pathString, info.project)?.findVirtualFile()
-                }
+                processLibraryReferences(pathWithExts, refInfos)
             }
 
             if (commandName in CommandMagic.bibliographyIncludeCommands) {
@@ -705,7 +733,7 @@ object LatexProjectStructure {
         }
 
         // final processing
-        val allFilesets = allFilesetInfo.map { Fileset(it.files, it.root) }.toSet()
+        val allFilesets = allFilesetInfo.map { it.buildFileset() }.toSet()
         val mapping: Map<VirtualFile, MutableSet<Fileset>> = buildMap {
             allFilesets.forEach {
                 it.files.forEach { file ->
@@ -717,9 +745,10 @@ object LatexProjectStructure {
         val dataMapping = mapping.mapValues { (file, filesets) ->
             val allFiles = filesets.flatMapTo(mutableSetOf(file)) { it.files }
             val texFiles = allFiles.filter { it.fileType == LatexFileType }
+            val allLibs = filesets.flatMapTo(mutableSetOf()) { it.libraries }
             val scope = GlobalSearchScope.filesWithLibrariesScope(project, allFiles)
             val texScope = GlobalSearchScope.filesWithoutLibrariesScope(project, texFiles) // only .tex files in the project, do not search in libraries
-            FilesetData(filesets, allFiles, scope, texScope)
+            FilesetData(filesets, allFiles, scope, texScope, allLibs)
         }
 
         val elapsedTime = System.currentTimeMillis() - startTime
@@ -744,9 +773,10 @@ object LatexProjectStructure {
 
     /**
      * Calls to update the filesets for the given project.
-     * This will ensure that the filesets are up-to-date and recomputed if necessary.
+     * This will ensure that the filesets are recomputed and up-to-date.
      */
     suspend fun updateFilesetsSuspend(project: Project) {
+        LatexLibraryStructure.invalidateLibraryCache(project)
         TexifyProjectCacheService.getInstance(project).ensureRefresh(CACHE_KEY, ::buildFilesetsSuspend)
     }
 
@@ -810,7 +840,7 @@ object LatexProjectStructure {
         val virtualFile = file.virtualFile ?: return emptySet()
         return getFilesets(project)?.getData(virtualFile)?.relatedFiles ?: setOf(virtualFile)
     }
-    
+
 
     /**
      * Gets the most recent file reference information for the given command, which is computed during the fileset building process.
