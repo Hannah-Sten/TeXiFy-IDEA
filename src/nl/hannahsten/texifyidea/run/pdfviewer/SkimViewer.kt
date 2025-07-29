@@ -21,7 +21,6 @@ object SkimViewer : SystemPdfViewer("Skim", "skim") {
         if (pdfFilePath == null || pdfFilePath != pdfPath) {
             pdfFilePath = pdfPath
         }
-        // TODO: Implement a way to open the pdf file in Skim, e.g. using GeneralCommandLine.
     }
 
     /**
