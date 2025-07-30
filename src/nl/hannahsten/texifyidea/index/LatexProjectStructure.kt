@@ -31,8 +31,8 @@ import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.CacheValueTimed
-import nl.hannahsten.texifyidea.util.CacheService
-import nl.hannahsten.texifyidea.util.CacheService.TypedKey
+import nl.hannahsten.texifyidea.util.GenericCacheService
+import nl.hannahsten.texifyidea.util.GenericCacheService.TypedKey
 import nl.hannahsten.texifyidea.util.TexifyProjectCacheService
 import nl.hannahsten.texifyidea.util.expandCommandsOnce
 import nl.hannahsten.texifyidea.util.files.LatexPackageLocation
@@ -66,7 +66,28 @@ data class Fileset(
     val root: VirtualFile,
     val files: Set<VirtualFile>,
     val libraries: Set<String>,
-)
+){
+    // cache the hash code to avoid recomputing it
+    private val hash: Int = run{
+        var result = root.hashCode()
+        result = 31 * result + files.hashCode()
+        result = 31 * result + libraries.hashCode()
+        result
+    }
+
+    override fun hashCode(): Int {
+        return hash
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Fileset) return false
+        if (root != other.root) return false
+        if (files != other.files) return false
+        if (libraries != other.libraries) return false
+        return true
+    }
+}
 
 /**
  * Integrated descriptions of all filesets that are related to a specific file.
@@ -132,7 +153,7 @@ class LatexLibraryInfo(
 object LatexLibraryStructure {
     private const val LIBRARY_FILESET_EXPIRATION_TIME = Long.MAX_VALUE // never expire unless invalidated manually
 
-    private val libraryFilesetCacheKey: TypedKey<MutableMap<String, LatexLibraryInfo>> = CacheService.createKey()
+    private val libraryFilesetCacheKey: TypedKey<MutableMap<String, LatexLibraryInfo>> = GenericCacheService.createKey()
 
     private val libraryCommandNameToExt: Map<String, String> = buildMap {
         put("\\usepackage", ".sty")
@@ -746,7 +767,7 @@ object LatexProjectStructure {
         return LatexProjectFilesets(allFilesets, dataMapping)
     }
 
-    private val CACHE_KEY = CacheService.createKey<LatexProjectFilesets>()
+    private val CACHE_KEY = GenericCacheService.createKey<LatexProjectFilesets>()
 
     private suspend fun buildFilesetsSuspend(project: Project): LatexProjectFilesets {
         return smartReadAction(project) {

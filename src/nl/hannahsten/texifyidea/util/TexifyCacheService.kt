@@ -9,7 +9,7 @@ import kotlinx.coroutines.CoroutineScope
 
 
 @Service
-class TexifyApplicationCacheService(coroutineScope: CoroutineScope) : CacheService<Application>(ApplicationManager.getApplication(), coroutineScope) {
+class TexifyApplicationCacheService(coroutineScope: CoroutineScope) : GenericCacheService<Application>(ApplicationManager.getApplication(), coroutineScope) {
 
     companion object {
         fun getInstance(): TexifyApplicationCacheService {
@@ -19,7 +19,7 @@ class TexifyApplicationCacheService(coroutineScope: CoroutineScope) : CacheServi
 }
 
 @Service(Service.Level.PROJECT)
-class TexifyProjectCacheService(project: Project, coroutineScope: CoroutineScope) : CacheService<Project>(project, coroutineScope) {
+class TexifyProjectCacheService(project: Project, coroutineScope: CoroutineScope) : GenericCacheService<Project>(project, coroutineScope) {
 
     companion object {
         fun getInstance(project: Project): TexifyProjectCacheService {

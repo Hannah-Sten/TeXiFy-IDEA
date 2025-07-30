@@ -18,7 +18,6 @@ object PredefinedCommands {
         }
 
 
-
     val packageToCommands: Map<String, List<NewLatexCommand>> =
         allCommands.groupBy { it.dependency }.mapValues { it.value }
 
