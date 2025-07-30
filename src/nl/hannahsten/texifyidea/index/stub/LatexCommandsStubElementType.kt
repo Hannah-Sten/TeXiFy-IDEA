@@ -4,7 +4,10 @@ import com.intellij.psi.stubs.*
 import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import nl.hannahsten.texifyidea.index.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexParameter
+import nl.hannahsten.texifyidea.psi.contentText
 import nl.hannahsten.texifyidea.psi.impl.LatexCommandsImpl
+import nl.hannahsten.texifyidea.util.parser.forEachDirectChildTyped
 import nl.hannahsten.texifyidea.util.parser.toStringMap
 import java.io.IOException
 import java.util.regex.Pattern
@@ -20,21 +23,45 @@ class LatexCommandsStubElementType(debugName: String) :
         return LatexCommandsImpl(latexCommandsStub, this)
     }
 
-    override fun createStub(latexCommands: LatexCommands, parent: StubElement<*>?): LatexCommandsStub {
+    override fun createStub(latexCommands: LatexCommands, parent: StubElement<*>): LatexCommandsStub {
         val commandToken = latexCommands.commandToken.text
-        val requiredParameters = latexCommands.requiredParametersText()
-        val optionalParameters: Map<String, String> =
+        val parameterContents = mutableListOf<LatexParameterStub>()
+        latexCommands.forEachDirectChildTyped<LatexParameter> {
+            val text = it.contentText()
+            val type = if (it.requiredParam != null) LatexParameterStub.REQUIRED
+            else if (it.optionalParam != null) LatexParameterStub.OPTIONAL else return@forEachDirectChildTyped
+            parameterContents.add(LatexParameterStub(type, text))
+        }
+        val optionalParametersMap: Map<String, String> =
             latexCommands.getOptionalParameterMap().toStringMap()
         return LatexCommandsStubImpl(
-            parent!!, this,
-            commandToken,
-            requiredParameters,
-            optionalParameters
+            parent, this,
+            commandToken, parameterContents, optionalParametersMap
         )
     }
 
     // Should equal externalIdPrefix from registration in index.xml plus field name in LatexStubElementTypes
     override fun getExternalId() = "texify.latex." + super.toString()
+
+    private fun writeParameters(
+        parameters: List<LatexParameterStub>,
+        output: StubOutputStream
+    ) {
+        output.writeVarInt(parameters.size)
+        parameters.forEach { parameter ->
+            output.writeByte(parameter.type)
+            output.writeUTFFast(parameter.content)
+        }
+    }
+
+    private fun readParameters(input: StubInputStream): List<LatexParameterStub> {
+        val size = input.readVarInt()
+        return (0 until size).map {
+            val type = input.readByte().toInt()
+            val content = input.readUTFFast()
+            LatexParameterStub(type, content)
+        }
+    }
 
     @Throws(IOException::class)
     override fun serialize(
@@ -42,24 +69,22 @@ class LatexCommandsStubElementType(debugName: String) :
         stubOutputStream: StubOutputStream
     ) {
         stubOutputStream.writeName(latexCommandsStub.name)
-        stubOutputStream.writeName(serialiseRequired(latexCommandsStub))
-        stubOutputStream.writeName(serialiseOptional(latexCommandsStub))
+        writeParameters(latexCommandsStub.parameters, stubOutputStream)
+        stubOutputStream.writeName(serialiseOptionalMap(latexCommandsStub))
     }
 
     @Throws(IOException::class)
     override fun deserialize(stubInputStream: StubInputStream, parent: StubElement<*>): LatexCommandsStub {
         val name = stubInputStream.readName().toString()
-        val required = deserialiseList(stubInputStream.readName().toString())
+        val parameters = readParameters(stubInputStream)
         val optional = deserializeMap(stubInputStream.readName().toString())
         return LatexCommandsStubImpl(
-            parent, this,
-            name,
-            required,
-            optional
+            parent, this, name, parameters, optional
         )
     }
 
     private fun deserializeMap(fromString: String): Map<String, String> {
+        if(fromString.isEmpty()) return emptyMap()
         val keyValuePairs = deserialiseList(fromString)
         return keyValuePairs.filter { it.isNotEmpty() }.associate {
             val parts = it.split(KEY_VALUE_SEPARATOR)
@@ -88,12 +113,8 @@ class LatexCommandsStubElementType(debugName: String) :
             .collect(Collectors.toList())
     }
 
-    private fun serialiseRequired(stub: LatexCommandsStub): String {
-        return java.lang.String.join(LIST_ELEMENT_SEPARATOR.pattern(), stub.requiredParams)
-    }
-
-    private fun serialiseOptional(stub: LatexCommandsStub): String {
-        val keyValuePairs = stub.optionalParams.map { "${it.key}=${it.value}" }
+    private fun serialiseOptionalMap(stub: LatexCommandsStub): String {
+        val keyValuePairs = stub.optionalParamsMap.map { "${it.key}=${it.value}" }
         return java.lang.String.join(LIST_ELEMENT_SEPARATOR.pattern(), keyValuePairs)
     }
 

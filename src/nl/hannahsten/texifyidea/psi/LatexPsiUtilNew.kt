@@ -259,10 +259,14 @@ fun LatexCommandWithParams.getParameterTexts(): Sequence<LatexParameterText> {
     return getParameterTexts0()
 }
 
-fun LatexRequiredParam.contentText(): String {
-    var text = this.text
-    if(text.length >= 2) {
-        text = text.substring(1, text.length - 1)
+fun LatexParameter.contentText(): String {
+    return stripContentText(text)
+}
+
+private fun stripContentText(text: String): String {
+    var stripped = text.trim()
+    if (stripped.length >= 2) {
+        stripped = stripped.substring(1, stripped.length - 1)
     }
-    return text.trim()
+    return stripped.trim()
 }

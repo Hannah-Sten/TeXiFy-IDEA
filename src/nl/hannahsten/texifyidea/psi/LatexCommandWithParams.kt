@@ -62,7 +62,7 @@ interface LatexCommandWithParams : LatexComposite {
      */
     fun requiredParametersText(): List<String> {
         return parameterList.mapNotNull {
-            it.requiredParam?.contentText()
+            if(it.requiredParam != null) it.contentText() else null
         }
     }
 
