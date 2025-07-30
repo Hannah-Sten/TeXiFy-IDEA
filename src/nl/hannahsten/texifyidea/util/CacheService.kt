@@ -159,6 +159,7 @@ abstract class CacheService<P>(val param: P, private val coroutineScope: Corouti
     fun <T : Any> scheduleComputation(
         key: TypedKey<T>, suspendComputation: suspend (P) -> T?
     ) {
+        if(getComputingState(key).isLocked) return // do not launch a new coroutine if there is already a computation in progress
         coroutineScope.launch {
             computeOrSkip(key, suspendComputation)
         }
