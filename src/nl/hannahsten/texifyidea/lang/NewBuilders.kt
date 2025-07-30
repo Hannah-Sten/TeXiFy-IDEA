@@ -116,6 +116,14 @@ class LatexCommandBuilderScope : LatexBuilderDSLScope {
         return LArgument.optional(this, ctx, description)
     }
 
+    operator fun LatexContext.unaryPlus(): LContextIntro {
+        return LContextIntro.add(this)
+    }
+
+    operator fun LatexContext.unaryMinus(): LContextIntro {
+        return LContextIntro.remove(this)
+    }
+
     companion object {
 
         fun buildCommands(action: LatexCommandBuilderScope.() -> Unit): List<NewLatexCommand> {

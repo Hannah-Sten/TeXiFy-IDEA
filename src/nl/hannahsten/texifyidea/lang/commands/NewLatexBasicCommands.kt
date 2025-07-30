@@ -45,9 +45,9 @@ object NewLatexBasicCommands : PredefinedCommandSet() {
         val numArgs = LArgument.optional("num args", LatexContexts.Numeric)
         val defaultOptional = "default".optional
         // The following context can be deeper
-        val definition = required("def", LClearContext)
-        val begdefRequired = required("begdef", LClearContext)
-        val enddefRequired = required("enddef", LClearContext)
+        val definition = required("def", +LatexContexts.InsideDefinition)
+        val begdef = required("begdef", +LatexContexts.InsideDefinition)
+        val enddef = required("enddef", +LatexContexts.InsideDefinition)
 
         "catcode".cmd("char".required) { "Set category code for a character" }
 
@@ -62,8 +62,8 @@ object NewLatexBasicCommands : PredefinedCommandSet() {
         "renewcommand".cmd(command, numArgs, defaultOptional, definition) { "Redefine an existing command" }
         "renewcommand*".cmd(command, numArgs, defaultOptional, definition) { "Redefine an existing command (starred variant)" }
 
-        "newenvironment".cmd(envName, numArgs, defaultOptional, begdefRequired, enddefRequired) { "Define a new environment" }
-        "renewenvironment".cmd(envName, numArgs, defaultOptional, begdefRequired, enddefRequired) { "Redefine an existing environment" }
+        "newenvironment".cmd(envName, numArgs, defaultOptional, begdef, enddef) { "Define a new environment" }
+        "renewenvironment".cmd(envName, numArgs, defaultOptional, begdef, enddef) { "Redefine an existing environment" }
         "newtheorem".cmd(
             envName, "numberedlike".optional, "caption".required(LatexContexts.Text), "within".optional
         ) { "Define a new theorem-like environment" }
@@ -77,8 +77,8 @@ object NewLatexBasicCommands : PredefinedCommandSet() {
         "providecommandx".cmd(command, numArgs, defaultOptional, definition) { "Provide a command with extended args" }
         "DeclareRobustCommandx".cmd(command, numArgs, defaultOptional, definition) { "Declare a robust command with extended args" }
 
-        "newenvironmentx".cmd(command, numArgs, defaultOptional, begdefRequired, enddefRequired) { "Define a new environment with extended args" }
-        "renewenvironmentx".cmd(command, numArgs, defaultOptional, begdefRequired, enddefRequired) { "Redefine an environment with extended args" }
+        "newenvironmentx".cmd(command, numArgs, defaultOptional, begdef, enddef) { "Define a new environment with extended args" }
+        "renewenvironmentx".cmd(command, numArgs, defaultOptional, begdef, enddef) { "Redefine an environment with extended args" }
     }
 
     val basicFileInputCommands = buildCommands {

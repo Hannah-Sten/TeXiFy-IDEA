@@ -27,6 +27,18 @@ sealed interface LContextIntro {
     fun applyTo(outerCtx: LContextSet): LContextSet
 
     companion object {
+
+        fun add(ctx: LatexContext): LContextIntro {
+            return LModifyContext(
+                toAdd = setOf(ctx), toRemove = emptySet()
+            )
+        }
+
+        fun remove(ctx: LatexContext): LContextIntro {
+            return LModifyContext(
+                toAdd = emptySet(), toRemove = setOf(ctx)
+            )
+        }
     }
 }
 

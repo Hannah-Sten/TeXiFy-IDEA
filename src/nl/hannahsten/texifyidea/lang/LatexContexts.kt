@@ -39,6 +39,11 @@ object LatexContexts {
 
     val Preamble = LatexContextBase("preamble")
 
+    /**
+     * The definition of a command, such as `...` in `\newcommand{\mycmd}{...}`.
+     */
+    val InsideDefinition = LatexContextBase("definition")
+
     val LabelDefinition = LatexContextBase("label.def")
     val LabelReference = LatexContextBase("label.ref")
 
