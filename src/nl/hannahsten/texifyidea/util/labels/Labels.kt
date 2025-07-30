@@ -10,29 +10,6 @@ import nl.hannahsten.texifyidea.index.NewLabelsIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
 
 /**
- * Finds all the defined labels in the fileset of the file.
- *
- * @return A set containing all labels that are defined in the fileset of the given file.
- */
-fun PsiFile.findLatexAndBibtexLabelStringsInFileSet(): Set<String> {
-    val fileset = LatexProjectStructure.getFilesetScopeFor(this)
-    return NewLabelsIndex.getAllLabels(fileset) + findBibtexLabelsInFileSetAsSequence()
-}
-
-/**
- * Finds all the defined latex labels in the fileset of the file.
- * May contain duplicates.
- *
- * @return A set containing all labels that are defined in the fileset of the given file.
- */
-fun PsiFile.findLatexLabelStringsInFileSetAsSequence(): Sequence<String> {
-    val fileset = LatexProjectStructure.getFilesetScopeFor(this)
-    return NewLabelsIndex.getAllLabels(fileset).asSequence()
-//    val externalDocumentCommand = this.findExternalDocumentCommand()
-//    return findLatexLabelingElementsInFileSet().map { it.extractLabelName(externalDocumentCommand) }
-}
-
-/**
  * All labels in the fileset.
  * May contain duplicates.
  */
@@ -47,26 +24,6 @@ fun PsiFile.findLatexLabelingElementsInFileSet(): Sequence<PsiElement> {
 /*
  * Filtering sequence or collection
  */
-
-/**
- * Finds all the labeling commands within the collection of PsiElements.
- *
- * @return A collection of all label commands.
- */
-fun Collection<PsiElement>.findLatexCommandsLabels(project: Project): Collection<LatexCommands> {
-    val commandNames = project.getLabelDefinitionCommands()
-    return filterIsInstance<LatexCommands>().filter { commandNames.contains(it.name) }
-}
-
-/**
- * Finds all the labeling commands within the sequence of PsiElements.
- *
- * @return A sequence of all label commands.
- */
-fun Sequence<PsiElement>.findLatexCommandsLabels(project: Project): Sequence<LatexCommands> {
-    val commandNames = project.getLabelDefinitionCommands()
-    return filterIsInstance<LatexCommands>().filter { commandNames.contains(it.name) }
-}
 
 object Labels {
 
