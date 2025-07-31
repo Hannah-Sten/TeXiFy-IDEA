@@ -69,7 +69,7 @@ class LatexLabelParameterReference(element: LatexParameterText) : PsiReferenceBa
                 if (label.startsWith(info.labelPrefix)) {
                     val labelWithoutPrefix = label.removePrefix(info.labelPrefix)
                     val scopes = info.files.map { LatexProjectStructure.getFilesetScopeFor(it, project, onlyTexFiles = true) }
-                    elements = elements + NewLabelsIndex.getByName(labelWithoutPrefix, GlobalSearchScope.union(scopes))
+                    elements += NewLabelsIndex.getByName(labelWithoutPrefix, GlobalSearchScope.union(scopes))
                 }
             }
 
