@@ -13,7 +13,7 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.findDirectory
-import com.intellij.openapi.vfs.findFile
+import com.intellij.openapi.vfs.findFileOrDirectory
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.search.FilenameIndex
@@ -285,7 +285,7 @@ object LatexProjectStructure {
 
     private open class ProjectInfo(
         val project: Project,
-        val rootDirs: Set<VirtualFile>,
+        var rootDirs: Set<VirtualFile>,
         val bibInputPaths: Set<VirtualFile>,
         val timestamp: Long = System.currentTimeMillis()
     )
@@ -424,6 +424,10 @@ object LatexProjectStructure {
             return result
         }
 
+        private fun resolveSubfolder(root: VirtualFile, siblingRelativePath: String): VirtualFile? {
+            return runCatching { root.parent?.findDirectory(siblingRelativePath) }.getOrNull()
+        }
+
         private fun findReferredFiles(
             command: LatexCommands, file: VirtualFile,
         ) {
@@ -486,11 +490,25 @@ object LatexProjectStructure {
                     } ?: emptySequence()
                 }
             }
+            val refInfos: List<MutableSet<VirtualFile>> = List(extractedRefTexts.size) { mutableSetOf() }
 
             var searchDirs = info.rootDirs
 
-            if (commandName == LatexGenericRegularCommand.TIKZFIG.commandWithSlash || commandName == LatexGenericRegularCommand.CTIKZFIG.commandWithSlash) {
-                searchDirs = searchDirs + searchDirs.mapNotNull { it.findDirectory("figures") }
+            when (commandName) {
+                LatexGenericRegularCommand.TIKZFIG.commandWithSlash, LatexGenericRegularCommand.CTIKZFIG.commandWithSlash -> {
+                    searchDirs = searchDirs + searchDirs.mapNotNull { runCatching { it.findDirectory("figures") }.getOrNull() }
+                }
+                in CommandMagic.absoluteImportCommands -> {
+                    command.requiredParameterText(0)?.let {
+                        currentRootDir = resolveSubfolder(root, it)
+                    }
+                }
+
+                in CommandMagic.relativeImportCommands -> {
+                    command.requiredParameterText(0)?.let {
+                        currentRootDir = resolveSubfolder(file, it)
+                    }
+                }
             }
 
             if (dependency in CommandMagic.graphicPackages && info.graphicsSuffix.isNotEmpty()) {
@@ -501,41 +519,37 @@ object LatexProjectStructure {
                 }
             }
 
-            val refInfos: List<MutableSet<VirtualFile>> = List(extractedRefTexts.size) { mutableSetOf() }
             var processPlainFilePath = true
 
             if (commandName in CommandMagic.packageInclusionCommands) {
                 processLibraryReferences(pathWithExts, refInfos)
             }
-
             if (commandName in CommandMagic.bibliographyIncludeCommands) {
                 // For bibliography files, we can search in the bib input paths
                 processFilesUnderRootDirs(pathWithExts, refInfos, info.bibInputPaths)
             }
-
             if (commandName == LatexGenericRegularCommand.EXTERNALDOCUMENT.commandWithSlash) {
                 // \externaldocument uses the .aux file in the output directory, we are only interested in the source file,
                 // but it can be anywhere (because no relative path will be given, as in the output directory everything will be on the same level).
                 // This does not count for building the file set, because the external document is not actually in the fileset, only the label definitions are,
-                // but we still include the files anyway, so that the user can navigate to them.
                 for ((paths, refInfo) in pathWithExts.zip(refInfos)) {
                     for (path in paths) {
                         // try to find everywhere in the project
                         FilenameIndex.getVirtualFilesByName(path.fileName.pathString, true, info.project.projectSearchScope).forEach { file ->
                             refInfo.add(file)
                         }
-                        // we do not add the file to the fileset, as it is not actually in the fileset,
-                        // but we still leave a reference to it
                     }
                 }
-                processPlainFilePath = false // do not process the plain file path, as it is not a file in the fileset
+                // we do not add the file to the fileset, as it is not actually in the fileset,
+                // but we still leave a reference to it
+                processPlainFilePath = false // do not process more
             }
             if (processPlainFilePath)
                 processFilesUnderRootDirs(pathWithExts, refInfos, searchDirs)
 
             val savedData = extractedRefTexts to refInfos
 
-            updateOrMergeRefData(command, savedData, info)
+            updateOrMergeRefData(command, savedData)
         }
 
         private fun addGraphicsPathsfo(file: VirtualFile) {
@@ -602,8 +616,9 @@ object LatexProjectStructure {
             info.currentRootDir = oldRoot
         }
 
-        private fun updateOrMergeRefData(command: PsiElement, refInfoList: Pair<List<String>, List<MutableSet<VirtualFile>>>, info: FilesetProcessor) {
+        private fun updateOrMergeRefData(command: PsiElement, refInfoList: Pair<List<String>, List<MutableSet<VirtualFile>>>) {
             val existingRef = command.getUserData(userDataKeyFileReference)
+            val info = this
             if (existingRef == null || existingRef.timestamp < info.timestamp) {
                 // overwrite the existing reference
                 command.putUserData(userDataKeyFileReference, CacheValueTimed(refInfoList, info.timestamp))
@@ -723,7 +738,7 @@ object LatexProjectStructure {
             // Inputs can be either a map "inline" -> String or file name
             // Actually it can also be just a single file name, but then we don't need all this gymnastics
             inputs.filterIsInstance<String>().mapNotNull {
-                tomlFile.parent?.findFile("src/$it")
+                tomlFile.parent?.findFileOrDirectory("src/$it")
             }.toSet()
         }
         return filesets
