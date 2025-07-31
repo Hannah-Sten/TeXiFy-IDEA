@@ -39,7 +39,7 @@ class LatexPackageSubdirectoryInspection : TexifyInspectionBase() {
         val descriptors = mutableListOf<ProblemDescriptor>()
 
         for (command in commands) {
-            val parameter = command.requiredParametersText().firstOrNull() ?: continue
+            val parameter = command.requiredParameterText(0) ?: continue
             val lastSlashIndex = parameter.indexOfLast { it == '/' }
             val providedDir = parameter.removeRange(max(0, lastSlashIndex), parameter.length)
 

@@ -9,7 +9,7 @@ import nl.hannahsten.texifyidea.structure.EditableHintPresentation
  */
 class LatexSubSubSectionPresentation(sectionCommand: LatexCommands) : EditableHintPresentation {
 
-    private val subSubSectionName = sectionCommand.requiredParametersText().firstOrNull() ?: "Unnamed subsubsection"
+    private val subSubSectionName = sectionCommand.requiredParameterText(0) ?: "Unnamed subsubsection"
     private var hint = ""
 
     override fun getPresentableText() = subSubSectionName

@@ -17,7 +17,7 @@ class LatexParagraphPresentation(paragraphCommand: LatexCommands) : EditableHint
             this.paragraphName = ""
         }
         else {
-            this.paragraphName = paragraphCommand.requiredParametersText().firstOrNull() ?: "Unnamed paragraph"
+            this.paragraphName = paragraphCommand.requiredParameterText(0) ?: "Unnamed paragraph"
         }
     }
 

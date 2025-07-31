@@ -1,55 +1,14 @@
 package nl.hannahsten.texifyidea.util.files
 
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import kotlin.math.min
-
-// /**
-// * This method will try to find a file when the 'import' package is used, which means that including files have to be searched for import paths.
-// *
-// * Note that this method cannot use other methods that rely on the fileset, because this method is used in building the fileset.
-// */
-// fun searchFileByImportPaths(command: LatexCommands): PsiFile? {
-//    // Check if import commands are used (do this now, to only search for import paths when needed)
-//    if (isImportPackageUsed(command.project)) return null
-//
-//    // Use references to get filenames, take care not to resolve the references because this method is called during resolving them so that would be a loop. This line will take a very long time for large projects, as it has to do a lot of recursive navigation in the psi tree in order to get the text required for building the reference keys.
-//    val references = command.references.filterIsInstance<InputFileReference>()
-//
-//    getParentDirectoryByImportPaths(command).forEach { parentDir ->
-//        for (reference in references) {
-//            val fileName = reference.key
-//            for (extension in reference.extensions) {
-//                parentDir.findFileByRelativePath(fileName.appendExtension(extension))?.let {
-//                    return it.psiFile(command.project)
-//                }
-//            }
-//        }
-//    }
-//
-//    return null
-// }
-
-fun isImportPackageUsed(project: Project): Boolean {
-    val allRelativeImportCommands = NewCommandsIndex.getByNames(
-        CommandMagic.relativeImportCommands,
-        project,
-    )
-    if (allRelativeImportCommands.isNotEmpty()) return true
-    val allAbsoluteImportCommands = NewCommandsIndex.getByNames(
-        CommandMagic.absoluteImportCommands,
-        project,
-    )
-    return allAbsoluteImportCommands.isNotEmpty()
-}
 
 /**
  * When the 'import' package is used, get all possible parent directories where a file included by the current command could hide.
@@ -59,7 +18,7 @@ fun getParentDirectoryByImportPaths(command: LatexCommands): List<VirtualFile> {
 
     val relativeSearchPaths = mutableListOf<String>()
     if (command.name in CommandMagic.relativeImportCommands) {
-        relativeSearchPaths.add(command.requiredParametersText().firstOrNull() ?: "")
+        relativeSearchPaths.add(command.requiredParameterText(0) ?: "")
     }
     else {
         relativeSearchPaths.add("")
@@ -73,7 +32,7 @@ fun getParentDirectoryByImportPaths(command: LatexCommands): List<VirtualFile> {
  */
 fun checkForAbsolutePath(command: LatexCommands): VirtualFile? {
     if (command.name in CommandMagic.absoluteImportCommands) {
-        val absolutePath = command.requiredParametersText().firstOrNull()
+        val absolutePath = command.requiredParameterText(0)
         if (absolutePath != null) {
             // No need to search further, because using an absolute path overrides the rest
             LocalFileSystem.getInstance().findFileByPath(absolutePath)?.let { return it }
@@ -129,7 +88,7 @@ fun findRelativeSearchPathsForImportCommands(command: LatexCommands, givenRelati
             // Each of the search paths gets prepended by one of the new relative paths found
             for (oldPath in relativeSearchPaths) {
                 if (includingCommand.name in CommandMagic.relativeImportCommands) {
-                    newSearchPaths.add(includingCommand.requiredParametersText().firstOrNull() + oldPath)
+                    newSearchPaths.add(includingCommand.requiredParameterText(0) + oldPath)
                 }
             }
 

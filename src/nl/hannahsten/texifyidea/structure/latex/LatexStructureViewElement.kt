@@ -39,7 +39,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
     val docClass: String
         get() {
             return NewCommandsIndex.getByName(LatexGenericRegularCommand.DOCUMENTCLASS.commandWithSlash, element.containingFile).firstNotNullOfOrNull {
-                it.requiredParametersText().firstOrNull()
+                it.requiredParameterText(0)
             } ?: "article"
         }
 
