@@ -10,12 +10,6 @@ import java.util.concurrent.atomic.AtomicBoolean
 // Due to the update method being called many times, we need to limit the number of updates requested
 var isUpdatingIncludeAliases = AtomicBoolean(false)
 
-fun updateAndGetIncludeCommands(project: Project): Set<String> {
-    // For performance reasons, do not wait until the update (which requires index access) is done
-//    updateIncludeCommandsAliasesAsync(project)
-    return CommandMagic.allFileIncludeCommands.map { CommandManager.getAliases(it) }.flatten().toSet()
-}
-
 fun updateIncludeCommandsAliasesAsync(project: Project) {
     if (!isUpdatingIncludeAliases.getAndSet(true)) {
         // Don't run with progress indicator, because this takes a short time (a few tenths) and runs in practice on every letter typed

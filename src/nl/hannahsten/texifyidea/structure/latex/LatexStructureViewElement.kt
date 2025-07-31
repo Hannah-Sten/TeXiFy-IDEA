@@ -5,7 +5,7 @@ import com.intellij.ide.util.treeView.smartTree.SortableTreeElement
 import com.intellij.ide.util.treeView.smartTree.TreeElement
 import com.intellij.navigation.ItemPresentation
 import com.intellij.navigation.NavigationItem
-import com.intellij.openapi.application.smartReadAction
+import com.intellij.openapi.roots.ProjectFileIndex
 import com.intellij.psi.*
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
@@ -22,8 +22,6 @@ import nl.hannahsten.texifyidea.structure.latex.SectionNumbering.DocumentClass
 import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommandsNoUpdate
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
-import nl.hannahsten.texifyidea.util.runInBackgroundWithoutProgress
-import nl.hannahsten.texifyidea.util.updateAndGetIncludeCommands
 import java.util.*
 
 /**
@@ -86,10 +84,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         val commands = element.traverseCommands()
         val treeElements = ArrayList<LatexStructureViewCommandElement>()
 
-        val includeCommands = updateAndGetIncludeCommands(element.project)
         val labelingCommands = getLabelDefinitionCommandsNoUpdate()
-
-        val cachedFileInclusions = Cache.includedFiles.mapKeys { it.key.element }
 
         // Add sectioning.
         val sections = mutableListOf<LatexStructureViewCommandElement>()
@@ -111,40 +106,32 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
                     addAtCurrentSectionLevel(sections, treeElements, newElement)
                 }
 
-                in includeCommands -> {
-                    cachedFileInclusions.getOrDefault(command, null)?.let { includedFiles ->
-                        for (filePointer in includedFiles) {
-                            val psiFile = filePointer.element ?: continue
-                            if (BibtexFileType == psiFile.fileType) {
-                                newElement.addChild(BibtexStructureViewElement(psiFile))
-                            }
-                            else if (LatexFileType == psiFile.fileType || StyleFileType == psiFile.fileType) {
-                                newElement.addChild(LatexStructureViewElement(psiFile))
+                else -> {
+                    var includedFiles = InputFileReference.getIncludedFiles(command)
+                    if (!TexifySettings.getInstance().showPackagesInStructureView) {
+                        includedFiles = includedFiles.filter {
+                            it.virtualFile?.fileType == LatexFileType || it.virtualFile?.fileType == BibtexFileType
+                        }
+                    }
+                    if (includedFiles.isNotEmpty()) {
+                        for (psiFile in includedFiles) {
+                            when (psiFile.virtualFile?.fileType) {
+                                LatexFileType ->
+                                    newElement.addChild(LatexStructureViewElement(psiFile))
+                                BibtexFileType ->
+                                    newElement.addChild(BibtexStructureViewElement(psiFile))
+
+                                StyleFileType, ClassFileType -> {
+                                    val inProject = runCatching { ProjectFileIndex.getInstance(element.project).isInProject(psiFile.virtualFile) }
+                                        .getOrDefault(false)
+                                    if (inProject) // let us do not show the style/class files that are not in the project, or the view will be cluttered
+                                        newElement.addChild(LatexStructureViewElement(psiFile))
+                                }
                             }
                         }
+                        newElement.isFileInclude = true
                         addAtCurrentSectionLevel(sections, treeElements, newElement)
                     }
-                }
-            }
-        }
-
-        // This can take a long time (a minute for a large file), but it is not crucial for the structure view, so we get the info in the background.
-        // This function may be called for every editor action, so cache this as well to reduce cpu usage
-        val includeCommandsElements = commands.filter { it.name in includeCommands }
-        if (includeCommandsElements.count() != Cache.includedFiles.size) {
-            runInBackgroundWithoutProgress {
-                smartReadAction(element.project) {
-                    val showPackages = TexifySettings.getInstance().showPackagesInStructureView
-                    val newIncludes = includeCommandsElements.associate {
-                        var allIncludeFiles = InputFileReference.getIncludedFiles(it)
-                        if(!showPackages) {
-                            allIncludeFiles = allIncludeFiles.filter { it.name.endsWith(".tex") || it.name.endsWith(".bib") }
-                        }
-                        Pair(it.createSmartPointer(), allIncludeFiles.map { it.createSmartPointer() })
-                    }
-                    // Clear cache to avoid it becoming outdated too much
-                    Cache.includedFiles.clear()
-                    Cache.includedFiles.putAll(newIncludes)
                 }
             }
         }
