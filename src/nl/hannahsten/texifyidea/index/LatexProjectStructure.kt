@@ -32,8 +32,7 @@ import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.CacheValueTimed
-import nl.hannahsten.texifyidea.util.CacheService
-import nl.hannahsten.texifyidea.util.CacheService.TypedKey
+import nl.hannahsten.texifyidea.util.GenericCacheService
 import nl.hannahsten.texifyidea.util.TexifyProjectCacheService
 import nl.hannahsten.texifyidea.util.contentSearchScope
 import nl.hannahsten.texifyidea.util.expandCommandsOnce
@@ -152,7 +151,7 @@ class LatexLibraryInfo(
 object LatexLibraryStructure {
     private const val LIBRARY_FILESET_EXPIRATION_TIME = Long.MAX_VALUE // never expire unless invalidated manually
 
-    private val libraryFilesetCacheKey: TypedKey<MutableMap<String, LatexLibraryInfo>> = CacheService.createKey()
+    private val libraryFilesetCacheKey: GenericCacheService.TypedKey<MutableMap<String, LatexLibraryInfo>> = GenericCacheService.createKey()
 
     private val libraryCommandNameToExt: Map<String, String> = buildMap {
         put("\\usepackage", ".sty")
@@ -794,7 +793,7 @@ object LatexProjectStructure {
         return LatexProjectFilesets(allFilesets, dataMapping)
     }
 
-    private val CACHE_KEY = CacheService.createKey<LatexProjectFilesets>()
+    private val CACHE_KEY = GenericCacheService.createKey<LatexProjectFilesets>()
 
     private suspend fun buildFilesetsSuspend(project: Project): LatexProjectFilesets {
         return smartReadAction(project) {

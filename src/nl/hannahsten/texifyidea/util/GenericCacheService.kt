@@ -22,9 +22,98 @@ class CacheValueTimed<T>(
 }
 
 /**
+ * Tries to lock the mutex and runs the action if successful.
+ * If the mutex is already locked, it skips the action.
+ */
+suspend inline fun Mutex.tryLockOrSkip(action: suspend () -> Unit) {
+    if (!tryLock()) return
+    try {
+        action()
+    }
+    finally {
+        unlock()
+    }
+}
+
+abstract class AbstractCacheServiceBase<K : Any, V> {
+    protected val caches: MutableMap<K, CacheValueTimed<V>> = concurrentMapOf()
+    protected val computingState = ConcurrentHashMap<K, Mutex>()
+
+    protected fun getComputingState(key: K): Mutex {
+        return computingState.computeIfAbsent(key) { Mutex() }
+    }
+
+    protected fun putValue(key: K, value: V) {
+        caches[key] = CacheValueTimed(value)
+    }
+
+    protected fun getTimedValue(key: K): CacheValueTimed<V>? {
+        return caches[key]
+    }
+}
+
+abstract class AbstractBackgroundCacheService<K : Any, V : Any>(private val coroutineScope: CoroutineScope) : AbstractCacheServiceBase<K, V>() {
+
+    protected abstract suspend fun computeValue(key: K): V?
+
+    /**
+     * Calls to compute a value and updates the cache if the computation is successful.
+     * If there is already a computation in progress for the same key, it will not wait for it to finish and will skip the computation.
+     *
+     */
+    protected suspend fun computeOrSkip(key: K) {
+        val computing = getComputingState(key)
+        computing.tryLockOrSkip {
+            computeValue(key)?.also { putValue(key, it) }
+        }
+    }
+
+    /**
+     * Schedules a computation to be run later in a coroutine.
+     * If the computation is already running, nothing happens.
+     *
+     */
+    protected fun scheduleComputation(key: K) {
+        if (getComputingState(key).isLocked) return // do not launch a new coroutine if there is already a computation in progress
+        coroutineScope.launch {
+            computeOrSkip(key)
+        }
+    }
+
+    protected fun getAndComputeLater(key: K, expirationInMs: Long = 1000L): V? {
+        val cachedValue = caches[key]
+        if (cachedValue != null && cachedValue.isNotExpired(expirationInMs)) {
+            return cachedValue.value
+        }
+        // If the value is not cached or expired, schedule the computation
+        scheduleComputation(key)
+        return cachedValue?.value
+    }
+
+    protected fun getAndComputeLater(key: K, expirationInMs: Long, defaultValue: V): V {
+        return getAndComputeLater(key, expirationInMs) ?: defaultValue
+    }
+
+    protected suspend fun refreshAll(keys: Collection<K>) {
+        for (key in keys) {
+            val computing = getComputingState(key)
+            computing.withLock {
+                computeValue(key)?.also { putValue(key, it) }
+            }
+        }
+    }
+
+    protected fun scheduleRefreshAll(keys: Collection<K> = caches.keys.toSet()) {
+        coroutineScope.launch {
+            refreshAll(keys)
+        }
+    }
+}
+
+/**
  * Provides a cache service for a project or an application that allows storing and retrieving values with expiration.
  */
-abstract class CacheService<P>(val param: P, private val coroutineScope: CoroutineScope) {
+abstract class GenericCacheService<P>(val param: P, private val coroutineScope: CoroutineScope) : AbstractCacheServiceBase<GenericCacheService.TypedKey<*>, Any?>() {
 
     interface TypedKey<T>
 
@@ -39,23 +128,7 @@ abstract class CacheService<P>(val param: P, private val coroutineScope: Corouti
         private fun <P, T> createKeyFromFunction(f: suspend (P) -> T?): TypedKey<T> {
             return TypedKeyFromFunction(f::class)
         }
-
-        /**
-         * Tries to lock the mutex and runs the action if successful.
-         * If the mutex is already locked, it skips the action.
-         */
-        private suspend inline fun Mutex.tryLockOrSkip(action: suspend () -> Unit) {
-            if(!tryLock()) return
-            try {
-                action()
-            } finally {
-                unlock()
-            }
-        }
     }
-
-    protected val caches: MutableMap<TypedKey<*>, CacheValueTimed<*>> = concurrentMapOf()
-    protected val computingState = ConcurrentHashMap<TypedKey<*>, Mutex>()
 
     /**
      * Puts a value in the cache with the given key instantly.
@@ -82,10 +155,6 @@ abstract class CacheService<P>(val param: P, private val coroutineScope: Corouti
      */
     fun <T : Any> getOrNull(key: TypedKey<T>): T? {
         return getTimed(key)?.value
-    }
-
-    private fun getComputingState(key: TypedKey<*>): Mutex {
-        return computingState.computeIfAbsent(key) { Mutex() }
     }
 
     private fun <T> getCachedValueOrNull(key: TypedKey<T>, expirationInMs: Long): CacheValueTimed<T>? {
@@ -128,7 +197,7 @@ abstract class CacheService<P>(val param: P, private val coroutineScope: Corouti
         instantResult: S, suspendComputation: suspend (P) -> T?
     ): S {
         val cachedValue = getTimed(key)
-        if(cachedValue == null || cachedValue.isExpired(expirationInMs)) {
+        if (cachedValue == null || cachedValue.isExpired(expirationInMs)) {
             // If the value is not cached or expired, schedule the computation
             scheduleComputation(key, suspendComputation)
         }
@@ -158,7 +227,7 @@ abstract class CacheService<P>(val param: P, private val coroutineScope: Corouti
     fun <T : Any> scheduleComputation(
         key: TypedKey<T>, suspendComputation: suspend (P) -> T?
     ) {
-        if(getComputingState(key).isLocked) return // do not launch a new coroutine if there is already a computation in progress
+        if (getComputingState(key).isLocked) return // do not launch a new coroutine if there is already a computation in progress
         coroutineScope.launch {
             computeOrSkip(key, suspendComputation)
         }
