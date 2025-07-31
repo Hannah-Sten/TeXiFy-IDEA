@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.psi
 
 import nl.hannahsten.texifyidea.util.parser.forEachDirectChild
+import nl.hannahsten.texifyidea.util.parser.forEachDirectChildTyped
 import nl.hannahsten.texifyidea.util.parser.toStringMap
 
 /**
@@ -62,7 +63,7 @@ interface LatexCommandWithParams : LatexComposite {
      */
     fun requiredParametersText(): List<String> {
         return parameterList.mapNotNull {
-            if(it.requiredParam != null) it.contentText() else null
+            if (it.requiredParam != null) it.contentText() else null
         }
     }
 
@@ -75,6 +76,17 @@ interface LatexCommandWithParams : LatexComposite {
      */
     fun requiredParameterText(idx: Int): String? {
         return requiredParametersText().getOrNull(idx)
+    }
+
+    fun optionalParameterText(idx: Int): String? {
+        var pos = 0
+        forEachDirectChildTyped<LatexParameter> { param ->
+            if (param.optionalParam != null) {
+                if (pos == idx) return param.contentText()
+                pos++
+            }
+        }
+        return null
     }
 
     fun getOptionalParameterMap(): Map<LatexOptionalKeyValKey, LatexKeyValValue?>

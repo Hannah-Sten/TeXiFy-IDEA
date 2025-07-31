@@ -7,7 +7,6 @@ import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.index.NewBibtexEntryIndex
 import nl.hannahsten.texifyidea.index.NewLabelsIndex
-import nl.hannahsten.texifyidea.psi.LatexCommands
 
 /**
  * All labels in the fileset.

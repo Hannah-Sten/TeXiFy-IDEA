@@ -14,6 +14,7 @@ import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.traverseCommands
+import nl.hannahsten.texifyidea.reference.LatexLabelParameterReference
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
@@ -66,7 +67,8 @@ open class LatexUnresolvedReferenceInspection : TexifyInspectionBase() {
 
                 // The cleveref package allows empty items to customize enumerations
                 if (part.isEmpty() && (command.name == LatexGenericRegularCommand.CREF.cmd || command.name == LatexGenericRegularCommand.CREF_CAPITAL.cmd)) continue
-                if (NewLabelsIndex.existsByName(part, project, filesetScope)) continue
+                if (NewLabelsIndex.existsByName(part, project, filesetScope)) continue // a simple check
+                if(LatexLabelParameterReference.multiResolve(part, file).isNotEmpty()) continue
                 if (NewBibtexEntryIndex.existsByName(part, project, filesetScope)) continue
                 // If there is no label with this required label parameter value
                 // We have to subtract from the total length, because we do not know whether optional

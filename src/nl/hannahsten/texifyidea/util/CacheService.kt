@@ -8,7 +8,6 @@ import kotlinx.coroutines.sync.withLock
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KClass
 
-
 class CacheValueTimed<T>(
     val value: T,
     val timestamp: Long = System.currentTimeMillis(),
@@ -37,7 +36,7 @@ abstract class CacheService<P>(val param: P, private val coroutineScope: Corouti
             return PlainTypedKey()
         }
 
-        private fun <P,T> createKeyFromFunction(f: suspend (P) -> T?): TypedKey<T> {
+        private fun <P, T> createKeyFromFunction(f: suspend (P) -> T?): TypedKey<T> {
             return TypedKeyFromFunction(f::class)
         }
 

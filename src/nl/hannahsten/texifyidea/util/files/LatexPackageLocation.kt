@@ -3,7 +3,6 @@ package nl.hannahsten.texifyidea.util.files
 import arrow.atomic.AtomicInt
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
-import nl.hannahsten.texifyidea.index.Fileset
 import nl.hannahsten.texifyidea.index.pathOrNull
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.settings.sdk.TectonicSdk
