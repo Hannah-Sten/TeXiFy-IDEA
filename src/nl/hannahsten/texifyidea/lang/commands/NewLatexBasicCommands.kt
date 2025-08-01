@@ -5,12 +5,82 @@ import nl.hannahsten.texifyidea.lang.LArgument.Companion.required
 import nl.hannahsten.texifyidea.lang.LClearContext
 import nl.hannahsten.texifyidea.lang.PredefinedCommandSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.lang.NewLatexCommand
 
 object NewLatexBasicCommands : PredefinedCommandSet() {
 
-    private val classArgument = required("class", LatexContexts.ClassName)
-    private val packageArg = required("package", LatexContexts.PackageNames)
-    private val texFileArg = required("tex file", LatexContexts.SingleTexFile)
+
+    val primitives = buildCommands {
+        val envArg = required("environment", LatexContexts.Identifier)
+        "begin".cmd(envArg)
+        "end".cmd(envArg)
+
+
+        underContext(LatexContexts.Nothing) { // The primitive commands will never be suggested for autocompletion.
+            "begingroup".cmd { "Begin a group" }
+            "endgroup".cmd { "End a group" }
+
+            "catcode".cmd("char".required) { "Set category code for a character" }
+            // the following primitive commands can not be totally covered by the command context
+            val paramMacro = required("macro", LatexContexts.ControlSequence)
+            val paramDef = required("definition", LatexContexts.InsideDefinition)
+            +"def" // \def\cmd#1#2...#9{content}, too complex to handle in the command context
+            "let".cmd(paramMacro, paramDef) { "LaTex primitive let" }
+            "edef".cmd(paramMacro, paramDef) { "LaTex primitive edef" }
+            "gdef".cmd(paramMacro, paramDef) { "LaTex primitive gdef" }
+            "xdef".cmd(paramMacro, paramDef) { "LaTex primitive xdef" }
+            "futurelet".cmd(paramMacro, paramDef) { "LaTex primitive futurelet" }
+            "relax".cmd { "Do nothing" }
+        }
+
+    }
+
+
+    val definitionCommands = buildCommands {
+        setCommandContext(LatexContexts.Preamble)
+
+        val command = required("cmd", LatexContexts.ControlSequence)
+        val envName = required("name", LatexContexts.Identifier)
+        val numArgs = LArgument.optional("num args", LatexContexts.Numeric)
+        val defaultOptional = "default".optional
+        // The following context can be deeper
+        val definition = required("definition", +LatexContexts.InsideDefinition)
+        val begdef = required("begdef", +LatexContexts.InsideDefinition)
+        val enddef = required("enddef", +LatexContexts.InsideDefinition)
+
+
+        "newcommand".cmd(command, numArgs, defaultOptional, definition) { "Define a new command" }
+        "newcommand*".cmd(command, numArgs, defaultOptional, definition) { "Define a new command (starred variant)" }
+
+        "newif".cmd(command) { "Define a new if conditional" }
+
+        "providecommand".cmd(command, numArgs, defaultOptional, definition) { "Provide a command if not defined" }
+        "providecommand*".cmd(command, numArgs, defaultOptional, definition) { "Provide a command if not defined (starred variant)" }
+
+        "renewcommand".cmd(command, numArgs, defaultOptional, definition) { "Redefine an existing command" }
+        "renewcommand*".cmd(command, numArgs, defaultOptional, definition) { "Redefine an existing command (starred variant)" }
+
+        "newenvironment".cmd(envName, numArgs, defaultOptional, begdef, enddef) { "Define a new environment" }
+        "renewenvironment".cmd(envName, numArgs, defaultOptional, begdef, enddef) { "Redefine an existing environment" }
+
+
+        "newtheorem".cmd(
+            envName, "numberedlike".optional, "caption".required(LatexContexts.Text), "within".optional
+        ) { "Define a new theorem-like environment" }
+        "newtheorem*".cmd(
+            envName, "caption".required(LatexContexts.Text)
+        ) { "Define a new theorem-like environment" }
+
+        packageOf("xargs")
+        "newcommandx".cmd(command, numArgs, defaultOptional, definition) { "Define a new command with extended args" }
+        "renewcommandx".cmd(command, numArgs, defaultOptional, definition) { "Redefine a command with extended args" }
+        "providecommandx".cmd(command, numArgs, defaultOptional, definition) { "Provide a command with extended args" }
+        "DeclareRobustCommandx".cmd(command, numArgs, defaultOptional, definition) { "Declare a robust command with extended args" }
+
+        "newenvironmentx".cmd(command, numArgs, defaultOptional, begdef, enddef) { "Define a new environment with extended args" }
+        "renewenvironmentx".cmd(command, numArgs, defaultOptional, begdef, enddef) { "Redefine an environment with extended args" }
+    }
+
 
     val ifCommands = buildCommands {
         underContext(LatexContexts.Preamble) {
@@ -37,109 +107,10 @@ object NewLatexBasicCommands : PredefinedCommandSet() {
         }
     }
 
-    val definitionCommands = buildCommands {
-        setCommandContext(LatexContexts.Preamble)
-
-        val command = required("cmd", LatexContexts.PlainCommand)
-        val envName = required("name", LatexContexts.Identifier)
-        val numArgs = LArgument.optional("num args", LatexContexts.Numeric)
-        val defaultOptional = "default".optional
-        // The following context can be deeper
-        val definition = required("def", +LatexContexts.InsideDefinition)
-        val begdef = required("begdef", +LatexContexts.InsideDefinition)
-        val enddef = required("enddef", +LatexContexts.InsideDefinition)
-
-        "catcode".cmd("char".required) { "Set category code for a character" }
-
-        "newcommand".cmd(command, numArgs, defaultOptional, definition) { "Define a new command" }
-        "newcommand*".cmd(command, numArgs, defaultOptional, definition) { "Define a new command (starred variant)" }
-
-        "newif".cmd(command) { "Define a new if conditional" }
-
-        "providecommand".cmd(command, numArgs, defaultOptional, definition) { "Provide a command if not defined" }
-        "providecommand*".cmd(command, numArgs, defaultOptional, definition) { "Provide a command if not defined (starred variant)" }
-
-        "renewcommand".cmd(command, numArgs, defaultOptional, definition) { "Redefine an existing command" }
-        "renewcommand*".cmd(command, numArgs, defaultOptional, definition) { "Redefine an existing command (starred variant)" }
-
-        "newenvironment".cmd(envName, numArgs, defaultOptional, begdef, enddef) { "Define a new environment" }
-        "renewenvironment".cmd(envName, numArgs, defaultOptional, begdef, enddef) { "Redefine an existing environment" }
-        "newtheorem".cmd(
-            envName, "numberedlike".optional, "caption".required(LatexContexts.Text), "within".optional
-        ) { "Define a new theorem-like environment" }
-        "newtheorem*".cmd(
-            envName, "caption".required(LatexContexts.Text)
-        ) { "Define a new theorem-like environment" }
-
-        packageOf("xargs")
-        "newcommandx".cmd(command, numArgs, defaultOptional, definition) { "Define a new command with extended args" }
-        "renewcommandx".cmd(command, numArgs, defaultOptional, definition) { "Redefine a command with extended args" }
-        "providecommandx".cmd(command, numArgs, defaultOptional, definition) { "Provide a command with extended args" }
-        "DeclareRobustCommandx".cmd(command, numArgs, defaultOptional, definition) { "Declare a robust command with extended args" }
-
-        "newenvironmentx".cmd(command, numArgs, defaultOptional, begdef, enddef) { "Define a new environment with extended args" }
-        "renewenvironmentx".cmd(command, numArgs, defaultOptional, begdef, enddef) { "Redefine an environment with extended args" }
-    }
-
-    val basicFileInputCommands = buildCommands {
-        // Most file inputs are in preamble, but can be adjusted per command if needed.
-        val name = required("name", LatexContexts.Identifier)
-        underContext(LatexContexts.Preamble) {
-            // TODO
-            "documentclass".cmd(
-                "options".optional(LatexContexts.Literal),
-                classArgument
-            ) {
-                "Declare the document class"
-            }
-
-            "usepackage".cmd(
-                "options".optional(LatexContexts.Literal),
-                packageArg,
-            ) {
-                "Load a LaTeX package"
-            }
-            "LoadClass".cmd(
-                "options".optional(LatexContexts.Literal),
-                classArgument
-            ) {
-                "Load a class file"
-            }
-            "LoadClassWithOptions".cmd(classArgument)
-
-            "ProvidesClass".cmd(name)
-            "ProvidesPackage".cmd(name)
-            "RequirePackage".cmd("options".optional, packageArg)
-
-            "includeonly".cmd("tex files".required(LatexContexts.MultipleTexFiles)) {
-                "Specify which files to include (comma-separated)"
-            }
-
-            "addtoluatexpath".cmd("paths".required(LatexContexts.Folder)) {
-                "Add a relative path to the LaTeX search path"
-            }
-        }
-
-        // Include and input commands.
-        "include".cmd(texFileArg) {
-            "Include a TeX file (page break before)"
-        }
-
-        "input".cmd(texFileArg) {
-            "Input a TeX file (no page break)"
-        }
-    }
-
-    val primitives = buildCommands {
-        val envArg = required("environment", LatexContexts.Identifier)
-        "begin".cmd(envArg)
-        "end".cmd(envArg)
-    }
-
     val xparseCommands = buildCommands {
         setCommandContext(LatexContexts.Preamble)
 
-        val cmdName = "name".required(LatexContexts.PlainCommand)
+        val cmdName = "name".required(LatexContexts.ControlSequence)
         val envName = "name".required(LatexContexts.Identifier)
         val argsSpec = "args spec".required(LatexContexts.Literal)
         val code = required("code", LClearContext)

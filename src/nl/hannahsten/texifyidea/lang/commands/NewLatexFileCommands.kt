@@ -1,8 +1,62 @@
 package nl.hannahsten.texifyidea.lang.commands
 
 import nl.hannahsten.texifyidea.lang.*
+import nl.hannahsten.texifyidea.lang.LArgument.Companion.required
 
 object NewLatexFileCommands : PredefinedCommandSet() {
+
+    private val classArgument = required("class", LatexContexts.ClassName)
+    private val packageArg = required("package", LatexContexts.PackageNames)
+    private val texFileArg = required("tex file", LatexContexts.SingleTexFile)
+
+    val basicFileInputCommands: List<NewLatexCommand> = buildCommands {
+        // Most file inputs are in preamble, but can be adjusted per command if needed.
+        val name = required("name", LatexContexts.Identifier)
+        underContext(LatexContexts.Preamble) {
+            // TODO
+            "documentclass".cmd(
+                "options".optional(LatexContexts.Literal),
+                classArgument
+            ) {
+                "Declare the document class"
+            }
+
+            "usepackage".cmd(
+                "options".optional(LatexContexts.Literal),
+                packageArg,
+            ) {
+                "Load a LaTeX package"
+            }
+            "LoadClass".cmd(
+                "options".optional(LatexContexts.Literal),
+                classArgument
+            ) {
+                "Load a class file"
+            }
+            "LoadClassWithOptions".cmd(classArgument)
+
+            "ProvidesClass".cmd(name)
+            "ProvidesPackage".cmd(name)
+            "RequirePackage".cmd("options".optional, packageArg)
+
+            "includeonly".cmd("tex files".required(LatexContexts.MultipleTexFiles)) {
+                "Specify which files to include (comma-separated)"
+            }
+
+            "addtoluatexpath".cmd("paths".required(LatexContexts.Folder)) {
+                "Add a relative path to the LaTeX search path"
+            }
+        }
+
+        // Include and input commands.
+        "include".cmd(texFileArg) {
+            "Include a TeX file (page break before)"
+        }
+
+        "input".cmd(texFileArg) {
+            "Input a TeX file (no page break)"
+        }
+    }
 
     // Predefine additional file input contexts if needed, based on common file types.
     // These can be moved to NewLang.kt if they are reusable across multiple command sets.
@@ -75,6 +129,22 @@ object NewLatexFileCommands : PredefinedCommandSet() {
             "Include a standalone TeX or graphics file"
         }
 
+        // Other miscellaneous file inputs, e.g., from glossaries.
+        packageOf("glossaries")
+        "loadglsentries".cmd("glossariesfile".required(LatexContexts.SingleTexFile)) {
+            "Load glossary entries from a file"
+        }
+
+        packageOf("minted")
+        "inputminted".cmd(
+            LArgument.required("language", LatexContexts.MintedFuntimeLand),
+            LArgument.required("sourcefile", LatexContexts.SingleFile),
+        ) {
+            "Input a source file with syntax highlighting"
+        }
+    }
+
+    val importRelative = buildCommands {
         // Import package commands.
         packageOf("import")
         "import".cmd(
@@ -97,7 +167,10 @@ object NewLatexFileCommands : PredefinedCommandSet() {
         ) {
             "Input from an absolute path"
         }
+    }
 
+    val importAbsolute = buildCommands {
+        packageOf("import")
         "subimport".cmd(
             "relative path".required(LatexContexts.Folder),
             "filename".required(LatexContexts.SingleTexFile)
@@ -118,7 +191,9 @@ object NewLatexFileCommands : PredefinedCommandSet() {
         ) {
             "Subinput from a relative path"
         }
+    }
 
+    val subfix = buildCommands {
         // Subfiles package.
         packageOf("subfiles")
         "subfile".cmd("sourcefile".required(LatexContexts.SingleTexFile)) {
@@ -131,20 +206,6 @@ object NewLatexFileCommands : PredefinedCommandSet() {
 
         "subfix".cmd("file".required(LatexContexts.SingleTexFile)) {
             "Fix subfile paths"
-        }
-
-        // Other miscellaneous file inputs, e.g., from glossaries.
-        packageOf("glossaries")
-        "loadglsentries".cmd("glossariesfile".required(LatexContexts.SingleTexFile)) {
-            "Load glossary entries from a file"
-        }
-
-        packageOf("minted")
-        "inputminted".cmd(
-            LArgument.required("language", LatexContexts.MintedFuntimeLand),
-            LArgument.required("sourcefile", LatexContexts.SingleFile),
-        ) {
-            "Input a source file with syntax highlighting"
         }
     }
 }

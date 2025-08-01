@@ -8,6 +8,341 @@ object NewLatexGenericCommands : PredefinedCommandSet() {
     private val textArg = LArgument.required("text", LatexContexts.Text)
     private val labelArg = LArgument.required("label", LatexContexts.LabelReference)
 
+    val genericCommands = buildCommands {
+        val titleArg = LArgument.required("title", LatexContexts.Text)
+
+        symbol("LaTeX", "LaTeX")
+        symbol("LaTeXe", "LaTeX2ε")
+        symbol("$", "$")
+        symbol("AA", "Å")
+        symbol("AE", "Æ")
+        +"Huge"
+        +"LARGE"
+        +"Large"
+
+        symbol("OE", "Œ")
+        "Roman".cmd("counter".required) { "CAPITAL_ROMAN" }
+        symbol("S", "§")
+        symbol("aa", "å")
+        "addtocounter".cmd("countername".required, "value".required) { "ADDTOCOUNTER" }
+
+        symbol("ae", "æ")
+        +"appendix"
+        "author".cmd("name".required) { "AUTHOR" }
+        +"baselineskip"
+        +"baselinestretch"
+        +"bf"
+        +"bfseries"
+        "bibitem".cmd("label".optional, "citekey".required) { "BIBITEM" }
+
+        +"bigskip"
+        +"boldmath"
+        "caption".cmd("shorttext".optional, textArg) { "CAPTION" }
+        "captionof".cmd("float type".required, "list entry".optional, "heading".required) { "CAPTIONOF" }
+        "chapter".cmd("shorttitle".optional, titleArg) { "CHAPTER" }
+        "chapter*".cmd(titleArg) { "CHAPTER_STAR" }
+
+        +"cleardoublepage"
+        +"clearpage"
+        +"columnsep "
+        +"columnwidth"
+        "contentsline".cmd("type".required, textArg, "page".required) { "CONTENTSLINE" }
+        "contentsname".cmd("name".required) { "CONTENTSNAME" }
+        symbol("dag", "†")
+        "date".cmd(textArg) { "DATE" }
+        symbol("ddag", "‡")
+        +"dotfill"
+        +"em"
+        "emph".cmd(textArg) { "EMPH" }
+
+        "enlargethispage".cmd("size".required) { "ENLARGETHISPAGE" }
+        "enlargethispage*".cmd("size".required) { "ENLARGETHISPAGE_STAR" }
+        +"evensidemargin"
+
+        +"family"
+        "fbox".cmd(textArg) { "FBOX" }
+        "figurename".cmd("name".required) { "FIGURENAME" }
+        symbol("flq", "‹")
+        symbol("flqq", "«")
+        +"flushbottom"
+        +"flushleft"
+        +"flushright"
+        "fontencoding".cmd("enc".required) { "FONTENCODING" }
+        "fontfamily".cmd("family".required) { "FONTFAMILY" }
+        "fontseries".cmd("series".required) { "FONTSERIES" }
+        "fontshape".cmd("shape".required) { "FONTSHAPE" }
+        "fontsize".cmd("size".required, "skip".required) { "FONTSIZE" }
+        "footnote".cmd("number".optional, textArg) { "FOOTNOTE" }
+        +"footnotemark"
+        +"footnotesize"
+        "footnotetext".cmd("number".optional, textArg) { "FOOTNOTETEXT" }
+        "frame".cmd(textArg) { "FRAME" }
+        "framebox".cmd("width".optional, "pos".optional, "text".optional) { "FRAMEBOX" }
+        symbol("frq", "›")
+        symbol("frqq", "»")
+        "glossary".cmd(textArg) { "GLOSSARY" }
+        "glossaryentry".cmd(textArg, "pagenum".required) { "GLOSSARYENTRY" }
+        symbol("glq", ",")
+        symbol("glqq", "„")
+        symbol("grq", "‘")
+        symbol("grqq", "“")
+        +"hfill"
+        +"hrule"
+        +"hrulefill"
+        "hspace".cmd("length".required) { "HSPACE" }
+        "hspace*".cmd("length".required) { "HSPACE_STAR" }
+        +"hss"
+        +"huge"
+        "hyphenation".cmd("words".required) { "HYPHENATION" }
+        symbol("i", "i (dotless)")
+        "ifthenelse".cmd("test".required, "then clause".required, "else clause".required) { "IFTHENELSE" }
+
+        "indexname".cmd("name".required) { "INDEXNAME" }
+        +"indexspace"
+        "intex".cmd("entry".required) { "INDEX" }
+        +"it"
+        "item".cmd("label".optional) { "ITEM" }
+        +"itshape"
+
+        +"large"
+        symbol("lbrack", "[")
+        symbol("ldots", "…")
+        +"lefteqn"
+        +"lfseries"
+        "linebreak".cmd("number".optional) { "LINEBREAK" }
+        "linethickness".cmd("dimension".required) { "LINETHICKNESS" }
+        +"linewidth"
+        "listfigurename".cmd("name".required) { "LISTFIGURENAME" }
+        +"listfiles"
+        +"listoffigures"
+        +"listoftables"
+        "listtablename".cmd("name".required) { "LISTTABLENAME" }
+        "lowercase".cmd(textArg) { "LOWERCASE" }
+        symbol("lq", "‘")
+        +"makeglossary"
+        +"makeindex"
+        +"makelabel"
+        "makelabels".cmd("number".required) { "MAKELABELS" }
+        +"maketitle"
+        "marg".cmd("arg".required) { "MARG" }
+        "mbox".cmd(textArg) { "MBOX" }
+        +"mdseries"
+        +"medskip"
+        "meta".cmd("arg".required) { "META" }
+        "multicolumn".cmd("cols".required, "pos".required, textArg) { "MULTICOLUMN" }
+        +"newlabel"
+        "newlength".cmd("length".required) { "NEWLENGTH" }
+        +"newline"
+        +"newpage"
+        "newtheorem".cmd("envname".required, "numberedlike".optional, "caption".required, "within".optional) { "NEWTHEOREM" }
+        "newtheorem*".cmd("envname".required, "caption".required) { "NEWTHEOREM_STAR" }
+        "nocite".cmd("keys".required) { "NOCITE" }
+        +"nofiles"
+        "nolinebreak".cmd("number".optional) { "NOLINEBREAK" }
+        +"nonumber"
+        "nopagebreak".cmd("number".optional) { "NOPAGEBREAK" }
+        +"normalfont"
+        +"normalsize"
+        "oarg".cmd("arg".required) { "OARG" }
+        +"oddsidemargin"
+        symbol("oe", "œ")
+        "oldstylenums".cmd("number".required) { "OLDSTYLEENUMS" }
+        +"onecolumn"
+        "onlyifstandalone".cmd("code".required) { "ONLYIFSTANDALONE" }
+        "pagebreak".cmd("number".optional) { "PAGEBREAK" }
+        +"pagename"
+        "pagenumbering".cmd("numstyle".required) { "PAGENUMBERING" }
+
+        "pagestyle".cmd("style".required) { "PAGESTYLE" }
+        +"pagetotal"
+        +"paperheight"
+        +"paperwidth"
+        "paragraph".cmd("shorttitle".optional, titleArg) { "PARAGRAPH" }
+        "paragraph*".cmd(titleArg) { "PARAGRAPH_STAR" }
+        +"paragraphmark"
+        "parbox".cmd("pos".optional, "width".required, textArg) { "PARBOX" }
+        "parg".cmd("arg".required) { "PARG" }
+        +"parindent"
+        +"parskip"
+        "part".cmd("shorttitle".optional, titleArg) { "PART" }
+        "part*".cmd(titleArg) { "PART_STAR" }
+        "partname".cmd("name".required) { "PARTNAME" }
+        "pdfinfo".cmd("info".required) { "PDFINFO" }
+        symbol("pounds", "£")
+        +"printindex"
+        symbol("r", "˚ (accent)")
+        symbol("rbrack", "]")
+
+        +"righthyphenmin"
+        +"rightmargin"
+        +"rightmark"
+        +"rm"
+        +"rmfamily"
+        "roman".cmd("counter".required) { "ROMAN" }
+        symbol("rq", "’")
+        "rule".cmd("line".optional, "width".required, "thickness".required) { "RULE" }
+        +"samepage"
+        "sbox".cmd("cmd".required, "length".required) { "SBOX" }
+        +"sc"
+        +"scriptsize"
+        +"scshape"
+        "section".cmd("shorttitle".optional, titleArg) { "SECTION" }
+        "section*".cmd(titleArg) { "SECTION_STAR" }
+        +"selectfont"
+        "setcounter".cmd("countername".required, "value".required) { "SETCOUNTER" }
+        "setlength".cmd("cmd".required, "length".required) { "SETLENGTH" }
+        +"sf"
+        +"sffamily"
+        "shortstack".cmd("pos".optional, textArg) { "SHORTSTACK" }
+        +"sl"
+        +"slshape"
+        +"small"
+        +"smallskip"
+        +"smash"
+        +"space"
+        "stepcounter".cmd("counter".required) { "STEPCOUNTER" }
+        +"stop"
+        "stretch".cmd("factor".required) { "STRETCH" }
+        +"subinputfrom"
+        +"subitem"
+        "subparagraph".cmd("shorttitle".optional, titleArg) { "SUBPARAGRAPH" }
+        "subparagraph*".cmd(titleArg) { "SUBPARAGRAPH_STAR" }
+        "subparagraphmark".cmd("code".required) { "SUBPARAGRAPHMARK" }
+        "subsection".cmd("shorttitle".optional, titleArg) { "SUBSECTION" }
+        "subsection*".cmd(titleArg) { "SUBSECTION_STAR" }
+        "subsectionmark".cmd("code".required) { "SUBSECTIONMARK" }
+        +"subsubitem"
+        "subsubsection".cmd("shorttitle".optional, titleArg) { "SUBSUBSECTION" }
+        "subsubsection*".cmd(titleArg) { "SUBSUBSECTION_STAR" }
+        "subsubsectionmark".cmd("code".required) { "SUBSUBSECTIONMARK" }
+        "suppressfloats".cmd("placement".optional) { "SUPPRESSFLOATS" }
+        "symbol".cmd("n".required) { "SYMBOL" }
+        +"tabcolsep"
+        "tablename".cmd("name".required) { "TABLENAME" }
+        +"tableofcontents"
+        symbol("textasciicircum", "^")
+        symbol("textasciitilde", "~")
+        symbol("textasteriskcentered", "⁎")
+        symbol("textbackslash", "\\")
+        symbol("textbar", "|")
+        "textbf".cmd(textArg) { "TEXTBF" }
+        symbol("textbraceleft", "{")
+        symbol("textbraceright", "}")
+        symbol("textbullet", "•")
+        "textcircled".cmd("a".required) { "CIRCLED_TEXT" }
+        symbol("textcopyright", "©")
+        symbol("textdagger", "†")
+        symbol("textdaggerdbl", "‡")
+        symbol("textdollar", "$")
+        symbol("textellipsis", "…")
+        symbol("textemdash", "—")
+        symbol("textendash", "–")
+        symbol("textexclamdown", "¡")
+        symbol("textgreater", ">")
+        +"textheight"
+        "textit".cmd(textArg) { "TEXTIT" }
+        symbol("textless", "<")
+        "textlf".cmd(textArg) { "TEXTLF" }
+        "textmd".cmd(textArg) { "TEXTMD" }
+        +"textnormal"
+        +"textparagraph"
+        symbol("textperiodcentered", "·")
+        symbol("textquestiondown", "¿")
+        symbol("textquotedblleft", "“")
+        symbol("textquotedblright", "”")
+        symbol("textquoteleft", "‘")
+        symbol("textquoteright", "’")
+        symbol("textregistered", "®")
+        "textrm".cmd(textArg) { "TEXTRM" }
+        "textsc".cmd("textsc".required) { "TEXTSC" }
+        symbol("textsection", "§")
+        "textsf".cmd(textArg) { "TEXTSF" }
+        "textsl".cmd(textArg) { "TEXTSL" }
+        symbol("textsterling", "£")
+        "textsubscript".cmd(textArg) { "TEXTSUBSCRIPT" }
+        "textsuperscript".cmd(textArg) { "TEXTSUPERSCRIPT" }
+        symbol("texttrademark", "™")
+        "texttt".cmd(textArg) { "TEXTTT" }
+        symbol("textunderscore", "_")
+        "textup".cmd(textArg) { "TEXTUP" }
+        symbol("textvisiblespace", "␣")
+        +"textwidth"
+        "thanks".cmd("to".required) { "THANKS" }
+        +"thicklines"
+        +"thinlines"
+        "thispagestyle".cmd("style".required) { "THISPAGESTYLE" }
+        +"time"
+        +"tiny"
+        "title".cmd(textArg) { "TITLE" }
+        +"today"
+        +"topmargin"
+        +"tt"
+        +"ttfamily"
+        "twocolumn".cmd("text".optional) { "TWOCOLUMN" }
+        +"unboldmath"
+        "underline".cmd(textArg) { "UNDERLINE" }
+        +"unitlength"
+        "uppercase".cmd(textArg) { "UPPERCASE" }
+        +"upshape"
+        "usepgfplotslibrary".cmd("libraries".required) { "USEPGFPLOTSLIBRARY" }
+        "usetikzlibrary".cmd("libraries".required) { "USETIKZLIBRARY" }
+        symbol("vdots", "⋮")
+        +"vline"
+        "vspace".cmd("length".required) { "VSPACE" }
+        "vspace*".cmd("length".required) { "VSPACE_STAR" }
+        +"width"
+
+        packageOf("biblatex")
+        +"printbibliography"
+
+        packageOf("amsmath")
+        underContext(LatexContexts.Preamble) {
+            "DeclareMathOperator".cmd("command".required, "operator".required) { "DECLARE_MATH_OPERATOR" }
+        }
+        "eqref".cmd(labelArg) { "EQREF" }
+
+        packageOf("csquotes")
+        +"enquote"
+        +"enquote*"
+
+        packageOf("fontenc")
+        symbol("guillemotleft", "«")
+        symbol("guillemotright", "»")
+
+        packageOf("mathtools")
+        symbol("lparen", "(")
+        symbol("rparen", ")")
+
+        packageOf("glossaries")
+        +"makenoidxglossaries"
+        +"printnoidxglossaries"
+
+        packageOf("amsthm")
+        +"qedhere"
+
+        packageOf("ulem")
+        "sout".cmd("strikethroughtext".required) { "SOUT" }
+
+        packageOf("textcomp")
+        symbol("textdownarrow", "↓")
+        symbol("textleftarrow", "←")
+        symbol("textrightarrow", "→")
+        symbol("textuparrow", "↑")
+
+        packageOf("ntheorem")
+        "thref".cmd(labelArg) { "THREF" }
+
+        packageOf("fontspec")
+        "addfontfeature".cmd("font features".required) { "ADDFONTFEATURE" }
+        "addfontfeatures".cmd("font features".required) { "ADDFONTFEATURES" }
+        "defaultfontfeatures".cmd("font names".optional, "font features".required) { "DEFAULTFONTFEATURES" }
+        "fontspec".cmd("font".required, "font features".optional) { "FONTSPEC_CMD" }
+        "setmainfont".cmd("font".required, "font features".optional) { "SETMAINFONT" }
+        "setmonofont".cmd("font".required, "font features".optional) { "SETMONOFONT" }
+        "setsansfont".cmd("font".required, "font features".optional) { "SETSANSFONT" }
+    }
+
+
     val citation = textCommands {
         val before = "before".optional
         val after = "after".optional
@@ -428,342 +763,6 @@ object NewLatexGenericCommands : PredefinedCommandSet() {
         ) { "Define a color series" }
     }
 
-    val genericCommands = buildCommands {
-        val titleArg = LArgument.required("title", LatexContexts.Text)
-
-        packageOf("")
-        symbol("LaTeX", "LaTeX")
-        symbol("LaTeXe", "LaTeX2ε")
-        symbol("$", "$")
-        symbol("AA", "Å")
-        symbol("AE", "Æ")
-        +"Huge"
-        +"LARGE"
-        +"Large"
-
-        symbol("OE", "Œ")
-        "Roman".cmd("counter".required) { "CAPITAL_ROMAN" }
-        symbol("S", "§")
-        symbol("aa", "å")
-        "addtocounter".cmd("countername".required, "value".required) { "ADDTOCOUNTER" }
-
-        symbol("ae", "æ")
-        +"appendix"
-        "author".cmd("name".required) { "AUTHOR" }
-        +"baselineskip"
-        +"baselinestretch"
-        +"bf"
-        +"bfseries"
-        "bibitem".cmd("label".optional, "citekey".required) { "BIBITEM" }
-
-        +"bigskip"
-        +"boldmath"
-        "caption".cmd("shorttext".optional, textArg) { "CAPTION" }
-        "captionof".cmd("float type".required, "list entry".optional, "heading".required) { "CAPTIONOF" }
-        "chapter".cmd("shorttitle".optional, titleArg) { "CHAPTER" }
-        "chapter*".cmd(titleArg) { "CHAPTER_STAR" }
-
-        +"cleardoublepage"
-        +"clearpage"
-        +"columnsep "
-        +"columnwidth"
-        "contentsline".cmd("type".required, textArg, "page".required) { "CONTENTSLINE" }
-        "contentsname".cmd("name".required) { "CONTENTSNAME" }
-        symbol("dag", "†")
-        "date".cmd(textArg) { "DATE" }
-        symbol("ddag", "‡")
-        +"def"
-        +"dotfill"
-        +"em"
-        "emph".cmd(textArg) { "EMPH" }
-
-        "enlargethispage".cmd("size".required) { "ENLARGETHISPAGE" }
-        "enlargethispage*".cmd("size".required) { "ENLARGETHISPAGE_STAR" }
-        +"evensidemargin"
-
-        +"family"
-        "fbox".cmd(textArg) { "FBOX" }
-        "figurename".cmd("name".required) { "FIGURENAME" }
-        symbol("flq", "‹")
-        symbol("flqq", "«")
-        +"flushbottom"
-        +"flushleft"
-        +"flushright"
-        "fontencoding".cmd("enc".required) { "FONTENCODING" }
-        "fontfamily".cmd("family".required) { "FONTFAMILY" }
-        "fontseries".cmd("series".required) { "FONTSERIES" }
-        "fontshape".cmd("shape".required) { "FONTSHAPE" }
-        "fontsize".cmd("size".required, "skip".required) { "FONTSIZE" }
-        "footnote".cmd("number".optional, textArg) { "FOOTNOTE" }
-        +"footnotemark"
-        +"footnotesize"
-        "footnotetext".cmd("number".optional, textArg) { "FOOTNOTETEXT" }
-        "frame".cmd(textArg) { "FRAME" }
-        "framebox".cmd("width".optional, "pos".optional, "text".optional) { "FRAMEBOX" }
-        symbol("frq", "›")
-        symbol("frqq", "»")
-        "glossary".cmd(textArg) { "GLOSSARY" }
-        "glossaryentry".cmd(textArg, "pagenum".required) { "GLOSSARYENTRY" }
-        symbol("glq", ",")
-        symbol("glqq", "„")
-        symbol("grq", "‘")
-        symbol("grqq", "“")
-        +"hfill"
-        +"hrule"
-        +"hrulefill"
-        "hspace".cmd("length".required) { "HSPACE" }
-        "hspace*".cmd("length".required) { "HSPACE_STAR" }
-        +"hss"
-        +"huge"
-        "hyphenation".cmd("words".required) { "HYPHENATION" }
-        symbol("i", "i (dotless)")
-        "ifthenelse".cmd("test".required, "then clause".required, "else clause".required) { "IFTHENELSE" }
-
-        "indexname".cmd("name".required) { "INDEXNAME" }
-        +"indexspace"
-        "intex".cmd("entry".required) { "INDEX" }
-        +"it"
-        "item".cmd("label".optional) { "ITEM" }
-        +"itshape"
-
-        +"large"
-        symbol("lbrack", "[")
-        symbol("ldots", "…")
-        +"lefteqn"
-        +"let"
-        +"lfseries"
-        "linebreak".cmd("number".optional) { "LINEBREAK" }
-        "linethickness".cmd("dimension".required) { "LINETHICKNESS" }
-        +"linewidth"
-        "listfigurename".cmd("name".required) { "LISTFIGURENAME" }
-        +"listfiles"
-        +"listoffigures"
-        +"listoftables"
-        "listtablename".cmd("name".required) { "LISTTABLENAME" }
-        "lowercase".cmd(textArg) { "LOWERCASE" }
-        symbol("lq", "‘")
-        +"makeglossary"
-        +"makeindex"
-        +"makelabel"
-        "makelabels".cmd("number".required) { "MAKELABELS" }
-        +"maketitle"
-        "marg".cmd("arg".required) { "MARG" }
-        "mbox".cmd(textArg) { "MBOX" }
-        +"mdseries"
-        +"medskip"
-        "meta".cmd("arg".required) { "META" }
-        "multicolumn".cmd("cols".required, "pos".required, textArg) { "MULTICOLUMN" }
-        +"newlabel"
-        "newlength".cmd("length".required) { "NEWLENGTH" }
-        +"newline"
-        +"newpage"
-        "newtheorem".cmd("envname".required, "numberedlike".optional, "caption".required, "within".optional) { "NEWTHEOREM" }
-        "newtheorem*".cmd("envname".required, "caption".required) { "NEWTHEOREM_STAR" }
-        "nocite".cmd("keys".required) { "NOCITE" }
-        +"nofiles"
-        "nolinebreak".cmd("number".optional) { "NOLINEBREAK" }
-        +"nonumber"
-        "nopagebreak".cmd("number".optional) { "NOPAGEBREAK" }
-        +"normalfont"
-        +"normalsize"
-        "oarg".cmd("arg".required) { "OARG" }
-        +"oddsidemargin"
-        symbol("oe", "œ")
-        "oldstylenums".cmd("number".required) { "OLDSTYLEENUMS" }
-        +"onecolumn"
-        "onlyifstandalone".cmd("code".required) { "ONLYIFSTANDALONE" }
-        "pagebreak".cmd("number".optional) { "PAGEBREAK" }
-        +"pagename"
-        "pagenumbering".cmd("numstyle".required) { "PAGENUMBERING" }
-
-        "pagestyle".cmd("style".required) { "PAGESTYLE" }
-        +"pagetotal"
-        +"paperheight"
-        +"paperwidth"
-        "paragraph".cmd("shorttitle".optional, titleArg) { "PARAGRAPH" }
-        "paragraph*".cmd(titleArg) { "PARAGRAPH_STAR" }
-        +"paragraphmark"
-        "parbox".cmd("pos".optional, "width".required, textArg) { "PARBOX" }
-        "parg".cmd("arg".required) { "PARG" }
-        +"parindent"
-        +"parskip"
-        "part".cmd("shorttitle".optional, titleArg) { "PART" }
-        "part*".cmd(titleArg) { "PART_STAR" }
-        "partname".cmd("name".required) { "PARTNAME" }
-        "pdfinfo".cmd("info".required) { "PDFINFO" }
-        symbol("pounds", "£")
-        +"printindex"
-        symbol("r", "˚ (accent)")
-        symbol("rbrack", "]")
-
-        +"righthyphenmin"
-        +"rightmargin"
-        +"rightmark"
-        +"rm"
-        +"rmfamily"
-        "roman".cmd("counter".required) { "ROMAN" }
-        symbol("rq", "’")
-        "rule".cmd("line".optional, "width".required, "thickness".required) { "RULE" }
-        +"samepage"
-        "sbox".cmd("cmd".required, "length".required) { "SBOX" }
-        +"sc"
-        +"scriptsize"
-        +"scshape"
-        "section".cmd("shorttitle".optional, titleArg) { "SECTION" }
-        "section*".cmd(titleArg) { "SECTION_STAR" }
-        +"selectfont"
-        "setcounter".cmd("countername".required, "value".required) { "SETCOUNTER" }
-        "setlength".cmd("cmd".required, "length".required) { "SETLENGTH" }
-        +"sf"
-        +"sffamily"
-        "shortstack".cmd("pos".optional, textArg) { "SHORTSTACK" }
-        +"sl"
-        +"slshape"
-        +"small"
-        +"smallskip"
-        +"smash"
-        +"space"
-        "stepcounter".cmd("counter".required) { "STEPCOUNTER" }
-        +"stop"
-        "stretch".cmd("factor".required) { "STRETCH" }
-        +"subinputfrom"
-        +"subitem"
-        "subparagraph".cmd("shorttitle".optional, titleArg) { "SUBPARAGRAPH" }
-        "subparagraph*".cmd(titleArg) { "SUBPARAGRAPH_STAR" }
-        "subparagraphmark".cmd("code".required) { "SUBPARAGRAPHMARK" }
-        "subsection".cmd("shorttitle".optional, titleArg) { "SUBSECTION" }
-        "subsection*".cmd(titleArg) { "SUBSECTION_STAR" }
-        "subsectionmark".cmd("code".required) { "SUBSECTIONMARK" }
-        +"subsubitem"
-        "subsubsection".cmd("shorttitle".optional, titleArg) { "SUBSUBSECTION" }
-        "subsubsection*".cmd(titleArg) { "SUBSUBSECTION_STAR" }
-        "subsubsectionmark".cmd("code".required) { "SUBSUBSECTIONMARK" }
-        "suppressfloats".cmd("placement".optional) { "SUPPRESSFLOATS" }
-        "symbol".cmd("n".required) { "SYMBOL" }
-        +"tabcolsep"
-        "tablename".cmd("name".required) { "TABLENAME" }
-        +"tableofcontents"
-        symbol("textasciicircum", "^")
-        symbol("textasciitilde", "~")
-        symbol("textasteriskcentered", "⁎")
-        symbol("textbackslash", "\\")
-        symbol("textbar", "|")
-        "textbf".cmd(textArg) { "TEXTBF" }
-        symbol("textbraceleft", "{")
-        symbol("textbraceright", "}")
-        symbol("textbullet", "•")
-        "textcircled".cmd("a".required) { "CIRCLED_TEXT" }
-        symbol("textcopyright", "©")
-        symbol("textdagger", "†")
-        symbol("textdaggerdbl", "‡")
-        symbol("textdollar", "$")
-        symbol("textellipsis", "…")
-        symbol("textemdash", "—")
-        symbol("textendash", "–")
-        symbol("textexclamdown", "¡")
-        symbol("textgreater", ">")
-        +"textheight"
-        "textit".cmd(textArg) { "TEXTIT" }
-        symbol("textless", "<")
-        "textlf".cmd(textArg) { "TEXTLF" }
-        "textmd".cmd(textArg) { "TEXTMD" }
-        +"textnormal"
-        +"textparagraph"
-        symbol("textperiodcentered", "·")
-        symbol("textquestiondown", "¿")
-        symbol("textquotedblleft", "“")
-        symbol("textquotedblright", "”")
-        symbol("textquoteleft", "‘")
-        symbol("textquoteright", "’")
-        symbol("textregistered", "®")
-        "textrm".cmd(textArg) { "TEXTRM" }
-        "textsc".cmd("textsc".required) { "TEXTSC" }
-        symbol("textsection", "§")
-        "textsf".cmd(textArg) { "TEXTSF" }
-        "textsl".cmd(textArg) { "TEXTSL" }
-        symbol("textsterling", "£")
-        "textsubscript".cmd(textArg) { "TEXTSUBSCRIPT" }
-        "textsuperscript".cmd(textArg) { "TEXTSUPERSCRIPT" }
-        symbol("texttrademark", "™")
-        "texttt".cmd(textArg) { "TEXTTT" }
-        symbol("textunderscore", "_")
-        "textup".cmd(textArg) { "TEXTUP" }
-        symbol("textvisiblespace", "␣")
-        +"textwidth"
-        "thanks".cmd("to".required) { "THANKS" }
-        +"thicklines"
-        +"thinlines"
-        "thispagestyle".cmd("style".required) { "THISPAGESTYLE" }
-        +"time"
-        +"tiny"
-        "title".cmd(textArg) { "TITLE" }
-        +"today"
-        +"topmargin"
-        +"tt"
-        +"ttfamily"
-        "twocolumn".cmd("text".optional) { "TWOCOLUMN" }
-        +"unboldmath"
-        "underline".cmd(textArg) { "UNDERLINE" }
-        +"unitlength"
-        "uppercase".cmd(textArg) { "UPPERCASE" }
-        +"upshape"
-        "usepgfplotslibrary".cmd("libraries".required) { "USEPGFPLOTSLIBRARY" }
-        "usetikzlibrary".cmd("libraries".required) { "USETIKZLIBRARY" }
-        symbol("vdots", "⋮")
-        +"vline"
-        "vspace".cmd("length".required) { "VSPACE" }
-        "vspace*".cmd("length".required) { "VSPACE_STAR" }
-        +"width"
-
-        packageOf("biblatex")
-        +"printbibliography"
-
-        packageOf("amsmath")
-        underContext(LatexContexts.Preamble) {
-            "DeclareMathOperator".cmd("command".required, "operator".required) { "DECLARE_MATH_OPERATOR" }
-        }
-        "eqref".cmd(labelArg) { "EQREF" }
-
-        packageOf("csquotes")
-        +"enquote"
-        +"enquote*"
-
-        packageOf("fontenc")
-        symbol("guillemotleft", "«")
-        symbol("guillemotright", "»")
-
-        packageOf("mathtools")
-        symbol("lparen", "(")
-        symbol("rparen", ")")
-
-        packageOf("glossaries")
-        +"makenoidxglossaries"
-        +"printnoidxglossaries"
-
-        packageOf("amsthm")
-        +"qedhere"
-
-        packageOf("ulem")
-        "sout".cmd("strikethroughtext".required) { "SOUT" }
-
-        packageOf("textcomp")
-        symbol("textdownarrow", "↓")
-        symbol("textleftarrow", "←")
-        symbol("textrightarrow", "→")
-        symbol("textuparrow", "↑")
-
-        packageOf("ntheorem")
-        "thref".cmd(labelArg) { "THREF" }
-
-        packageOf("fontspec")
-        "addfontfeature".cmd("font features".required) { "ADDFONTFEATURE" }
-        "addfontfeatures".cmd("font features".required) { "ADDFONTFEATURES" }
-        "defaultfontfeatures".cmd("font names".optional, "font features".required) { "DEFAULTFONTFEATURES" }
-        "fontspec".cmd("font".required, "font features".optional) { "FONTSPEC_CMD" }
-        "setmainfont".cmd("font".required, "font features".optional) { "SETMAINFONT" }
-        "setmonofont".cmd("font".required, "font features".optional) { "SETMONOFONT" }
-        "setsansfont".cmd("font".required, "font features".optional) { "SETSANSFONT" }
-    }
 
     val colorCommands = buildCommands {
 

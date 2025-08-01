@@ -5,7 +5,6 @@ import nl.hannahsten.texifyidea.util.Log
 
 object PredefinedCommands {
 
-
     val allCommands: List<NewLatexCommand> =
         listOf(
             NewLatexBasicCommands,

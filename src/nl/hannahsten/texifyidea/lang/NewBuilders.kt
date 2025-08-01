@@ -7,6 +7,10 @@ class LatexCommandBuilderScope : LatexBuilderDSLScope {
 
     private val commands = mutableListOf<NewLatexCommand>()
 
+    fun build(): List<NewLatexCommand> {
+        return commands
+    }
+
     var requiredContext: LContextSet = emptySet()
 
     /**
@@ -126,19 +130,21 @@ class LatexCommandBuilderScope : LatexBuilderDSLScope {
 
     companion object {
 
-        fun buildCommands(action: LatexCommandBuilderScope.() -> Unit): List<NewLatexCommand> {
+        inline fun buildCommands(action: LatexCommandBuilderScope.() -> Unit): List<NewLatexCommand> {
             val scope = LatexCommandBuilderScope()
             scope.action()
-            return scope.commands
+            return scope.build()
         }
     }
 }
 
 abstract class PredefinedCommandSet {
-    private val myAllCommands = mutableListOf<NewLatexCommand>()
+    private val myAllCommands = mutableSetOf<NewLatexCommand>()
 
-    val allCommands : List<NewLatexCommand>
+    val allCommands : Set<NewLatexCommand>
         get() = myAllCommands
+
+
 
     protected fun buildCommands(action: LatexCommandBuilderScope.() -> Unit): List<NewLatexCommand> {
         val built = LatexCommandBuilderScope.buildCommands(action)
@@ -158,6 +164,14 @@ abstract class PredefinedCommandSet {
             setCommandContext(LatexContexts.Text)
             action()
         }
+    }
+
+    protected fun Collection<NewLatexCommand>.toSingleLookupMap(): Map<String, NewLatexCommand> {
+        return this.associateBy { it.name }
+    }
+
+    protected fun Collection<NewLatexCommand>.toLookupMap(): Map<String, List<NewLatexCommand>> {
+        return this.groupBy { it.name }
     }
 }
 

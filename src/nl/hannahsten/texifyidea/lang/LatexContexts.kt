@@ -23,7 +23,8 @@ interface LLiteralContext : LatexContext
 
 object LatexContexts {
 
-    object Math : LatexContextBase("math")
+
+    val Math = LatexContextBase("math")
 
     /**
      * Describes the context of package names, for example in `\usepackage{...}`.
@@ -40,6 +41,11 @@ object LatexContexts {
     val Preamble = LatexContextBase("preamble")
 
     /**
+     * This context should never be introduced, so command under this context will never be suggested.
+     */
+    val Nothing = LatexContextBase("nothing")
+
+    /**
      * The definition of a command, such as `...` in `\newcommand{\mycmd}{...}`.
      */
     val InsideDefinition = LatexContextBase("definition")
@@ -48,9 +54,10 @@ object LatexContexts {
     val LabelReference = LatexContextBase("label.ref")
 
     /**
-     * A command and only a command. Used in `\newcommand{...}`.
+     * A control sequence, namely a command.
+     * Used in, for example, `\newcommand{...}`.
      */
-    val PlainCommand = LatexContextBase("command")
+    val ControlSequence = LatexContextBase("command")
 
     /**
      * An identifier, such as a command name without slash or environment name.
