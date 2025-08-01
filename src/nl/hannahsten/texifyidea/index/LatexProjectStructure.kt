@@ -493,6 +493,7 @@ object LatexProjectStructure {
             val refInfos: List<MutableSet<VirtualFile>> = List(extractedRefTexts.size) { mutableSetOf() }
 
             var searchDirs = info.rootDirs
+            val oldRootDir = this.currentRootDir
 
             when (commandName) {
                 LatexGenericRegularCommand.TIKZFIG.commandWithSlash, LatexGenericRegularCommand.CTIKZFIG.commandWithSlash -> {
@@ -548,8 +549,9 @@ object LatexProjectStructure {
                 processFilesUnderRootDirs(pathWithExts, refInfos, searchDirs)
 
             val savedData = extractedRefTexts to refInfos
-
             updateOrMergeRefData(command, savedData)
+
+            currentRootDir = oldRootDir
         }
 
         private fun addGraphicsPathsfo(file: VirtualFile) {
