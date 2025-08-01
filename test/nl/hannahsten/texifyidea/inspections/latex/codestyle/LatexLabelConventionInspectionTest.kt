@@ -178,4 +178,18 @@ class LatexLabelConventionInspectionTest : TexifyInspectionTestBase(LatexLabelCo
             """.trimIndent()
         )
     }
+
+    fun testNoWarningForCorrectLabel() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \begin{document}
+                \paragraph{some paragraph}
+                \section{some section}
+                \label{sec:some-section}
+            \end{document}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting(false, false, true, false)
+    }
 }
