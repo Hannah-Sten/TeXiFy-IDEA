@@ -7,6 +7,7 @@ import io.mockk.unmockkAll
 import nl.hannahsten.texifyidea.configureByFilesAndBuildFilesets
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
+import nl.hannahsten.texifyidea.updateFilesets
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 
 class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnresolvedReferenceInspection()) {
@@ -128,13 +129,6 @@ class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnr
     }
 
 
-    @Test
-    fun `test using xr package`() {
-        myFixture.copyFileToProject("presentations/presentation.tex")
-        myFixture.configureByFiles("xr-test.tex")
-        myFixture.checkHighlighting()
-    }
-
     fun testNoWarningCustomCommand() {
         myFixture.configureByText(
             LatexFileType,
@@ -149,6 +143,13 @@ class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnr
     }
 
      */
+
+    fun `test using xr package`() {
+        myFixture.copyFileToProject("presentations/presentation.tex")
+        myFixture.configureByFiles("xr-test.tex")
+        myFixture.updateFilesets()
+        myFixture.checkHighlighting()
+    }
 
     fun testComma() {
         myFixture.configureByText(LatexFileType, """\input{name,with,.tex}""")

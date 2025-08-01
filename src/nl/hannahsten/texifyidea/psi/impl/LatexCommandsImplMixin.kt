@@ -10,6 +10,9 @@ import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.util.elementType
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
+import nl.hannahsten.texifyidea.index.stub.optionalParamAt
+import nl.hannahsten.texifyidea.index.stub.requiredParamAt
+import nl.hannahsten.texifyidea.index.stub.requiredParams
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.psi.LatexTypes
@@ -109,12 +112,17 @@ abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStu
     }
 
     override fun requiredParameterText(idx: Int): String? {
-        this.greenStub?.let { return it.requiredParams.getOrNull(idx) }
+        this.greenStub?.let { return it.requiredParamAt(idx) }
         return super.requiredParameterText(idx)
     }
 
+    override fun optionalParameterText(idx: Int): String? {
+        this.greenStub?.let { return it.optionalParamAt(idx) }
+        return super.optionalParameterText(idx)
+    }
+
     override fun optionalParameterTextMap(): Map<String, String> {
-        this.greenStub?.let { return it.optionalParams }
+        this.greenStub?.let { return it.optionalParamsMap }
         return super.optionalParameterTextMap()
     }
 }

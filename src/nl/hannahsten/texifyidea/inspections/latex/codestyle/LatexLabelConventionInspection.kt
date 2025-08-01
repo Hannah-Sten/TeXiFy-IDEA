@@ -108,8 +108,17 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
                 return extractLabelParameterTextFromOptionalParameters()
             }
             if (name in CommandMagic.sectionNameToLevel) {
-                val labelElement = nextContextualSibling { it is LatexCommands && it.name in CommandMagic.labels }
-                return labelElement?.findFirstChildTyped<LatexParameterText>()
+                traverseContextualSiblingsNext {
+                    if(it is LatexCommands) {
+                        if(it.name in CommandMagic.labels) {
+                            return it.findFirstChildTyped<LatexParameterText>()
+                        }
+                        if(it.name in CommandMagic.sectionNameToLevel) {
+                            // end if we find another section
+                            return null
+                        }
+                    }
+                }
             }
             return null
         }

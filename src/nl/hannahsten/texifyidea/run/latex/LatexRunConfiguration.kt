@@ -11,7 +11,8 @@ import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.icons.AllIcons
-import com.intellij.openapi.application.*
+import com.intellij.openapi.application.readAction
+import com.intellij.openapi.application.writeAction
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
@@ -109,10 +110,8 @@ class LatexRunConfiguration(
     var mainFile: VirtualFile? = null
         set(value) {
             field = value
-            this.outputPath.mainFile = value
-            this.outputPath.contentRoot = getMainFileContentRoot()
-            this.auxilPath.mainFile = value
-            this.auxilPath.contentRoot = getMainFileContentRoot()
+            outputPath.mainFile = value
+            auxilPath.mainFile = value
         }
 
     // Save the psifile which can be used to check whether to create a bibliography based on which commands are in the psifile
@@ -120,10 +119,10 @@ class LatexRunConfiguration(
     var psiFile: SmartPsiElementPointer<PsiFile>? = null
 
     /** Path to the directory containing the output files. */
-    var outputPath = LatexOutputPath("out", getMainFileContentRoot(), mainFile, project)
+    var outputPath = LatexOutputPath("out", mainFile, project)
 
     /** Path to the directory containing the auxiliary files. */
-    var auxilPath = LatexOutputPath("auxil", getMainFileContentRoot(), mainFile, project)
+    var auxilPath = LatexOutputPath("auxil", mainFile, project)
 
     var compileTwice = false
     var outputFormat: Format = Format.PDF
@@ -316,10 +315,10 @@ class LatexRunConfiguration(
         val outputPathString = parent.getChildText(OUTPUT_PATH)
         if (outputPathString != null) {
             if (outputPathString.endsWith("/bin")) {
-                this.outputPath = LatexOutputPath("out", getMainFileContentRoot(), mainFile, project)
+                this.outputPath = LatexOutputPath("out", mainFile, project)
             }
             else {
-                this.outputPath = LatexOutputPath("out", getMainFileContentRoot(), mainFile, project)
+                this.outputPath = LatexOutputPath("out", mainFile, project)
                 this.outputPath.pathString = outputPathString
             }
         }
@@ -327,7 +326,7 @@ class LatexRunConfiguration(
         // Read auxil path
         val auxilPathString = parent.getChildText(AUXIL_PATH)
         if (auxilPathString != null) {
-            this.auxilPath = LatexOutputPath("auxil", getMainFileContentRoot(), mainFile, project)
+            this.auxilPath = LatexOutputPath("auxil", mainFile, project)
             this.auxilPath.pathString = auxilPathString
         }
 
@@ -609,7 +608,7 @@ class LatexRunConfiguration(
 
     // Path to output file (e.g. pdf)
     override fun getOutputFilePath(): String {
-        val outputDir = outputPath.getAndCreatePath()
+        val outputDir = outputPath.getAndCreatePath() ?: mainFile?.parent
         return "${outputDir?.path}/" + mainFile!!
             .nameWithoutExtension + "." + if (outputFormat == Format.DEFAULT) "pdf"
         else outputFormat.toString()
@@ -625,17 +624,6 @@ class LatexRunConfiguration(
         // If not possible to resolve directly, we might resolve it later
         if (this.outputPath.virtualFile == null) {
             this.outputPath.pathString = fileOutputPath
-        }
-    }
-
-    /**
-     * Get the content root of the main file.
-     */
-    fun getMainFileContentRoot(): VirtualFile? {
-        if (mainFile == null) return null
-        if (!project.isInitialized) return null
-        return runReadAction {
-            return@runReadAction ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile!!)
         }
     }
 

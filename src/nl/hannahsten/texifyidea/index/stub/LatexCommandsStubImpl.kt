@@ -12,11 +12,11 @@ class LatexCommandsStubImpl(
     parent: StubElement<*>,
     elementType: IStubElementType<*, *>,
     override val commandToken: String,
-    override val requiredParams: List<String>,
-    override val optionalParams: Map<String, String>
+    override val parameters: List<LatexParameterStub>,
+    override val optionalParamsMap: Map<String, String>
 ) : NamedStubBase<LatexCommands>(parent, elementType, commandToken), LatexCommandsStub {
 
     override fun getName() = commandToken
 
-    override fun toString() = "LatexCommandsStubImpl{commandToken='$commandToken', requiredParams=$requiredParams, optionalParams=$optionalParams}"
+    override fun toString() = "LatexCommandsStubImpl{command='$commandToken', parameters=$parameters, optionalParamsMap=$optionalParamsMap}"
 }

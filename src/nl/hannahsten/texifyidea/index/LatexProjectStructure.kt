@@ -4,6 +4,7 @@ import com.fasterxml.jackson.dataformat.toml.TomlMapper
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.smartReadAction
+import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectFileIndex
@@ -12,7 +13,7 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.findDirectory
-import com.intellij.openapi.vfs.findFile
+import com.intellij.openapi.vfs.findFileOrDirectory
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.search.FilenameIndex
@@ -32,8 +33,8 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.CacheValueTimed
 import nl.hannahsten.texifyidea.util.GenericCacheService
-import nl.hannahsten.texifyidea.util.GenericCacheService.TypedKey
 import nl.hannahsten.texifyidea.util.TexifyProjectCacheService
+import nl.hannahsten.texifyidea.util.contentSearchScope
 import nl.hannahsten.texifyidea.util.expandCommandsOnce
 import nl.hannahsten.texifyidea.util.files.LatexPackageLocation
 import nl.hannahsten.texifyidea.util.files.allChildDirectories
@@ -44,6 +45,7 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.projectSearchScope
+import nl.hannahsten.texifyidea.util.unionBy
 import java.io.File
 import java.nio.file.InvalidPathException
 import java.nio.file.Path
@@ -53,6 +55,7 @@ import kotlin.collections.contains
 import kotlin.io.path.Path
 import kotlin.io.path.extension
 import kotlin.io.path.invariantSeparatorsPathString
+import kotlin.io.path.name
 import kotlin.io.path.pathString
 
 // May be modified in the future
@@ -66,33 +69,37 @@ data class Fileset(
     val root: VirtualFile,
     val files: Set<VirtualFile>,
     val libraries: Set<String>,
-){
-    // cache the hash code to avoid recomputing it
-    private val hash: Int = run{
-        var result = root.hashCode()
-        result = 31 * result + files.hashCode()
-        result = 31 * result + libraries.hashCode()
-        result
+    val allFileScope: GlobalSearchScope,
+    val externalDocumentInfo: List<ExternalDocumentInfo>
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Fileset
+
+        if (root != other.root) return false
+        if (files != other.files) return false
+
+        return true
     }
 
     override fun hashCode(): Int {
-        return hash
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is Fileset) return false
-        if (root != other.root) return false
-        if (files != other.files) return false
-        if (libraries != other.libraries) return false
-        return true
+        var result = root.hashCode()
+        result = 31 * result + files.hashCode()
+        return result
     }
 }
+
+data class ExternalDocumentInfo(
+    val labelPrefix: String,
+    val files: Set<VirtualFile>,
+)
 
 /**
  * Integrated descriptions of all filesets that are related to a specific file.
  */
-data class FilesetData(
+class FilesetData(
     val filesets: Set<Fileset>,
     /**
      * The union of all files in the related [filesets].
@@ -102,13 +109,14 @@ data class FilesetData(
      * The scope that contains all files in [relatedFiles].
      */
     val filesetScope: GlobalSearchScope,
-    /**
-     * The scope that contains all `.tex` files.
-     */
-    val texFileScope: GlobalSearchScope,
 
-    val libraries: Set<String>
-)
+    val libraries: Set<String>,
+
+    val externalDocumentInfo: List<ExternalDocumentInfo>
+) {
+    val texFileScope: GlobalSearchScope
+        get() = filesetScope.restrictedByFileTypes(LatexFileType)
+}
 
 /**
  * Describes the filesets of a project, containing all filesets and a mapping from files to their fileset data.
@@ -119,16 +127,6 @@ data class LatexProjectFilesets(
 ) {
     fun getData(file: VirtualFile): FilesetData? {
         return mapping[file]
-    }
-}
-
-fun pathOrNull(pathText: String?): Path? {
-    if (pathText.isNullOrBlank()) return null
-    return try {
-        Path(pathText)
-    }
-    catch (e: InvalidPathException) {
-        null
     }
 }
 
@@ -153,7 +151,7 @@ class LatexLibraryInfo(
 object LatexLibraryStructure {
     private const val LIBRARY_FILESET_EXPIRATION_TIME = Long.MAX_VALUE // never expire unless invalidated manually
 
-    private val libraryFilesetCacheKey: TypedKey<MutableMap<String, LatexLibraryInfo>> = GenericCacheService.createKey()
+    private val libraryFilesetCacheKey: GenericCacheService.TypedKey<MutableMap<String, LatexLibraryInfo>> = GenericCacheService.createKey()
 
     private val libraryCommandNameToExt: Map<String, String> = buildMap {
         put("\\usepackage", ".sty")
@@ -183,10 +181,10 @@ object LatexLibraryStructure {
         nameWithExt: String,
         project: Project,
         cache: MutableMap<String, LatexLibraryInfo>,
-        processing : MutableSet<String>
+        processing: MutableSet<String>
     ): LatexLibraryInfo? {
         cache[nameWithExt]?.let { return it }
-        if(!processing.add(nameWithExt)) return null // Prevent infinite recursion
+        if (!processing.add(nameWithExt)) return null // Prevent infinite recursion
 
         val path = LatexPackageLocation.getPackageLocation(nameWithExt, project) ?: return null
         val file = LocalFileSystem.getInstance().findFileByNioFile(path) ?: return null
@@ -202,7 +200,7 @@ object LatexLibraryStructure {
                 val trimmed = text.trim()
                 if (trimmed.isEmpty()) continue
                 val name = trimmed + ext
-                if(name in dependencies) continue
+                if (name in dependencies) continue
                 computePackageFilesets(name, project, cache, processing)?.let {
                     refTexts.add(trimmed)
                     refInfos.add(setOf(it.location))
@@ -236,7 +234,6 @@ object LatexLibraryStructure {
     }
 }
 
-
 /**
  * A utility object that provides methods to build and manage the fileset structure for LaTeX files.
  *
@@ -256,11 +253,10 @@ object LatexProjectStructure {
      * Stores the files that are referenced by the latex command.
      */
     val userDataKeyFileReference = Key.create<
-            CacheValueTimed<
-                    Pair<List<String>, List<Set<VirtualFile>>> // List of pairs of original text and set of files in order
-                    >
-            >("latex.command.reference.files")
-
+        CacheValueTimed<
+            Pair<List<String>, List<Set<VirtualFile>>> // List of pairs of original text and set of files in order
+            >
+        >("latex.command.reference.files")
 
     fun getPossibleRootFiles(project: Project): Set<VirtualFile> {
         if (DumbService.isDumb(project)) return emptySet()
@@ -273,7 +269,7 @@ object LatexProjectStructure {
         project.getLatexRunConfigurations().forEach {
             it.mainFile?.let { mainFile -> rootFiles.add(mainFile) }
         }
-        FilenameIndex.getVirtualFilesByName("main.tex", true, project.projectSearchScope)
+        FilenameIndex.getVirtualFilesByName("main.tex", true, project.contentSearchScope)
             .filter { it.isValid }
             .forEach { rootFiles.add(it) }
 
@@ -284,13 +280,12 @@ object LatexProjectStructure {
         // Check if the file is a library file, e.g. in the texlive distribution
         val filetype = file.fileType
         return (filetype == StyleFileType || filetype == ClassFileType || filetype == LatexSourceFileType) &&
-                !ProjectFileIndex.getInstance(project).isInProject(file)
+            !ProjectFileIndex.getInstance(project).isInProject(file)
     }
-
 
     private open class ProjectInfo(
         val project: Project,
-        val rootDirs: Set<VirtualFile>,
+        var rootDirs: Set<VirtualFile>,
         val bibInputPaths: Set<VirtualFile>,
         val timestamp: Long = System.currentTimeMillis()
     )
@@ -316,10 +311,29 @@ object LatexProjectStructure {
         var graphicsSuffix: Set<Path> = emptySet()
         var luatexPaths: Set<VirtualFile> = emptySet()
 
+        private fun extractExternalDocumentInfoInFileset(allFilesScope: GlobalSearchScope): List<ExternalDocumentInfo> {
+            val externalDocumentCommands = NewCommandsIndex.getByName(
+                LatexGenericRegularCommand.EXTERNALDOCUMENT.commandWithSlash,
+                allFilesScope.restrictedByFileTypes(LatexFileType)
+            )
+            if (externalDocumentCommands.isEmpty()) return emptyList()
+
+            val result = mutableListOf<ExternalDocumentInfo>()
+            for (command in externalDocumentCommands) {
+                val pathText = command.requiredParameterText(0) ?: continue
+                val path = pathOrNull("$pathText.tex") ?: continue
+                val prefix = command.optionalParameterText(0) ?: ""
+                val files = FilenameIndex.getVirtualFilesByName(path.name, true, project.projectSearchScope).toSet()
+                if (files.isEmpty()) continue
+                result.add(ExternalDocumentInfo(prefix, files))
+            }
+            return result
+        }
 
         fun createFileset(): Fileset {
-            // sort the files to ensure a consistent order
-            return Fileset(root, files, libraries)
+            val scope = GlobalSearchScope.filesWithLibrariesScope(project, files)
+            val extInfo = extractExternalDocumentInfoInFileset(scope)
+            return Fileset(root, files, libraries, scope, extInfo)
         }
 
         private fun processNext(v: VirtualFile) {
@@ -410,6 +424,10 @@ object LatexProjectStructure {
             return result
         }
 
+        private fun resolveSubfolder(root: VirtualFile, siblingRelativePath: String): VirtualFile? {
+            return runCatching { root.parent?.findDirectory(siblingRelativePath) }.getOrNull()
+        }
+
         private fun findReferredFiles(
             command: LatexCommands, file: VirtualFile,
         ) {
@@ -465,18 +483,33 @@ object LatexProjectStructure {
                             sequenceOf(path)
                         }
                         else {
-                            path.fileName?.pathString?.let { fileName ->
+                            path.name.let { fileName ->
                                 extensionSeq.map { ext -> path.resolveSibling("$fileName.$ext") }
                             }
                         }
                     } ?: emptySequence()
                 }
             }
+            val refInfos: List<MutableSet<VirtualFile>> = List(extractedRefTexts.size) { mutableSetOf() }
 
             var searchDirs = info.rootDirs
+            val oldRootDir = this.currentRootDir
 
-            if (commandName == LatexGenericRegularCommand.TIKZFIG.commandWithSlash || commandName == LatexGenericRegularCommand.CTIKZFIG.commandWithSlash) {
-                searchDirs = searchDirs + searchDirs.mapNotNull { it.findDirectory("figures") }
+            when (commandName) {
+                LatexGenericRegularCommand.TIKZFIG.commandWithSlash, LatexGenericRegularCommand.CTIKZFIG.commandWithSlash -> {
+                    searchDirs = searchDirs + searchDirs.mapNotNull { runCatching { it.findDirectory("figures") }.getOrNull() }
+                }
+                in CommandMagic.absoluteImportCommands -> {
+                    command.requiredParameterText(0)?.let {
+                        currentRootDir = resolveSubfolder(root, it)
+                    }
+                }
+
+                in CommandMagic.relativeImportCommands -> {
+                    command.requiredParameterText(0)?.let {
+                        currentRootDir = resolveSubfolder(file, it)
+                    }
+                }
             }
 
             if (dependency in CommandMagic.graphicPackages && info.graphicsSuffix.isNotEmpty()) {
@@ -487,32 +520,38 @@ object LatexProjectStructure {
                 }
             }
 
-            val refInfos: List<MutableSet<VirtualFile>> = List(extractedRefTexts.size) { mutableSetOf() }
+            var processPlainFilePath = true
 
             if (commandName in CommandMagic.packageInclusionCommands) {
                 processLibraryReferences(pathWithExts, refInfos)
             }
-
             if (commandName in CommandMagic.bibliographyIncludeCommands) {
                 // For bibliography files, we can search in the bib input paths
                 processFilesUnderRootDirs(pathWithExts, refInfos, info.bibInputPaths)
             }
-
             if (commandName == LatexGenericRegularCommand.EXTERNALDOCUMENT.commandWithSlash) {
                 // \externaldocument uses the .aux file in the output directory, we are only interested in the source file,
                 // but it can be anywhere (because no relative path will be given, as in the output directory everything will be on the same level).
                 // This does not count for building the file set, because the external document is not actually in the fileset, only the label definitions are,
-                // but we still include the files anyway, so that the user can navigate to them.
-                // try to find everywhere in the project
-                processElementsWithPaths0(pathWithExts, refInfos) { path ->
-                    FilenameIndex.getVirtualFilesByName(path.fileName.pathString, true, info.project.projectSearchScope)
+                for ((paths, refInfo) in pathWithExts.zip(refInfos)) {
+                    for (path in paths) {
+                        // try to find everywhere in the project
+                        FilenameIndex.getVirtualFilesByName(path.fileName.pathString, true, info.project.projectSearchScope).forEach { file ->
+                            refInfo.add(file)
+                        }
+                    }
                 }
+                // we do not add the file to the fileset, as it is not actually in the fileset,
+                // but we still leave a reference to it
+                processPlainFilePath = false // do not process more
             }
-            processFilesUnderRootDirs(pathWithExts, refInfos, searchDirs)
+            if (processPlainFilePath)
+                processFilesUnderRootDirs(pathWithExts, refInfos, searchDirs)
 
             val savedData = extractedRefTexts to refInfos
+            updateOrMergeRefData(command, savedData)
 
-            updateOrMergeRefData(command, savedData, info)
+            currentRootDir = oldRootDir
         }
 
         private fun addGraphicsPathsfo(file: VirtualFile) {
@@ -579,8 +618,9 @@ object LatexProjectStructure {
             info.currentRootDir = oldRoot
         }
 
-        private fun updateOrMergeRefData(command: PsiElement, refInfoList: Pair<List<String>, List<MutableSet<VirtualFile>>>, info: FilesetProcessor) {
+        private fun updateOrMergeRefData(command: PsiElement, refInfoList: Pair<List<String>, List<MutableSet<VirtualFile>>>) {
             val existingRef = command.getUserData(userDataKeyFileReference)
+            val info = this
             if (existingRef == null || existingRef.timestamp < info.timestamp) {
                 // overwrite the existing reference
                 command.putUserData(userDataKeyFileReference, CacheValueTimed(refInfoList, info.timestamp))
@@ -621,7 +661,6 @@ object LatexProjectStructure {
         }
     }
 
-
     private fun makePreparation(project: Project): ProjectInfo {
         // Get all bibtex input paths from the run configurations
         countOfBuilding.incrementAndGet()
@@ -657,7 +696,6 @@ object LatexProjectStructure {
             project, texInputPaths, bibInputPaths, projectInfo.timestamp, root
         )
     }
-
 
     private fun buildFilesetFromRoot(
         root: VirtualFile, project: Project, projectInfo: ProjectInfo
@@ -702,7 +740,7 @@ object LatexProjectStructure {
             // Inputs can be either a map "inline" -> String or file name
             // Actually it can also be just a single file name, but then we don't need all this gymnastics
             inputs.filterIsInstance<String>().mapNotNull {
-                tomlFile.parent?.findFile("src/$it")
+                tomlFile.parent?.findFileOrDirectory("src/$it")
             }.toSet()
         }
         return filesets
@@ -753,13 +791,18 @@ object LatexProjectStructure {
             }
         }
 
-        val dataMapping = mapping.mapValues { (file, filesets) ->
-            val allFiles = filesets.flatMapTo(mutableSetOf(file)) { it.files }
-            val texFiles = allFiles.filter { it.fileType == LatexFileType }
-            val allLibs = filesets.flatMapTo(mutableSetOf()) { it.libraries }
-            val scope = GlobalSearchScope.filesWithLibrariesScope(project, allFiles)
-            val texScope = GlobalSearchScope.filesWithoutLibrariesScope(project, texFiles) // only .tex files in the project, do not search in libraries
-            FilesetData(filesets, allFiles, scope, texScope, allLibs)
+        val dataMapping = mapping.mapValues { (_, filesets) ->
+            val allFiles = filesets.unionBy { it.files }
+            val allLibs = filesets.unionBy { it.libraries }
+            val scope = GlobalSearchScope.union(filesets.map { it.allFileScope })
+            val externalDocumentInfo = if (filesets.size == 1) {
+                filesets.first().externalDocumentInfo
+            }
+            else {
+                filesets.flatMap { it.externalDocumentInfo }
+            }
+
+            FilesetData(filesets, allFiles, scope, allLibs, externalDocumentInfo)
         }
 
         val elapsedTime = System.currentTimeMillis() - startTime
@@ -807,6 +850,16 @@ object LatexProjectStructure {
 //        return TexifyProjectCacheService.getInstance(project).getOrNull(CACHE_KEY) != null
     }
 
+    fun getFilesetDataFor(virtualFile: VirtualFile, project: Project): FilesetData? {
+        return getFilesets(project)?.getData(virtualFile)
+    }
+
+    fun getFilesetDataFor(psiFile: PsiFile): FilesetData? {
+        val virtualFile = psiFile.virtualFile ?: return null
+        val project = psiFile.project
+        return getFilesetDataFor(virtualFile, project)
+    }
+
     /**
      * Gets the filesets containing the given PsiFile.
      *
@@ -814,7 +867,7 @@ object LatexProjectStructure {
     fun getFilesetsFor(psiFile: PsiFile): Set<Fileset> {
         val virtualFile = psiFile.virtualFile ?: return emptySet()
         val project = psiFile.project
-        return getFilesets(project)?.getData(virtualFile)?.filesets ?: emptySet()
+        return getFilesetDataFor(virtualFile, project)?.filesets ?: emptySet()
     }
 
     /**
@@ -830,10 +883,11 @@ object LatexProjectStructure {
 
     fun getFilesetScopeFor(file: VirtualFile, project: Project, onlyTexFiles: Boolean = false): GlobalSearchScope {
         val data = getFilesets(project)?.getData(file) ?: return GlobalSearchScope.fileScope(project, file)
+        var scope = data.filesetScope
         if (onlyTexFiles) {
-            return data.texFileScope
+            scope = scope.restrictedByFileTypes(LatexFileType)
         }
-        return data.filesetScope
+        return scope
     }
 
     fun getRootfilesFor(file: PsiFile): Set<VirtualFile> {
@@ -851,7 +905,6 @@ object LatexProjectStructure {
         val virtualFile = file.virtualFile ?: return emptySet()
         return getFilesets(project)?.getData(virtualFile)?.relatedFiles ?: setOf(virtualFile)
     }
-
 
     /**
      * Gets the most recent file reference information for the given command, which is computed during the fileset building process.
@@ -883,4 +936,18 @@ object LatexProjectStructure {
 
         return command.getUserData(userDataKeyFileReference)?.value
     }
+}
+
+fun pathOrNull(pathText: String?): Path? {
+    if (pathText.isNullOrBlank()) return null
+    return try {
+        Path(pathText)
+    }
+    catch (e: InvalidPathException) {
+        null
+    }
+}
+
+fun GlobalSearchScope.restrictedByFileTypes(vararg fileTypes: FileType): GlobalSearchScope {
+    return GlobalSearchScope.getScopeRestrictedByFileTypes(this, *fileTypes)
 }

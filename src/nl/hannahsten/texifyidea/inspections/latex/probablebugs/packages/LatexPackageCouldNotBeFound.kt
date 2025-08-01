@@ -38,7 +38,7 @@ class LatexPackageCouldNotBeFound : TexifyInspectionBase() {
 
         for (command in commands) {
             @Suppress("ktlint:standard:property-naming")
-            val `package` = command.requiredParametersText().firstOrNull()?.lowercase(Locale.getDefault())
+            val `package` = command.requiredParameterText(0)?.lowercase(Locale.getDefault())
             if (!packages.contains(`package`)) {
                 descriptors.add(
                     manager.createProblemDescriptor(

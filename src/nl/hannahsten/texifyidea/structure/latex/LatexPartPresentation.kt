@@ -9,7 +9,7 @@ import nl.hannahsten.texifyidea.structure.EditableHintPresentation
  */
 class LatexPartPresentation(partCommand: LatexCommands) : EditableHintPresentation {
 
-    private val partName = partCommand.requiredParametersText().firstOrNull() ?: "Unnamed part"
+    private val partName = partCommand.requiredParameterText(0) ?: "Unnamed part"
     private var hint = ""
 
     override fun getPresentableText() = partName

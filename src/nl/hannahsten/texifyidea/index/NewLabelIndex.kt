@@ -7,6 +7,7 @@ import com.intellij.psi.stubs.StubElement
 import com.intellij.psi.stubs.StubIndexKey
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
 import nl.hannahsten.texifyidea.index.stub.LatexEnvironmentStub
+import nl.hannahsten.texifyidea.index.stub.requiredParamAt
 import nl.hannahsten.texifyidea.psi.LatexComposite
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
@@ -34,13 +35,13 @@ class NewLabelsIndexEx : LatexCompositeTransformedStubIndex<StubElement<LatexCom
     fun sinkIndexCommand(stub: LatexCommandsStub, sink: IndexSink) {
         val command = stub.commandToken
         if (command in CommandMagic.labels) {
-            if (stub.requiredParams.isNotEmpty()) {
+            stub.requiredParamAt(0)?.let {
                 // It is possible that the command has no required parameters, e.g. `\label`, which is often used in class files.
-                sink.occurrence(key, stub.requiredParams[0])
+                sink.occurrence(key, it)
             }
         }
         else if (command in CommandMagic.labelAsParameter) {
-            stub.optionalParams["label"]?.let { label ->
+            stub.optionalParamsMap["label"]?.let { label ->
                 sink.occurrence(key, label)
             }
         }

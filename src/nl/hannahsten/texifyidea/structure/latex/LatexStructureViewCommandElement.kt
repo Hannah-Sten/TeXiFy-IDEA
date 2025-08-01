@@ -15,6 +15,8 @@ import nl.hannahsten.texifyidea.util.parser.nextCommand
  */
 class LatexStructureViewCommandElement private constructor(private val element: LatexCommands) : StructureViewTreeElement, SortableTreeElement {
 
+    var isFileInclude = false
+
     companion object {
 
         @JvmStatic

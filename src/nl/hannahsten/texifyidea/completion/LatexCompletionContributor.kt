@@ -25,9 +25,9 @@ import nl.hannahsten.texifyidea.util.parser.*
 import java.util.*
 
 /**
- * This class registers some completion contributors. For labels we currently use reference completion instead of
- * contributor-based completion, in [nl.hannahsten.texifyidea.reference.LatexLabelReference],
- * though at the moment I don't see a reason why this is the case.
+ * This class registers some completion contributors.
+ *
+ *
  * Also see https://www.jetbrains.org/intellij/sdk/docs/reference_guide/custom_language_support/code_completion.html
  *
  * @author Sten Wessel, Hannah Schellekens

@@ -5,40 +5,9 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference
 import com.intellij.util.containers.toArray
-import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.reference.LatexLabelReference
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import java.util.regex.Pattern
-
-/**
- * Create label references from the command parameter given, assuming it is a known command with label referencing parameters.
- */
-fun extractLabelReferences(element: LatexCommands, requiredParameters: List<LatexRequiredParam>): List<PsiReference> {
-    // Assume that any possible label reference is a required parameter
-    val defaultParameter = requiredParameters.getOrNull(0) ?: return emptyList()
-
-    // Find the command parameters which are a label reference
-    return (
-        LatexCommand.lookup(element.name)
-            ?.firstOrNull()
-            ?.arguments
-            ?.withIndex()
-            ?.filter { it.value.type == Argument.Type.LABEL }
-            // Use the known parameter indices to match with the actual parameters
-            ?.mapNotNull { requiredParameters.getOrNull(it.index) }
-            ?.ifEmpty { listOf(defaultParameter) }
-            ?: listOf(defaultParameter)
-        )
-        .flatMap { param ->
-            extractSubParameterRanges(param).map { range ->
-                LatexLabelReference(
-                    element,
-                    range.shiftRight(param.textOffset - element.textOffset)
-                )
-            }
-        }
-}
 
 fun extractSubParameterRanges(param: LatexRequiredParam): List<TextRange> {
     return splitToRanges(stripGroup(param.text), PatternMagic.parameterSplit)

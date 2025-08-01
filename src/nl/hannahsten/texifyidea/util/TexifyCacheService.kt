@@ -7,7 +7,6 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import kotlinx.coroutines.CoroutineScope
 
-
 @Service
 class TexifyApplicationCacheService(coroutineScope: CoroutineScope) : GenericCacheService<Application>(ApplicationManager.getApplication(), coroutineScope) {
 

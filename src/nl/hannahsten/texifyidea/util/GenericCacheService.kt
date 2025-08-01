@@ -1,14 +1,12 @@
 package nl.hannahsten.texifyidea.util
 
 import com.jetbrains.rd.util.concurrentMapOf
-import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KClass
-
 
 class CacheValueTimed<T>(
     val value: T,
@@ -22,8 +20,6 @@ class CacheValueTimed<T>(
         return !isExpired(expirationInMs)
     }
 }
-
-
 
 /**
  * Tries to lock the mutex and runs the action if successful.
@@ -39,7 +35,7 @@ suspend inline fun Mutex.tryLockOrSkip(action: suspend () -> Unit) {
     }
 }
 
-abstract class BasicBackgroundCacheService<K : Any, V:Any>(private val coroutineScope: CoroutineScope) {
+abstract class AbstractCacheServiceBase<K : Any, V> {
     protected val caches: MutableMap<K, CacheValueTimed<V>> = concurrentMapOf()
     protected val computingState = ConcurrentHashMap<K, Mutex>()
 
@@ -47,12 +43,18 @@ abstract class BasicBackgroundCacheService<K : Any, V:Any>(private val coroutine
         return computingState.computeIfAbsent(key) { Mutex() }
     }
 
-    protected abstract suspend fun computeValue(key: K): V?
-
-
-    protected fun put(key: K, value: V) {
+    protected fun putValue(key: K, value: V) {
         caches[key] = CacheValueTimed(value)
     }
+
+    protected fun getTimedValue(key: K): CacheValueTimed<V>? {
+        return caches[key]
+    }
+}
+
+abstract class AbstractBackgroundCacheService<K : Any, V : Any>(private val coroutineScope: CoroutineScope) : AbstractCacheServiceBase<K, V>() {
+
+    protected abstract suspend fun computeValue(key: K): V?
 
     /**
      * Calls to compute a value and updates the cache if the computation is successful.
@@ -62,7 +64,7 @@ abstract class BasicBackgroundCacheService<K : Any, V:Any>(private val coroutine
     protected suspend fun computeOrSkip(key: K) {
         val computing = getComputingState(key)
         computing.tryLockOrSkip {
-            computeValue(key)?.also { put(key, it) }
+            computeValue(key)?.also { putValue(key, it) }
         }
     }
 
@@ -78,7 +80,7 @@ abstract class BasicBackgroundCacheService<K : Any, V:Any>(private val coroutine
         }
     }
 
-    protected fun getAndComputeLater(key: K, expirationInMs: Long = 1000L): V?{
+    protected fun getAndComputeLater(key: K, expirationInMs: Long = 1000L): V? {
         val cachedValue = caches[key]
         if (cachedValue != null && cachedValue.isNotExpired(expirationInMs)) {
             return cachedValue.value
@@ -88,7 +90,7 @@ abstract class BasicBackgroundCacheService<K : Any, V:Any>(private val coroutine
         return cachedValue?.value
     }
 
-    protected fun getAndComputeLater(key: K, expirationInMs: Long, defaultValue : V): V{
+    protected fun getAndComputeLater(key: K, expirationInMs: Long, defaultValue: V): V {
         return getAndComputeLater(key, expirationInMs) ?: defaultValue
     }
 
@@ -96,7 +98,7 @@ abstract class BasicBackgroundCacheService<K : Any, V:Any>(private val coroutine
         for (key in keys) {
             val computing = getComputingState(key)
             computing.withLock {
-                computeValue(key)?.also { put(key, it) }
+                computeValue(key)?.also { putValue(key, it) }
             }
         }
     }
@@ -111,7 +113,7 @@ abstract class BasicBackgroundCacheService<K : Any, V:Any>(private val coroutine
 /**
  * Provides a cache service for a project or an application that allows storing and retrieving values with expiration.
  */
-abstract class GenericCacheService<P>(val param: P, private val coroutineScope: CoroutineScope) {
+abstract class GenericCacheService<P>(val param: P, private val coroutineScope: CoroutineScope) : AbstractCacheServiceBase<GenericCacheService.TypedKey<*>, Any?>() {
 
     interface TypedKey<T>
 
@@ -126,11 +128,7 @@ abstract class GenericCacheService<P>(val param: P, private val coroutineScope: 
         private fun <P, T> createKeyFromFunction(f: suspend (P) -> T?): TypedKey<T> {
             return TypedKeyFromFunction(f::class)
         }
-
     }
-
-    protected val caches: MutableMap<TypedKey<*>, CacheValueTimed<*>> = concurrentMapOf()
-    protected val computingState = ConcurrentHashMap<TypedKey<*>, Mutex>()
 
     /**
      * Puts a value in the cache with the given key instantly.
@@ -157,10 +155,6 @@ abstract class GenericCacheService<P>(val param: P, private val coroutineScope: 
      */
     fun <T : Any> getOrNull(key: TypedKey<T>): T? {
         return getTimed(key)?.value
-    }
-
-    private fun getComputingState(key: TypedKey<*>): Mutex {
-        return computingState.computeIfAbsent(key) { Mutex() }
     }
 
     private fun <T> getCachedValueOrNull(key: TypedKey<T>, expirationInMs: Long): CacheValueTimed<T>? {

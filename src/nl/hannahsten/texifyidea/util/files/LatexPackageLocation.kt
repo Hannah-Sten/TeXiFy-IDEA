@@ -6,8 +6,8 @@ import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.index.pathOrNull
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.settings.sdk.TectonicSdk
-import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.GenericCacheService
+import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.TexifyProjectCacheService
 import nl.hannahsten.texifyidea.util.isTestProject
 import nl.hannahsten.texifyidea.util.runCommand

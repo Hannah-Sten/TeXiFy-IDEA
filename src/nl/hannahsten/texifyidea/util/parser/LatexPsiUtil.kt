@@ -7,6 +7,7 @@ import com.intellij.psi.PsiRecursiveElementVisitor
 import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
+import nl.hannahsten.texifyidea.index.stub.requiredParamAt
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.lang.LatexPackage
@@ -159,8 +160,8 @@ object LatexPsiUtil {
      * Get the name of the command that is defined by a definition command stub.
      */
     fun getDefinedCommandName(defStub: LatexCommandsStub): String? {
-        if (defStub.requiredParams.isNotEmpty()) {
-            return defStub.requiredParams[0].trim()
+        defStub.requiredParamAt(0)?.let {
+            return it.trim()
         }
         // \def\cmd\something
         // find the next command after it, which can be a bit slow, but I don't know a better way

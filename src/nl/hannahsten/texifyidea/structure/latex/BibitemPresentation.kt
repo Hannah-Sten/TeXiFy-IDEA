@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 class BibitemPresentation(labelCommand: LatexCommands) : ItemPresentation {
 
     // Get label name.
-    private val bibitemName = labelCommand.requiredParametersText().firstOrNull() ?: ""
+    private val bibitemName = labelCommand.requiredParameterText(0) ?: ""
     private val locationString: String
 
     init {

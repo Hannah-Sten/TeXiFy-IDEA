@@ -52,6 +52,8 @@ class LatexParserTest : BasePlatformTestCase() {
             LatexFileType,
             """
             $ math \text{ text $\xi$ text } math$
+            \def\bracefill{$\hbox{$#4$}$} % MnSymbol.sty
+            
             
             $\begin{cases*}
                  1 & if $ p \equiv 1 \pmod 4$ \\
@@ -271,6 +273,7 @@ class LatexParserTest : BasePlatformTestCase() {
                 \begin{multicols}{2}
             }
             \newcommand{\cmd}{${'$'}x${'$'}}
+            \newcommand\MnMissing{$\times$} % MnSymbol package
             
             \AfterEndEnvironment{minted}{
                 \end{tcolorbox}
