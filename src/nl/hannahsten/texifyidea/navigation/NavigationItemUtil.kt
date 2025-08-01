@@ -8,7 +8,6 @@ import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.labels.extractLabelName
 import nl.hannahsten.texifyidea.util.parser.forcedFirstRequiredParameterAsCommand
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
 import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
 
 /**
@@ -50,13 +49,13 @@ object NavigationItemUtil {
 
     @JvmStatic
     fun createEnvironmentDefinitionNavigationItem(psiElement: LatexCommands): NavigationItem? {
-        val environmentName = psiElement.requiredParameter(0) ?: return null
+        val environmentName = psiElement.requiredParameterText(0) ?: return null
         return GoToSymbolProvider.BaseNavigationItem(psiElement, environmentName, TexifyIcons.DOT_ENVIRONMENT)
     }
 
     @JvmStatic
     fun createSectionMarkerNavigationItem(psiElement: LatexCommands): NavigationItem? {
-        val sectionName = psiElement.requiredParameter(0) ?: return null
+        val sectionName = psiElement.requiredParameterText(0) ?: return null
         val icon = when (psiElement.commandToken.text) {
             "\\part" -> TexifyIcons.DOT_PART
             "\\chapter" -> TexifyIcons.DOT_CHAPTER

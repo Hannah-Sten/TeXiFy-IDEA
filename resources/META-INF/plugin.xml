@@ -40,7 +40,6 @@
 
     <!-- Listeners -->
     <applicationListeners>
-        <listener class="nl.hannahsten.texifyidea.file.listeners.VfsChangeListener" topic="com.intellij.openapi.vfs.newvfs.BulkFileListener"/>
         <listener class="nl.hannahsten.texifyidea.startup.LoadUnloadListener"
                   topic="com.intellij.ide.plugins.DynamicPluginListener" />
     </applicationListeners>

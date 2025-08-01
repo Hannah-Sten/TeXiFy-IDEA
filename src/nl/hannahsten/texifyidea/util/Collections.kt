@@ -153,3 +153,9 @@ fun <T> Stream<T>.mutableSet(): MutableSet<T> = this.collect(Collectors.toSet())
  * Converts the collection to a vector.
  */
 fun <T> Collection<T>.toVector() = Vector(this)
+
+fun <T, R> Collection<T>.unionBy(f: (T) -> Set<R>): Set<R> {
+    if(this.isEmpty()) return emptySet()
+    if(this.size == 1) return f(this.first())
+    return this.flatMapTo(mutableSetOf()) { f(it) }
+}

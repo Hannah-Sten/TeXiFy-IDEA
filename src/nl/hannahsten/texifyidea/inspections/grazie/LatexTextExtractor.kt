@@ -4,17 +4,18 @@ import com.intellij.grazie.grammar.strategy.StrategyUtils
 import com.intellij.grazie.text.TextContent
 import com.intellij.grazie.text.TextExtractor
 import com.intellij.lang.tree.util.children
+import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.startOffset
-import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
+import nl.hannahsten.texifyidea.index.NewDefinitionIndex
 import nl.hannahsten.texifyidea.lang.commands.Argument
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
-import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
 import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.*
 import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 
@@ -140,7 +141,7 @@ class LatexTextExtractor : TextExtractor() {
         return LatexCommand.lookup(commandName)
             ?.firstOrNull()
             ?.arguments
-            ?.filter { it is RequiredArgument }
+            ?.filterIsInstance<RequiredArgument>()
             // Do not keep if it is not text
             ?.any { it.type != Argument.Type.TEXT && it.type != Argument.Type.LABEL } == true
     }
@@ -150,9 +151,10 @@ class LatexTextExtractor : TextExtractor() {
      * Special case: if the command does not have parameters but the definition contains a text command, we assume the command itself will fit into the sentence (as we can't do a text replacement before sending to Grazie).
      */
     private fun isUserDefinedTextCommand(commandName: String, project: Project): Boolean {
-        // todo cache
-        val allTextCommands = LatexRegularCommand.ALL.filter { command -> command.arguments.any { it.type != Argument.Type.TEXT && it.type != Argument.Type.LABEL } }.map { it.commandWithSlash }.toSet()
-        return LatexDefinitionIndex.Util.getItems(project).filter { it.definedCommandName() == commandName }.any { it.text.containsAny(allTextCommands) }
+        if (DumbService.isDumb(project)) return false
+        return NewDefinitionIndex.getByName(commandName, project).any {
+            it.text.containsAny(CommandMagic.allTextCommands)
+        }
     }
 
     private fun PsiElement.isNotInSquareBrackets() = parents().find { it is LatexGroup || it is LatexOptionalParam }

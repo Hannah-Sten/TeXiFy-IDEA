@@ -2,7 +2,7 @@ package nl.hannahsten.texifyidea.inspections.bibtex
 
 import io.mockk.clearAllMocks
 import io.mockk.unmockkAll
-import nl.hannahsten.texifyidea.configureByFilesWithMockCache
+import nl.hannahsten.texifyidea.configureByFilesAndBuildFilesets
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import nl.hannahsten.texifyidea.testutils.writeCommand
 
@@ -14,7 +14,7 @@ class BibtexUnusedEntryInspectionTest : TexifyInspectionTestBase(BibtexUnusedEnt
 
     fun `test warnings where needed`() {
         try {
-            myFixture.configureByFilesWithMockCache("references.bib", "main.tex")
+            myFixture.configureByFilesAndBuildFilesets("references.bib", "main.tex")
             myFixture.checkHighlighting()
         }
         finally {
@@ -25,7 +25,7 @@ class BibtexUnusedEntryInspectionTest : TexifyInspectionTestBase(BibtexUnusedEnt
 
     fun `test quick fix`() {
         try {
-            myFixture.configureByFilesWithMockCache("references-before.bib", "main-quick-fix.tex")
+            myFixture.configureByFilesAndBuildFilesets("references-before.bib", "main-quick-fix.tex")
             val quickFixes = myFixture.getAllQuickFixes()
             assertEquals("Expected number of quick fixes:", 2, quickFixes.size)
             writeCommand(myFixture.project) {

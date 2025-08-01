@@ -21,7 +21,7 @@ data class LabelConvention(
     /**
      * The command name this convention applies to
      */
-    var name: String? = null,
+    var name: String = "",
 
     /**
      * The prefix to use for an inserted label

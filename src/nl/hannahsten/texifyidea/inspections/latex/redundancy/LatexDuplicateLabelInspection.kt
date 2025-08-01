@@ -22,7 +22,6 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.parser.isDefinitionOrRedefinition
 import nl.hannahsten.texifyidea.util.parser.parentOfType
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
 import java.lang.Integer.max
 import java.util.*
 
@@ -112,7 +111,7 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
      * Creates a LabelDescriptor for a command that defines a label with a required parameter at the specified position
      */
     private fun getCommandLabelDescriptor(cmd: LatexCommands, position: Int): LabelDescriptor? {
-        val label = cmd.requiredParameter(position) ?: return null
+        val label = cmd.requiredParameterText(position) ?: return null
         val offset = cmd.commandToken.textLength + skippedParametersLength(cmd.parameterList, label) + 1
         return LabelDescriptor(cmd, label, TextRange.from(offset, label.length))
     }

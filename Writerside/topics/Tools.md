@@ -89,3 +89,26 @@ This will delete all generated files in `src/`, `auxil/` and `out/`, including p
 When there is an internal error in TeXiFy, a notification will be shown from which you can directly report the issue to our issue tracker.
 
 
+## Refresh fileset
+
+_Since b0.11.0_
+
+<ui-path>Tools | LaTeX | Refresh Fileset</ui-path>
+
+This will call for a refresh of the fileset, updating the references in commands like `\input` and `\usepackage`.
+Can be useful with customized automatic refresh periods in the [settings](TeXiFy-settings.md#fileset-refresh-period).
+
+## Performance diagnostics
+
+_Since b0.11.0_
+
+<ui-path>Tools | LaTeX | Performance Diagnostics</ui-path>
+
+Check some performance diagnostics of TeXiFy IDEA (currently for fileset build performance).
+
+Usually, it should not take more than a second.
+Please report any performance issues you find to our issue tracker.
+
+See also [Refresh fileset](#refresh-fileset) and [Fileset refresh period](TeXiFy-settings.md#fileset-refresh-period).
+
+![Performance Diagnostics](performance-diagnostics.png)

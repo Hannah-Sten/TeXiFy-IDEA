@@ -5,13 +5,16 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.index.LatexProjectStructure
+import nl.hannahsten.texifyidea.index.NewBibtexEntryIndex
+import nl.hannahsten.texifyidea.index.NewLabelsIndex
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.files.commandsInFile
-import nl.hannahsten.texifyidea.util.labels.findLatexAndBibtexLabelStringsInFileSet
+import nl.hannahsten.texifyidea.psi.traverseCommands
+import nl.hannahsten.texifyidea.reference.LatexLabelParameterReference
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
@@ -32,10 +35,15 @@ open class LatexUnresolvedReferenceInspection : TexifyInspectionBase() {
     override fun getDisplayName() = "Unresolved reference"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        val descriptors = descriptorList()
+        if (!LatexProjectStructure.isProjectFilesetsAvailable(file.project)) {
+            // If the project filesets are not available, we cannot inspect the file.
+            return emptyList()
+        }
 
-        val labels = file.findLatexAndBibtexLabelStringsInFileSet()
-        val commands = file.commandsInFile()
+        val descriptors = descriptorList()
+        val commands = file.traverseCommands()
+        val project = file.project
+        val filesetScope = LatexProjectStructure.getFilesetScopeFor(file)
 
         for (command in commands) {
             if (!CommandMagic.reference.contains(command.name)) {
@@ -47,39 +55,39 @@ open class LatexUnresolvedReferenceInspection : TexifyInspectionBase() {
                 continue
             }
 
-            val required = command.getRequiredParameters()
+            val required = command.requiredParametersText()
             if (required.isEmpty()) {
                 continue
             }
 
             val parts = required[0].split(",")
             for (i in parts.indices) {
-                val part = parts[i]
+                val part = parts[i].trim()
                 if (part == "*") continue
 
                 // The cleveref package allows empty items to customize enumerations
                 if (part.isEmpty() && (command.name == LatexGenericRegularCommand.CREF.cmd || command.name == LatexGenericRegularCommand.CREF_CAPITAL.cmd)) continue
-
+                if (NewLabelsIndex.existsByName(part, project, filesetScope)) continue // a simple check
+                if(LatexLabelParameterReference.multiResolve(part, file).isNotEmpty()) continue
+                if (NewBibtexEntryIndex.existsByName(part, project, filesetScope)) continue
                 // If there is no label with this required label parameter value
-                if (!labels.contains(part.trim())) {
-                    // We have to subtract from the total length, because we do not know whether optional
-                    // parameters were included with [a][b][c] or [a,b,c] in which case the
-                    // indices of the parts are different with respect to the start of the command
-                    var offset = command.textLength - parts.sumOf { it.length + 1 }
-                    for (j in 0 until i) {
-                        offset += parts[j].length + 1
-                    }
-
-                    descriptors.add(
-                        manager.createProblemDescriptor(
-                            command,
-                            TextRange.from(max(offset, 0), part.length),
-                            "Unresolved reference '$part'",
-                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                            isOntheFly
-                        )
-                    )
+                // We have to subtract from the total length, because we do not know whether optional
+                // parameters were included with [a][b][c] or [a,b,c] in which case the
+                // indices of the parts are different with respect to the start of the command
+                var offset = command.textLength - parts.sumOf { it.length + 1 }
+                for (j in 0 until i) {
+                    offset += parts[j].length + 1
                 }
+
+                descriptors.add(
+                    manager.createProblemDescriptor(
+                        command,
+                        TextRange.from(max(offset, 0), part.length),
+                        "Unresolved reference '$part'",
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                        isOntheFly
+                    )
+                )
             }
         }
 

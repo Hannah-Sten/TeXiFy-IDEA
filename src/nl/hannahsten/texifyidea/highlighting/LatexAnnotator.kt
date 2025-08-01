@@ -10,7 +10,7 @@ import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.elementType
 import com.intellij.psi.util.endOffset
 import com.intellij.psi.util.startOffset
-import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
+import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericMathCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
@@ -204,7 +204,7 @@ open class LatexAnnotator : Annotator {
 
         // Make user-defined commands highlighting customizable
         if (Cache.allUserDefinedCommands.isEmpty()) {
-            Cache.allUserDefinedCommands = LatexDefinitionIndex.Util.getItems(command.project)
+            Cache.allUserDefinedCommands = NewSpecialCommandsIndex.getAllCommandDefInFileset(command.containingFile)
                 .filter { it.isCommandDefinition() }
                 .mapNotNull { it.definedCommandName() }
         }
@@ -217,7 +217,7 @@ open class LatexAnnotator : Annotator {
 
         // Label references.
         val style = when (command.name) {
-            in CommandMagic.labelReferenceWithoutCustomCommands -> {
+            in CommandMagic.labelReference -> {
                 LatexSyntaxHighlighter.LABEL_REFERENCE
             }
             // Label definitions.
@@ -236,7 +236,7 @@ open class LatexAnnotator : Annotator {
             else -> return
         }
 
-        command.requiredParameters().firstOrNull()?.let {
+        command.firstRequiredParameter()?.let {
             annotationHolder.annotateRequiredParameter(it, style)
         }
     }
@@ -257,7 +257,7 @@ open class LatexAnnotator : Annotator {
             else -> return
         }
 
-        command.requiredParameters().firstOrNull()?.let {
+        command.firstRequiredParameter()?.let {
             annotationHolder.annotateRequiredParameter(it, style)
         }
     }
@@ -276,7 +276,7 @@ open class LatexAnnotator : Annotator {
                 .create()
         }
         else if (firstParamChild != null) {
-            parameter.traverseAll {
+            parameter.forEachChild {
                 if(it is LeafPsiElement && it.elementType == LatexTypes.NORMAL_TEXT_WORD) {
                     this.newSilentAnnotation(HighlightSeverity.INFORMATION)
                         .range(it as PsiElement) // resolve overloading

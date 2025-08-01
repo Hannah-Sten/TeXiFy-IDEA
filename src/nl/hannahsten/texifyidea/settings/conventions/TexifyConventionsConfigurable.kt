@@ -132,7 +132,7 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
     }
 
     private val nameColumnInfo = object : TableModelEditor.EditableColumnInfo<LabelConvention, String>("Element") {
-        override fun valueOf(item: LabelConvention): String = item.name!!
+        override fun valueOf(item: LabelConvention): String = item.name
         override fun getColumnClass(): Class<*> = String::class.java
         override fun setValue(item: LabelConvention, value: String?) {
             item.name = value ?: ""

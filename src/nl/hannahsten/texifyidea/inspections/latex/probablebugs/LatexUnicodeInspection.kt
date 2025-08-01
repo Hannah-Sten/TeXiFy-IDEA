@@ -82,7 +82,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
             }
 
             // If we can't figure it out by compiler, check included packages
-            val included = file.includedPackages()
+            val included = file.includedPackagesInFileset()
             return PackageMagic.unicode.stream().allMatch { p -> included.contains(p) }
         }
     }

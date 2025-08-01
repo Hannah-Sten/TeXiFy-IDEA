@@ -68,6 +68,6 @@ class MiktexLinuxSdk : LatexSdk("MiKTeX Mac/Linux SDK") {
     }
 
     override fun getDefaultStyleFilesPath(homePath: String): VirtualFile? {
-        return LocalFileSystem.getInstance().findFileByPath(Paths.get(System.getProperty("user.home"), ".miktex", "texmfs", "install", "tex", "latex").toString())
+        return LocalFileSystem.getInstance().findFileByPath(Paths.get(System.getProperty("user.home"), ".miktex", "texmfs", "install", "tex").toString())
     }
 }

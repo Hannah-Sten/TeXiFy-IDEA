@@ -1,0 +1,1 @@
+% This is a fake class file to test the subfiles inspection.

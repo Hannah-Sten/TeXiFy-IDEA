@@ -1,45 +1,45 @@
 package nl.hannahsten.texifyidea.navigation
 
-import com.intellij.navigation.ChooseByNameContributor
+import com.intellij.navigation.ChooseByNameContributorEx
 import com.intellij.navigation.NavigationItem
-import com.intellij.openapi.project.Project
+import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.util.Processor
+import com.intellij.util.indexing.FindSymbolParameters
+import com.intellij.util.indexing.IdFilter
 
 /**
  * @author Hannah Schellekens
  */
-abstract class TexifyGotoSymbolBase<T> : ChooseByNameContributor {
+abstract class TexifyGotoSymbolBase<Psi> : ChooseByNameContributorEx {
 
     /**
      * Finds all elements that can be found in 'Goto symbol'.
      */
-    abstract fun Project.findElements(): Iterable<T>
+    abstract fun processElements(scope: GlobalSearchScope, filter: IdFilter?, processor: Processor<Psi>)
 
     /**
      * Transforms the element into its visible and identifyable name.
      * `null` when no name is available.
      */
-    abstract fun T.extractName(): String?
+    abstract fun extractName(item: Psi): String?
 
     /**
      * Creates a navigation item from the given element.
      * `null` when no navigation item could be created.
      */
-    abstract fun T.createNavigationItem(): NavigationItem?
+    abstract fun createNavigationItem(item: Psi): NavigationItem?
 
-    override fun getItemsByName(name: String?, pattern: String?, project: Project?, includeNonProjectItems: Boolean): Array<NavigationItem> {
-        val elements = project?.findElements() ?: return emptyArray()
-        return elements.asSequence()
-            .map { it to it.extractName() }
-            .filter { (_, definedName) ->
-                definedName == name || (pattern != null && (definedName ?: "").contains(pattern, ignoreCase = true))
-            }
-            .mapNotNull { (psi, _) -> psi.createNavigationItem() }
-            .toList()
-            .toTypedArray()
+    override fun processNames(processor: Processor<in String>, scope: GlobalSearchScope, filter: IdFilter?) {
+        processElements(scope, filter) { e ->
+            extractName(e)?.let { processor.process(it) } ?: true
+        }
     }
 
-    override fun getNames(project: Project?, includeNonProjectItems: Boolean): Array<String> {
-        val elements = project?.findElements() ?: return emptyArray()
-        return elements.mapNotNull { it.extractName() }.toTypedArray()
+    override fun processElementsWithName(name: String, processor: Processor<in NavigationItem>, parameters: FindSymbolParameters) {
+        processElements(parameters.searchScope, parameters.idFilter) {
+            val defName = extractName(it) ?: return@processElements true
+            if(defName != name) return@processElements true
+            processor.process(createNavigationItem(it))
+        }
     }
 }

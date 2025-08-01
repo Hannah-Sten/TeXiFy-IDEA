@@ -1,16 +1,13 @@
 package nl.hannahsten.texifyidea.index.stub
 
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiElement
 import com.intellij.psi.stubs.*
-import com.intellij.testFramework.LightVirtualFile
 import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import nl.hannahsten.texifyidea.index.*
-import nl.hannahsten.texifyidea.index.file.LatexIndexableSetContributor
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexParameter
+import nl.hannahsten.texifyidea.psi.contentText
 import nl.hannahsten.texifyidea.psi.impl.LatexCommandsImpl
-import nl.hannahsten.texifyidea.util.defaultIncludeCommands
-import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.parser.forEachDirectChildTyped
 import nl.hannahsten.texifyidea.util.parser.toStringMap
 import java.io.IOException
 import java.util.regex.Pattern
@@ -23,42 +20,48 @@ class LatexCommandsStubElementType(debugName: String) :
     IStubElementType<LatexCommandsStub, LatexCommands>(debugName, LatexLanguage) {
 
     override fun createPsi(latexCommandsStub: LatexCommandsStub): LatexCommands {
-        return object : LatexCommandsImpl(latexCommandsStub, this) {
-
-            override fun getElementType(): IStubElementType<*, *> {
-                return this@LatexCommandsStubElementType
-            }
-
-            override fun getStub(): LatexCommandsStub {
-                return latexCommandsStub
-            }
-
-            override fun setName(newName: String): PsiElement {
-                this.name = newName
-                return this
-            }
-
-            init {
-                this.name = latexCommandsStub.name!!
-            }
-        }
+        return LatexCommandsImpl(latexCommandsStub, this)
     }
 
-    override fun createStub(latexCommands: LatexCommands, parent: StubElement<*>?): LatexCommandsStub {
+    override fun createStub(latexCommands: LatexCommands, parent: StubElement<*>): LatexCommandsStub {
         val commandToken = latexCommands.commandToken.text
-        val requiredParameters = latexCommands.getRequiredParameters()
-        val optionalParameters: Map<String, String> =
+        val parameterContents = mutableListOf<LatexParameterStub>()
+        latexCommands.forEachDirectChildTyped<LatexParameter> {
+            val text = it.contentText()
+            val type = if (it.requiredParam != null) LatexParameterStub.REQUIRED
+            else if (it.optionalParam != null) LatexParameterStub.OPTIONAL else return@forEachDirectChildTyped
+            parameterContents.add(LatexParameterStub(type, text))
+        }
+        val optionalParametersMap: Map<String, String> =
             latexCommands.getOptionalParameterMap().toStringMap()
         return LatexCommandsStubImpl(
-            parent!!, this,
-            commandToken,
-            requiredParameters,
-            optionalParameters
+            parent, this,
+            commandToken, parameterContents, optionalParametersMap
         )
     }
 
     // Should equal externalIdPrefix from registration in index.xml plus field name in LatexStubElementTypes
     override fun getExternalId() = "texify.latex." + super.toString()
+
+    private fun writeParameters(
+        parameters: List<LatexParameterStub>,
+        output: StubOutputStream
+    ) {
+        output.writeVarInt(parameters.size)
+        parameters.forEach { parameter ->
+            output.writeByte(parameter.type)
+            output.writeUTFFast(parameter.content)
+        }
+    }
+
+    private fun readParameters(input: StubInputStream): List<LatexParameterStub> {
+        val size = input.readVarInt()
+        return (0 until size).map {
+            val type = input.readByte().toInt()
+            val content = input.readUTFFast()
+            LatexParameterStub(type, content)
+        }
+    }
 
     @Throws(IOException::class)
     override fun serialize(
@@ -66,24 +69,22 @@ class LatexCommandsStubElementType(debugName: String) :
         stubOutputStream: StubOutputStream
     ) {
         stubOutputStream.writeName(latexCommandsStub.name)
-        stubOutputStream.writeName(serialiseRequired(latexCommandsStub))
-        stubOutputStream.writeName(serialiseOptional(latexCommandsStub))
+        writeParameters(latexCommandsStub.parameters, stubOutputStream)
+        stubOutputStream.writeName(serialiseOptionalMap(latexCommandsStub))
     }
 
     @Throws(IOException::class)
     override fun deserialize(stubInputStream: StubInputStream, parent: StubElement<*>): LatexCommandsStub {
         val name = stubInputStream.readName().toString()
-        val required = deserialiseList(stubInputStream.readName().toString())
+        val parameters = readParameters(stubInputStream)
         val optional = deserializeMap(stubInputStream.readName().toString())
         return LatexCommandsStubImpl(
-            parent, this,
-            name,
-            required,
-            optional
+            parent, this, name, parameters, optional
         )
     }
 
     private fun deserializeMap(fromString: String): Map<String, String> {
+        if(fromString.isEmpty()) return emptyMap()
         val keyValuePairs = deserialiseList(fromString)
         return keyValuePairs.filter { it.isNotEmpty() }.associate {
             val parts = it.split(KEY_VALUE_SEPARATOR)
@@ -91,35 +92,20 @@ class LatexCommandsStubElementType(debugName: String) :
         }
     }
 
-    override fun indexStub(latexCommandsStub: LatexCommandsStub, indexSink: IndexSink) {
+    override fun indexStub(stub: LatexCommandsStub, sink: IndexSink) {
         // We do not want all the commands from all package source files in this index, because
-        // then we end up with 200k keys for texlive full, but we need to iterate over all keys
-        // every time we need to get e.g. all commands in a file, so that would be too slow.
-        // Therefore, we check if the indexing of this file was caused by being in an extra project root or not
-        // It seems we cannot make a distinction that we do want to index with LatexExternalCommandIndex but not this index
-        // Unfortunately, this seems to make indexing five times slower
-        val pathOfCurrentlyIndexedFile = (latexCommandsStub.psi?.containingFile?.viewProvider?.virtualFile as? LightVirtualFile)?.originalFile?.path
+//        // then we end up with 200k keys for texlive full, but we need to iterate over all keys
+//        // every time we need to get e.g. all commands in a file, so that would be too slow.
+//        // Therefore, we check if the indexing of this file was caused by being in an extra project root or not
+//        // It seems we cannot make a distinction that we do want to index with LatexExternalCommandIndex but not this index
+//        // Unfortunately, this seems to make indexing five times slower
 
-        // If any of the sdk source roots is part of the currently indexed path, don't index the file
-        if (getAdditionalProjectRoots(latexCommandsStub.psi?.project).any { pathOfCurrentlyIndexedFile?.contains(it) == true }) {
-            return
-        }
+        val token = stub.commandToken
+        sink.occurrence(LatexStubIndexKeys.COMMANDS, token)
 
-        val token = latexCommandsStub.commandToken
-        indexSinkOccurrence(indexSink, LatexCommandsIndex.Util, token)
-        if (token in defaultIncludeCommands) {
-            indexSinkOccurrence(indexSink, LatexIncludesIndex.Util, token)
-        }
-        if (token in CommandMagic.definitions) {
-            indexSinkOccurrence(indexSink, LatexDefinitionIndex.Util, token)
-        }
-        if (token in CommandMagic.labelAsParameter && "label" in latexCommandsStub.optionalParams) {
-            val label = latexCommandsStub.optionalParams["label"]!!
-            indexSinkOccurrence(indexSink, LatexParameterLabeledCommandsIndex.Util, label)
-        }
-        if (token in CommandMagic.glossaryEntry && latexCommandsStub.requiredParams.isNotEmpty()) {
-            indexSinkOccurrence(indexSink, LatexGlossaryEntryIndex.Util, latexCommandsStub.requiredParams[0])
-        }
+        NewSpecialCommandsIndex.sinkIndex(sink, token) // all commands classified
+        NewDefinitionIndex.sinkIndex(stub, sink) // record definitions
+        NewLabelsIndex.sinkIndexCommand(stub, sink) // labels
     }
 
     private fun deserialiseList(string: String): List<String> {
@@ -127,12 +113,8 @@ class LatexCommandsStubElementType(debugName: String) :
             .collect(Collectors.toList())
     }
 
-    private fun serialiseRequired(stub: LatexCommandsStub): String {
-        return java.lang.String.join(LIST_ELEMENT_SEPARATOR.pattern(), stub.requiredParams)
-    }
-
-    private fun serialiseOptional(stub: LatexCommandsStub): String {
-        val keyValuePairs = stub.optionalParams.map { "${it.key}=${it.value}" }
+    private fun serialiseOptionalMap(stub: LatexCommandsStub): String {
+        val keyValuePairs = stub.optionalParamsMap.map { "${it.key}=${it.value}" }
         return java.lang.String.join(LIST_ELEMENT_SEPARATOR.pattern(), keyValuePairs)
     }
 
@@ -141,14 +123,5 @@ class LatexCommandsStubElementType(debugName: String) :
         private val LIST_ELEMENT_SEPARATOR =
             Pattern.compile("\u1923\u9123\u2d20 hello\u0012")
         private val KEY_VALUE_SEPARATOR = "=".toRegex()
-
-        private var projectRootsCache: List<String>? = null
-
-        fun getAdditionalProjectRoots(project: Project?): List<String> {
-            if (projectRootsCache == null && project != null) {
-                projectRootsCache = LatexIndexableSetContributor().getAdditionalProjectRootsToIndex(project).map { it.path }
-            }
-            return projectRootsCache ?: emptyList()
-        }
     }
 }

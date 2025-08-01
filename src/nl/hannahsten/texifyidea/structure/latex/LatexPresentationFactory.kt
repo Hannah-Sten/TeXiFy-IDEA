@@ -9,8 +9,8 @@ import nl.hannahsten.texifyidea.lang.commands.LatexNewDefinitionCommand.RENEWCOM
 import nl.hannahsten.texifyidea.lang.commands.LatexXparseCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommandsAndUpdateLater
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
-import nl.hannahsten.texifyidea.util.updateAndGetIncludeCommands
 
 /**
  * @author Hannah Schellekens
@@ -38,7 +38,7 @@ object LatexPresentationFactory {
             )
             LABEL.cmd -> LatexLabelPresentation(commands)
             BIBITEM.cmd -> BibitemPresentation(commands)
-            in updateAndGetIncludeCommands(commands.project) -> LatexIncludePresentation(commands)
+            in CommandMagic.allFileIncludeCommands -> LatexIncludePresentation(commands)
             else -> LatexOtherCommandPresentation(commands, TexifyIcons.DOT_COMMAND)
         }
     }

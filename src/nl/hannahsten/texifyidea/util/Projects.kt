@@ -1,24 +1,25 @@
 package nl.hannahsten.texifyidea.util
 
 import com.intellij.execution.RunManager
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ApplicationNamesInfo
-import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.module.ModuleType
+import com.intellij.openapi.project.IndexNotReadyException
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.psi.search.ProjectScope
 import com.intellij.serviceContainer.AlreadyDisposedException
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex
-import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.modules.LatexModuleType
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationType
@@ -30,6 +31,18 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
  */
 val Project.projectSearchScope: GlobalSearchScope
     get() = GlobalSearchScope.projectScope(this)
+
+val Project.contentSearchScope: GlobalSearchScope
+    get() = ProjectScope.getContentScope(this)
+
+val Project.librarySearchScope: GlobalSearchScope
+    get() = ProjectScope.getLibrariesScope(this)
+
+/**
+ * Get a project [GlobalSearchScope] for this project.
+ */
+val Project.everythingScope: GlobalSearchScope
+    get() = GlobalSearchScope.everythingScope(this)
 
 /**
  * Get a [GlobalSearchScope] for the source folders in this project.
@@ -47,9 +60,9 @@ val Project.sourceSetSearchScope: GlobalSearchScope
  * Looks for all defined document classes in the project.
  */
 fun Project.findAvailableDocumentClasses(): Set<String> {
-    val defines = LatexDefinitionIndex.Util.getCommandsByName("ProvidesClass", this, sourceSetSearchScope)
+    val defines = NewCommandsIndex.getByName("ProvidesClass", this, sourceSetSearchScope)
     return defines.asSequence()
-        .map { it.getRequiredParameters() }
+        .map { it.requiredParametersText() }
         .filter { it.isNotEmpty() }
         .mapNotNull { it.firstOrNull() }
         .toSet()
@@ -58,22 +71,22 @@ fun Project.findAvailableDocumentClasses(): Set<String> {
 /**
  * Get all the virtual files that are in the project of a given file type.
  */
-fun Project.allFiles(type: FileType): Collection<VirtualFile> {
-    if (!isInitialized) return emptyList()
+fun Project.containsFileOfType(type: FileType): Boolean {
+    if (!isInitialized) return false
     try {
-        return runReadAction {
-            val scope = GlobalSearchScope.projectScope(this)
-            return@runReadAction FileTypeIndex.getFiles(type, scope)
-        }
+        val scope = GlobalSearchScope.projectScope(this)
+        return FileTypeIndex.containsFileOfType(type, scope)
     }
     catch (e: IllegalStateException) {
         // Doesn't happen very often, and afaik there's no proper way of checking whether this index is initialized. See #2855
         if (e.message?.contains("Index is not created for `filetypes`") == true) {
-            return emptyList()
+            return false
         }
         else {
             throw e
         }
+    } catch (e: IndexNotReadyException) {
+        return false
     }
 }
 
@@ -83,6 +96,11 @@ fun Project.allFiles(type: FileType): Collection<VirtualFile> {
 fun Project.getLatexRunConfigurations(): Collection<LatexRunConfiguration> {
     if (isDisposed) return emptyList()
     return RunManager.getInstance(this).allConfigurationsList.filterIsInstance<LatexRunConfiguration>()
+}
+
+fun Project.getBibtexRunConfigurations(): Collection<BibtexRunConfiguration> {
+    if (isDisposed) return emptyList()
+    return RunManager.getInstance(this).allConfigurationsList.filterIsInstance<BibtexRunConfiguration>()
 }
 
 /**
@@ -130,19 +148,19 @@ fun Project.hasLatexModule(): Boolean {
 fun Project.isLatexProject(): Boolean {
     return hasLatexModule() ||
         getLatexRunConfigurations().isNotEmpty() ||
-        (ApplicationNamesInfo.getInstance().scriptName != "idea" && allFiles(LatexFileType).isNotEmpty())
+        (ApplicationNamesInfo.getInstance().scriptName != "idea" && containsFileOfType(LatexFileType))
 }
 
 /**
  * True if we are probably in a unit test.
  */
-fun Project.isTestProject() = name.contains("_temp_") || basePath?.contains("unitTest") == true
+fun Project.isTestProject() = ApplicationManager.getApplication().isUnitTestMode
 
 /**
  * Finds all section marker commands (as defined in [CommandMagic.sectionNameToLevel]) in the project.
  *
  * @return A list containing all the section marker [LatexCommands].
  */
-fun Project.findSectionMarkers() = LatexCommandsIndex.Util.getItems(this).filter {
-    it.commandToken.text in CommandMagic.sectionNameToLevel
+fun Project.findSectionMarkers(): Collection<LatexCommands> {
+    return NewCommandsIndex.getByNames(CommandMagic.sectionNameToLevel.keys, this)
 }

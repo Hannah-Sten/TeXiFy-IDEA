@@ -33,7 +33,7 @@ class LatexPsiImplUtilTest : BasePlatformTestCase() {
             .children
             .first()
             .findFirstChildOfType(LatexCommands::class)!!
-            .getRequiredParameters()
+            .requiredParametersText()
         // then
         assertEquals("library1,library2", requiredParameters[0])
     }

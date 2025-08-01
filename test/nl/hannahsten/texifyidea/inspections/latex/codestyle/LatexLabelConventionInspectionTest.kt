@@ -11,7 +11,7 @@ class LatexLabelConventionInspectionTest : TexifyInspectionTestBase(LatexLabelCo
             """
             \begin{document}
                 \section{some section}
-                <weak_warning descr="Unconventional label prefix">\label{some-section}</weak_warning>
+                \label{<weak_warning descr="Unconventional label prefix">some-section</weak_warning>}
             \end{document}
             """.trimIndent()
         )
@@ -24,7 +24,7 @@ class LatexLabelConventionInspectionTest : TexifyInspectionTestBase(LatexLabelCo
             """
             \begin{document}
                 \begin{figure}
-                    <weak_warning descr="Unconventional label prefix">\label{some-figure}</weak_warning>
+                    \label{<weak_warning descr="Unconventional label prefix">some-figure</weak_warning>}
                 \end{figure}
             \end{document}
             """.trimIndent()
@@ -54,8 +54,8 @@ class LatexLabelConventionInspectionTest : TexifyInspectionTestBase(LatexLabelCo
             LatexFileType,
             """
             \begin{document}
-                <weak_warning descr="Unconventional label prefix">\begin{lstlisting}[label={some label}]
-                \end{lstlisting}</weak_warning>
+                \begin{lstlisting}[label={<weak_warning descr="Unconventional label prefix">some label</weak_warning>}]
+                \end{lstlisting}
             \end{document}
             """.trimIndent()
         )
@@ -67,7 +67,7 @@ class LatexLabelConventionInspectionTest : TexifyInspectionTestBase(LatexLabelCo
             LatexFileType,
             """
             \begin{document}
-                <weak_warning descr="Unconventional label prefix">\lstinputlisting[label={input listing}]{some/file}</weak_warning>
+                \lstinputlisting[label={<weak_warning descr="Unconventional label prefix">input listing</weak_warning>}]{some/file}
             \end{document}
             """.trimIndent()
         )
@@ -177,5 +177,19 @@ class LatexLabelConventionInspectionTest : TexifyInspectionTestBase(LatexLabelCo
             \end{document}
             """.trimIndent()
         )
+    }
+
+    fun testNoWarningForCorrectLabel() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \begin{document}
+                \paragraph{some paragraph}
+                \section{some section}
+                \label{sec:some-section}
+            \end{document}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting(false, false, true, false)
     }
 }

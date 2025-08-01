@@ -5,10 +5,10 @@ import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.commands.LatexNewDefinitionCommand
+import nl.hannahsten.texifyidea.psi.forEachCommand
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.forcedFirstRequiredParameterAsCommand
@@ -36,8 +36,7 @@ class LatexMightBreakTexifyInspection : TexifyInspectionBase() {
         isOntheFly: Boolean
     ): List<ProblemDescriptor> {
         val descriptors = descriptorList()
-        val commands = LatexCommandsIndex.Util.getItems(file, useCache = false)
-        for (command in commands) {
+        file.forEachCommand { command ->
             // Error when \newcommand is used on existing command
             if (CommandMagic.commandRedefinitions.contains(command.name)) {
                 val newCommand = command.forcedFirstRequiredParameterAsCommand()

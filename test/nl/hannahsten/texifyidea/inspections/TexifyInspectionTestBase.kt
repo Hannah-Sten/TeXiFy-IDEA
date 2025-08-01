@@ -2,7 +2,9 @@ package nl.hannahsten.texifyidea.inspections
 
 import com.intellij.codeInspection.InspectionsBundle
 import com.intellij.codeInspection.LocalInspectionTool
+import com.intellij.psi.PsiFile
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import nl.hannahsten.texifyidea.configureByFilesAndBuildFilesets
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.testutils.writeCommand
 
@@ -11,6 +13,10 @@ abstract class TexifyInspectionTestBase(vararg val inspections: LocalInspectionT
     override fun setUp() {
         super.setUp()
         myFixture.enableInspections(*inspections)
+    }
+
+    protected fun configureByFilesAndBuildFilesets(vararg files: String): Array<out PsiFile> {
+        return myFixture.configureByFilesAndBuildFilesets(*files)
     }
 
     protected fun testHighlighting(text: String) {

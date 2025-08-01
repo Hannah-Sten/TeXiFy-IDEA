@@ -30,7 +30,7 @@ class LatexPackageNameDoesNotMatchFileNameInspection : TexifyInspectionBase() {
         val commands = file.collectSubtreeTyped<LatexCommands> { it.name == LatexGenericRegularCommand.PROVIDESPACKAGE.commandWithSlash }
 
         for (command in commands) {
-            val providesName = command.getRequiredParameters().firstOrNull()?.split("/")?.last()
+            val providesName = command.requiredParameterText(0)?.split("/")?.last()
             val fileName = file.name.removeSuffix(".sty")
             if (fileName != providesName) {
                 descriptors.add(
@@ -58,7 +58,7 @@ class LatexPackageNameDoesNotMatchFileNameInspection : TexifyInspectionBase() {
             val providesCommand = descriptor.psiElement as LatexCommands
             val newCommandText = providesCommand.let {
                 it.text.replace(
-                    it.getRequiredParameters().first().split("/").last() + "}",
+                    it.requiredParametersText().first().split("/").last() + "}",
                     it.containingFile.name.removeSuffix(".sty") + "}"
                 )
             }

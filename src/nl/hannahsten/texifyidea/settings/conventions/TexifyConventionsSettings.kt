@@ -89,7 +89,6 @@ data class TexifyConventionsSettings internal constructor(
         else {
             name
         }
-
         return currentScheme.labelConventions.singleOrNull { c -> c.name == conventionName && c.type == type }
     }
 

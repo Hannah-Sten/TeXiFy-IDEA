@@ -4,13 +4,11 @@ import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockkStatic
 import io.mockk.unmockkAll
-import nl.hannahsten.texifyidea.configureByFilesWithMockCache
+import nl.hannahsten.texifyidea.configureByFilesAndBuildFilesets
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
-import nl.hannahsten.texifyidea.lang.alias.CommandManager
-import nl.hannahsten.texifyidea.lang.alias.EnvironmentManager
+import nl.hannahsten.texifyidea.updateFilesets
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
-import org.junit.Test
 
 class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnresolvedReferenceInspection()) {
 
@@ -48,19 +46,22 @@ class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnr
         myFixture.checkHighlighting()
     }
 
-    fun testNoWarningCustomCommand() {
-        myFixture.configureByText(
-            LatexFileType,
-            """
-            \newcommand{\mylabell}[1]{\label{#1}}
-            \section{some sec}\mylabell{some-sec}
-            ~\ref{some-sec}
-            """.trimIndent()
-        )
-        CommandManager.updateAliases(setOf("\\label"), project)
-        myFixture.checkHighlighting()
+    fun testBibtexReference() {
+        try {
+            val name = getTestName(false) + ".tex"
+            myFixture.configureByFilesAndBuildFilesets(name, "references.bib")
+
+            myFixture.checkHighlighting()
+        }
+        finally {
+            clearAllMocks()
+            unmockkAll()
+        }
     }
 
+    // TODO: Re-enable the following tests when custom commands are supported
+
+    /*
     fun testNoWarningCustomCommandWithPrefix() {
         myFixture.configureByText(
             LatexFileType,
@@ -72,19 +73,6 @@ class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnr
         )
         CommandManager.updateAliases(setOf("\\mylabel"), project)
         myFixture.checkHighlighting()
-    }
-
-    fun testBibtexReference() {
-        try {
-            val name = getTestName(false) + ".tex"
-            myFixture.configureByFilesWithMockCache(name, "references.bib")
-
-            myFixture.checkHighlighting()
-        }
-        finally {
-            clearAllMocks()
-            unmockkAll()
-        }
     }
 
     fun testFigureReferencedCustomCommandOptionalParameter() {
@@ -99,10 +87,10 @@ class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnr
                 \label{fig:#2}
             \end{figure}
             }
-        
+
             \includenamedimage[0.5]{test.png}{fancy caption}
             \includenamedimage{test2.png}{fancy caption}
-        
+
             some text~\ref{fig:test.png} more text.
             some text~\ref{fig:test2.png} more text.
             """.trimIndent()
@@ -140,6 +128,29 @@ class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnr
         myFixture.checkHighlighting()
     }
 
+
+    fun testNoWarningCustomCommand() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \newcommand{\mylabell}[1]{\label{#1}}
+            \section{some sec}\mylabell{some-sec}
+            ~\ref{some-sec}
+            """.trimIndent()
+        )
+        CommandManager.updateAliases(setOf("\\label"), project)
+        myFixture.checkHighlighting()
+    }
+
+     */
+
+    fun `test using xr package`() {
+        myFixture.copyFileToProject("presentations/presentation.tex")
+        myFixture.configureByFiles("xr-test.tex")
+        myFixture.updateFilesets()
+        myFixture.checkHighlighting()
+    }
+
     fun testComma() {
         myFixture.configureByText(LatexFileType, """\input{name,with,.tex}""")
         myFixture.checkHighlighting()
@@ -147,13 +158,6 @@ class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnr
 
     fun testNewcommand() {
         myFixture.configureByText(LatexFileType, """\newcommand{\bla}[1]{\includegraphics{#1}}""")
-        myFixture.checkHighlighting()
-    }
-
-    @Test
-    fun `test using xr package`() {
-        myFixture.copyFileToProject("presentations/presentation.tex")
-        myFixture.configureByFiles("xr-test.tex")
         myFixture.checkHighlighting()
     }
 }

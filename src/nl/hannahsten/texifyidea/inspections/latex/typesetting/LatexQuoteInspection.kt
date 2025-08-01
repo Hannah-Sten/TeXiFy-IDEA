@@ -13,12 +13,11 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexNormalText
-import nl.hannahsten.texifyidea.util.files.commandsInFileSet
+import nl.hannahsten.texifyidea.psi.traverseCommands
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.magic.PatternMagic.quotePattern
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.inMathContext
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
 import nl.hannahsten.texifyidea.util.replaceString
 import nl.hannahsten.texifyidea.util.toTextRange
 
@@ -50,7 +49,7 @@ class LatexQuoteInspection : TexifyInspectionBase() {
         QuoteMaker("\\MakeForeignBlockQuote", 1, 3),
         QuoteMaker("\\MakeHyphenBlockQuote", 1, 3),
         QuoteMaker("\\MakeHybridBlockQuote", 1, 3),
-    )
+    ).associateBy { it.command }
 
     private val fixers = arrayOf(
         MathFix(),
@@ -67,22 +66,21 @@ class LatexQuoteInspection : TexifyInspectionBase() {
             "`" to "'",
             "``" to "''",
         )
-        val commands = file.commandsInFileSet(useIndexCache = false)
+        val commands = file.traverseCommands()
 
         // When Ligatures=TeXOff is set, straight quotes will be used. This setting can be applied in certain fontspec commands
         val fontspecCommands = LatexGenericRegularCommand.entries.filter { it.dependency == LatexPackage.FONTSPEC }.map { it.cmd }
         if (commands.filter { it.name in fontspecCommands }.any { it.text.contains("ligatures=TeXOff", ignoreCase = true) }) {
             return emptyList()
         }
+        for (command in commands) {
+            val quoteMaker = quoteMakers[command.name] ?: continue
 
-        for (quoteMaker in quoteMakers) {
-            for (command in commands) {
-                val opener = command.requiredParameter(quoteMaker.openParam)
-                val closer = command.requiredParameter(quoteMaker.closeParam)
+            val opener = command.requiredParameterText(quoteMaker.openParam)
+            val closer = command.requiredParameterText(quoteMaker.closeParam)
 
-                if (!opener.isNullOrEmpty() && !closer.isNullOrEmpty()) {
-                    validQuotes.add(opener to closer)
-                }
+            if (!opener.isNullOrEmpty() && !closer.isNullOrEmpty()) {
+                validQuotes.add(opener to closer)
             }
         }
         val openers = LinkedHashSet(validQuotes.map { it.first })

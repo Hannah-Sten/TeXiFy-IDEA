@@ -95,8 +95,8 @@ fun getTexinputsPaths(
     rootFiles: Collection<VirtualFile>,
     expandPaths: Boolean = true,
     latexmkSearchDirectory: VirtualFile? = null
-): List<String> {
-    val searchPaths = mutableListOf<String>()
+): Set<String> {
+    val searchPaths = mutableSetOf<String>()
     val runManager = RunManagerImpl.getInstanceImpl(project) as RunManager
     val allConfigurations = runManager.allConfigurationsList
         .filterIsInstance<LatexRunConfiguration>()
