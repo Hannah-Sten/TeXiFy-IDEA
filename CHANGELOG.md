@@ -5,6 +5,20 @@
 ### Added
 
 ### Fixed
+
+## [0.11.0] - 2025-08-04
+
+Welcome to TeXiFy IDEA 0.11.0! This release is a major rewrite of all index-related functionality by @Ezrnest, which massively improves performance. This may have introduced new bugs, so please report any new issue to GitHub.
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
+
+### Added
+
+* Rewrite all index-related functionality to improve performance, by @Ezrnest
+
+### Fixed
+
 * Fix a parser issue when using inline math inside a \hbox inside inline math 
 * Fix a parser issue when using \newcommand without braces
 * Fix a possible UI freeze when an output directory is used with more than 10000 subdirectories
@@ -618,7 +632,8 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.4...HEAD
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.0...HEAD
+[0.11.0]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.4...v0.11.0
 [0.10.4]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.3...v0.10.4
 [0.10.3]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.2...v0.10.3
 [0.10.2]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.1...v0.10.2
