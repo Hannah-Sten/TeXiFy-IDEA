@@ -19,7 +19,7 @@ import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.psi.LatexParameterText
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.document
-import nl.hannahsten.texifyidea.util.includedPackages
+import nl.hannahsten.texifyidea.util.includedPackagesInFileset
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
@@ -67,7 +67,7 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
-        val isCleverefLoaded = file.includedPackages().contains(LatexPackage.CLEVEREF)
+        val isCleverefLoaded = file.includedPackagesInFileset().contains(LatexPackage.CLEVEREF)
 
         val commands = file.commandsInFile()
         for (command in commands) {

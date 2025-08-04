@@ -20,7 +20,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
 import nl.hannahsten.texifyidea.psi.LatexNoMathContent
 import nl.hannahsten.texifyidea.psi.LatexNormalText
-import nl.hannahsten.texifyidea.util.parser.allCommands
+import nl.hannahsten.texifyidea.psi.traverseCommands
 import java.text.Normalizer
 import java.util.*
 
@@ -51,7 +51,7 @@ open class LatexRedundantEscapeInspection : TexifyInspectionBase() {
             return descriptors
         }
 
-        val commands = file.allCommands()
+        val commands = file.traverseCommands()
         for (command in commands) {
             val inMathMode = PsiTreeUtil.getParentOfType(command, LatexMathEnvironment::class.java) != null
             if (inMathMode) {
@@ -60,7 +60,7 @@ open class LatexRedundantEscapeInspection : TexifyInspectionBase() {
             }
 
             val diacritic = Diacritic.Normal.fromCommand(command.commandToken.text) ?: continue
-            if (diacritic.isTypeable && (command.getRequiredParameters().isNotEmpty() || Util.getNormalTextSibling(command) != null)) {
+            if (diacritic.isTypeable && (command.requiredParametersText().isNotEmpty() || Util.getNormalTextSibling(command) != null)) {
                 descriptors.add(
                     manager.createProblemDescriptor(
                         command,
@@ -93,7 +93,7 @@ open class LatexRedundantEscapeInspection : TexifyInspectionBase() {
 
             val range: TextRange
             val base: String
-            val param = command.getRequiredParameters().getOrNull(0)
+            val param = command.requiredParametersText().getOrNull(0)
             if (param != null) {
                 // Just a required parameter
                 range = command.textRange

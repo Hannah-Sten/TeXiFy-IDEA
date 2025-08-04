@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.util.parser
 
+import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment
@@ -73,6 +74,30 @@ inline fun PsiElement.anyParent(predicate: (PsiElement) -> Boolean): Boolean {
 }
 
 /**
+ * Returns the start offset of this PsiElement in the given ancestor, or -1 if the ancestor is not a parent of this PsiElement.
+ */
+fun PsiElement.startOffsetInAncestor(ancestor: PsiElement): Int {
+    // If the ancestor is not a parent, return -1
+    var current: PsiElement? = this
+    var startOffset = 0
+    while (current != null && current != ancestor) {
+        startOffset += current.startOffsetInParent
+        current = current.parent
+    }
+    return if (current == null) -1 else startOffset // ancestor not found in the parent chain
+}
+
+/**
+ * Returns the text range of this PsiElement in the given ancestor, or null if the ancestor is not a parent of this PsiElement.
+ */
+fun PsiElement.textRangeInAncestor(ancestor: PsiElement): TextRange? {
+    // If the ancestor is not a parent, return null
+    val startOffset = this.startOffsetInAncestor(ancestor)
+    if(startOffset < 0) return null
+    return TextRange.from(startOffset, this.textLength)
+}
+
+/**
  * Checks if the psi element is in math mode or not.
  *
  * **This function is slow as it checks all parents of the psi element.**
@@ -100,6 +125,12 @@ inline fun PsiElement.forEachDirectChild(action: (PsiElement) -> Unit) {
     while (child != null) {
         action(child)
         child = child.nextSibling
+    }
+}
+
+inline fun <reified Psi : PsiElement> PsiElement.forEachDirectChildTyped(action: (Psi) -> Unit) {
+    forEachDirectChild {
+        if (it is Psi) action(it)
     }
 }
 
@@ -155,6 +186,34 @@ fun PsiElement.traverse(depth: Int = Int.MAX_VALUE): Sequence<PsiElement> = sequ
     if (depth == 0) return@sequence
     forEachDirectChild { c ->
         yieldAll(c.traverse(depth - 1))
+    }
+}
+
+private fun PsiElement.traversePruned0(depth: Int = Int.MAX_VALUE, pruneIf: (PsiElement) -> Boolean): Sequence<PsiElement> = sequence {
+    val element = this@traversePruned0
+    if (depth < 0 || pruneIf(element)) return@sequence
+    yield(element)
+    if (depth == 0) return@sequence
+    forEachDirectChild { c ->
+        yieldAll(c.traversePruned0(depth - 1, pruneIf))
+    }
+}
+
+/**
+ * Traverse the PSI tree and yield each element (including this element),
+ * but prune the traversal (and the subtree) if the element matches the given predicate.
+ * Note that the root element is never pruned.
+ *
+ *
+ * @param depth The maximum depth to traverse the PSI tree.
+ * @param pruneIf The predicate to prune the subtree. If it returns true for an element, the whole subtree of that element (inclusive) is not traversed.
+ */
+fun PsiElement.traversePruneIf(depth: Int = Int.MAX_VALUE, pruneIf: (PsiElement) -> Boolean): Sequence<PsiElement> = sequence {
+    if (depth < 0) return@sequence
+    yield(this@traversePruneIf)
+    if (depth == 0) return@sequence
+    forEachDirectChild { c ->
+        yieldAll(c.traversePruned0(depth - 1, pruneIf))
     }
 }
 
@@ -215,9 +274,11 @@ fun PsiElement.traverse(depth: Int = Int.MAX_VALUE, action: (PsiElement) -> Bool
 
 /**
  * Traverse the whole subtree of this [PsiElement] and apply the action to each element (including this element).
+ *
+ * @see [forEachDirectChild]
  */
-inline fun PsiElement.traverseAll(crossinline action: (PsiElement) -> Unit) {
-    traverse {
+inline fun PsiElement.forEachChild(depth: Int = Int.MAX_VALUE, crossinline action: (PsiElement) -> Unit) {
+    traverse(depth) {
         action(it)
         true
     }
@@ -225,13 +286,14 @@ inline fun PsiElement.traverseAll(crossinline action: (PsiElement) -> Unit) {
 
 /**
  * Traverse the whole subtree of this [PsiElement] and apply the action to each element of type [T] (including this element if it is of type [T]).
+ *
+ * @see [forEachDirectChild]
  */
-inline fun <reified T : PsiElement> PsiElement.traverseAllTyped(crossinline action: (T) -> Unit) {
-    traverse {
+inline fun <reified T : PsiElement> PsiElement.forEachChildTyped(depth: Int = Int.MAX_VALUE, crossinline action: (T) -> Unit) {
+    forEachChild(depth) {
         if (it is T) {
             action(it)
         }
-        true
     }
 }
 
@@ -291,9 +353,10 @@ fun PsiElement.collectSubtree(depth: Int, predicate: (PsiElement) -> Boolean): L
 inline fun <reified T : PsiElement> PsiElement.collectSubtreeTyped(depth: Int = Int.MAX_VALUE, noinline predicate: (T) -> Boolean): List<T> {
     // Collect all children of the PsiElement that match the predicate
     return collectSubtreeTo(mutableListOf(), depth) {
-        if(it is T && predicate(it)) {
+        if (it is T && predicate(it)) {
             it
-        } else {
+        }
+        else {
             null
         }
     }
@@ -328,10 +391,11 @@ fun <T : PsiElement> PsiElement.findFirstChildOfType(clazz: KClass<T>): T? {
 inline fun <reified T : PsiElement> PsiElement.findFirstChildTyped(depth: Int = Int.MAX_VALUE, crossinline predicate: (T) -> Boolean): T? {
     var result: T? = null
     traverse(depth) {
-        if(it is T && predicate(it)) {
+        if (it is T && predicate(it)) {
             result = it
             false
-        } else {
+        }
+        else {
             true
         }
     }

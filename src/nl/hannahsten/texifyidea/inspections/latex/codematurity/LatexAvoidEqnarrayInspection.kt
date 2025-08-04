@@ -16,7 +16,7 @@ import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.util.parser.endOffset
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.insertUsepackage
-import nl.hannahsten.texifyidea.util.parser.traverseAllTyped
+import nl.hannahsten.texifyidea.util.parser.forEachChildTyped
 import java.util.*
 
 /**
@@ -35,7 +35,7 @@ open class LatexAvoidEqnarrayInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        file.traverseAllTyped<LatexEnvironment> { env ->
+        file.forEachChildTyped<LatexEnvironment> { env ->
             val name = env.getEnvironmentName()
             if(name == "eqnarray" || name == "eqnarray*") {
                 val star = name.substring("eqnarray".length)

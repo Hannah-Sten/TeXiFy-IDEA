@@ -9,7 +9,7 @@ import nl.hannahsten.texifyidea.structure.EditableHintPresentation
  */
 class LatexSectionPresentation(sectionCommand: LatexCommands) : EditableHintPresentation {
 
-    private val sectionName = sectionCommand.getRequiredParameters().firstOrNull() ?: "Unnamed section"
+    private val sectionName = sectionCommand.requiredParameterText(0) ?: "Unnamed section"
     private var hint = ""
 
     override fun getPresentableText() = sectionName

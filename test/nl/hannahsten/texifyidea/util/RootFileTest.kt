@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.util
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import nl.hannahsten.texifyidea.configureByFilesAndBuildFilesets
 import nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexFileNotFoundInspection
 
 class RootFileTest : BasePlatformTestCase() {
@@ -11,10 +12,8 @@ class RootFileTest : BasePlatformTestCase() {
 
     fun testTwoLevelDeepInclusion() {
         myFixture.enableInspections(LatexFileNotFoundInspection())
-        myFixture.copyFileToProject("main.tex")
-        myFixture.copyFileToProject("contents/level-one.tex")
-        myFixture.copyFileToProject("contents/level-two/level-three.tex")
-        myFixture.configureByFile("contents/level-two/level-two.tex")
+        myFixture.configureByFilesAndBuildFilesets("contents/level-two/level-two.tex", "main.tex", "contents/level-one.tex", "contents/level-two/level-three.tex")
+        // calls to rebuild the filesets
         myFixture.checkHighlighting()
     }
 }

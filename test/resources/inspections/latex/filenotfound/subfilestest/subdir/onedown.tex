@@ -1,7 +1,8 @@
-\documentclass[../main.tex]{<error descr="File 'subfiles.cls' not found">subfiles</error>}
+\documentclass[../main.tex]{../subfiles}
 
 \begin{document}
-    Inclusions should be relative to this file, not to the main file.
+    Inclusions should be relative to this file, not to the main file:
     \subfile{subsubdir/twodown.tex}
-    \subfile{<error descr="File 'subdir/subsubdir/twodown.tex' not found">subdir/subsubdir/twodown.tex</error>}
+    But if it is relative to the main file, it should still be found (we can consider add an inspection for this):
+    \subfile{subdir/subsubdir/twodown.tex}
 \end{document}

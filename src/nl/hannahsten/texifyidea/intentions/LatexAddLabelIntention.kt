@@ -16,7 +16,7 @@ import com.intellij.refactoring.rename.RenameProcessor
 import com.intellij.refactoring.rename.inplace.MemberInplaceRenamer
 import nl.hannahsten.texifyidea.psi.LatexCommandWithParams
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.util.labels.findLatexAndBibtexLabelStringsInFileSet
+import nl.hannahsten.texifyidea.util.labels.Labels
 import kotlin.math.max
 
 abstract class LatexAddLabelIntention(name: String) : TexifyIntentionBase(name) {
@@ -65,25 +65,10 @@ abstract class LatexAddLabelIntention(name: String) : TexifyIntentionBase(name) 
             ?: file.findElementAt(max(0, offset - 1))?.parentOfType()
     }
 
-    protected fun getUniqueLabelName(base: String, prefix: String, file: PsiFile): LabelWithPrefix {
+    protected fun getUniqueLabelWithPrefix(base: String, prefix: String, file: PsiFile): LabelWithPrefix {
         val labelBase = "$prefix:$base"
-        val allLabels = file.findLatexAndBibtexLabelStringsInFileSet()
-        val fullLabel = appendCounter(labelBase, allLabels)
+        val fullLabel = Labels.getUniqueLabelName(labelBase, file)
         return LabelWithPrefix(prefix, fullLabel.substring(prefix.length + 1))
-    }
-
-    /**
-     * Keeps adding a counter behind the label until there is no other label with that name.
-     */
-    private fun appendCounter(label: String, allLabels: Set<String>): String {
-        var counter = 2
-        var candidate = label
-
-        while (allLabels.contains(candidate)) {
-            candidate = label + (counter++)
-        }
-
-        return candidate
     }
 
     data class LabelWithPrefix(val prefix: String, val base: String) {

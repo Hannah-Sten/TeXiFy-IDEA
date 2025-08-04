@@ -2,7 +2,7 @@ package nl.hannahsten.texifyidea.reference
 
 import com.intellij.psi.*
 import com.intellij.util.containers.toArray
-import nl.hannahsten.texifyidea.index.LatexGlossaryEntryIndex
+import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.lang.commands.LatexGlossariesCommand
 import nl.hannahsten.texifyidea.psi.LatexParameterText
 
@@ -28,7 +28,7 @@ class LatexGlossaryReference(element: LatexParameterText) :
     }
 
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
-        val glossaryEntries = LatexGlossaryEntryIndex.Util.getItemsInFileSet(myElement.containingFile.originalFile)
+        val glossaryEntries = NewSpecialCommandsIndex.getAllGlossaryEntries(myElement.containingFile.originalFile)
         return glossaryEntries
             .filter { LatexGlossariesCommand.extractGlossaryLabel(it) == myElement.name }
             .toSet()

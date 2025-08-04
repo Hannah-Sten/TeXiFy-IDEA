@@ -287,36 +287,6 @@ fun PsiElement.inDirectEnvironmentContext(context: Environment.Context): Boolean
 }
 
 /**
- * Performs the given [action] on each child, in order.
- */
-inline fun PsiElement.forEachChild(action: (PsiElement) -> Unit) {
-    for (child in children) action(child)
-}
-
-/**
- * Performs the given [action] on each child of the given type `Psi`, in order.
- */
-inline fun <reified Psi : PsiElement> PsiElement.forEachChildOfType(action: (PsiElement) -> Unit) = forEachChild {
-    if (it is Psi) {
-        action(it)
-    }
-}
-
-/**
- * Finds the `n`th (index) child of the given type.
- */
-inline fun <reified ChildPsi : PsiElement> PsiElement.nthChildOfType(index: Int): ChildPsi? {
-    var pointer = 0
-    forEachChildOfType<ChildPsi> {
-        if (pointer == index) {
-            return it as ChildPsi
-        }
-        pointer++
-    }
-    return null
-}
-
-/**
  * Finds the first child of the PsiElement that is not whitespace.
  * When there is no first child that is not whitespace, this function returns `null`.
  */
@@ -407,7 +377,7 @@ inline fun <reified PsiChild : PsiElement, reified PsiParent : PsiElement> PsiCh
 
     // Loop over all children to find this parameter.
     var currentIndex = 0
-    parentElement.forEachChildOfType<PsiChild> {
+    parentElement.forEachDirectChildTyped<PsiChild> {
         if (it == this) {
             return currentIndex
         }

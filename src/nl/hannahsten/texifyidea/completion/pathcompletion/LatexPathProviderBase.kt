@@ -32,9 +32,8 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
 
     private var parameters: CompletionParameters? = null
     private var resultSet: CompletionResultSet? = null
-    private var validExtensions: List<String>? = null
+    private var validExtensions: Set<String>? = null
     private var absolutePathSupport = true
-    private var supportsAnyExtension = true
 
     companion object {
 
@@ -51,10 +50,9 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
         if (parentCommand is RequiredFileArgument) {
             validExtensions = parentCommand.supportedExtensions
             absolutePathSupport = parentCommand.isAbsolutePathSupported
-            supportsAnyExtension = parentCommand.supportsAnyExtension
         }
 
-        var finalCompleteText = expandCommandsOnce(autocompleteText, project = parameters.originalFile.project, file = parameters.originalFile) ?: autocompleteText
+        var finalCompleteText = expandCommandsOnce(autocompleteText, project = parameters.originalFile.project, file = parameters.originalFile.virtualFile)
 
         // Process the expanded text again
         finalCompleteText = processAutocompleteText(finalCompleteText)
@@ -174,7 +172,7 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
      */
     private fun addFileCompletion(baseDir: String, foundFile: VirtualFile) {
         // Some commands like \input accept any file extension (supportsExtension), but showing only .tex files is probably a better user experience.
-        if (validExtensions != null && validExtensions!!.isNotEmpty() && validExtensions!![0].isNotEmpty()) {
+        if (validExtensions != null && validExtensions!!.isNotEmpty() && validExtensions!!.first().isNotEmpty()) {
             if (validExtensions!!.contains(foundFile.extension).not()) return
         }
 

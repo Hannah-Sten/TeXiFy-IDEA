@@ -78,6 +78,7 @@ class NativeTexliveSdk : TexliveSdk("Native TeX Live SDK") {
         if (articlePath.isNullOrBlank()) return null
 
         // Assume article.sty is in tex/latex/base/article.sty
-        return LocalFileSystem.getInstance().findFileByPath(articlePath)?.parent?.parent
+        // we go up to tex/
+        return LocalFileSystem.getInstance().findFileByPath(articlePath)?.parent?.parent?.parent
     }
 }

@@ -1,8 +1,10 @@
 package nl.hannahsten.texifyidea.util.files
 
 import com.intellij.openapi.application.smartReadAction
+import com.intellij.openapi.vfs.findPsiFile
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SUBFILES
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
@@ -45,15 +47,18 @@ suspend fun PsiFile.findRootFilesWithoutCache(): Set<PsiFile> {
  * multiple root files is preferred over using [findRootFile].
  */
 fun PsiFile.findRootFile(useIndexCache: Boolean = true): PsiFile {
-    val allRoots = findRootFiles(useIndexCache)
+    val allRoots = findRootFiles()
     // If there are multiple root files, prefer the current one
     return if (this in allRoots) this else allRoots.firstOrNull() ?: this
 }
 
 /**
- * Gets the set of files that are the root files of `this` file, using [ReferencedFileSetCache.getSetFromCache].
+ * Gets the set of files that are the root files of `this` file, using [LatexProjectStructure.getFilesetsFor].
  */
-fun PsiFile.findRootFiles(useIndexCache: Boolean = true): Set<PsiFile> = ReferencedFileSetService.getInstance().rootFilesOf(this, useIndexCache)
+fun PsiFile.findRootFiles(): Set<PsiFile> {
+    val project = this.project
+    return LatexProjectStructure.getFilesetsFor(this).mapNotNullTo(mutableSetOf()) { it.root.findPsiFile(project) }
+}
 
 /**
  * Checks whether the psi file is a tex document root or not.
@@ -74,7 +79,7 @@ fun PsiFile.isRoot(): Boolean {
 
     // If the file uses the subfiles documentclass, then it is a root file in the sense that all file inclusions
     // will be relative to this file. Note that it may include the preamble of a different file (using optional parameter of \documentclass)
-    fun usesSubFiles() = documentClass()?.getRequiredParameters()?.contains(SUBFILES.name) == true
+    fun usesSubFiles() = documentClass()?.requiredParametersText()?.contains(SUBFILES.name) == true
 
     // Go through all run configurations, to check if there is one which contains the current file.
     // If so, then we assume that the file is compilable and must be a root file.
@@ -88,7 +93,7 @@ fun PsiFile.isRoot(): Boolean {
  * e.g. \mycommand{arg1,arg2}{arg3} will return [arg1, arg2, arg3].
  */
 fun LatexCommands.getAllRequiredArguments(): List<String>? {
-    val required = getRequiredParameters()
+    val required = requiredParametersText()
     if (required.isEmpty()) return null
     return required.flatMap { it.split(',') }
 }

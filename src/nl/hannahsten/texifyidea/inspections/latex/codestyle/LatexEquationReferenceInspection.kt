@@ -1,10 +1,10 @@
 package nl.hannahsten.texifyidea.inspections.latex.codestyle
 
 import com.intellij.codeInspection.ProblemDescriptor
+import nl.hannahsten.texifyidea.index.NewLabelsIndex
 import nl.hannahsten.texifyidea.inspections.TexifyRegexInspection
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.util.insertUsepackage
-import nl.hannahsten.texifyidea.util.labels.findLatexLabelingElementsInFileSet
 import nl.hannahsten.texifyidea.util.parser.findOuterMathEnvironment
 import java.util.regex.Pattern
 
@@ -17,9 +17,12 @@ open class LatexEquationReferenceInspection : TexifyRegexInspection(
     replacementRange = { it.groupRange(0) },
     quickFixName = { "Replace with \\eqref" },
     groupFetcher = { listOf(it.group(2)) },
-    cancelIf = { matcher, psiFile ->
+//     TODO: Re-implement this in better ways
+    cancelIf = cancelIf@{ matcher, psiFile ->
         // Cancel if the label was defined outside a math environment.
-        psiFile.findLatexLabelingElementsInFileSet().find { it.text == "\\label{${matcher.group(2)}}" }.findOuterMathEnvironment() == null
+        val refName = matcher.group(2) ?: return@cancelIf true
+        val labels = NewLabelsIndex.getByNameInFileSet(refName, psiFile)
+        labels.isEmpty() || labels.any { it.findOuterMathEnvironment() == null }
     }
 ) {
 

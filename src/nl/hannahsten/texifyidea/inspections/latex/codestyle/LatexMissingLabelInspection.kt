@@ -18,6 +18,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.psi.getLabel
+import nl.hannahsten.texifyidea.psi.traverseCommands
 import nl.hannahsten.texifyidea.settings.conventions.LabelConventionType
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsConfigurable
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettingsManager
@@ -25,6 +26,7 @@ import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.hasLabel
 import nl.hannahsten.texifyidea.util.parser.hasStar
+import nl.hannahsten.texifyidea.util.parser.traverseTyped
 import org.jetbrains.annotations.Nls
 import java.util.*
 
@@ -57,13 +59,14 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
             labeledCommands.remove("\\part")
         }
 
-        file.commandsInFile().filter {
+        file.traverseCommands().filter {
             labeledCommands.contains(it.name) && it.name != "\\item" && !it.hasStar()
         }.forEach { addCommandDescriptor(it, descriptors, manager, isOntheFly) }
 
         val labeledEnvironments =
             requireLabel.filter { c -> c.type == LabelConventionType.ENVIRONMENT }.map { it.name }.toSet()
-        file.environmentsInFile().filter { env -> labeledEnvironments.contains(env.getEnvironmentName()) }
+        file.traverseTyped<LatexEnvironment>()
+            .filter { env -> labeledEnvironments.contains(env.getEnvironmentName()) }
             .forEach { addEnvironmentDescriptor(it, descriptors, manager, isOntheFly) }
 
         return descriptors

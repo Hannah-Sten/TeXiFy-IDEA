@@ -113,7 +113,7 @@ end_command ::= END_TOKEN (OPEN_BRACE env_identifier CLOSE_BRACE)?  {
     pin=1
 }
 
-parameter ::= optional_param | required_param | picture_param | ANGLE_PARAM {
+parameter ::= required_param | optional_param | picture_param | ANGLE_PARAM {
     mixin="nl.hannahsten.texifyidea.psi.impl.LatexParameterImplMixin"
 }
 

@@ -13,7 +13,7 @@ import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.util.and
 import nl.hannahsten.texifyidea.util.keyNames
 import nl.hannahsten.texifyidea.util.parser.parentOfType
-import nl.hannahsten.texifyidea.util.parser.traverseAllTyped
+import nl.hannahsten.texifyidea.util.parser.forEachChildTyped
 import nl.hannahsten.texifyidea.util.tokenType
 
 /**
@@ -70,7 +70,7 @@ object BibtexKeyProvider : CompletionProvider<CompletionParameters>() {
         val result = HashSet<BibtexEntryField>()
         val presentFieldSet: MutableSet<String> = allFields.map { it.fieldName }
             .toMutableSet()
-        file.traverseAllTyped<BibtexEntry> {
+        file.forEachChildTyped<BibtexEntry> {
             val name = it.text
             if(name !in presentFieldSet) {
                 presentFieldSet.add(name)

@@ -26,6 +26,8 @@ data class TexifySettingsState(
 
     var hasApprovedDetexify: Boolean = false,
 
+    var filesetExpirationTimeMs: Int = TexifySettings.DEFAULT_FILESET_EXPIRATION_TIME_MS,
+
     // Kept for backwards compatibility
     var autoCompile: Boolean = false,
     var autoCompileOnSaveOnly: Boolean = false,

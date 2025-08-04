@@ -6,13 +6,13 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexNoMathContent
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
+import nl.hannahsten.texifyidea.psi.forEachCommand
 import nl.hannahsten.texifyidea.util.parser.nextSiblingIgnoreWhitespace
 import nl.hannahsten.texifyidea.util.parser.parentOfType
 import nl.hannahsten.texifyidea.util.parser.previousSiblingIgnoreWhitespace
@@ -44,8 +44,7 @@ class LatexOverInsteadOfFracInspection : TexifyInspectionBase() {
         isOntheFly: Boolean
     ): List<ProblemDescriptor> {
         val descriptors = descriptorList()
-        val commands = LatexCommandsIndex.Util.getItems(file)
-        for (command in commands) {
+        file.forEachCommand { command ->
             if ("\\over" == command.name) {
                 descriptors.add(
                     manager.createProblemDescriptor(

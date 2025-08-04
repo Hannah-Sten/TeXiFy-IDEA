@@ -6,13 +6,13 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.index.LatexGlossaryEntryIndex
+import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.commands.LatexGlossariesCommand
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
+import nl.hannahsten.texifyidea.util.parser.traverseTyped
 import nl.hannahsten.texifyidea.util.toTextRange
 
 /**
@@ -23,17 +23,33 @@ class LatexMissingGlossaryReferenceInspection : TexifyInspectionBase() {
     override val inspectionId = "MissingGlossaryReference"
     override fun getDisplayName() = "Missing glossary reference"
 
+    private val nameLetterRegex = "[^a-zA-Z]+".toRegex()
+
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        val descriptors = mutableListOf<ProblemDescriptor>()
-        val names = LatexGlossaryEntryIndex.Util.getItemsInFileSet(file).mapNotNull { LatexGlossariesCommand.extractGlossaryName(it) }
-        // Unfortunately the lowest level we have is a block of text, so we have to do a text-based search
-        file.collectSubtreeTyped<LatexNormalText>().forEach { textElement ->
-            val text = textElement.text
-            names.forEach { name ->
+        val entries = NewSpecialCommandsIndex.getAllGlossaryEntries(file)
+        val extractedNames = entries.asSequence().mapNotNull { LatexGlossariesCommand.extractGlossaryName(it) }
+            .map {
                 // Ensure the regex is valid, assuming that regular words don't contain e.g. braces
-                val nameLetters = name.replace("[^a-zA-Z]+".toRegex(), "")
-                val correctOccurrences = "\\\\gls[^{]+\\{($nameLetters)}".toRegex().findAll(text).mapNotNull { it.groups.firstOrNull()?.range }
-                val allOccurrences = nameLetters.toRegex().findAll(text).map { it.range }
+                it.replace(nameLetterRegex, "")
+            }.filter {
+                it.isNotBlank()
+            }.toList()
+        if (extractedNames.isEmpty()) {
+            // No valid glossary names, so no need to check for missing references
+            return emptyList()
+        }
+        val descriptors = descriptorList()
+        val regexes = extractedNames.map { nameLetters ->
+            val nameLetterRegex = nameLetters.toRegex()
+            val glsRegex = "\\\\gls[^{]+\\{($nameLetters)}".toRegex()
+            nameLetterRegex to glsRegex
+        }
+        // Unfortunately the lowest level we have is a block of text, so we have to do a text-based search
+        file.traverseTyped<LatexNormalText>().forEach { textElement ->
+            val text = textElement.text
+            regexes.forEach { (nameLettersRegex, glsRegex) ->
+                val correctOccurrences = glsRegex.findAll(text).mapNotNull { it.groups.firstOrNull()?.range }
+                val allOccurrences = nameLettersRegex.findAll(text).map { it.range }
                 allOccurrences.filter { !correctOccurrences.contains(it) }.forEach { range ->
                     descriptors.add(
                         manager.createProblemDescriptor(

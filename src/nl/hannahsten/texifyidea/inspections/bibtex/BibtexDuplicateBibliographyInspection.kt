@@ -9,13 +9,13 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.createSmartPointer
-import nl.hannahsten.texifyidea.index.LatexIncludesIndex
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.includedPackages
-import nl.hannahsten.texifyidea.util.parser.getIncludedFiles
+import nl.hannahsten.texifyidea.reference.InputFileReference
+import nl.hannahsten.texifyidea.util.includedPackagesInFileset
 
 /**
  * @author Sten Wessel
@@ -33,7 +33,7 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         // Chapterbib allows multiple bibliographies
-        if (file.includedPackages().any { it == LatexPackage.CHAPTERBIB }) {
+        if (file.includedPackagesInFileset().any { it == LatexPackage.CHAPTERBIB }) {
             return emptyList()
         }
 
@@ -42,13 +42,13 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
         // Map each bibliography file to all the commands which include it
         val groupedIncludes = mutableMapOf<Pair<String, String>, MutableList<LatexCommands>>()
 
-        LatexIncludesIndex.Util.getItemsInFileSet(file).asSequence()
-            .filter { it.name == "\\bibliography" || it.name == "\\addbibresource" }
-            .forEach { command ->
-                for ((filePath, fileName) in command.getIncludedFiles(false).map { it.virtualFile.path to it.name }) {
-                    groupedIncludes.getOrPut(filePath to fileName) { mutableListOf() }.add(command)
-                }
+        val commands = NewCommandsIndex.getByNameInFileSet("\\bibliography", file).asSequence() +
+            NewCommandsIndex.getByNameInFileSet("\\addbibresource", file)
+        commands.forEach { command ->
+            for ((filePath, fileName) in InputFileReference.getIncludedFiles(command, false).map { it.virtualFile.path to it.name }) {
+                groupedIncludes.getOrPut(filePath to fileName) { mutableListOf() }.add(command)
             }
+        }
 
         groupedIncludes.asSequence()
             .filter { (_, commands) -> commands.size > 1 }

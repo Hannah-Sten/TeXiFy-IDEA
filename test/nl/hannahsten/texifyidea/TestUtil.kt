@@ -1,21 +1,20 @@
 package nl.hannahsten.texifyidea
 
-import com.intellij.testFramework.fixtures.CodeInsightTestFixture
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.mockkObject
-import nl.hannahsten.texifyidea.util.files.ReferencedFileSetService
-import nl.hannahsten.texifyidea.util.files.psiFile
+import com.intellij.psi.PsiFile
+import com.intellij.testFramework.common.timeoutRunBlocking
 
-fun CodeInsightTestFixture.configureByFilesWithMockCache(vararg filenames: String) {
-    val files = filenames.mapNotNull { copyFileToProject(it).psiFile(project) }
-//    val files = configureByFiles(*filenames)
-    val mockService = mockk<ReferencedFileSetService>()
-    every { mockService.referencedFileSetOf(any()) } returns files.toSet()
-    every { mockService.rootFilesOf(any()) } returns setOf(files.first())
-    every { mockService.dropAllCaches(any()) } answers { callOriginal() }
-    every { mockService.markCacheOutOfDate() } answers { callOriginal() }
-    mockkObject(ReferencedFileSetService.Companion)
-    every { ReferencedFileSetService.getInstance() } returns mockService
-    openFileInEditor(files.first().virtualFile)
+import com.intellij.testFramework.fixtures.CodeInsightTestFixture
+import nl.hannahsten.texifyidea.index.LatexProjectStructure
+import kotlin.time.Duration.Companion.seconds
+
+fun CodeInsightTestFixture.updateFilesets() {
+    timeoutRunBlocking(1.seconds) {
+        LatexProjectStructure.updateFilesetsSuspend(project)
+    }
+}
+
+fun CodeInsightTestFixture.configureByFilesAndBuildFilesets(vararg filenames: String): Array<out PsiFile> {
+    return configureByFiles(*filenames).also {
+        updateFilesets()
+    }
 }

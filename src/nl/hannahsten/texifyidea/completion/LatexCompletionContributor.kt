@@ -13,8 +13,6 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import nl.hannahsten.texifyidea.inspections.ALL_TEXIFY_INSPECTIONS
 import nl.hannahsten.texifyidea.inspections.InsightGroup
-import nl.hannahsten.texifyidea.lang.LatexMode
-import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
@@ -27,9 +25,9 @@ import nl.hannahsten.texifyidea.util.parser.*
 import java.util.*
 
 /**
- * This class registers some completion contributors. For labels we currently use reference completion instead of
- * contributor-based completion, in [nl.hannahsten.texifyidea.reference.LatexLabelReference],
- * though at the moment I don't see a reason why this is the case.
+ * This class registers some completion contributors.
+ *
+ *
  * Also see https://www.jetbrains.org/intellij/sdk/docs/reference_guide/custom_language_support/code_completion.html
  *
  * @author Sten Wessel, Hannah Schellekens
@@ -44,6 +42,7 @@ open class LatexCompletionContributor : CompletionContributor() {
         registerGraphicPathCompletion()
         registerColorCompletion()
         registerMagicCommentCompletion()
+        registerLabelReferenceCompletion()
         registerBibliographyReferenceCompletion()
         registerPackageNameCompletion()
         registerGlossariesCompletion()
@@ -61,7 +60,7 @@ open class LatexCompletionContributor : CompletionContributor() {
             .andNot(PlatformPatterns.psiElement().inside(LatexMathEnvironment::class.java))
             .withPattern { psiElement, _ -> psiElement.inMathContext().not() }
             .withLanguage(LatexLanguage),
-        LatexCommandsAndEnvironmentsCompletionProvider(LatexMode.NORMAL)
+        LatexNormalCommandCompletionProvider
     )
 
     /**
@@ -73,19 +72,16 @@ open class LatexCompletionContributor : CompletionContributor() {
             PlatformPatterns.psiElement(LatexTypes.COMMAND_TOKEN)
                 .withPattern { psiElement, _ -> psiElement.inMathContext() }
                 .withLanguage(LatexLanguage),
-            LatexCommandsAndEnvironmentsCompletionProvider(LatexMode.MATH)
+            LatexMathCommandCompletionProvider
         )
-
-        registerMathModeInsideEnvironmentCompletion()
+        extend(
+            CompletionType.BASIC,
+            PlatformPatterns.psiElement(LatexTypes.COMMAND_TOKEN)
+                .inside(LatexMathEnvMarker::class.java)
+                .withLanguage(LatexLanguage),
+            LatexMathCommandCompletionProvider
+        )
     }
-
-    private fun registerMathModeInsideEnvironmentCompletion() = extend(
-        CompletionType.BASIC,
-        PlatformPatterns.psiElement(LatexTypes.COMMAND_TOKEN)
-            .inside(LatexMathEnvironment::class.java)
-            .withLanguage(LatexLanguage),
-        LatexCommandsAndEnvironmentsCompletionProvider(LatexMode.MATH)
-    )
 
     /**
      * Adds file name support to the autocomplete.
@@ -146,7 +142,7 @@ open class LatexCompletionContributor : CompletionContributor() {
                 args.isNotEmpty()
             }
             .withLanguage(LatexLanguage),
-        LatexGraphicsPathProvider()
+        LatexGraphicsPathProvider
     )
 
     /**
@@ -159,7 +155,7 @@ open class LatexCompletionContributor : CompletionContributor() {
             .withPattern("xcolor color completion pattern") { psiElement, _ ->
                 val command = getParentOfType(psiElement, LatexCommands::class.java) ?: return@withPattern false
                 val name = command.commandToken.text
-                name.substring(1) in ColorMagic.takeColorCommands
+                name in ColorMagic.takeColorCommands
             },
         LatexXColorProvider
     )
@@ -281,6 +277,10 @@ open class LatexCompletionContributor : CompletionContributor() {
         completionProvider
     )
 
+    private fun registerLabelReferenceCompletion() {
+        extendLatexCommands(LatexLabelReferenceProvider, CommandMagic.labelReference.keys)
+    }
+
     /**
      * Adds support for bibliography references to the autocomplete.
      */
@@ -339,7 +339,7 @@ open class LatexCompletionContributor : CompletionContributor() {
             .inside(LatexEnvIdentifier::class.java)
             .inside(PlatformPatterns.or(PlatformPatterns.psiElement(LatexBeginCommand::class.java), PlatformPatterns.psiElement(LatexEndCommand::class.java)))
             .withLanguage(LatexLanguage),
-        LatexCommandsAndEnvironmentsCompletionProvider(LatexMode.ENVIRONMENT_NAME)
+        LatexEnvironmentCompletionProvider
     )
 
     /**
@@ -363,10 +363,9 @@ open class LatexCompletionContributor : CompletionContributor() {
             .inside(LatexRequiredParam::class.java)
             .withPattern { psiElement, _ ->
                 val command = psiElement.parentOfType(LatexCommands::class) ?: return@withPattern false
-                if (command.commandToken.text in commandNamesWithSlash) return@withPattern true
-
-                CommandManager.updateAliases(commandNamesWithSlash, psiElement.project)
-                CommandManager.getAliases(command.commandToken.text).intersect(commandNamesWithSlash).isNotEmpty()
+                command.name in commandNamesWithSlash
+//                CommandManager.updateAliases(commandNamesWithSlash, psiElement.project)
+//                CommandManager.getAliases(command.commandToken.text).intersect(commandNamesWithSlash).isNotEmpty()
             }
             .withLanguage(LatexLanguage),
         provider
