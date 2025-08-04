@@ -50,11 +50,15 @@ abstract class AbstractCacheServiceBase<K : Any, V> {
     protected fun getTimedValue(key: K): CacheValueTimed<V>? {
         return caches[key]
     }
+
+    protected fun getValueOrNull(key: K): V? {
+        return caches[key]?.value
+    }
 }
 
 abstract class AbstractBackgroundCacheService<K : Any, V : Any>(private val coroutineScope: CoroutineScope) : AbstractCacheServiceBase<K, V>() {
 
-    protected abstract suspend fun computeValue(key: K): V?
+    protected abstract suspend fun computeValueSuspend(key: K, oldValue: V?): V?
 
     /**
      * Calls to compute a value and updates the cache if the computation is successful.
@@ -64,7 +68,8 @@ abstract class AbstractBackgroundCacheService<K : Any, V : Any>(private val coro
     protected suspend fun computeOrSkip(key: K) {
         val computing = getComputingState(key)
         computing.tryLockOrSkip {
-            computeValue(key)?.also { putValue(key, it) }
+            val oldValue = getValueOrNull(key)
+            computeValueSuspend(key, oldValue)?.also { putValue(key, it) }
         }
     }
 
@@ -98,7 +103,8 @@ abstract class AbstractBackgroundCacheService<K : Any, V : Any>(private val coro
         for (key in keys) {
             val computing = getComputingState(key)
             computing.withLock {
-                computeValue(key)?.also { putValue(key, it) }
+                val oldValue = getValueOrNull(key)
+                computeValueSuspend(key, oldValue)?.also { putValue(key, it) }
             }
         }
     }

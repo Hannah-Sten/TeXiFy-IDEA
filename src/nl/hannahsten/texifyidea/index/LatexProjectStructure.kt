@@ -134,7 +134,14 @@ class LatexLibraryInfo(
     val name: String,
     val location: VirtualFile,
     val files: Set<VirtualFile>,
-    val dependencies: Set<String>,
+    /**
+     * The set of package names that are directly included in this package, without transitive dependencies and this package itself.
+     */
+    val directDependencies: Set<String>,
+    /**
+     * The set of all package names that are included in this package, including transitive dependencies and this package itself.
+     */
+    val allIncludedPackageNames: Set<String>,
 ) {
 
     val isPackage: Boolean
@@ -189,7 +196,8 @@ object LatexLibraryStructure {
         val path = LatexPackageLocation.getPackageLocation(nameWithExt, project) ?: return null
         val file = LocalFileSystem.getInstance().findFileByNioFile(path) ?: return null
         val files = mutableSetOf(file)
-        val dependencies = mutableSetOf(nameWithExt)
+        val allPackages = mutableSetOf(nameWithExt)
+        val directDependencies = mutableSetOf<String>()
         val commands = NewSpecialCommandsIndex.getPackageIncludes(project, file)
         for (command in commands) {
             val packageText = command.requiredParameterText(0) ?: continue
@@ -200,12 +208,13 @@ object LatexLibraryStructure {
                 val trimmed = text.trim()
                 if (trimmed.isEmpty()) continue
                 val name = trimmed + ext
-                if (name in dependencies) continue
+                directDependencies.add(name)
+                if (name in allPackages) continue // prevent infinite recursion
                 computePackageFilesets(name, project, cache, processing)?.let {
                     refTexts.add(trimmed)
                     refInfos.add(setOf(it.location))
                     files.addAll(it.files)
-                    dependencies.addAll(it.dependencies)
+                    allPackages.addAll(it.allIncludedPackageNames)
                 }
             }
             command.putUserData(
@@ -213,7 +222,7 @@ object LatexLibraryStructure {
                 CacheValueTimed(refTexts to refInfos)
             )
         }
-        val info = LatexLibraryInfo(nameWithExt, file, files, dependencies)
+        val info = LatexLibraryInfo(nameWithExt, file, files, directDependencies, allPackages)
         cache[nameWithExt] = info
         return info
     }
@@ -253,10 +262,10 @@ object LatexProjectStructure {
      * Stores the files that are referenced by the latex command.
      */
     val userDataKeyFileReference = Key.create<
-        CacheValueTimed<
-            Pair<List<String>, List<Set<VirtualFile>>> // List of pairs of original text and set of files in order
-            >
-        >("latex.command.reference.files")
+            CacheValueTimed<
+                    Pair<List<String>, List<Set<VirtualFile>>> // List of pairs of original text and set of files in order
+                    >
+            >("latex.command.reference.files")
 
     fun getPossibleRootFiles(project: Project): Set<VirtualFile> {
         if (DumbService.isDumb(project)) return emptySet()
@@ -280,7 +289,7 @@ object LatexProjectStructure {
         // Check if the file is a library file, e.g. in the texlive distribution
         val filetype = file.fileType
         return (filetype == StyleFileType || filetype == ClassFileType || filetype == LatexSourceFileType) &&
-            !ProjectFileIndex.getInstance(project).isInProject(file)
+                !ProjectFileIndex.getInstance(project).isInProject(file)
     }
 
     private open class ProjectInfo(
@@ -345,7 +354,7 @@ object LatexProjectStructure {
 
         private fun addLibrary(info: LatexLibraryInfo) {
             files.addAll(info.files)
-            libraries.addAll(info.dependencies)
+            libraries.addAll(info.allIncludedPackageNames)
         }
 
         private inline fun processElementsWithPaths0(
@@ -499,6 +508,7 @@ object LatexProjectStructure {
                 LatexGenericRegularCommand.TIKZFIG.commandWithSlash, LatexGenericRegularCommand.CTIKZFIG.commandWithSlash -> {
                     searchDirs = searchDirs + searchDirs.mapNotNull { runCatching { it.findDirectory("figures") }.getOrNull() }
                 }
+
                 in CommandMagic.absoluteImportCommands -> {
                     command.requiredParameterText(0)?.let {
                         currentRootDir = resolveSubfolder(root, it)

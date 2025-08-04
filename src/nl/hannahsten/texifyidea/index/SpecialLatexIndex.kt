@@ -81,6 +81,10 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexWrapper<LatexCommands>(Late
         return getByName(SpecialKeys.COMMAND_DEFINITIONS, project, scope)
     }
 
+    fun getAllCommandDef(project: Project, file : VirtualFile): Collection<LatexCommands> {
+        return getByName(SpecialKeys.COMMAND_DEFINITIONS, project, file)
+    }
+
     fun getAllCommandDefInFileset(file: PsiFile): Collection<LatexCommands> {
         return getByNameInFileSet(SpecialKeys.COMMAND_DEFINITIONS, file)
     }

@@ -18,12 +18,20 @@ class LatexCommandBuilderScope : LatexBuilderDSLScope {
      * `package` is a reserved keyword in Kotlin, so we use `packageOf` instead.
      */
     fun packageOf(name: String) {
-        pkg = name
+        pkg = toPackageName(name)
+    }
+
+    private fun appendSuffixIfNeeded(name: String, suffix: String) : String{
+        return if (name.endsWith(suffix)) name else "$name$suffix"
+    }
+
+    fun toPackageName(name: String): String {
+        return appendSuffixIfNeeded(name, ".sty")
     }
 
     inline fun underPackage(name: String, action: () -> Unit) {
         val oldDependency = pkg
-        pkg = oldDependency
+        pkg = toPackageName(name)
         action()
         pkg = oldDependency
     }

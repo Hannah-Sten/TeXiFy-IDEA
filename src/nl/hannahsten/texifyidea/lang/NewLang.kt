@@ -149,7 +149,7 @@ abstract class LEntity(
      */
     val name: String,
     /**
-     * The namespace of the entity, i.e., the package or class it belongs to.
+     * The namespace of the entity, i.e., the package or class it belongs to, including the suffix `.sty` or `.cls`.
      */
     val dependency: String = "",
     val requiredContext: LContextSet = emptySet(),
@@ -184,7 +184,7 @@ class NewLatexCommand(
     /**
      * The list of arguments in order of appearance, including optional arguments.
      */
-    val arguments: List<LArgument>,
+    val arguments: List<LArgument> = emptyList(),
     /**
      * The description of the command, used for documentation.
      */
