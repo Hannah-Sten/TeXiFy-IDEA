@@ -162,12 +162,12 @@ class InsertGraphicWizardAction(private val initialFile: File? = null) : AnActio
             }
             else {
                 rootManager.relativizePath(absoluteFilePath)
-            }
+            } ?: absoluteFilePath
         }
         else absoluteFilePath
 
         // LaTeX cannot handle backslashes in path, always replace them
-        return filePath ?: absoluteFilePath
+        return filePath.removeFileExtension().replace("\\", "/")
     }
 
     private fun InsertGraphicData.captionCommand() = buildString {
