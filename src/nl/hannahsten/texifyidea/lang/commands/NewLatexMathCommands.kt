@@ -7,9 +7,12 @@ object NewLatexMathCommands : PredefinedCommandSet() {
 
     val textMathCommands = buildCommands {
         packageOf("amsmath")
-        underContext(LatexContexts.Math) {
-            "text".cmd("text".required(LatexContexts.Text)) { "Text in math" }
+        underPackage("amstext"){
+            underContext(LatexContexts.Math) {
+                "text".cmd("text".required(LatexContexts.Text)) { "Text in math" }
+            }
         }
+
         underContext {
             // mostly used in command definition
             "ensuremath".cmd("math".required(LatexContexts.Math)) { "Ensure math mode" }

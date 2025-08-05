@@ -172,6 +172,7 @@ abstract class LEntity(
         result = 31 * result + dependency.hashCode()
         return result
     }
+
 }
 
 class NewLatexCommand(

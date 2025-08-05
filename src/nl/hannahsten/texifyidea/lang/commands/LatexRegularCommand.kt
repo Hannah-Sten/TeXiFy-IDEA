@@ -19,10 +19,6 @@ object LatexRegularCommand {
 
     private val GENERIC: Set<LatexCommand> = LatexGenericRegularCommand.entries.toSet()
 
-    init {
-        parseFor(GENERIC)
-    }
-
     private val LISTINGS: Set<LatexCommand> = LatexListingCommand.entries.toSet()
     private val LOREM_IPSUM: Set<LatexCommand> = LatexLoremIpsumCommand.entries.toSet()
     private val GLOSSARY: Set<LatexCommand> = LatexGlossariesCommand.entries.toSet()

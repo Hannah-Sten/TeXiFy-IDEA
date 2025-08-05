@@ -288,7 +288,7 @@ object NewLatexMathSymbols : PredefinedCommandSet() {
     }
 
     val mathTextOperators = mathCommands {
-
+        packageOf("amsopn")
         // Text-based operators (no arg, display as command name if applicable)
         symbol("arccos", "arccos", "Inverse cosine")
         symbol("arcsin", "arcsin", "Inverse sine")
@@ -324,8 +324,7 @@ object NewLatexMathSymbols : PredefinedCommandSet() {
         symbol("sup", "sup", "Supremum")
         symbol("tan", "tan", "Tangent")
         symbol("tanh", "tanh", "Hyperbolic tangent")
-        symbol("cong", "≅", "Congruent")
-        symbol("doteq", "≐", "Dot equal")
+
 
         packageOf("amsmath")
         symbol("projlim", description = "Projective limit")
@@ -549,10 +548,10 @@ object NewLatexMathSymbols : PredefinedCommandSet() {
         symbol("eqcirc", null, "Equal with circle")
         symbol("bumpeq", null, "Bump equal")
         symbol("Bumpeq", null, "Double bump equal")
+        symbol("doteq", "≐", "Dot equal")
         symbol("doteqdot", "≑", "Dot equal dot")
         symbol("risingdotseq", "≓", "Rising dots equal")
         symbol("fallingdotseq", "≒", "Falling dots equal")
-        symbol("doteq", null, "Dot equal")
 
         packageOf("amsmath")
         symbol("iint", "∬", "Double integral")

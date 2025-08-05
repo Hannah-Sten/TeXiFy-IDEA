@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.action.debug
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.components.service
 import com.intellij.openapi.ui.DialogBuilder
 import kotlinx.html.body
 import kotlinx.html.h2
@@ -13,12 +14,16 @@ import kotlinx.html.table
 import kotlinx.html.td
 import kotlinx.html.tr
 import nl.hannahsten.texifyidea.index.LatexProjectStructure
+import nl.hannahsten.texifyidea.index.PackageCommandDefService
 import javax.swing.JLabel
 import javax.swing.SwingConstants
 
 class PerformanceDiagnosticAction : AnAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
+        // TODO: only for test purposes, remove later
+        val bundle = e.project!!.service<PackageCommandDefService>().getLibBundle("amsmath.sty")
+        bundle.allLibraries
         // show a dialog with performance diagnostic information
         val count = LatexProjectStructure.countOfBuilding.get()
         val totalTime = LatexProjectStructure.totalBuildTime.get()

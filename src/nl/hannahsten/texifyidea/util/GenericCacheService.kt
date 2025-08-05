@@ -54,6 +54,14 @@ abstract class AbstractCacheServiceBase<K : Any, V> {
     protected fun getValueOrNull(key: K): V? {
         return caches[key]?.value
     }
+
+    protected fun clearAllCache() {
+        caches.clear()
+    }
+
+    protected fun clearOutdatedCache(expirationInMs: Long) {
+        caches.entries.removeIf { it.value.isExpired(expirationInMs) }
+    }
 }
 
 abstract class AbstractBackgroundCacheService<K : Any, V : Any>(private val coroutineScope: CoroutineScope) : AbstractCacheServiceBase<K, V>() {
@@ -112,6 +120,21 @@ abstract class AbstractBackgroundCacheService<K : Any, V : Any>(private val coro
     protected fun scheduleRefreshAll(keys: Collection<K> = caches.keys.toSet()) {
         coroutineScope.launch {
             refreshAll(keys)
+        }
+    }
+}
+
+abstract class AbstractBlockingCacheService<K : Any, V : Any>() : AbstractCacheServiceBase<K, V>() {
+
+    protected abstract fun computeValue(key: K, oldValue: V?): V
+
+    protected fun getOrComputeNow(key: K, expirationInMs: Long = 1000L): V {
+        val valueTimed = getTimedValue(key)
+        if (valueTimed != null && valueTimed.isNotExpired(expirationInMs)) {
+            return valueTimed.value
+        }
+        return computeValue(key, valueTimed?.value).also {
+            putValue(key, it)
         }
     }
 }

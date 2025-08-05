@@ -18,6 +18,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.search.FilenameIndex
 import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.psi.search.ProjectScope
 import com.jetbrains.rd.util.concurrentMapOf
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexGraphicsPathProvider.getGraphicsPaths
 import nl.hannahsten.texifyidea.file.ClassFileType
@@ -89,6 +90,10 @@ data class Fileset(
         result = 31 * result + files.hashCode()
         return result
     }
+
+    fun projectFileScope(project: Project): GlobalSearchScope {
+        return allFileScope.intersectWith(project.contentSearchScope)
+    }
 }
 
 data class ExternalDocumentInfo(
@@ -113,10 +118,7 @@ class FilesetData(
     val libraries: Set<String>,
 
     val externalDocumentInfo: List<ExternalDocumentInfo>
-) {
-    val texFileScope: GlobalSearchScope
-        get() = filesetScope.restrictedByFileTypes(LatexFileType)
-}
+)
 
 /**
  * Describes the filesets of a project, containing all filesets and a mapping from files to their fileset data.
@@ -891,11 +893,14 @@ object LatexProjectStructure {
         return getFilesetScopeFor(virtualFile, project, onlyTexFiles)
     }
 
-    fun getFilesetScopeFor(file: VirtualFile, project: Project, onlyTexFiles: Boolean = false): GlobalSearchScope {
+    fun getFilesetScopeFor(file: VirtualFile, project: Project, onlyTexFiles: Boolean = false, onlyProjectFiles : Boolean = false): GlobalSearchScope {
         val data = getFilesets(project)?.getData(file) ?: return GlobalSearchScope.fileScope(project, file)
         var scope = data.filesetScope
         if (onlyTexFiles) {
             scope = scope.restrictedByFileTypes(LatexFileType)
+        }
+        if (onlyProjectFiles) {
+            scope = scope.intersectWith(ProjectScope.getContentScope(project))
         }
         return scope
     }
