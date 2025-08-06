@@ -141,7 +141,7 @@ class LArgument(
     }
 }
 
-abstract class LEntity(
+abstract class LSemanticEntity(
     /**
      * The name of the entity, such as a command or environment.
      *
@@ -160,7 +160,7 @@ abstract class LEntity(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is LEntity) return false
+        if (other !is LSemanticEntity) return false
 
         if (name != other.name) return false
         if (dependency != other.dependency) return false
@@ -175,7 +175,7 @@ abstract class LEntity(
 
 }
 
-class NewLatexCommand(
+class LSemanticCommand(
     /**
      * The name of the command without the leading backslash.
      */
@@ -193,9 +193,12 @@ class NewLatexCommand(
 
     val display: String? = null,
     val nameWithSlash: String = "\\$name",
-) : LEntity(name, namespace, requiredContext, description)
+) : LSemanticEntity(name, namespace, requiredContext, description){
 
-class NewLatexEnvironment(
+
+}
+
+class LSemanticEnv(
     name: String,
     namespace: String,
     requiredContext: LContextSet = emptySet(),
@@ -211,4 +214,4 @@ class NewLatexEnvironment(
      * The description of the environment, used for documentation.
      */
     description: String = "",
-) : LEntity(name, namespace, requiredContext, description)
+) : LSemanticEntity(name, namespace, requiredContext, description)

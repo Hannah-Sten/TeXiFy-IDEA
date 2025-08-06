@@ -5,9 +5,9 @@ interface LatexBuilderDSLScope
 class LatexCommandBuilderScope : LatexBuilderDSLScope {
     var pkg: String = ""
 
-    private val commands = mutableListOf<NewLatexCommand>()
+    private val commands = mutableListOf<LSemanticCommand>()
 
-    fun build(): List<NewLatexCommand> {
+    fun build(): List<LSemanticCommand> {
         return commands
     }
 
@@ -54,16 +54,16 @@ class LatexCommandBuilderScope : LatexBuilderDSLScope {
     operator fun String.invoke(
         vararg arguments: LArgument,
         description: String = "",
-    ): NewLatexCommand {
+    ): LSemanticCommand {
         return cmd(*arguments) { description }
     }
 
     fun String.cmd(
         vararg arguments: LArgument,
         desc: String = "",
-    ): NewLatexCommand {
+    ): LSemanticCommand {
         val name = this
-        val command = NewLatexCommand(
+        val command = LSemanticCommand(
             name = name,
             namespace = pkg,
             arguments = arguments.toList(),
@@ -78,16 +78,16 @@ class LatexCommandBuilderScope : LatexBuilderDSLScope {
     inline fun String.cmd(
         vararg arguments: LArgument,
         desc: () -> String,
-    ): NewLatexCommand {
+    ): LSemanticCommand {
         return cmd(*arguments, desc = desc())
     }
 
-    operator fun String.unaryPlus(): NewLatexCommand {
+    operator fun String.unaryPlus(): LSemanticCommand {
         return this.cmd()
     }
 
-    fun symbol(name: String, display: String? = null, description: String? = null): NewLatexCommand {
-        val command = NewLatexCommand(
+    fun symbol(name: String, display: String? = null, description: String? = null): LSemanticCommand {
+        val command = LSemanticCommand(
             name = name,
             namespace = pkg,
             arguments = emptyList(),
@@ -139,7 +139,7 @@ class LatexCommandBuilderScope : LatexBuilderDSLScope {
 
     companion object {
 
-        inline fun buildCommands(action: LatexCommandBuilderScope.() -> Unit): List<NewLatexCommand> {
+        inline fun buildCommands(action: LatexCommandBuilderScope.() -> Unit): List<LSemanticCommand> {
             val scope = LatexCommandBuilderScope()
             scope.action()
             return scope.build()
@@ -148,38 +148,38 @@ class LatexCommandBuilderScope : LatexBuilderDSLScope {
 }
 
 abstract class PredefinedCommandSet {
-    private val myAllCommands = mutableSetOf<NewLatexCommand>()
+    private val myAllCommands = mutableSetOf<LSemanticCommand>()
 
-    val allCommands : Set<NewLatexCommand>
+    val allCommands : Set<LSemanticCommand>
         get() = myAllCommands
 
 
 
-    protected fun buildCommands(action: LatexCommandBuilderScope.() -> Unit): List<NewLatexCommand> {
+    protected fun buildCommands(action: LatexCommandBuilderScope.() -> Unit): List<LSemanticCommand> {
         val built = LatexCommandBuilderScope.buildCommands(action)
         myAllCommands.addAll(built)
         return built
     }
 
-    protected fun mathCommands(action: LatexCommandBuilderScope.() -> Unit): List<NewLatexCommand> {
+    protected fun mathCommands(action: LatexCommandBuilderScope.() -> Unit): List<LSemanticCommand> {
         return buildCommands {
             setCommandContext(LatexContexts.Math)
             action()
         }
     }
 
-    protected fun textCommands(action: LatexCommandBuilderScope.() -> Unit): List<NewLatexCommand> {
+    protected fun textCommands(action: LatexCommandBuilderScope.() -> Unit): List<LSemanticCommand> {
         return buildCommands {
             setCommandContext(LatexContexts.Text)
             action()
         }
     }
 
-    protected fun Collection<NewLatexCommand>.toSingleLookupMap(): Map<String, NewLatexCommand> {
+    protected fun Collection<LSemanticCommand>.toSingleLookupMap(): Map<String, LSemanticCommand> {
         return this.associateBy { it.name }
     }
 
-    protected fun Collection<NewLatexCommand>.toLookupMap(): Map<String, List<NewLatexCommand>> {
+    protected fun Collection<LSemanticCommand>.toLookupMap(): Map<String, List<LSemanticCommand>> {
         return this.groupBy { it.name }
     }
 }

@@ -8,7 +8,8 @@ import com.intellij.psi.SmartPointerManager
 import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.index.SourcedDefinition.DefinitionSource
-import nl.hannahsten.texifyidea.lang.NewLatexCommand
+import nl.hannahsten.texifyidea.lang.LSemanticCommand
+import nl.hannahsten.texifyidea.lang.commands.NewLatexBasicCommands
 import nl.hannahsten.texifyidea.lang.commands.PredefinedCommands
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.AbstractBlockingCacheService
@@ -16,7 +17,7 @@ import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 
 class SourcedDefinition(
-    val command: NewLatexCommand,
+    val command: LSemanticCommand,
     val definitionCommandPointer: SmartPsiElementPointer<LatexCommands>?,
     val source: DefinitionSource = DefinitionSource.UserDefined
 ) {
@@ -61,10 +62,10 @@ object CommandDefUtil {
         var name = LatexPsiUtil.getDefinedCommandName(defCmd) ?: return null
         name = name.removePrefix("\\") // remove the leading backslash
         // TODO: delicate
-        return SourcedDefinition(NewLatexCommand(name, pkgName), ref, DefinitionSource.UserDefined)
+        return SourcedDefinition(LSemanticCommand(name, pkgName), ref, DefinitionSource.UserDefined)
     }
 
-    fun mergeCommand(old: NewLatexCommand, new: NewLatexCommand): NewLatexCommand {
+    fun mergeCommand(old: LSemanticCommand, new: LSemanticCommand): LSemanticCommand {
         if (old.fqName != new.fqName) {
             return new
         }
@@ -78,7 +79,7 @@ object CommandDefUtil {
         val requiredContext = new.requiredContext.ifEmpty {
             old.requiredContext // if the new command has no required context, keep the old one
         }
-        return NewLatexCommand(
+        return LSemanticCommand(
             new.name, new.dependency,
             requiredContext = requiredContext,
             arguments = arguments,
@@ -184,11 +185,7 @@ class PackageCommandDefService(
 
     private fun processPredefinedCommands(name: String, defMap: MutableMap<String, SourcedDefinition>) {
         PredefinedCommands.packageToCommands[name]?.forEach { command ->
-            defMap[command.name] =
-                SourcedDefinition(
-                    command, null, // predefined commands do not have a definition command
-                    DefinitionSource.Predefined
-                )
+            defMap[command.name] = SourcedDefinition(command, null, DefinitionSource.Predefined)
         }
     }
 
@@ -216,7 +213,7 @@ class PackageCommandDefService(
 //            val documentation = LatexExternalCommandIndex.getValuesByKey(key, scope).lastOrNull() ?: continue
 //            val name = key.removePrefix("\\") // remove the leading backslash
 //            val sourcedDef = SourcedDefinition(
-//                NewLatexCommand(name, libInfo.name, description = documentation),
+//                LSemanticCommand(name, libInfo.name, description = documentation),
 //                null,
 //                DefinitionSource.Package
 //            )
@@ -228,6 +225,10 @@ class PackageCommandDefService(
         // return the default commands, i.e., those hard-coded in the plugin
         val currentSourcedDefinitions = mutableMapOf<String, SourcedDefinition>()
         processPredefinedCommands("", currentSourcedDefinitions)
+        // overwrite the definitions with the primitive commands
+        NewLatexBasicCommands.primitives.forEach {
+            currentSourcedDefinitions[it.name] = SourcedDefinition(it, null, DefinitionSource.Primitive)
+        }
         return LibCommandBundle("", currentSourcedDefinitions)
     }
 

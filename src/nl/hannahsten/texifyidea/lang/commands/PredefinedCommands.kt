@@ -1,11 +1,11 @@
 package nl.hannahsten.texifyidea.lang.commands
 
-import nl.hannahsten.texifyidea.lang.NewLatexCommand
+import nl.hannahsten.texifyidea.lang.LSemanticCommand
 import nl.hannahsten.texifyidea.util.Log
 
 object PredefinedCommands {
 
-    val allCommands: List<NewLatexCommand> =
+    val allCommands: List<LSemanticCommand> =
         listOf(
             NewLatexBasicCommands,
             NewLatexFileCommands,
@@ -17,11 +17,11 @@ object PredefinedCommands {
         }
 
 
-    val packageToCommands: Map<String, List<NewLatexCommand>> =
+    val packageToCommands: Map<String, List<LSemanticCommand>> =
         allCommands.groupBy { it.dependency }.mapValues { it.value }
 
 
-    val nameToCommands: Map<String, List<NewLatexCommand>> =
+    val nameToCommands: Map<String, List<LSemanticCommand>> =
         allCommands.groupBy { it.name }
 
 

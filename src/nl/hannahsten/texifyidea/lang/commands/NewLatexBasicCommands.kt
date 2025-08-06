@@ -5,7 +5,6 @@ import nl.hannahsten.texifyidea.lang.LArgument.Companion.required
 import nl.hannahsten.texifyidea.lang.LClearContext
 import nl.hannahsten.texifyidea.lang.PredefinedCommandSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
-import nl.hannahsten.texifyidea.lang.NewLatexCommand
 
 object NewLatexBasicCommands : PredefinedCommandSet() {
 

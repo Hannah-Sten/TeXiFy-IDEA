@@ -9,7 +9,7 @@ object NewLatexFileCommands : PredefinedCommandSet() {
     private val packageArg = required("package", LatexContexts.PackageNames)
     private val texFileArg = required("tex file", LatexContexts.SingleTexFile)
 
-    val basicFileInputCommands: List<NewLatexCommand> = buildCommands {
+    val basicFileInputCommands: List<LSemanticCommand> = buildCommands {
         // Most file inputs are in preamble, but can be adjusted per command if needed.
         val name = required("name", LatexContexts.Identifier)
         underContext(LatexContexts.Preamble) {
