@@ -49,24 +49,30 @@ object LatexContexts {
      */
     val Nothing = LatexContextBase("nothing")
 
-    /**
-     * The definition of a command, such as `...` in `\newcommand{\mycmd}{...}`.
-     */
-    val InsideDefinition = LatexContextBase("definition")
+
 
     val LabelDefinition = LatexContextBase("label.def")
     val LabelReference = LatexContextBase("label.ref")
 
     /**
-     * A control sequence, namely a command.
-     * Used in, for example, `\newcommand{...}`.
+     * An identifier that is used in a command definition, such as `\mycmd` in `\newcommand{\mycmd}{...}`.
      */
-    val ControlSequence = LatexContextBase("command")
+    val CommandDeclaration = LatexContextBase("def.command")
+
+    /**
+     * An identifier that is used in an environment definition, such as `myenv` in `\newenvironment{myenv}{...}{...}`.
+     */
+    val EnvironmentDeclaration = LatexContextBase("def.environment")
+
+    /**
+     * The definition of a command, such as `...` in `\newcommand{\mycmd}{...}`.
+     */
+    val InsideDefinition = LatexContextBase("definition")
 
     /**
      * An identifier, such as a command name without slash or environment name.
      *
-     * Used in `\newenvironment{...}`.
+     * Used in `\begin{...}`.
      */
     val Identifier = LatexContextBase("identifier")
 

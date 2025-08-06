@@ -21,7 +21,7 @@ object NewLatexBasicCommands : PredefinedCommandSet() {
 
             "catcode".cmd("char".required) { "Set category code for a character" }
             // the following primitive commands can not be totally covered by the command context
-            val paramMacro = required("macro", LatexContexts.ControlSequence)
+            val paramMacro = required("macro", LatexContexts.CommandDeclaration)
             val paramDef = required("definition", LatexContexts.InsideDefinition)
             +"def" // \def\cmd#1#2...#9{content}, too complex to handle in the command context
             "let".cmd(paramMacro, paramDef) { "LaTex primitive let" }
@@ -38,8 +38,8 @@ object NewLatexBasicCommands : PredefinedCommandSet() {
     val definitionCommands = buildCommands {
         setCommandContext(LatexContexts.Preamble)
 
-        val command = required("cmd", LatexContexts.ControlSequence)
-        val envName = required("name", LatexContexts.Identifier)
+        val command = required("cmd", LatexContexts.CommandDeclaration)
+        val envName = required("name", LatexContexts.EnvironmentDeclaration)
         val numArgs = LArgument.optional("num args", LatexContexts.Numeric)
         val defaultOptional = "default".optional
         // The following context can be deeper
@@ -109,8 +109,8 @@ object NewLatexBasicCommands : PredefinedCommandSet() {
     val xparseCommands = buildCommands {
         setCommandContext(LatexContexts.Preamble)
 
-        val cmdName = "name".required(LatexContexts.ControlSequence)
-        val envName = "name".required(LatexContexts.Identifier)
+        val cmdName = "name".required(LatexContexts.CommandDeclaration)
+        val envName = "name".required(LatexContexts.EnvironmentDeclaration)
         val argsSpec = "args spec".required(LatexContexts.Literal)
         val code = required("code", LClearContext)
         val startCode = required("start code", LClearContext)

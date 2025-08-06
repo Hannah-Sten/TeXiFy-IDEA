@@ -4,17 +4,26 @@ import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPointerManager
 import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.index.SourcedDefinition.DefinitionSource
+import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
+import nl.hannahsten.texifyidea.lang.LArgument
+import nl.hannahsten.texifyidea.lang.LAssignContext
+import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LSemanticCommand
+import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.lang.LatexSemanticCommandLookup
+import nl.hannahsten.texifyidea.lang.LatexSemanticLookup
 import nl.hannahsten.texifyidea.lang.commands.NewLatexBasicCommands
 import nl.hannahsten.texifyidea.lang.commands.PredefinedCommands
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.contentText
 import nl.hannahsten.texifyidea.util.AbstractBlockingCacheService
 import nl.hannahsten.texifyidea.util.Log
-import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 
 class SourcedDefinition(
     val command: LSemanticCommand,
@@ -56,13 +65,64 @@ class SourcedDefinition(
 
 object CommandDefUtil {
 
+    private fun isCommandDeclarationArgument(arg: LArgument): Boolean {
+        // we consider a command declaration argument to be one that is required and has an assign context
+        val ctxSig = arg.contextSignature
+        if (ctxSig !is LAssignContext) return false
+        return LatexContexts.CommandDeclaration in ctxSig.contexts
+    }
 
-    fun parseCommandDef(defCmd: LatexCommands, pkgName: String, project: Project): SourcedDefinition? {
-        val ref = SmartPointerManager.getInstance(project).createSmartPsiElementPointer(defCmd)
-        var name = LatexPsiUtil.getDefinedCommandName(defCmd) ?: return null
-        name = name.removePrefix("\\") // remove the leading backslash
-        // TODO: delicate
-        return SourcedDefinition(LSemanticCommand(name, pkgName), ref, DefinitionSource.UserDefined)
+    private fun isCommandDefinitionArgument(arg: LArgument): Boolean {
+        // we consider a command declaration argument to be one that is required and has an assign context
+        val ctxSig = arg.contextSignature
+        if (ctxSig !is LAssignContext) return false
+        return LatexContexts.InsideDefinition in ctxSig.contexts
+    }
+
+    private fun backTrackingRequiredContext(definitionElement : PsiElement, lookup : LatexSemanticLookup) : LContextSet{
+        return emptySet()
+    }
+
+    private fun parseParameterDefinedCommandPSI(defCommand: LatexCommands, semantics: LSemanticCommand, pkgName: String): LSemanticCommand? {
+        // we use the PSI tree now, since the operation of finding the next command seems to be expensive with stubs
+        var definedCommandName: String? = null
+        var definitionElement: PsiElement? = null
+        for ((sArg, pArg) in semantics.arguments.zip(defCommand.parameterList)) {
+            if (isCommandDeclarationArgument(sArg)) {
+                definedCommandName = pArg.contentText()
+            }
+            else if (isCommandDefinitionArgument(sArg)) {
+                definitionElement = pArg.requiredParam
+            }
+        }
+        definedCommandName ?: return null
+        definedCommandName = definedCommandName.removePrefix("\\") // remove the leading backslash
+//        val requiredContext =
+
+        return LSemanticCommand(definedCommandName, pkgName,)
+    }
+
+    private fun parseSubsequentDefinedCommandPSI(defCommand: LatexCommands, defSemantics: LSemanticCommand, pkgName: String): LSemanticCommand? {
+        // \def\cmd\something
+        // TODO
+//        val nextCommand = defCommand.nextContextualSibling { it is LatexCommands } as? LatexCommands ?: return null
+        return null
+    }
+
+    fun parseCommandDefNoSemantics(defCmd: LatexCommands, defSemantics: LSemanticCommand,){
+
+    }
+
+    fun parseCommandDefPSI(defCmd: LatexCommands, defSemantics: LSemanticCommand, pkgName: String, file : PsiFile, project: Project): SourcedDefinition? {
+        val semanticCommand = parseParameterDefinedCommandPSI(defCmd, defSemantics, pkgName)
+            ?: parseSubsequentDefinedCommandPSI(defCmd, defSemantics, pkgName) ?: return null
+        val ref = SmartPointerManager.getInstance(project).createSmartPsiElementPointer(defCmd,file)
+        return SourcedDefinition(semanticCommand, ref, DefinitionSource.UserDefined)
+    }
+
+    fun parseCommandDefStub(cmd: LatexCommandsStub, semantics: LSemanticCommand, pkgName: String,file : PsiFile, project: Project): SourcedDefinition? {
+        var name = cmd.name ?: return null
+        TODO()
     }
 
     fun mergeCommand(old: LSemanticCommand, new: LSemanticCommand): LSemanticCommand {
@@ -103,8 +163,12 @@ object CommandDefUtil {
 }
 
 
-interface CommandBundle {
+interface CommandBundle : LatexSemanticCommandLookup {
     fun findDef(name: String): SourcedDefinition?
+
+    override fun lookupCommand(name: String): LSemanticCommand? {
+        return findDef(name)?.command
+    }
 
     fun appendDefinitions(nameMap: MutableMap<String, SourcedDefinition>, includedPackages: MutableSet<String>)
 
@@ -196,7 +260,7 @@ class PackageCommandDefService(
     ) {
         val stubBasedDefinitions = NewSpecialCommandsIndex.getAllCommandDef(project, libInfo.location)
         for (defCmd in stubBasedDefinitions) {
-            val sourcedDef = CommandDefUtil.parseCommandDef(defCmd, libInfo.name, project) ?: continue
+            val sourcedDef = CommandDefUtil.parseCommandDefPSI(defCmd, libInfo.name, project) ?: continue
             val name = sourcedDef.command.name
             currentSourcedDefinitions.merge(name, sourcedDef, CommandDefUtil::mergeDefinition)
         }
@@ -315,7 +379,7 @@ class LatexCommandDefService(
         return FilesetCommandBundle(
             customCommands = buildMap {
                 for (defCmd in commandDefinitions) {
-                    val sourcedDef = CommandDefUtil.parseCommandDef(defCmd, "", project) ?: continue
+                    val sourcedDef = CommandDefUtil.parseCommandDefPSI(defCmd, "", project) ?: continue
                     val name = sourcedDef.command.name
                     put(name, sourcedDef)
                     // never merge user-defined commands
