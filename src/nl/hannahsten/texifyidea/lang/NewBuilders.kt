@@ -26,6 +26,7 @@ class LatexCommandBuilderScope : LatexBuilderDSLScope {
     }
 
     fun toPackageName(name: String): String {
+        if(name.isEmpty()) return ""
         return appendSuffixIfNeeded(name, ".sty")
     }
 

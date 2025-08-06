@@ -2,7 +2,11 @@ package nl.hannahsten.texifyidea.lang
 
 open class LatexContextBase(
     final override val name: String
-) : LatexContext
+) : LatexContext{
+    override fun toString(): String {
+        return "LatexContextBase($name)"
+    }
+}
 
 /**
  * A marker interface for contexts that are related to file input.

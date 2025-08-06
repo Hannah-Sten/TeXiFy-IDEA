@@ -6,8 +6,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.SmartPointerManager
 import com.intellij.psi.SmartPsiElementPointer
+import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.index.SourcedDefinition.DefinitionSource
-import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex
 import nl.hannahsten.texifyidea.lang.NewLatexCommand
 import nl.hannahsten.texifyidea.lang.commands.PredefinedCommands
 import nl.hannahsten.texifyidea.psi.LatexCommands
@@ -35,11 +35,11 @@ class SourcedDefinition(
 
     override fun toString(): String {
         return buildString {
-            append("Def(${command.fqName}, ${source.name}")
+            append("Def(${command.name}, ${source.name}")
             if (definitionCommandPointer != null) {
                 append(", with PSI")
             }
-            append(")")
+            append(" in ${command.dependency})")
         }
     }
 
@@ -64,6 +64,29 @@ object CommandDefUtil {
         return SourcedDefinition(NewLatexCommand(name, pkgName), ref, DefinitionSource.UserDefined)
     }
 
+    fun mergeCommand(old: NewLatexCommand, new: NewLatexCommand): NewLatexCommand {
+        if (old.fqName != new.fqName) {
+            return new
+        }
+        val arguments = new.arguments.ifEmpty {
+            old.arguments // if the new command has no arguments, keep the old ones
+        }
+        val description = new.description.ifEmpty {
+            old.description // if the new command has no description, keep the old one
+        }
+        val display = new.display ?: old.display
+        val requiredContext = new.requiredContext.ifEmpty {
+            old.requiredContext // if the new command has no required context, keep the old one
+        }
+        return NewLatexCommand(
+            new.name, new.dependency,
+            requiredContext = requiredContext,
+            arguments = arguments,
+            description = description,
+            display = display
+        )
+    }
+
     fun mergeDefinition(old: SourcedDefinition, new: SourcedDefinition): SourcedDefinition {
         if (old.command.fqName != new.command.fqName) {
             // TODO: change to log after testing
@@ -72,12 +95,9 @@ object CommandDefUtil {
         // do not override primitive definitions
         if (old.source == DefinitionSource.Primitive) return old
         if (new.source == DefinitionSource.Primitive) return new
-
-        if (old.definitionCommandPointer == null) {
-            return SourcedDefinition(old.command, new.definitionCommandPointer, DefinitionSource.Merged)
-        }
-        // TODO: delicate
-        return new
+        val cmd = mergeCommand(old.command, new.command)
+        val pointer = new.definitionCommandPointer ?: old.definitionCommandPointer
+        return SourcedDefinition(cmd, pointer, DefinitionSource.Merged)
     }
 }
 
@@ -123,6 +143,10 @@ class LibCommandBundle(
     val allLibraries: Set<String> = setOf(libName)
 ) : CompositeCommandBundle(introducedDefinitions, directDependencies) {
 
+    override fun toString(): String {
+        return "Lib($libName, #defs=${introducedDefinitions.size})"
+    }
+
     val allNameLookup: Map<String, SourcedDefinition> by lazy {
         buildMap {
             // let us cache the full lookup map since a package can be used frequently
@@ -158,10 +182,61 @@ class PackageCommandDefService(
     val project: Project
 ) : AbstractBlockingCacheService<String, LibCommandBundle>() {
 
+    private fun processPredefinedCommands(name: String, defMap: MutableMap<String, SourcedDefinition>) {
+        PredefinedCommands.packageToCommands[name]?.forEach { command ->
+            defMap[command.name] =
+                SourcedDefinition(
+                    command, null, // predefined commands do not have a definition command
+                    DefinitionSource.Predefined
+                )
+        }
+    }
+
+
+    private fun processStubBasedDefinitions(
+        libInfo: LatexLibraryInfo,
+        currentSourcedDefinitions: MutableMap<String, SourcedDefinition>
+    ) {
+        val stubBasedDefinitions = NewSpecialCommandsIndex.getAllCommandDef(project, libInfo.location)
+        for (defCmd in stubBasedDefinitions) {
+            val sourcedDef = CommandDefUtil.parseCommandDef(defCmd, libInfo.name, project) ?: continue
+            val name = sourcedDef.command.name
+            currentSourcedDefinitions.merge(name, sourcedDef, CommandDefUtil::mergeDefinition)
+        }
+    }
+
+    private fun processExternalDefinitions(
+        libInfo: LatexLibraryInfo,
+        currentSourcedDefinitions: MutableMap<String, SourcedDefinition>
+    ) {
+        val scope = GlobalSearchScope.fileScope(project, libInfo.location)
+//        val externalIndexDefinitions = LatexExternalCommandIndex.getAllKeys(scope)
+//        externalIndexDefinitions.size
+//        for (key in externalIndexDefinitions) {
+//            val documentation = LatexExternalCommandIndex.getValuesByKey(key, scope).lastOrNull() ?: continue
+//            val name = key.removePrefix("\\") // remove the leading backslash
+//            val sourcedDef = SourcedDefinition(
+//                NewLatexCommand(name, libInfo.name, description = documentation),
+//                null,
+//                DefinitionSource.Package
+//            )
+//            currentSourcedDefinitions.merge(name, sourcedDef, CommandDefUtil::mergeDefinition)
+//        }
+    }
+
+    private fun getDefaultLibBundle(): LibCommandBundle {
+        // return the default commands, i.e., those hard-coded in the plugin
+        val currentSourcedDefinitions = mutableMapOf<String, SourcedDefinition>()
+        processPredefinedCommands("", currentSourcedDefinitions)
+        return LibCommandBundle("", currentSourcedDefinitions)
+    }
 
     private fun computeCommandDefinitionsRecur(
         pkgName: String, processedPackages: MutableSet<String> // to prevent loops
     ): LibCommandBundle {
+        if (pkgName.isEmpty()) {
+            return getDefaultLibBundle()
+        }
         getTimedValue(pkgName)?.takeIf { it.isNotExpired(expirationInMs) }?.let { return it.value }
         if (!processedPackages.add(pkgName)) {
             Log.warn("Recursive package dependency detected for package [$pkgName] !")
@@ -186,22 +261,9 @@ class PackageCommandDefService(
             includedPackages.addAll(depBundle.allLibraries)
         }
         val currentSourcedDefinitions = mutableMapOf<String, SourcedDefinition>()
-        // process the package itself, first the predefined commands
-        PredefinedCommands.packageToCommands[pkgName]?.forEach { command ->
-            currentSourcedDefinitions[command.name] =
-                SourcedDefinition(
-                    command, null, // predefined commands do not have a definition command
-                    DefinitionSource.Predefined
-                )
-        }
-        val stubBasedDefinitions = NewSpecialCommandsIndex.getAllCommandDef(project, libInfo.location)
-        for (defCmd in stubBasedDefinitions) {
-            val sourcedDef = CommandDefUtil.parseCommandDef(defCmd, pkgName, project) ?: continue
-            val name = sourcedDef.command.name
-            currentSourcedDefinitions.merge(name, sourcedDef, CommandDefUtil::mergeDefinition)
-        }
-        val externalIndexDefinitions = LatexExternalCommandIndex
-
+        processPredefinedCommands(pkgName, currentSourcedDefinitions)
+        processStubBasedDefinitions(libInfo, currentSourcedDefinitions)
+        processExternalDefinitions(libInfo, currentSourcedDefinitions)
         val result = LibCommandBundle(pkgName, currentSourcedDefinitions, directDependencies, includedPackages)
         putValue(pkgName, result)
         return result
@@ -217,7 +279,7 @@ class PackageCommandDefService(
     }
 
 
-    val expirationInMs: Long = 1L
+    val expirationInMs: Long = 100000L
 
     fun getLibBundle(libName: String): LibCommandBundle {
         return getOrComputeNow(libName, expirationInMs)
@@ -245,7 +307,9 @@ class LatexCommandDefService(
 
     override fun computeValue(key: Fileset, oldValue: FilesetCommandBundle?): FilesetCommandBundle {
         val packageService = PackageCommandDefService.getInstance(project)
-        val libraries = key.libraries.map { packageService.getLibBundle(it) }
+        val libraries = ArrayList<LibCommandBundle>(key.libraries.size + 1)
+        libraries.add(packageService.getLibBundle("")) // add the default commands
+        key.libraries.mapTo(libraries) { packageService.getLibBundle(it) }
         val commandDefinitions = NewSpecialCommandsIndex.getAllCommandDef(project, key.projectFileScope(project))
         return FilesetCommandBundle(
             customCommands = buildMap {
@@ -277,4 +341,19 @@ class LatexCommandDefService(
             getFilesetBundle(it).findDef(nameWithoutSlash)
         }
     }
+
+    fun resolveCommandDef(commandName: String): SourcedDefinition? {
+        val nameWithoutSlash = commandName.removePrefix("\\")
+        val pf = LatexProjectStructure.getFilesets(project) ?: return null
+        return pf.filesets.firstNotNullOfOrNull {
+            getFilesetBundle(it).findDef(nameWithoutSlash)
+        }
+    }
+
+    companion object {
+        fun getInstance(project: Project): LatexCommandDefService {
+            return project.service()
+        }
+    }
+
 }

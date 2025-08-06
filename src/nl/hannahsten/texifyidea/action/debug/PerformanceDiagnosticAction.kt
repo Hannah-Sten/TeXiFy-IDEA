@@ -13,6 +13,7 @@ import kotlinx.html.stream.createHTML
 import kotlinx.html.table
 import kotlinx.html.td
 import kotlinx.html.tr
+import nl.hannahsten.texifyidea.index.LatexCommandDefService
 import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.index.PackageCommandDefService
 import javax.swing.JLabel
@@ -22,8 +23,9 @@ class PerformanceDiagnosticAction : AnAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
         // TODO: only for test purposes, remove later
-        val bundle = e.project!!.service<PackageCommandDefService>().getLibBundle("amsmath.sty")
-        bundle.allLibraries
+        val project = e.project ?: return
+        val bundle = project.service<PackageCommandDefService>().getLibBundle("amsmath.sty")
+        val def = LatexCommandDefService.getInstance(project).resolveCommandDef("alpha")
         // show a dialog with performance diagnostic information
         val count = LatexProjectStructure.countOfBuilding.get()
         val totalTime = LatexProjectStructure.totalBuildTime.get()
@@ -50,7 +52,7 @@ class PerformanceDiagnosticAction : AnAction() {
                             }
                         }
                     }
-                    e.project?.let { LatexProjectStructure.getFilesets(it) }?.let { fs ->
+                    project.let { LatexProjectStructure.getFilesets(it) }?.let { fs ->
                         tr {
                             td { +"Recent Fileset Size" }
                             td {
