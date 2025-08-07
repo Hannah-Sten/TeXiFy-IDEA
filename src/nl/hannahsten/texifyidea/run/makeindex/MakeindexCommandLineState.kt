@@ -7,9 +7,12 @@ import com.intellij.execution.process.KillableProcessHandler
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
+import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
+import nl.hannahsten.texifyidea.run.latex.getMakeindexOptions
 import nl.hannahsten.texifyidea.util.appendExtension
 import kotlin.io.path.Path
 
@@ -20,7 +23,7 @@ class MakeindexCommandLineState(
     environment: ExecutionEnvironment,
     private val mainFile: VirtualFile?,
     private val workingDirectory: VirtualFile?,
-    private val makeindexOptions: Map<String, String>,
+    private val project: Project,
     private val indexProgram: MakeindexProgram,
     private val commandLineArguments: String?,
 ) : CommandLineState(environment) {
@@ -30,6 +33,15 @@ class MakeindexCommandLineState(
         if (mainFile == null) {
             throw ExecutionException("Main file to compile is not found or missing.")
         }
+
+        var makeindexOptions: Map<String, String> = mapOf()
+        // Similar to LatexCommandLineState, run slow operations synchronously
+        ProgressManager.getInstance().runProcessWithProgressSynchronously(
+            { makeindexOptions = getMakeindexOptions(mainFile, project) },
+            "Starting Makeindex Run Configuration...",
+            false,
+            project,
+        )
 
         val indexBasename = makeindexOptions.getOrDefault("name", mainFile.nameWithoutExtension)
 
