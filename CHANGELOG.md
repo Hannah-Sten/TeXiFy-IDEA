@@ -5,6 +5,7 @@
 ### Added
 
 ### Fixed
+* Fix exceptions when using a makeindex run configuration
 * Fix an issue with relative paths in graphic insertion wizard
 
 ## [0.11.0] - 2025-08-04

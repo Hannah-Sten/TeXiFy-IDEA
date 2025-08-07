@@ -7,6 +7,7 @@ import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.io.FileUtil
 import nl.hannahsten.texifyidea.lang.LatexPackage
@@ -37,7 +38,15 @@ class RunMakeindexListener(
             // Only create new one if there is none yet
             val runConfigSettingsList =
                 latexRunConfig.makeindexRunConfigs.ifEmpty {
-                    generateIndexConfigs()
+                    val configs = mutableSetOf<RunnerAndConfigurationSettings>()
+                    // We need index access, which has to be done in EDT but we cannot run slow operations in EDT
+                    ProgressManager.getInstance().runProcessWithProgressSynchronously(
+                        { configs.addAll(generateIndexConfigs()) },
+                        "Generating Makeindex Run Configuration...",
+                        false,
+                        latexRunConfig.project,
+                    )
+                    configs
                 }
 
             // Run all run configurations
