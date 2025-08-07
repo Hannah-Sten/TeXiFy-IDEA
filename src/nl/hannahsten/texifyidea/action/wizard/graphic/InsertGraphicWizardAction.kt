@@ -9,14 +9,17 @@ import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
+import com.intellij.openapi.util.io.toNioPathOrNull
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.toNioPathOrNull
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.graphic.CaptionLocation
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.*
 import java.io.File
+import kotlin.io.path.invariantSeparatorsPathString
 
 /**
  * Action that shows a dialog with a graphic insertion wizard, and inserts the graphic as latex at the location of the
@@ -148,19 +151,18 @@ class InsertGraphicWizardAction(private val initialFile: File? = null) : AnActio
     }
 
     private fun InsertGraphicData.convertFilePath(project: Project, absoluteFilePath: String, rootFile: PsiFile?): String {
+        val absPath = absoluteFilePath.toNioPathOrNull() ?: return absoluteFilePath
         val rootManager = ProjectRootManager.getInstance(project)
 
         val filePath = if (relativePath) {
             // We need to match the path given by the user (from e.g. the file chooser dialog) to the root file
-            val imageFile = LocalFileSystem.getInstance().findFileByPath(absoluteFilePath)
-
-            val default = rootManager.relativizePath(absoluteFilePath) ?: absoluteFilePath
+            val imageFile = LocalFileSystem.getInstance().findFileByNioFile(absPath)
             if (rootFile != null && imageFile != null) {
-                FileUtil.pathRelativeTo(rootFile.virtualFile.parent.path + "/", imageFile.path) ?: default
+                FileUtil.pathRelativeTo(rootFile.virtualFile.toNioPathOrNull()?.parent, imageFile.toNioPathOrNull())?.invariantSeparatorsPathString
             }
             else {
-                default
-            }
+                rootManager.relativizePath(absoluteFilePath)
+            } ?: absoluteFilePath
         }
         else absoluteFilePath
 
