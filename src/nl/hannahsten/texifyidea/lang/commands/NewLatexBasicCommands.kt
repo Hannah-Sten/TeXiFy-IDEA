@@ -35,17 +35,13 @@ object NewLatexBasicCommands : PredefinedCommandSet() {
     }
 
 
-    val definitionCommands = buildCommands {
+    val definitionOfCommands = buildCommands {
         setCommandContext(LatexContexts.Preamble)
 
         val command = required("cmd", LatexContexts.CommandDeclaration)
-        val envName = required("name", LatexContexts.EnvironmentDeclaration)
         val numArgs = LArgument.optional("num args", LatexContexts.Numeric)
         val defaultOptional = "default".optional
-        // The following context can be deeper
         val definition = required("definition", +LatexContexts.InsideDefinition)
-        val begdef = required("begdef", +LatexContexts.InsideDefinition)
-        val enddef = required("enddef", +LatexContexts.InsideDefinition)
 
 
         "newcommand".cmd(command, numArgs, defaultOptional, definition) { "Define a new command" }
@@ -59,6 +55,20 @@ object NewLatexBasicCommands : PredefinedCommandSet() {
         "renewcommand".cmd(command, numArgs, defaultOptional, definition) { "Redefine an existing command" }
         "renewcommand*".cmd(command, numArgs, defaultOptional, definition) { "Redefine an existing command (starred variant)" }
 
+        packageOf("xargs")
+        "newcommandx".cmd(command, numArgs, defaultOptional, definition) { "Define a new command with extended args" }
+        "renewcommandx".cmd(command, numArgs, defaultOptional, definition) { "Redefine a command with extended args" }
+        "providecommandx".cmd(command, numArgs, defaultOptional, definition) { "Provide a command with extended args" }
+        "DeclareRobustCommandx".cmd(command, numArgs, defaultOptional, definition) { "Declare a robust command with extended args" }
+    }
+
+    val definitionOfEnvironment = buildCommands {
+        val envName = required("name", LatexContexts.EnvironmentDeclaration)
+        val numArgs = LArgument.optional("num args", LatexContexts.Numeric)
+        val defaultOptional = "default".optional
+        val begdef = required("begdef", +LatexContexts.InsideDefinition)
+        val enddef = required("enddef", +LatexContexts.InsideDefinition)
+
         "newenvironment".cmd(envName, numArgs, defaultOptional, begdef, enddef) { "Define a new environment" }
         "renewenvironment".cmd(envName, numArgs, defaultOptional, begdef, enddef) { "Redefine an existing environment" }
 
@@ -71,13 +81,8 @@ object NewLatexBasicCommands : PredefinedCommandSet() {
         ) { "Define a new theorem-like environment" }
 
         packageOf("xargs")
-        "newcommandx".cmd(command, numArgs, defaultOptional, definition) { "Define a new command with extended args" }
-        "renewcommandx".cmd(command, numArgs, defaultOptional, definition) { "Redefine a command with extended args" }
-        "providecommandx".cmd(command, numArgs, defaultOptional, definition) { "Provide a command with extended args" }
-        "DeclareRobustCommandx".cmd(command, numArgs, defaultOptional, definition) { "Declare a robust command with extended args" }
-
-        "newenvironmentx".cmd(command, numArgs, defaultOptional, begdef, enddef) { "Define a new environment with extended args" }
-        "renewenvironmentx".cmd(command, numArgs, defaultOptional, begdef, enddef) { "Redefine an environment with extended args" }
+        "newenvironmentx".cmd(envName, numArgs, defaultOptional, begdef, enddef) { "Define a new environment with extended args" }
+        "renewenvironmentx".cmd(envName, numArgs, defaultOptional, begdef, enddef) { "Redefine an environment with extended args" }
     }
 
 

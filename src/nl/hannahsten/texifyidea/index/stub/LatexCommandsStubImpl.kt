@@ -12,9 +12,12 @@ class LatexCommandsStubImpl(
     parent: StubElement<*>,
     elementType: IStubElementType<*, *>,
     override val commandToken: String,
+
     override val parameters: List<LatexParameterStub>,
     override val optionalParamsMap: Map<String, String>
 ) : NamedStubBase<LatexCommands>(parent, elementType, commandToken), LatexCommandsStub {
+
+    override val commandName: String = commandToken.removePrefix("\\")
 
     override fun getName() = commandToken
 

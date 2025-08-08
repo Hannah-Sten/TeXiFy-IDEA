@@ -22,6 +22,9 @@ interface LatexCommandsStub : StubElement<LatexCommands>, NamedStub<LatexCommand
 
     val commandToken: String
 
+    val commandName: String
+        get() = commandToken.removePrefix("\\")
+
     /**
      * All the parameters of the command in order
      */

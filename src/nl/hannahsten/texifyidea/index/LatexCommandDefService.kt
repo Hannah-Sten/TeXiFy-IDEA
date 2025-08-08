@@ -6,11 +6,15 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiManager
 import com.intellij.psi.SmartPointerManager
 import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.psi.stubs.StubElement
+import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.index.SourcedDefinition.DefinitionSource
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
+import nl.hannahsten.texifyidea.index.stub.requiredParamAt
 import nl.hannahsten.texifyidea.lang.LArgument
 import nl.hannahsten.texifyidea.lang.LAssignContext
 import nl.hannahsten.texifyidea.lang.LContextSet
@@ -79,11 +83,12 @@ object CommandDefUtil {
         return LatexContexts.InsideDefinition in ctxSig.contexts
     }
 
-    private fun backTrackingRequiredContext(definitionElement : PsiElement, lookup : LatexSemanticLookup) : LContextSet{
+    private fun backTrackingRequiredContext(definitionElement: PsiElement?, lookup: LatexSemanticLookup): LContextSet {
+        definitionElement ?: return emptySet()
         return emptySet()
     }
 
-    private fun parseParameterDefinedCommandPSI(defCommand: LatexCommands, semantics: LSemanticCommand, pkgName: String): LSemanticCommand? {
+    private fun parseParameterDefinedCommandPSI(defCommand: LatexCommands, semantics: LSemanticCommand, pkgName: String, lookup: LatexSemanticLookup): LSemanticCommand? {
         // we use the PSI tree now, since the operation of finding the next command seems to be expensive with stubs
         var definedCommandName: String? = null
         var definitionElement: PsiElement? = null
@@ -97,32 +102,66 @@ object CommandDefUtil {
         }
         definedCommandName ?: return null
         definedCommandName = definedCommandName.removePrefix("\\") // remove the leading backslash
-//        val requiredContext =
+        val requiredContext = backTrackingRequiredContext(definitionElement, lookup)
 
-        return LSemanticCommand(definedCommandName, pkgName,)
+        return LSemanticCommand(definedCommandName, pkgName, requiredContext)
     }
 
     private fun parseSubsequentDefinedCommandPSI(defCommand: LatexCommands, defSemantics: LSemanticCommand, pkgName: String): LSemanticCommand? {
-        // \def\cmd\something
-        // TODO
-//        val nextCommand = defCommand.nextContextualSibling { it is LatexCommands } as? LatexCommands ?: return null
+
         return null
     }
 
-    fun parseCommandDefNoSemantics(defCmd: LatexCommands, defSemantics: LSemanticCommand,){
 
+    /**
+     * Parses command definitions in the library file, only recognizing command names but no semantics (because they can be very complex).
+     *
+     * The semantics of the command definitions in latex libraries can be manually specified in the [PredefinedCommands].
+     *
+     * @param topLevelStubs only consider top-level stubs as definition commands can only be top-level
+     */
+    fun parseCommandDefInLib(topLevelStubs: List<StubElement<*>>, pkgName: String, file: PsiFile, pointerManager: SmartPointerManager): List<SourcedDefinition> {
+        val definitions = mutableListOf<SourcedDefinition>()
+        val size = topLevelStubs.size
+        for (idx in 0 until size) {
+            val defStub = topLevelStubs[idx]
+            if (defStub !is LatexCommandsStub) continue
+            if (defStub.commandName !in PredefinedCommands.namesOfDefinitionCommands) continue
+            val nameWithSlash = parseCommandDefNameInLib(defStub, idx, topLevelStubs) ?: continue
+            definitions.add(
+                SourcedDefinition(
+                    LSemanticCommand(nameWithSlash.removePrefix("\\"), pkgName),
+                    pointerManager.createSmartPsiElementPointer(defStub.psi, file),
+                    DefinitionSource.Package
+                )
+            )
+        }
+        return definitions
     }
 
-    fun parseCommandDefPSI(defCmd: LatexCommands, defSemantics: LSemanticCommand, pkgName: String, file : PsiFile, project: Project): SourcedDefinition? {
-        val semanticCommand = parseParameterDefinedCommandPSI(defCmd, defSemantics, pkgName)
+    /**
+     * Find the first parameter of the command definition stub that defines a command name.
+     *
+     * @return shift in index, name of the defined command
+     */
+    private fun parseCommandDefNameInLib(defStub: LatexCommandsStub, idx: Int, stubs: List<StubElement<*>>): String? {
+        defStub.requiredParamAt(0)?.let {
+            return it.trim()
+        }
+        // \def\cmd\something
+        val nextCommand = stubs.getOrNull(idx + 1) as? LatexCommandsStub ?: return null
+        // no need for checking \def\cmd\relax since only top-level stubs are considered
+        return nextCommand.commandToken
+    }
+
+
+    fun parseCommandDefPSI(
+        defCmd: LatexCommands, defSemantics: LSemanticCommand, pkgName: String, file: PsiFile, lookup: LatexSemanticLookup
+    ): SourcedDefinition? {
+        val semanticCommand = parseParameterDefinedCommandPSI(defCmd, defSemantics, pkgName, lookup)
             ?: parseSubsequentDefinedCommandPSI(defCmd, defSemantics, pkgName) ?: return null
-        val ref = SmartPointerManager.getInstance(project).createSmartPsiElementPointer(defCmd,file)
+        val ref = SmartPointerManager.getInstance(file.project).createSmartPsiElementPointer(defCmd, file)
         return SourcedDefinition(semanticCommand, ref, DefinitionSource.UserDefined)
-    }
-
-    fun parseCommandDefStub(cmd: LatexCommandsStub, semantics: LSemanticCommand, pkgName: String,file : PsiFile, project: Project): SourcedDefinition? {
-        var name = cmd.name ?: return null
-        TODO()
     }
 
     fun mergeCommand(old: LSemanticCommand, new: LSemanticCommand): LSemanticCommand {
@@ -254,15 +293,17 @@ class PackageCommandDefService(
     }
 
 
-    private fun processStubBasedDefinitions(
+    private fun processPsiDefinitions(
         libInfo: LatexLibraryInfo,
         currentSourcedDefinitions: MutableMap<String, SourcedDefinition>
     ) {
-        val stubBasedDefinitions = NewSpecialCommandsIndex.getAllCommandDef(project, libInfo.location)
-        for (defCmd in stubBasedDefinitions) {
-            val sourcedDef = CommandDefUtil.parseCommandDefPSI(defCmd, libInfo.name, project) ?: continue
-            val name = sourcedDef.command.name
-            currentSourcedDefinitions.merge(name, sourcedDef, CommandDefUtil::mergeDefinition)
+        val psiManager = PsiManager.getInstance(project)
+        val psiFile = psiManager.findFile(libInfo.location) as? LatexFile ?: return
+        val stub = psiFile.stub ?: return
+        // the packages should be stub-based
+        val pointerManager = SmartPointerManager.getInstance(project)
+        CommandDefUtil.parseCommandDefInLib(stub.childrenStubs, libInfo.name, psiFile, pointerManager).forEach {
+            currentSourcedDefinitions.merge(it.command.name, it, CommandDefUtil::mergeDefinition)
         }
     }
 
@@ -271,6 +312,7 @@ class PackageCommandDefService(
         currentSourcedDefinitions: MutableMap<String, SourcedDefinition>
     ) {
         val scope = GlobalSearchScope.fileScope(project, libInfo.location)
+        // TODO:
 //        val externalIndexDefinitions = LatexExternalCommandIndex.getAllKeys(scope)
 //        externalIndexDefinitions.size
 //        for (key in externalIndexDefinitions) {
@@ -327,7 +369,7 @@ class PackageCommandDefService(
         }
         val currentSourcedDefinitions = mutableMapOf<String, SourcedDefinition>()
         processPredefinedCommands(pkgName, currentSourcedDefinitions)
-        processStubBasedDefinitions(libInfo, currentSourcedDefinitions)
+        processPsiDefinitions(libInfo, currentSourcedDefinitions)
         processExternalDefinitions(libInfo, currentSourcedDefinitions)
         val result = LibCommandBundle(pkgName, currentSourcedDefinitions, directDependencies, includedPackages)
         putValue(pkgName, result)
@@ -379,9 +421,9 @@ class LatexCommandDefService(
         return FilesetCommandBundle(
             customCommands = buildMap {
                 for (defCmd in commandDefinitions) {
-                    val sourcedDef = CommandDefUtil.parseCommandDefPSI(defCmd, "", project) ?: continue
-                    val name = sourcedDef.command.name
-                    put(name, sourcedDef)
+//                    val sourcedDef = CommandDefUtil.parseCommandDefPSI(defCmd, "", project) ?: continue
+//                    val name = sourcedDef.command.name
+//                    put(name, sourcedDef)
                     // never merge user-defined commands
                 }
             },

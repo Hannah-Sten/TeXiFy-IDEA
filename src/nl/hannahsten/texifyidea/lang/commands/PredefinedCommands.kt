@@ -37,4 +37,14 @@ object PredefinedCommands {
             }
         }
     }
+
+    fun lookupCommand(name: String, dependency: String? = null): LSemanticCommand? {
+        val commands = nameToCommands[name] ?: return null
+        if (dependency == null) {
+            return commands.firstOrNull()
+        }
+        return commands.firstOrNull { it.dependency == dependency }
+    }
+
+    val namesOfDefinitionCommands = NewLatexBasicCommands.definitionOfCommands.map { it.name }.toSet()
 }
