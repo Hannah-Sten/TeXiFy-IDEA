@@ -3,7 +3,7 @@ name: CI
 on:
   workflow_dispatch:
   push:
-    branches: [ master ]
+    branches: [ '**' ]
   pull_request:
     types: [opened, synchronize, ready_for_review]
   merge_group:
