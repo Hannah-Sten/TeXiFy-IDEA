@@ -6,6 +6,7 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.parser.forEachChildTyped
 import nl.hannahsten.texifyidea.util.parser.forEachDirectChild
+import nl.hannahsten.texifyidea.util.parser.forEachDirectChildTyped
 import nl.hannahsten.texifyidea.util.parser.getOptionalParameterMapFromParameters
 import nl.hannahsten.texifyidea.util.parser.toStringMap
 import nl.hannahsten.texifyidea.util.parser.traversePruneIf
@@ -236,11 +237,17 @@ fun PsiElement.traverseCommands(depth: Int = Int.MAX_VALUE): Sequence<LatexComma
 inline fun LatexCommandWithParams.forEachOptionalParameter(
     action: (LatexOptionalKeyValKey, LatexKeyValValue?) -> Unit
 ) {
-    parameterList.forEach {
+    forEachParameter {
         it.optionalParam?.optionalKeyValPairList?.forEach { kvPair ->
             action(kvPair.optionalKeyValKey, kvPair.keyValValue)
         }
     }
+}
+
+inline fun LatexCommandWithParams.forEachParameter(
+    action: (LatexParameter) -> Unit
+) {
+    forEachDirectChildTyped<LatexParameter>(action)
 }
 
 private fun PsiElement.getParameterTexts0(): Sequence<LatexParameterText> {
@@ -272,7 +279,7 @@ fun LatexParameter.contentText(): String {
     return text
 }
 
-private fun stripContentText(text: String, prefix : Char, suffix : Char): String {
+private fun stripContentText(text: String, prefix: Char, suffix: Char): String {
     var result = text
     if (result.length >= 2 && result.first() == prefix && result.last() == suffix) {
         result = result.substring(1, result.length - 1)

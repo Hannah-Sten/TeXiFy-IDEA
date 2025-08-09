@@ -1,8 +1,8 @@
-package nl.hannahsten.texifyidea.lang.commands
+package nl.hannahsten.texifyidea.lang.predefined
 
 import nl.hannahsten.texifyidea.lang.PredefinedCommandSet
 
-object NewLatexMathSymbols : PredefinedCommandSet() {
+object PredefinedMathSymbols : PredefinedCommandSet() {
 
     val lowercaseGreek = mathCommands {
 

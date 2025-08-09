@@ -1,10 +1,10 @@
-package nl.hannahsten.texifyidea.lang.commands
+package nl.hannahsten.texifyidea.lang.predefined
 
 import nl.hannahsten.texifyidea.lang.LArgument
 import nl.hannahsten.texifyidea.lang.PredefinedCommandSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
 
-object NewLatexGenericCommands : PredefinedCommandSet() {
+object PredefinedGenericCommands : PredefinedCommandSet() {
     private val textArg = LArgument.required("text", LatexContexts.Text)
     private val labelArg = LArgument.required("label", LatexContexts.LabelReference)
 
@@ -517,7 +517,7 @@ object NewLatexGenericCommands : PredefinedCommandSet() {
 
     val algorithm = buildCommands {
         packageOf("algpseudocode")
-        setCommandContext(LatexContexts.Algorithmicx)
+        setRequiredContext(LatexContexts.Algorithmicx)
         "ElsIf".cmd("condition".required) { "ELSIF" }
         "EndFor".cmd()
         "EndFunction".cmd()
@@ -550,14 +550,14 @@ object NewLatexGenericCommands : PredefinedCommandSet() {
         val label = "label".required(LatexContexts.Text)
         val insert = "insert".optional
 
-        setCommandContext() // TODO: maybe setCommandContext(LatexContexts.Preamble)
+        setRequiredContext() // TODO: maybe setCommandContext(LatexContexts.Preamble)
         "loadglsentries".cmd("glossariesfile".required(LatexContexts.SingleFile))
         "longnewglossaryentry".cmd("name".required, "options".required, "description".required)
         "newabbreviation".cmd(options, "name".required, "short".required, "long".required)
         "newacronym".cmd(options, "name".required, "short".required, "long".required)
         "newglossaryentry".cmd("name".required, "options".required)
 
-        setCommandContext(LatexContexts.Text)
+        setRequiredContext(LatexContexts.Text)
         "GLS".cmd(options, label, label)
         "GLSdesc".cmd(options, label, label)
         "GLSfirst".cmd(options, label, label)
@@ -613,12 +613,12 @@ object NewLatexGenericCommands : PredefinedCommandSet() {
         val linebreakPenalty = "linebreak penalty".optional
         val acronym = "acronym".required(LatexContexts.Text)
 
-        setCommandContext()
+        setRequiredContext()
         "acro".cmd(acronym, "short name".optional, "full name".required)
         "acrodef".cmd(acronym, "short name".optional, "full name".required)
         "newacro".cmd(acronym, "short name".optional, "full name".required)
 
-        setCommandContext(LatexContexts.Text)
+        setRequiredContext(LatexContexts.Text)
         "Ac".cmd(linebreakPenalty, acronym)
         "Ac*".cmd(linebreakPenalty, acronym)
         "Acf".cmd(linebreakPenalty, acronym)
@@ -718,7 +718,7 @@ object NewLatexGenericCommands : PredefinedCommandSet() {
 
     val mathtools = buildCommands {
         packageOf("mathtools")
-        setCommandContext(LatexContexts.Preamble)
+        setRequiredContext(LatexContexts.Preamble)
         val cmd = "cmd".required
         val numArgs = "num args".optional
         val leftDelimiter = "left delimiter".required
@@ -732,7 +732,7 @@ object NewLatexGenericCommands : PredefinedCommandSet() {
     }
 
     val colorDefinitionCommands = buildCommands {
-        setCommandContext(LatexContexts.Preamble)
+        setRequiredContext(LatexContexts.Preamble)
 
         val typeOpt = "type".optional
         val nameReq = "name".required

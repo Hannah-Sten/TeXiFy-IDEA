@@ -7,9 +7,13 @@ import com.intellij.psi.PsiRecursiveElementVisitor
 import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
+import nl.hannahsten.texifyidea.index.stub.LatexParameterStub
 import nl.hannahsten.texifyidea.index.stub.requiredParamAt
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.Environment
+import nl.hannahsten.texifyidea.lang.LArgument
+import nl.hannahsten.texifyidea.lang.LArgumentType
+import nl.hannahsten.texifyidea.lang.LSemanticCommand
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.psi.*
@@ -141,10 +145,12 @@ fun PsiElement.findDependencies(): Set<LatexPackage> {
                 // If the command is a known command, add its dependency.
                 LatexCommand.lookupInAll(e)?.firstOrNull()?.dependency
             }
+
             is LatexEnvironment -> {
                 // If the environment is a known environment, add its dependency.
                 Environment.lookup(e.getEnvironmentName())?.dependency
             }
+
             else -> null
         }
         dependency?.takeIf { it.isDefault.not() }
@@ -215,5 +221,59 @@ object LatexPsiUtil {
         if (prevCmd.name !in CommandMagic.definitions) return false
         if (prevCmd.hasRequiredParameter()) return false
         return true
+    }
+
+    fun parameterTypeMatches(parameter: LatexParameter, type: LArgumentType): Boolean {
+        return when (type) {
+            LArgumentType.REQUIRED -> parameter.requiredParam != null
+            LArgumentType.OPTIONAL -> parameter.optionalParam != null
+        }
+    }
+
+    fun parameterTypeMatchesStub(parameter: LatexParameterStub, type: LArgumentType): Boolean {
+        return when (type) {
+            LArgumentType.REQUIRED -> parameter.type == LatexParameterStub.REQUIRED
+            LArgumentType.OPTIONAL -> parameter.type == LatexParameterStub.OPTIONAL
+        }
+    }
+
+    inline fun processArgumentsWithSemantics(cmd: LatexCommands, semantics: LSemanticCommand, action: (LatexParameter, LArgument?) -> Unit) {
+        val arguments = semantics.arguments
+        var argIdx = 0
+        val argSize = arguments.size
+        cmd.forEachParameter { param ->
+            if (argIdx >= argSize) action(param, null)
+            else while (true) {
+                val argument = arguments[argIdx]
+                if (parameterTypeMatches(param, argument.type)) {
+                    action(param, argument)
+                    argIdx++
+                    return@forEachParameter // continue to next parameter
+                }
+                else if (argument.type == LArgumentType.OPTIONAL) {
+                    argIdx++ // skip optional arguments that are not present
+                }
+            }
+        }
+    }
+
+    inline fun processArgumentsWithSemantics(cmd: LatexCommandsStub, semantics: LSemanticCommand, action: (LatexParameterStub, LArgument) -> Unit) {
+        val arguments = semantics.arguments
+        var argIdx = 0
+        val argSize = arguments.size
+        cmd.parameters.forEach { param ->
+            if (argIdx >= argSize) return
+            while (true) {
+                val argument = arguments[argIdx]
+                if (parameterTypeMatchesStub(param, argument.type)) {
+                    action(param, argument)
+                    argIdx++
+                    return@forEach // continue to next parameter
+                }
+                else if (argument.type == LArgumentType.OPTIONAL) {
+                    argIdx++ // skip optional arguments that are not present
+                }
+            }
+        }
     }
 }

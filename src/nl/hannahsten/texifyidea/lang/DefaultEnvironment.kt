@@ -8,6 +8,7 @@ import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MATHTOOLS
 import nl.hannahsten.texifyidea.lang.commands.Argument
 import nl.hannahsten.texifyidea.lang.commands.OptionalArgument
 import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
+import nl.hannahsten.texifyidea.lang.predefined.parseFor
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import java.util.*
@@ -195,3 +196,4 @@ enum class DefaultEnvironment(
         operator fun get(name: String): DefaultEnvironment? = lookup[name]
     }
 }
+

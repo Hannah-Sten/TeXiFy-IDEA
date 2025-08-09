@@ -132,4 +132,6 @@ object PatternMagic {
      * Matches any consecutive sequence of LaTeX quote characters
      */
     val quotePattern = """["'`]+""".toRegex()
+
+    val commandToken = "\\\\[a-zA-Z@]+".toRegex()
 }

@@ -1,9 +1,9 @@
-package nl.hannahsten.texifyidea.lang.commands
+package nl.hannahsten.texifyidea.lang.predefined
 
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.PredefinedCommandSet
 
-object NewLatexTextSymbols : PredefinedCommandSet() {
+object PredefinedTextSymbols : PredefinedCommandSet() {
 
     val textcomp = buildCommands {
         packageOf("textcomp")

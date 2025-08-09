@@ -1,9 +1,9 @@
-package nl.hannahsten.texifyidea.lang.commands
+package nl.hannahsten.texifyidea.lang.predefined
 
 import nl.hannahsten.texifyidea.lang.*
 import nl.hannahsten.texifyidea.lang.LArgument.Companion.required
 
-object NewLatexFileCommands : PredefinedCommandSet() {
+object PredefinedFileCommands : PredefinedCommandSet() {
 
     private val classArgument = required("class", LatexContexts.ClassName)
     private val packageArg = required("package", LatexContexts.PackageNames)
@@ -137,8 +137,8 @@ object NewLatexFileCommands : PredefinedCommandSet() {
 
         packageOf("minted")
         "inputminted".cmd(
-            LArgument.required("language", LatexContexts.MintedFuntimeLand),
-            LArgument.required("sourcefile", LatexContexts.SingleFile),
+            required("language", LatexContexts.MintedFuntimeLand),
+            required("sourcefile", LatexContexts.SingleFile),
         ) {
             "Input a source file with syntax highlighting"
         }

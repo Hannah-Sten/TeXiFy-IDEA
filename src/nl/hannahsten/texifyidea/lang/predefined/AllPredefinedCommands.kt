@@ -1,17 +1,18 @@
-package nl.hannahsten.texifyidea.lang.commands
+package nl.hannahsten.texifyidea.lang.predefined
 
 import nl.hannahsten.texifyidea.lang.LSemanticCommand
 import nl.hannahsten.texifyidea.util.Log
+import kotlin.collections.iterator
 
-object PredefinedCommands {
+object AllPredefinedCommands {
 
     val allCommands: List<LSemanticCommand> =
         listOf(
-            NewLatexBasicCommands,
-            NewLatexFileCommands,
-            NewLatexMathCommands,
-            NewLatexMathSymbols,
-            NewLatexTextSymbols
+            PredefinedBasicCommands,
+            PredefinedFileCommands,
+            PredefinedMathCommands,
+            PredefinedMathSymbols,
+            PredefinedTextSymbols
         ).flatMap {
             it.allCommands
         }
@@ -46,5 +47,5 @@ object PredefinedCommands {
         return commands.firstOrNull { it.dependency == dependency }
     }
 
-    val namesOfDefinitionCommands = NewLatexBasicCommands.definitionOfCommands.map { it.name }.toSet()
+    val mapOfDefinitionCommands = PredefinedBasicCommands.definitionOfCommands.associateBy { it.name }
 }

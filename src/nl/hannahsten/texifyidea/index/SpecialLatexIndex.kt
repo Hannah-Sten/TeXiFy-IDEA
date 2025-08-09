@@ -7,6 +7,7 @@ import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.stubs.StubIndexKey
 import com.intellij.util.Processor
 import com.intellij.util.indexing.IdFilter
+import nl.hannahsten.texifyidea.lang.predefined.AllPredefinedCommands
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.contentSearchScope
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
@@ -39,7 +40,7 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexWrapper<LatexCommands>(Late
 
     val mappingPairs = listOf(
         CommandMagic.allFileIncludeCommands to SpecialKeys.FILE_INPUTS,
-        CommandMagic.commandDefinitionsAndRedefinitions to SpecialKeys.COMMAND_DEFINITIONS,
+        AllPredefinedCommands.mapOfDefinitionCommands.keys to SpecialKeys.COMMAND_DEFINITIONS,
         CommandMagic.environmentDefinitions to SpecialKeys.ENV_DEFINITIONS,
         CommandMagic.definitions to SpecialKeys.ALL_DEFINITIONS,
         CommandMagic.packageInclusionCommands to SpecialKeys.PACKAGE_INCLUDES,

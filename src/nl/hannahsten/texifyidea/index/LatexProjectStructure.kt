@@ -50,6 +50,7 @@ import nl.hannahsten.texifyidea.util.unionBy
 import java.io.File
 import java.nio.file.InvalidPathException
 import java.nio.file.Path
+import java.util.SequencedSet
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicLong
 import kotlin.collections.contains
@@ -68,7 +69,10 @@ import kotlin.io.path.pathString
  */
 data class Fileset(
     val root: VirtualFile,
-    val files: Set<VirtualFile>,
+    /**
+     * The files in the fileset
+     */
+    val files: SequencedSet<VirtualFile>,
     val libraries: Set<String>,
     val allFileScope: GlobalSearchScope,
     val externalDocumentInfo: List<ExternalDocumentInfo>
@@ -316,11 +320,21 @@ object LatexProjectStructure {
          * The current root directory, particularly for subfiles package as each `subfile` assigns a new root directory.
          */
         var currentRootDir: VirtualFile? = root.parent
-        val files: MutableSet<VirtualFile> = mutableSetOf(root)
+
+        /**
+         * All files in the fileset in encountering order.
+         */
+        val files: LinkedHashSet<VirtualFile> = linkedSetOf()
+
+        init {
+            files.add(root)
+        }
+
         val libraries: MutableSet<String> = mutableSetOf()
         var declareGraphicsExtensions: Set<String>? = null
         var graphicsSuffix: Set<Path> = emptySet()
         var luatexPaths: Set<VirtualFile> = emptySet()
+
 
         private fun extractExternalDocumentInfoInFileset(allFilesScope: GlobalSearchScope): List<ExternalDocumentInfo> {
             val externalDocumentCommands = NewCommandsIndex.getByName(
@@ -893,7 +907,7 @@ object LatexProjectStructure {
         return getFilesetScopeFor(virtualFile, project, onlyTexFiles)
     }
 
-    fun getFilesetScopeFor(file: VirtualFile, project: Project, onlyTexFiles: Boolean = false, onlyProjectFiles : Boolean = false): GlobalSearchScope {
+    fun getFilesetScopeFor(file: VirtualFile, project: Project, onlyTexFiles: Boolean = false, onlyProjectFiles: Boolean = false): GlobalSearchScope {
         val data = getFilesets(project)?.getData(file) ?: return GlobalSearchScope.fileScope(project, file)
         var scope = data.filesetScope
         if (onlyTexFiles) {
@@ -940,7 +954,7 @@ object LatexProjectStructure {
         }
         val projectFS = getFilesets(project) // call for an update if needed
         val root = command.containingFile.virtualFile ?: return null
-        if (projectFS == null || root in projectFS.mapping) {
+        if (projectFS == null || root in projectFS.mapping || !ProjectFileIndex.getInstance(project).isInProject(root)) {
             // if the file is already in the mapping, we should totally rely on the computed data
             return data?.value
         }

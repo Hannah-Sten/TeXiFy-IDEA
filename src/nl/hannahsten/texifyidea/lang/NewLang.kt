@@ -28,6 +28,11 @@ sealed interface LContextIntro {
 
     companion object {
 
+
+        fun inherit(): LContextIntro {
+            return LContextInherit
+        }
+
         fun add(ctx: LatexContext): LContextIntro {
             return LModifyContext(
                 toAdd = setOf(ctx), toRemove = emptySet()
@@ -155,8 +160,8 @@ abstract class LSemanticEntity(
     val requiredContext: LContextSet = emptySet(),
     var description: String = ""
 ) {
-    val fqName: String
-        get() = if (dependency.isEmpty()) name else "$dependency.$name"
+    val displayName : String
+        get() = if (dependency.isEmpty()) name else "$name($dependency)"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

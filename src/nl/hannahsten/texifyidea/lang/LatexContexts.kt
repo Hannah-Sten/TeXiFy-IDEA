@@ -125,4 +125,18 @@ object LatexContexts {
     val Algorithmicx = LatexContextBase("algorithmicx")
 
     val MintedFuntimeLand = LatexContextBase("minted.funtime.land")
+
+
+    // environment contexts
+
+    val Enumerate = LatexContextBase("env.enumerate")
+    val Figure = LatexContextBase("env.figure")
+    val Table = LatexContextBase("env.table")
+
+    /**
+     * A context inside tabular environment, where `&` is valid.
+     */
+    val Tabular = LatexContextBase("tabular")
+
+    val Comment = LatexContextBase("comment")
 }

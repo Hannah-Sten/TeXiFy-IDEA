@@ -87,12 +87,3 @@ abstract class MyPsiRecursiveWalker(private var depth: Int) : PsiRecursiveElemen
     protected open fun elementEnd(e: PsiElement) = Unit
 }
 
-abstract class LatexPsiRecursiveWalker(depth: Int) : MyPsiRecursiveWalker(depth) {
-
-    override fun elementStart(e: PsiElement) {
-        if(e is LatexNormalText || e is PsiWhiteSpace) {
-            // Skip normal text and whitespace elements
-            goDown = false
-        }
-    }
-}
