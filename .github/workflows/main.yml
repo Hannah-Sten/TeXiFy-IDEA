@@ -17,7 +17,7 @@ jobs:
     name: Qodana
     # Note: updating to ubuntu-latest may slow the build and produce a "The runner has received a shutdown signal."
     runs-on: ubuntu-22.04
-    if: github.event.pull_request.draft == false
+#    if: github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v4
         with:
@@ -50,7 +50,7 @@ jobs:
           sarif_file: ${{ runner.temp }}/qodana/results/qodana.sarif.json
   test:
     runs-on: ${{ matrix.os }}
-    if: github.event.pull_request.draft == false
+#    if: github.event.pull_request.draft == false
     timeout-minutes: 50
     strategy:
       matrix:
