@@ -167,7 +167,7 @@ object LatexMathCommandCompletionProvider : LatexCommandCompletionProviderBase()
         )
         addStubIndexCustomCommands(
             parameters, context, result, project, filesetScope,
-            NewSpecialCommandsIndex.getAllCommandDef(project, filesetScope)
+            NewSpecialCommandsIndex.getRegularCommandDef(project, filesetScope)
         )
 
         // This lookup advertisement is added only for math commands

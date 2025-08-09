@@ -65,7 +65,7 @@ abstract class AbstractDSLLatexBuilderScope : DSLLatexBuilderScope {
     }
 
     fun String.required(
-        ctx: LContextIntro, description: String = ""
+        ctx: LatexContextIntro, description: String = ""
     ): LArgument {
         return LArgument.required(this, ctx, description)
     }
@@ -77,17 +77,17 @@ abstract class AbstractDSLLatexBuilderScope : DSLLatexBuilderScope {
     }
 
     fun String.optional(
-        ctx: LContextIntro, description: String = ""
+        ctx: LatexContextIntro, description: String = ""
     ): LArgument {
         return LArgument.optional(this, ctx, description)
     }
 
-    operator fun LatexContext.unaryPlus(): LContextIntro {
-        return LContextIntro.add(this)
+    operator fun LatexContext.unaryPlus(): LatexContextIntro {
+        return LatexContextIntro.add(this)
     }
 
-    operator fun LatexContext.unaryMinus(): LContextIntro {
-        return LContextIntro.remove(this)
+    operator fun LatexContext.unaryMinus(): LatexContextIntro {
+        return LatexContextIntro.remove(this)
     }
 }
 
@@ -167,7 +167,7 @@ class DSLLatexEnvironmentBuilderScope : AbstractDSLLatexBuilderScope() {
     }
 
     fun String.env(
-        context: LContextIntro,
+        context: LatexContextIntro,
         vararg arguments: LArgument,
         desc: String = "",
     ): LSemanticEnv {
@@ -194,7 +194,7 @@ class DSLLatexEnvironmentBuilderScope : AbstractDSLLatexBuilderScope() {
 
 
     inline fun String.env(
-        context: LContextIntro = LContextIntro.inherit(),
+        context: LatexContextIntro = LatexContextIntro.inherit(),
         vararg arguments: LArgument,
         desc: () -> String,
     ): LSemanticEnv {
@@ -210,7 +210,7 @@ class DSLLatexEnvironmentBuilderScope : AbstractDSLLatexBuilderScope() {
     }
 
     operator fun String.unaryPlus(): LSemanticEnv {
-        return this.env()
+        return this.env(LatexContextIntro.inherit())
     }
 
     companion object {

@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.lang.predefined
 
-import nl.hannahsten.texifyidea.lang.LContextIntro
+import nl.hannahsten.texifyidea.lang.LatexContextIntro
+import nl.hannahsten.texifyidea.lang.LSemanticEnv
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.LatexContexts.Math
 import nl.hannahsten.texifyidea.lang.PredefinedEnvironmentSet
@@ -44,7 +45,7 @@ object AllPredefinedEnvironments : PredefinedEnvironmentSet() {
         +"trivlist"
         +"verse"
 
-        "thebibliography".env(LContextIntro.inherit(), "widestlabel".required) {
+        "thebibliography".env(LatexContextIntro.inherit(), "widestlabel".required) {
             "A bibliography environment."
         }
     }
@@ -58,7 +59,7 @@ object AllPredefinedEnvironments : PredefinedEnvironmentSet() {
 
         +"array"
 
-        "list".env(LContextIntro.inherit(), "label".required, "spacing".required)
+        "list".env(LatexContextIntro.inherit(), "label".required, "spacing".required)
     }
     val basicIntroMath = buildEnvironments {
         "math".env(Math) { "Inline math mode." }
@@ -262,5 +263,7 @@ object AllPredefinedEnvironments : PredefinedEnvironmentSet() {
         +"widetable"
         +"widetabular"
     }
+
+    val packageToEnvironments: Map<String, List<LSemanticEnv>> = allEnvironments.groupBy { it.dependency }
 
 }

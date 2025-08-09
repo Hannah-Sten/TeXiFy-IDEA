@@ -19,17 +19,25 @@ import kotlin.reflect.KClass
  * Typically, PSI related extensions are called from a read action, so we must avoid wrapping these methods in a read action.
  */
 
+/**
+ * Find the first parent (including this element) of this PsiElement that matches the given predicate.
+ */
 inline fun PsiElement.firstParent(maxDepth: Int = Int.MAX_VALUE, predicate: (PsiElement) -> Boolean): PsiElement? {
-    var current: PsiElement? = this
-    var depth = -1
-    while (current != null && depth < maxDepth) {
+    var current: PsiElement = this
+    for (depth in 0..maxDepth) {
         if (predicate(current)) {
             return current
         }
-        current = current.parent?.let { if (it.isValid) it else null }
-        depth++
+        current = current.parent ?: return null
     }
     return null
+}
+
+/**
+ * Find the first parent excluding this element that matches the given predicate.
+ */
+inline fun PsiElement.firstStrictParent(maxDepth: Int = Int.MAX_VALUE, predicate: (PsiElement) -> Boolean): PsiElement? {
+    return this.parent?.firstParent(maxDepth, predicate)
 }
 
 /**
@@ -42,15 +50,7 @@ inline fun PsiElement.firstParent(maxDepth: Int = Int.MAX_VALUE, predicate: (Psi
  * @see [firstParentOfType]
  */
 inline fun <reified T : PsiElement> PsiElement.firstParentOfType(maxDepth: Int = Int.MAX_VALUE): T? {
-    var current: PsiElement = this
-    for (depth in 0..maxDepth) {
-        if (current is T) {
-            return current
-        }
-        current = current.parent ?: return null
-        if (!current.isValid) return null
-    }
-    return null
+    return firstParent(maxDepth) { it is T } as? T
 }
 
 inline fun PsiElement.traverseParents(action: (PsiElement) -> Unit) {
@@ -93,7 +93,7 @@ fun PsiElement.startOffsetInAncestor(ancestor: PsiElement): Int {
 fun PsiElement.textRangeInAncestor(ancestor: PsiElement): TextRange? {
     // If the ancestor is not a parent, return null
     val startOffset = this.startOffsetInAncestor(ancestor)
-    if(startOffset < 0) return null
+    if (startOffset < 0) return null
     return TextRange.from(startOffset, this.textLength)
 }
 

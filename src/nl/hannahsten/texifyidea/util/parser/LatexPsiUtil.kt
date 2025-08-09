@@ -13,8 +13,13 @@ import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.lang.LArgument
 import nl.hannahsten.texifyidea.lang.LArgumentType
+import nl.hannahsten.texifyidea.lang.LAssignContext
+import nl.hannahsten.texifyidea.lang.LClearContext
+import nl.hannahsten.texifyidea.lang.LatexContextIntro
+import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LSemanticCommand
 import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.LatexSemanticLookup
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
@@ -197,6 +202,13 @@ object LatexPsiUtil {
         return nextCommand.name
     }
 
+    fun getDefinedCommandElement(cmd: LatexCommands): LatexCommands? {
+        cmd.firstRequiredParameter()?.let {
+            return it.findFirstChildTyped<LatexCommands>()
+        }
+        return cmd.nextContextualSibling { true } as? LatexCommands
+    }
+
     fun isInsideDefinition(cmd: LatexComposite): Boolean {
         return isInsideNewCommandDef(cmd) || isInsidePlainDef(cmd)
     }
@@ -221,6 +233,14 @@ object LatexPsiUtil {
         if (prevCmd.name !in CommandMagic.definitions) return false
         if (prevCmd.hasRequiredParameter()) return false
         return true
+    }
+
+    fun stubTypeToLArgumentType(type: Int): LArgumentType {
+        return when (type) {
+            LatexParameterStub.REQUIRED -> LArgumentType.REQUIRED
+            LatexParameterStub.OPTIONAL -> LArgumentType.OPTIONAL
+            else -> LArgumentType.REQUIRED
+        }
     }
 
     fun parameterTypeMatches(parameter: LatexParameter, type: LArgumentType): Boolean {
@@ -275,5 +295,69 @@ object LatexPsiUtil {
                 }
             }
         }
+    }
+
+    fun alignCommandArgument(command: LatexCommands, parameter: LatexParameter, semantics: LSemanticCommand): LArgument? {
+        val command = parameter.firstParentOfType<LatexCommands>() ?: return null
+        processArgumentsWithSemantics(command, semantics) { p, arg ->
+            if (p == parameter) return arg
+        }
+        return null
+    }
+
+    private fun resolveCommandParameterContext(parameter: LatexParameter, lookup: LatexSemanticLookup): LatexContextIntro? {
+        val command = parameter.firstParentOfType<LatexCommands>() ?: return null
+        val name = command.name ?: return null
+        val semantics = lookup.lookupCommand(name) ?: return null
+        val arg = alignCommandArgument(command, parameter, semantics) ?: return null
+        return arg.contextSignature
+    }
+
+    private fun resolveEnvironmentContentContext(environmentContent: LatexEnvironmentContent, lookup: LatexSemanticLookup): LatexContextIntro? {
+        val environment = environmentContent.firstParentOfType<LatexEnvironment>() ?: return null
+        val name = environment.getEnvironmentName()
+        val semantics = lookup.lookupEnv(name) ?: return null
+        return semantics.contextSignature
+    }
+
+
+    fun resolveContextUpward(e: PsiElement, lookup: LatexSemanticLookup): LContextSet {
+        var collectedContextIntro: MutableList<LatexContextIntro>? = null
+        var current: PsiElement? = e
+        // Latex.bnf
+        while (current != null) {
+            current = current.firstStrictParent { // `firstParent` is inclusive
+                it is LatexParameter || it is LatexEnvironmentContent
+            } ?: break
+            val intro = when (current) {
+                is LatexParameter -> {
+                    resolveCommandParameterContext(current, lookup) ?: continue
+                }
+                is LatexEnvironmentContent -> {
+                    resolveEnvironmentContentContext(current, lookup) ?: continue
+                }
+                else -> continue
+            }
+            when(intro){
+                is LAssignContext -> {
+                    if (collectedContextIntro == null) return intro.contexts
+                    collectedContextIntro.add(intro)
+                    break
+                }
+                LClearContext -> {
+                    if (collectedContextIntro == null) return emptySet()
+                    collectedContextIntro.add(intro)
+                    break
+                }
+                else -> {
+                    if (collectedContextIntro == null) {
+                        collectedContextIntro = mutableListOf()
+                    }
+                    collectedContextIntro.add(intro)
+                }
+            }
+        }
+        collectedContextIntro ?: return emptySet()
+        return LatexContextIntro.buildContext(collectedContextIntro.asReversed())
     }
 }

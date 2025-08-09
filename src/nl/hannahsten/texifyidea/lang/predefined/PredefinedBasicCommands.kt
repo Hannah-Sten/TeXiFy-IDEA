@@ -23,7 +23,7 @@ object PredefinedBasicCommands : PredefinedCommandSet() {
             val paramMacro = required("macro", LatexContexts.CommandDeclaration)
             val paramDef = required("definition", LatexContexts.InsideDefinition)
             +"def" // \def\cmd#1#2...#9{content}, too complex to handle in the command context
-            "let".cmd(paramMacro, paramDef) { "LaTex primitive let" }
+            +"let"
             "edef".cmd(paramMacro, paramDef) { "LaTex primitive edef" }
             "gdef".cmd(paramMacro, paramDef) { "LaTex primitive gdef" }
             "xdef".cmd(paramMacro, paramDef) { "LaTex primitive xdef" }
@@ -35,7 +35,12 @@ object PredefinedBasicCommands : PredefinedCommandSet() {
 
     const val ARG_NAME_COMMAND_TOKEN = "commandToken"
 
-    val definitionOfCommands = buildCommands {
+    val definitionOfCommand = buildCommands {
+        underContext(LatexContexts.Nothing) {
+            // primitive commands, only
+            +"def" // primitive command, but also considered a command definition
+            +"let"
+        }
         setRequiredContext(LatexContexts.Preamble)
 
         val command = required("commandToken", LatexContexts.CommandDeclaration)

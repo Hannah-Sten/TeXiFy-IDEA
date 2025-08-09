@@ -45,7 +45,7 @@ object LatexEnvironmentCompletionProvider : CompletionProvider<CompletionParamet
         result: CompletionResultSet
     ) {
         val fileset = LatexProjectStructure.getFilesetScopeFor(parameters.originalFile)
-        val lookups = NewSpecialCommandsIndex.getAllEnvDef(fileset)
+        val lookups = NewSpecialCommandsIndex.getRegularEnvDef(fileset)
             .asSequence()
             .filter { cmd -> CommandMagic.environmentDefinitions.contains(cmd.name) }
             .mapNotNull { cmd -> cmd.requiredParameterText(0) }

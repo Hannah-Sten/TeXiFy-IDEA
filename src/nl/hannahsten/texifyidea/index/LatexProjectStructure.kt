@@ -258,7 +258,7 @@ object LatexProjectStructure {
     /**
      * The count of building operations, used for debugging purposes.
      */
-    val countOfBuilding = AtomicInteger(0)
+    val countOfBuilds = AtomicInteger(0)
     val totalBuildTime = AtomicLong(0)
 
     private val expirationTimeInMs: Long
@@ -689,7 +689,7 @@ object LatexProjectStructure {
 
     private fun makePreparation(project: Project): ProjectInfo {
         // Get all bibtex input paths from the run configurations
-        countOfBuilding.incrementAndGet()
+        countOfBuilds.incrementAndGet()
         val bibInputPaths = project.getBibtexRunConfigurations().mapNotNull { config ->
             (config.environmentVariables.envs["BIBINPUTS"])?.let {
                 LocalFileSystem.getInstance().findFileByPath(it)

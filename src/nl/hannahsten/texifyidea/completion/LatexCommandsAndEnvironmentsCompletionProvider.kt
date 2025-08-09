@@ -98,7 +98,7 @@ class LatexCommandsAndEnvironmentsCompletionProvider internal constructor(privat
             // Find all environments.
             val environments = mutableListOf<Environment>()
             environments.addAll(DefaultEnvironment.entries)
-            NewSpecialCommandsIndex.getAllEnvDef(parameters.originalFile.project)
+            NewSpecialCommandsIndex.getRegularEnvDef(parameters.originalFile.project)
                 .asSequence()
                 .filter { cmd -> CommandMagic.environmentDefinitions.contains(cmd.name) }
                 .mapNotNull { cmd -> cmd.requiredParameterText(0) }

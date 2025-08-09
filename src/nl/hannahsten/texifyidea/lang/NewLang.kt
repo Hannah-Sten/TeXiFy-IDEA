@@ -23,26 +23,32 @@ typealias LContextSet = Set<LatexContext>
 /**
  * Describes how contexts are introduced.
  */
-sealed interface LContextIntro {
+sealed interface LatexContextIntro {
     fun applyTo(outerCtx: LContextSet): LContextSet
 
     companion object {
 
 
-        fun inherit(): LContextIntro {
+        fun inherit(): LatexContextIntro {
             return LContextInherit
         }
 
-        fun add(ctx: LatexContext): LContextIntro {
+        fun add(ctx: LatexContext): LatexContextIntro {
             return LModifyContext(
                 toAdd = setOf(ctx), toRemove = emptySet()
             )
         }
 
-        fun remove(ctx: LatexContext): LContextIntro {
+        fun remove(ctx: LatexContext): LatexContextIntro {
             return LModifyContext(
                 toAdd = emptySet(), toRemove = setOf(ctx)
             )
+        }
+
+        fun buildContext(introList : List<LatexContextIntro>, outerCtx: LContextSet = emptySet()): LContextSet {
+            return introList.fold(outerCtx) { ctx, intro ->
+                intro.applyTo(ctx)
+            }
         }
     }
 }
@@ -51,13 +57,13 @@ sealed interface LContextIntro {
  * Inherits the context from the outer scope.
  * This is the default behavior, so it can be used to reset the context to the outer scope.
  */
-object LContextInherit : LContextIntro {
+object LContextInherit : LatexContextIntro {
     override fun applyTo(outerCtx: LContextSet): LContextSet {
         return outerCtx
     }
 }
 
-object LClearContext : LContextIntro {
+object LClearContext : LatexContextIntro {
     override fun applyTo(outerCtx: LContextSet): LContextSet {
         return emptySet()
     }
@@ -66,7 +72,7 @@ object LClearContext : LContextIntro {
 /**
  * Sets the context to the given [LatexContext], discarding any previous context.
  */
-class LAssignContext(val contexts: Set<LatexContext>) : LContextIntro {
+class LAssignContext(val contexts: Set<LatexContext>) : LatexContextIntro {
 
     constructor(contexts: LatexContext) : this(setOf(contexts))
     constructor(vararg contexts: LatexContext) : this(contexts.toSet())
@@ -79,7 +85,7 @@ class LAssignContext(val contexts: Set<LatexContext>) : LContextIntro {
 /**
  * Adds [toAdd] and removes [toRemove] contexts from the current context.
  */
-class LModifyContext(val toAdd: Set<LatexContext>, val toRemove: Set<LatexContext>) : LContextIntro {
+class LModifyContext(val toAdd: Set<LatexContext>, val toRemove: Set<LatexContext>) : LatexContextIntro {
     override fun applyTo(outerCtx: LContextSet): LContextSet {
         val res = outerCtx.toMutableSet()
         if (toAdd.isNotEmpty()) {
@@ -114,14 +120,14 @@ class LArgument(
      *
      * For example, a file name argument might introduce a file input context.
      */
-    val contextSignature: LContextIntro = LContextInherit,
+    val contextSignature: LatexContextIntro = LContextInherit,
 
     val description: String = "",
 ) {
 
     companion object {
         fun required(
-            name: String, ctx: LContextIntro = LContextInherit, description: String = ""
+            name: String, ctx: LatexContextIntro = LContextInherit, description: String = ""
         ): LArgument {
             return LArgument(name, LArgumentType.REQUIRED, ctx, description)
         }
@@ -133,7 +139,7 @@ class LArgument(
         }
 
         fun optional(
-            name: String, ctx: LContextIntro = LContextInherit, description: String = ""
+            name: String, ctx: LatexContextIntro = LContextInherit, description: String = ""
         ): LArgument {
             return LArgument(name, LArgumentType.OPTIONAL, ctx, description)
         }
@@ -210,11 +216,11 @@ class LSemanticEnv(
     /**
      * The list of arguments in order of appearance, including optional arguments.
      */
-    val arguments: List<LArgument>,
+    val arguments: List<LArgument> = emptyList(),
     /**
      * The context signature that this environment introduces.
      */
-    val contextSignature: LContextIntro,
+    val contextSignature: LatexContextIntro = LContextInherit,
     /**
      * The description of the environment, used for documentation.
      */

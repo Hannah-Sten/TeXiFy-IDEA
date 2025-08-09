@@ -47,5 +47,6 @@ object AllPredefinedCommands {
         return commands.firstOrNull { it.dependency == dependency }
     }
 
-    val mapOfDefinitionCommands = PredefinedBasicCommands.definitionOfCommands.associateBy { it.name }
+    val regularCommandDef = PredefinedBasicCommands.definitionOfCommand.associateBy { it.name }
+    val regularEnvironmentDef = PredefinedBasicCommands.definitionOfEnvironment.associateBy { it.name }
 }

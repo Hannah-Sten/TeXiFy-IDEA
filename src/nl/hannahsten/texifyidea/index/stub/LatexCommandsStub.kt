@@ -22,6 +22,9 @@ interface LatexCommandsStub : StubElement<LatexCommands>, NamedStub<LatexCommand
 
     val commandToken: String
 
+    /**
+     * The name of the command without the leading backslash.
+     */
     val commandName: String
         get() = commandToken.removePrefix("\\")
 

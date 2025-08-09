@@ -7,7 +7,6 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.ui.DialogBuilder
 import kotlinx.html.body
 import kotlinx.html.h2
-import kotlinx.html.h3
 import kotlinx.html.html
 import kotlinx.html.stream.createHTML
 import kotlinx.html.table
@@ -21,42 +20,55 @@ import javax.swing.SwingConstants
 
 class PerformanceDiagnosticAction : AnAction() {
 
+    private data class PerformanceData(
+        val name: String,
+        val count: Int,
+        val totalTime: Long,
+        val additionalInfo: String = ""
+    )
+
     override fun actionPerformed(e: AnActionEvent) {
         // TODO: only for test purposes, remove later
         val project = e.project ?: return
+        PackageDefinitionService.getInstance(project).invalidateCache()
         val bundle = project.service<PackageDefinitionService>().getLibBundle("amsmath.sty")
         val def = LatexDefinitionService.getInstance(project).resolveCommandDef("alpha")
         // show a dialog with performance diagnostic information
-        val count = LatexProjectStructure.countOfBuilding.get()
-        val totalTime = LatexProjectStructure.totalBuildTime.get()
+        val tableData = listOf(
+            PerformanceData(
+                "Fileset", LatexProjectStructure.countOfBuilds.get(), LatexProjectStructure.totalBuildTime.get(),
+                "Recent Fileset Size: ${LatexProjectStructure.getFilesets(project)?.mapping?.size ?: "N/A"}"
+            ),
+            PerformanceData(
+                "Package Definitions", PackageDefinitionService.countOfBuilds.get(), PackageDefinitionService.totalBuildTime.get(),
+            ),
+            PerformanceData(
+                "Command Definitions", LatexDefinitionService.countOfBuilds.get(), LatexDefinitionService.totalBuildTime.get(),
+            )
+        )
         val messageHtml = createHTML(true).html {
             body {
                 h2 { +"Performance Diagnostic Since Last Restart" }
-                h3 { +"Fileset Performance" }
                 table {
                     tr {
-                        td { +"Total fileset builds" }
-                        td { +(count.toString()) }
+                        td { +"Name" }
+                        td { +"Count" }
+                        td { +"Total Time (ms)" }
+                        td { +"Average" }
+                        td { +"Additional Info" }
                     }
-                    tr {
-                        td { +"Total CPU time (ms)" }
-                        td { +(totalTime.toString()) }
-                    }
-                    tr {
-                        td { +"Average time (ms)" }
-                        td {
-                            if (count > 0) {
-                                +(totalTime / count).toString()
-                            } else {
-                                +"N/A"
-                            }
-                        }
-                    }
-                    project.let { LatexProjectStructure.getFilesets(it) }?.let { fs ->
+                    for (data in tableData) {
                         tr {
-                            td { +"Recent Fileset Size" }
+                            td { +data.name }
+                            td { +(data.count.toString()) }
+                            td { +(data.totalTime.toString()) }
                             td {
-                                +(fs.mapping.size.toString())
+                                if (data.count > 0) {
+                                    +(data.totalTime / data.count).toString()
+                                }
+                                else {
+                                    +"N/A"
+                                }
                             }
                         }
                     }
