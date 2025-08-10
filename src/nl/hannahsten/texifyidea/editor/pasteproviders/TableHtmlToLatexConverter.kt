@@ -231,7 +231,7 @@ class TableHtmlToLatexConverter : HtmlToLatexConverter {
                     var span = 1
                     while (c + span < width && grid[r][c + span] === cell) span++
 
-                    val fromAbove = (r > 0) && (grid[r - 1][c] === cell)     // vertically continued
+                    val fromAbove = (r > 0) && (grid[r - 1][c] === cell) // vertically continued
                     val toBelow = (r + 1 < height) && (grid[r + 1][c] === cell)
 
                     val content = if (fromAbove) "" else cell.toLatex().trim()
@@ -239,7 +239,7 @@ class TableHtmlToLatexConverter : HtmlToLatexConverter {
                     val piece = when {
                         span > 1 && content.isNotEmpty() -> "\\multicolumn{$span}{c}{$content}"
                         span > 1 && content.isEmpty() -> "\\multicolumn{$span}{c}{}" // occupy columns but print nothing
-                        span == 1 && content.isEmpty() -> "{}"                        // blank cell
+                        span == 1 && content.isEmpty() -> "{}" // blank cell
                         else -> content
                     }
                     parts.add(piece)
@@ -265,7 +265,6 @@ class TableHtmlToLatexConverter : HtmlToLatexConverter {
                 }
             }
         }
-
 
         // Build data rows
         val dataRowsLatex = buildString {
