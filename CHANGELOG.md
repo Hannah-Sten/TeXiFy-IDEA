@@ -5,14 +5,24 @@
 ### Added
 
 ### Fixed
+
+## [0.11.2] - 2025-08-10
+
+Welcome to TeXiFy IDEA 0.11.2! This release fixes a few exceptions introduced in the previous release.
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
+
+### Fixed
+
 * Fix exception #4160 when using a tool window in non-IntelliJ IDEs
 * Fix exceptions when using a makeindex run configuration
 * Fix an issue with relative paths in graphic insertion wizard
 * Fix exception #4144
 
-## [0.11.0] - 2025-08-04
+## [0.11.1] - 2025-08-04
 
-Welcome to TeXiFy IDEA 0.11.0! This release is a major rewrite of all index-related functionality by @Ezrnest, which massively improves performance. This may have introduced new bugs, so please report any new issue to GitHub.
+Welcome to TeXiFy IDEA 0.11.1! This release is a major rewrite of all index-related functionality by @Ezrnest, which massively improves performance. This may have introduced new bugs, so please report any new issue to GitHub.
 
 We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
 Your input is valuable and well appreciated.
@@ -636,7 +646,9 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.0...HEAD
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.2...HEAD
+[0.11.2]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.1...v0.11.2
+[0.11.1]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.4...v0.11.1
 [0.11.0]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.4...v0.11.0
 [0.10.4]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.3...v0.10.4
 [0.10.3]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.2...v0.10.3
