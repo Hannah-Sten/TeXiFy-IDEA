@@ -8,7 +8,6 @@ import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.util.insertUsepackage
 import nl.hannahsten.texifyidea.util.toVector
-import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import java.util.*
 
@@ -143,6 +142,7 @@ class TableHtmlToLatexConverter : HtmlToLatexConverter {
     private fun generateLatexWithMergedHeaders(table: Element, latexFile: LatexFile): String? {
         // Build the expanded grid (same approach as in toTableDialogWrapper)
         data class HtmlCell(val element: Element?, val text: String)
+
         val trs = table.select("tr")
         if (trs.isEmpty()) return null
         val assignments = mutableMapOf<Pair<Int, Int>, HtmlCell>()
@@ -232,15 +232,15 @@ class TableHtmlToLatexConverter : HtmlToLatexConverter {
                     while (c + span < width && grid[r][c + span] === cell) span++
 
                     val fromAbove = (r > 0) && (grid[r - 1][c] === cell)     // vertically continued
-                    val toBelow   = (r + 1 < height) && (grid[r + 1][c] === cell)
+                    val toBelow = (r + 1 < height) && (grid[r + 1][c] === cell)
 
                     val content = if (fromAbove) "" else cell.toLatex().trim()
 
                     val piece = when {
                         span > 1 && content.isNotEmpty() -> "\\multicolumn{$span}{c}{$content}"
-                        span > 1 && content.isEmpty()    -> "\\multicolumn{$span}{c}{}" // occupy columns but print nothing
-                        span == 1 && content.isEmpty()   -> "{}"                        // blank cell
-                        else                              -> content
+                        span > 1 && content.isEmpty() -> "\\multicolumn{$span}{c}{}" // occupy columns but print nothing
+                        span == 1 && content.isEmpty() -> "{}"                        // blank cell
+                        else -> content
                     }
                     parts.add(piece)
 
