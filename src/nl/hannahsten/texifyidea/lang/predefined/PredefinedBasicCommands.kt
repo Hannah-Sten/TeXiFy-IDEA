@@ -74,6 +74,8 @@ object PredefinedBasicCommands : PredefinedCommandSet() {
     }
 
     val definitionOfEnvironment = buildCommands {
+        setRequiredContext(LatexContexts.Preamble)
+
         val envName = required("name", LatexContexts.EnvironmentDeclaration)
         val numArgs = LArgument.optional("num args", LatexContexts.Numeric)
         val defaultOptional = "default".optional

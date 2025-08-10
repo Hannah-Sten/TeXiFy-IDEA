@@ -668,6 +668,7 @@ object PredefinedGenericCommands : PredefinedCommandSet() {
 
     val tcolorboxDefinitionCommands = buildCommands {
         packageOf("tcolorbox")
+        setRequiredContext(LatexContexts.Preamble)
 
         val initOptionsOptional = "init options".optional
         val nameRequired = "name".required
