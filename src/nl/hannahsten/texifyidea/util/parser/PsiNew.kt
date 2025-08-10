@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.util.parser
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.psi.util.PsiUtil
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.psi.*
@@ -295,6 +296,17 @@ inline fun <reified T : PsiElement> PsiElement.forEachChildTyped(depth: Int = In
             action(it)
         }
     }
+}
+
+inline fun PsiElement.getNthChildThat(n: Int, predicate: (PsiElement) -> Boolean): PsiElement? {
+    var count = 0
+    forEachDirectChild { child ->
+        if (predicate(child)) {
+            if (count == n) return child
+            count++
+        }
+    }
+    return null
 }
 
 /**

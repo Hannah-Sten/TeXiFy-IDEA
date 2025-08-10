@@ -389,31 +389,52 @@ object LatexPsiUtil {
         e: PsiElement,
         lookup: LatexSemanticLookup,
         action: (PsiElement, List<LatexContextIntro>) -> Unit
-    ) {
+    ): List<LatexContextIntro> {
         val visitor = RecordingContextIntroTraverser(lookup, action)
         visitor.traverse(e)
+        return visitor.exitState
     }
 
     private class RecordingContextIntroTraverser(
         lookup: LatexSemanticLookup,
         private val action: (PsiElement, List<LatexContextIntro>) -> Unit
-    ) : LatexWithContextTraverser<MutableList<LatexContextIntro>>(lookup) {
-        override fun enterContextIntro(s: MutableList<LatexContextIntro>, intro: LatexContextIntro): MutableList<LatexContextIntro> {
-            s.add(intro)
-            return s
+    ) : LatexWithContextTraverser<MutableList<LatexContextIntro>>(mutableListOf(), lookup) {
+        override fun enterContextIntro(intro: LatexContextIntro) {
+            state.add(intro)
         }
 
         override fun exitContextIntro(old: MutableList<LatexContextIntro>, intro: LatexContextIntro) {
-            old.removeLast()
+            val lastIntro = state.lastOrNull()
+            if (lastIntro === intro) state.removeLast() // they should be exactly the same object
         }
 
-        override fun elementStart(e: PsiElement, state: MutableList<LatexContextIntro>): WalkAction {
+        private fun enterBeginEnv(envName: String) {
+            val semantics = lookup.lookupEnv(envName) ?: return
+            enterContextIntro(semantics.contextSignature)
+        }
+
+        private fun exitEndEnv(envName: String) {
+            val semantics = lookup.lookupEnv(envName) ?: return
+            exitContextIntro(state, semantics.contextSignature)
+        }
+
+        override fun elementStart(e: PsiElement): WalkAction {
             action(e, state)
+            if (e is LatexCommands) {
+                // special handling for begin/end commands that are not parsed as environments
+                val name = e.name
+                if (name == "\\begin") e.requiredParameterText(0)?.let { enterBeginEnv(it) }
+                else if (name == "\\end") e.requiredParameterText(0)?.let { exitEndEnv(it) }
+            }
             return WalkAction.CONTINUE
         }
 
         fun traverse(e: PsiElement): Boolean {
-            return traverseRecur(e, mutableListOf())
+            return traverseRecur(e)
         }
+
+        val exitState: List<LatexContextIntro>
+            get() = state
+
     }
 }

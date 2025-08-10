@@ -5,42 +5,18 @@ import nl.hannahsten.texifyidea.lang.LArgument.Companion.required
 import nl.hannahsten.texifyidea.lang.PredefinedCommandSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
 
-object PredefinedBasicCommands : PredefinedCommandSet() {
+/**
+ * The set of basic commands that will be used for
+ * * command/environment definition resolving;
+ *
+ */
+object PredefinedDefinitionCommands : PredefinedCommandSet() {
 
-    val primitives = buildCommands {
-        val envArg = required("environment", LatexContexts.Identifier)
-        "begin".cmd(envArg)
-        "end".cmd(envArg)
 
-        underContext(LatexContexts.Nothing) { // The primitive commands will never be suggested for autocompletion.
-            "begingroup".cmd { "Begin a group" }
-            "endgroup".cmd { "End a group" }
 
-            "catcode".cmd("char".required) { "Set category code for a character" }
-            // the following primitive commands can not be totally covered by the command context
-            val paramMacro = required("macro", LatexContexts.CommandDeclaration)
-            val paramDef = required("definition", LatexContexts.InsideDefinition)
-            +"def" // \def\cmd#1#2...#9{content}, too complex to handle in the command context
-            +"let"
-            "edef".cmd(paramMacro, paramDef) { "LaTex primitive edef" }
-            "gdef".cmd(paramMacro, paramDef) { "LaTex primitive gdef" }
-            "xdef".cmd(paramMacro, paramDef) { "LaTex primitive xdef" }
-            "futurelet".cmd(paramMacro, paramDef) { "LaTex primitive futurelet" }
-            "relax".cmd { "Do nothing" }
-        }
-    }
+    val regularDefinitionOfCommand = preambleCommands {
 
-    const val ARG_NAME_COMMAND_TOKEN = "commandToken"
-
-    val definitionOfCommand = buildCommands {
-        underContext(LatexContexts.Nothing) {
-            // primitive commands, only
-            +"def" // primitive command, but also considered a command definition
-            +"let"
-        }
-        setRequiredContext(LatexContexts.Preamble)
-
-        val command = required("commandToken", LatexContexts.CommandDeclaration)
+        val command = required("cmd", LatexContexts.CommandDeclaration)
         val numArgs = LArgument.optional("num args", LatexContexts.Numeric)
         val defaultOptional = "default".optional
         val code = required("code", +LatexContexts.InsideDefinition)
@@ -62,7 +38,11 @@ object PredefinedBasicCommands : PredefinedCommandSet() {
             "providecommandx".cmd(command, numArgs, defaultOptional, code) { "Provide a command with extended args" }
             "DeclareRobustCommandx".cmd(command, numArgs, defaultOptional, code) { "Declare a robust command with extended args" }
         }
+    }
 
+    val argSpecDefinitionOfCommand = preambleCommands {
+        val command = required("cmd", LatexContexts.CommandDeclaration)
+        val code = required("code", +LatexContexts.InsideDefinition)
         // xparse commands
         underPackage("xparse") {
             val argsSpec = "args spec".required(LatexContexts.Literal)
@@ -73,34 +53,73 @@ object PredefinedBasicCommands : PredefinedCommandSet() {
         }
     }
 
-    val definitionOfEnvironment = buildCommands {
-        setRequiredContext(LatexContexts.Preamble)
+    val definitionOfMathCommand = preambleCommands {
+        val command = required("cmd", LatexContexts.CommandDeclaration)
+        underPackage("amsmath") {
+            "DeclareMathOperator".cmd(
+                command, "operator".required(LatexContexts.Text)
+            ) { "Declare a new math operator" }
+        }
+        underPackage("mathtools") {
+            val leftDelimiter = required("left delimiter", LatexContexts.Text)
+            val rightDelimiter = required("right delimiter", LatexContexts.Text)
+            "DeclarePairedDelimiter".cmd(
+                command, leftDelimiter, rightDelimiter
+            ) { "Declare a paired delimiter" }
+            "DeclarePairedDelimiterX".cmd(
+                command, leftDelimiter, rightDelimiter
+            ) { "Declare a paired delimiter" }
+            "DeclarePairedDelimiterXPP".cmd(
+                command, "pre code".required(LatexContexts.InsideDefinition), leftDelimiter, rightDelimiter,
+                "post code".required(LatexContexts.InsideDefinition), "body".required(LatexContexts.InsideDefinition)
+            ) { "Declare a paired delimiter with pre and post code" }
+        }
+    }
 
+    val regularDefinitionOfEnvironment = preambleCommands {
         val envName = required("name", LatexContexts.EnvironmentDeclaration)
         val numArgs = LArgument.optional("num args", LatexContexts.Numeric)
-        val defaultOptional = "default".optional
+        val defaultValue = "default".optional
         val beginCode = required("beginCode", +LatexContexts.InsideDefinition)
         val endCode = required("enddef", +LatexContexts.InsideDefinition)
 
-        "newenvironment".cmd(envName, numArgs, defaultOptional, beginCode, endCode) { "Define a new environment" }
-        "renewenvironment".cmd(envName, numArgs, defaultOptional, beginCode, endCode) { "Redefine an existing environment" }
+        "newenvironment".cmd(envName, numArgs, defaultValue, beginCode, endCode) { "Define a new environment" }
+        "renewenvironment".cmd(envName, numArgs, defaultValue, beginCode, endCode) { "Redefine an existing environment" }
 
+
+    }
+
+    val newTheoremDefinitionOfEnvironment = preambleCommands {
+        val envName = required("name", LatexContexts.EnvironmentDeclaration)
         "newtheorem".cmd(
             envName, "numberedlike".optional, "caption".required(LatexContexts.Text), "within".optional
         ) { "Define a new theorem-like environment" }
         "newtheorem*".cmd(
             envName, "caption".required(LatexContexts.Text)
         ) { "Define a new theorem-like environment" }
+    }
 
+    val argSpecDefinitionOfEnvironment = preambleCommands {
+        val envName = required("name", LatexContexts.EnvironmentDeclaration)
         val argsSpec = "args spec".required(LatexContexts.Literal)
+        val beginCode = required("beginCode", +LatexContexts.InsideDefinition)
+        val endCode = required("enddef", +LatexContexts.InsideDefinition)
         "NewDocumentEnvironment".cmd(envName, argsSpec, beginCode, endCode) { "Define a new document environment" }
         "RenewDocumentEnvironment".cmd(envName, argsSpec, beginCode, endCode) { "Renew a document environment" }
         "ProvideDocumentEnvironment".cmd(envName, argsSpec, beginCode, endCode) { "Provide a document environment" }
         "DeclareDocumentEnvironment".cmd(envName, argsSpec, beginCode, endCode) { "Declare a document environment" }
+    }
 
+    val xargsDefinitionOfEnvironment = buildCommands {
+        setRequiredContext(LatexContexts.Preamble)
+        val envName = required("name", LatexContexts.EnvironmentDeclaration)
+        val numArgs = LArgument.optional("num args", LatexContexts.Numeric)
+        val argsSpec = "args spec".required(LatexContexts.Literal)
+        val beginCode = required("beginCode", +LatexContexts.InsideDefinition)
+        val endCode = required("enddef", +LatexContexts.InsideDefinition)
         packageOf("xargs")
-        "newenvironmentx".cmd(envName, numArgs, defaultOptional, beginCode, endCode) { "Define a new environment with extended args" }
-        "renewenvironmentx".cmd(envName, numArgs, defaultOptional, beginCode, endCode) { "Redefine an environment with extended args" }
+        "newenvironmentx".cmd(envName, numArgs, argsSpec, beginCode, endCode) { "Define a new environment with extended args" }
+        "renewenvironmentx".cmd(envName, numArgs, argsSpec, beginCode, endCode) { "Redefine an environment with extended args" }
     }
 
     val ifCommands = buildCommands {
@@ -126,5 +145,21 @@ object PredefinedBasicCommands : PredefinedCommandSet() {
             +"else"
             +"or"
         }
+    }
+
+
+    val namesOfAllCommandDef = buildSet {
+        add("def")
+        add("let")
+        regularDefinitionOfCommand.forEach { add(it.name) }
+        argSpecDefinitionOfCommand.forEach { add(it.name) }
+        definitionOfMathCommand.forEach { add(it.name) }
+    }
+
+    val namesOfAllEnvironmentDef = buildSet {
+        regularDefinitionOfEnvironment.forEach { add(it.name) }
+        argSpecDefinitionOfEnvironment.forEach { add(it.name) }
+        xargsDefinitionOfEnvironment.forEach { add(it.name) }
+        newTheoremDefinitionOfEnvironment.forEach { add(it.name) }
     }
 }

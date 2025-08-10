@@ -9,7 +9,10 @@ import nl.hannahsten.texifyidea.lang.LatexSemanticLookup
 import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 import nl.hannahsten.texifyidea.util.parser.forEachDirectChild
 
-abstract class LatexWithContextTraverser<S>(protected val lookup: LatexSemanticLookup) {
+abstract class LatexWithContextTraverser<S>(
+    initialState: S,
+    protected val lookup: LatexSemanticLookup
+) {
 
     protected enum class WalkAction {
         CONTINUE,
@@ -17,38 +20,44 @@ abstract class LatexWithContextTraverser<S>(protected val lookup: LatexSemanticL
         STOP_WALK
     }
 
-    protected open fun elementStart(e: PsiElement, state: S): WalkAction {
+    protected var state: S = initialState
+
+    protected open fun elementStart(e: PsiElement): WalkAction {
         return WalkAction.CONTINUE
     }
 
-    protected abstract fun enterContextIntro(s: S, intro: LatexContextIntro): S
+    protected abstract fun enterContextIntro(intro: LatexContextIntro)
 
-    protected abstract fun exitContextIntro(old: S, intro: LatexContextIntro)
+    protected open fun exitContextIntro(old: S, intro: LatexContextIntro) {
+        state = old
+    }
 
-    protected fun traverseCommandRecur(e: LatexCommandWithParams, args: List<LArgument>, state: S): Boolean {
+    protected fun traverseCommandRecur(e: LatexCommandWithParams, args: List<LArgument>): Boolean {
         LatexPsiUtil.processArgumentsWithSemantics(e, args) { parameter, argument ->
             val intro = argument?.contextSignature ?: LContextInherit
-            val newState = enterContextIntro(state, intro)
-            val action = traverseRecur(parameter, newState)
-            exitContextIntro(state, intro)
+            val oldState = state
+            enterContextIntro(intro)
+            val action = traverseRecur(parameter)
+            exitContextIntro(oldState, intro)
             if (!action) return false
         }
         return true
     }
 
-    protected fun traverseEnvironmentRecur(e: LatexEnvironment, semantics: LSemanticEnv, state: S): Boolean {
-        if (!traverseCommandRecur(e.beginCommand, semantics.arguments, state)) return false
+    protected fun traverseEnvironmentRecur(e: LatexEnvironment, semantics: LSemanticEnv): Boolean {
+        if (!traverseCommandRecur(e.beginCommand, semantics.arguments)) return false
         e.environmentContent?.let {
-            val contentState = enterContextIntro(state, semantics.contextSignature)
-            val ret = traverseRecur(it, contentState)
-            exitContextIntro(state, semantics.contextSignature)
+            val oldState = state
+            enterContextIntro(semantics.contextSignature)
+            val ret = traverseRecur(it)
+            exitContextIntro(oldState, semantics.contextSignature)
             if (!ret) return false
         }
         return true
     }
 
-    protected fun traverseRecur(e: PsiElement, state: S): Boolean {
-        val action = elementStart(e, state)
+    protected fun traverseRecur(e: PsiElement): Boolean {
+        val action = elementStart(e)
         when (action) {
             WalkAction.STOP_WALK -> return false
             WalkAction.SKIP_CHILDREN -> return true
@@ -63,14 +72,14 @@ abstract class LatexWithContextTraverser<S>(protected val lookup: LatexSemanticL
             is LatexCommands -> {
                 val semantic = lookup.lookupCommand(e.name ?: "")
                 if (semantic != null) {
-                    return traverseCommandRecur(e, semantic.arguments, state)
+                    return traverseCommandRecur(e, semantic.arguments)
                 }
             }
 
             is LatexEnvironment -> {
                 val semantic = lookup.lookupEnv(e.getEnvironmentName())
                 if (semantic != null) {
-                    return traverseEnvironmentRecur(e, semantic, state)
+                    return traverseEnvironmentRecur(e, semantic)
                 }
             }
 
@@ -78,17 +87,18 @@ abstract class LatexWithContextTraverser<S>(protected val lookup: LatexSemanticL
                 currentIntro = LatexContextIntro.ASSIGN_MATH
             }
         }
-        val childState = if (currentIntro != null) enterContextIntro(state, currentIntro) else state
+        val oldState = state
+        if (currentIntro != null) enterContextIntro(currentIntro)
         var ret = true
         run {
             e.forEachDirectChild {
-                if (!traverseRecur(it, childState)) {
+                if (!traverseRecur(it)) {
                     ret = false
                     return@run // stop processing children
                 }
             }
         }
-        if (currentIntro != null) exitContextIntro(state, currentIntro)
+        if (currentIntro != null) exitContextIntro(oldState, currentIntro)
         return ret
     }
 }

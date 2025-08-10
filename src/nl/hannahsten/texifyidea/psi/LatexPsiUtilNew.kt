@@ -7,6 +7,7 @@ import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.parser.forEachChildTyped
 import nl.hannahsten.texifyidea.util.parser.forEachDirectChild
 import nl.hannahsten.texifyidea.util.parser.forEachDirectChildTyped
+import nl.hannahsten.texifyidea.util.parser.getNthChildThat
 import nl.hannahsten.texifyidea.util.parser.getOptionalParameterMapFromParameters
 import nl.hannahsten.texifyidea.util.parser.toStringMap
 import nl.hannahsten.texifyidea.util.parser.traversePruneIf
@@ -254,14 +255,6 @@ private fun PsiElement.getParameterTexts0(): Sequence<LatexParameterText> {
     return this.traversePruneIf { it is LatexCommandWithParams }.filterIsInstance<LatexParameterText>()
 }
 
-fun LatexRequiredParam.getParameterTexts(): Sequence<LatexParameterText> {
-    return getParameterTexts0()
-}
-
-fun LatexOptionalParam.getParameterTexts(): Sequence<LatexParameterText> {
-    return getParameterTexts0()
-}
-
 fun LatexCommandWithParams.getParameterTexts(): Sequence<LatexParameterText> {
     return getParameterTexts0()
 }
@@ -285,4 +278,18 @@ private fun stripContentText(text: String, prefix: Char, suffix: Char): String {
         result = result.substring(1, result.length - 1)
     }
     return result.trim()
+}
+
+fun LatexCommandWithParams.getNthRequiredParameter(n : Int) : LatexRequiredParam? {
+    val parameter = getNthChildThat(n){
+        it is LatexParameter && it.requiredParam != null
+    } as? LatexParameter
+    return parameter?.requiredParam
+}
+
+fun LatexCommandWithParams.getNthOptionalParameter(n : Int) : LatexOptionalParam? {
+    val parameter = getNthChildThat(n){
+        it is LatexParameter && it.optionalParam != null
+    } as? LatexParameter
+    return parameter?.optionalParam
 }

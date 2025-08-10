@@ -8,7 +8,7 @@ object AllPredefinedCommands {
 
     val allCommands: List<LSemanticCommand> =
         listOf(
-            PredefinedBasicCommands,
+            PredefinedDefinitionCommands,
             PredefinedFileCommands,
             PredefinedMathCommands,
             PredefinedMathSymbols,
@@ -35,6 +35,4 @@ object AllPredefinedCommands {
         }
     }
 
-    val regularCommandDef = PredefinedBasicCommands.definitionOfCommand.associateBy { it.name }
-    val regularEnvironmentDef = PredefinedBasicCommands.definitionOfEnvironment.associateBy { it.name }
 }

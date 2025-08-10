@@ -247,6 +247,13 @@ abstract class PredefinedCommandSet {
         }
     }
 
+    protected fun preambleCommands(action: DSLLatexCommandBuilderScope.() -> Unit): List<LSemanticCommand> {
+        return buildCommands {
+            setRequiredContext(LatexContexts.Preamble)
+            action()
+        }
+    }
+
 //    protected fun Collection<LSemanticCommand>.toSingleLookupMap(): Map<String, LSemanticCommand> {
 //        return this.associateBy { it.name }
 //    }
