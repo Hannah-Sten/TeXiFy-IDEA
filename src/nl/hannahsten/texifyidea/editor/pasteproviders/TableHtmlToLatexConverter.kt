@@ -217,26 +217,52 @@ class TableHtmlToLatexConverter : HtmlToLatexConverter {
         }
 
         // Build header rows using multicolumn for repeated cells across the row
+        // Build header rows using multicolumn for repeated cells across the row,
+// and insert \cmidrule under non-leaf header rows (skip vertically merged cells).
         val headerRowsLatex = buildString {
             for (r in 0 until headerRowCount) {
                 var c = 0
                 val parts = mutableListOf<String>()
+                val spans = mutableListOf<Pair<Int, Int>>() // 1-based [start, end] for cmidrule
+
                 while (c < width) {
                     val cell = grid[r][c]
                     // Determine span width across this row for equal cell references
                     var span = 1
                     while (c + span < width && grid[r][c + span] === cell) span++
+
                     val content = cell.toLatex().trim()
                     val piece = if (span > 1) {
-                        "\\multicolumn{" + span + "}{c}{" + content + "}"
+                        "\\multicolumn{$span}{c}{$content}"
                     } else content
                     parts.add(piece)
+
+                    // Only add cmidrule if this cell is not vertically merged into next row
+                    if (span > 1) {
+                        val verticallyMerged =
+                            (r + 1 < height) && (grid[r + 1][c] === cell)
+                        if (!verticallyMerged) {
+                            val start = c + 1 // LaTeX is 1-based
+                            val end = c + span
+                            spans.add(start to end)
+                        }
+                    }
+
                     c += span
                 }
+
+                // Output the current header row
                 append(parts.joinToString(" & "))
                 append(" \\\\\n")
+
+                // Output cmidrule for this header row if not the last header row
+                if (r < headerRowCount - 1 && spans.isNotEmpty()) {
+                    val rules = spans.joinToString(" ") { (s, e) -> "\\cmidrule(lr){$s-$e}" }
+                    append(rules).append("\n")
+                }
             }
         }
+
 
         // Build data rows
         val dataRowsLatex = buildString {
