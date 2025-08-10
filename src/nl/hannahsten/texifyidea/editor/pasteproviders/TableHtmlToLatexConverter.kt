@@ -16,9 +16,11 @@ import java.util.*
 class TableHtmlToLatexConverter : HtmlToLatexConverter {
 
     override fun convertHtmlToLatex(htmlIn: Element, file: LatexFile): String {
+        // htmlIn is expected to be the <table> element; use it directly rather than the document's first table
+        val tableWrapper = if (htmlIn.tagName() == "table") htmlIn.toTableDialogWrapper(file) else null
         return LatexTableWizardAction().getTableTextWithDialog(
             file.project,
-            htmlIn.ownerDocument()?.toTableDialogWrapper(file) ?: return ""
+            tableWrapper ?: return ""
         )
     }
 
@@ -26,9 +28,9 @@ class TableHtmlToLatexConverter : HtmlToLatexConverter {
      * Creates the Table Creation Dialog filled in with the data from the clipboard.
      */
     @Suppress("USELESS_CAST")
-    private fun Document.toTableDialogWrapper(latexFile: LatexFile): TableCreationDialogWrapper? {
-        // Work with the first table on the page
-        val table = selectFirst("table") ?: return null
+    private fun Element.toTableDialogWrapper(latexFile: LatexFile): TableCreationDialogWrapper? {
+        // Work with this table element directly
+        val table = this
 
         data class HtmlCell(val element: Element?, val text: String)
 
