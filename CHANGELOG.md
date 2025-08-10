@@ -8,6 +8,7 @@
 * Fix exception #4160 when using a tool window in non-IntelliJ IDEs
 * Fix exceptions when using a makeindex run configuration
 * Fix an issue with relative paths in graphic insertion wizard
+* Fix exception #4144
 
 ## [0.11.0] - 2025-08-04
 
