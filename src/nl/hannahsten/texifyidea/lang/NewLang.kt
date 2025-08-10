@@ -26,6 +26,11 @@ typealias LContextSet = Set<LatexContext>
 sealed interface LatexContextIntro {
     fun applyTo(outerCtx: LContextSet): LContextSet
 
+    /**
+     * Computes the outer context required to satisfy the inner context [innerCtx], given that this intro is applied.
+     */
+    fun revoke(innerCtx: LContextSet): LContextSet?
+
     companion object {
 
 
@@ -45,11 +50,84 @@ sealed interface LatexContextIntro {
             )
         }
 
-        fun buildContext(introList : List<LatexContextIntro>, outerCtx: LContextSet = emptySet()): LContextSet {
+        fun buildContext(introList: List<LatexContextIntro>, outerCtx: LContextSet = emptySet()): LContextSet {
             return introList.fold(outerCtx) { ctx, intro ->
                 intro.applyTo(ctx)
             }
         }
+
+        private operator fun LContextSet.plus(other: LContextSet): LContextSet {
+            if (this.isEmpty()) return other
+            if (other.isEmpty()) return this
+            return buildSet {
+                addAll(this@plus)
+                addAll(other)
+            }
+        }
+
+        private operator fun LContextSet.minus(other: LContextSet): LContextSet {
+            if (this.isEmpty()) return emptySet()
+            if (other.isEmpty()) return this
+            return buildSet {
+                addAll(this@minus)
+                removeAll(other)
+            }
+        }
+
+        fun compose(a: LatexContextIntro, b: LatexContextIntro): LatexContextIntro {
+            return when (b) {
+                is LClearContext, is LAssignContext -> b
+                is LContextInherit -> a
+                is LModifyContext -> {
+                    when (a) {
+                        LContextInherit -> b
+                        is LClearContext -> LAssignContext(b.toAdd)
+                        is LAssignContext -> LAssignContext(b.applyTo(a.contexts))
+                        is LModifyContext -> LModifyContext(
+                            toAdd = a.toAdd - a.toRemove + b.toAdd - b.toRemove,
+                            toRemove = a.toRemove - b.toAdd + b.toRemove
+                        )
+                    }
+                }
+            }
+        }
+
+        fun composeList(introList: List<LatexContextIntro>): LatexContextIntro {
+            return introList.fold(LContextInherit, ::compose)
+        }
+
+        fun union(a: LatexContextIntro, b: LatexContextIntro): LatexContextIntro {
+            if (b is LClearContext || b is LContextInherit) return a
+            return when (a) {
+                is LContextInherit, is LClearContext -> b
+                is LAssignContext -> when (b) {
+                    is LAssignContext -> LAssignContext(a.contexts + b.contexts)
+                    is LModifyContext -> LAssignContext(b.applyTo(a.contexts))
+                    else -> a // already handled above
+                }
+
+                is LModifyContext -> when (b) {
+                    is LAssignContext -> LAssignContext(a.applyTo(b.contexts))
+                    is LModifyContext -> LModifyContext(
+                        toAdd = a.toAdd + b.toAdd,
+                        toRemove = a.toRemove + b.toRemove
+                    )
+
+                    else -> a // already handled above
+                }
+            }
+        }
+
+        fun computeMinimalRequiredContext(
+            introList: List<LatexContextIntro>,
+            innerRequiredContext: LContextSet
+        ): LContextSet? {
+            if (innerRequiredContext.isEmpty()) return emptySet()
+            return introList.asReversed().fold(innerRequiredContext) { ctx, intro ->
+                intro.revoke(ctx) ?: return null
+            }
+        }
+
     }
 }
 
@@ -61,24 +139,49 @@ object LContextInherit : LatexContextIntro {
     override fun applyTo(outerCtx: LContextSet): LContextSet {
         return outerCtx
     }
+
+    override fun revoke(innerCtx: LContextSet): LContextSet? {
+        return innerCtx
+    }
+
+    override fun toString(): String {
+        return "Inherit"
+    }
 }
 
 object LClearContext : LatexContextIntro {
     override fun applyTo(outerCtx: LContextSet): LContextSet {
         return emptySet()
     }
+
+    override fun revoke(innerCtx: LContextSet): LContextSet? {
+        return if (innerCtx.isEmpty()) emptySet() else null
+    }
+
+    override fun toString(): String {
+        return "Clear"
+    }
 }
 
 /**
  * Sets the context to the given [LatexContext], discarding any previous context.
  */
-class LAssignContext(val contexts: Set<LatexContext>) : LatexContextIntro {
+data class LAssignContext(val contexts: Set<LatexContext>) : LatexContextIntro {
 
     constructor(contexts: LatexContext) : this(setOf(contexts))
     constructor(vararg contexts: LatexContext) : this(contexts.toSet())
 
     override fun applyTo(outerCtx: LContextSet): LContextSet {
         return contexts
+    }
+
+    override fun revoke(innerCtx: LContextSet): LContextSet? {
+        if (contexts.containsAll(innerCtx)) return emptySet()
+        return null
+    }
+
+    override fun toString(): String {
+        return "Assign(${contexts.joinToString { it.name }})"
     }
 }
 
@@ -95,6 +198,22 @@ class LModifyContext(val toAdd: Set<LatexContext>, val toRemove: Set<LatexContex
             res -= toRemove
         }
         return res
+    }
+
+    override fun revoke(innerCtx: LContextSet): LContextSet? {
+        if (innerCtx.any { it in toRemove }) return null // impossible to satisfy
+        return innerCtx - toAdd
+    }
+
+    override fun toString(): String {
+        val parts = mutableListOf<String>()
+        if (toAdd.isNotEmpty()) {
+            parts += "+(${toAdd.joinToString { it.name }})"
+        }
+        if (toRemove.isNotEmpty()) {
+            parts += "-(${toRemove.joinToString { it.name }})"
+        }
+        return parts.joinToString("", prefix = "Modify(", postfix = ")")
     }
 }
 
@@ -124,6 +243,12 @@ class LArgument(
 
     val description: String = "",
 ) {
+    override fun toString(): String {
+        return when (type) {
+            LArgumentType.REQUIRED -> "{$name($contextSignature)}"
+            LArgumentType.OPTIONAL -> "[$name($contextSignature)]"
+        }
+    }
 
     companion object {
         fun required(
@@ -166,7 +291,7 @@ abstract class LSemanticEntity(
     val requiredContext: LContextSet = emptySet(),
     var description: String = ""
 ) {
-    val displayName : String
+    val displayName: String
         get() = if (dependency.isEmpty()) name else "$name($dependency)"
 
     override fun equals(other: Any?): Boolean {
@@ -204,9 +329,11 @@ class LSemanticCommand(
 
     val display: String? = null,
     val nameWithSlash: String = "\\$name",
-) : LSemanticEntity(name, namespace, requiredContext, description){
+) : LSemanticEntity(name, namespace, requiredContext, description) {
 
-
+    override fun toString(): String {
+        return "Cmd($displayName, ctx=$requiredContext, arg=${arguments.joinToString("")}, description='$description')"
+    }
 }
 
 class LSemanticEnv(

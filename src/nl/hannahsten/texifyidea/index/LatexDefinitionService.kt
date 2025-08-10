@@ -14,6 +14,7 @@ import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.stubs.PsiFileStub
 import com.intellij.psi.stubs.StubElement
+import com.intellij.psi.util.elementType
 import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.index.SourcedDefinition.DefinitionSource
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
@@ -25,6 +26,7 @@ import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LSemanticCommand
 import nl.hannahsten.texifyidea.lang.LSemanticEntity
 import nl.hannahsten.texifyidea.lang.LSemanticEnv
+import nl.hannahsten.texifyidea.lang.LatexContext
 import nl.hannahsten.texifyidea.lang.LatexSemanticLookup
 import nl.hannahsten.texifyidea.lang.predefined.PredefinedBasicCommands
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefinedCommands
@@ -34,6 +36,7 @@ import nl.hannahsten.texifyidea.psi.LatexContent
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
+import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.psi.contentText
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.util.AbstractBlockingCacheService
@@ -66,11 +69,11 @@ sealed class SourcedDefinition(
 
     override fun toString(): String {
         return buildString {
-            append("Def(${entity.name}, ${source.name}")
+            append("Def($entity, ${source.name}")
             if (definitionCommandPointer != null) {
                 append(", with PSI")
             }
-            append(" in ${entity.dependency})")
+            append(")")
         }
     }
 
@@ -256,10 +259,6 @@ object LatexDefinitionUtil {
 //        return result
 //    }
 
-    private fun guessRequiredContext(definitionElement: PsiElement?, lookup: LatexSemanticLookup): LContextSet {
-        definitionElement ?: return emptySet()
-        return emptySet()
-    }
 
     private fun extractParameterTypeAndContent(command: LatexCommands): List<Pair<LArgumentType, String>> {
         val stub = command.stub
@@ -289,7 +288,7 @@ object LatexDefinitionUtil {
         var idx = 0
         for (pos in 0..3) {
             if (idx >= parameterSize) break
-            val (type,text) = parameterTypeAndContent[idx]
+            val (type, text) = parameterTypeAndContent[idx]
             when (pos) {
                 0 -> declaredName = text
                 1 -> if (type != LArgumentType.OPTIONAL) continue
@@ -316,7 +315,7 @@ object LatexDefinitionUtil {
         rawName ?: return null
         codeRawText ?: return null
         val name = rawName.removePrefix("\\") // remove the leading backslash
-        var codeText = codeRawText.trim()
+        val codeText = codeRawText.trim()
         if (argCount == 0 && PatternMagic.commandToken.matches(codeText)) {
             // this is an alias definition, e.g., \newcommand{\cmd}{\othercmd}
             val originalSemantic = lookup.lookupCommand(codeText)
@@ -332,61 +331,49 @@ object LatexDefinitionUtil {
         if (argCount == 0) {
             return LSemanticCommand(name, "", requiredContext, description = codeRawText, arguments = emptyList())
         }
-        // TODO: advanced parsing
-        val arguments = ArrayList<LArgument>(argCount)
-        for (i in 0 until argCount) {
+        val argIntro = guessArgumentContextIntro(codeElement, argCount, lookup)
+        val arguments = argIntro.mapIndexed { i, argIntro ->
             val type = if (i == 0 && hasOptional) LArgumentType.OPTIONAL else LArgumentType.REQUIRED
-            arguments.add(LArgument("#${i + 1}", type))
+            LArgument("#${i + 1}", type, argIntro)
         }
         return LSemanticCommand(name, "", requiredContext, arguments, description = codeText)
     }
 
-    private val parameterPlaceholderRegex = Regex("#[1-9]")
-
-    private fun findParameterElements(codeElement: PsiElement, argCount: Int): List<List<PsiElement>> {
-        if (argCount <= 0) return emptyList()
-        val result = List(argCount) { mutableListOf<PsiElement>() }
-        codeElement.traverseTyped<LatexNormalText>().forEach {
-            if (!it.textContains('#')) return@forEach
-            val match = parameterPlaceholderRegex.find(it.text) ?: return@forEach
-            val paramIndex = match.value.removePrefix("#").toIntOrNull() ?: return@forEach
-            if (paramIndex < 1 || paramIndex > argCount) return@forEach
-            result[paramIndex - 1] += it
+    private fun guessRequiredContext(definitionElement: PsiElement?, lookup: LatexSemanticLookup): LContextSet {
+        definitionElement ?: return emptySet()
+        val necessaryContexts = mutableSetOf<LatexContext>()
+        LatexPsiUtil.traverseRecordingContextIntro(definitionElement, lookup) { e, introList ->
+            val requiredContext: LContextSet? = when (e) {
+                is LatexCommands -> lookup.lookupCommand(e.name ?: "")?.requiredContext
+                is LatexEnvironment -> lookup.lookupEnv(e.getEnvironmentName())?.requiredContext
+                else -> null
+            }
+            if (requiredContext != null && requiredContext.isNotEmpty()) {
+                LatexContextIntro.computeMinimalRequiredContext(introList, requiredContext)?.forEach {
+                    necessaryContexts.add(it)
+                } // we will ignore cases where the context cannot be satisfied
+            }
         }
-        return result
+        return necessaryContexts
     }
 
-    private fun traverseRecordingContextIntro(
-        e: PsiElement, lookup: LatexSemanticLookup, currentIntro: MutableList<LatexContextIntro>,
-        action: (PsiElement, List<LatexContextIntro>) -> Unit
-    ) {
-        action(e, currentIntro)
-        if (e is LatexNormalText) return // no need to traverse further, this is just text
-        if (e is LatexCommands) {
-            val semantic = lookup.lookupCommand(e.name ?: "")
-            if (semantic != null) {
-                LatexPsiUtil.processArgumentsWithSemantics(e, semantic) { parameter, argument ->
-                    argument?.let { currentIntro.add(argument.contextSignature) }
-                    traverseRecordingContextIntro(parameter, lookup, currentIntro, action)
-                    argument?.let { currentIntro.removeLast() }
-                }
-                return
+    private val parameterPlaceholderRegex = Regex("#[1-9]")
+
+    private fun guessArgumentContextIntro(codeElement: PsiElement, argCount: Int, lookup: LatexSemanticLookup): List<LatexContextIntro> {
+        if (argCount <= 0) return emptyList()
+        val contextIntroList = Array(argCount) { LatexContextIntro.inherit() }
+        LatexPsiUtil.traverseRecordingContextIntro(codeElement, lookup) traverse@{ e, introList->
+            if (e.elementType != LatexTypes.NORMAL_TEXT_WORD) return@traverse
+            if (!e.textContains('#')) return@traverse
+            parameterPlaceholderRegex.findAll(e.text).forEach { match ->
+                val paramIndex = match.value.removePrefix("#").toIntOrNull() ?: return@forEach
+                if (paramIndex < 1 || paramIndex > argCount) return@forEach
+                val reducedIntro = LatexContextIntro.composeList(introList)
+                val prevIntro = contextIntroList[paramIndex - 1]
+                contextIntroList[paramIndex - 1] = LatexContextIntro.union(prevIntro, reducedIntro)
             }
         }
-        if (e is LatexEnvironment) {
-            val semantic = lookup.lookupEnv(e.getEnvironmentName())
-            if (semantic != null) {
-                currentIntro.add(semantic.contextSignature)
-                e.environmentContent?.let {
-                    traverseRecordingContextIntro(it, lookup, currentIntro, action)
-                }
-                currentIntro.removeLast()
-                return
-            }
-        }
-        e.forEachDirectChild {
-            traverseRecordingContextIntro(it, lookup, currentIntro, action)
-        }
+        return contextIntroList.asList()
     }
 
 
@@ -428,7 +415,7 @@ object LatexDefinitionUtil {
     fun mergeDefinition(old: SourcedDefinition, new: SourcedDefinition): SourcedDefinition {
         if (old.entity != new.entity) {
             // TODO: change to log after testing
-            println("Merging command def: $old and $new")
+            println("Command override: $old and $new")
         }
         // do not override primitive definitions
         if (old.source == DefinitionSource.Primitive) return old
@@ -494,7 +481,7 @@ abstract class CompositeDefinitionBundle(
 
     override fun findDefinition(name: String): SourcedDefinition? {
         return introducedDefinitions[name] ?: directDependencies.asReversed().firstNotNullOfOrNull {
-            it.findCmdDef(name)
+            it.findDefinition(name)
         }
     }
 }
@@ -550,13 +537,10 @@ class PackageDefinitionService(
         clearAllCache()
     }
 
-    private fun processPredefinedCommands(name: String, defMap: MutableMap<String, SourcedDefinition>) {
+    private fun processPredefinedCommandsAndEnvironments(name: String, defMap: MutableMap<String, SourcedDefinition>) {
         AllPredefinedCommands.packageToCommands[name]?.forEach { command ->
             defMap[command.name] = SourcedCmdDefinition(command, null, DefinitionSource.Predefined)
         }
-    }
-
-    private fun processPredefinedEnvironments(name: String, defMap: MutableMap<String, SourcedDefinition>) {
         AllPredefinedEnvironments.packageToEnvironments[name]?.forEach { env ->
             defMap[env.name] = SourcedEnvDefinition(env, null, DefinitionSource.Predefined)
         }
@@ -603,7 +587,7 @@ class PackageDefinitionService(
     private fun getDefaultLibBundle(): LibDefinitionBundle {
         // return the default commands, i.e., those hard-coded in the plugin
         val currentSourcedDefinitions = mutableMapOf<String, SourcedDefinition>()
-        processPredefinedCommands("", currentSourcedDefinitions)
+        processPredefinedCommandsAndEnvironments("", currentSourcedDefinitions)
         // overwrite the definitions with the primitive commands
         PredefinedBasicCommands.primitives.forEach {
             currentSourcedDefinitions[it.name] = SourcedCmdDefinition(it, null, DefinitionSource.Primitive)
@@ -641,8 +625,7 @@ class PackageDefinitionService(
             includedPackages.addAll(depBundle.allLibraries)
         }
         val currentSourcedDefinitions = mutableMapOf<String, SourcedDefinition>()
-        processPredefinedCommands(pkgName, currentSourcedDefinitions)
-        processPredefinedEnvironments(pkgName, currentSourcedDefinitions)
+        processPredefinedCommandsAndEnvironments(pkgName, currentSourcedDefinitions)
         processPsiCommandDefinitions(libInfo, currentSourcedDefinitions)
         processExternalDefinitions(libInfo, currentSourcedDefinitions)
         val result = LibDefinitionBundle(pkgName, currentSourcedDefinitions, directDependencies, includedPackages)
@@ -695,7 +678,7 @@ class LatexDefinitionService(
     val project: Project,
 ) : AbstractBlockingCacheService<Fileset, FilesetDefinitionBundle>() {
 
-    var expirationInMs: Long = 10L
+    var expirationInMs: Long = 100L
 
 
     override fun computeValue(key: Fileset, oldValue: FilesetDefinitionBundle?): FilesetDefinitionBundle {

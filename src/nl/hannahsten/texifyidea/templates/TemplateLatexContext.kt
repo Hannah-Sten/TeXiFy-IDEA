@@ -12,17 +12,16 @@ import nl.hannahsten.texifyidea.util.parser.inVerbatim
  *
  * @author Abby Berkers
  */
-open class LatexContext(name: String) : TemplateContextType(name) {
+open class TemplateLatexContext(name: String) : TemplateContextType(name) {
 
     override fun isInContext(context: TemplateActionContext): Boolean = context.file is LatexFile
 
-    class Generic : LatexContext("LaTeX") {
-
+    class TemplateLatexGeneric : TemplateLatexContext("LaTeX") {
         override fun isInContext(context: TemplateActionContext): Boolean =
             context.file is LatexFile && context.file.findElementAt(context.startOffset)?.inVerbatim() == false
     }
 
-    open class LatexMathContext : LatexContext("Math") {
+    open class TemplateLatexMathContext : TemplateLatexContext("Math") {
 
         override fun isInContext(context: TemplateActionContext): Boolean =
             context.file is LatexFile && context.file.findElementAt(context.startOffset)?.inMathContext() == true

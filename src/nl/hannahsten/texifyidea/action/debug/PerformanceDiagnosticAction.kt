@@ -70,6 +70,9 @@ class PerformanceDiagnosticAction : AnAction() {
                                     +"N/A"
                                 }
                             }
+                            td {
+                                +data.additionalInfo
+                            }
                         }
                     }
                 }

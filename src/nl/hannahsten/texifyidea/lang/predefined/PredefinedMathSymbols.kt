@@ -325,8 +325,6 @@ object PredefinedMathSymbols : PredefinedCommandSet() {
         symbol("tan", "tan", "Tangent")
         symbol("tanh", "tanh", "Hyperbolic tangent")
 
-
-        packageOf("amsmath")
         symbol("projlim", description = "Projective limit")
         symbol("varinjlim", description = "Variant direct limit")
         symbol("varliminf", description = "Variant limit inferior")

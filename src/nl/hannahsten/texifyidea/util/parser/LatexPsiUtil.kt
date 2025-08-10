@@ -18,6 +18,7 @@ import nl.hannahsten.texifyidea.lang.LClearContext
 import nl.hannahsten.texifyidea.lang.LatexContextIntro
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LSemanticCommand
+import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.LatexSemanticLookup
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
@@ -243,10 +244,11 @@ object LatexPsiUtil {
         }
     }
 
-    fun parameterTypeMatches(parameter: LatexParameter, type: LArgumentType): Boolean {
-        return when (type) {
-            LArgumentType.REQUIRED -> parameter.requiredParam != null
-            LArgumentType.OPTIONAL -> parameter.optionalParam != null
+    fun parameterToLArgumentType(parameter: LatexParameter): LArgumentType {
+        return when {
+            parameter.requiredParam != null -> LArgumentType.REQUIRED
+            parameter.optionalParam != null -> LArgumentType.OPTIONAL
+            else -> LArgumentType.REQUIRED // default to required if no parameters are present
         }
     }
 
@@ -257,23 +259,40 @@ object LatexPsiUtil {
         }
     }
 
-    inline fun processArgumentsWithSemantics(cmd: LatexCommands, semantics: LSemanticCommand, action: (LatexParameter, LArgument?) -> Unit) {
-        val arguments = semantics.arguments
+    inline fun processArgumentsWithSemantics(cmd: LatexCommandWithParams, semantics: LSemanticCommand, action: (LatexParameter, LArgument?) -> Unit) {
+        processArgumentsWithSemantics(cmd, semantics.arguments, action)
+    }
+
+    inline fun processArgumentsWithSemantics(cmd: LatexCommandWithParams, argList: List<LArgument>, action: (LatexParameter, LArgument?) -> Unit) {
         var argIdx = 0
-        val argSize = arguments.size
-        cmd.forEachParameter { param ->
-            if (argIdx >= argSize) action(param, null)
-            else while (true) {
-                val argument = arguments[argIdx]
-                if (parameterTypeMatches(param, argument.type)) {
-                    action(param, argument)
-                    argIdx++
-                    return@forEachParameter // continue to next parameter
+        val argSize = argList.size
+        cmd.forEachParameter forEach@{ param ->
+            if (argIdx >= argSize) {
+                action(param, null) // no suitable arguments
+                return@forEach
+            }
+            var arg: LArgument? = null
+            val paramType = parameterToLArgumentType(param)
+            when (paramType) {
+                LArgumentType.REQUIRED -> while (argIdx < argSize) {
+                    // find the next required argument
+                    val argument = argList[argIdx++]
+                    if (argument.type == LArgumentType.REQUIRED) {
+                        arg = argument
+                        break
+                    }
                 }
-                else if (argument.type == LArgumentType.OPTIONAL) {
-                    argIdx++ // skip optional arguments that are not present
+
+                LArgumentType.OPTIONAL -> {
+                    val argument = argList[argIdx]
+                    if (argument.type == LArgumentType.OPTIONAL) {
+                        arg = argument
+                        argIdx++
+                    }
+                    // just skip if the next argument is not optional
                 }
             }
+            action(param, arg)
         }
     }
 
@@ -313,51 +332,81 @@ object LatexPsiUtil {
         return arg.contextSignature
     }
 
-    private fun resolveEnvironmentContentContext(environmentContent: LatexEnvironmentContent, lookup: LatexSemanticLookup): LatexContextIntro? {
-        val environment = environmentContent.firstParentOfType<LatexEnvironment>() ?: return null
-        val name = environment.getEnvironmentName()
+    private fun resolveEnvironmentContext(env: LatexEnvironment, lookup: LatexSemanticLookup): LatexContextIntro? {
+        val name = env.getEnvironmentName()
         val semantics = lookup.lookupEnv(name) ?: return null
         return semantics.contextSignature
     }
 
 
+    private val baseContext = setOf(LatexContexts.Preamble)
+
     fun resolveContextUpward(e: PsiElement, lookup: LatexSemanticLookup): LContextSet {
         var collectedContextIntro: MutableList<LatexContextIntro>? = null
-        var current: PsiElement? = e
-        // Latex.bnf
-        while (current != null) {
+        var current: PsiElement = e
+        // see Latex.bnf
+        while (true) {
             current = current.firstStrictParent { // `firstParent` is inclusive
-                it is LatexParameter || it is LatexEnvironmentContent
+                it is LatexParameter || it is LatexEnvironment
             } ?: break
             val intro = when (current) {
-                is LatexParameter -> {
-                    resolveCommandParameterContext(current, lookup) ?: continue
-                }
-                is LatexEnvironmentContent -> {
-                    resolveEnvironmentContentContext(current, lookup) ?: continue
-                }
+                is LatexParameter -> resolveCommandParameterContext(current, lookup) ?: continue
+                is LatexEnvironment -> resolveEnvironmentContext(current, lookup) ?: continue
                 else -> continue
             }
-            when(intro){
+            when (intro) {
                 is LAssignContext -> {
                     if (collectedContextIntro == null) return intro.contexts
                     collectedContextIntro.add(intro)
                     break
                 }
+
                 LClearContext -> {
                     if (collectedContextIntro == null) return emptySet()
                     collectedContextIntro.add(intro)
                     break
                 }
+
                 else -> {
-                    if (collectedContextIntro == null) {
-                        collectedContextIntro = mutableListOf()
-                    }
+                    if (collectedContextIntro == null) collectedContextIntro = mutableListOf()
                     collectedContextIntro.add(intro)
                 }
             }
         }
         collectedContextIntro ?: return emptySet()
-        return LatexContextIntro.buildContext(collectedContextIntro.asReversed())
+        return LatexContextIntro.buildContext(collectedContextIntro.asReversed(), baseContext)
+    }
+
+
+    fun traverseRecordingContextIntro(
+        e: PsiElement,
+        lookup: LatexSemanticLookup,
+        action: (PsiElement, List<LatexContextIntro>) -> Unit
+    ) {
+        val visitor = RecordingContextIntroTraverser(lookup, action)
+        visitor.traverse(e)
+    }
+
+    private class RecordingContextIntroTraverser(
+        lookup: LatexSemanticLookup,
+        private val action: (PsiElement, List<LatexContextIntro>) -> Unit
+    ) : LatexWithContextTraverser<MutableList<LatexContextIntro>>(lookup) {
+        override fun enterContextIntro(s: MutableList<LatexContextIntro>, intro: LatexContextIntro): MutableList<LatexContextIntro> {
+            s.add(intro)
+            return s
+        }
+
+        override fun exitContextIntro(old: MutableList<LatexContextIntro>, intro: LatexContextIntro) {
+            old.removeLast()
+        }
+
+        override fun elementStart(e: PsiElement, state: MutableList<LatexContextIntro>): WalkAction {
+            action(e, state)
+            return WalkAction.CONTINUE
+        }
+
+        fun traverse(e: PsiElement): Boolean {
+            return traverseRecur(e, mutableListOf())
+        }
     }
 }

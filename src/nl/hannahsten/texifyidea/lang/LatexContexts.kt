@@ -4,7 +4,7 @@ open class LatexContextBase(
     final override val name: String
 ) : LatexContext{
     override fun toString(): String {
-        return "LatexContextBase($name)"
+        return name
     }
 }
 
