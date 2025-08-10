@@ -34,7 +34,6 @@ import nl.hannahsten.texifyidea.lang.predefined.AllPredefinedEnvironments
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexContent
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.psi.contentText
@@ -44,9 +43,7 @@ import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
-import nl.hannahsten.texifyidea.util.parser.forEachDirectChild
 import nl.hannahsten.texifyidea.util.parser.traverse
-import nl.hannahsten.texifyidea.util.parser.traverseTyped
 import java.util.concurrent.atomic.AtomicInteger
 
 sealed class SourcedDefinition(
@@ -148,7 +145,6 @@ object LatexDefinitionUtil {
                     SourcedEnvDefinition(semanticEnv, pointer, DefinitionSource.Package)
                 )
             }
-
         }
         return definitions
     }
@@ -187,7 +183,7 @@ object LatexDefinitionUtil {
      * @return shift in index, name of the defined command
      */
     private fun getCommandDefNameStub(defStub: LatexCommandsStub, idx: Int, stubs: List<StubElement<*>>): String? {
-        defStub.requiredParamAt(0)?.let { //\newcommand{\cmd}{...}
+        defStub.requiredParamAt(0)?.let { // \newcommand{\cmd}{...}
             return it.trim()
         }
         // \def\cmd\something
@@ -238,9 +234,8 @@ object LatexDefinitionUtil {
         return definitions
     }
 
-
 //    fun collectCustomDefinitionsAST(psiFile: LatexFile, project: Project, lookup: LatexSemanticLookup): List<SourcedCmdDefinition> {
-////        val
+// //        val
 //        // only deal with top-level commands
 //        // Latex.bnf: file - content - nomathcontent - command
 //        val contentNode = psiFile.findFirstChildTyped<LatexContent>() ?: return emptyList()
@@ -258,7 +253,6 @@ object LatexDefinitionUtil {
 //        }
 //        return result
 //    }
-
 
     private fun extractParameterTypeAndContent(command: LatexCommands): List<Pair<LArgumentType, String>> {
         val stub = command.stub
@@ -362,7 +356,7 @@ object LatexDefinitionUtil {
     private fun guessArgumentContextIntro(codeElement: PsiElement, argCount: Int, lookup: LatexSemanticLookup): List<LatexContextIntro> {
         if (argCount <= 0) return emptyList()
         val contextIntroList = Array(argCount) { LatexContextIntro.inherit() }
-        LatexPsiUtil.traverseRecordingContextIntro(codeElement, lookup) traverse@{ e, introList->
+        LatexPsiUtil.traverseRecordingContextIntro(codeElement, lookup) traverse@{ e, introList ->
             if (e.elementType != LatexTypes.NORMAL_TEXT_WORD) return@traverse
             if (!e.textContains('#')) return@traverse
             parameterPlaceholderRegex.findAll(e.text).forEach { match ->
@@ -375,7 +369,6 @@ object LatexDefinitionUtil {
         }
         return contextIntroList.asList()
     }
-
 
     fun mergeCommand(old: LSemanticCommand, new: LSemanticCommand): LSemanticCommand {
         if (old != new) { // whether the commands are the same
@@ -432,9 +425,7 @@ object LatexDefinitionUtil {
             }
         }
     }
-
 }
-
 
 interface DefinitionBundle : LatexSemanticLookup {
     fun findCmdDef(name: String): SourcedCmdDefinition? {
@@ -523,7 +514,6 @@ class FilesetDefinitionBundle(
     libraryBundles: List<LibDefinitionBundle> = emptyList()
 ) : CompositeDefinitionBundle(customDefinitions, libraryBundles)
 
-
 /**
  * Command definition service for a single LaTeX package (`.cls` or `.sty` file).
  */
@@ -531,7 +521,6 @@ class FilesetDefinitionBundle(
 class PackageDefinitionService(
     val project: Project
 ) : AbstractBlockingCacheService<String, LibDefinitionBundle>() {
-
 
     fun invalidateCache() {
         clearAllCache()
@@ -545,7 +534,6 @@ class PackageDefinitionService(
             defMap[env.name] = SourcedEnvDefinition(env, null, DefinitionSource.Predefined)
         }
     }
-
 
     private fun processPsiCommandDefinitions(
         libInfo: LatexLibraryInfo,
@@ -606,28 +594,39 @@ class PackageDefinitionService(
             Log.warn("Recursive package dependency detected for package [$pkgName] !")
             return LibDefinitionBundle(pkgName)
         }
-        val libInfo = LatexLibraryStructure.getLibraryInfo(pkgName, project) ?: return LibDefinitionBundle(pkgName)
-        val directDependencyNames = libInfo.directDependencies
-        val includedPackages = mutableSetOf(pkgName) // do not process the same package twice
-        /*
-        Let us be careful not to process the same package twice, note that we may have to following:
-                A -> B1 -> C
-                  -> B2 -> C,D
-         */
-        val directDependencies = mutableListOf<LibDefinitionBundle>()
-        for (dependency in directDependencyNames) {
-            if (!includedPackages.add(dependency)) {
-                continue
-            }
-            // recursively compute the command definitions for the dependency
-            val depBundle = getValueOrNull(dependency) ?: computeDefinitionsRecur(dependency, processedPackages)
-            directDependencies.add(depBundle)
-            includedPackages.addAll(depBundle.allLibraries)
-        }
+        val libInfo = LatexLibraryStructure.getLibraryInfo(pkgName, project)
         val currentSourcedDefinitions = mutableMapOf<String, SourcedDefinition>()
         processPredefinedCommandsAndEnvironments(pkgName, currentSourcedDefinitions)
-        processPsiCommandDefinitions(libInfo, currentSourcedDefinitions)
-        processExternalDefinitions(libInfo, currentSourcedDefinitions)
+
+        val directDependencies: List<LibDefinitionBundle>
+        val includedPackages: Set<String>
+        if (libInfo != null) {
+            val directDependencyNames = libInfo.directDependencies
+            includedPackages = mutableSetOf(pkgName) // do not process the same package twice
+            /*
+            Let us be careful not to process the same package twice, note that we may have to following:
+                    A -> B1 -> C
+                      -> B2 -> C,D
+             */
+            directDependencies = mutableListOf()
+            for (dependency in directDependencyNames) {
+                if (!includedPackages.add(dependency)) {
+                    continue
+                }
+                // recursively compute the command definitions for the dependency
+                val depBundle = getValueOrNull(dependency) ?: computeDefinitionsRecur(dependency, processedPackages)
+                directDependencies.add(depBundle)
+                includedPackages.addAll(depBundle.allLibraries)
+            }
+
+            processPsiCommandDefinitions(libInfo, currentSourcedDefinitions)
+            processExternalDefinitions(libInfo, currentSourcedDefinitions)
+        }
+        else {
+            directDependencies = emptyList()
+            includedPackages = setOf(pkgName)
+        }
+
         val result = LibDefinitionBundle(pkgName, currentSourcedDefinitions, directDependencies, includedPackages)
         putValue(pkgName, result)
         return result
@@ -646,7 +645,6 @@ class PackageDefinitionService(
         totalBuildTime.addAndGet(buildTime)
         return result
     }
-
 
     /**
      * Should be long, since packages do not change.
@@ -680,16 +678,21 @@ class LatexDefinitionService(
 
     var expirationInMs: Long = 100L
 
-
     override fun computeValue(key: Fileset, oldValue: FilesetDefinitionBundle?): FilesetDefinitionBundle {
         val startTime = System.currentTimeMillis()
+
+        // packages do not need indexing
         val packageService = PackageDefinitionService.getInstance(project)
         val libraries = ArrayList<LibDefinitionBundle>(key.libraries.size + 1)
         libraries.add(packageService.getLibBundle("")) // add the default commands
         key.libraries.mapTo(libraries) { packageService.getLibBundle(it) }
-        val projectFileIndex = ProjectFileIndex.getInstance(project)
+
+        if (DumbService.isDumb(project)) return FilesetDefinitionBundle(emptyMap(), libraries)
+
         val customCommands = mutableMapOf<String, SourcedDefinition>()
         val bundle = FilesetDefinitionBundle(customCommands, libraryBundles = libraries)
+
+        val projectFileIndex = ProjectFileIndex.getInstance(project)
         // a building placeholder for the bundle to make lookups work
         for (file in key.files) {
             if (!projectFileIndex.isInProject(file)) continue
@@ -704,7 +707,6 @@ class LatexDefinitionService(
         totalBuildTime.addAndGet(System.currentTimeMillis() - startTime)
         return bundle
     }
-
 
     fun getFilesetBundle(fileset: Fileset): FilesetDefinitionBundle {
         return getOrComputeNow(fileset, expirationInMs)
@@ -739,5 +741,4 @@ class LatexDefinitionService(
         val countOfBuilds = AtomicInteger(0)
         val totalBuildTime = AtomicLong(0)
     }
-
 }

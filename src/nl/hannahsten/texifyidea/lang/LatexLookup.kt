@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.lang
 
-
-interface LatexSemanticEnvLookup{
+interface LatexSemanticEnvLookup {
     fun lookupEnv(name: String): LSemanticEnv?
 }
 interface LatexSemanticCommandLookup {
@@ -12,7 +11,4 @@ interface LatexSemanticCommandLookup {
     fun lookupCommand(name: String): LSemanticCommand?
 }
 
-
-
-interface LatexSemanticLookup : LatexSemanticEnvLookup, LatexSemanticCommandLookup {
-}
+interface LatexSemanticLookup : LatexSemanticEnvLookup, LatexSemanticCommandLookup

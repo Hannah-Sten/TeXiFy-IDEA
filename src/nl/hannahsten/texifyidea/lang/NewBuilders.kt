@@ -99,7 +99,6 @@ class DSLLatexCommandBuilderScope : AbstractDSLLatexBuilderScope() {
         return commands
     }
 
-
     operator fun String.invoke(
         vararg arguments: LArgument,
         description: String = "",
@@ -192,7 +191,6 @@ class DSLLatexEnvironmentBuilderScope : AbstractDSLLatexBuilderScope() {
         return env(LAssignContext(context), *arguments, desc = desc)
     }
 
-
     inline fun String.env(
         context: LatexContextIntro = LatexContextIntro.inherit(),
         vararg arguments: LArgument,
@@ -223,13 +221,11 @@ class DSLLatexEnvironmentBuilderScope : AbstractDSLLatexBuilderScope() {
     }
 }
 
-
 abstract class PredefinedCommandSet {
     private val myAllCommands = mutableSetOf<LSemanticCommand>()
 
     val allCommands: Set<LSemanticCommand>
         get() = myAllCommands
-
 
     protected fun buildCommands(action: DSLLatexCommandBuilderScope.() -> Unit): List<LSemanticCommand> {
         val built = DSLLatexCommandBuilderScope.buildCommands(action)

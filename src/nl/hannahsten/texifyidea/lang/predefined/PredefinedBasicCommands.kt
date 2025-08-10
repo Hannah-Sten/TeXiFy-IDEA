@@ -7,12 +7,10 @@ import nl.hannahsten.texifyidea.lang.LatexContexts
 
 object PredefinedBasicCommands : PredefinedCommandSet() {
 
-
     val primitives = buildCommands {
         val envArg = required("environment", LatexContexts.Identifier)
         "begin".cmd(envArg)
         "end".cmd(envArg)
-
 
         underContext(LatexContexts.Nothing) { // The primitive commands will never be suggested for autocompletion.
             "begingroup".cmd { "Begin a group" }
@@ -30,7 +28,6 @@ object PredefinedBasicCommands : PredefinedCommandSet() {
             "futurelet".cmd(paramMacro, paramDef) { "LaTex primitive futurelet" }
             "relax".cmd { "Do nothing" }
         }
-
     }
 
     const val ARG_NAME_COMMAND_TOKEN = "commandToken"
@@ -47,7 +44,6 @@ object PredefinedBasicCommands : PredefinedCommandSet() {
         val numArgs = LArgument.optional("num args", LatexContexts.Numeric)
         val defaultOptional = "default".optional
         val code = required("code", +LatexContexts.InsideDefinition)
-
 
         "newcommand".cmd(command, numArgs, defaultOptional, code) { "Define a new command" }
         "newcommand*".cmd(command, numArgs, defaultOptional, code) { "Define a new command (starred variant)" }
@@ -75,7 +71,6 @@ object PredefinedBasicCommands : PredefinedCommandSet() {
             "ProvideDocumentCommand".cmd(command, argsSpec, code) { "Provide a document command" }
             "DeclareDocumentCommand".cmd(command, argsSpec, code) { "Declare a document command" }
         }
-
     }
 
     val definitionOfEnvironment = buildCommands {
@@ -87,7 +82,6 @@ object PredefinedBasicCommands : PredefinedCommandSet() {
 
         "newenvironment".cmd(envName, numArgs, defaultOptional, beginCode, endCode) { "Define a new environment" }
         "renewenvironment".cmd(envName, numArgs, defaultOptional, beginCode, endCode) { "Redefine an existing environment" }
-
 
         "newtheorem".cmd(
             envName, "numberedlike".optional, "caption".required(LatexContexts.Text), "within".optional
@@ -106,7 +100,6 @@ object PredefinedBasicCommands : PredefinedCommandSet() {
         "newenvironmentx".cmd(envName, numArgs, defaultOptional, beginCode, endCode) { "Define a new environment with extended args" }
         "renewenvironmentx".cmd(envName, numArgs, defaultOptional, beginCode, endCode) { "Redefine an environment with extended args" }
     }
-
 
     val ifCommands = buildCommands {
         underContext(LatexContexts.Preamble) {
@@ -132,5 +125,4 @@ object PredefinedBasicCommands : PredefinedCommandSet() {
             +"or"
         }
     }
-
 }

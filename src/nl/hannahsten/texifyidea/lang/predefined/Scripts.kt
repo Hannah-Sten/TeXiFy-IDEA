@@ -1,13 +1,11 @@
 package nl.hannahsten.texifyidea.lang.predefined
 
-import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.lang.commands.Argument
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.OptionalArgument
 import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
 import kotlin.collections.component1
 import kotlin.collections.component2
-
 
 fun parseFor(s: Collection<LatexCommand>) {
     // Example usage of LatexOperatorCommand

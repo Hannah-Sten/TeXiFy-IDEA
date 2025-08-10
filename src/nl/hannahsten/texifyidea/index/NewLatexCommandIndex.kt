@@ -3,7 +3,6 @@ package nl.hannahsten.texifyidea.index
 import com.intellij.psi.stubs.IndexSink
 import com.intellij.psi.stubs.PsiFileStub
 import com.intellij.psi.stubs.StubIndexKey
-import nl.hannahsten.texifyidea.grammar.LatexParserDefinition
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil

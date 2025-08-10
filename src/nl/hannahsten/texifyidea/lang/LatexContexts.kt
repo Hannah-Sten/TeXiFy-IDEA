@@ -2,7 +2,7 @@ package nl.hannahsten.texifyidea.lang
 
 open class LatexContextBase(
     final override val name: String
-) : LatexContext{
+) : LatexContext {
     override fun toString(): String {
         return name
     }
@@ -27,7 +27,6 @@ interface LLiteralContext : LatexContext
 
 object LatexContexts {
 
-
     val Math = LatexContextBase("math")
 
     /**
@@ -48,8 +47,6 @@ object LatexContexts {
      * This context should never be introduced, so command under this context will never be suggested.
      */
     val Nothing = LatexContextBase("nothing")
-
-
 
     val LabelDefinition = LatexContextBase("label.def")
     val LabelReference = LatexContextBase("label.ref")
@@ -125,7 +122,6 @@ object LatexContexts {
     val Algorithmicx = LatexContextBase("algorithmicx")
 
     val MintedFuntimeLand = LatexContextBase("minted.funtime.land")
-
 
     // environment contexts
 

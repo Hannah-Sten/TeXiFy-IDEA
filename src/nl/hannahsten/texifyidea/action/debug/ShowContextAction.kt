@@ -1,7 +1,5 @@
 package nl.hannahsten.texifyidea.action.debug
 
-import com.intellij.notification.Notification
-import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
@@ -25,14 +23,13 @@ class ShowContextAction : AnAction() {
         // show the context of the element in a dialog
         val project = e.project ?: return
 
-
         val semanticLookup = LatexDefinitionService.getInstance(e.project!!).getFilesetBundles(file.virtualFile).firstOrNull() ?: return
         val contexts = LatexPsiUtil.resolveContextUpward(element, semanticLookup)
         println("Contexts: $contexts")
 
         val cmdName = element.firstParentOfType<LatexCommands>()?.name
         if(cmdName != null) {
-            val cmdDef = LatexDefinitionService.getInstance(project).resolveCommandDef(file.virtualFile,cmdName)
+            val cmdDef = LatexDefinitionService.getInstance(project).resolveCommandDef(file.virtualFile, cmdName)
             println("Definition of [$cmdName]: ${cmdDef ?: "Not found"}")
         }
     }

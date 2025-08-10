@@ -316,7 +316,7 @@ object LatexPsiUtil {
         }
     }
 
-    fun alignCommandArgument(command: LatexCommandWithParams, parameter: LatexParameter, arguments : List<LArgument>): LArgument? {
+    fun alignCommandArgument(command: LatexCommandWithParams, parameter: LatexParameter, arguments: List<LArgument>): LArgument? {
         val command = parameter.firstParentOfType<LatexCommands>() ?: return null
         processArgumentsWithSemantics(command, arguments) { p, arg ->
             if (p == parameter) return arg
@@ -324,9 +324,9 @@ object LatexPsiUtil {
         return null
     }
 
-    private fun resolveBeginCommandContext(parameter: LatexParameter, lookup: LatexSemanticLookup) : LatexContextIntro?{
+    private fun resolveBeginCommandContext(parameter: LatexParameter, lookup: LatexSemanticLookup): LatexContextIntro? {
         val beginCommand = parameter.firstParentOfType<LatexBeginCommand>(3) ?: return null
-        val name =beginCommand.environmentName() ?: return null
+        val name = beginCommand.environmentName() ?: return null
         val semantics = lookup.lookupEnv(name) ?: return null
         val arg = alignCommandArgument(beginCommand, parameter, semantics.arguments) ?: return null
         return arg.contextSignature
@@ -345,7 +345,6 @@ object LatexPsiUtil {
         val semantics = lookup.lookupEnv(name) ?: return null
         return semantics.contextSignature
     }
-
 
     private val baseContext = setOf(LatexContexts.Preamble)
 
@@ -385,7 +384,6 @@ object LatexPsiUtil {
         collectedContextIntro ?: return emptySet()
         return LatexContextIntro.buildContext(collectedContextIntro.asReversed(), baseContext)
     }
-
 
     fun traverseRecordingContextIntro(
         e: PsiElement,

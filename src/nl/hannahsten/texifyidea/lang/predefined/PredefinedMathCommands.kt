@@ -7,7 +7,7 @@ object PredefinedMathCommands : PredefinedCommandSet() {
 
     val textMathCommands = buildCommands {
         packageOf("amsmath")
-        underPackage("amstext"){
+        underPackage("amstext") {
             underContext(LatexContexts.Math) {
                 "text".cmd("text".required(LatexContexts.Text)) { "Text in math" }
             }

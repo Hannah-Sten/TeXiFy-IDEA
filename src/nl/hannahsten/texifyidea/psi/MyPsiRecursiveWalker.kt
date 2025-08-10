@@ -86,4 +86,3 @@ abstract class MyPsiRecursiveWalker(private var depth: Int) : PsiRecursiveElemen
 
     protected open fun elementEnd(e: PsiElement) = Unit
 }
-

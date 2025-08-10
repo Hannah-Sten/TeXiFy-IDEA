@@ -19,7 +19,6 @@ import java.util.stream.Collectors
 class LatexCommandsStubElementType(debugName: String) :
     IStubElementType<LatexCommandsStub, LatexCommands>(debugName, LatexLanguage) {
 
-
     override fun createPsi(latexCommandsStub: LatexCommandsStub): LatexCommands {
         return LatexCommandsImpl(latexCommandsStub, this)
     }
@@ -118,7 +117,6 @@ class LatexCommandsStubElementType(debugName: String) :
         val keyValuePairs = stub.optionalParamsMap.map { "${it.key}=${it.value}" }
         return java.lang.String.join(LIST_ELEMENT_SEPARATOR.pattern(), keyValuePairs)
     }
-
 
     companion object {
 

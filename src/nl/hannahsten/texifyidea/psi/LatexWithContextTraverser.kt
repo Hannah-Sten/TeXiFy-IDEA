@@ -2,11 +2,9 @@ package nl.hannahsten.texifyidea.psi
 
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.lang.LArgument
-import nl.hannahsten.texifyidea.lang.LAssignContext
 import nl.hannahsten.texifyidea.lang.LContextInherit
 import nl.hannahsten.texifyidea.lang.LSemanticEnv
 import nl.hannahsten.texifyidea.lang.LatexContextIntro
-import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.LatexSemanticLookup
 import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 import nl.hannahsten.texifyidea.util.parser.forEachDirectChild
@@ -14,7 +12,9 @@ import nl.hannahsten.texifyidea.util.parser.forEachDirectChild
 abstract class LatexWithContextTraverser<S>(protected val lookup: LatexSemanticLookup) {
 
     protected enum class WalkAction {
-        CONTINUE, SKIP_CHILDREN, STOP_WALK
+        CONTINUE,
+        SKIP_CHILDREN,
+        STOP_WALK
     }
 
     protected open fun elementStart(e: PsiElement, state: S): WalkAction {
@@ -52,7 +52,8 @@ abstract class LatexWithContextTraverser<S>(protected val lookup: LatexSemanticL
         when (action) {
             WalkAction.STOP_WALK -> return false
             WalkAction.SKIP_CHILDREN -> return true
-            else -> { /* CONTINUE */
+            else -> {
+                /* CONTINUE */
             }
         }
 

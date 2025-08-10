@@ -33,7 +33,6 @@ sealed interface LatexContextIntro {
 
     companion object {
 
-
         fun inherit(): LatexContextIntro {
             return LContextInherit
         }
@@ -127,7 +126,6 @@ sealed interface LatexContextIntro {
                 intro.revoke(ctx) ?: return null
             }
         }
-
 
         val ASSIGN_MATH = LAssignContext(LatexContexts.Math)
     }
@@ -310,7 +308,6 @@ abstract class LSemanticEntity(
         result = 31 * result + dependency.hashCode()
         return result
     }
-
 }
 
 class LSemanticCommand(

@@ -8,7 +8,6 @@ import nl.hannahsten.texifyidea.lang.PredefinedEnvironmentSet
 
 object AllPredefinedEnvironments : PredefinedEnvironmentSet() {
 
-
     val basic = buildEnvironments {
         "document".env(LatexContexts.Text) {
             "The main document environment."
@@ -50,7 +49,6 @@ object AllPredefinedEnvironments : PredefinedEnvironmentSet() {
         }
     }
 
-
     val lists = buildEnvironments {
         "enumerate".env(+LatexContexts.Enumerate) {
             "A numbered list."
@@ -65,11 +63,9 @@ object AllPredefinedEnvironments : PredefinedEnvironmentSet() {
         "math".env(Math) { "Inline math mode." }
         "displaymath".env(Math) { "Display math mode." }
 
-
         "eqnarray".env(Math) { "A set of aligned equations, similar to `align`." }
         "eqnarray*".env(Math) { "A set of aligned equations, similar to `align*`." }
     }
-
 
     val basicUnderMath = buildEnvironments {
         underContext(Math) {
@@ -149,7 +145,6 @@ object AllPredefinedEnvironments : PredefinedEnvironmentSet() {
         underPackage("gauss") {
             +"gmatrix"
         }
-
     }
 
     val thmAndProof = buildEnvironments {
@@ -193,7 +188,6 @@ object AllPredefinedEnvironments : PredefinedEnvironmentSet() {
         }
         "table*".env(LatexContexts.Table, placement)
 
-
         val cols = "cols".required(LatexContexts.Literal)
         val pos = "pos".optional(LatexContexts.Literal)
         val width = "width".optional(LatexContexts.Literal)
@@ -233,7 +227,6 @@ object AllPredefinedEnvironments : PredefinedEnvironmentSet() {
         +"blockarray"
     }
 
-
     val other = buildEnvironments {
         // contexts can be further specified
         packageOf("listings")
@@ -265,5 +258,4 @@ object AllPredefinedEnvironments : PredefinedEnvironmentSet() {
     }
 
     val packageToEnvironments: Map<String, List<LSemanticEnv>> = allEnvironments.groupBy { it.dependency }
-
 }

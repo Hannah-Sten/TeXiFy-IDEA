@@ -48,7 +48,6 @@ class LatexParserDefinition : ParserDefinition {
     ): SpaceRequirements = SpaceRequirements.MAY
 }
 
-
 object LatexStubFileElementType : IStubFileElementType<LatexFileStub>(
     // debugName is required to let IntelliJ distinguish between this FILE and BibtexParserDefinition.FILE
     "LatexStubFileElementType", Language.findInstance(LatexLanguage::class.java)
@@ -67,7 +66,5 @@ object LatexStubFileElementType : IStubFileElementType<LatexFileStub>(
         super.serialize(stub, dataStream)
     }
 }
-
-
 
 class LatexFileStub(file: LatexFile) : PsiFileStubImpl<LatexFile>(file)

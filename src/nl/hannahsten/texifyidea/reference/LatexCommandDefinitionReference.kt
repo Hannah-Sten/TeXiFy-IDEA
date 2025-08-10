@@ -3,10 +3,8 @@ package nl.hannahsten.texifyidea.reference
 import com.intellij.openapi.project.DumbService
 import com.intellij.psi.*
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
-import nl.hannahsten.texifyidea.index.NewDefinitionIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
-import nl.hannahsten.texifyidea.util.parser.definitionCommand
 
 /**
  * Command reference. When resolved, points to the command definition.

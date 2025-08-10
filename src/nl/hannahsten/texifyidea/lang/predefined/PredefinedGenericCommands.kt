@@ -342,7 +342,6 @@ object PredefinedGenericCommands : PredefinedCommandSet() {
         "setsansfont".cmd("font".required, "font features".optional) { "SETSANSFONT" }
     }
 
-
     val citation = textCommands {
         val before = "before".optional
         val after = "after".optional
@@ -762,7 +761,6 @@ object PredefinedGenericCommands : PredefinedCommandSet() {
             "s-spec".required
         ) { "Define a color series" }
     }
-
 
     val colorCommands = buildCommands {
 

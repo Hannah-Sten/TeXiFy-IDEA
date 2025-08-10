@@ -17,14 +17,11 @@ object AllPredefinedCommands {
             it.allCommands
         }
 
-
     val packageToCommands: Map<String, List<LSemanticCommand>> =
         allCommands.groupBy { it.dependency }.mapValues { it.value }
 
-
     val nameToCommands: Map<String, List<LSemanticCommand>> =
         allCommands.groupBy { it.name }
-
 
     private const val CHECK_DUPLICATION = true
 
