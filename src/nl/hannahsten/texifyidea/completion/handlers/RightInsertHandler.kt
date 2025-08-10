@@ -4,6 +4,7 @@ import com.intellij.codeInsight.completion.InsertHandler
 import com.intellij.codeInsight.completion.InsertionContext
 import com.intellij.codeInsight.highlighting.BraceMatchingUtil
 import com.intellij.codeInsight.lookup.LookupElement
+import com.intellij.psi.PsiDocumentManager
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexDelimiterCommand
@@ -21,6 +22,7 @@ open class RightInsertHandler : InsertHandler<LookupElement> {
 
         if (command is LatexDelimiterCommand && command.isLeft) {
             val hasMatchingBrace = BraceMatchingUtil.matchBrace(context.editor.document.text, LatexFileType, editor.highlighter.createIterator(context.editor.caretModel.offset - 1), true)
+            PsiDocumentManager.getInstance(editor.project ?: return).doPostponedOperationsAndUnblockDocument(editor.document)
             if (hasMatchingBrace) {
                 editor.document.insertString(editor.caretModel.offset, " ")
             } else {
