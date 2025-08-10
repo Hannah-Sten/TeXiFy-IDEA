@@ -316,19 +316,27 @@ object LatexPsiUtil {
         }
     }
 
-    fun alignCommandArgument(command: LatexCommands, parameter: LatexParameter, semantics: LSemanticCommand): LArgument? {
+    fun alignCommandArgument(command: LatexCommandWithParams, parameter: LatexParameter, arguments : List<LArgument>): LArgument? {
         val command = parameter.firstParentOfType<LatexCommands>() ?: return null
-        processArgumentsWithSemantics(command, semantics) { p, arg ->
+        processArgumentsWithSemantics(command, arguments) { p, arg ->
             if (p == parameter) return arg
         }
         return null
     }
 
+    private fun resolveBeginCommandContext(parameter: LatexParameter, lookup: LatexSemanticLookup) : LatexContextIntro?{
+        val beginCommand = parameter.firstParentOfType<LatexBeginCommand>(3) ?: return null
+        val name =beginCommand.environmentName() ?: return null
+        val semantics = lookup.lookupEnv(name) ?: return null
+        val arg = alignCommandArgument(beginCommand, parameter, semantics.arguments) ?: return null
+        return arg.contextSignature
+    }
+
     private fun resolveCommandParameterContext(parameter: LatexParameter, lookup: LatexSemanticLookup): LatexContextIntro? {
-        val command = parameter.firstParentOfType<LatexCommands>() ?: return null
+        val command = parameter.firstParentOfType<LatexCommands>(3) ?: return resolveBeginCommandContext(parameter, lookup)
         val name = command.name ?: return null
         val semantics = lookup.lookupCommand(name) ?: return null
-        val arg = alignCommandArgument(command, parameter, semantics) ?: return null
+        val arg = alignCommandArgument(command, parameter, semantics.arguments) ?: return null
         return arg.contextSignature
     }
 
@@ -347,11 +355,12 @@ object LatexPsiUtil {
         // see Latex.bnf
         while (true) {
             current = current.firstStrictParent { // `firstParent` is inclusive
-                it is LatexParameter || it is LatexEnvironment
+                it is LatexParameter || it is LatexEnvironment || it is LatexMathContent
             } ?: break
             val intro = when (current) {
                 is LatexParameter -> resolveCommandParameterContext(current, lookup) ?: continue
                 is LatexEnvironment -> resolveEnvironmentContext(current, lookup) ?: continue
+                is LatexMathEnvironment -> LatexContextIntro.ASSIGN_MATH
                 else -> continue
             }
             when (intro) {

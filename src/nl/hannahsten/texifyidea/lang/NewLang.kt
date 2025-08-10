@@ -128,6 +128,8 @@ sealed interface LatexContextIntro {
             }
         }
 
+
+        val ASSIGN_MATH = LAssignContext(LatexContexts.Math)
     }
 }
 

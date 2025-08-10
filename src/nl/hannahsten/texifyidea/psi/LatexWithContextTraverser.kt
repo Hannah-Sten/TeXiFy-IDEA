@@ -74,7 +74,7 @@ abstract class LatexWithContextTraverser<S>(protected val lookup: LatexSemanticL
             }
 
             is LatexMathContent -> {
-                currentIntro = LAssignContext(LatexContexts.Math)
+                currentIntro = LatexContextIntro.ASSIGN_MATH
             }
         }
         val childState = if (currentIntro != null) enterContextIntro(state, currentIntro) else state
@@ -91,7 +91,3 @@ abstract class LatexWithContextTraverser<S>(protected val lookup: LatexSemanticL
         return ret
     }
 }
-/*
-
-
- */
