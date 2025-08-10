@@ -203,7 +203,7 @@ class TableHtmlToLatexConverter : HtmlToLatexConverter {
         val columnTypes = (0 until width).map { col ->
             val allNumeric = (headerRowCount until height).all { r ->
                 val t = grid[r][col]?.text
-                t == null || t.isBlank() || t.trim().toDoubleOrNull() != null
+                t.isNullOrBlank() || t.trim().toDoubleOrNull() != null
             }
             if (allNumeric) ColumnType.NUMBERS_COLUMN else ColumnType.TEXT_COLUMN
         }
