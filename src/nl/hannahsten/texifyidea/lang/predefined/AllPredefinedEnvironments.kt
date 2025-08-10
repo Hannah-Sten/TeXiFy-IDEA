@@ -258,4 +258,7 @@ object AllPredefinedEnvironments : PredefinedEnvironmentSet() {
     }
 
     val packageToEnvironments: Map<String, List<LSemanticEnv>> = allEnvironments.groupBy { it.dependency }
+
+
+    val simpleNameLookup = allEnvironments.associateBy { it.name }
 }

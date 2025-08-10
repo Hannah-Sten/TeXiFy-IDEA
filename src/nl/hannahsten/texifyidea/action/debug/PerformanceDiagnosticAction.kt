@@ -32,7 +32,7 @@ class PerformanceDiagnosticAction : AnAction() {
         val project = e.project ?: return
         PackageDefinitionService.getInstance(project).invalidateCache()
         val bundle = project.service<PackageDefinitionService>().getLibBundle("amsmath.sty")
-        val def = LatexDefinitionService.getInstance(project).resolveCommandDef("alpha")
+        val def = LatexDefinitionService.getInstance(project).resolveDefInProject("alpha")
         // show a dialog with performance diagnostic information
         val tableData = listOf(
             PerformanceData(

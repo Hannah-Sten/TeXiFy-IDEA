@@ -20,8 +20,7 @@ object AllPredefinedCommands {
     val packageToCommands: Map<String, List<LSemanticCommand>> =
         allCommands.groupBy { it.dependency }.mapValues { it.value }
 
-    val nameToCommands: Map<String, List<LSemanticCommand>> =
-        allCommands.groupBy { it.name }
+    val simpleNameLookup = allCommands.associateBy { it.name }
 
     private const val CHECK_DUPLICATION = true
 
@@ -34,14 +33,6 @@ object AllPredefinedCommands {
                 }
             }
         }
-    }
-
-    fun lookupCommand(name: String, dependency: String? = null): LSemanticCommand? {
-        val commands = nameToCommands[name] ?: return null
-        if (dependency == null) {
-            return commands.firstOrNull()
-        }
-        return commands.firstOrNull { it.dependency == dependency }
     }
 
     val regularCommandDef = PredefinedBasicCommands.definitionOfCommand.associateBy { it.name }

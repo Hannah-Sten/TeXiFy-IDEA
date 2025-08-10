@@ -708,30 +708,37 @@ class LatexDefinitionService(
         return bundle
     }
 
-    fun getFilesetBundle(fileset: Fileset): FilesetDefinitionBundle {
+    fun getFilesetBundle(fileset: Fileset): DefinitionBundle {
         return getOrComputeNow(fileset, expirationInMs)
     }
 
-    fun getFilesetBundles(v: VirtualFile): List<FilesetDefinitionBundle> {
+    fun getFilesetBundles(v: VirtualFile): List<DefinitionBundle> {
         val filesetData = LatexProjectStructure.getFilesetDataFor(v, project) ?: return emptyList()
         return filesetData.filesets.map { getFilesetBundle(it) }
     }
 
     fun resolveCommandDef(v: VirtualFile, commandName: String): SourcedCmdDefinition? {
-        val nameWithoutSlash = commandName.removePrefix("\\")
-        val filesetData = LatexProjectStructure.getFilesetDataFor(v, project) ?: return null
+        return resolveDef(v, commandName.removePrefix("\\")) as? SourcedCmdDefinition
+    }
+
+    fun resolveEnvDef(v: VirtualFile, envName: String): SourcedEnvDefinition? {
+        return resolveDef(v, envName) as? SourcedEnvDefinition
+    }
+
+    fun resolveDef(v: VirtualFile, name: String): SourcedDefinition? {
+        val filesetData = LatexProjectStructure.getFilesetDataFor(v, project) ?: return resolvePredefinedDef(name)
         return filesetData.filesets.firstNotNullOfOrNull {
-            getFilesetBundle(it).findCmdDef(nameWithoutSlash)
+            getFilesetBundle(it).findDefinition(name)
         }
     }
 
-    fun resolveCommandDef(commandName: String): SourcedCmdDefinition? {
-        val nameWithoutSlash = commandName.removePrefix("\\")
-        val pf = LatexProjectStructure.getFilesets(project) ?: return null
+    fun resolveDefInProject(name: String): SourcedDefinition? {
+        val pf = LatexProjectStructure.getFilesets(project) ?: return resolvePredefinedDef(name)
         return pf.filesets.firstNotNullOfOrNull {
-            getFilesetBundle(it).findCmdDef(nameWithoutSlash)
+            getFilesetBundle(it).findDefinition(name)
         }
     }
+
 
     companion object {
         fun getInstance(project: Project): LatexDefinitionService {
@@ -740,5 +747,21 @@ class LatexDefinitionService(
 
         val countOfBuilds = AtomicInteger(0)
         val totalBuildTime = AtomicLong(0)
+
+        fun resolvePredefinedDef(name: String): SourcedDefinition? {
+            return resolvePredefinedCommandDef(name) ?: resolvePredefinedEnvDef(name)
+        }
+
+        fun resolvePredefinedCommandDef(name: String): SourcedCmdDefinition? {
+            return AllPredefinedCommands.simpleNameLookup[name]?.let { cmd ->
+                return SourcedCmdDefinition(cmd, null, DefinitionSource.Predefined)
+            }
+        }
+
+        fun resolvePredefinedEnvDef(envName: String): SourcedEnvDefinition? {
+            return AllPredefinedEnvironments.simpleNameLookup[envName]?.let { env ->
+                SourcedEnvDefinition(env, null, DefinitionSource.Predefined)
+            }
+        }
     }
 }
