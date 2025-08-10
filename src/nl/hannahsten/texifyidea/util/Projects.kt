@@ -15,6 +15,7 @@ import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.search.ProjectScope
 import com.intellij.serviceContainer.AlreadyDisposedException
+import com.intellij.util.concurrency.annotations.RequiresReadLock
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.modules.LatexModuleType
@@ -145,6 +146,7 @@ fun Project.hasLatexModule(): Boolean {
 /**
  * Best guess at whether this project can be considered a project containing significant LaTeX things.
  */
+@RequiresReadLock // Required by containsFileOfType
 fun Project.isLatexProject(): Boolean {
     return hasLatexModule() ||
         getLatexRunConfigurations().isNotEmpty() ||
