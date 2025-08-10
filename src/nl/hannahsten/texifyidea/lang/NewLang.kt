@@ -243,10 +243,16 @@ class LArgument(
 
     val description: String = "",
 ) {
+
+    val isRequired: Boolean
+        get() = type == LArgumentType.REQUIRED
+    val isOptional: Boolean
+        get() = type == LArgumentType.OPTIONAL
+
     override fun toString(): String {
         return when (type) {
-            LArgumentType.REQUIRED -> "{$name($contextSignature)}"
-            LArgumentType.OPTIONAL -> "[$name($contextSignature)]"
+            LArgumentType.REQUIRED -> "{$name<$contextSignature>}"
+            LArgumentType.OPTIONAL -> "[$name<$contextSignature>]"
         }
     }
 
@@ -331,7 +337,7 @@ class LSemanticCommand(
 ) : LSemanticEntity(name, namespace, requiredContext, description) {
 
     override fun toString(): String {
-        return "Cmd($displayName, ctx=$requiredContext, arg=${arguments.joinToString("")}, description='$description')"
+        return "Cmd($displayName, ctx=<${requiredContext.joinToString(",")}>, arg=${arguments.joinToString("")}, description='$description')"
     }
 }
 
@@ -351,4 +357,8 @@ class LSemanticEnv(
      * The description of the environment, used for documentation.
      */
     description: String = "",
-) : LSemanticEntity(name, namespace, requiredContext, description)
+) : LSemanticEntity(name, namespace, requiredContext, description){
+    override fun toString(): String {
+        return "Env($displayName, ctx=<${requiredContext.joinToString(",")}>, arg=${arguments.joinToString("")}, scope=$contextSignature, description='$description')"
+    }
+}

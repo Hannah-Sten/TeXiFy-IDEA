@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.completion
 
 import com.intellij.codeInsight.completion.CompletionContributor
+import com.intellij.codeInsight.completion.CompletionInitializationContext
 import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionProvider
 import com.intellij.codeInsight.completion.CompletionType
@@ -32,11 +33,10 @@ import java.util.*
  *
  * @author Sten Wessel, Hannah Schellekens
  */
-open class LatexCompletionContributor : CompletionContributor() {
+class LatexCompletionContributor : CompletionContributor() {
 
     init {
-        registerRegularCommandCompletion()
-        registerMathModeCompletion()
+        registerContextBasedCommandCompletion()
         registerFileNameCompletion()
         registerFolderNameCompletion()
         registerGraphicPathCompletion()
@@ -51,37 +51,18 @@ open class LatexCompletionContributor : CompletionContributor() {
         registerDefaultEnvironmentCompletion()
     }
 
+    override fun beforeCompletion(context: CompletionInitializationContext) {
+    }
+
     /**
      * Adds the commands outside math context to the autocomplete.
      */
-    private fun registerRegularCommandCompletion() = extend(
+    private fun registerContextBasedCommandCompletion() = extend(
         CompletionType.BASIC,
         PlatformPatterns.psiElement(LatexTypes.COMMAND_TOKEN)
-            .andNot(PlatformPatterns.psiElement().inside(LatexMathEnvironment::class.java))
-            .withPattern { psiElement, _ -> psiElement.inMathContext().not() }
             .withLanguage(LatexLanguage),
-        LatexNormalCommandCompletionProvider
+        LatexContextAwareCommandCompletionProvider
     )
-
-    /**
-     * Adds the commands inside math context to the autocomplete.
-     */
-    private fun registerMathModeCompletion() {
-        extend(
-            CompletionType.BASIC,
-            PlatformPatterns.psiElement(LatexTypes.COMMAND_TOKEN)
-                .withPattern { psiElement, _ -> psiElement.inMathContext() }
-                .withLanguage(LatexLanguage),
-            LatexMathCommandCompletionProvider
-        )
-        extend(
-            CompletionType.BASIC,
-            PlatformPatterns.psiElement(LatexTypes.COMMAND_TOKEN)
-                .inside(LatexMathEnvMarker::class.java)
-                .withLanguage(LatexLanguage),
-            LatexMathCommandCompletionProvider
-        )
-    }
 
     /**
      * Adds file name support to the autocomplete.

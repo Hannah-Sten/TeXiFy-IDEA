@@ -23,7 +23,7 @@ class ShowContextAction : AnAction() {
         // show the context of the element in a dialog
         val project = e.project ?: return
 
-        val semanticLookup = LatexDefinitionService.getInstance(e.project!!).getFilesetBundles(file.virtualFile).firstOrNull() ?: return
+        val semanticLookup = LatexDefinitionService.getInstance(e.project!!).getFilesetBundlesMerged(file.virtualFile)
         val contexts = LatexPsiUtil.resolveContextUpward(element, semanticLookup)
         println("Contexts: $contexts")
 

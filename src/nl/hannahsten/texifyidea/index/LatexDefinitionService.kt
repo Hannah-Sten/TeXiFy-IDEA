@@ -45,6 +45,7 @@ import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
 import nl.hannahsten.texifyidea.util.parser.traverse
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.text.get
 
 sealed class SourcedDefinition(
     val definitionCommandPointer: SmartPsiElementPointer<LatexCommands>?,
@@ -456,7 +457,7 @@ interface DefinitionBundle : LatexSemanticLookup {
     }
 }
 
-abstract class CompositeDefinitionBundle(
+open class CompositeDefinitionBundle(
     val introducedDefinitions: Map<String, SourcedDefinition> = emptyMap(),
     val directDependencies: List<DefinitionBundle> = emptyList(),
 ) : DefinitionBundle {
@@ -477,17 +478,10 @@ abstract class CompositeDefinitionBundle(
     }
 }
 
-class LibDefinitionBundle(
-    val libName: String,
+open class CachedCompositeDefinitionBundle(
     introducedDefinitions: Map<String, SourcedDefinition> = emptyMap(),
-    directDependencies: List<LibDefinitionBundle> = emptyList(),
-    val allLibraries: Set<String> = setOf(libName)
+    directDependencies: List<DefinitionBundle> = emptyList()
 ) : CompositeDefinitionBundle(introducedDefinitions, directDependencies) {
-
-    override fun toString(): String {
-        return "Lib($libName, #defs=${introducedDefinitions.size})"
-    }
-
     val allNameLookup: Map<String, SourcedDefinition> by lazy {
         buildMap {
             // let us cache the full lookup map since a package can be used frequently
@@ -495,12 +489,25 @@ class LibDefinitionBundle(
         }
     }
 
-    override fun findDefinition(name: String): SourcedDefinition? {
-        return allNameLookup[name]
+    final override fun sourcedDefinitions(): Collection<SourcedDefinition> {
+        return allNameLookup.values
+    }
+}
+
+class LibDefinitionBundle(
+    val libName: String,
+    introducedDefinitions: Map<String, SourcedDefinition> = emptyMap(),
+    directDependencies: List<LibDefinitionBundle> = emptyList(),
+    val allLibraries: Set<String> = setOf(libName)
+) : CachedCompositeDefinitionBundle(introducedDefinitions, directDependencies) {
+
+    override fun toString(): String {
+        return "Lib($libName, #defs=${introducedDefinitions.size})"
     }
 
-    override fun sourcedDefinitions(): Collection<SourcedDefinition> {
-        return allNameLookup.values
+    override fun findDefinition(name: String): SourcedDefinition? {
+        // load the cached full map
+        return allNameLookup[name]
     }
 
     override fun appendDefinitions(nameMap: MutableMap<String, SourcedDefinition>, includedPackages: MutableSet<String>) {
@@ -512,7 +519,7 @@ class LibDefinitionBundle(
 class FilesetDefinitionBundle(
     customDefinitions: Map<String, SourcedDefinition> = emptyMap(),
     libraryBundles: List<LibDefinitionBundle> = emptyList()
-) : CompositeDefinitionBundle(customDefinitions, libraryBundles)
+) : CachedCompositeDefinitionBundle(customDefinitions, libraryBundles)
 
 /**
  * Command definition service for a single LaTeX package (`.cls` or `.sty` file).
@@ -524,15 +531,6 @@ class PackageDefinitionService(
 
     fun invalidateCache() {
         clearAllCache()
-    }
-
-    private fun processPredefinedCommandsAndEnvironments(name: String, defMap: MutableMap<String, SourcedDefinition>) {
-        AllPredefinedCommands.packageToCommands[name]?.forEach { command ->
-            defMap[command.name] = SourcedCmdDefinition(command, null, DefinitionSource.Predefined)
-        }
-        AllPredefinedEnvironments.packageToEnvironments[name]?.forEach { env ->
-            defMap[env.name] = SourcedEnvDefinition(env, null, DefinitionSource.Predefined)
-        }
     }
 
     private fun processPsiCommandDefinitions(
@@ -572,22 +570,11 @@ class PackageDefinitionService(
 //        }
     }
 
-    private fun getDefaultLibBundle(): LibDefinitionBundle {
-        // return the default commands, i.e., those hard-coded in the plugin
-        val currentSourcedDefinitions = mutableMapOf<String, SourcedDefinition>()
-        processPredefinedCommandsAndEnvironments("", currentSourcedDefinitions)
-        // overwrite the definitions with the primitive commands
-        PredefinedBasicCommands.primitives.forEach {
-            currentSourcedDefinitions[it.name] = SourcedCmdDefinition(it, null, DefinitionSource.Primitive)
-        }
-        return LibDefinitionBundle("", currentSourcedDefinitions)
-    }
-
     private fun computeDefinitionsRecur(
         pkgName: String, processedPackages: MutableSet<String> // to prevent loops
     ): LibDefinitionBundle {
         if (pkgName.isEmpty()) {
-            return getDefaultLibBundle()
+            return baseLibBundle
         }
         getTimedValue(pkgName)?.takeIf { it.isNotExpired(expirationInMs) }?.let { return it.value }
         if (!processedPackages.add(pkgName)) {
@@ -662,6 +649,26 @@ class PackageDefinitionService(
 
         val countOfBuilds = AtomicInteger(0)
         val totalBuildTime = AtomicLong(0)
+
+        val baseLibBundle: LibDefinitionBundle by lazy {
+            // return the hard-coded basic commands
+            val currentSourcedDefinitions = mutableMapOf<String, SourcedDefinition>()
+            processPredefinedCommandsAndEnvironments("", currentSourcedDefinitions)
+            // overwrite the definitions with the primitive commands
+            PredefinedBasicCommands.primitives.forEach {
+                currentSourcedDefinitions[it.name] = SourcedCmdDefinition(it, null, DefinitionSource.Primitive)
+            }
+            LibDefinitionBundle("", currentSourcedDefinitions)
+        }
+
+        private fun processPredefinedCommandsAndEnvironments(name: String, defMap: MutableMap<String, SourcedDefinition>) {
+            AllPredefinedCommands.packageToCommands[name]?.forEach { command ->
+                defMap[command.name] = SourcedCmdDefinition(command, null, DefinitionSource.Predefined)
+            }
+            AllPredefinedEnvironments.packageToEnvironments[name]?.forEach { env ->
+                defMap[env.name] = SourcedEnvDefinition(env, null, DefinitionSource.Predefined)
+            }
+        }
     }
 }
 
@@ -712,9 +719,10 @@ class LatexDefinitionService(
         return getOrComputeNow(fileset, expirationInMs)
     }
 
-    fun getFilesetBundles(v: VirtualFile): List<DefinitionBundle> {
-        val filesetData = LatexProjectStructure.getFilesetDataFor(v, project) ?: return emptyList()
-        return filesetData.filesets.map { getFilesetBundle(it) }
+    fun getFilesetBundlesMerged(v: VirtualFile): DefinitionBundle {
+        val filesetData = LatexProjectStructure.getFilesetDataFor(v, project) ?: return PackageDefinitionService.baseLibBundle
+        if (filesetData.filesets.size == 1) return getFilesetBundle(filesetData.filesets.first())
+        return union(filesetData.filesets.map { getFilesetBundle(it) })
     }
 
     fun resolveCommandDef(v: VirtualFile, commandName: String): SourcedCmdDefinition? {
@@ -739,7 +747,6 @@ class LatexDefinitionService(
         }
     }
 
-
     companion object {
         fun getInstance(project: Project): LatexDefinitionService {
             return project.service()
@@ -762,6 +769,11 @@ class LatexDefinitionService(
             return AllPredefinedEnvironments.simpleNameLookup[envName]?.let { env ->
                 SourcedEnvDefinition(env, null, DefinitionSource.Predefined)
             }
+        }
+
+        fun union(list: List<DefinitionBundle>): DefinitionBundle {
+            if (list.size == 1) return list[0]
+            return CompositeDefinitionBundle(directDependencies = list)
         }
     }
 }

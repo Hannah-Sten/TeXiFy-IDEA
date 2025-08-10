@@ -14,9 +14,14 @@ import com.intellij.util.ProcessingContext
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.completion.handlers.LatexCommandArgumentInsertHandler
 import nl.hannahsten.texifyidea.completion.handlers.LatexCommandInsertHandler
+import nl.hannahsten.texifyidea.completion.handlers.NewLatexCommandInsertHandler
+import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
+import nl.hannahsten.texifyidea.index.SourcedCmdDefinition
 import nl.hannahsten.texifyidea.lang.Dependend
+import nl.hannahsten.texifyidea.lang.LArgument
+import nl.hannahsten.texifyidea.lang.LSemanticCommand
 import nl.hannahsten.texifyidea.lang.commands.Argument
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexMathCommand
@@ -172,5 +177,78 @@ object LatexMathCommandCompletionProvider : LatexCommandCompletionProviderBase()
 
         // This lookup advertisement is added only for math commands
         result.addLookupAdvertisement("Don't use \\\\ outside of tabular or math mode, it's evil.")
+    }
+}
+
+object LatexContextAwareCommandCompletionProvider : CompletionProvider<CompletionParameters>() {
+
+    override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
+        val project = parameters.editor.project ?: return
+        val file = parameters.originalFile
+        val virtualFile = file.virtualFile ?: return
+        val defBundle = LatexDefinitionService.getInstance(project).getFilesetBundlesMerged(virtualFile)
+        val element = parameters.position
+        val isClassOrStyleFile = file.isClassFile() || file.isStyleFile()
+        val contexts = LatexPsiUtil.resolveContextUpward(element, defBundle)
+        val allDefinitions = defBundle.sourcedDefinitions()
+        val lookupElements = mutableListOf<LookupElementBuilder>()
+        for (sd in allDefinitions) {
+            if (sd !is SourcedCmdDefinition) continue
+            val cmd = sd.entity
+            if(!isClassOrStyleFile && cmd.name.contains('@')) {
+                // skip internal commands for regular files
+                continue
+            }
+            if(!contexts.containsAll(cmd.requiredContext)) continue
+            appendCommandLookupElements(cmd, lookupElements)
+        }
+        result.addAllElements(lookupElements)
+        result.addLookupAdvertisement("Experimental feature: context-aware command completion.")
+    }
+
+    fun createInsertHandler(semantics: LSemanticCommand): InsertHandler<LookupElement> {
+        return NewLatexCommandInsertHandler(semantics)
+    }
+
+    private fun packageName(name: String): String {
+        return if (name.isEmpty()) "" else " ($name)"
+    }
+
+    private fun appendCommandLookupElements(cmd: LSemanticCommand, result: MutableCollection<LookupElementBuilder>) {
+        cmd.arguments.optionalPowerSet().forEachIndexed { index, args ->
+            // Add spaces to the lookup text to distinguish different versions of commands within the same package (optional parameters).
+            // Add the package name to the lookup text so we can distinguish between the same commands that come from different packages.
+            // This 'extra' text will be automatically inserted by intellij and is removed by the LatexCommandArgumentInsertHandler after insertion.
+            val default = cmd.dependency == ""
+            val l = LookupElementBuilder.create(cmd, cmd.nameWithSlash + " ".repeat(index + default.not().int) + cmd.dependency)
+                .withPresentableText(cmd.nameWithSlash)
+                .bold()
+                .withTailText(args.joinToString("") + " " + packageName(cmd.dependency), true)
+                .withTypeText(cmd.display)
+                .withInsertHandler(createInsertHandler(cmd))
+                .withIcon(TexifyIcons.DOT_COMMAND)
+            result.add(l)
+        }
+    }
+
+    private fun List<LArgument>.optionalPowerSet(): List<List<LArgument>> {
+        if (this.isEmpty()) {
+            return listOf(emptyList())
+        }
+        if (this.all { it.isRequired }) {
+            return listOf(this.toList())
+        }
+        var result = listOf<MutableList<LArgument>>(mutableListOf())
+        for (arg in this) {
+            if (arg.isRequired) {
+                result.forEach { it.add(arg) }
+            }
+            else {
+                val noAdd = result.map { it.toMutableList() }
+                result.forEach { it.add(arg) }
+                result = result + noAdd
+            }
+        }
+        return result
     }
 }
