@@ -223,39 +223,42 @@ class TableHtmlToLatexConverter : HtmlToLatexConverter {
             for (r in 0 until headerRowCount) {
                 var c = 0
                 val parts = mutableListOf<String>()
-                val spans = mutableListOf<Pair<Int, Int>>() // 1-based [start, end] for cmidrule
+                val spans = mutableListOf<Pair<Int, Int>>() // 1-based [start, end] for \cmidrule
 
                 while (c < width) {
                     val cell = grid[r][c]
-                    // Determine span width across this row for equal cell references
+                    // horizontal span: same cell repeated to the right
                     var span = 1
                     while (c + span < width && grid[r][c + span] === cell) span++
 
-                    val content = cell.toLatex().trim()
-                    val piece = if (span > 1) {
-                        "\\multicolumn{$span}{c}{$content}"
-                    } else content
+                    val fromAbove = (r > 0) && (grid[r - 1][c] === cell)     // vertically continued
+                    val toBelow   = (r + 1 < height) && (grid[r + 1][c] === cell)
+
+                    val content = if (fromAbove) "" else cell.toLatex().trim()
+
+                    val piece = when {
+                        span > 1 && content.isNotEmpty() -> "\\multicolumn{$span}{c}{$content}"
+                        span > 1 && content.isEmpty()    -> "\\multicolumn{$span}{c}{}" // occupy columns but print nothing
+                        span == 1 && content.isEmpty()   -> "{}"                        // blank cell
+                        else                              -> content
+                    }
                     parts.add(piece)
 
-                    // Only add cmidrule if this cell is not vertically merged into next row
-                    if (span > 1) {
-                        val verticallyMerged =
-                            (r + 1 < height) && (grid[r + 1][c] === cell)
-                        if (!verticallyMerged) {
-                            val start = c + 1 // LaTeX is 1-based
-                            val end = c + span
-                            spans.add(start to end)
-                        }
+                    // \cmidrule only for header blocks that (a) span multiple cols, (b) are not fromAbove,
+                    // and (c) are not vertically merged downward (i.e., this row is the place to draw the rule)
+                    if (span > 1 && !fromAbove && !toBelow) {
+                        val start = c + 1  // LaTeX columns are 1-based
+                        val end = c + span
+                        spans.add(start to end)
                     }
 
                     c += span
                 }
 
-                // Output the current header row
                 append(parts.joinToString(" & "))
                 append(" \\\\\n")
 
-                // Output cmidrule for this header row if not the last header row
+                // draw rules only if there is a deeper header row
                 if (r < headerRowCount - 1 && spans.isNotEmpty()) {
                     val rules = spans.joinToString(" ") { (s, e) -> "\\cmidrule(lr){$s-$e}" }
                     append(rules).append("\n")
