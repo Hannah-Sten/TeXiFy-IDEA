@@ -247,7 +247,7 @@ class TableHtmlToLatexConverter : HtmlToLatexConverter {
                     // \cmidrule only for header blocks that (a) span multiple cols, (b) are not fromAbove,
                     // and (c) are not vertically merged downward (i.e., this row is the place to draw the rule)
                     if (span > 1 && !fromAbove && !toBelow) {
-                        val start = c + 1  // LaTeX columns are 1-based
+                        val start = c + 1 // LaTeX columns are 1-based
                         val end = c + span
                         spans.add(start to end)
                     }
