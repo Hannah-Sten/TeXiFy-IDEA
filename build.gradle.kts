@@ -5,6 +5,7 @@ import org.jetbrains.changelog.Changelog
 import org.jetbrains.grammarkit.tasks.GenerateLexerTask
 import org.jetbrains.grammarkit.tasks.GenerateParserTask
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 fun properties(key: String) = project.findProperty(key).toString()
 
@@ -60,12 +61,16 @@ sourceSets {
     }
 }
 
+val targetVersion = "21"
+
 // Java target version
-java.sourceCompatibility = JavaVersion.VERSION_21
+java.sourceCompatibility = JavaVersion.toVersion(targetVersion)
+val kotlinJvmTarget = JvmTarget.fromTarget(targetVersion)
 
 // Specify the right jvm target for Kotlin
 tasks.compileKotlin {
     compilerOptions {
+        jvmTarget.set(kotlinJvmTarget)
         freeCompilerArgs = listOf("-Xjvm-default=all")
     }
 }
@@ -73,6 +78,7 @@ tasks.compileKotlin {
 // Same for Kotlin tests
 tasks.compileTestKotlin {
     compilerOptions {
+        jvmTarget.set(kotlinJvmTarget)
         freeCompilerArgs = listOf("-Xjvm-default=all")
     }
 }
