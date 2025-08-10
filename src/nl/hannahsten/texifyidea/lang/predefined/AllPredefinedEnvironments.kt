@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.lang.predefined
 import nl.hannahsten.texifyidea.lang.LatexContextIntro
 import nl.hannahsten.texifyidea.lang.LSemanticEnv
 import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.lang.LatexContexts.Literal
 import nl.hannahsten.texifyidea.lang.LatexContexts.Math
 import nl.hannahsten.texifyidea.lang.PredefinedEnvironmentSet
 
@@ -83,16 +84,20 @@ object AllPredefinedEnvironments : PredefinedEnvironmentSet() {
     val amsmathEnv = buildEnvironments {
         packageOf("amsmath")
 
-        "equation".env(Math) { "A numbered equation." }
-        "equation*".env(Math) { "An unnumbered equation." }
-        "align".env(Math) { "A set of aligned equations." }
-        "align*".env(Math) { "A set of aligned equations without numbering." }
-        "gather".env(Math) { "A set of equations, centered." }
-        "gather*".env(Math) { "A set of equations, centered, without numbering." }
-        "multline".env(Math) { "A long equation that spans multiple lines." }
-        "multline*".env(Math) { "A long equation that spans multiple lines, without numbering." }
-        "flalign".env(Math) { "A set of equations, left and right aligned." }
-        "flalign*".env(Math) { "A set of equations, left and right aligned, without numbering." }
+        underContext(LatexContexts.Text) {
+            "equation".env(Math) { "A numbered equation." }
+            "equation*".env(Math) { "An unnumbered equation." }
+            "align".env(Math) { "A set of aligned equations." }
+            "align*".env(Math) { "A set of aligned equations without numbering." }
+            "gather".env(Math) { "A set of equations, centered." }
+            "gather*".env(Math) { "A set of equations, centered, without numbering." }
+            "multline".env(Math) { "A long equation that spans multiple lines." }
+            "multline*".env(Math) { "A long equation that spans multiple lines, without numbering." }
+            "flalign".env(Math) { "A set of equations, left and right aligned." }
+            "flalign*".env(Math) { "A set of equations, left and right aligned, without numbering." }
+        }
+
+
 
         underContext(Math) {
             +"Bmatrix"
@@ -177,38 +182,37 @@ object AllPredefinedEnvironments : PredefinedEnvironmentSet() {
     }
 
     val figuresAndTable = buildEnvironments {
-        val placement = "placement".optional(LatexContexts.Literal)
+        val placement = "placement".optional(Literal)
         "figure".env(LatexContexts.Figure, placement) {
             "A figure environment."
         }
         "figure*".env(LatexContexts.Figure, placement)
 
-        "table".env(LatexContexts.Table, placement) {
+        "table".env(+LatexContexts.Table, placement) {
             "A table environment."
         }
-        "table*".env(LatexContexts.Table, placement)
+        "table*".env(+LatexContexts.Table, placement)
 
-        val cols = "cols".required(LatexContexts.Literal)
-        val pos = "pos".optional(LatexContexts.Literal)
-        val width = "width".optional(LatexContexts.Literal)
-        "tabular".env(LatexContexts.Table, pos, cols) {
+        val cols = "cols".required(Literal)
+        val pos = "pos".optional(Literal)
+        val width = "width".optional(Literal)
+        "tabular".env(+LatexContexts.Tabular, pos, cols) {
             "A basic table."
         }
-
-        "tabular*".env(LatexContexts.Table, width, pos, cols)
-        "tabularx".env(LatexContexts.Table, width, cols)
-        "tabulary".env(LatexContexts.Table, "length".required(LatexContexts.Literal), "pream".optional(LatexContexts.Literal))
+        "tabular*".env(+LatexContexts.Tabular, width, pos, cols)
+        "tabularx".env(+LatexContexts.Tabular, width, cols)
+        "tabulary".env(+LatexContexts.Tabular, "length".required(Literal), "pream".optional(Literal))
         "longtable".env(LatexContexts.Table, cols)
 
         underPackage("tabularray") {
-            "longtblr".env(LatexContexts.Table, "outer".optional, "inner".required)
-            "talltblr".env(LatexContexts.Table, "outer".optional, "inner".required)
-            "tblr".env(LatexContexts.Table, "outer".optional, "inner".required)
+            "longtblr".env(+LatexContexts.Table, "outer".optional, "inner".required)
+            "talltblr".env(+LatexContexts.Table, "outer".optional, "inner".required)
+            "tblr".env(+LatexContexts.Table, "outer".optional, "inner".required)
         }
     }
 
     val formatting = buildEnvironments {
-        "minipage".env(LatexContexts.Text, "position".optional(LatexContexts.Literal), "width".required(LatexContexts.Literal)) {
+        "minipage".env(LatexContexts.Text, "position".optional(Literal), "width".required(Literal)) {
             "A minipage environment."
         }
     }

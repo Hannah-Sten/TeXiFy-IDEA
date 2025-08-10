@@ -346,7 +346,7 @@ object LatexPsiUtil {
         return semantics.contextSignature
     }
 
-    private val baseContext = setOf(LatexContexts.Preamble)
+    private val baseContext = setOf(LatexContexts.Preamble, LatexContexts.Text)
 
     fun resolveContextUpward(e: PsiElement, lookup: LatexSemanticLookup): LContextSet {
         var collectedContextIntro: MutableList<LatexContextIntro>? = null

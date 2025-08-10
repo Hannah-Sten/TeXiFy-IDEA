@@ -320,7 +320,7 @@ class LatexCompletionContributor : CompletionContributor() {
             .inside(LatexEnvIdentifier::class.java)
             .inside(PlatformPatterns.or(PlatformPatterns.psiElement(LatexBeginCommand::class.java), PlatformPatterns.psiElement(LatexEndCommand::class.java)))
             .withLanguage(LatexLanguage),
-        LatexEnvironmentCompletionProvider
+        LatexContextAwareEnvironmentCompletionProvider
     )
 
     /**

@@ -8,6 +8,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectFileIndex
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.SmartPointerManager
 import com.intellij.psi.SmartPsiElementPointer
@@ -719,8 +720,8 @@ class LatexDefinitionService(
         return getOrComputeNow(fileset, expirationInMs)
     }
 
-    fun getFilesetBundlesMerged(v: VirtualFile): DefinitionBundle {
-        val filesetData = LatexProjectStructure.getFilesetDataFor(v, project) ?: return PackageDefinitionService.baseLibBundle
+    fun getFilesetBundlesMerged(psiFile : PsiFile): DefinitionBundle {
+        val filesetData = LatexProjectStructure.getFilesetDataFor(psiFile) ?: return PackageDefinitionService.baseLibBundle
         if (filesetData.filesets.size == 1) return getFilesetBundle(filesetData.filesets.first())
         return union(filesetData.filesets.map { getFilesetBundle(it) })
     }
