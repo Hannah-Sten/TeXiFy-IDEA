@@ -134,5 +134,7 @@ object LatexContexts {
      */
     val Tabular = LatexContextBase("tabular")
 
+    val Alignable = LatexContextBase("alignable")
+
     val Comment = LatexContextBase("comment")
 }

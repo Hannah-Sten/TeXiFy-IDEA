@@ -334,7 +334,6 @@ object LatexDefinitionUtil {
     private val parameterPlaceholderRegex = Regex("#[1-9]")
 
     private fun guessArgumentContextIntroAndExitState(codeElement: PsiElement, argCount: Int, lookup: LatexSemanticLookup): Pair<List<LatexContextIntro>, List<LatexContextIntro>> {
-        if (argCount <= 0) return emptyList<LatexContextIntro>() to emptyList()
         val contextIntroList = Array(argCount) { LatexContextIntro.inherit() }
         val exitState = LatexPsiUtil.traverseRecordingContextIntro(codeElement, lookup) traverse@{ e, introList ->
             if (e.elementType != LatexTypes.NORMAL_TEXT_WORD) return@traverse

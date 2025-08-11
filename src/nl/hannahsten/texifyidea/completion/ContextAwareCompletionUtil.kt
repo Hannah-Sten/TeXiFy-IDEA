@@ -6,7 +6,6 @@ import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.util.ProcessingContext
 import nl.hannahsten.texifyidea.index.DefinitionBundle
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
-import nl.hannahsten.texifyidea.lang.Dependend
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LSemanticEntity
 import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
@@ -24,7 +23,7 @@ abstract class LatexContextAwareCompletionProvider : CompletionProvider<Completi
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
         val project = parameters.editor.project ?: return
         val file = parameters.originalFile
-        val defBundle = LatexDefinitionService.getInstance(project).getFilesetBundlesMerged(file)
+        val defBundle = LatexDefinitionService.getInstance(project).getDefBundlesMerged(file)
         val contexts = LatexPsiUtil.resolveContextUpward(parameters.position, defBundle)
         addContextAwareCompletions(parameters, contexts, defBundle, context, result)
         // Add a message to the user that this is an experimental feature.

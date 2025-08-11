@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.lang.predefined
 import nl.hannahsten.texifyidea.lang.LatexContextIntro
 import nl.hannahsten.texifyidea.lang.LSemanticEnv
 import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.lang.LatexContexts.Alignable
 import nl.hannahsten.texifyidea.lang.LatexContexts.Literal
 import nl.hannahsten.texifyidea.lang.LatexContexts.Math
 import nl.hannahsten.texifyidea.lang.PredefinedEnvironmentSet
@@ -64,8 +65,9 @@ object AllPredefinedEnvironments : PredefinedEnvironmentSet() {
         "math".env(Math) { "Inline math mode." }
         "displaymath".env(Math) { "Display math mode." }
 
-        "eqnarray".env(Math) { "A set of aligned equations, similar to `align`." }
-        "eqnarray*".env(Math) { "A set of aligned equations, similar to `align*`." }
+        val alignableMath = setOf(Math, Alignable)
+        "eqnarray".env(alignableMath) { "A set of aligned equations, similar to `align`." }
+        "eqnarray*".env(alignableMath) { "A set of aligned equations, similar to `align*`." }
     }
 
     val basicUnderMath = buildEnvironments {
@@ -84,11 +86,13 @@ object AllPredefinedEnvironments : PredefinedEnvironmentSet() {
     val amsmathEnv = buildEnvironments {
         packageOf("amsmath")
 
+        val alignableMath = setOf(Math, Alignable)
+
         underContext(LatexContexts.Text) {
             "equation".env(Math) { "A numbered equation." }
             "equation*".env(Math) { "An unnumbered equation." }
-            "align".env(Math) { "A set of aligned equations." }
-            "align*".env(Math) { "A set of aligned equations without numbering." }
+            "align".env(alignableMath) { "A set of aligned equations." }
+            "align*".env(alignableMath) { "A set of aligned equations without numbering." }
             "gather".env(Math) { "A set of equations, centered." }
             "gather*".env(Math) { "A set of equations, centered, without numbering." }
             "multline".env(Math) { "A long equation that spans multiple lines." }
@@ -100,48 +104,31 @@ object AllPredefinedEnvironments : PredefinedEnvironmentSet() {
 
 
         underContext(Math) {
-            +"Bmatrix"
-            +"Vmatrix"
-            +"alignat"
-            +"alignat*"
-            +"aligned"
-            +"alignedat"
-            +"bmatrix"
-            +"cases"
+            val alignableEnvList = listOf(
+                "alignat", "alignat*", "aligned", "alignedat", "xalignat", "xalignat*", "xxalignat",
+                "cases",
+                "Bmatrix", "Vmatrix", "bmatrix", "matrix", "pmatrix", "smallmatrix", "vmatrix",
+                "split", "subarray", "subequations",
+            )
+            alignableEnvList.forEach { envName ->
+                envName.env(alignableMath)
+            }
             +"gathered"
-            +"matrix"
-            +"pmatrix"
-            +"smallmatrix"
-            +"split"
-            +"subarray"
-            +"subequations"
-            +"vmatrix"
-            +"xalignat"
-            +"xalignat*"
-            +"xxalignat"
         }
     }
 
     val mathtoolsUnderMath = buildEnvironments {
         packageOf("mathtools")
+        val alignableMath = setOf(Math, Alignable)
         underContext(Math) {
-            +"Bmatrix*"
-            +"Bsmallmatrix"
-            +"Bsmallmatrix*"
-            +"Vmatrix*"
-            +"Vsmallmatrix"
-            +"Vsmallmatrix*"
-            +"bmatrix*"
-            +"bsmallmatrix"
-            +"bsmallmatrix*"
-            +"matrix*"
-            +"pmatrix*"
-            +"psmallmatrix"
-            +"psmallmatrix*"
-            +"smallmatrix*"
-            +"vmatrix*"
-            +"vsmallmatrix"
-            +"vsmallmatrix*"
+            val moreMatrices = listOf(
+                "Bmatrix*", "Bsmallmatrix", "Bsmallmatrix*", "Vmatrix*", "Vsmallmatrix", "Vsmallmatrix*",
+                "bmatrix*", "bsmallmatrix", "bsmallmatrix*", "matrix*", "pmatrix*", "psmallmatrix",
+                "psmallmatrix*", "smallmatrix*", "vmatrix*", "vsmallmatrix", "vsmallmatrix*"
+            )
+            moreMatrices.forEach { envName ->
+                envName.env(alignableMath)
+            }
         }
     }
 

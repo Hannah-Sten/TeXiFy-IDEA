@@ -6,6 +6,7 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.PsiUtil
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.Environment
+import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.psi.LatexCommandWithParams
 import kotlin.reflect.KClass
@@ -99,21 +100,13 @@ fun PsiElement.textRangeInAncestor(ancestor: PsiElement): TextRange? {
 }
 
 /**
- * Checks if the psi element is in math mode or not.
+ * Checks if the psi element is in math mode or not using **advanced context resolution**.
  *
- * **This function is slow as it checks all parents of the psi element.**
  *
  * @return `true` when the element is in math mode, `false` when the element is in no math mode.
  */
 fun PsiElement.inMathContext(): Boolean {
-    traverseParents {
-        if (it is LatexMathEnvMarker) return true
-        if (it is LatexEnvironment) {
-            // TODO: make it possible to check if the environment QUITs math mode
-            if (DefaultEnvironment.fromPsi(it)?.context == Environment.Context.MATH) return true
-        }
-    }
-    return false
+    return LatexPsiUtil.resolveContextUpward(this).contains(LatexContexts.Math)
 }
 
 /**

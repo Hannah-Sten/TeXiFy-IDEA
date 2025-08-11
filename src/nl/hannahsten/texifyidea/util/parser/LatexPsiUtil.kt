@@ -5,6 +5,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiRecursiveElementVisitor
 import nl.hannahsten.texifyidea.file.LatexFile
+import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
 import nl.hannahsten.texifyidea.index.stub.LatexParameterStub
@@ -347,6 +348,13 @@ object LatexPsiUtil {
     }
 
     private val baseContext = setOf(LatexContexts.Preamble, LatexContexts.Text)
+
+
+    fun resolveContextUpward(e: PsiElement): LContextSet {
+        val file = e.containingFile
+        val lookup = LatexDefinitionService.getInstance(file.project).getDefBundlesMerged(file)
+        return resolveContextUpward(e, lookup)
+    }
 
     fun resolveContextUpward(e: PsiElement, lookup: LatexSemanticLookup): LContextSet {
         var collectedContextIntro: MutableList<LatexContextIntro>? = null

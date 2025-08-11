@@ -165,46 +165,45 @@ class DSLLatexEnvironmentBuilderScope : AbstractDSLLatexBuilderScope() {
         return environments
     }
 
-    fun String.env(
-        context: LatexContextIntro,
-        vararg arguments: LArgument,
-        desc: String = "",
+    fun environment(
+        name: String, context: LatexContextIntro,
+        arguments: List<LArgument>, description: String
     ): LSemanticEnv {
-        val name = this
         val environment = LSemanticEnv(
             name = name,
             namespace = namespace,
             contextSignature = context,
-            arguments = arguments.toList(),
-            description = desc,
+            arguments = arguments,
+            description = description,
             requiredContext = requiredContext,
         )
         environments.add(environment)
         return environment
     }
 
-    fun String.env(
+
+    inline fun String.env(
+        context: LatexContextIntro,
+        vararg arguments: LArgument,
+        desc: () -> String = { "" }
+    ): LSemanticEnv {
+        return environment(this, context, arguments.toList(), description = desc())
+    }
+
+    inline fun String.env(
         context: LatexContext,
         vararg arguments: LArgument,
-        desc: String = "",
+        desc: () -> String = { "" }
     ): LSemanticEnv {
         return env(LAssignContext(context), *arguments, desc = desc)
     }
 
     inline fun String.env(
-        context: LatexContextIntro = LatexContextIntro.inherit(),
+        context: LContextSet,
         vararg arguments: LArgument,
-        desc: () -> String,
+        desc: () -> String = { "" }
     ): LSemanticEnv {
-        return env(context, *arguments, desc = desc())
-    }
-
-    inline fun String.env(
-        context: LatexContext,
-        vararg arguments: LArgument,
-        desc: () -> String,
-    ): LSemanticEnv {
-        return env(LAssignContext(context), *arguments, desc = desc())
+        return env(LAssignContext(context), *arguments, desc = desc)
     }
 
     operator fun String.unaryPlus(): LSemanticEnv {

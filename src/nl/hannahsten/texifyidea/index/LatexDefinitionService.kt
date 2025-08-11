@@ -359,14 +359,14 @@ class LatexDefinitionService(
         return bundle
     }
 
-    fun getFilesetBundle(fileset: Fileset): DefinitionBundle {
+    fun getDefBundleForFileset(fileset: Fileset): DefinitionBundle {
         return getOrComputeNow(fileset, expirationInMs)
     }
 
-    fun getFilesetBundlesMerged(psiFile: PsiFile): DefinitionBundle {
+    fun getDefBundlesMerged(psiFile: PsiFile): DefinitionBundle {
         val filesetData = LatexProjectStructure.getFilesetDataFor(psiFile) ?: return PackageDefinitionService.baseLibBundle
-        if (filesetData.filesets.size == 1) return getFilesetBundle(filesetData.filesets.first())
-        return union(filesetData.filesets.map { getFilesetBundle(it) })
+        if (filesetData.filesets.size == 1) return getDefBundleForFileset(filesetData.filesets.first())
+        return union(filesetData.filesets.map { getDefBundleForFileset(it) })
     }
 
     fun resolveCommandDef(v: VirtualFile, commandName: String): SourcedCmdDefinition? {
@@ -380,14 +380,14 @@ class LatexDefinitionService(
     fun resolveDef(v: VirtualFile, name: String): SourcedDefinition? {
         val filesetData = LatexProjectStructure.getFilesetDataFor(v, project) ?: return resolvePredefinedDef(name)
         return filesetData.filesets.firstNotNullOfOrNull {
-            getFilesetBundle(it).findDefinition(name)
+            getDefBundleForFileset(it).findDefinition(name)
         }
     }
 
     fun resolveDefInProject(name: String): SourcedDefinition? {
         val pf = LatexProjectStructure.getFilesets(project) ?: return resolvePredefinedDef(name)
         return pf.filesets.firstNotNullOfOrNull {
-            getFilesetBundle(it).findDefinition(name)
+            getDefBundleForFileset(it).findDefinition(name)
         }
     }
 
