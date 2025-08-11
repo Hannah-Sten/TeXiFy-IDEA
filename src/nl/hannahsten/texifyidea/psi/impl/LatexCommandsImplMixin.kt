@@ -31,7 +31,7 @@ abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStu
     constructor(stub: LatexCommandsStub?, nodeType: IElementType?, node: ASTNode?) : super(stub, nodeType, node)
 
     override fun toString(): String {
-        return "LatexCommands($name)"
+        return "Command($name)"
     }
 
     override fun getTextOffset(): Int {

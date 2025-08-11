@@ -405,8 +405,8 @@ END_IFS=\\fi
     {BEGIN_TOKEN}       { return COMMAND_TOKEN; }
     {END_TOKEN}         { return COMMAND_TOKEN; }
     // To avoid changing state and thus tripping over the not matching group }{ in the middle, catch characters here which would otherwise change state
-    "\\["               { return DISPLAY_MATH_START; }
-    "\\]"               { return DISPLAY_MATH_END; }
+    "\\["               { return NORMAL_TEXT_WORD; }
+    "\\]"               { return NORMAL_TEXT_WORD; }
     "$"                 { return NORMAL_TEXT_WORD; }
 }
 
@@ -427,8 +427,8 @@ END_IFS=\\fi
     }
     {BEGIN_TOKEN}       { return COMMAND_TOKEN; }
     {END_TOKEN}         { return COMMAND_TOKEN; }
-    "\\["               { return DISPLAY_MATH_START; }
-    "\\]"               { return DISPLAY_MATH_END; }
+    "\\["               { return NORMAL_TEXT_WORD; }
+    "\\]"               { return NORMAL_TEXT_WORD; }
     "$"                 { return NORMAL_TEXT_WORD; }
 }
 
