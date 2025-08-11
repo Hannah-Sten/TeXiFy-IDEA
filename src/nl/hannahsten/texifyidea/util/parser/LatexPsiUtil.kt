@@ -361,7 +361,7 @@ object LatexPsiUtil {
         // see Latex.bnf
         while (true) {
             current = current.firstStrictParent { // `firstParent` is inclusive
-                it is LatexParameter || it is LatexEnvironment || it is LatexMathContent
+                it is LatexParameter || it is LatexEnvironment || it is LatexMathEnvironment
             } ?: break
             val intro = when (current) {
                 is LatexParameter -> resolveCommandParameterContext(current, lookup) ?: continue
