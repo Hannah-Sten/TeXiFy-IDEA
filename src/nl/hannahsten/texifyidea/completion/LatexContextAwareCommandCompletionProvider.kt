@@ -31,16 +31,13 @@ object LatexContextAwareCommandCompletionProvider : LatexContextAwareCompletionP
                 continue
             }
             if(!contexts.containsAll(cmd.requiredContext)) continue
-            appendCommandLookupElements(cmd, lookupElements)
+            appendCommandLookupElements(cmd, lookupElements,defBundle)
         }
         result.addAllElements(lookupElements)
     }
 
-    fun createInsertHandler(semantics: LSemanticCommand): InsertHandler<LookupElement> {
-        return NewLatexCommandInsertHandler(semantics)
-    }
 
-    private fun appendCommandLookupElements(cmd: LSemanticCommand, result: MutableCollection<LookupElementBuilder>) {
+    private fun appendCommandLookupElements(cmd: LSemanticCommand, result: MutableCollection<LookupElementBuilder>,defBundle: DefinitionBundle) {
         val default = cmd.dependency == ""
         cmd.arguments.optionalPowerSet().forEachIndexed { index, args ->
             // Add spaces to the lookup text to distinguish different versions of commands within the same package (optional parameters).
@@ -51,10 +48,14 @@ object LatexContextAwareCommandCompletionProvider : LatexContextAwareCompletionP
                 .bold()
                 .withTailText(args.joinToString("") + " " + packageName(cmd), true)
                 .withTypeText(cmd.display)
-                .withInsertHandler(createInsertHandler(cmd))
+                .withInsertHandler(createInsertHandler(cmd,defBundle))
                 .withIcon(TexifyIcons.DOT_COMMAND)
             result.add(l)
         }
+    }
+
+    fun createInsertHandler(semantics: LSemanticCommand, defBundle: DefinitionBundle): InsertHandler<LookupElement> {
+        return NewLatexCommandInsertHandler(semantics, defBundle)
     }
 
     private fun List<LArgument>.optionalPowerSet(): List<List<LArgument>> {

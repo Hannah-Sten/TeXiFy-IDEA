@@ -9,8 +9,11 @@ import com.intellij.codeInsight.template.TemplateManager
 import com.intellij.codeInsight.template.impl.TemplateImpl
 import com.intellij.codeInsight.template.impl.TemplateState
 import com.intellij.codeInsight.template.impl.TextExpression
+import nl.hannahsten.texifyidea.index.DefinitionBundle
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.lang.LSemanticCommand
+import nl.hannahsten.texifyidea.lang.LSemanticEnv
+import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.Argument
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
@@ -153,8 +156,7 @@ class LatexCommandInsertHandler(val arguments: List<Argument>? = null) : InsertH
 /**
  * @author Hannah Schellekens, Sten Wessel
  */
-class NewLatexCommandInsertHandler(val semantics: LSemanticCommand) : InsertHandler<LookupElement> {
-
+class NewLatexCommandInsertHandler(val semantics: LSemanticCommand, val definitionBundle: DefinitionBundle) : InsertHandler<LookupElement> {
     override fun handleInsert(context: InsertionContext, item: LookupElement) {
         removeWhiteSpaces(context)
         when (semantics.name) {
@@ -163,7 +165,7 @@ class NewLatexCommandInsertHandler(val semantics: LSemanticCommand) : InsertHand
             }
 
             in TypographyMagic.pseudoCodeBeginEndOpposites -> {
-                insertPseudocodeEnd(semantics.name, context)
+                insertPseudocodeEnd(semantics, context)
             }
 
             else -> {
@@ -171,19 +173,16 @@ class NewLatexCommandInsertHandler(val semantics: LSemanticCommand) : InsertHand
             }
         }
 
-        RightInsertHandler().handleInsert(context, item)
-
+        SemanticRightInsertHandler.handleInsert(context, item, semantics)
         // TODO: now automatic package inclusion is disabled as we only show command that are already included in packages.
     }
 
-    private fun insertPseudocodeEnd(name: String, context: InsertionContext) {
-        val numberRequiredArguments = LatexCommand.lookup(name)
-            ?.first()?.arguments
-            ?.count { it is RequiredArgument } ?: 0
+    private fun insertPseudocodeEnd(cmd: LSemanticCommand, context: InsertionContext) {
+        val numberRequiredArguments = cmd.arguments.count { it.isRequired }
 
         val templateText = List(numberRequiredArguments) {
             "{\$__Variable${it}\$}"
-        }.joinToString("") + "\n\$END\$\n\\${TypographyMagic.pseudoCodeBeginEndOpposites[name]}"
+        }.joinToString("") + "\n\$END\$\n\\${TypographyMagic.pseudoCodeBeginEndOpposites[cmd.name]}"
         val parameterTemplate = object : TemplateImpl("", templateText, "") {
             override fun isToReformat(): Boolean = false
         }
@@ -204,28 +203,18 @@ class NewLatexCommandInsertHandler(val semantics: LSemanticCommand) : InsertHand
         template.addVariable(TextExpression(""), true)
 
         TemplateManager.getInstance(context.project)
-            .startTemplate(context.editor, template, EnvironmentInsertImports(context))
+            .startTemplate(context.editor, template, EnvironmentInsertImports(context, definitionBundle))
     }
 
-    /**
-     * Insert a live template for the required arguments. When there are  no required
-     * arguments, move to the content of the environment.
-     */
-    private fun insertRequiredArguments(environment: Environment?, context: InsertionContext) {
-        val numberRequiredArguments = environment?.arguments
-            ?.count { it is RequiredArgument } ?: 0
-
-        val templateText = List(numberRequiredArguments) { "{\$__Variable${it}\$}" }.joinToString("") + "\n\$END\$"
-        val parameterTemplate = object : TemplateImpl("", templateText, "") {
-            override fun isToReformat(): Boolean = true
-        }
-        repeat(numberRequiredArguments) { parameterTemplate.addVariable(TextExpression(""), true) }
-
-        TemplateManager.getInstance(context.project)
-            .startTemplate(context.editor, parameterTemplate)
-    }
 
     companion object {
+
+        val environmentInitialContentsMap = mapOf(
+            "description" to "\\item ",
+            "enumerate" to "\\item ",
+            "itemize" to "\\item ",
+        )
+
         /**
          * Remove whitespaces and everything after that that was inserted by the lookup text.
          */
@@ -239,6 +228,23 @@ class NewLatexCommandInsertHandler(val semantics: LSemanticCommand) : InsertHand
             if (indexFirstSpace == -1) return
             document.deleteString(context.startOffset + indexFirstSpace, offset)
         }
+
+        /**
+         * Insert a live template for the required arguments. When there are  no required
+         * arguments, move to the content of the environment.
+         */
+        private fun insertRequiredArguments(environment: LSemanticEnv?, context: InsertionContext) {
+            val numberRequiredArguments = environment?.arguments?.count { it.isRequired } ?: 0
+
+            val templateText = List(numberRequiredArguments) { "{\$__Variable${it}\$}" }.joinToString("") + "\n\$END\$"
+            val parameterTemplate = object : TemplateImpl("", templateText, "") {
+                override fun isToReformat(): Boolean = true
+            }
+            repeat(numberRequiredArguments) { parameterTemplate.addVariable(TextExpression(""), true) }
+
+            TemplateManager.getInstance(context.project)
+                .startTemplate(context.editor, parameterTemplate)
+        }
     }
 
     /**
@@ -246,16 +252,18 @@ class NewLatexCommandInsertHandler(val semantics: LSemanticCommand) : InsertHand
      *
      * @author Hannah Schellekens
      */
-    private inner class EnvironmentInsertImports(val context: InsertionContext) : TemplateEditingListener {
+    private class EnvironmentInsertImports(
+        val context: InsertionContext,
+        val definitionBundle: DefinitionBundle
+    ) : TemplateEditingListener {
 
         override fun beforeTemplateFinished(templateState: TemplateState, template: Template?) {
             val envName = templateState.getVariableValue("__Variable0")?.text ?: return
+            val envSemantic = definitionBundle.lookupEnv(envName)
+            insertRequiredArguments(envSemantic, context)
+            envSemantic ?: return
 
-            val environment = Environment[envName]
-            insertRequiredArguments(environment, context)
-            environment ?: return
-
-            val pack = environment.dependency
+            val pack = LatexPackage(envSemantic.dependency)
             val file = context.file
             val editor = context.editor
             val envDefinitions = file.definitionsAndRedefinitionsInFileSet().asSequence()
@@ -269,7 +277,7 @@ class NewLatexCommandInsertHandler(val semantics: LSemanticCommand) : InsertHand
             }
 
             // Add initial contents.
-            val initial = environment.initialContents
+            val initial = environmentInitialContentsMap[envName] ?: ""
             editor.insertAndMove(editor.caretModel.offset, initial)
         }
 

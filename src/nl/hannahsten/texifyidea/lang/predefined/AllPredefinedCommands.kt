@@ -14,6 +14,7 @@ object AllPredefinedCommands {
             PredefinedDefinitionCommands,
             PredefinedFileCommands,
             PredefinedMathCommands,
+            PredefinedPairedDelimiters,
             PredefinedMathSymbols,
             PredefinedTextSymbols
         ).flatMap {
