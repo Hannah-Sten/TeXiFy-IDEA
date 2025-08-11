@@ -1,11 +1,12 @@
 package nl.hannahsten.texifyidea.lang
 
-open class LatexContextBase(
+open class SimpleLatexContext(
     final override val name: String
 ) : LatexContext {
     override fun toString(): String {
         return name
     }
+
 }
 
 /**
@@ -17,7 +18,7 @@ class LFileInputContext(
     name: String,
     val isCommaSeparated: Boolean = false,
     val supportedExtensions: Set<String> = emptySet(),
-) : LatexContextBase(name), ILFileInputContext
+) : SimpleLatexContext(name), ILFileInputContext
 
 /**
  * A context that describes a literal, for example `cc` in `\begin{tabular}{cc}`.
@@ -27,68 +28,68 @@ interface LLiteralContext : LatexContext
 
 object LatexContexts {
 
-    val Math = LatexContextBase("math")
+    val Math = SimpleLatexContext("math")
 
     /**
      * Describes the context of package names, for example in `\usepackage{...}`.
      *
      * The names can be comma-separated, for example in `\usepackage{package1,package2}`.
      */
-    object PackageNames : LatexContextBase("packages"), ILFileInputContext
+    object PackageNames : SimpleLatexContext("packages"), ILFileInputContext
 
     /**
      * Describes the context of class names, for example in `\documentclass{...}`.
      */
-    object ClassName : LatexContextBase("class"), ILFileInputContext
+    object ClassName : SimpleLatexContext("class"), ILFileInputContext
 
-    val Preamble = LatexContextBase("preamble")
+    val Preamble = SimpleLatexContext("preamble")
 
     /**
      * This context should never be introduced, so command under this context will never be suggested.
      */
-    val Nothing = LatexContextBase("nothing")
+    val Nothing = SimpleLatexContext("nothing")
 
-    val LabelDefinition = LatexContextBase("label.def")
-    val LabelReference = LatexContextBase("label.ref")
+    val LabelDefinition = SimpleLatexContext("label.def")
+    val LabelReference = SimpleLatexContext("label.ref")
 
     /**
      * An identifier that is used in a command definition, such as `\mycmd` in `\newcommand{\mycmd}{...}`.
      */
-    val CommandDeclaration = LatexContextBase("def.command")
+    val CommandDeclaration = SimpleLatexContext("def.command")
 
     /**
      * An identifier that is used in an environment definition, such as `myenv` in `\newenvironment{myenv}{...}{...}`.
      */
-    val EnvironmentDeclaration = LatexContextBase("def.environment")
+    val EnvironmentDeclaration = SimpleLatexContext("def.environment")
 
     /**
      * The definition of a command, such as `...` in `\newcommand{\mycmd}{...}`.
      */
-    val InsideDefinition = LatexContextBase("definition")
+    val InsideDefinition = SimpleLatexContext("definition")
 
     /**
      * An identifier, such as a command name without slash or environment name.
      *
      * Used in `\begin{...}`.
      */
-    val Identifier = LatexContextBase("identifier")
+    val Identifier = SimpleLatexContext("identifier")
 
     /**
      * Some string literal that may be meaningful, such as `cc` in `\begin{tabular}{cc}`.
      */
-    val Literal = LatexContextBase("literal")
+    val Literal = SimpleLatexContext("literal")
 
     /**
      * Plain text content, such as in `\text{...}`.
      */
-    val Text = LatexContextBase("text")
+    val Text = SimpleLatexContext("text")
 
     /**
      * A number is expected, for example in `\setcounter{...}{...}`.
      */
-    val Numeric = LatexContextBase("numeric")
+    val Numeric = SimpleLatexContext("numeric")
 
-    val ListType = LatexContextBase("list.type")
+    val ListType = SimpleLatexContext("list.type")
 
     val SingleFile = LFileInputContext(
         "file.general", isCommaSeparated = false, supportedExtensions = emptySet(),
@@ -111,30 +112,30 @@ object LatexContexts {
         "files.bib", isCommaSeparated = true, supportedExtensions = setOf("bib"),
     )
 
-    object Folder : LatexContextBase("folder"), ILFileInputContext
+    object Folder : SimpleLatexContext("folder"), ILFileInputContext
 
-    object BibtexKey : LatexContextBase("bibtex.key"), ILFileInputContext
+    object BibtexKey : SimpleLatexContext("bibtex.key"), ILFileInputContext
 
-    val BibStyle = LatexContextBase("style")
+    val BibStyle = SimpleLatexContext("style")
 
     val URL = LFileInputContext("url")
 
-    val Algorithmicx = LatexContextBase("algorithmicx")
+    val Algorithmicx = SimpleLatexContext("algorithmicx")
 
-    val MintedFuntimeLand = LatexContextBase("minted.funtime.land")
+    val MintedFuntimeLand = SimpleLatexContext("minted.funtime.land")
 
     // environment contexts
 
-    val Enumerate = LatexContextBase("env.enumerate")
-    val Figure = LatexContextBase("env.figure")
-    val Table = LatexContextBase("env.table")
+    val Enumerate = SimpleLatexContext("env.enumerate")
+    val Figure = SimpleLatexContext("env.figure")
+    val Table = SimpleLatexContext("env.table")
 
     /**
      * A context inside tabular environment, where `&` is valid.
      */
-    val Tabular = LatexContextBase("tabular")
+    val Tabular = SimpleLatexContext("tabular")
 
-    val Alignable = LatexContextBase("alignable")
+    val Alignable = SimpleLatexContext("alignable")
 
-    val Comment = LatexContextBase("comment")
+    val Comment = SimpleLatexContext("comment")
 }

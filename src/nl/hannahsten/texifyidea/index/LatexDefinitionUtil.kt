@@ -20,7 +20,7 @@ import nl.hannahsten.texifyidea.lang.LSemanticEnv
 import nl.hannahsten.texifyidea.lang.LatexContext
 import nl.hannahsten.texifyidea.lang.LatexContextIntro
 import nl.hannahsten.texifyidea.lang.LatexContexts
-import nl.hannahsten.texifyidea.lang.LatexSemanticLookup
+import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.lang.predefined.PredefinedDefinitionCommands
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexContent
@@ -155,7 +155,7 @@ object LatexDefinitionUtil {
      *
      * We only process regular command definitions
      */
-    fun collectCustomDefinitions(virtualFile: VirtualFile, project: Project, lookup: LatexSemanticLookup): List<SourcedDefinition> {
+    fun collectCustomDefinitions(virtualFile: VirtualFile, project: Project, lookup: LatexSemanticsLookup): List<SourcedDefinition> {
         val psiManager = PsiManager.getInstance(project)
         val psiFile = psiManager.findFile(virtualFile) as? LatexFile ?: return emptyList()
         if (DumbService.isDumb(project)) return emptyList()
@@ -226,7 +226,7 @@ object LatexDefinitionUtil {
         PredefinedDefinitionCommands.argSpecDefinitionOfCommand.mapTo(this) { it.name }
     }
 
-    private fun parseCommandDef(defCommand: LatexCommands, lookup: LatexSemanticLookup, project: Project): LSemanticCommand? {
+    private fun parseCommandDef(defCommand: LatexCommands, lookup: LatexSemanticsLookup, project: Project): LSemanticCommand? {
         val defCmdName = defCommand.name?.removePrefix("\\") ?: return null
         return when (defCmdName) {
             in namesOfCmdDefRegular -> parseRegularCommandDef(defCommand, lookup, project)
@@ -262,7 +262,7 @@ object LatexDefinitionUtil {
         }
     }
 
-    private fun parseRegularCommandDef(defCommand: LatexCommands, lookup: LatexSemanticLookup, project: Project): LSemanticCommand? {
+    private fun parseRegularCommandDef(defCommand: LatexCommands, lookup: LatexSemanticsLookup, project: Project): LSemanticCommand? {
         // command definitions like \newcommand{\cmd}[num][default]{code}
         val contents = extractParameterTypeAndContent(defCommand)
         val declaredName = contents.getNthRequiredArg(0) ?: return null
@@ -272,7 +272,7 @@ object LatexDefinitionUtil {
         return buildCommandSemantics(project, lookup, declaredName, codeText, buildRegularArgSignature(numOfArgs, hasOptionalArgs))
     }
 
-    private fun parseArgSpecCommandDef(defCommand: LatexCommands, lookup: LatexSemanticLookup, project: Project): LSemanticCommand? {
+    private fun parseArgSpecCommandDef(defCommand: LatexCommands, lookup: LatexSemanticsLookup, project: Project): LSemanticCommand? {
         // command definitions like \NewDocumentCommand{\cmd}{args spec}{code}
         val contents = extractParameterTypeAndContent(defCommand)
         val declaredName = contents.getNthRequiredArg(0) ?: return null
@@ -282,7 +282,7 @@ object LatexDefinitionUtil {
     }
 
     private fun buildCommandSemantics(
-        project: Project, lookup: LatexSemanticLookup,
+        project: Project, lookup: LatexSemanticsLookup,
         rawName: String, codeRawText: String?, argSignature: List<LArgumentType>
     ): LSemanticCommand? {
         val name = rawName.removePrefix("\\") // remove the leading backslash
@@ -290,7 +290,7 @@ object LatexDefinitionUtil {
         val codeText = codeRawText.trim()
         if (argSignature.isEmpty() && PatternMagic.commandToken.matches(codeText)) {
             // this is an alias definition, e.g., \newcommand{\cmd}{\othercmd}
-            val originalSemantic = lookup.lookupCommand(codeText)
+            val originalSemantic = lookup.lookupCommand(codeText.removePrefix("\\"))
             if (originalSemantic != null) {
                 // use the original command semantics
                 val description = "Alias for ${originalSemantic.displayName}"
@@ -312,12 +312,12 @@ object LatexDefinitionUtil {
         return LSemanticCommand(name, "", requiredContext, arguments, description = codeText)
     }
 
-    private fun guessRequiredContext(definitionElement: PsiElement?, lookup: LatexSemanticLookup): LContextSet {
+    private fun guessRequiredContext(definitionElement: PsiElement?, lookup: LatexSemanticsLookup): LContextSet {
         definitionElement ?: return emptySet()
         val necessaryContexts = mutableSetOf<LatexContext>()
         LatexPsiUtil.traverseRecordingContextIntro(definitionElement, lookup) { e, introList ->
             val requiredContext: LContextSet? = when (e) {
-                is LatexCommands -> lookup.lookupCommand(e.name ?: "")?.requiredContext
+                is LatexCommands -> lookup.lookupCommand(e.name?.removePrefix("\\") ?: "")?.requiredContext
                 is LatexEnvironment -> lookup.lookupEnv(e.getEnvironmentName())?.requiredContext
                 else -> null
             }
@@ -332,7 +332,7 @@ object LatexDefinitionUtil {
 
     private val parameterPlaceholderRegex = Regex("#[1-9]")
 
-    private fun guessArgumentContextIntroAndExitState(codeElement: PsiElement, argCount: Int, lookup: LatexSemanticLookup): Pair<List<LatexContextIntro>, List<LatexContextIntro>> {
+    private fun guessArgumentContextIntroAndExitState(codeElement: PsiElement, argCount: Int, lookup: LatexSemanticsLookup): Pair<List<LatexContextIntro>, List<LatexContextIntro>> {
         val contextIntroList = Array(argCount) { LatexContextIntro.inherit() }
         val exitState = LatexPsiUtil.traverseRecordingContextIntro(codeElement, lookup) traverse@{ e, introList ->
             if (e.elementType != LatexTypes.NORMAL_TEXT_WORD) return@traverse
@@ -355,7 +355,7 @@ object LatexDefinitionUtil {
         PredefinedDefinitionCommands.argSpecDefinitionOfEnvironment.mapTo(this) { it.name }
     }
 
-    private fun parseEnvironmentDef(defCommand: LatexCommands, lookup: LatexSemanticLookup, project: Project): LSemanticEnv? {
+    private fun parseEnvironmentDef(defCommand: LatexCommands, lookup: LatexSemanticsLookup, project: Project): LSemanticEnv? {
         val defCmdName = defCommand.name?.removePrefix("\\") ?: return null
         val contents = extractParameterTypeAndContent(defCommand)
         return when (defCmdName) {
@@ -390,7 +390,7 @@ object LatexDefinitionUtil {
         return LatexPsiHelper.createFromText(rebuiltCode, project).findFirstChildTyped<LatexCommands>()
     }
 
-    private fun parseRegularEnvironmentDef(defCommand: LatexCommands, contents: List<Pair<LArgumentType, String>>, lookup: LatexSemanticLookup, project: Project): LSemanticEnv? {
+    private fun parseRegularEnvironmentDef(defCommand: LatexCommands, contents: List<Pair<LArgumentType, String>>, lookup: LatexSemanticsLookup, project: Project): LSemanticEnv? {
         // This will be something like \newenvironment{env}[num arg][default value]{begin code}{end code}
         val envName = contents.getNthRequiredArg(0) ?: return null
         val codeElement = rebuildEnvDefinitionCommand(defCommand, contents, project) ?: return LSemanticEnv(envName, "")
@@ -401,7 +401,7 @@ object LatexDefinitionUtil {
         return buildEnvironmentSemantics(envName, beginElement, endElement, buildRegularArgSignature(numArg, hasOptionalArg), defCommand, lookup, project)
     }
 
-    private fun parseArgSpecEnvironmentDef(defCommand: LatexCommands, contents: List<Pair<LArgumentType, String>>, lookup: LatexSemanticLookup, project: Project): LSemanticEnv? {
+    private fun parseArgSpecEnvironmentDef(defCommand: LatexCommands, contents: List<Pair<LArgumentType, String>>, lookup: LatexSemanticsLookup, project: Project): LSemanticEnv? {
         // This will be something like \NewDocumentEnvironment{env}{args spec}{begin code}{end code}
         val envName = contents.getNthRequiredArg(0) ?: return null
         val codeElement = rebuildEnvDefinitionCommand(defCommand, contents, project) ?: return LSemanticEnv(envName, "")
@@ -414,7 +414,7 @@ object LatexDefinitionUtil {
     private fun buildEnvironmentSemantics(
         envName: String, beginElement: PsiElement?, endElement: PsiElement?,
         argTypeList: List<LArgumentType>,
-        defCommand: LatexCommands, lookup: LatexSemanticLookup, project: Project
+        defCommand: LatexCommands, lookup: LatexSemanticsLookup, project: Project
     ): LSemanticEnv {
         if (beginElement == null || endElement == null) return LSemanticEnv(envName, "")
         val requiredContext = guessRequiredContext(beginElement, lookup)

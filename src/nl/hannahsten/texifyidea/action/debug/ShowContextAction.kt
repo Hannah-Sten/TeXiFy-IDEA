@@ -8,6 +8,7 @@ import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 
 class ShowContextAction : AnAction() {
+    // For debugging purposes
     override fun actionPerformed(e: AnActionEvent) {
         // get the active editor
         val editor = e.getData(com.intellij.openapi.actionSystem.CommonDataKeys.EDITOR) ?: return

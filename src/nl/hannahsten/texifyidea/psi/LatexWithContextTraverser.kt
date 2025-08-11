@@ -5,13 +5,13 @@ import nl.hannahsten.texifyidea.lang.LArgument
 import nl.hannahsten.texifyidea.lang.LContextInherit
 import nl.hannahsten.texifyidea.lang.LSemanticEnv
 import nl.hannahsten.texifyidea.lang.LatexContextIntro
-import nl.hannahsten.texifyidea.lang.LatexSemanticLookup
+import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 import nl.hannahsten.texifyidea.util.parser.forEachDirectChild
 
 abstract class LatexWithContextTraverser<S>(
     initialState: S,
-    protected val lookup: LatexSemanticLookup
+    protected val lookup: LatexSemanticsLookup
 ) {
 
     protected enum class WalkAction {
@@ -70,7 +70,7 @@ abstract class LatexWithContextTraverser<S>(
 
         when (e) {
             is LatexCommands -> {
-                val semantic = lookup.lookupCommand(e.name ?: "")
+                val semantic = lookup.lookupCommand(e.name?.removePrefix("\\") ?: "")
                 if (semantic != null) {
                     return traverseCommandRecur(e, semantic.arguments)
                 }
@@ -102,3 +102,6 @@ abstract class LatexWithContextTraverser<S>(
         return ret
     }
 }
+
+
+abstract class Latex

@@ -16,7 +16,7 @@ import nl.hannahsten.texifyidea.index.SourcedDefinition.DefinitionSource
 import nl.hannahsten.texifyidea.lang.LSemanticCommand
 import nl.hannahsten.texifyidea.lang.LSemanticEntity
 import nl.hannahsten.texifyidea.lang.LSemanticEnv
-import nl.hannahsten.texifyidea.lang.LatexSemanticLookup
+import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefinedCommands
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefinedEnvironments
 import nl.hannahsten.texifyidea.lang.predefined.PredefinedPrimitives
@@ -74,7 +74,7 @@ class SourcedEnvDefinition(
     source: DefinitionSource = DefinitionSource.UserDefined
 ) : SourcedDefinition(definitionCommandPointer, source)
 
-interface DefinitionBundle : LatexSemanticLookup {
+interface DefinitionBundle : LatexSemanticsLookup {
     fun findCmdDef(name: String): SourcedCmdDefinition? {
         return findDefinition(name) as? SourcedCmdDefinition
     }
@@ -85,12 +85,8 @@ interface DefinitionBundle : LatexSemanticLookup {
 
     fun findDefinition(name: String): SourcedDefinition?
 
-    override fun lookupCommand(name: String): LSemanticCommand? {
-        return findCmdDef(name.removePrefix("\\"))?.entity
-    }
-
-    override fun lookupEnv(name: String): LSemanticEnv? {
-        return findEnvDef(name)?.entity
+    override fun lookup(name: String): LSemanticEntity? {
+        return findDefinition(name)?.entity
     }
 
     fun appendDefinitions(nameMap: MutableMap<String, SourcedDefinition>, includedPackages: MutableSet<String>)
@@ -171,7 +167,7 @@ class FilesetDefinitionBundle(
  * Command definition service for a single LaTeX package (`.cls` or `.sty` file).
  */
 @Service(Service.Level.PROJECT)
-class PackageDefinitionService(
+class LatexLibraryDefinitionService(
     val project: Project
 ) : AbstractBlockingCacheService<String, LibDefinitionBundle>() {
 
@@ -289,7 +285,7 @@ class PackageDefinitionService(
     }
 
     companion object : SimplePerformanceTracker{
-        fun getInstance(project: Project): PackageDefinitionService {
+        fun getInstance(project: Project): LatexLibraryDefinitionService {
             return project.service()
         }
 
@@ -350,13 +346,13 @@ class LatexDefinitionService(
     val project: Project,
 ) : AbstractBlockingCacheService<Fileset, FilesetDefinitionBundle>() {
 
-    var expirationInMs: Long = 100L // TODO: perhaps sync with file modification time?
+    var expirationInMs: Long = 1000L // TODO: perhaps sync with file modification time?
 
     override fun computeValue(key: Fileset, oldValue: FilesetDefinitionBundle?): FilesetDefinitionBundle {
         val startTime = System.currentTimeMillis()
 
         // packages do not need indexing
-        val packageService = PackageDefinitionService.getInstance(project)
+        val packageService = LatexLibraryDefinitionService.getInstance(project)
         val libraries = ArrayList<LibDefinitionBundle>(key.libraries.size + 1)
         libraries.add(packageService.getLibBundle("")) // add the default commands
         key.libraries.mapTo(libraries) { packageService.getLibBundle(it) }
@@ -387,7 +383,7 @@ class LatexDefinitionService(
     }
 
     fun getDefBundlesMerged(psiFile: PsiFile): DefinitionBundle {
-        val filesetData = LatexProjectStructure.getFilesetDataFor(psiFile) ?: return PackageDefinitionService.baseLibBundle
+        val filesetData = LatexProjectStructure.getFilesetDataFor(psiFile) ?: return LatexLibraryDefinitionService.baseLibBundle
         if (filesetData.filesets.size == 1) return getDefBundleForFileset(filesetData.filesets.first())
         return union(filesetData.filesets.map { getDefBundleForFileset(it) })
     }

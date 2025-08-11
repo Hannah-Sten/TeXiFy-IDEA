@@ -14,7 +14,7 @@ import kotlinx.html.tr
 import nl.hannahsten.texifyidea.completion.LatexContextAwareCompletionProviderBase
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.index.LatexProjectStructure
-import nl.hannahsten.texifyidea.index.PackageDefinitionService
+import nl.hannahsten.texifyidea.index.LatexLibraryDefinitionService
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicLong
 import javax.swing.JLabel
@@ -48,7 +48,7 @@ class PerformanceDiagnosticAction : AnAction() {
                 "Fileset", LatexProjectStructure,
                 "Recent Fileset Size: ${LatexProjectStructure.getFilesets(project)?.mapping?.size ?: "N/A"}"
             ),
-            performanceData("Package Definitions", PackageDefinitionService),
+            performanceData("Package Definitions", LatexLibraryDefinitionService),
             performanceData("Command Definitions", LatexDefinitionService),
             performanceData("Completion Lookup", LatexContextAwareCompletionProviderBase)
         )

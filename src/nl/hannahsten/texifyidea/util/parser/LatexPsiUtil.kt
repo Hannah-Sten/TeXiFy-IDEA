@@ -21,7 +21,7 @@ import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LSemanticCommand
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.lang.LatexSemanticLookup
+import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
@@ -325,7 +325,7 @@ object LatexPsiUtil {
         return null
     }
 
-    private fun resolveBeginCommandContext(parameter: LatexParameter, lookup: LatexSemanticLookup): LatexContextIntro? {
+    private fun resolveBeginCommandContext(parameter: LatexParameter, lookup: LatexSemanticsLookup): LatexContextIntro? {
         val beginCommand = parameter.firstParentOfType<LatexBeginCommand>(3) ?: return null
         val name = beginCommand.environmentName() ?: return null
         val semantics = lookup.lookupEnv(name) ?: return null
@@ -333,15 +333,15 @@ object LatexPsiUtil {
         return arg.contextSignature
     }
 
-    private fun resolveCommandParameterContext(parameter: LatexParameter, lookup: LatexSemanticLookup): LatexContextIntro? {
+    private fun resolveCommandParameterContext(parameter: LatexParameter, lookup: LatexSemanticsLookup): LatexContextIntro? {
         val command = parameter.firstParentOfType<LatexCommands>(3) ?: return resolveBeginCommandContext(parameter, lookup)
-        val name = command.name ?: return null
+        val name = command.name?.removePrefix("\\") ?: return null
         val semantics = lookup.lookupCommand(name) ?: return null
         val arg = alignCommandArgument(command, parameter, semantics.arguments) ?: return null
         return arg.contextSignature
     }
 
-    private fun resolveEnvironmentContext(env: LatexEnvironment, lookup: LatexSemanticLookup): LatexContextIntro? {
+    private fun resolveEnvironmentContext(env: LatexEnvironment, lookup: LatexSemanticsLookup): LatexContextIntro? {
         val name = env.getEnvironmentName()
         val semantics = lookup.lookupEnv(name) ?: return null
         return semantics.contextSignature
@@ -355,7 +355,7 @@ object LatexPsiUtil {
         return resolveContextUpward(e, lookup)
     }
 
-    fun resolveContextUpward(e: PsiElement, lookup: LatexSemanticLookup): LContextSet {
+    fun resolveContextUpward(e: PsiElement, lookup: LatexSemanticsLookup): LContextSet {
         var collectedContextIntro: MutableList<LatexContextIntro>? = null
         var current: PsiElement = e
         // see Latex.bnf
@@ -394,7 +394,7 @@ object LatexPsiUtil {
 
     fun traverseRecordingContextIntro(
         e: PsiElement,
-        lookup: LatexSemanticLookup,
+        lookup: LatexSemanticsLookup,
         action: (PsiElement, List<LatexContextIntro>) -> Unit
     ): List<LatexContextIntro> {
         val visitor = RecordingContextIntroTraverser(lookup, action)
@@ -403,7 +403,7 @@ object LatexPsiUtil {
     }
 
     private class RecordingContextIntroTraverser(
-        lookup: LatexSemanticLookup,
+        lookup: LatexSemanticsLookup,
         private val action: (PsiElement, List<LatexContextIntro>) -> Unit
     ) : LatexWithContextTraverser<MutableList<LatexContextIntro>>(mutableListOf(), lookup) {
         override fun enterContextIntro(intro: LatexContextIntro) {
