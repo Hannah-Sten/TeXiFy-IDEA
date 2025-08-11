@@ -36,6 +36,7 @@ import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.AbstractBlockingCacheService
 import nl.hannahsten.texifyidea.util.CacheValueTimed
 import nl.hannahsten.texifyidea.util.GenericCacheService
+import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.TexifyProjectCacheService
 import nl.hannahsten.texifyidea.util.contentSearchScope
 import nl.hannahsten.texifyidea.util.expandCommandsOnce
@@ -211,13 +212,10 @@ class LatexLibraryStructureService(
         }
 
         val path = LatexPackageLocation.getPackageLocation(nameWithExt, project) ?: run {
-            println("LatexLibrary not found!! $nameWithExt")
+            Log.info("LatexLibrary not found!! $nameWithExt")
             return null
         }
-        val file = LocalFileSystem.getInstance().findFileByNioFile(path) ?: run {
-            println("!! $nameWithExt file not found available now!")
-            return null
-        }
+        val file = LocalFileSystem.getInstance().findFileByNioFile(path) ?: return null
         val files = mutableSetOf(file)
         val allPackages = mutableSetOf(nameWithExt)
         val directDependencies = mutableSetOf<String>()
@@ -248,7 +246,7 @@ class LatexLibraryStructureService(
         }
         val info = LatexLibraryInfo(nameWithExt, file, files, directDependencies, allPackages)
         putValue(nameWithExt, info)
-        println("LatexLibrary Loaded: $nameWithExt")
+        Log.info("LatexLibrary Loaded: $nameWithExt")
         return info
     }
 

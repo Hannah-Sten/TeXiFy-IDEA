@@ -106,7 +106,6 @@ object PredefinedGenericCommands : PredefinedCommandSet() {
 
         +"large"
         symbol("lbrack", "[")
-        symbol("ldots", "…")
         +"lefteqn"
         +"lfseries"
         "linebreak".cmd("number".optional) { "LINEBREAK" }
@@ -134,8 +133,6 @@ object PredefinedGenericCommands : PredefinedCommandSet() {
         "newlength".cmd("length".required) { "NEWLENGTH" }
         +"newline"
         +"newpage"
-        "newtheorem".cmd("envname".required, "numberedlike".optional, "caption".required, "within".optional) { "NEWTHEOREM" }
-        "newtheorem*".cmd("envname".required, "caption".required) { "NEWTHEOREM_STAR" }
         "nocite".cmd("keys".required) { "NOCITE" }
         +"nofiles"
         "nolinebreak".cmd("number".optional) { "NOLINEBREAK" }
@@ -296,9 +293,6 @@ object PredefinedGenericCommands : PredefinedCommandSet() {
         +"printbibliography"
 
         packageOf("amsmath")
-        underContext(LatexContexts.Preamble) {
-            "DeclareMathOperator".cmd("command".required, "operator".required) { "DECLARE_MATH_OPERATOR" }
-        }
         "eqref".cmd(labelArg) { "EQREF" }
 
         packageOf("csquotes")
@@ -714,21 +708,6 @@ object PredefinedGenericCommands : PredefinedCommandSet() {
             +"pys"
             +"pyv"
         }
-    }
-
-    val mathtools = buildCommands {
-        packageOf("mathtools")
-        setRequiredContext(LatexContexts.Preamble)
-        val cmd = "cmd".required
-        val numArgs = "num args".optional
-        val leftDelimiter = "left delimiter".required
-        val rightDelimiter = "right delimiter".required
-        val body = "body".required(LatexContexts.Text)
-        val preCode = "pre code".required
-        val postCode = "post code".required
-        "DeclarePairedDelimiter".cmd(cmd, leftDelimiter, rightDelimiter) { "Declare a paired delimiter" }
-        "DeclarePairedDelimiterX".cmd(cmd, numArgs, leftDelimiter, rightDelimiter) { "Declare a paired delimiter with extended arguments" }
-        "DeclarePairedDelimiterXPP".cmd(cmd, numArgs, preCode, leftDelimiter, rightDelimiter, postCode, body) { "Declare a paired delimiter with pre and post code" }
     }
 
     val colorDefinitionCommands = buildCommands {

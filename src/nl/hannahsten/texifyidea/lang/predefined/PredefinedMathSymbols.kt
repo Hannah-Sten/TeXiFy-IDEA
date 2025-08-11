@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.lang.predefined
 
+import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.PredefinedCommandSet
 
 object PredefinedMathSymbols : PredefinedCommandSet() {
@@ -171,6 +172,11 @@ object PredefinedMathSymbols : PredefinedCommandSet() {
     }
 
     val defaultMathSymbols = mathCommands {
+        underContext(LatexContexts.Math, LatexContexts.Text) {
+            // they can also be used in non-math contexts
+            symbol("vdots", "⋮", "Vertical dots")
+            symbol("ldots", "…", "Low dots")
+        }
 
         symbol("aleph", "ℵ", "Aleph symbol") // Added display as it's a symbol
         symbol("amalg", "⨿", "Amalgamation symbol")
@@ -207,7 +213,7 @@ object PredefinedMathSymbols : PredefinedCommandSet() {
         symbol("Im", "ℑ", "Imaginary part")
         symbol("imath", "ı", "Dotless i")
         symbol("jmath", "ȷ", "Dotless j")
-        symbol("ldots", "…", "Low dots")
+
         symbol("natural", "♮", "Natural sign")
         symbol("neg", "¬", "Negation")
         symbol("prime", "′", "Prime")
@@ -217,7 +223,6 @@ object PredefinedMathSymbols : PredefinedCommandSet() {
         symbol("surd", "√", "Square root surd")
         symbol("top", "⊤", "Top symbol")
         symbol("triangle", "△", "Triangle up")
-        symbol("vdots", "⋮", "Vertical dots")
         symbol("vee", "⋁", "Vee")
         symbol("wedge", "⋀", "Wedge")
         symbol("wp", "℘", "Script capital P")
@@ -586,51 +591,9 @@ object PredefinedMathSymbols : PredefinedCommandSet() {
         symbol("Colonsim", "::∼")
     }
 
-    val delimiters = mathCommands {
-        packageOf("")
-        symbol("left(", "(")
-        symbol("right)", ")")
-        symbol("left[", "[")
-        symbol("right]", "]")
-        symbol("left\\{", "{")
-        symbol("right\\}", "}")
-        symbol("left<", "<")
-        symbol("right>", ">")
-        symbol("left|", "|")
-        symbol("right|", "|")
-        symbol("left\\|", "||")
-        symbol("right\\|", "||")
-        symbol("langle", "<")
-        symbol("rangle", ">")
-        symbol("lceil", "⌈")
-        symbol("rceil", "⌉")
-        symbol("lfloor", "⌊")
-        symbol("rfloor", "⌋")
-        symbol("lmoustache", "⎰")
-        symbol("rmoustache", "⎱")
-        symbol("lgroup", null)
-        symbol("rgroup", null)
-
-        packageOf("amsmath")
-        symbol("lvert", null)
-        symbol("rvert", null)
-        symbol("lVert", null)
-        symbol("rVert", null)
-
-        packageOf("stmaryrd")
-        symbol("lbag", "⟅")
-        symbol("rbag", "⟆")
-        symbol("Lbag", "⟅")
-        symbol("Rbag", "⟆")
-        symbol("llbracket", "⟦")
-        symbol("rrbracket", "⟧")
-        symbol("llceil", null)
-        symbol("rrceil", null)
-        symbol("llfloor", null)
-        symbol("rrfloor", null)
-        symbol("llparenthesis", "⦅")
-        symbol("rrparenthesis", "⦆")
-    }
+//    val delimiters = mathCommands {
+    // see PredefinedPairedDelimiters
+//    }
 
     val uncategorizedStmaryrdSymbols = mathCommands {
         packageOf("stmaryrd")

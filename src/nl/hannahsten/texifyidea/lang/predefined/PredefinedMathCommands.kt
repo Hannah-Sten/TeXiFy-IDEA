@@ -39,7 +39,6 @@ object PredefinedMathCommands : PredefinedCommandSet() {
         "stackrel".cmd("top".required, "relation".required) { "Stacked relation" }
         "tilde".cmd("a".required) { "Tilde accent" }
         "underbrace".cmd("text".required) { "Underbrace" }
-        "underline".cmd("text".required) { "Underline" }
         "vec".cmd("a".required) { "Vector accent" }
         "widehat".cmd("text".required) { "Wide hat" }
         "widetilde".cmd("text".required) { "Wide tilde" }
