@@ -2,17 +2,18 @@ package nl.hannahsten.texifyidea.lang.predefined
 
 import nl.hannahsten.texifyidea.lang.PredefinedCommandSet
 
-object PredefinedPairedDelimiters : PredefinedCommandSet(){
+object PredefinedCmdPairedDelimiters : PredefinedCommandSet() {
 
     data class Delimiter(
         val left: String,
         val right: String,
         val leftDisplay: String? = null,
         val rightDisplay: String? = null,
-        val dependency : String = ""
+        val dependency: String = ""
     )
-    private fun d(left: String, right: String, leftDisplay: String? = null, rightDisplay: String? = null, dependency: String = ""
-    ) : Delimiter {
+    private fun d(
+        left: String, right: String, leftDisplay: String? = null, rightDisplay: String? = null, dependency: String = ""
+    ): Delimiter {
         return Delimiter(left, right, leftDisplay, rightDisplay)
     }
 
@@ -20,7 +21,7 @@ object PredefinedPairedDelimiters : PredefinedCommandSet(){
      * The predefined paired delimiters in LaTeX.
      */
     val delimiters = listOf(
-        d("left(", "right)","(", ")"),
+        d("left(", "right)", "(", ")"),
         d("left[", "right]", "[", "]"),
         d("left\\{", "right\\}", "{", "}"),
         d("left<", "right>", "<", ">"),
@@ -50,11 +51,10 @@ object PredefinedPairedDelimiters : PredefinedCommandSet(){
 
     val delimiterCommands = mathCommands {
         delimiters.map { delimiter ->
-            underPackage(delimiter.dependency){
-                symbol(delimiter.left,delimiter.leftDisplay)
-                symbol(delimiter.right,delimiter.rightDisplay)
+            underPackage(delimiter.dependency) {
+                symbol(delimiter.left, delimiter.leftDisplay)
+                symbol(delimiter.right, delimiter.rightDisplay)
             }
         }
     }
-
 }

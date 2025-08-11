@@ -152,7 +152,6 @@ class LibDefinitionBundle(
     }
 }
 
-
 /**
  * Command definition service for a single LaTeX package (`.cls` or `.sty` file).
  */

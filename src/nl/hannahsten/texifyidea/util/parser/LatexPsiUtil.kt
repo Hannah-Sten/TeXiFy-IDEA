@@ -388,7 +388,7 @@ object LatexPsiUtil {
                 }
             }
         }
-        collectedContextIntro ?: return emptySet()
+        collectedContextIntro ?: return baseContext
         return LatexContextIntro.buildContext(collectedContextIntro.asReversed(), baseContext)
     }
 

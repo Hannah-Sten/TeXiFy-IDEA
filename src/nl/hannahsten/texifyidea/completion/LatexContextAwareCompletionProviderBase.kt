@@ -9,13 +9,22 @@ import nl.hannahsten.texifyidea.index.DefinitionBundle
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.index.SourcedDefinition
 import nl.hannahsten.texifyidea.lang.LContextSet
+import nl.hannahsten.texifyidea.lang.LSemanticEntity
+import nl.hannahsten.texifyidea.lang.compactDisplayString
 import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicLong
 
 abstract class LatexContextAwareCompletionProviderBase : CompletionProvider<CompletionParameters>() {
 
-    protected fun getContainingFileName(def : SourcedDefinition) : String? {
+    protected fun buildApplicableContextStr(en: LSemanticEntity): String {
+        if(en.requiredContext.isEmpty()) {
+            return ""
+        }
+        return " in <${en.requiredContext.compactDisplayString()}>"
+    }
+
+    protected fun getContainingFileName(def: SourcedDefinition): String? {
         val pointer = def.definitionCommandPointer ?: return null
         val file = pointer.containingFile ?: return null
         return file.name
@@ -50,8 +59,6 @@ abstract class LatexContextAwareCompletionProviderBase : CompletionProvider<Comp
 
         totalTimeCost.addAndGet(System.currentTimeMillis() - startTime)
     }
-
-
 
     companion object : SimplePerformanceTracker {
         override val countOfBuilds = AtomicInteger(0)

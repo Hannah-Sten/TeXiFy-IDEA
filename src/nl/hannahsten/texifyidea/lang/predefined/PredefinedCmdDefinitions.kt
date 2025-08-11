@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.lang.predefined
 
 import nl.hannahsten.texifyidea.lang.LArgument
 import nl.hannahsten.texifyidea.lang.LArgument.Companion.required
+import nl.hannahsten.texifyidea.lang.LatexContextIntro
 import nl.hannahsten.texifyidea.lang.PredefinedCommandSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
 
@@ -10,14 +11,17 @@ import nl.hannahsten.texifyidea.lang.LatexContexts
  * * command/environment definition resolving;
  *
  */
-object PredefinedDefinitionCommands : PredefinedCommandSet() {
+object PredefinedCmdDefinitions : PredefinedCommandSet() {
+
+    private val argCommandName = required("name", LatexContexts.CommandDeclaration)
+    private val argCode = required("code", LatexContextIntro.add(LatexContexts.InsideDefinition))
 
     val regularDefinitionOfCommand = preambleCommands {
 
-        val command = required("cmd", LatexContexts.CommandDeclaration)
+        val command = argCommandName
         val numArgs = LArgument.optional("num args", LatexContexts.Numeric)
         val defaultOptional = "default".optional
-        val code = required("code", +LatexContexts.InsideDefinition)
+        val code = argCode
 
         "newcommand".cmd(command, numArgs, defaultOptional, code) { "Define a new command" }
         "newcommand*".cmd(command, numArgs, defaultOptional, code) { "Define a new command (starred variant)" }
@@ -39,8 +43,8 @@ object PredefinedDefinitionCommands : PredefinedCommandSet() {
     }
 
     val argSpecDefinitionOfCommand = preambleCommands {
-        val command = required("cmd", LatexContexts.CommandDeclaration)
-        val code = required("code", +LatexContexts.InsideDefinition)
+        val command = argCommandName
+        val code = argCode
         // xparse commands
         underPackage("xparse") {
             val argsSpec = "args spec".required(LatexContexts.Literal)
@@ -52,7 +56,7 @@ object PredefinedDefinitionCommands : PredefinedCommandSet() {
     }
 
     val definitionOfMathCommand = preambleCommands {
-        val command = required("cmd", LatexContexts.CommandDeclaration)
+        val command = argCode
         underPackage("amsmath") {
             "DeclareMathOperator".cmd(
                 command, "operator".required(LatexContexts.Text)
@@ -74,48 +78,41 @@ object PredefinedDefinitionCommands : PredefinedCommandSet() {
         }
     }
 
+    private val argEnvName = required("name", LatexContexts.EnvironmentDeclaration)
+    private val argBeginCode = required("begin", LatexContextIntro.add(LatexContexts.InsideDefinition))
+    private val argEndCode = required("end", LatexContextIntro.add(LatexContexts.InsideDefinition))
+
     val regularDefinitionOfEnvironment = preambleCommands {
-        val envName = required("name", LatexContexts.EnvironmentDeclaration)
         val numArgs = LArgument.optional("num args", LatexContexts.Numeric)
         val defaultValue = "default".optional
-        val beginCode = required("beginCode", +LatexContexts.InsideDefinition)
-        val endCode = required("enddef", +LatexContexts.InsideDefinition)
-
-        "newenvironment".cmd(envName, numArgs, defaultValue, beginCode, endCode) { "Define a new environment" }
-        "renewenvironment".cmd(envName, numArgs, defaultValue, beginCode, endCode) { "Redefine an existing environment" }
+        "newenvironment".cmd(argEnvName, numArgs, defaultValue, argBeginCode, argEndCode) { "Define a new environment" }
+        "renewenvironment".cmd(argEnvName, numArgs, defaultValue, argBeginCode, argEndCode) { "Redefine an existing environment" }
     }
 
     val newTheoremDefinitionOfEnvironment = preambleCommands {
-        val envName = required("name", LatexContexts.EnvironmentDeclaration)
         "newtheorem".cmd(
-            envName, "numberedlike".optional, "caption".required(LatexContexts.Text), "within".optional
+            argEnvName, "numberedlike".optional, "caption".required(LatexContexts.Text), "within".optional
         ) { "Define a new theorem-like environment" }
         "newtheorem*".cmd(
-            envName, "caption".required(LatexContexts.Text)
+            argEnvName, "caption".required(LatexContexts.Text)
         ) { "Define a new theorem-like environment" }
     }
 
     val argSpecDefinitionOfEnvironment = preambleCommands {
-        val envName = required("name", LatexContexts.EnvironmentDeclaration)
         val argsSpec = "args spec".required(LatexContexts.Literal)
-        val beginCode = required("beginCode", +LatexContexts.InsideDefinition)
-        val endCode = required("enddef", +LatexContexts.InsideDefinition)
-        "NewDocumentEnvironment".cmd(envName, argsSpec, beginCode, endCode) { "Define a new document environment" }
-        "RenewDocumentEnvironment".cmd(envName, argsSpec, beginCode, endCode) { "Renew a document environment" }
-        "ProvideDocumentEnvironment".cmd(envName, argsSpec, beginCode, endCode) { "Provide a document environment" }
-        "DeclareDocumentEnvironment".cmd(envName, argsSpec, beginCode, endCode) { "Declare a document environment" }
+        "NewDocumentEnvironment".cmd(argEnvName, argsSpec, argBeginCode, argEndCode) { "Define a new document environment" }
+        "RenewDocumentEnvironment".cmd(argEnvName, argsSpec, argBeginCode, argEndCode) { "Renew a document environment" }
+        "ProvideDocumentEnvironment".cmd(argEnvName, argsSpec, argBeginCode, argEndCode) { "Provide a document environment" }
+        "DeclareDocumentEnvironment".cmd(argEnvName, argsSpec, argBeginCode, argEndCode) { "Declare a document environment" }
     }
 
     val xargsDefinitionOfEnvironment = buildCommands {
         setRequiredContext(LatexContexts.Preamble)
-        val envName = required("name", LatexContexts.EnvironmentDeclaration)
         val numArgs = LArgument.optional("num args", LatexContexts.Numeric)
         val argsSpec = "args spec".required(LatexContexts.Literal)
-        val beginCode = required("beginCode", +LatexContexts.InsideDefinition)
-        val endCode = required("enddef", +LatexContexts.InsideDefinition)
         packageOf("xargs")
-        "newenvironmentx".cmd(envName, numArgs, argsSpec, beginCode, endCode) { "Define a new environment with extended args" }
-        "renewenvironmentx".cmd(envName, numArgs, argsSpec, beginCode, endCode) { "Redefine an environment with extended args" }
+        "newenvironmentx".cmd(argEnvName, numArgs, argsSpec, argBeginCode, argEndCode) { "Define a new environment with extended args" }
+        "renewenvironmentx".cmd(argEnvName, numArgs, argsSpec, argBeginCode, argEndCode) { "Redefine an environment with extended args" }
     }
 
     val ifCommands = buildCommands {

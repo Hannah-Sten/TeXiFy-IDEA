@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.lang.predefined
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.PredefinedCommandSet
 
-object PredefinedMathSymbols : PredefinedCommandSet() {
+object PredefinedCmdMathSymbols : PredefinedCommandSet() {
 
     val lowercaseGreek = mathCommands {
 
@@ -592,7 +592,7 @@ object PredefinedMathSymbols : PredefinedCommandSet() {
     }
 
 //    val delimiters = mathCommands {
-    // see PredefinedPairedDelimiters
+    // see PredefinedCmdPairedDelimiters
 //    }
 
     val uncategorizedStmaryrdSymbols = mathCommands {

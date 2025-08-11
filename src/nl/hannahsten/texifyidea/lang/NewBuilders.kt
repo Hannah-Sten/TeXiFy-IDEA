@@ -65,6 +65,12 @@ abstract class AbstractDSLLatexBuilderScope : DSLLatexBuilderScope {
     }
 
     fun String.required(
+        ctx: LContextSet, description: String = ""
+    ): LArgument {
+        return LArgument.required(this, LAssignContext(ctx), description)
+    }
+
+    fun String.required(
         ctx: LatexContextIntro, description: String = ""
     ): LArgument {
         return LArgument.required(this, ctx, description)

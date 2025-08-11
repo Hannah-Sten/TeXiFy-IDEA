@@ -22,7 +22,7 @@ import nl.hannahsten.texifyidea.lang.LatexContext
 import nl.hannahsten.texifyidea.lang.LatexContextIntro
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
-import nl.hannahsten.texifyidea.lang.predefined.PredefinedDefinitionCommands
+import nl.hannahsten.texifyidea.lang.predefined.PredefinedCmdDefinitions
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexContent
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
@@ -60,7 +60,7 @@ object LatexDefinitionUtil {
         for ((idx, defStub) in topLevelStubs.withIndex()) {
             if (defStub !is LatexCommandsStub) continue
             val defCommandName = defStub.commandName
-            if (defCommandName in PredefinedDefinitionCommands.namesOfAllCommandDef) {
+            if (defCommandName in PredefinedCmdDefinitions.namesOfAllCommandDef) {
                 val nameWithSlash = getCommandDefNameStub(defStub, idx, topLevelStubs) ?: continue
                 val pointer = pointerManager.createSmartPsiElementPointer(defStub.psi, psiFile)
                 definitions.add(
@@ -73,7 +73,7 @@ object LatexDefinitionUtil {
                     )
                 )
             }
-            else if (defCommandName in PredefinedDefinitionCommands.namesOfAllEnvironmentDef) {
+            else if (defCommandName in PredefinedCmdDefinitions.namesOfAllEnvironmentDef) {
                 val envName = getEnvironmentDefNameStub(defStub) ?: continue
                 val semanticEnv =
                     LSemanticEnv(
@@ -99,7 +99,7 @@ object LatexDefinitionUtil {
         for (e in elements) {
             if (e !is LatexCommands) continue // only commands
             val name = e.name?.removePrefix("\\") ?: continue
-            if (name in PredefinedDefinitionCommands.namesOfAllCommandDef) {
+            if (name in PredefinedCmdDefinitions.namesOfAllCommandDef) {
                 val cmdName = getCommandDefNameAST(e) ?: continue
                 val semanticCmd = LSemanticCommand(cmdName.removePrefix("\\"), libInfo.name)
                 val pointer = pointerManager.createSmartPsiElementPointer(e, psiFile)
@@ -107,7 +107,7 @@ object LatexDefinitionUtil {
                     SourcedCmdDefinition(semanticCmd, pointer, DefinitionSource.LibraryScan)
                 )
             }
-            else if (name in PredefinedDefinitionCommands.namesOfAllEnvironmentDef) {
+            else if (name in PredefinedCmdDefinitions.namesOfAllEnvironmentDef) {
                 val envName = getEnvironmentDefNameAST(e) ?: continue
                 val semanticEnv = LSemanticEnv(envName, libInfo.name)
                 val pointer = pointerManager.createSmartPsiElementPointer(e, psiFile)
@@ -217,14 +217,14 @@ object LatexDefinitionUtil {
     }
 
     private val namesOfCmdDefRegular = buildSet {
-        PredefinedDefinitionCommands.regularDefinitionOfCommand.mapTo(this) { it.name }
+        PredefinedCmdDefinitions.regularDefinitionOfCommand.mapTo(this) { it.name }
     }
     private val namesOfCmdDefMath = buildSet {
-        PredefinedDefinitionCommands.definitionOfMathCommand.mapTo(this) { it.name }
+        PredefinedCmdDefinitions.definitionOfMathCommand.mapTo(this) { it.name }
     }
 
     private val namesOfCmdDefArgSpec = buildSet {
-        PredefinedDefinitionCommands.argSpecDefinitionOfCommand.mapTo(this) { it.name }
+        PredefinedCmdDefinitions.argSpecDefinitionOfCommand.mapTo(this) { it.name }
     }
 
     private fun parseCommandDef(defCommand: LatexCommands, lookup: LatexSemanticsLookup, project: Project): LSemanticCommand? {
@@ -350,10 +350,10 @@ object LatexDefinitionUtil {
     }
 
     private val namesOfEnvDefRegular = buildSet {
-        PredefinedDefinitionCommands.regularDefinitionOfEnvironment.mapTo(this) { it.name }
+        PredefinedCmdDefinitions.regularDefinitionOfEnvironment.mapTo(this) { it.name }
     }
     private val namesOfEnvDefArgSpec = buildSet {
-        PredefinedDefinitionCommands.argSpecDefinitionOfEnvironment.mapTo(this) { it.name }
+        PredefinedCmdDefinitions.argSpecDefinitionOfEnvironment.mapTo(this) { it.name }
     }
 
     private fun parseEnvironmentDef(defCommand: LatexCommands, lookup: LatexSemanticsLookup, project: Project): LSemanticEnv? {
@@ -427,7 +427,6 @@ object LatexDefinitionUtil {
         }
         return LSemanticEnv(envName, "", requiredContext, arguments, innerIntro)
     }
-
 
     private fun mergeCmdDefinition(old: SourcedCmdDefinition, new: SourcedCmdDefinition): SourcedCmdDefinition {
         val pointer = new.definitionCommandPointer ?: old.definitionCommandPointer

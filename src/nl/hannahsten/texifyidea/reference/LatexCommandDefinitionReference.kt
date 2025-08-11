@@ -19,8 +19,7 @@ class LatexCommandDefinitionReference(element: LatexCommands) : PsiReferenceBase
         rangeInElement = ElementManipulators.getValueTextRange(element)
     }
 
-
-    private fun resolveWithDefIndex(name : String): Array<ResolveResult> {
+    private fun resolveWithDefIndex(name: String): Array<ResolveResult> {
         val file = element.containingFile
         if (DumbService.isDumb(file.project)) return ResolveResult.EMPTY_ARRAY
         val definitions = NewDefinitionIndex.getByNameInFileSet(name, file)
@@ -32,7 +31,7 @@ class LatexCommandDefinitionReference(element: LatexCommands) : PsiReferenceBase
         }.toTypedArray()
     }
 
-    private fun resolveWithDefinitionService(name : String): PsiElement? {
+    private fun resolveWithDefinitionService(name: String): PsiElement? {
         val element = myElement
         val file = element.containingFile
         val virtualFile = file.virtualFile ?: return null
@@ -52,7 +51,6 @@ class LatexCommandDefinitionReference(element: LatexCommands) : PsiReferenceBase
         resolveWithDefinitionService(name)?.let { return arrayOf(PsiElementResolveResult(it)) }
         return resolveWithDefIndex(name)
     }
-
 
     override fun resolve(): PsiElement? {
         val name = element.name ?: return null

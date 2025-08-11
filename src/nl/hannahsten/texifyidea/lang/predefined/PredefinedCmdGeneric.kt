@@ -4,7 +4,7 @@ import nl.hannahsten.texifyidea.lang.LArgument
 import nl.hannahsten.texifyidea.lang.PredefinedCommandSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
 
-object PredefinedGenericCommands : PredefinedCommandSet() {
+object PredefinedCmdGeneric : PredefinedCommandSet() {
     private val textArg = LArgument.required("text", LatexContexts.Text)
     private val labelArg = LArgument.required("label", LatexContexts.LabelReference)
 
@@ -505,6 +505,13 @@ object PredefinedGenericCommands : PredefinedCommandSet() {
             "Vref".cmd(labelArg) { "VREF_CAPITAL" }
             "vref".cmd(labelArg) { "VREF" }
             "vrefrange".cmd("start".required, "end".required, "text".optional) { "VREFRANGE" }
+        }
+
+        underPackage("prettyref") {
+            "prettyref".cmd(labelArg)
+            underContext(LatexContexts.Preamble) {
+                "newrefformat".cmd("prefix".required, "refText".required(setOf(LatexContexts.InsideDefinition, LatexContexts.Text)))
+            }
         }
     }
 

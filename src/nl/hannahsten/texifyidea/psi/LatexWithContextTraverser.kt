@@ -103,5 +103,4 @@ abstract class LatexWithContextTraverser<S>(
     }
 }
 
-
 abstract class Latex

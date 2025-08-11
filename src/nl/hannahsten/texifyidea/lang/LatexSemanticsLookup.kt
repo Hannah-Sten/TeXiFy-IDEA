@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.lang
 
-
 /**
  * Interface for looking up LaTeX semantics entities such as commands and environments.
  */

@@ -36,9 +36,8 @@ object LatexContextAwareCommandCompletionProvider : LatexContextAwareCompletionP
         result.addAllElements(lookupElements)
     }
 
-
     private fun buildArgumentInformation(cmd: LSemanticCommand, args: List<LArgument>): String {
-        return args.joinToString("") // TODO:
+        return args.joinToString("")
     }
 
     private fun buildCommandDisplay(cmd: LSemanticCommand, defBundle: DefinitionBundle): String {
@@ -47,7 +46,6 @@ object LatexContextAwareCommandCompletionProvider : LatexContextAwareCompletionP
         }
         return cmd.nameWithSlash + " " + cmd.display
     }
-
 
     private fun appendCommandLookupElements(sourced: SourcedCmdDefinition, result: MutableCollection<LookupElementBuilder>, defBundle: DefinitionBundle) {
         /*
@@ -59,11 +57,12 @@ object LatexContextAwareCommandCompletionProvider : LatexContextAwareCompletionP
         val default = cmd.dependency == ""
         val typeText = buildCommandSourceStr(sourced) // type text is at the right
         val presentableText = buildCommandDisplay(cmd, defBundle)
+        val applicableCtxText = buildApplicableContextStr(cmd)
         cmd.arguments.optionalPowerSet().forEachIndexed { index, subArgs ->
             // Add spaces to the lookup text to distinguish different versions of commands within the same package (optional parameters).
             // Add the package name to the lookup text so we can distinguish between the same commands that come from different packages.
             // This 'extra' text will be automatically inserted by intellij and is removed by the LatexCommandArgumentInsertHandler after insertion.
-            val tailText = buildArgumentInformation(cmd, subArgs)
+            val tailText = buildArgumentInformation(cmd, subArgs) + applicableCtxText
             val lookupString = cmd.nameWithSlash + " ".repeat(index + default.not().int) + cmd.dependency
             val l = LookupElementBuilder.create(cmd, lookupString)
                 .withPresentableText(presentableText)

@@ -9,7 +9,7 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.lang.LSemanticCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexDelimiterCommand
-import nl.hannahsten.texifyidea.lang.predefined.PredefinedPairedDelimiters
+import nl.hannahsten.texifyidea.lang.predefined.PredefinedCmdPairedDelimiters
 
 /**
  * Inserts the right part of left-right command pairs, like `\left( \right)`.
@@ -35,8 +35,6 @@ open class RightInsertHandler : InsertHandler<LookupElement> {
     }
 }
 
-
-
 /**
  * Inserts the right part of left-right command pairs, like `\left( \right)`.
  *
@@ -47,8 +45,8 @@ object SemanticRightInsertHandler : InsertHandler<LookupElement> {
     fun handleInsert(context: InsertionContext, element: LookupElement, semantic: LSemanticCommand) {
         val editor = context.editor
 
-        val delimiter = PredefinedPairedDelimiters.delimiterLeftMap[semantic.name]
-        if( delimiter != null) {
+        val delimiter = PredefinedCmdPairedDelimiters.delimiterLeftMap[semantic.name]
+        if(delimiter != null) {
             val hasMatchingBrace = BraceMatchingUtil.matchBrace(context.editor.document.text, LatexFileType, editor.highlighter.createIterator(context.editor.caretModel.offset - 1), true)
             PsiDocumentManager.getInstance(editor.project ?: return).doPostponedOperationsAndUnblockDocument(editor.document)
             if (hasMatchingBrace) {
@@ -62,7 +60,6 @@ object SemanticRightInsertHandler : InsertHandler<LookupElement> {
 
     override fun handleInsert(context: InsertionContext, element: LookupElement) {
         val command = element.`object` as? LSemanticCommand ?: return
-        handleInsert(context, element,command)
-
+        handleInsert(context, element, command)
     }
 }

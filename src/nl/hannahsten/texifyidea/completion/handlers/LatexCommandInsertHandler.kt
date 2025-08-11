@@ -214,7 +214,6 @@ class NewLatexCommandInsertHandler(
             .startTemplate(context.editor, template, EnvironmentInsertImports(context, definitionBundle))
     }
 
-
     companion object {
 
         val environmentInitialContentsMap = mapOf(

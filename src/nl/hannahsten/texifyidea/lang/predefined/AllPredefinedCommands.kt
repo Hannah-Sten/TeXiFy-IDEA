@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.lang.predefined
 
 import nl.hannahsten.texifyidea.lang.LSemanticCommand
-import nl.hannahsten.texifyidea.lang.PredefinedCommandSet
 import nl.hannahsten.texifyidea.util.Log
 import kotlin.collections.iterator
 
@@ -10,13 +9,13 @@ object AllPredefinedCommands {
     val allCommands: List<LSemanticCommand> =
         listOf(
             PredefinedPrimitives,
-            PredefinedGenericCommands,
-            PredefinedDefinitionCommands,
-            PredefinedFileCommands,
-            PredefinedMathCommands,
-            PredefinedPairedDelimiters,
-            PredefinedMathSymbols,
-            PredefinedTextSymbols
+            PredefinedCmdGeneric,
+            PredefinedCmdDefinitions,
+            PredefinedCmdFiles,
+            PredefinedCmdMath,
+            PredefinedCmdPairedDelimiters,
+            PredefinedCmdMathSymbols,
+            PredefinedCmdTextSymbols
         ).flatMap {
             it.allCommands
         }

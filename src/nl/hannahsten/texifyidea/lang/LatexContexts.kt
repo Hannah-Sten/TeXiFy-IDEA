@@ -6,7 +6,6 @@ open class SimpleLatexContext(
     override fun toString(): String {
         return name
     }
-
 }
 
 /**
@@ -49,18 +48,18 @@ object LatexContexts {
      */
     val Nothing = SimpleLatexContext("nothing")
 
-    val LabelDefinition = SimpleLatexContext("label.def")
+    val LabelDefinition = SimpleLatexContext("new.label")
     val LabelReference = SimpleLatexContext("label.ref")
 
     /**
      * An identifier that is used in a command definition, such as `\mycmd` in `\newcommand{\mycmd}{...}`.
      */
-    val CommandDeclaration = SimpleLatexContext("def.command")
+    val CommandDeclaration = SimpleLatexContext("new.cmd")
 
     /**
      * An identifier that is used in an environment definition, such as `myenv` in `\newenvironment{myenv}{...}{...}`.
      */
-    val EnvironmentDeclaration = SimpleLatexContext("def.environment")
+    val EnvironmentDeclaration = SimpleLatexContext("new.env")
 
     /**
      * The definition of a command, such as `...` in `\newcommand{\mycmd}{...}`.

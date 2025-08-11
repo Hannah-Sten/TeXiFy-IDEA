@@ -1,10 +1,9 @@
 package nl.hannahsten.texifyidea.lang.predefined
 
-import nl.hannahsten.texifyidea.lang.LatexContext
 import nl.hannahsten.texifyidea.lang.PredefinedCommandSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
 
-object PredefinedMathCommands : PredefinedCommandSet() {
+object PredefinedCmdMath : PredefinedCommandSet() {
 
     val textMathCommands = buildCommands {
         packageOf("amsmath")

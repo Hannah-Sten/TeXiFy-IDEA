@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.lang.predefined
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.PredefinedCommandSet
 
-object PredefinedTextSymbols : PredefinedCommandSet() {
+object PredefinedCmdTextSymbols : PredefinedCommandSet() {
 
     val textcomp = buildCommands {
         packageOf("textcomp")

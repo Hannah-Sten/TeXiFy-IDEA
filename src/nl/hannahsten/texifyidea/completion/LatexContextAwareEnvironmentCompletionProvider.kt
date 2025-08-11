@@ -12,7 +12,6 @@ import nl.hannahsten.texifyidea.lang.LSemanticEnv
 
 object LatexContextAwareEnvironmentCompletionProvider : LatexContextAwareCompletionProviderBase() {
 
-
     private fun buildEnvironmentSignature(env: LSemanticEnv): String {
         return "${env.arguments.joinToString()} <${env.contextSignature}>"
     }
@@ -24,10 +23,11 @@ object LatexContextAwareEnvironmentCompletionProvider : LatexContextAwareComplet
         //
         val env = sourced.entity
         val lookupString = env.name
+        val tailText = buildEnvironmentSignature(env) + buildApplicableContextStr(env)
         return LookupElementBuilder.create(env, lookupString)
             .withPresentableText(env.name)
             .bold()
-            .withTailText(buildEnvironmentSignature(env), true)
+            .withTailText(tailText, true)
             .withTypeText(buildCommandSourceStr(sourced))
             .withIcon(TexifyIcons.DOT_ENVIRONMENT)
     }

@@ -20,7 +20,7 @@ interface LatexContext {
 
 typealias LContextSet = Set<LatexContext>
 
-fun LContextSet.compactDisplayString() : String = joinToString(",") { it.name }
+fun LContextSet.compactDisplayString(): String = joinToString(",") { it.name }
 
 /**
  * Describes how contexts are introduced.
@@ -359,7 +359,7 @@ class LSemanticCommand(
 ) : LSemanticEntity(name, namespace, requiredContext, description) {
 
     override fun toString(): String {
-        return "Cmd($displayName, ctx=<${requiredContext.joinToString(",")}>, arg=${arguments.joinToString("")}, description='$description')"
+        return "Cmd('$displayName', ctx=<${requiredContext.joinToString(",")}>, arg=${arguments.joinToString("")}, description='$description')"
     }
 }
 

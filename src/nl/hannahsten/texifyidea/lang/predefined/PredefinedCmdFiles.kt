@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.lang.predefined
 import nl.hannahsten.texifyidea.lang.*
 import nl.hannahsten.texifyidea.lang.LArgument.Companion.required
 
-object PredefinedFileCommands : PredefinedCommandSet() {
+object PredefinedCmdFiles : PredefinedCommandSet() {
 
     private val classArgument = required("class", LatexContexts.ClassName)
     private val packageArg = required("package", LatexContexts.PackageNames)
