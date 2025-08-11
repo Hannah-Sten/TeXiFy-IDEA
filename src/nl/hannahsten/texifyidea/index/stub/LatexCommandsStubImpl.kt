@@ -21,5 +21,5 @@ class LatexCommandsStubImpl(
 
     override fun getName() = commandToken
 
-    override fun toString() = "LatexCommandsStubImpl{command='$commandToken', parameters=$parameters, optionalParamsMap=$optionalParamsMap}"
+    override fun toString() = "LatexCommandsStub{'$commandToken', parameters=$parameters, optionalParamsMap=$optionalParamsMap}"
 }
