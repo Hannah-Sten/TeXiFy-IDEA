@@ -12,7 +12,6 @@ import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 
 abstract class LatexContextAwareCompletionProvider : CompletionProvider<CompletionParameters>() {
 
-
     protected abstract fun addContextAwareCompletions(
         parameters: CompletionParameters,
         contexts: LContextSet,
@@ -30,7 +29,7 @@ abstract class LatexContextAwareCompletionProvider : CompletionProvider<Completi
         result.addLookupAdvertisement("Experimental feature: context-aware completion. ")
     }
 
-    protected fun packageName(entity : LSemanticEntity): String {
+    protected fun packageName(entity: LSemanticEntity): String {
         val name = entity.dependency
         return if (name.isEmpty()) "" else " ($name)"
     }

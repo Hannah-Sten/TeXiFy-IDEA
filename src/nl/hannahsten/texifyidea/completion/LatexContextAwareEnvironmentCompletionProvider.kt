@@ -12,7 +12,6 @@ import nl.hannahsten.texifyidea.lang.LSemanticEnv
 
 object LatexContextAwareEnvironmentCompletionProvider : LatexContextAwareCompletionProvider() {
 
-
     private fun createEnvironmentLookupElement(env: LSemanticEnv): LookupElementBuilder {
         // somehow we have to add the \begin{ to the lookup string,
         // because the \begin{} command is recognized as a whole since we enable it to have references

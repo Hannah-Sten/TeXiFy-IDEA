@@ -8,7 +8,6 @@ import com.intellij.openapi.startup.ProjectActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import nl.hannahsten.texifyidea.index.LatexProjectStructure
-import nl.hannahsten.texifyidea.util.files.LatexPackageLocation
 import nl.hannahsten.texifyidea.util.isLatexProject
 
 /**

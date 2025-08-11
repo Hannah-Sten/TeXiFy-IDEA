@@ -181,7 +181,6 @@ class DSLLatexEnvironmentBuilderScope : AbstractDSLLatexBuilderScope() {
         return environment
     }
 
-
     inline fun String.env(
         context: LatexContextIntro,
         vararg arguments: LArgument,

@@ -37,7 +37,6 @@ import nl.hannahsten.texifyidea.util.parser.traverse
 
 object LatexDefinitionUtil {
 
-
     /**
      * Parses command definitions in the library file, only recognizing command names but no semantics (because they can be very complex).
      *
@@ -68,7 +67,8 @@ object LatexDefinitionUtil {
                         LSemanticCommand(
                             nameWithSlash.removePrefix("\\"),
                             pkgName
-                        ), pointer, SourcedDefinition.DefinitionSource.Package
+                        ),
+                        pointer, SourcedDefinition.DefinitionSource.Package
                     )
                 )
             }
@@ -214,7 +214,6 @@ object LatexDefinitionUtil {
     private fun List<Pair<LArgumentType, String>>.getNthOptionalArg(index: Int): String? {
         return getNthArgOfType(index, LArgumentType.OPTIONAL)
     }
-
 
     private val namesOfCmdDefRegular = buildSet {
         PredefinedDefinitionCommands.regularDefinitionOfCommand.mapTo(this) { it.name }
@@ -371,7 +370,6 @@ object LatexDefinitionUtil {
         return LSemanticEnv(declaredName, "", requiredCtx)
     }
 
-
     private fun rebuildEnvDefinitionCommand(
         defCommand: LatexCommands, contents: List<Pair<LArgumentType, String>>, project: Project
     ): LatexCommands? {
@@ -412,7 +410,6 @@ object LatexDefinitionUtil {
         val endElement = codeElement.getNthRequiredParameter(3)
         return buildEnvironmentSemantics(envName, beginElement, endElement, argSignature, defCommand, lookup, project)
     }
-
 
     private fun buildEnvironmentSemantics(
         envName: String, beginElement: PsiElement?, endElement: PsiElement?,

@@ -349,7 +349,6 @@ object LatexPsiUtil {
 
     private val baseContext = setOf(LatexContexts.Preamble, LatexContexts.Text)
 
-
     fun resolveContextUpward(e: PsiElement): LContextSet {
         val file = e.containingFile
         val lookup = LatexDefinitionService.getInstance(file.project).getDefBundlesMerged(file)
@@ -443,6 +442,5 @@ object LatexPsiUtil {
 
         val exitState: List<LatexContextIntro>
             get() = state
-
     }
 }

@@ -14,14 +14,9 @@ import com.intellij.util.ProcessingContext
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.completion.handlers.LatexCommandArgumentInsertHandler
 import nl.hannahsten.texifyidea.completion.handlers.LatexCommandInsertHandler
-import nl.hannahsten.texifyidea.completion.handlers.NewLatexCommandInsertHandler
-import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
-import nl.hannahsten.texifyidea.index.SourcedCmdDefinition
 import nl.hannahsten.texifyidea.lang.Dependend
-import nl.hannahsten.texifyidea.lang.LArgument
-import nl.hannahsten.texifyidea.lang.LSemanticCommand
 import nl.hannahsten.texifyidea.lang.commands.Argument
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexMathCommand

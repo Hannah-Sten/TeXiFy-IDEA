@@ -264,7 +264,6 @@ class LatexLibraryStructureService(
     fun invalidateLibraryCache() {
         clearAllCache()
     }
-
 }
 
 /**
@@ -286,10 +285,10 @@ object LatexProjectStructure {
      * Stores the files that are referenced by the latex command.
      */
     val userDataKeyFileReference = Key.create<
-            CacheValueTimed<
-                    Pair<List<String>, List<Set<VirtualFile>>> // List of pairs of original text and set of files in order
-                    >
-            >("latex.command.reference.files")
+        CacheValueTimed<
+            Pair<List<String>, List<Set<VirtualFile>>> // List of pairs of original text and set of files in order
+            >
+        >("latex.command.reference.files")
 
     fun getPossibleRootFiles(project: Project): Set<VirtualFile> {
         if (DumbService.isDumb(project)) return emptySet()
@@ -313,7 +312,7 @@ object LatexProjectStructure {
         // Check if the file is a library file, e.g. in the texlive distribution
         val filetype = file.fileType
         return (filetype == StyleFileType || filetype == ClassFileType || filetype == LatexSourceFileType) &&
-                !ProjectFileIndex.getInstance(project).isInProject(file)
+            !ProjectFileIndex.getInstance(project).isInProject(file)
     }
 
     private open class ProjectInfo(

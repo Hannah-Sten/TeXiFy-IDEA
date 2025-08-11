@@ -280,15 +280,15 @@ private fun stripContentText(text: String, prefix: Char, suffix: Char): String {
     return result.trim()
 }
 
-fun LatexCommandWithParams.getNthRequiredParameter(n : Int) : LatexRequiredParam? {
-    val parameter = getNthChildThat(n){
+fun LatexCommandWithParams.getNthRequiredParameter(n: Int): LatexRequiredParam? {
+    val parameter = getNthChildThat(n) {
         it is LatexParameter && it.requiredParam != null
     } as? LatexParameter
     return parameter?.requiredParam
 }
 
-fun LatexCommandWithParams.getNthOptionalParameter(n : Int) : LatexOptionalParam? {
-    val parameter = getNthChildThat(n){
+fun LatexCommandWithParams.getNthOptionalParameter(n: Int): LatexOptionalParam? {
+    val parameter = getNthChildThat(n) {
         it is LatexParameter && it.optionalParam != null
     } as? LatexParameter
     return parameter?.optionalParam

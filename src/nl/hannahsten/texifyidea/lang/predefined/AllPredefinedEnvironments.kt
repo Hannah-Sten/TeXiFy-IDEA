@@ -101,8 +101,6 @@ object AllPredefinedEnvironments : PredefinedEnvironmentSet() {
             "flalign*".env(Math) { "A set of equations, left and right aligned, without numbering." }
         }
 
-
-
         underContext(Math) {
             val alignableEnvList = listOf(
                 "alignat", "alignat*", "aligned", "alignedat", "xalignat", "xalignat*", "xxalignat",

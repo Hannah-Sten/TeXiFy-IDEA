@@ -3,9 +3,6 @@ package nl.hannahsten.texifyidea.util.parser
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.util.PsiUtil
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment
-import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.psi.LatexCommandWithParams

@@ -18,7 +18,6 @@ import nl.hannahsten.texifyidea.util.files.isStyleFile
 import nl.hannahsten.texifyidea.util.int
 import nl.hannahsten.texifyidea.util.repeat
 
-
 object LatexContextAwareCommandCompletionProvider : LatexContextAwareCompletionProvider() {
 
     override fun addContextAwareCompletions(parameters: CompletionParameters, contexts: LContextSet, defBundle: DefinitionBundle, processingContext: ProcessingContext, result: CompletionResultSet) {
@@ -40,7 +39,6 @@ object LatexContextAwareCommandCompletionProvider : LatexContextAwareCompletionP
     fun createInsertHandler(semantics: LSemanticCommand): InsertHandler<LookupElement> {
         return NewLatexCommandInsertHandler(semantics)
     }
-
 
     private fun appendCommandLookupElements(cmd: LSemanticCommand, result: MutableCollection<LookupElementBuilder>) {
         val default = cmd.dependency == ""

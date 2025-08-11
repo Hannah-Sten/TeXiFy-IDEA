@@ -357,7 +357,7 @@ class LSemanticEnv(
      * The description of the environment, used for documentation.
      */
     description: String = "",
-) : LSemanticEntity(name, namespace, requiredContext, description){
+) : LSemanticEntity(name, namespace, requiredContext, description) {
     override fun toString(): String {
         return "Env($displayName, ctx=<${requiredContext.joinToString(",")}>, arg=${arguments.joinToString("")}, scope=$contextSignature, description='$description')"
     }

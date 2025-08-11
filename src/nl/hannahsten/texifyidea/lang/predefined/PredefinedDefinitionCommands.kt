@@ -12,8 +12,6 @@ import nl.hannahsten.texifyidea.lang.LatexContexts
  */
 object PredefinedDefinitionCommands : PredefinedCommandSet() {
 
-
-
     val regularDefinitionOfCommand = preambleCommands {
 
         val command = required("cmd", LatexContexts.CommandDeclaration)
@@ -85,8 +83,6 @@ object PredefinedDefinitionCommands : PredefinedCommandSet() {
 
         "newenvironment".cmd(envName, numArgs, defaultValue, beginCode, endCode) { "Define a new environment" }
         "renewenvironment".cmd(envName, numArgs, defaultValue, beginCode, endCode) { "Redefine an existing environment" }
-
-
     }
 
     val newTheoremDefinitionOfEnvironment = preambleCommands {
@@ -146,7 +142,6 @@ object PredefinedDefinitionCommands : PredefinedCommandSet() {
             +"or"
         }
     }
-
 
     val namesOfAllCommandDef = buildSet {
         add("def")
