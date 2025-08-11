@@ -6,7 +6,7 @@ import nl.hannahsten.texifyidea.lang.PredefinedCommandSet
 
 object PredefinedPrimitives : PredefinedCommandSet() {
     val primitives = buildCommands {
-        val envArg = LArgument.required("environment", LatexContexts.Identifier)
+        val envArg = LArgument.required("env", LatexContexts.Identifier)
         "begin".cmd(envArg)
         "end".cmd(envArg)
         underContext(LatexContexts.Nothing) { // The primitive commands will never be suggested for autocompletion.

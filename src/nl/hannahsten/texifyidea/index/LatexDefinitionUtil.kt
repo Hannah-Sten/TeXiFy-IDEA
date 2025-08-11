@@ -10,6 +10,7 @@ import com.intellij.psi.stubs.PsiFileStub
 import com.intellij.psi.stubs.StubElement
 import com.intellij.psi.util.elementType
 import nl.hannahsten.texifyidea.file.LatexFile
+import nl.hannahsten.texifyidea.index.SourcedDefinition.DefinitionSource
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
 import nl.hannahsten.texifyidea.index.stub.requiredParamAt
 import nl.hannahsten.texifyidea.lang.LArgument
@@ -68,7 +69,7 @@ object LatexDefinitionUtil {
                             nameWithSlash.removePrefix("\\"),
                             pkgName
                         ),
-                        pointer, SourcedDefinition.DefinitionSource.Package
+                        pointer, DefinitionSource.LibraryScan
                     )
                 )
             }
@@ -83,7 +84,7 @@ object LatexDefinitionUtil {
                     )
                 val pointer = pointerManager.createSmartPsiElementPointer(defStub.psi, psiFile)
                 definitions.add(
-                    SourcedEnvDefinition(semanticEnv, pointer, SourcedDefinition.DefinitionSource.Package)
+                    SourcedEnvDefinition(semanticEnv, pointer, DefinitionSource.LibraryScan)
                 )
             }
         }
@@ -103,7 +104,7 @@ object LatexDefinitionUtil {
                 val semanticCmd = LSemanticCommand(cmdName.removePrefix("\\"), libInfo.name)
                 val pointer = pointerManager.createSmartPsiElementPointer(e, psiFile)
                 result.add(
-                    SourcedCmdDefinition(semanticCmd, pointer, SourcedDefinition.DefinitionSource.Package)
+                    SourcedCmdDefinition(semanticCmd, pointer, DefinitionSource.LibraryScan)
                 )
             }
             else if (name in PredefinedDefinitionCommands.namesOfAllEnvironmentDef) {
@@ -111,7 +112,7 @@ object LatexDefinitionUtil {
                 val semanticEnv = LSemanticEnv(envName, libInfo.name)
                 val pointer = pointerManager.createSmartPsiElementPointer(e, psiFile)
                 result.add(
-                    SourcedEnvDefinition(semanticEnv, pointer, SourcedDefinition.DefinitionSource.Package)
+                    SourcedEnvDefinition(semanticEnv, pointer, DefinitionSource.LibraryScan)
                 )
             }
         }
@@ -168,7 +169,7 @@ object LatexDefinitionUtil {
             val semantics = parseRegularCommandDef(defCommand, lookup, project) ?: continue
             val pointer = manager.createSmartPsiElementPointer(defCommand, psiFile)
             definitions.add(
-                SourcedCmdDefinition(semantics, pointer, SourcedDefinition.DefinitionSource.UserDefined)
+                SourcedCmdDefinition(semantics, pointer, DefinitionSource.UserDefined)
             )
         }
 
@@ -177,7 +178,7 @@ object LatexDefinitionUtil {
             val semantics = parseEnvironmentDef(defCommand, lookup, project) ?: continue
             val pointer = manager.createSmartPsiElementPointer(defCommand, psiFile)
             definitions.add(
-                SourcedEnvDefinition(semantics, pointer, SourcedDefinition.DefinitionSource.UserDefined)
+                SourcedEnvDefinition(semantics, pointer, DefinitionSource.UserDefined)
             )
         }
         return definitions
@@ -427,49 +428,38 @@ object LatexDefinitionUtil {
         return LSemanticEnv(envName, "", requiredContext, arguments, innerIntro)
     }
 
-    fun mergeCommand(old: LSemanticCommand, new: LSemanticCommand): LSemanticCommand {
-        if (old != new) { // whether the commands are the same
-            return new
-        }
-        val arguments = new.arguments.ifEmpty {
-            old.arguments // if the new command has no arguments, keep the old ones
-        }
-        val description = new.description.ifEmpty {
-            old.description // if the new command has no description, keep the old one
-        }
-        val display = new.display ?: old.display
-        val requiredContext = new.requiredContext.ifEmpty {
-            old.requiredContext // if the new command has no required context, keep the old one
-        }
-        return LSemanticCommand(
-            new.name, new.dependency,
-            requiredContext = requiredContext,
-            arguments = arguments,
-            description = description,
-            display = display
-        )
+
+    private fun mergeCmdDefinition(old: SourcedCmdDefinition, new: SourcedCmdDefinition): SourcedCmdDefinition {
+        val pointer = new.definitionCommandPointer ?: old.definitionCommandPointer
+        return SourcedCmdDefinition(old.entity, pointer, old.source)
     }
 
-    fun mergeCmdDefinition(old: SourcedCmdDefinition, new: SourcedCmdDefinition): SourcedCmdDefinition {
-        val cmd = mergeCommand(old.entity, new.entity)
+    private fun mergeEnvDefinition(old: SourcedEnvDefinition, new: SourcedEnvDefinition): SourcedEnvDefinition {
         val pointer = new.definitionCommandPointer ?: old.definitionCommandPointer
-        return SourcedCmdDefinition(cmd, pointer, SourcedDefinition.DefinitionSource.Merged)
+        return SourcedEnvDefinition(old.entity, pointer, old.source)
     }
 
-    fun mergeEnvDefinition(old: SourcedEnvDefinition, new: SourcedEnvDefinition): SourcedEnvDefinition {
-        val env = new.entity
-        val pointer = new.definitionCommandPointer ?: old.definitionCommandPointer
-        return SourcedEnvDefinition(env, pointer, SourcedDefinition.DefinitionSource.Merged)
+    private fun overrideOrKeep(old: SourcedDefinition, new: SourcedDefinition): SourcedDefinition {
+        if (old.source == DefinitionSource.Predefined && new.source == DefinitionSource.LibraryScan) {
+            // do not override predefined environments with package definitions (they are messy)
+            return old
+        }
+        println("Def overridden: $old by $new")
+        return new
     }
 
     fun mergeDefinition(old: SourcedDefinition, new: SourcedDefinition): SourcedDefinition {
         if (old.entity != new.entity) {
             // TODO: change to log after testing
-            println("Command override: $old and $new")
+            println("Merging commands: $old and $new")
         }
         // do not override primitive definitions
-        if (old.source == SourcedDefinition.DefinitionSource.Primitive) return old
-        if (new.source == SourcedDefinition.DefinitionSource.Primitive) return new
+        if (old.source == DefinitionSource.Primitive) return old
+        if (new.source == DefinitionSource.Primitive) return new
+        if (old.entity != new.entity) {
+            return overrideOrKeep(old, new)
+        }
+
         return when (old) {
             is SourcedCmdDefinition -> when (new) {
                 is SourcedCmdDefinition -> mergeCmdDefinition(old, new)

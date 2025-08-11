@@ -21,6 +21,7 @@ import nl.hannahsten.texifyidea.lang.predefined.AllPredefinedCommands
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefinedEnvironments
 import nl.hannahsten.texifyidea.lang.predefined.PredefinedPrimitives
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.AbstractBlockingCacheService
 import nl.hannahsten.texifyidea.util.Log
 import java.util.concurrent.atomic.AtomicInteger
@@ -57,7 +58,7 @@ sealed class SourcedDefinition(
         Primitive,
         Predefined,
         Merged,
-        Package,
+        LibraryScan,
         UserDefined
     }
 }
@@ -99,11 +100,10 @@ interface DefinitionBundle : LatexSemanticsLookup {
     }
 }
 
-open class CompositeDefinitionBundle(
+abstract class MergedDefinitionBundle(
     val introducedDefinitions: Map<String, SourcedDefinition> = emptyMap(),
     val directDependencies: List<DefinitionBundle> = emptyList(),
 ) : DefinitionBundle {
-
     override fun appendDefinitions(nameMap: MutableMap<String, SourcedDefinition>, includedPackages: MutableSet<String>) {
         for (dep in directDependencies) {
             dep.appendDefinitions(nameMap, includedPackages)
@@ -112,19 +112,13 @@ open class CompositeDefinitionBundle(
             nameMap.merge(sourcedDef.entity.name, sourcedDef, LatexDefinitionUtil::mergeDefinition)
         }
     }
-
-    override fun findDefinition(name: String): SourcedDefinition? {
-        return introducedDefinitions[name] ?: directDependencies.asReversed().firstNotNullOfOrNull {
-            it.findDefinition(name)
-        }
-    }
 }
 
-open class CachedCompositeDefinitionBundle(
+open class CachedMergedDefinitionBundle(
     introducedDefinitions: Map<String, SourcedDefinition> = emptyMap(),
     directDependencies: List<DefinitionBundle> = emptyList()
-) : CompositeDefinitionBundle(introducedDefinitions, directDependencies) {
-    val allNameLookup: Map<String, SourcedDefinition> by lazy {
+) : MergedDefinitionBundle(introducedDefinitions, directDependencies) {
+    private val allNameLookup: Map<String, SourcedDefinition> by lazy {
         buildMap {
             // let us cache the full lookup map since a package can be used frequently
             appendDefinitions(this, mutableSetOf())
@@ -134,6 +128,11 @@ open class CachedCompositeDefinitionBundle(
     final override fun sourcedDefinitions(): Collection<SourcedDefinition> {
         return allNameLookup.values
     }
+
+    final override fun findDefinition(name: String): SourcedDefinition? {
+        // this would load the cached full map, but necessary
+        return allNameLookup[name]
+    }
 }
 
 class LibDefinitionBundle(
@@ -141,15 +140,10 @@ class LibDefinitionBundle(
     introducedDefinitions: Map<String, SourcedDefinition> = emptyMap(),
     directDependencies: List<LibDefinitionBundle> = emptyList(),
     val allLibraries: Set<String> = setOf(libName)
-) : CachedCompositeDefinitionBundle(introducedDefinitions, directDependencies) {
+) : CachedMergedDefinitionBundle(introducedDefinitions, directDependencies) {
 
     override fun toString(): String {
         return "Lib($libName, #defs=${introducedDefinitions.size})"
-    }
-
-    override fun findDefinition(name: String): SourcedDefinition? {
-        // load the cached full map
-        return allNameLookup[name]
     }
 
     override fun appendDefinitions(nameMap: MutableMap<String, SourcedDefinition>, includedPackages: MutableSet<String>) {
@@ -158,10 +152,6 @@ class LibDefinitionBundle(
     }
 }
 
-class FilesetDefinitionBundle(
-    customDefinitions: Map<String, SourcedDefinition> = emptyMap(),
-    libraryBundles: List<LibDefinitionBundle> = emptyList()
-) : CachedCompositeDefinitionBundle(customDefinitions, libraryBundles)
 
 /**
  * Command definition service for a single LaTeX package (`.cls` or `.sty` file).
@@ -183,12 +173,6 @@ class LatexLibraryDefinitionService(
         for (def in definitions) {
             currentSourcedDefinitions.merge(def.entity.name, def, LatexDefinitionUtil::mergeDefinition)
         }
-    }
-
-    private fun processPsiEnvironmentDefinitions(
-        libInfo: LatexLibraryInfo,
-        currentSourcedDefinitions: MutableMap<String, SourcedDefinition>
-    ) {
     }
 
     private fun processExternalDefinitions(
@@ -284,7 +268,7 @@ class LatexLibraryDefinitionService(
         return getOrComputeNow(libName, expirationInMs)
     }
 
-    companion object : SimplePerformanceTracker{
+    companion object : SimplePerformanceTracker {
         fun getInstance(project: Project): LatexLibraryDefinitionService {
             return project.service()
         }
@@ -344,11 +328,44 @@ class LatexLibraryDefinitionService(
 @Service(Service.Level.PROJECT)
 class LatexDefinitionService(
     val project: Project,
-) : AbstractBlockingCacheService<Fileset, FilesetDefinitionBundle>() {
+) : AbstractBlockingCacheService<Fileset, DefinitionBundle>() {
 
-    var expirationInMs: Long = 1000L // TODO: perhaps sync with file modification time?
+    val expirationInMs: Long
+        get() = TexifySettings.getInstance().filesetExpirationTimeMs.toLong()
 
-    override fun computeValue(key: Fileset, oldValue: FilesetDefinitionBundle?): FilesetDefinitionBundle {
+    private class WorkingFilesetDefinitionBundle(
+        libraryBundles: List<LibDefinitionBundle> = emptyList(),
+    ) : DefinitionBundle {
+        private val allNameLookup: MutableMap<String, SourcedDefinition> = mutableMapOf()
+
+        init {
+            val includedPackages = mutableSetOf<String>()
+            for (dep in libraryBundles) {
+                dep.appendDefinitions(allNameLookup, includedPackages)
+            }
+        }
+
+        override fun appendDefinitions(nameMap: MutableMap<String, SourcedDefinition>, includedPackages: MutableSet<String>) {
+            nameMap.putAll(allNameLookup)
+        }
+
+        override fun findDefinition(name: String): SourcedDefinition? {
+            return allNameLookup[name]
+        }
+
+        /**
+         * Overwrite the definition for a custom command or environment.
+         */
+        fun addCustomDefinition(def: SourcedDefinition) {
+            allNameLookup[def.entity.name] = def
+        }
+
+        override fun sourcedDefinitions(): Collection<SourcedDefinition> {
+            return allNameLookup.values
+        }
+    }
+
+    override fun computeValue(key: Fileset, oldValue: DefinitionBundle?): DefinitionBundle {
         val startTime = System.currentTimeMillis()
 
         // packages do not need indexing
@@ -357,10 +374,9 @@ class LatexDefinitionService(
         libraries.add(packageService.getLibBundle("")) // add the default commands
         key.libraries.mapTo(libraries) { packageService.getLibBundle(it) }
 
-        if (DumbService.isDumb(project)) return FilesetDefinitionBundle(emptyMap(), libraries)
+        if (DumbService.isDumb(project)) return CachedMergedDefinitionBundle(emptyMap(), libraries)
 
-        val customCommands = mutableMapOf<String, SourcedDefinition>()
-        val bundle = FilesetDefinitionBundle(customCommands, libraryBundles = libraries)
+        val bundle = WorkingFilesetDefinitionBundle(libraries)
 
         val projectFileIndex = ProjectFileIndex.getInstance(project)
         // a building placeholder for the bundle to make lookups work
@@ -369,7 +385,7 @@ class LatexDefinitionService(
             val commandDefinitions = LatexDefinitionUtil.collectCustomDefinitions(file, project, bundle)
             for (sourcedDef in commandDefinitions) {
                 // always overwrite for user-defined commands
-                customCommands.put(sourcedDef.entity.name, sourcedDef)
+                bundle.addCustomDefinition(sourcedDef)
             }
         }
 
@@ -410,7 +426,11 @@ class LatexDefinitionService(
         }
     }
 
-    companion object :SimplePerformanceTracker{
+    fun refresh() {
+        clearAllCache()
+    }
+
+    companion object : SimplePerformanceTracker {
         fun getInstance(project: Project): LatexDefinitionService {
             return project.service()
         }
@@ -436,7 +456,23 @@ class LatexDefinitionService(
 
         fun union(list: List<DefinitionBundle>): DefinitionBundle {
             if (list.size == 1) return list[0]
-            return CompositeDefinitionBundle(directDependencies = list)
+            return CompositeOverridingDefinitionBundle(list)
+        }
+    }
+
+    class CompositeOverridingDefinitionBundle(
+        val bundles: List<DefinitionBundle>
+    ) : DefinitionBundle {
+        override fun findDefinition(name: String): SourcedDefinition? {
+            return bundles.firstNotNullOfOrNull { it.findDefinition(name) }
+        }
+
+        override fun appendDefinitions(nameMap: MutableMap<String, SourcedDefinition>, includedPackages: MutableSet<String>) {
+            for (bundle in bundles) {
+                bundle.sourcedDefinitions().forEach {
+                    nameMap[it.entity.name] = it
+                }
+            }
         }
     }
 }

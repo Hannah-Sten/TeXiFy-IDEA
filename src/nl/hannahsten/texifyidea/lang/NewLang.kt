@@ -20,6 +20,8 @@ interface LatexContext {
 
 typealias LContextSet = Set<LatexContext>
 
+fun LContextSet.compactDisplayString() : String = joinToString(",") { it.name }
+
 /**
  * Describes how contexts are introduced.
  */
@@ -145,7 +147,7 @@ object LContextInherit : LatexContextIntro {
     }
 
     override fun toString(): String {
-        return "Inherit"
+        return ""
     }
 }
 
@@ -181,7 +183,7 @@ data class LAssignContext(val contexts: Set<LatexContext>) : LatexContextIntro {
     }
 
     override fun toString(): String {
-        return "Assign(${contexts.joinToString { it.name }})"
+        return "Assign(${contexts.joinToString(",") { it.name }})"
     }
 }
 
@@ -208,10 +210,10 @@ class LModifyContext(val toAdd: Set<LatexContext>, val toRemove: Set<LatexContex
     override fun toString(): String {
         val parts = mutableListOf<String>()
         if (toAdd.isNotEmpty()) {
-            parts += "+(${toAdd.joinToString { it.name }})"
+            parts += "+(${toAdd.joinToString(",") { it.name }})"
         }
         if (toRemove.isNotEmpty()) {
-            parts += "-(${toRemove.joinToString { it.name }})"
+            parts += "-(${toRemove.joinToString(",") { it.name }})"
         }
         return parts.joinToString("", prefix = "Modify(", postfix = ")")
     }
@@ -249,10 +251,30 @@ class LArgument(
     val isOptional: Boolean
         get() = type == LArgumentType.OPTIONAL
 
+    private fun contextIntroDisplay(): String {
+        return when (contextSignature) {
+            LContextInherit -> ""
+            is LClearContext -> "<>"
+            is LAssignContext -> "<${contextSignature.contexts.compactDisplayString()}>"
+            is LModifyContext -> buildString {
+                append("<")
+                if (contextSignature.toAdd.isNotEmpty()) {
+                    append("+${contextSignature.toAdd.compactDisplayString()}")
+                }
+                if (contextSignature.toRemove.isNotEmpty()) {
+                    if (contextSignature.toAdd.isNotEmpty()) append(";")
+                    append("-${contextSignature.toRemove.compactDisplayString()}")
+                }
+                append(">")
+            }
+        }
+    }
+
     override fun toString(): String {
+        val introDisplay = contextIntroDisplay()
         return when (type) {
-            LArgumentType.REQUIRED -> "{$name<$contextSignature>}"
-            LArgumentType.OPTIONAL -> "[$name<$contextSignature>]"
+            LArgumentType.REQUIRED -> "{$name$introDisplay}"
+            LArgumentType.OPTIONAL -> "[$name$introDisplay]"
         }
     }
 

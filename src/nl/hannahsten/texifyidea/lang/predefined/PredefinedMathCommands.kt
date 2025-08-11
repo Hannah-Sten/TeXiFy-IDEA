@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.lang.predefined
 
+import nl.hannahsten.texifyidea.lang.LatexContext
 import nl.hannahsten.texifyidea.lang.PredefinedCommandSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
 
@@ -14,7 +15,6 @@ object PredefinedMathCommands : PredefinedCommandSet() {
         }
 
         underContext {
-            // mostly used in command definition
             "ensuremath".cmd("math".required(LatexContexts.Math)) { "Ensure math mode" }
         }
     }
