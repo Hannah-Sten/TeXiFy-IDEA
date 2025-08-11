@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.inspections.latex.probablebugs
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.inspections.TexifyRegexInspection
+import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 import nl.hannahsten.texifyidea.util.parser.inDirectEnvironment
@@ -11,6 +12,7 @@ import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
 import nl.hannahsten.texifyidea.util.labels.getLabelReferenceCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
+import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -41,6 +43,8 @@ class LatexEscapeAmpersandInspection : TexifyRegexInspection(
         if (this.inDirectEnvironment(EnvironmentMagic.getAllTableEnvironments(project))) return true
         if (this.inDirectEnvironment(EnvironmentMagic.alignableEnvironments)) return true
 
+        val context = LatexPsiUtil.resolveContextUpward(this)
+        if(LatexContexts.Tabular in context || LatexContexts.Alignable in context) return true
         // Other exceptions
         val command = this.firstParentOfType(LatexCommands::class)?.name
         return command in CommandMagic.urls ||
