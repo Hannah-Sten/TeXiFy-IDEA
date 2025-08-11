@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.completion
 import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.updateFilesets
 import org.junit.Test
 
 class LatexCompletionTest : BasePlatformTestCase() {
@@ -39,6 +40,7 @@ class LatexCompletionTest : BasePlatformTestCase() {
             \h<caret>
             """.trimIndent()
         )
+        myFixture.updateFilesets()
 
         // when
         val result = myFixture.complete(CompletionType.BASIC)
