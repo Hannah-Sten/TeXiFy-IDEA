@@ -14,7 +14,6 @@ import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.lang.LArgument
 import nl.hannahsten.texifyidea.lang.LSemanticCommand
 import nl.hannahsten.texifyidea.lang.LSemanticEnv
-import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.Argument
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
@@ -270,22 +269,24 @@ class NewLatexCommandInsertHandler(
             insertRequiredArguments(envSemantic, context)
             envSemantic ?: return
 
-            val pack = LatexPackage(envSemantic.dependency)
-            val file = context.file
             val editor = context.editor
-            val envDefinitions = file.definitionsAndRedefinitionsInFileSet().asSequence()
-                .filter { it.isEnvironmentDefinition() }
-                .mapNotNull { it.requiredParameterText(0) }
-                .toSet()
 
-            // Include packages.
-            if (!file.includedPackagesInFileset().contains(pack) && envName !in envDefinitions) {
-                file.insertUsepackage(pack)
-            }
+            // TODO: re-enable automatic package inclusion
+//            val pack = LatexPackage(envSemantic.dependency)
+//            val file = context.file
+//            val envDefinitions = file.definitionsAndRedefinitionsInFileSet().asSequence()
+//                .filter { it.isEnvironmentDefinition() }
+//                .mapNotNull { it.requiredParameterText(0) }
+//                .toSet()
+//
+//            // Include packages.
+//            if (!file.includedPackagesInFileset().contains(pack) && envName !in envDefinitions) {
+//                file.insertUsepackage(pack)
+//            }
 
             // Add initial contents.
             val initial = environmentInitialContentsMap[envName] ?: ""
-            editor.insertAndMove(editor.caretModel.offset, initial)
+            editor.insertAndMove(context.editor.caretModel.offset, initial)
         }
 
         override fun templateFinished(template: Template, b: Boolean) {}

@@ -10,6 +10,6 @@ class RefreshFilesetAction : AnAction() {
         val project = e.project ?: return
         // Call a refresh of the fileset cache
         LatexProjectStructure.getFilesets(project, callRefresh = true)
-        LatexDefinitionService.getInstance(project).refresh()
+        LatexDefinitionService.getInstance(project).requestRefresh()
     }
 }

@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.util
 
-import com.jetbrains.rd.util.concurrentMapOf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -36,7 +35,7 @@ suspend inline fun Mutex.tryLockOrSkip(action: suspend () -> Unit) {
 }
 
 abstract class AbstractCacheServiceBase<K : Any, V> {
-    protected val caches: MutableMap<K, CacheValueTimed<V>> = concurrentMapOf()
+    protected val caches: MutableMap<K, CacheValueTimed<V>> = ConcurrentHashMap()
     protected val computingState = ConcurrentHashMap<K, Mutex>()
 
     protected fun getComputingState(key: K): Mutex {
@@ -295,11 +294,11 @@ abstract class GenericCacheService<P>(val param: P, private val coroutineScope: 
      * It is guaranteed that [suspendComputation] will not run in parallel with itself for the same key.
      */
     suspend fun <T : Any> ensureRefresh(
-        key: TypedKey<T>, suspendComputation: suspend (P) -> T?
-    ): T? {
+        key: TypedKey<T>, suspendComputation: suspend (P) -> T
+    ): T {
         val computing = getComputingState(key)
         computing.withLock {
-            return suspendComputation(param)?.also { put(key, it) }
+            return suspendComputation(param).also { put(key, it) }
         }
     }
 }

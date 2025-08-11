@@ -7,13 +7,14 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.ProjectActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.util.isLatexProject
 
 /**
  * Initialize package location cache, because filling it takes a long time, we do not want to do that only at the moment we need it (when resolving references).
  */
-class LatexProjectStructureCacheInitializer : ProjectActivity {
+class LatexProjectCacheInitializer : ProjectActivity {
 
     override suspend fun execute(project: Project) {
         if (ApplicationManager.getApplication().isUnitTestMode) return
@@ -23,8 +24,8 @@ class LatexProjectStructureCacheInitializer : ProjectActivity {
         if (!isLatexProject) return
         withContext(Dispatchers.Default) {
             // Not sure on which thread this is run, run in background to be sure
-//            LatexPackageLocation.updateLocationWithKpsewhichSuspend(project)
-            LatexProjectStructure.updateFilesetsSuspend(project)
+            val projectFilesets = LatexProjectStructure.updateFilesetsSuspend(project)
+            LatexDefinitionService.getInstance(project).ensureRefreshAll(projectFilesets)
             // there will be an exception if we try to restart the daemon in unit tests
             // see FileStatusMap.CHANGES_NOT_ALLOWED_DURING_HIGHLIGHTING
             DaemonCodeAnalyzer.getInstance(project).restart()

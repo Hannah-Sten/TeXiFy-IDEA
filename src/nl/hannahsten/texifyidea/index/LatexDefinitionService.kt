@@ -2,15 +2,16 @@ package nl.hannahsten.texifyidea.index
 
 import arrow.atomic.AtomicLong
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.smartReadAction
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
-import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectFileIndex
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.search.GlobalSearchScope
+import kotlinx.coroutines.CoroutineScope
 import nl.hannahsten.texifyidea.action.debug.SimplePerformanceTracker
 import nl.hannahsten.texifyidea.index.SourcedDefinition.DefinitionSource
 import nl.hannahsten.texifyidea.lang.LSemanticCommand
@@ -22,6 +23,7 @@ import nl.hannahsten.texifyidea.lang.predefined.AllPredefinedEnvironments
 import nl.hannahsten.texifyidea.lang.predefined.PredefinedPrimitives
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.settings.TexifySettings
+import nl.hannahsten.texifyidea.util.AbstractBackgroundCacheService
 import nl.hannahsten.texifyidea.util.AbstractBlockingCacheService
 import nl.hannahsten.texifyidea.util.Log
 import java.util.concurrent.atomic.AtomicInteger
@@ -326,8 +328,8 @@ class LatexLibraryDefinitionService(
  */
 @Service(Service.Level.PROJECT)
 class LatexDefinitionService(
-    val project: Project,
-) : AbstractBlockingCacheService<Fileset, DefinitionBundle>() {
+    val project: Project, scope: CoroutineScope
+) : AbstractBackgroundCacheService<Fileset, DefinitionBundle>(scope) {
 
     val expirationInMs: Long
         get() = TexifySettings.getInstance().filesetExpirationTimeMs.toLong()
@@ -364,16 +366,14 @@ class LatexDefinitionService(
         }
     }
 
-    override fun computeValue(key: Fileset, oldValue: DefinitionBundle?): DefinitionBundle {
+    private fun computeValue(key: Fileset, oldValue: DefinitionBundle?): DefinitionBundle {
         val startTime = System.currentTimeMillis()
 
-        // packages do not need indexing
+        // packages first
         val packageService = LatexLibraryDefinitionService.getInstance(project)
         val libraries = ArrayList<LibDefinitionBundle>(key.libraries.size + 1)
         libraries.add(packageService.getLibBundle("")) // add the default commands
         key.libraries.mapTo(libraries) { packageService.getLibBundle(it) }
-
-        if (DumbService.isDumb(project)) return CachedMergedDefinitionBundle(emptyMap(), libraries)
 
         val bundle = WorkingFilesetDefinitionBundle(libraries)
 
@@ -387,14 +387,19 @@ class LatexDefinitionService(
                 bundle.addCustomDefinition(sourcedDef)
             }
         }
-
         countOfBuilds.incrementAndGet()
         totalTimeCost.addAndGet(System.currentTimeMillis() - startTime)
         return bundle
     }
 
+    override suspend fun computeValueSuspend(key: Fileset, oldValue: DefinitionBundle?): DefinitionBundle {
+        return smartReadAction(project) {
+            computeValue(key, oldValue)
+        }
+    }
+
     fun getDefBundleForFileset(fileset: Fileset): DefinitionBundle {
-        return getOrComputeNow(fileset, expirationInMs)
+        return getAndComputeLater(fileset, expirationInMs, LatexLibraryDefinitionService.baseLibBundle)
     }
 
     fun getDefBundlesMerged(psiFile: PsiFile): DefinitionBundle {
@@ -425,8 +430,12 @@ class LatexDefinitionService(
         }
     }
 
-    fun refresh() {
-        clearAllCache()
+    fun requestRefresh() {
+        scheduleRefreshAll()
+    }
+
+    suspend fun ensureRefreshAll(projectFilesets: LatexProjectFilesets) {
+        refreshAll(projectFilesets.filesets)
     }
 
     companion object : SimplePerformanceTracker {
