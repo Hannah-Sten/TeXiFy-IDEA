@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.index
 
 import arrow.atomic.AtomicLong
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.DumbService
@@ -295,9 +296,18 @@ class PackageDefinitionService(
         val totalBuildTime = AtomicLong(0)
 
         val baseLibBundle: LibDefinitionBundle by lazy {
+
             // return the hard-coded basic commands
             val currentSourcedDefinitions = mutableMapOf<String, SourcedDefinition>()
-            processPredefinedCommandsAndEnvironments("", currentSourcedDefinitions)
+            if (ApplicationManager.getApplication().isUnitTestMode) {
+                // add all the predefined commands and environments in unit test mode
+                processAllPredefinedCommands(currentSourcedDefinitions)
+                processAllPredefinedEnvironments(currentSourcedDefinitions)
+            }
+            else {
+                processPredefinedCommandsAndEnvironments("", currentSourcedDefinitions)
+            }
+
             // overwrite the definitions with the primitive commands
             PredefinedPrimitives.allCommands.forEach {
                 currentSourcedDefinitions[it.name] = SourcedCmdDefinition(it, null, DefinitionSource.Primitive)
@@ -310,6 +320,18 @@ class PackageDefinitionService(
                 defMap[command.name] = SourcedCmdDefinition(command, null, DefinitionSource.Predefined)
             }
             AllPredefinedEnvironments.packageToEnvironments[name]?.forEach { env ->
+                defMap[env.name] = SourcedEnvDefinition(env, null, DefinitionSource.Predefined)
+            }
+        }
+
+        private fun processAllPredefinedCommands(defMap: MutableMap<String, SourcedDefinition>) {
+            AllPredefinedCommands.allCommands.forEach { command ->
+                defMap[command.name] = SourcedCmdDefinition(command, null, DefinitionSource.Predefined)
+            }
+        }
+
+        private fun processAllPredefinedEnvironments(defMap: MutableMap<String, SourcedDefinition>) {
+            AllPredefinedEnvironments.allEnvironments.forEach { env ->
                 defMap[env.name] = SourcedEnvDefinition(env, null, DefinitionSource.Predefined)
             }
         }

@@ -99,13 +99,6 @@ class DSLLatexCommandBuilderScope : AbstractDSLLatexBuilderScope() {
         return commands
     }
 
-    operator fun String.invoke(
-        vararg arguments: LArgument,
-        description: String = "",
-    ): LSemanticCommand {
-        return cmd(*arguments) { description }
-    }
-
     fun String.cmd(
         vararg arguments: LArgument,
         desc: String = "",

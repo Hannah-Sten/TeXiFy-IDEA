@@ -72,7 +72,7 @@ object AllPredefinedEnvironments : PredefinedEnvironmentSet() {
 
     val basicUnderMath = buildEnvironments {
         underContext(Math) {
-            "array".env(Math, "cols".required) {
+            "array".env(setOf(Math,Alignable), "cols".required) {
                 "An array (matrix) environment."
             }
         }
@@ -83,7 +83,7 @@ object AllPredefinedEnvironments : PredefinedEnvironmentSet() {
         +"verbatim*"
     }
 
-    val amsmathEnv = buildEnvironments {
+    val someMathEnv = buildEnvironments {
         packageOf("amsmath")
 
         val alignableMath = setOf(Math, Alignable)
@@ -112,6 +112,14 @@ object AllPredefinedEnvironments : PredefinedEnvironmentSet() {
                 envName.env(alignableMath)
             }
             +"gathered"
+        }
+
+
+        underPackage("blkarray"){
+            "block".env(LatexContextIntro.inherit(), "title".required(LatexContexts.Text))
+            "blockarray".env(alignableMath, "cols".required(Literal)) {
+                "A block array environment."
+            }
         }
     }
 
@@ -211,9 +219,6 @@ object AllPredefinedEnvironments : PredefinedEnvironmentSet() {
     val algorithm = buildEnvironments {
         packageOf("algorithmicx")
         +"algorithmic"
-        packageOf("blkarray")
-        +"block"
-        +"blockarray"
     }
 
     val other = buildEnvironments {
