@@ -28,11 +28,7 @@ class PerformanceDiagnosticAction : AnAction() {
     )
 
     override fun actionPerformed(e: AnActionEvent) {
-        // TODO: only for test purposes, remove later
         val project = e.project ?: return
-        PackageDefinitionService.getInstance(project).invalidateCache()
-        val bundle = project.service<PackageDefinitionService>().getLibBundle("amsmath.sty")
-        val def = LatexDefinitionService.getInstance(project).resolveDefInProject("alpha")
         // show a dialog with performance diagnostic information
         val tableData = listOf(
             PerformanceData(

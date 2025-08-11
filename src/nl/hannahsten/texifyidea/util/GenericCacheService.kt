@@ -55,6 +55,15 @@ abstract class AbstractCacheServiceBase<K : Any, V> {
         return caches[key]?.value
     }
 
+    protected fun getUpToDateValueOrNull(key: K, expirationInMs: Long): V? {
+        val cachedValue = caches[key] ?: return null
+        return if (cachedValue.isNotExpired(expirationInMs)) {
+            cachedValue.value
+        } else {
+            null
+        }
+    }
+
     protected fun clearAllCache() {
         caches.clear()
     }
@@ -124,7 +133,7 @@ abstract class AbstractBackgroundCacheService<K : Any, V : Any>(private val coro
     }
 }
 
-abstract class AbstractBlockingCacheService<K : Any, V : Any>() : AbstractCacheServiceBase<K, V>() {
+abstract class AbstractBlockingCacheService<K : Any, V>() : AbstractCacheServiceBase<K, V>() {
 
     protected abstract fun computeValue(key: K, oldValue: V?): V
 

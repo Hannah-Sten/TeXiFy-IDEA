@@ -27,13 +27,13 @@ object LatexPackageLocation {
 
     private val locationCacheKey = GenericCacheService.createKey<Map<String, Path>>()
 
-    /**
-     * Fill cache with all paths of all files in the LaTeX installation.
-     * Note: this can take a long time.
-     */
-    suspend fun updateLocationWithKpsewhichSuspend(project: Project) {
-        TexifyProjectCacheService.getInstance(project).computeOrSkip(locationCacheKey, ::computeLocationWithKpsewhich)
-    }
+//    /**
+//     * Fill cache with all paths of all files in the LaTeX installation.
+//     * Note: this can take a long time.
+//     */
+//    suspend fun updateLocationWithKpsewhichSuspend(project: Project) {
+//        TexifyProjectCacheService.getInstance(project).ensureRefresh(locationCacheKey, ::computeLocationWithKpsewhich)
+//    }
 
     /**
      * Fill cache with all paths of all files in the LaTeX installation.
@@ -93,10 +93,10 @@ object LatexPackageLocation {
             pathOrNull((projectSdk.sdkType as TectonicSdk).getPackageLocation(name, projectSdk.homePath))
         }
         else {
-            val cache = TexifyProjectCacheService.getInstance(project).getAndComputeLater(
+            val cache = TexifyProjectCacheService.getInstance(project).getOrComputeNow(
                 locationCacheKey, EXPIRATION_TIME, ::computeLocationWithKpsewhich
             )
-            cache?.get(name)
+            cache.get(name)
         }
         return path
     }

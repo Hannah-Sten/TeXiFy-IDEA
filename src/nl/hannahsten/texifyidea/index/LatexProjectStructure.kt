@@ -4,6 +4,8 @@ import com.fasterxml.jackson.dataformat.toml.TomlMapper
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.smartReadAction
+import com.intellij.openapi.components.Service
+import com.intellij.openapi.components.service
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
@@ -19,7 +21,6 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.search.FilenameIndex
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.search.ProjectScope
-import com.jetbrains.rd.util.concurrentMapOf
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexGraphicsPathProvider.getGraphicsPaths
 import nl.hannahsten.texifyidea.file.ClassFileType
 import nl.hannahsten.texifyidea.file.LatexFileType
@@ -32,6 +33,7 @@ import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.settings.TexifySettings
+import nl.hannahsten.texifyidea.util.AbstractBlockingCacheService
 import nl.hannahsten.texifyidea.util.CacheValueTimed
 import nl.hannahsten.texifyidea.util.GenericCacheService
 import nl.hannahsten.texifyidea.util.TexifyProjectCacheService
@@ -161,16 +163,28 @@ class LatexLibraryInfo(
     }
 }
 
-object LatexLibraryStructure {
-    private const val LIBRARY_FILESET_EXPIRATION_TIME = Long.MAX_VALUE // never expire unless invalidated manually
+@Service(Service.Level.PROJECT)
+class LatexLibraryStructureService(
+    private val project: Project
+) : AbstractBlockingCacheService<String, LatexLibraryInfo?>() {
+    companion object {
+        private val libraryCommandNameToExt: Map<String, String> = buildMap {
+            put("\\usepackage", ".sty")
+            put("\\RequirePackage", ".sty")
+            put("\\documentclass", ".cls")
+            put("\\LoadClass", ".cls")
+        }
 
-    private val libraryFilesetCacheKey: GenericCacheService.TypedKey<MutableMap<String, LatexLibraryInfo>> = GenericCacheService.createKey()
+        // never expire unless invalidated manually
+        private const val LIBRARY_FILESET_EXPIRATION_TIME = Long.MAX_VALUE
 
-    private val libraryCommandNameToExt: Map<String, String> = buildMap {
-        put("\\usepackage", ".sty")
-        put("\\RequirePackage", ".sty")
-        put("\\documentclass", ".cls")
-        put("\\LoadClass", ".cls")
+        fun getInstance(project: Project): LatexLibraryStructureService {
+            return project.service()
+        }
+    }
+
+    override fun computeValue(key: String, oldValue: LatexLibraryInfo?): LatexLibraryInfo? {
+        return computePackageFilesetsRecur(key, mutableSetOf())
     }
 
     private fun getLibraryName(current: VirtualFile, project: Project): String {
@@ -190,17 +204,20 @@ object LatexLibraryStructure {
         return fileName
     }
 
-    private fun computePackageFilesets(
-        nameWithExt: String,
-        project: Project,
-        cache: MutableMap<String, LatexLibraryInfo>,
-        processing: MutableSet<String>
-    ): LatexLibraryInfo? {
-        cache[nameWithExt]?.let { return it }
+    private fun computePackageFilesetsRecur(nameWithExt: String, processing: MutableSet<String>): LatexLibraryInfo? {
         if (!processing.add(nameWithExt)) return null // Prevent infinite recursion
+        getUpToDateValueOrNull(nameWithExt, LIBRARY_FILESET_EXPIRATION_TIME)?.let {
+            return it // Return cached value if available
+        }
 
-        val path = LatexPackageLocation.getPackageLocation(nameWithExt, project) ?: return null
-        val file = LocalFileSystem.getInstance().findFileByNioFile(path) ?: return null
+        val path = LatexPackageLocation.getPackageLocation(nameWithExt, project) ?: run {
+            println("LatexLibrary not found!! $nameWithExt")
+            return null
+        }
+        val file = LocalFileSystem.getInstance().findFileByNioFile(path) ?: run {
+            println("!! $nameWithExt file not found available now!")
+            return null
+        }
         val files = mutableSetOf(file)
         val allPackages = mutableSetOf(nameWithExt)
         val directDependencies = mutableSetOf<String>()
@@ -216,7 +233,8 @@ object LatexLibraryStructure {
                 val name = trimmed + ext
                 directDependencies.add(name)
                 if (name in allPackages) continue // prevent infinite recursion
-                computePackageFilesets(name, project, cache, processing)?.let {
+                val info = computePackageFilesetsRecur(name, processing)
+                info?.let {
                     refTexts.add(trimmed)
                     refInfos.add(setOf(it.location))
                     files.addAll(it.files)
@@ -229,24 +247,24 @@ object LatexLibraryStructure {
             )
         }
         val info = LatexLibraryInfo(nameWithExt, file, files, directDependencies, allPackages)
-        cache[nameWithExt] = info
+        putValue(nameWithExt, info)
+        println("LatexLibrary Loaded: $nameWithExt")
         return info
     }
 
-    fun getLibraryInfo(nameWithExt: String, project: Project): LatexLibraryInfo? {
-        val cache = TexifyProjectCacheService.getInstance(project).getOrComputeNow(libraryFilesetCacheKey, LIBRARY_FILESET_EXPIRATION_TIME) { concurrentMapOf() }
-        return computePackageFilesets(nameWithExt, project, cache, mutableSetOf())
+    fun getLibraryInfo(nameWithExt: String): LatexLibraryInfo? {
+        return getOrComputeNow(nameWithExt, LIBRARY_FILESET_EXPIRATION_TIME)
     }
 
-    fun getLibraryInfo(path: Path, project: Project): LatexLibraryInfo? {
+    fun getLibraryInfo(path: Path): LatexLibraryInfo? {
         if (path.nameCount != 1) return null
-        return getLibraryInfo(path.fileName.pathString, project)
+        return getLibraryInfo(path.fileName.pathString)
     }
 
-    fun invalidateLibraryCache(project: Project) {
-        TexifyProjectCacheService.getInstance(project).getOrComputeNow(libraryFilesetCacheKey, LIBRARY_FILESET_EXPIRATION_TIME) { concurrentMapOf() }
-            .clear()
+    fun invalidateLibraryCache() {
+        clearAllCache()
     }
+
 }
 
 /**
@@ -405,7 +423,7 @@ object LatexProjectStructure {
         ) {
             for ((paths, refInfo) in elements.zip(refInfoList)) {
                 for (path in paths) {
-                    val libraryInfo = LatexLibraryStructure.getLibraryInfo(path, project)
+                    val libraryInfo = LatexLibraryStructureService.getInstance(project).getLibraryInfo(path)
                     if (libraryInfo != null) {
                         addLibrary(libraryInfo)
                         refInfo.add(libraryInfo.location)
@@ -840,15 +858,14 @@ object LatexProjectStructure {
     private suspend fun buildFilesetsSuspend(project: Project): LatexProjectFilesets {
         return smartReadAction(project) {
             buildFilesets(project)
+        }.also {
+            // refresh the inspections
+            if (!ApplicationManager.getApplication().isUnitTestMode) {
+                // there will be an exception if we try to restart the daemon in unit tests
+                // see FileStatusMap.CHANGES_NOT_ALLOWED_DURING_HIGHLIGHTING
+                DaemonCodeAnalyzer.getInstance(project).restart()
+            }
         }
-//            .also {
-//                // refresh the inspections
-//                if (!ApplicationManager.getApplication().isUnitTestMode) {
-//                    DaemonCodeAnalyzer.getInstance(project).restart()
-//                }
-//                // there will be an exception if we try to restart the daemon in unit tests
-//                // see FileStatusMap.CHANGES_NOT_ALLOWED_DURING_HIGHLIGHTING
-//            }
     }
 
     /**
@@ -856,7 +873,7 @@ object LatexProjectStructure {
      * This will ensure that the filesets are recomputed and up-to-date.
      */
     suspend fun updateFilesetsSuspend(project: Project) {
-        LatexLibraryStructure.invalidateLibraryCache(project)
+        LatexLibraryStructureService.getInstance(project).invalidateLibraryCache()
         TexifyProjectCacheService.getInstance(project).ensureRefresh(CACHE_KEY, ::buildFilesetsSuspend)
     }
 
@@ -873,7 +890,6 @@ object LatexProjectStructure {
      */
     fun isProjectFilesetsAvailable(project: Project): Boolean {
         return getFilesets(project) != null
-//        return TexifyProjectCacheService.getInstance(project).getOrNull(CACHE_KEY) != null
     }
 
     fun getFilesetDataFor(virtualFile: VirtualFile, project: Project): FilesetData? {

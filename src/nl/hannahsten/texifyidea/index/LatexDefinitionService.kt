@@ -225,7 +225,7 @@ class PackageDefinitionService(
             Log.warn("Recursive package dependency detected for package [$pkgName] !")
             return LibDefinitionBundle(pkgName)
         }
-        val libInfo = LatexLibraryStructure.getLibraryInfo(pkgName, project)
+        val libInfo = LatexLibraryStructureService.getInstance(project).getLibraryInfo(pkgName)
         val currentSourcedDefinitions = mutableMapOf<String, SourcedDefinition>()
         processPredefinedCommandsAndEnvironments(pkgName, currentSourcedDefinitions)
 

@@ -24,7 +24,7 @@ class LatexProjectStructureCacheInitializer : ProjectActivity {
         if (!isLatexProject) return
         withContext(Dispatchers.Default) {
             // Not sure on which thread this is run, run in background to be sure
-            LatexPackageLocation.updateLocationWithKpsewhichSuspend(project)
+//            LatexPackageLocation.updateLocationWithKpsewhichSuspend(project)
             LatexProjectStructure.updateFilesetsSuspend(project)
             // there will be an exception if we try to restart the daemon in unit tests
             // see FileStatusMap.CHANGES_NOT_ALLOWED_DURING_HIGHLIGHTING
