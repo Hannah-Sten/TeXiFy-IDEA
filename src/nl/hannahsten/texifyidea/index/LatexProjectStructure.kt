@@ -21,6 +21,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.search.FilenameIndex
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.search.ProjectScope
+import nl.hannahsten.texifyidea.action.debug.SimplePerformanceTracker
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexGraphicsPathProvider.getGraphicsPaths
 import nl.hannahsten.texifyidea.file.ClassFileType
 import nl.hannahsten.texifyidea.file.LatexFileType
@@ -269,12 +270,12 @@ class LatexLibraryStructureService(
  *
  *
  */
-object LatexProjectStructure {
+object LatexProjectStructure : SimplePerformanceTracker {
     /**
      * The count of building operations, used for debugging purposes.
      */
-    val countOfBuilds = AtomicInteger(0)
-    val totalBuildTime = AtomicLong(0)
+    override val countOfBuilds = AtomicInteger(0)
+    override val totalTimeCost = AtomicLong(0)
 
     private val expirationTimeInMs: Long
         get() = TexifySettings.getInstance().filesetExpirationTimeMs.toLong()
@@ -846,7 +847,7 @@ object LatexProjectStructure {
         }
 
         val elapsedTime = System.currentTimeMillis() - startTime
-        totalBuildTime.addAndGet(elapsedTime)
+        totalTimeCost.addAndGet(elapsedTime)
         return LatexProjectFilesets(allFilesets, dataMapping)
     }
 

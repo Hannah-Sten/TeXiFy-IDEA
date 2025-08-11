@@ -18,7 +18,7 @@ import nl.hannahsten.texifyidea.util.files.isStyleFile
 import nl.hannahsten.texifyidea.util.int
 import nl.hannahsten.texifyidea.util.repeat
 
-object LatexContextAwareCommandCompletionProvider : LatexContextAwareCompletionProvider() {
+object LatexContextAwareCommandCompletionProvider : LatexContextAwareCompletionProviderBase() {
 
     override fun addContextAwareCompletions(parameters: CompletionParameters, contexts: LContextSet, defBundle: DefinitionBundle, processingContext: ProcessingContext, result: CompletionResultSet) {
         val isClassOrStyleFile = parameters.originalFile.let { it.isClassFile() || it.isStyleFile() }

@@ -11,11 +11,19 @@ import kotlinx.html.stream.createHTML
 import kotlinx.html.table
 import kotlinx.html.td
 import kotlinx.html.tr
+import nl.hannahsten.texifyidea.completion.LatexContextAwareCompletionProviderBase
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.index.PackageDefinitionService
+import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicLong
 import javax.swing.JLabel
 import javax.swing.SwingConstants
+
+interface SimplePerformanceTracker {
+    val countOfBuilds: AtomicInteger
+    val totalTimeCost: AtomicLong
+}
 
 class PerformanceDiagnosticAction : AnAction() {
 
@@ -26,20 +34,23 @@ class PerformanceDiagnosticAction : AnAction() {
         val additionalInfo: String = ""
     )
 
+    private fun performanceData(name: String, tracker: SimplePerformanceTracker, additionalInfo: String = ""): PerformanceData {
+        return PerformanceData(
+            name, tracker.countOfBuilds.get(), tracker.totalTimeCost.get(), additionalInfo
+        )
+    }
+
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
         // show a dialog with performance diagnostic information
         val tableData = listOf(
-            PerformanceData(
-                "Fileset", LatexProjectStructure.countOfBuilds.get(), LatexProjectStructure.totalBuildTime.get(),
+            performanceData(
+                "Fileset", LatexProjectStructure,
                 "Recent Fileset Size: ${LatexProjectStructure.getFilesets(project)?.mapping?.size ?: "N/A"}"
             ),
-            PerformanceData(
-                "Package Definitions", PackageDefinitionService.countOfBuilds.get(), PackageDefinitionService.totalBuildTime.get(),
-            ),
-            PerformanceData(
-                "Command Definitions", LatexDefinitionService.countOfBuilds.get(), LatexDefinitionService.totalBuildTime.get(),
-            )
+            performanceData("Package Definitions", PackageDefinitionService),
+            performanceData("Command Definitions", LatexDefinitionService),
+            performanceData("Completion Lookup", LatexContextAwareCompletionProviderBase)
         )
         val messageHtml = createHTML(true).html {
             body {

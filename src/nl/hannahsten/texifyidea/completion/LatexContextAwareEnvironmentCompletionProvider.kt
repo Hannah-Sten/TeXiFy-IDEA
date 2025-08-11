@@ -10,7 +10,7 @@ import nl.hannahsten.texifyidea.index.SourcedEnvDefinition
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LSemanticEnv
 
-object LatexContextAwareEnvironmentCompletionProvider : LatexContextAwareCompletionProvider() {
+object LatexContextAwareEnvironmentCompletionProvider : LatexContextAwareCompletionProviderBase() {
 
     private fun createEnvironmentLookupElement(env: LSemanticEnv): LookupElementBuilder {
         // somehow we have to add the \begin{ to the lookup string,

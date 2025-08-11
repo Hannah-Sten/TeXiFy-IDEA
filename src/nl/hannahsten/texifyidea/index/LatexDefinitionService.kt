@@ -11,6 +11,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.search.GlobalSearchScope
+import nl.hannahsten.texifyidea.action.debug.SimplePerformanceTracker
 import nl.hannahsten.texifyidea.index.SourcedDefinition.DefinitionSource
 import nl.hannahsten.texifyidea.lang.LSemanticCommand
 import nl.hannahsten.texifyidea.lang.LSemanticEntity
@@ -274,7 +275,7 @@ class PackageDefinitionService(
         val result = computeDefinitionsRecur(key, mutableSetOf())
         val buildTime = System.currentTimeMillis() - start
         countOfBuilds.incrementAndGet()
-        totalBuildTime.addAndGet(buildTime)
+        totalTimeCost.addAndGet(buildTime)
         return result
     }
 
@@ -287,13 +288,13 @@ class PackageDefinitionService(
         return getOrComputeNow(libName, expirationInMs)
     }
 
-    companion object {
+    companion object : SimplePerformanceTracker{
         fun getInstance(project: Project): PackageDefinitionService {
             return project.service()
         }
 
-        val countOfBuilds = AtomicInteger(0)
-        val totalBuildTime = AtomicLong(0)
+        override val countOfBuilds = AtomicInteger(0)
+        override val totalTimeCost = AtomicLong(0)
 
         val baseLibBundle: LibDefinitionBundle by lazy {
 
@@ -340,16 +341,16 @@ class PackageDefinitionService(
 
 /**
  * Provide a unified definition service for LaTeX commands, including
- *   * those hard-coded in the plugin, see [nl.hannahsten.texifyidea.util.magic.CommandMagic], [nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand]
- *   * those indexed by file-based index [nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex]
+ *   * those hard-coded in the plugin, see [nl.hannahsten.texifyidea.lang.predefined.AllPredefinedCommands], [nl.hannahsten.texifyidea.lang.predefined.AllPredefinedEnvironments].
  *   * those indexed by stub-based index [NewDefinitionIndex]
+ *   * those indexed by file-based index [nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex]
  */
 @Service(Service.Level.PROJECT)
 class LatexDefinitionService(
     val project: Project,
 ) : AbstractBlockingCacheService<Fileset, FilesetDefinitionBundle>() {
 
-    var expirationInMs: Long = 100L
+    var expirationInMs: Long = 100L // TODO: perhaps sync with file modification time?
 
     override fun computeValue(key: Fileset, oldValue: FilesetDefinitionBundle?): FilesetDefinitionBundle {
         val startTime = System.currentTimeMillis()
@@ -377,7 +378,7 @@ class LatexDefinitionService(
         }
 
         countOfBuilds.incrementAndGet()
-        totalBuildTime.addAndGet(System.currentTimeMillis() - startTime)
+        totalTimeCost.addAndGet(System.currentTimeMillis() - startTime)
         return bundle
     }
 
@@ -413,13 +414,13 @@ class LatexDefinitionService(
         }
     }
 
-    companion object {
+    companion object :SimplePerformanceTracker{
         fun getInstance(project: Project): LatexDefinitionService {
             return project.service()
         }
 
-        val countOfBuilds = AtomicInteger(0)
-        val totalBuildTime = AtomicLong(0)
+        override val countOfBuilds = AtomicInteger(0)
+        override val totalTimeCost = AtomicLong(0)
 
         fun resolvePredefinedDef(name: String): SourcedDefinition? {
             return resolvePredefinedCommandDef(name) ?: resolvePredefinedEnvDef(name)
