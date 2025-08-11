@@ -11,6 +11,7 @@ import com.intellij.codeInsight.template.impl.TemplateState
 import com.intellij.codeInsight.template.impl.TextExpression
 import nl.hannahsten.texifyidea.index.DefinitionBundle
 import nl.hannahsten.texifyidea.lang.Environment
+import nl.hannahsten.texifyidea.lang.LArgument
 import nl.hannahsten.texifyidea.lang.LSemanticCommand
 import nl.hannahsten.texifyidea.lang.LSemanticEnv
 import nl.hannahsten.texifyidea.lang.LatexPackage
@@ -156,7 +157,14 @@ class LatexCommandInsertHandler(val arguments: List<Argument>? = null) : InsertH
 /**
  * @author Hannah Schellekens, Sten Wessel
  */
-class NewLatexCommandInsertHandler(val semantics: LSemanticCommand, val definitionBundle: DefinitionBundle) : InsertHandler<LookupElement> {
+class NewLatexCommandInsertHandler(
+    val semantics: LSemanticCommand,
+    /**
+     * The arguments for insertion. Some optional arguments may be skipped, so this may be a subset of the full arguments.
+     */
+    val arguments: List<LArgument>,
+    val definitionBundle: DefinitionBundle
+) : InsertHandler<LookupElement> {
     override fun handleInsert(context: InsertionContext, item: LookupElement) {
         removeWhiteSpaces(context)
         when (semantics.name) {
@@ -169,7 +177,7 @@ class NewLatexCommandInsertHandler(val semantics: LSemanticCommand, val definiti
             }
 
             else -> {
-                NewLatexCommandArgumentInsertHandler(semantics.arguments).handleInsert(context, item)
+                NewLatexCommandArgumentInsertHandler(arguments).handleInsert(context, item)
             }
         }
 
@@ -178,7 +186,7 @@ class NewLatexCommandInsertHandler(val semantics: LSemanticCommand, val definiti
     }
 
     private fun insertPseudocodeEnd(cmd: LSemanticCommand, context: InsertionContext) {
-        val numberRequiredArguments = cmd.arguments.count { it.isRequired }
+        val numberRequiredArguments = arguments.count { it.isRequired }
 
         val templateText = List(numberRequiredArguments) {
             "{\$__Variable${it}\$}"

@@ -12,16 +12,23 @@ import nl.hannahsten.texifyidea.lang.LSemanticEnv
 
 object LatexContextAwareEnvironmentCompletionProvider : LatexContextAwareCompletionProviderBase() {
 
-    private fun createEnvironmentLookupElement(env: LSemanticEnv): LookupElementBuilder {
+
+    private fun buildEnvironmentSignature(env: LSemanticEnv): String {
+        return "${env.arguments.joinToString()} <${env.contextSignature}>"
+    }
+
+    private fun createEnvironmentLookupElement(sourced: SourcedEnvDefinition): LookupElementBuilder {
         // somehow we have to add the \begin{ to the lookup string,
         // because the \begin{} command is recognized as a whole since we enable it to have references
         // See: LatexBeginCommandImplMixin,
         //
+        val env = sourced.entity
         val lookupString = env.name
         return LookupElementBuilder.create(env, lookupString)
             .withPresentableText(env.name)
             .bold()
-            .withTailText("${env.arguments.joinToString()} <${env.contextSignature}> ${packageName(env)}", true)
+            .withTailText(buildEnvironmentSignature(env), true)
+            .withTypeText(buildCommandSourceStr(sourced))
             .withIcon(TexifyIcons.DOT_ENVIRONMENT)
     }
 
@@ -31,7 +38,7 @@ object LatexContextAwareEnvironmentCompletionProvider : LatexContextAwareComplet
             if (sd !is SourcedEnvDefinition) continue
             val env = sd.entity
             if (!contexts.containsAll(env.requiredContext)) continue
-            lookupElements.add(createEnvironmentLookupElement(env))
+            lookupElements.add(createEnvironmentLookupElement(sd))
         }
         result.addAllElements(lookupElements)
     }

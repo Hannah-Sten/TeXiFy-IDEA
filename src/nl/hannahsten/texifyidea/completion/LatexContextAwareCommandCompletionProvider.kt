@@ -26,36 +26,58 @@ object LatexContextAwareCommandCompletionProvider : LatexContextAwareCompletionP
         for (sd in defBundle.sourcedDefinitions()) {
             if (sd !is SourcedCmdDefinition) continue
             val cmd = sd.entity
-            if(!isClassOrStyleFile && cmd.name.contains('@')) {
+            if (!isClassOrStyleFile && cmd.name.contains('@')) {
                 // skip internal commands for regular files
                 continue
             }
-            if(!contexts.containsAll(cmd.requiredContext)) continue
-            appendCommandLookupElements(cmd, lookupElements,defBundle)
+            if (!contexts.containsAll(cmd.requiredContext)) continue
+            appendCommandLookupElements(sd, lookupElements, defBundle)
         }
         result.addAllElements(lookupElements)
     }
 
 
-    private fun appendCommandLookupElements(cmd: LSemanticCommand, result: MutableCollection<LookupElementBuilder>,defBundle: DefinitionBundle) {
+    private fun buildArgumentInformation(cmd: LSemanticCommand, args: List<LArgument>): String {
+        return args.joinToString("") // TODO:
+    }
+
+    private fun buildCommandDisplay(cmd: LSemanticCommand, defBundle: DefinitionBundle): String {
+        if (cmd.display == null) {
+            return cmd.nameWithSlash
+        }
+        return cmd.nameWithSlash + " " + cmd.display
+    }
+
+
+    private fun appendCommandLookupElements(sourced: SourcedCmdDefinition, result: MutableCollection<LookupElementBuilder>, defBundle: DefinitionBundle) {
+        /*
+        The presentation looks like:
+        \alpha α                          (amsmath.sty)
+        \mycommand[optional]{required}    (main.tex)
+         */
+        val cmd = sourced.entity
         val default = cmd.dependency == ""
-        cmd.arguments.optionalPowerSet().forEachIndexed { index, args ->
+        val typeText = buildCommandSourceStr(sourced) // type text is at the right
+        val presentableText = buildCommandDisplay(cmd, defBundle)
+        cmd.arguments.optionalPowerSet().forEachIndexed { index, subArgs ->
             // Add spaces to the lookup text to distinguish different versions of commands within the same package (optional parameters).
             // Add the package name to the lookup text so we can distinguish between the same commands that come from different packages.
             // This 'extra' text will be automatically inserted by intellij and is removed by the LatexCommandArgumentInsertHandler after insertion.
-            val l = LookupElementBuilder.create(cmd, cmd.nameWithSlash + " ".repeat(index + default.not().int) + cmd.dependency)
-                .withPresentableText(cmd.nameWithSlash)
+            val tailText = buildArgumentInformation(cmd, subArgs)
+            val lookupString = cmd.nameWithSlash + " ".repeat(index + default.not().int) + cmd.dependency
+            val l = LookupElementBuilder.create(cmd, lookupString)
+                .withPresentableText(presentableText)
                 .bold()
-                .withTailText(args.joinToString("") + " " + packageName(cmd), true)
-                .withTypeText(cmd.display)
-                .withInsertHandler(createInsertHandler(cmd,defBundle))
+                .withTailText(tailText, true)
+                .withTypeText(typeText)
+                .withInsertHandler(createInsertHandler(cmd, subArgs, defBundle))
                 .withIcon(TexifyIcons.DOT_COMMAND)
             result.add(l)
         }
     }
 
-    fun createInsertHandler(semantics: LSemanticCommand, defBundle: DefinitionBundle): InsertHandler<LookupElement> {
-        return NewLatexCommandInsertHandler(semantics, defBundle)
+    fun createInsertHandler(semantics: LSemanticCommand, subArgs: List<LArgument>, defBundle: DefinitionBundle): InsertHandler<LookupElement> {
+        return NewLatexCommandInsertHandler(semantics, subArgs, defBundle)
     }
 
     private fun List<LArgument>.optionalPowerSet(): List<List<LArgument>> {
@@ -63,7 +85,7 @@ object LatexContextAwareCommandCompletionProvider : LatexContextAwareCompletionP
             return listOf(emptyList())
         }
         if (this.all { it.isRequired }) {
-            return listOf(this.toList())
+            return listOf(this)
         }
         var result = listOf<MutableList<LArgument>>(mutableListOf())
         for (arg in this) {
