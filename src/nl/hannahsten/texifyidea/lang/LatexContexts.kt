@@ -44,6 +44,8 @@ interface LLiteralContext : LatexContext
 
 /**
  * Some predefined contexts that are used in LaTeX files.
+ *
+ * @author Ezrnest
  */
 object LatexContexts {
 

@@ -15,6 +15,8 @@ import nl.hannahsten.texifyidea.lang.SimpleFileInputContext
  * Defines a dispatcher for context-aware completion providers.
  *
  * @see LatexContexts
+ *
+ * @author Ezrnest
  */
 object ContextAwareCompletionProviderDispatcher : LatexContextAwareCompletionAdaptor() {
 

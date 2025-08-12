@@ -166,6 +166,12 @@ class LatexLibraryInfo(
     }
 }
 
+/**
+ *
+ * Provides methods to build and manage the structure of LaTeX libraries (.sty and .cls files).
+ *
+ * @author Ezrnest
+ */
 @Service(Service.Level.PROJECT)
 class LatexLibraryStructureService(
     private val project: Project
@@ -290,9 +296,9 @@ class LatexLibraryStructureService(
 }
 
 /**
- * A utility object that provides methods to build and manage the fileset structure for LaTeX files.
+ * Provides methods to build and manage the fileset structure for LaTeX files.
  *
- *
+ * @author Ezrnest
  */
 object LatexProjectStructure : SimplePerformanceTracker {
     /**

@@ -83,7 +83,7 @@ object PredefinedEnvBasic : PredefinedEnvironmentSet() {
 
     val someMathEnv = buildEnvironments {
 
-        underContext(LatexContexts.Math) {
+        underContext(LatexContexts.Text) {
             // equation is basic
             "equation".env(LatexContexts.Math) { "A numbered equation." }
         }

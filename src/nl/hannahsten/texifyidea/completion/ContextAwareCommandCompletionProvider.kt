@@ -17,6 +17,9 @@ import nl.hannahsten.texifyidea.util.files.isStyleFile
 import nl.hannahsten.texifyidea.util.int
 import nl.hannahsten.texifyidea.util.repeat
 
+/**
+ * Provides context-aware command completions.
+ */
 object ContextAwareCommandCompletionProvider : LatexContextAwareCompletionAdaptor() {
 
     override fun addContextAwareCompletions(parameters: CompletionParameters, contexts: LContextSet, defBundle: DefinitionBundle, result: CompletionResultSet) {
@@ -29,7 +32,7 @@ object ContextAwareCommandCompletionProvider : LatexContextAwareCompletionAdapto
                 // skip internal commands for regular files
                 continue
             }
-            if (!cmd.isApplicableIn(contexts)) continue
+            if (!cmd.isApplicableIn(contexts)) continue // context check
             appendCommandLookupElements(sd, lookupElements, defBundle)
         }
         result.addAllElements(lookupElements)

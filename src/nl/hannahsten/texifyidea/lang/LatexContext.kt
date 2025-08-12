@@ -11,6 +11,8 @@ import nl.hannahsten.texifyidea.lang.LatexContextIntro.*
  *
  * Due to the nature of LaTeX, multiple contexts can be active at the same time.
  * Also, contexts can be inherited from the outer scope.
+ *
+ * @author Ezrnest
  */
 interface LatexContext {
 
@@ -24,6 +26,8 @@ typealias LContextSet = Set<LatexContext>
 
 /**
  * Describes how contexts are introduced.
+ *
+ * @author Ezrnest
  */
 sealed interface LatexContextIntro {
     fun applyTo(outerCtx: LContextSet): LContextSet

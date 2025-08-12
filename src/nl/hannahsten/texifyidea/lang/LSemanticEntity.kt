@@ -2,9 +2,14 @@ package nl.hannahsten.texifyidea.lang
 
 import nl.hannahsten.texifyidea.lang.LatexContextIntro.Inherit
 
+/**
+ * A semantic entity in LaTeX, such as a command or environment.
+ *
+ * @author Ezrnest
+ */
 abstract class LSemanticEntity(
     /**
-     * The name of the entity, such as a command or environment.
+     * The name of the entity.
      *
      * This is the name without the leading backslash for commands.
      */

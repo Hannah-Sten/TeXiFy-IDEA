@@ -155,6 +155,8 @@ class LibDefinitionBundle(
 
 /**
  * Command definition service for a single LaTeX package (`.cls` or `.sty` file).
+ *
+ * @author Ezrnest
  */
 @Service(Service.Level.PROJECT)
 class LatexLibraryDefinitionService(
@@ -280,11 +282,6 @@ class LatexLibraryDefinitionService(
 
             // return the hard-coded basic commands
             val currentSourcedDefinitions = mutableMapOf<String, SourcedDefinition>()
-//            if (ApplicationManager.getApplication().isUnitTestMode) {
-//                // add all the predefined commands and environments in unit test mode
-//                processAllPredefinedCommands(currentSourcedDefinitions)
-//                processAllPredefinedEnvironments(currentSourcedDefinitions)
-//            }
             processPredefinedCommandsAndEnvironments("", currentSourcedDefinitions)
 
             // overwrite the definitions with the primitive commands
@@ -355,6 +352,9 @@ class WorkingFilesetDefinitionBundle(
  *   * those hard-coded in the plugin, see [nl.hannahsten.texifyidea.lang.predefined.AllPredefinedCommands], [nl.hannahsten.texifyidea.lang.predefined.AllPredefinedEnvironments].
  *   * those indexed by stub-based index [NewDefinitionIndex]
  *   * those indexed by file-based index [nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex]
+ *
+ *
+ * @author Ezrnest
  */
 @Service(Service.Level.PROJECT)
 class LatexDefinitionService(

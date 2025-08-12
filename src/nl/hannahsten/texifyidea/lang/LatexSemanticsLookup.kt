@@ -13,6 +13,8 @@ interface LatexSemanticsEnvLookup {
 
 /**
  * Interface for looking up LaTeX semantics entities such as commands and environments.
+ *
+ * @author Ezrnest
  */
 interface LatexSemanticsLookup : LatexSemanticsCommandLookup, LatexSemanticsEnvLookup {
 
