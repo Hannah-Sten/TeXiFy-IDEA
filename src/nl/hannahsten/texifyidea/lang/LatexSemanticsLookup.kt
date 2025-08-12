@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.lang
 
-
 interface LatexSemanticsCommandLookup {
     /**
      * @param name **without** the leading backslash.

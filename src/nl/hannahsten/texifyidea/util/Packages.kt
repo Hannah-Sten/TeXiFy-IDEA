@@ -9,8 +9,6 @@ import com.intellij.psi.impl.source.tree.TreeUtil
 import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.index.LatexProjectStructure.getFilesetScopeFor
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
-import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
-import nl.hannahsten.texifyidea.index.file.LatexExternalPackageIndex
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
@@ -21,7 +19,6 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
-import java.util.Collections
 import kotlin.collections.forEach
 
 /**

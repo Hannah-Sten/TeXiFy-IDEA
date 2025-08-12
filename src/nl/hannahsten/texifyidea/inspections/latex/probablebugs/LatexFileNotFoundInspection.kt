@@ -59,7 +59,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
 
             val referencesList = InputFileReference.getFileArgumentsReferences(command)
             for (reference in referencesList) {
-                if (reference.resolve() == null) {
+                if (reference.refText.isNotEmpty() && reference.resolve() == null) {
                     createQuickFixes(reference, descriptors, manager, isOntheFly)
                 }
             }
@@ -69,7 +69,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
     }
 
     private fun createQuickFixes(reference: InputFileReference, descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager, isOntheFly: Boolean) {
-        val fileName = reference.key
+        val fileName = reference.refText
         val commandName = reference.element.name
         val extensions = LatexCommand.lookup(commandName)?.firstOrNull()?.arguments?.flatMap {
             (it as? RequiredFileArgument)?.supportedExtensions ?: emptyList()
@@ -78,14 +78,14 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
         // CTAN packages are no targets of the InputFileReference, so we check them here and don't show a warning if a CTAN package is included
         if (extensions.contains("sty")) {
             val ctanPackages = PackageUtils.CTAN_PACKAGE_NAMES.map { it.lowercase(Locale.getDefault()) }
-            if (reference.key.lowercase(Locale.getDefault()) in ctanPackages) return
+            if (reference.refText.lowercase(Locale.getDefault()) in ctanPackages) return
         }
 
         val fixes = mutableListOf<LocalQuickFix>()
 
         // Create quick fixes for all extensions
         extensions.forEach {
-            fixes.add(CreateNewFileWithDialogQuickFix(fileName, it, reference.element.createSmartPointer(), reference.key, reference.range))
+            fixes.add(CreateNewFileWithDialogQuickFix(fileName, it, reference.element.createSmartPointer(), reference.refText, reference.range))
         }
 
         // Find expected extension

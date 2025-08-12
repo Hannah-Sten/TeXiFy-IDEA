@@ -5,7 +5,7 @@ import nl.hannahsten.texifyidea.lang.LatexSemanticsCommandLookup
 import nl.hannahsten.texifyidea.util.Log
 import kotlin.collections.iterator
 
-object AllPredefinedCommands  : LatexSemanticsCommandLookup {
+object AllPredefinedCommands : LatexSemanticsCommandLookup {
 
     val allCommands: List<LSemanticCommand> =
         listOf(

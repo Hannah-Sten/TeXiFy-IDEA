@@ -19,5 +19,4 @@ object AllPredefinedEnvironments : LatexSemanticsEnvLookup {
     override fun lookupEnv(name: String): LSemanticEnv? {
         return simpleNameLookup[name]
     }
-
 }
