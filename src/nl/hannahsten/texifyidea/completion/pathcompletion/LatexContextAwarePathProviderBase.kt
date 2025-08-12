@@ -1,22 +1,22 @@
 package nl.hannahsten.texifyidea.completion.pathcompletion
 
 import com.intellij.codeInsight.completion.CompletionParameters
-import com.intellij.codeInsight.completion.CompletionProvider
 import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiFile
 import com.intellij.psi.util.parentOfTypes
 import com.intellij.util.PlatformIcons
-import com.intellij.util.ProcessingContext
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.TexifyIcons.FILE
+import nl.hannahsten.texifyidea.completion.LatexContextAwareCompletionAdaptor
 import nl.hannahsten.texifyidea.completion.handlers.CompositeHandler
 import nl.hannahsten.texifyidea.completion.handlers.FileNameInsertionHandler
 import nl.hannahsten.texifyidea.completion.handlers.LatexReferenceInsertHandler
-import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
+import nl.hannahsten.texifyidea.index.DefinitionBundle
+import nl.hannahsten.texifyidea.lang.LContextSet
+import nl.hannahsten.texifyidea.lang.SimpleFileInputContext
 import nl.hannahsten.texifyidea.psi.LatexRequiredParam
 import nl.hannahsten.texifyidea.util.expandCommandsOnce
 import nl.hannahsten.texifyidea.util.files.findRootFiles
@@ -28,37 +28,26 @@ import java.util.regex.Pattern
 /**
  * @author Lukas Heiligenbrunner
  */
-abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>() {
-
-    private var parameters: CompletionParameters? = null
-    private var resultSet: CompletionResultSet? = null
-    private var validExtensions: Set<String>? = null
-    private var absolutePathSupport = true
+abstract class LatexContextAwarePathProviderBase : LatexContextAwareCompletionAdaptor() {
 
     companion object {
-
         private val TRIM_SLASH = Pattern.compile("/[^/]*$")
     }
 
-    override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
-        this.parameters = parameters
-
+    override fun addContextAwareCompletions(parameters: CompletionParameters, contexts: LContextSet, defBundle: DefinitionBundle, result: CompletionResultSet) {
         // We create a result set with the correct autocomplete text as prefix, which may be different when multiple LaTeX parameters (comma separated) are present
         val autocompleteText = processAutocompleteText(parameters.position.parentOfTypes(LatexRequiredParam::class)?.text ?: parameters.position.text)
-
-        val parentCommand = context.get("type")
-        if (parentCommand is RequiredFileArgument) {
-            validExtensions = parentCommand.supportedExtensions
-            absolutePathSupport = parentCommand.isAbsolutePathSupported
-        }
+        val context = contexts.firstOrNull { it is SimpleFileInputContext } as? SimpleFileInputContext
+        val validExtensions = context?.supportedExtensions
+        val absolutePathSupport = context?.isAbsolutePathSupported ?: true
 
         var finalCompleteText = expandCommandsOnce(autocompleteText, project = parameters.originalFile.project, file = parameters.originalFile.virtualFile)
 
         // Process the expanded text again
         finalCompleteText = processAutocompleteText(finalCompleteText)
-        resultSet = result.withPrefixMatcher(finalCompleteText)
-        selectScanRoots(parameters.originalFile).forEach {
-            addByDirectory(it, finalCompleteText)
+        val resultSet = result.withPrefixMatcher(finalCompleteText)
+        selectScanRoots(parameters).forEach {
+            addByDirectory(it, finalCompleteText, validExtensions, absolutePathSupport, resultSet)
         }
     }
 
@@ -67,7 +56,7 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
      * eg. project root
      * eg. \includegraphics roots
      */
-    abstract fun selectScanRoots(file: PsiFile): Collection<VirtualFile>
+    abstract fun selectScanRoots(parameters: CompletionParameters): Collection<VirtualFile>
 
     /**
      * enable folder search?
@@ -82,38 +71,38 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
     /**
      * scan directory for completions
      */
-    private fun addByDirectory(baseDirectory: VirtualFile, autoCompleteText: String) {
+    private fun addByDirectory(baseDirectory: VirtualFile, autoCompleteText: String, validExtensions: Set<String>?, absolutePathSupport: Boolean, resultSet: CompletionResultSet) {
         // Check if path is relative or absolute
         if (File(autoCompleteText).isAbsolute) {
             if (absolutePathSupport) {
                 // Split text in path and completion text
                 val pathOffset = trimAutocompleteText(autoCompleteText)
-                addAbsolutePathCompletion(pathOffset)
+                addAbsolutePathCompletion(pathOffset, validExtensions, resultSet)
             }
         }
         else {
             val pathOffset = trimAutocompleteText(autoCompleteText)
-            addRelativePathCompletion(baseDirectory, pathOffset)
+            addRelativePathCompletion(baseDirectory, pathOffset, validExtensions, resultSet)
         }
     }
 
     /**
      * add completion entries for relative path
      */
-    private fun addRelativePathCompletion(projectDir: VirtualFile, pathOffset: String) {
+    private fun addRelativePathCompletion(projectDir: VirtualFile, pathOffset: String, validExtensions: Set<String>?, resultSet: CompletionResultSet) {
         // Don't use LocalFileSystem.findByPath here. In a normal IntelliJ, projectDir.path will be the
         // full path (on the local file system) to the project directory, but in tests this will be just "src/"
         // causing LocalFileSystem.findByPath to always return null.
         projectDir.findFileByRelativePath(pathOffset)?.let { baseDir ->
             if (searchFolders()) {
-                addFolderNavigations(pathOffset)
+                addFolderNavigations(pathOffset, resultSet)
                 getContents(baseDir, true).forEach {
-                    addDirectoryCompletion(pathOffset, it)
+                    addDirectoryCompletion(pathOffset, it, resultSet)
                 }
             }
 
             if (searchFiles()) getContents(baseDir, false).forEach {
-                addFileCompletion(pathOffset, it)
+                addFileCompletion(pathOffset, it, validExtensions, resultSet)
             }
         }
     }
@@ -121,18 +110,18 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
     /**
      * add completion entries for absolute path
      */
-    private fun addAbsolutePathCompletion(baseDir: String) {
+    private fun addAbsolutePathCompletion(baseDir: String, validExtensions: Set<String>?, resultSet: CompletionResultSet) {
         if (baseDir.isBlank()) return
         LocalFileSystem.getInstance().refreshAndFindFileByPath(baseDir)?.let { dirFile ->
             if (searchFolders()) {
-                addFolderNavigations(baseDir)
+                addFolderNavigations(baseDir, resultSet)
                 getContents(dirFile, true).forEach {
-                    addDirectoryCompletion(baseDir, it)
+                    addDirectoryCompletion(baseDir, it, resultSet)
                 }
             }
 
             if (searchFiles()) getContents(dirFile, false).forEach {
-                addFileCompletion(baseDir, it)
+                addFileCompletion(baseDir, it, validExtensions, resultSet)
             }
         }
     }
@@ -140,16 +129,16 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
     /**
      * add basic folder navigation options such as ../ and ./
      */
-    private fun addFolderNavigations(baseDir: String) {
+    private fun addFolderNavigations(baseDir: String, resultSet: CompletionResultSet) {
         // Add current directory.
-        resultSet?.addElement(
+        resultSet.addElement(
             LookupElementBuilder.create("$baseDir./")
                 .withPresentableText(".")
                 .withIcon(PlatformIcons.PACKAGE_ICON)
         )
 
         // Add return directory.
-        resultSet?.addElement(
+        resultSet.addElement(
             LookupElementBuilder.create("$baseDir../")
                 .withPresentableText("..")
                 .withIcon(PlatformIcons.PACKAGE_ICON)
@@ -159,8 +148,8 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
     /**
      * add Directory to autocompletion dialog
      */
-    private fun addDirectoryCompletion(baseDir: String, foundFile: VirtualFile) {
-        resultSet?.addElement(
+    private fun addDirectoryCompletion(baseDir: String, foundFile: VirtualFile, resultSet: CompletionResultSet) {
+        resultSet.addElement(
             LookupElementBuilder.create(baseDir + foundFile.name + "/")
                 .withPresentableText(foundFile.presentableName)
                 .withIcon(PlatformIcons.PACKAGE_ICON)
@@ -170,14 +159,14 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
     /**
      * add file to autocompletion dialog
      */
-    private fun addFileCompletion(baseDir: String, foundFile: VirtualFile) {
+    private fun addFileCompletion(baseDir: String, foundFile: VirtualFile, validExtensions: Set<String>?, resultSet: CompletionResultSet) {
         // Some commands like \input accept any file extension (supportsExtension), but showing only .tex files is probably a better user experience.
-        if (validExtensions != null && validExtensions!!.isNotEmpty() && validExtensions!!.first().isNotEmpty()) {
-            if (validExtensions!!.contains(foundFile.extension).not()) return
+        if (validExtensions != null && validExtensions.isNotEmpty() && validExtensions.first().isNotEmpty()) {
+            if (validExtensions.contains(foundFile.extension).not()) return
         }
 
         val icon = TexifyIcons.getIconFromExtension(foundFile.extension, default = FILE)
-        resultSet?.addElement(
+        resultSet.addElement(
             LookupElementBuilder.create(baseDir + foundFile.name)
                 .withPresentableText(foundFile.nameWithoutExtension)
                 .withTailText(".${foundFile.extension}", true)
@@ -195,10 +184,10 @@ abstract class LatexPathProviderBase : CompletionProvider<CompletionParameters>(
      * Get project roots
      * @return all Project Root directories as VirtualFile
      */
-    fun getProjectRoots(): ArrayList<VirtualFile> {
+    fun getProjectRoots(parameters: CompletionParameters): ArrayList<VirtualFile> {
         val resultList = ArrayList<VirtualFile>()
 
-        parameters?.apply {
+        parameters.apply {
             // Get base data.
             val baseFile = this.originalFile.virtualFile
 

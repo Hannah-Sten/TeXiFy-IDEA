@@ -5,15 +5,48 @@ import nl.hannahsten.texifyidea.lang.LArgument.Companion.required
 
 object PredefinedCmdFiles : PredefinedCommandSet() {
 
-    private val classArgument = required("class", LatexContexts.ClassName)
-    private val packageArg = required("package", LatexContexts.PackageNames)
-    private val texFileArg = required("tex file", LatexContexts.SingleTexFile)
+    private val singleTexFile = SimpleFileInputContext(
+        "file.tex", isCommaSeparated = false, supportedExtensions = setOf("tex")
+    )
+
+    private val classArgument = required(
+        "class",
+        setOf(
+            LatexContexts.ClassName,
+            SimpleFileInputContext(
+                "file.cls", isCommaSeparated = false, supportedExtensions = setOf("cls")
+            )
+        )
+    )
+    private val packageArg = required(
+        "package",
+        setOf(
+            LatexContexts.PackageNames,
+            SimpleFileInputContext(
+                "files.sty", isCommaSeparated = true, supportedExtensions = setOf("sty")
+            )
+        )
+    )
+    private val texFileArg = required("tex file", singleTexFile)
+    private val relativeSingleTexFileArg = required(
+        "filename",
+        SimpleFileInputContext(
+            "relative.file.tex", isCommaSeparated = false, supportedExtensions = setOf("tex"),
+            isAbsolutePathSupported = false
+        )
+    )
+    private val relativeMultipleTexFilesArg = required(
+        "files",
+        SimpleFileInputContext(
+            "relative.files.tex", isCommaSeparated = true, supportedExtensions = setOf("tex"),
+            isAbsolutePathSupported = false
+        )
+    )
 
     val basicFileInputCommands: List<LSemanticCommand> = buildCommands {
         // Most file inputs are in preamble, but can be adjusted per command if needed.
         val name = required("name", LatexContexts.Identifier)
         underContext(LatexContexts.Preamble) {
-            // TODO
             "documentclass".cmd(
                 "options".optional(LatexContexts.Literal),
                 classArgument
@@ -39,17 +72,19 @@ object PredefinedCmdFiles : PredefinedCommandSet() {
             "ProvidesPackage".cmd(name)
             "RequirePackage".cmd("options".optional, packageArg)
 
-            "includeonly".cmd("tex files".required(LatexContexts.MultipleTexFiles)) {
+            "includeonly".cmd(relativeMultipleTexFilesArg) {
                 "Specify which files to include (comma-separated)"
             }
 
             "addtoluatexpath".cmd("paths".required(LatexContexts.Folder)) {
                 "Add a relative path to the LaTeX search path"
             }
+
+            "externaldocument".cmd("prefix".optional, relativeSingleTexFileArg)
         }
 
         // Include and input commands.
-        "include".cmd(texFileArg) {
+        "include".cmd(relativeSingleTexFileArg) {
             "Include a TeX file (page break before)"
         }
 
@@ -61,22 +96,23 @@ object PredefinedCmdFiles : PredefinedCommandSet() {
     // Predefine additional file input contexts if needed, based on common file types.
     // These can be moved to NewLang.kt if they are reusable across multiple command sets.
     private val GRAPHICS_EXTENSIONS = setOf("pdf", "jpg", "jpeg", "png", "eps", "bmp", "gif", "tiff")
-    private val PICTURE_FILE = LFileInputContext(
+    private val PICTURE_FILE = SimpleFileInputContext(
         "file.picture",
         isCommaSeparated = false,
         supportedExtensions = GRAPHICS_EXTENSIONS
     )
 
-    private val SVG_FILE = LFileInputContext(
+    private val SVG_FILE = SimpleFileInputContext(
         "file.svg",
         isCommaSeparated = false,
         supportedExtensions = setOf("svg")
     )
 
-    private val STANDALONE_FILE = LFileInputContext(
+    private val relativeStandalone = SimpleFileInputContext(
         "file.standalone",
         isCommaSeparated = false,
-        supportedExtensions = setOf("tex") + GRAPHICS_EXTENSIONS
+        supportedExtensions = setOf("tex") + GRAPHICS_EXTENSIONS,
+        isAbsolutePathSupported = false,
     )
 
     val commands = buildCommands {
@@ -92,11 +128,101 @@ object PredefinedCmdFiles : PredefinedCommandSet() {
             "Specify bibliography files (comma-separated)"
         }
 
+        // Standalone package.
+        packageOf("standalone")
+        "includestandalone".cmd(
+            "mode".optional,
+            "filename".required(relativeStandalone)
+        ) {
+            "Include a standalone TeX or graphics file"
+        }
+
+        // Other miscellaneous file inputs, e.g., from glossaries.
+        packageOf("glossaries")
+        "loadglsentries".cmd("glossariesfile".required(singleTexFile)) {
+            "Load glossary entries from a file"
+        }
+
+        packageOf("minted")
+        "inputminted".cmd(
+            required("language", LatexContexts.MintedFuntimeLand),
+            required("sourcefile", LatexContexts.SingleFile),
+        ) {
+            "Input a source file with syntax highlighting"
+        }
+    }
+
+    val importAbsolute = buildCommands {
+        // Import package commands.
+        packageOf("import")
+        "import".cmd(
+            "absolute path".required(LatexContexts.Folder), // Folder-like.
+            relativeSingleTexFileArg
+        ) {
+            "Import a file from an absolute path"
+        }
+
+        "includefrom".cmd(
+            "absolute path".required(LatexContexts.Folder),
+            relativeSingleTexFileArg
+        ) {
+            "Include from an absolute path"
+        }
+
+        "inputfrom".cmd(
+            "absolute path".required(LatexContexts.Folder),
+            relativeSingleTexFileArg
+        ) {
+            "Input from an absolute path"
+        }
+    }
+
+    val importRelative = buildCommands {
+        packageOf("import")
+        "subimport".cmd(
+            "relative path".required(LatexContexts.Folder),
+            relativeSingleTexFileArg
+        ) {
+            "Subimport from a relative path"
+        }
+
+        "subincludefrom".cmd(
+            "relative path".required(LatexContexts.Folder),
+            relativeSingleTexFileArg
+        ) {
+            "Subinclude from a relative path"
+        }
+
+        "subinputfrom".cmd(
+            "relative path".required(LatexContexts.Folder),
+            relativeSingleTexFileArg
+        ) {
+            "Subinput from a relative path"
+        }
+    }
+
+    val subfix = buildCommands {
+        // Subfiles package.
+        packageOf("subfiles")
+        "subfile".cmd("sourcefile".required(singleTexFile)) {
+            "Include a subfile"
+        }
+
+        "subfileinclude".cmd("sourcefile".required(singleTexFile)) {
+            "Include a subfile with page break"
+        }
+
+        "subfix".cmd("file".required(singleTexFile)) {
+            "Fix subfile paths"
+        }
+    }
+
+    val graphicsRelated = buildCommands {
         // Graphics-related.
         packageOf("graphicx")
         "includegraphics".cmd(
             "key-val-list".optional(LatexContexts.Literal),
-            "imagefile".required(PICTURE_FILE)
+            "imagefile".required(setOf(PICTURE_FILE, LatexContexts.PicturePath))
         ) {
             "Include a graphics file"
         }
@@ -120,92 +246,8 @@ object PredefinedCmdFiles : PredefinedCommandSet() {
             "Set the SVG search path"
         }
 
-        // Standalone package.
-        packageOf("standalone")
-        "includestandalone".cmd(
-            "mode".optional,
-            "filename".required(STANDALONE_FILE)
-        ) {
-            "Include a standalone TeX or graphics file"
-        }
-
-        // Other miscellaneous file inputs, e.g., from glossaries.
-        packageOf("glossaries")
-        "loadglsentries".cmd("glossariesfile".required(LatexContexts.SingleTexFile)) {
-            "Load glossary entries from a file"
-        }
-
-        packageOf("minted")
-        "inputminted".cmd(
-            required("language", LatexContexts.MintedFuntimeLand),
-            required("sourcefile", LatexContexts.SingleFile),
-        ) {
-            "Input a source file with syntax highlighting"
-        }
-    }
-
-    val importRelative = buildCommands {
-        // Import package commands.
-        packageOf("import")
-        "import".cmd(
-            "absolute path".required(LatexContexts.Folder), // Folder-like.
-            "filename".required(LatexContexts.SingleTexFile)
-        ) {
-            "Import a file from an absolute path"
-        }
-
-        "includefrom".cmd(
-            "absolute path".required(LatexContexts.Folder),
-            "filename".required(LatexContexts.SingleTexFile)
-        ) {
-            "Include from an absolute path"
-        }
-
-        "inputfrom".cmd(
-            "absolute path".required(LatexContexts.Folder),
-            "filename".required(LatexContexts.SingleTexFile)
-        ) {
-            "Input from an absolute path"
-        }
-    }
-
-    val importAbsolute = buildCommands {
-        packageOf("import")
-        "subimport".cmd(
-            "relative path".required(LatexContexts.Folder),
-            "filename".required(LatexContexts.SingleTexFile)
-        ) {
-            "Subimport from a relative path"
-        }
-
-        "subincludefrom".cmd(
-            "relative path".required(LatexContexts.Folder),
-            "filename".required(LatexContexts.SingleTexFile)
-        ) {
-            "Subinclude from a relative path"
-        }
-
-        "subinputfrom".cmd(
-            "relative path".required(LatexContexts.Folder),
-            "filename".required(LatexContexts.SingleTexFile)
-        ) {
-            "Subinput from a relative path"
-        }
-    }
-
-    val subfix = buildCommands {
-        // Subfiles package.
-        packageOf("subfiles")
-        "subfile".cmd("sourcefile".required(LatexContexts.SingleTexFile)) {
-            "Include a subfile"
-        }
-
-        "subfileinclude".cmd("sourcefile".required(LatexContexts.SingleTexFile)) {
-            "Include a subfile with page break"
-        }
-
-        "subfix".cmd("file".required(LatexContexts.SingleTexFile)) {
-            "Fix subfile paths"
-        }
+        packageOf("tikzit")
+        "tikzfig".cmd(relativeSingleTexFileArg)
+        "ctikzfig".cmd(relativeSingleTexFileArg)
     }
 }

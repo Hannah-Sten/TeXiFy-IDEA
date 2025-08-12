@@ -286,6 +286,12 @@ class LArgument(
         }
 
         fun required(
+            name: String, ctx: LContextSet, description: String = ""
+        ): LArgument {
+            return LArgument(name, LArgumentType.REQUIRED, LAssignContext(ctx), description)
+        }
+
+        fun required(
             name: String, ctx: LatexContext, description: String = ""
         ): LArgument {
             return LArgument(name, LArgumentType.REQUIRED, LAssignContext(ctx), description)

@@ -13,10 +13,11 @@ open class SimpleLatexContext(
  */
 interface ILFileInputContext : LatexContext
 
-class LFileInputContext(
+class SimpleFileInputContext(
     name: String,
     val isCommaSeparated: Boolean = false,
     val supportedExtensions: Set<String> = emptySet(),
+    val isAbsolutePathSupported: Boolean = true
 ) : SimpleLatexContext(name), ILFileInputContext
 
 /**
@@ -34,12 +35,12 @@ object LatexContexts {
      *
      * The names can be comma-separated, for example in `\usepackage{package1,package2}`.
      */
-    object PackageNames : SimpleLatexContext("packages"), ILFileInputContext
+    val PackageNames = SimpleLatexContext("packages")
 
     /**
      * Describes the context of class names, for example in `\documentclass{...}`.
      */
-    object ClassName : SimpleLatexContext("class"), ILFileInputContext
+    val ClassName = SimpleLatexContext("class")
 
     val Preamble = SimpleLatexContext("preamble")
 
@@ -102,24 +103,15 @@ object LatexContexts {
      */
     val ListType = SimpleLatexContext("list.type")
 
-    val SingleFile = LFileInputContext(
+    val SingleFile = SimpleFileInputContext(
         "file.general", isCommaSeparated = false, supportedExtensions = emptySet(),
     )
-    val MultipleFiles = LFileInputContext(
-        "files.general", isCommaSeparated = true, supportedExtensions = emptySet(),
-    )
-    val SingleTexFile = LFileInputContext(
-        "file.tex", isCommaSeparated = false, supportedExtensions = setOf("tex"),
-    )
-    val MultipleTexFiles = LFileInputContext(
-        "files.tex", isCommaSeparated = true, supportedExtensions = setOf("tex"),
-    )
 
-    val SingleBibFile = LFileInputContext(
+    val SingleBibFile = SimpleFileInputContext(
         "file.bib", isCommaSeparated = false, supportedExtensions = setOf("bib"),
     )
 
-    val MultipleBibFiles = LFileInputContext(
+    val MultipleBibFiles = SimpleFileInputContext(
         "files.bib", isCommaSeparated = true, supportedExtensions = setOf("bib"),
     )
 
@@ -135,7 +127,7 @@ object LatexContexts {
      */
     val BibStyle = SimpleLatexContext("style")
 
-    val URL = LFileInputContext("url")
+    val URL = SimpleFileInputContext("url")
 
     val Algorithmicx = SimpleLatexContext("algorithmicx")
 
@@ -147,6 +139,8 @@ object LatexContexts {
     val GlossaryLabel = SimpleLatexContext("glossary")
 
     val ColorReference = SimpleLatexContext("color")
+
+    val PicturePath = SimpleLatexContext("picture.path")
 
     // environment contexts
 

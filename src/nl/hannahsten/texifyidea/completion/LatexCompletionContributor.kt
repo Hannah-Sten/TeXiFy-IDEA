@@ -34,9 +34,6 @@ class LatexCompletionContributor : CompletionContributor() {
     init {
         registerContextBasedCommandCompletion()
         registerContextAwareParameterCompletion()
-        registerFileNameCompletion()
-        registerFolderNameCompletion()
-        registerGraphicPathCompletion()
         registerMagicCommentCompletion()
         registerDefaultEnvironmentCompletion()
     }
@@ -102,7 +99,7 @@ class LatexCompletionContributor : CompletionContributor() {
                 args.isNotEmpty()
             }
             .withLanguage(LatexLanguage),
-        LatexFolderProvider()
+        LatexFolderProvider
     )
 
     /**
