@@ -20,6 +20,9 @@ interface LatexCommandWithParams : LatexComposite {
      */
     fun getName(): String?
 
+    val nameWithoutSlash: String?
+        get() = getName()?.removePrefix("\\")
+
     val parameterList: List<LatexParameter>
 
     /**

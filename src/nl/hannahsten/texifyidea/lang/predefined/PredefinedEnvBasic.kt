@@ -82,12 +82,16 @@ object PredefinedEnvBasic : PredefinedEnvironmentSet() {
     }
 
     val someMathEnv = buildEnvironments {
+
+        underContext(LatexContexts.Math) {
+            // equation is basic
+            "equation".env(LatexContexts.Math) { "A numbered equation." }
+        }
+
         packageOf("amsmath")
 
         val alignableMath = setOf(LatexContexts.Math, Alignable)
-
         underContext(LatexContexts.Text) {
-            "equation".env(LatexContexts.Math) { "A numbered equation." }
             "equation*".env(LatexContexts.Math) { "An unnumbered equation." }
             "align".env(alignableMath) { "A set of aligned equations." }
             "align*".env(alignableMath) { "A set of aligned equations without numbering." }

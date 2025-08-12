@@ -753,8 +753,8 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         "blendcolors".cmd("mix expr".required) { "BLENDCOLORS" }
         "blendcolors*".cmd("mix expr".required) { "BLENDCOLORS_STAR" }
         "boxframe".cmd("width".required, "height".required, "depth".required) { "BOXFRAME" }
-        "color".cmd("model-list".optional, "spec-list".required) { "COLOR2" }
-        "colorbox".cmd("model-list".optional, "spec-list".required, textArg) { "COLORBOX2" }
+        "color".cmd("model-list".optional, colorArg) { "COLOR2" }
+        "colorbox".cmd("model-list".optional, colorArg, textArg) { "COLORBOX2" }
         +"colormask"
         +"colorseriescycle"
         "convertcolorspec".cmd("model".required, "spec".required, "target model".required, "cmd".required) { "CONVERTCOLORSPEC" }
@@ -765,15 +765,15 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         "fcolorbox".cmd("frame color".required, "background model-list".optional, "background spec-list".required, textArg) { "FCOLORBOX4" }
         +"hiderowcolors"
         "maskcolors".cmd("num model".optional, colorArg) { "MASKCOLORS" }
-        "pagecolor".cmd("model-list".optional, "spec-list".required) { "PAGECOLOR2" }
+        "pagecolor".cmd("model-list".optional, colorArg) { "PAGECOLOR2" }
         "resetcolorseries".cmd("div".optional, "name".required) { "RESETCOLORSERIES" }
         "rowcolors".cmd("commands".optional, "row".required, "odd-row color".required, "even-row color".required) { "ROWCOLORS" }
         "rowcolors*".cmd("commands".optional, "row".required, "odd-row color".required, "even-row color".required) { "ROWCOLORS_STAR" }
         +"rownum"
         +"showrowcolors"
-        "testcolor".cmd(colorArg) { "TESTCOLOR" }
-        "testcolor".cmd("model-list".optional, "spec-list".required) { "TESTCOLOR2" }
-        "textcolor".cmd("model-list".optional, "spec-list".required, textArg) { "TEXTCOLOR2" }
+        "textcolor".cmd(colorArg) { "TESTCOLOR" }
+        "textcolor".cmd("model-list".optional, colorArg) { "TESTCOLOR2" }
+        "textcolor".cmd("model-list".optional, colorArg, textArg) { "TEXTCOLOR2" }
         +"xglobal"
 
         packageOf("color")

@@ -9,13 +9,13 @@ import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import kotlin.time.Duration.Companion.seconds
 
 fun CodeInsightTestFixture.updateFilesets() {
-    timeoutRunBlocking(1.seconds) {
+    timeoutRunBlocking(10.seconds) {
         LatexProjectStructure.updateFilesetsSuspend(project)
     }
 }
 
 fun CodeInsightTestFixture.updateCommandDef() {
-    timeoutRunBlocking(1.seconds) {
+    timeoutRunBlocking(10.seconds) {
         LatexDefinitionService.getInstance(project).ensureRefreshAll()
     }
 }

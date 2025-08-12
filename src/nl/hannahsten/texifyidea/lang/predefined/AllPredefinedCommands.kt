@@ -42,4 +42,10 @@ object AllPredefinedCommands : LatexSemanticsCommandLookup {
     override fun lookupCommand(name: String): LSemanticCommand? {
         return simpleNameLookup[name]
     }
+
+    val nameToCommands = allCommands.groupBy { it.name }
+
+    fun findAll(name: String): List<LSemanticCommand> {
+        return nameToCommands[name] ?: emptyList()
+    }
 }

@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.index
 
-import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
@@ -159,7 +158,6 @@ object LatexDefinitionUtil {
     fun collectCustomDefinitions(virtualFile: VirtualFile, project: Project, bundle: WorkingFilesetDefinitionBundle) {
         val psiManager = PsiManager.getInstance(project)
         val psiFile = psiManager.findFile(virtualFile) as? LatexFile ?: return
-        if (DumbService.isDumb(project)) return
         // let us use the index to find the command definitions
         val manager = SmartPointerManager.getInstance(project)
 

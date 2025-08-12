@@ -29,7 +29,6 @@ class LatexEquationReferenceInspectionTest : TexifyInspectionTestBase(LatexEquat
             test constraints (\ref{eq:time3}) enforce node
             """.trimIndent()
         )
-
         val quickFixes = myFixture.getAllQuickFixes()
         assertEquals(1, quickFixes.size)
         writeCommand(myFixture.project) {

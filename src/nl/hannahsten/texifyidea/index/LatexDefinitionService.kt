@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.index
 
 import arrow.atomic.AtomicLong
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.smartReadAction
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
@@ -281,14 +280,12 @@ class LatexLibraryDefinitionService(
 
             // return the hard-coded basic commands
             val currentSourcedDefinitions = mutableMapOf<String, SourcedDefinition>()
-            if (ApplicationManager.getApplication().isUnitTestMode) {
-                // add all the predefined commands and environments in unit test mode
-                processAllPredefinedCommands(currentSourcedDefinitions)
-                processAllPredefinedEnvironments(currentSourcedDefinitions)
-            }
-            else {
-                processPredefinedCommandsAndEnvironments("", currentSourcedDefinitions)
-            }
+//            if (ApplicationManager.getApplication().isUnitTestMode) {
+//                // add all the predefined commands and environments in unit test mode
+//                processAllPredefinedCommands(currentSourcedDefinitions)
+//                processAllPredefinedEnvironments(currentSourcedDefinitions)
+//            }
+            processPredefinedCommandsAndEnvironments("", currentSourcedDefinitions)
 
             // overwrite the definitions with the primitive commands
             PredefinedPrimitives.allCommands.forEach {
@@ -399,6 +396,9 @@ class LatexDefinitionService(
         return getAndComputeLater(fileset, expirationInMs, LatexLibraryDefinitionService.baseLibBundle)
     }
 
+    /**
+     * Get the definition bundle for the given [psiFile],
+     */
     fun getDefBundlesMerged(psiFile: PsiFile): DefinitionBundle {
         val filesetData = LatexProjectStructure.getFilesetDataFor(psiFile) ?: return LatexLibraryDefinitionService.baseLibBundle
         if (filesetData.filesets.size == 1) return getDefBundleForFileset(filesetData.filesets.first())

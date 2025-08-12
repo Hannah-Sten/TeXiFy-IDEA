@@ -234,7 +234,7 @@ object PackageUtils {
      * The returned set contains the extensions to distinguish between packages and classes,
      * for example `{article.cls, amsmath.sty}`.
      */
-    fun getIncludedPackagesInFileset(file: PsiFile): Set<String> {
+    fun getIncludedLibrariesInFileset(file: PsiFile): Set<String> {
         val data = LatexProjectStructure.getFilesetDataFor(file) ?: return emptySet()
         val filesets = data.filesets
         if(filesets.isEmpty()) return emptySet()
@@ -294,5 +294,5 @@ fun PsiFile.insertUsepackage(pack: LatexPackage) = PackageUtils.insertUsepackage
  * @return List of all included packages, including those that are included indirectly.
  */
 fun PsiFile.includedPackagesInFileset(): Set<LatexPackage> {
-    return PackageUtils.getIncludedPackagesInFileset(this).map { LatexPackage(it) }.toSet()
+    return PackageUtils.getIncludedLibrariesInFileset(this).map { LatexPackage(it.substringBefore('.')) }.toSet()
 }

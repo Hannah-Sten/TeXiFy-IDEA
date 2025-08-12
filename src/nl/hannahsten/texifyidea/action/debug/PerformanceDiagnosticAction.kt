@@ -15,6 +15,7 @@ import nl.hannahsten.texifyidea.completion.LatexContextAwareCompletionAdaptor
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.index.LatexLibraryDefinitionService
+import nl.hannahsten.texifyidea.index.LatexLibraryStructureService
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicLong
 import javax.swing.JLabel
@@ -34,7 +35,7 @@ class PerformanceDiagnosticAction : AnAction() {
         val additionalInfo: String = ""
     )
 
-    private fun performanceData(name: String, tracker: SimplePerformanceTracker, additionalInfo: String = ""): PerformanceData {
+    private fun performance(name: String, tracker: SimplePerformanceTracker, additionalInfo: String = ""): PerformanceData {
         return PerformanceData(
             name, tracker.countOfBuilds.get(), tracker.totalTimeCost.get(), additionalInfo
         )
@@ -43,14 +44,20 @@ class PerformanceDiagnosticAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
         // show a dialog with performance diagnostic information
+        val libService = LatexLibraryStructureService.getInstance(project)
+        val projectFilesets = LatexProjectStructure.getFilesets(project)
         val tableData = listOf(
-            performanceData(
-                "Fileset", LatexProjectStructure,
-                "Recent Fileset Size: ${LatexProjectStructure.getFilesets(project)?.mapping?.size ?: "N/A"}"
+            performance(
+                "Library Structure", LatexLibraryStructureService,
+                "Loaded Libraries: ${libService.librarySize()}"
             ),
-            performanceData("Package Definitions", LatexLibraryDefinitionService),
-            performanceData("Command Definitions", LatexDefinitionService),
-            performanceData("Completion Lookup", LatexContextAwareCompletionAdaptor)
+            PerformanceData(
+                "Fileset", LatexProjectStructure.countOfBuilds.get(), LatexProjectStructure.totalTimeCost.get() - LatexLibraryStructureService.totalTimeCost.get(),
+                projectFilesets?.let { fs -> "${fs.mapping.size} files out of ${fs.filesets.size} sets" } ?: ""
+            ),
+            performance("Package Definitions", LatexLibraryDefinitionService),
+            performance("Command Definitions", LatexDefinitionService),
+            performance("Completion Lookup", LatexContextAwareCompletionAdaptor)
         )
         val messageHtml = createHTML(true).html {
             body {

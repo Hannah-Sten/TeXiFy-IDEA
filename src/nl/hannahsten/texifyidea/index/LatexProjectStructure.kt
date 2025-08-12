@@ -170,7 +170,10 @@ class LatexLibraryInfo(
 class LatexLibraryStructureService(
     private val project: Project
 ) : AbstractBlockingCacheService<String, LatexLibraryInfo?>() {
-    companion object {
+    companion object : SimplePerformanceTracker {
+        override val countOfBuilds: AtomicInteger = AtomicInteger(0)
+        override val totalTimeCost: AtomicLong = AtomicLong(0)
+
         private val libraryCommandNameToExt: Map<String, String> = buildMap {
             put("\\usepackage", ".sty")
             put("\\RequirePackage", ".sty")
@@ -187,7 +190,11 @@ class LatexLibraryStructureService(
     }
 
     override fun computeValue(key: String, oldValue: LatexLibraryInfo?): LatexLibraryInfo? {
-        return computePackageFilesetsRecur(key, mutableSetOf())
+        val startTime = System.currentTimeMillis()
+        return computePackageFilesetsRecur(key, mutableSetOf()).also {
+            countOfBuilds.incrementAndGet()
+            totalTimeCost.addAndGet(System.currentTimeMillis() - startTime)
+        }
     }
 
     private fun getLibraryName(current: VirtualFile, project: Project): String {
@@ -275,6 +282,10 @@ class LatexLibraryStructureService(
 
     fun invalidateLibraryCache() {
         clearAllCache()
+    }
+
+    fun librarySize(): Int {
+        return caches.size
     }
 }
 
@@ -438,6 +449,10 @@ object LatexProjectStructure : SimplePerformanceTracker {
                     if (libraryInfo != null) {
                         addLibrary(libraryInfo)
                         refInfo.add(libraryInfo.location)
+                    } else {
+                        // even though we cannot find the library, we still add it to the libraries set
+                        // so that the definition service can still find it
+                        libraries.add(path.name)
                     }
                 }
             }
@@ -717,7 +732,6 @@ object LatexProjectStructure : SimplePerformanceTracker {
 
     private fun makePreparation(project: Project): ProjectInfo {
         // Get all bibtex input paths from the run configurations
-        countOfBuilds.incrementAndGet()
         val bibInputPaths = project.getBibtexRunConfigurations().mapNotNull { config ->
             (config.environmentVariables.envs["BIBINPUTS"])?.let {
                 LocalFileSystem.getInstance().findFileByPath(it)
@@ -801,7 +815,6 @@ object LatexProjectStructure : SimplePerformanceTracker {
     }
 
     private fun buildFilesets(project: Project): LatexProjectFilesets {
-        val startTime = System.currentTimeMillis()
         val projectInfo = makePreparation(project)
         val roots = getPossibleRootFiles(project)
         val allFilesetInfo = mutableListOf<FilesetProcessor>()
@@ -859,8 +872,6 @@ object LatexProjectStructure : SimplePerformanceTracker {
             FilesetData(filesets, allFiles, scope, allLibs, externalDocumentInfo)
         }
 
-        val elapsedTime = System.currentTimeMillis() - startTime
-        totalTimeCost.addAndGet(elapsedTime)
         return LatexProjectFilesets(allFilesets, dataMapping)
     }
 
@@ -868,7 +879,11 @@ object LatexProjectStructure : SimplePerformanceTracker {
 
     private suspend fun buildFilesetsSuspend(project: Project): LatexProjectFilesets {
         return smartReadAction(project) {
-            buildFilesets(project)
+            val startTime = System.currentTimeMillis()
+            buildFilesets(project).also {
+                countOfBuilds.incrementAndGet()
+                totalTimeCost.addAndGet(System.currentTimeMillis() - startTime)
+            }
         }.also {
             // refresh the inspections
             if (!ApplicationManager.getApplication().isUnitTestMode) {
@@ -989,7 +1004,6 @@ object LatexProjectStructure : SimplePerformanceTracker {
         // If the file is not in the mapping, it means it is not part of any fileset, so we manually build it as a root file
         val projectInfo = makePreparation(project)
         buildFilesetFromRoot(root, project, projectInfo)
-
         return command.getUserData(userDataKeyFileReference)?.value
     }
 }

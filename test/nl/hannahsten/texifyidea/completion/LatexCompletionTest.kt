@@ -55,10 +55,12 @@ class LatexCompletionTest : BasePlatformTestCase() {
         myFixture.configureByText(
             LatexFileType,
             """
+            \usepackage{xcolor}
             \colorlet{fadedred}{red!70!}
             \color{r<caret>}
             """.trimIndent()
         )
+        myFixture.updateCommandDef()
 
         val result = myFixture.complete(CompletionType.BASIC)
 

@@ -16,7 +16,13 @@ object AllPredefinedEnvironments : LatexSemanticsEnvLookup {
 
     val simpleNameLookup = allEnvironments.associateBy { it.name }
 
+    val nameToEnvironments = allEnvironments.groupBy { it.name }
+
     override fun lookupEnv(name: String): LSemanticEnv? {
         return simpleNameLookup[name]
+    }
+
+    fun findAll(name: String): List<LSemanticEnv> {
+        return nameToEnvironments[name] ?: emptyList()
     }
 }

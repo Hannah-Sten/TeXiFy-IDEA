@@ -4,6 +4,7 @@ import io.mockk.every
 import io.mockk.mockkStatic
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
+import nl.hannahsten.texifyidea.updateFilesets
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 
 class OutsideMathLatexUnicodeInspectionTest : LatexUnicodeInspectionTest() {
@@ -26,6 +27,7 @@ class OutsideMathLatexUnicodeInspectionTest : LatexUnicodeInspectionTest() {
             î
             """.trimIndent()
         )
+        myFixture.updateFilesets()
         myFixture.checkHighlighting()
     }
 

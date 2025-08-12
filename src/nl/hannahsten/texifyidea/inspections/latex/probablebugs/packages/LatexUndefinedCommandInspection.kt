@@ -35,6 +35,7 @@ class LatexUndefinedCommandInspection : TexifyInspectionBase() {
     override fun getDisplayName() = "Command is not defined"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
+        // TODO
         val includedPackages = file.includedPackagesInFileset().toSet().plus(LatexPackage.DEFAULT)
 
         val commandsInFile = file.commandsInFile()
