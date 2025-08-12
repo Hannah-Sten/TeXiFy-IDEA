@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.psi
 
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.lang.LArgument
-import nl.hannahsten.texifyidea.lang.LContextInherit
 import nl.hannahsten.texifyidea.lang.LSemanticEnv
 import nl.hannahsten.texifyidea.lang.LatexContextIntro
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
@@ -34,7 +33,7 @@ abstract class LatexWithContextTraverser<S>(
 
     protected fun traverseCommandRecur(e: LatexCommandWithParams, args: List<LArgument>): Boolean {
         LatexPsiUtil.processArgumentsWithSemantics(e, args) { parameter, argument ->
-            val intro = argument?.contextSignature ?: LContextInherit
+            val intro = argument?.contextSignature ?: LatexContextIntro.Inherit
             val oldState = state
             enterContextIntro(intro)
             val action = traverseRecur(parameter)

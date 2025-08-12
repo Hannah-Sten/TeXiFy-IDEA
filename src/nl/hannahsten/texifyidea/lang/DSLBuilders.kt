@@ -82,7 +82,7 @@ abstract class AbstractDSLLatexBuilderScope : DSLLatexBuilderScope {
     fun String.required(
         ctx: LContextSet, description: String = ""
     ): LArgument {
-        return LArgument.required(this, LAssignContext(ctx), description)
+        return LArgument.required(this, LatexContextIntro.Assign(ctx), description)
     }
 
     fun String.required(
@@ -208,7 +208,7 @@ class DSLLatexEnvironmentBuilderScope : AbstractDSLLatexBuilderScope() {
         vararg arguments: LArgument,
         desc: () -> String = { "" }
     ): LSemanticEnv {
-        return env(LAssignContext(context), *arguments, desc = desc)
+        return env(LatexContextIntro.Assign(context), *arguments, desc = desc)
     }
 
     inline fun String.env(
@@ -216,7 +216,7 @@ class DSLLatexEnvironmentBuilderScope : AbstractDSLLatexBuilderScope() {
         vararg arguments: LArgument,
         desc: () -> String = { "" }
     ): LSemanticEnv {
-        return env(LAssignContext(context), *arguments, desc = desc)
+        return env(LatexContextIntro.Assign(context), *arguments, desc = desc)
     }
 
     operator fun String.unaryPlus(): LSemanticEnv {

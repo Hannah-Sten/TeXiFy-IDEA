@@ -11,21 +11,26 @@ import nl.hannahsten.texifyidea.lang.LatexContext
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.SimpleFileInputContext
 
+/**
+ * Defines a dispatcher for context-aware completion providers.
+ *
+ * @see LatexContexts
+ */
 object ContextAwareCompletionProviderDispatcher : LatexContextAwareCompletionAdaptor() {
 
     private val dispatchMap: Map<LatexContext, LatexContextAwareCompletionProvider> = LatexContexts.run {
         mapOf(
+            ClassName to LatexDocumentclassProvider,
+            PackageNames to LatexPackageNameProvider,
+            Folder to LatexFolderProvider,
             BibStyle to LatexBibliographyStyleProvider,
-            ListType to LatexListTypeProvider,
-            MintedFuntimeLand to LatexMintedTypeProvider,
             LabelReference to LatexLabelReferenceProvider,
             CitationKey to LatexBibliographyReferenceProvider,
-            LatexContexts.PackageNames to LatexPackageNameProvider,
-            LatexContexts.ClassName to LatexDocumentclassProvider,
-            GlossaryLabel to LatexGlossariesCompletionProvider,
-            ColorReference to LatexXColorProvider,
-            LatexContexts.Folder to LatexFolderProvider,
             PicturePath to LatexGraphicsPathProvider,
+            GlossaryLabel to LatexGlossariesCompletionProvider,
+            ListType to LatexListTypeProvider,
+            ColorReference to LatexXColorProvider,
+            MintedFuntimeLand to LatexMintedTypeProvider,
         )
     }
 

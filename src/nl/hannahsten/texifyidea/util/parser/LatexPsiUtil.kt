@@ -14,8 +14,6 @@ import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.lang.LArgument
 import nl.hannahsten.texifyidea.lang.LArgumentType
-import nl.hannahsten.texifyidea.lang.LAssignContext
-import nl.hannahsten.texifyidea.lang.LClearContext
 import nl.hannahsten.texifyidea.lang.LatexContextIntro
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LSemanticCommand
@@ -370,13 +368,13 @@ object LatexPsiUtil {
                 else -> continue
             }
             when (intro) {
-                is LAssignContext -> {
+                is LatexContextIntro.Assign -> {
                     if (collectedContextIntro == null) return intro.contexts
                     collectedContextIntro.add(intro)
                     break
                 }
 
-                LClearContext -> {
+                LatexContextIntro.Clear -> {
                     if (collectedContextIntro == null) return emptySet()
                     collectedContextIntro.add(intro)
                     break

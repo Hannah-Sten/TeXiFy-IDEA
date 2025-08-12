@@ -1,10 +1,26 @@
 package nl.hannahsten.texifyidea.lang
 
+/**
+ * Simple implementation of [LatexContext] that only holds a name.
+ *
+ * The identity of the context is based on the name, so two contexts with the same name are considered equal.
+ */
 open class SimpleLatexContext(
-    final override val name: String
+    val name: String,
+    final override val display: String = name
 ) : LatexContext {
     override fun toString(): String {
-        return name
+        return display
+    }
+
+    private val hash = name.hashCode()
+
+    final override fun hashCode(): Int = hash
+
+    final override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is SimpleLatexContext) return false
+        return name == other.name
     }
 }
 
@@ -26,6 +42,9 @@ class SimpleFileInputContext(
  */
 interface LLiteralContext : LatexContext
 
+/**
+ * Some predefined contexts that are used in LaTeX files.
+ */
 object LatexContexts {
 
     val Math = SimpleLatexContext("math")
@@ -115,7 +134,7 @@ object LatexContexts {
         "files.bib", isCommaSeparated = true, supportedExtensions = setOf("bib"),
     )
 
-    object Folder : SimpleLatexContext("folder"), ILFileInputContext
+    val Folder = SimpleLatexContext("folder")
 
     /**
      * The citation key in `\cite{...}`.
