@@ -71,7 +71,7 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexWrapper<LatexCommands>(Late
         return getByName(SpecialKeys.FILE_INPUTS, project, GlobalSearchScope.fileScope(project, file))
     }
 
-    fun getAllPackageIncludes(project: Project, scope: GlobalSearchScope): Collection<LatexCommands> {
+    fun getPackageIncludes(project: Project, scope: GlobalSearchScope): Collection<LatexCommands> {
         return getByName(SpecialKeys.PACKAGE_INCLUDES, project, scope)
     }
 

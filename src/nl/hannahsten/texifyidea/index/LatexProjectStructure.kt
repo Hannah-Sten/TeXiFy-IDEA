@@ -27,6 +27,7 @@ import nl.hannahsten.texifyidea.file.ClassFileType
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.file.LatexSourceFileType
 import nl.hannahsten.texifyidea.file.StyleFileType
+import nl.hannahsten.texifyidea.index.file.LatexExternalPackageIndex
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SUBFILES
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
@@ -217,10 +218,11 @@ class LatexLibraryStructureService(
             return null
         }
         val file = LocalFileSystem.getInstance().findFileByNioFile(path) ?: return null
-        val files = mutableSetOf(file)
+        val allFiles = mutableSetOf(file)
         val allPackages = mutableSetOf(nameWithExt)
         val directDependencies = mutableSetOf<String>()
-        val commands = NewSpecialCommandsIndex.getPackageIncludes(project, file)
+        val scope = GlobalSearchScope.fileScope(project, file)
+        val commands = NewSpecialCommandsIndex.getPackageIncludes(project, scope)
         for (command in commands) {
             val packageText = command.requiredParameterText(0) ?: continue
             val ext = libraryCommandNameToExt[command.name] ?: continue
@@ -236,7 +238,7 @@ class LatexLibraryStructureService(
                 info?.let {
                     refTexts.add(trimmed)
                     refInfos.add(setOf(it.location))
-                    files.addAll(it.files)
+                    allFiles.addAll(it.files)
                     allPackages.addAll(it.allIncludedPackageNames)
                 }
             }
@@ -245,7 +247,17 @@ class LatexLibraryStructureService(
                 CacheValueTimed(refTexts to refInfos)
             )
         }
-        val info = LatexLibraryInfo(nameWithExt, file, files, directDependencies, allPackages)
+        LatexExternalPackageIndex.getAllPackageInclusions(scope).forEach {
+            val name = "$it.sty"
+            directDependencies.add(name)
+            if (name in allPackages) return@forEach
+            val info = computePackageFilesetsRecur(name, processing)
+            info?.let {
+                allFiles.addAll(info.files)
+                allPackages.addAll(info.allIncludedPackageNames)
+            }
+        }
+        val info = LatexLibraryInfo(nameWithExt, file, allFiles, directDependencies, allPackages)
         putValue(nameWithExt, info)
         Log.info("LatexLibrary Loaded: $nameWithExt")
         return info
@@ -284,10 +296,10 @@ object LatexProjectStructure : SimplePerformanceTracker {
      * Stores the files that are referenced by the latex command.
      */
     val userDataKeyFileReference = Key.create<
-        CacheValueTimed<
-            Pair<List<String>, List<Set<VirtualFile>>> // List of pairs of original text and set of files in order
-            >
-        >("latex.command.reference.files")
+            CacheValueTimed<
+                    Pair<List<String>, List<Set<VirtualFile>>> // List of pairs of original text and set of files in order
+                    >
+            >("latex.command.reference.files")
 
     fun getPossibleRootFiles(project: Project): Set<VirtualFile> {
         if (DumbService.isDumb(project)) return emptySet()
@@ -311,7 +323,7 @@ object LatexProjectStructure : SimplePerformanceTracker {
         // Check if the file is a library file, e.g. in the texlive distribution
         val filetype = file.fileType
         return (filetype == StyleFileType || filetype == ClassFileType || filetype == LatexSourceFileType) &&
-            !ProjectFileIndex.getInstance(project).isInProject(file)
+                !ProjectFileIndex.getInstance(project).isInProject(file)
     }
 
     private open class ProjectInfo(
