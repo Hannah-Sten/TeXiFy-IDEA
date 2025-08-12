@@ -11,7 +11,7 @@ import kotlinx.html.stream.createHTML
 import kotlinx.html.table
 import kotlinx.html.td
 import kotlinx.html.tr
-import nl.hannahsten.texifyidea.completion.LatexContextAwareCompletionProviderBase
+import nl.hannahsten.texifyidea.completion.LatexContextAwareCompletionAdaptor
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.index.LatexLibraryDefinitionService
@@ -50,7 +50,7 @@ class PerformanceDiagnosticAction : AnAction() {
             ),
             performanceData("Package Definitions", LatexLibraryDefinitionService),
             performanceData("Command Definitions", LatexDefinitionService),
-            performanceData("Completion Lookup", LatexContextAwareCompletionProviderBase)
+            performanceData("Completion Lookup", LatexContextAwareCompletionAdaptor)
         )
         val messageHtml = createHTML(true).html {
             body {

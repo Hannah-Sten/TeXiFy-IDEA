@@ -8,7 +8,7 @@ import nl.hannahsten.texifyidea.util.files.getParentDirectoryByImportPaths
 /**
  * @author Hannah Schellekens
  */
-class LatexFileProvider : LatexPathProviderBase() {
+object LatexFileProvider : LatexPathProviderBase() {
 
     override fun selectScanRoots(file: PsiFile): List<VirtualFile> {
         val searchDirs = getProjectRoots().toMutableList()

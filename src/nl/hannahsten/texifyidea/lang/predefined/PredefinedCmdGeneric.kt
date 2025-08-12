@@ -339,7 +339,7 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
     val citation = textCommands {
         val before = "before".optional
         val after = "after".optional
-        val keys = "keys".required(LatexContexts.BibtexKey)
+        val keys = "keys".required(LatexContexts.CitationKey)
 
         "cite".cmd("extratext".optional, keys) { "CITE" }
         "bibliographystyle".cmd("style".required(LatexContexts.BibStyle)) { "BIBLIOGRAPHYSTYLE" }
@@ -376,7 +376,7 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         packageOf("biblatex")
         val prenote = "prenote".optional
         val postnote = "postnote".optional
-        val key = "keys".required(LatexContexts.BibtexKey)
+        val key = "keys".required(LatexContexts.CitationKey)
         val volume = "volume".required
         val page = "page".optional
         "Autocite".cmd(prenote, postnote, key) { "AUTOCITE_CAPITALIZED" }
@@ -547,7 +547,7 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         packageOf("glossaries")
 
         val options = "options".optional
-        val label = "label".required(LatexContexts.Text)
+        val label = "label".required(setOf(LatexContexts.Text, LatexContexts.GlossaryLabel))
         val insert = "insert".optional
 
         setRequiredContext() // TODO: maybe setCommandContext(LatexContexts.Preamble)
@@ -558,55 +558,55 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         "newglossaryentry".cmd("name".required, "options".required)
 
         setRequiredContext(LatexContexts.Text)
-        "GLS".cmd(options, label, label)
-        "GLSdesc".cmd(options, label, label)
-        "GLSfirst".cmd(options, label, label)
-        "GLSfirstplural".cmd(options, label, label)
-        "GLSname".cmd(options, label, label)
-        "GLSplural".cmd(options, label, label)
-        "GLSsymbol".cmd(options, label, label)
-        "GLStext".cmd(options, label, label)
-        "GLSuseri".cmd(options, label, label)
-        "GLSuserii".cmd(options, label, label)
-        "GLSuseriii".cmd(options, label, label)
-        "GLSuseriv".cmd(options, label, label)
-        "GLSuserv".cmd(options, label, label)
-        "GLSuservi".cmd(options, label, label)
-        "Gls".cmd(options, label, label)
-        "Glsdesc".cmd(options, label, label)
+        "GLS".cmd(options, label, insert)
+        "GLSdesc".cmd(options, label, insert)
+        "GLSfirst".cmd(options, label, insert)
+        "GLSfirstplural".cmd(options, label, insert)
+        "GLSname".cmd(options, label, insert)
+        "GLSplural".cmd(options, label, insert)
+        "GLSsymbol".cmd(options, label, insert)
+        "GLStext".cmd(options, label, insert)
+        "GLSuseri".cmd(options, label, insert)
+        "GLSuserii".cmd(options, label, insert)
+        "GLSuseriii".cmd(options, label, insert)
+        "GLSuseriv".cmd(options, label, insert)
+        "GLSuserv".cmd(options, label, insert)
+        "GLSuservi".cmd(options, label, insert)
+        "Gls".cmd(options, label, insert)
+        "Glsdesc".cmd(options, label, insert)
         "Glsdisp".cmd(options, label, "text".optional)
-        "Glsfirst".cmd(options, label, label)
-        "Glsfirstplural".cmd(options, label, label)
+        "Glsfirst".cmd(options, label, insert)
+        "Glsfirstplural".cmd(options, label, insert)
         "Glslink".cmd(options, label, "text".optional)
-        "Glsname".cmd(options, label, label)
-        "Glspl".cmd(options, label, label)
-        "Glspl".cmd(options, label, label)
-        "Glsplural".cmd(options, label, label)
-        "Glssymbol".cmd(options, label, label)
-        "Glstext".cmd(options, label, label)
-        "Glsuseri".cmd(options, label, label)
-        "Glsuserii".cmd(options, label, label)
-        "Glsuseriii".cmd(options, label, label)
-        "Glsuseriv".cmd(options, label, label)
-        "Glsuserv".cmd(options, label, label)
-        "Glsuservi".cmd(options, label, label)
-        "gls".cmd(options, label, label)
-        "glsdesc".cmd(options, label, label)
+        "Glsname".cmd(options, label, insert)
+        "Glspl".cmd(options, label, insert)
+        "Glspl".cmd(options, label, insert)
+        "Glsplural".cmd(options, label, insert)
+        "Glssymbol".cmd(options, label, insert)
+        "Glstext".cmd(options, label, insert)
+        "Glsuseri".cmd(options, label, insert)
+        "Glsuserii".cmd(options, label, insert)
+        "Glsuseriii".cmd(options, label, insert)
+        "Glsuseriv".cmd(options, label, insert)
+        "Glsuserv".cmd(options, label, insert)
+        "Glsuservi".cmd(options, label, insert)
+        "gls".cmd(options, label, insert)
+        "glsdesc".cmd(options, label, insert)
         "glsdisp".cmd(options, label, "text".optional)
-        "glsfirst".cmd(options, label, label)
-        "glsfirstplural".cmd(options, label, label)
+        "glsfirst".cmd(options, label, insert)
+        "glsfirstplural".cmd(options, label, insert)
         "glslink".cmd(options, label, "text".optional)
-        "glsname".cmd(options, label, label)
-        "glspl".cmd(options, label, label)
-        "glsplural".cmd(options, label, label)
-        "glssymbol".cmd(options, label, label)
-        "glstext".cmd(options, label, label)
-        "glsuseri".cmd(options, label, label)
-        "glsuserii".cmd(options, label, label)
-        "glsuseriii".cmd(options, label, label)
-        "glsuseriv".cmd(options, label, label)
-        "glsuserv".cmd(options, label, label)
-        "glsuservi".cmd(options, label, label)
+        "glsname".cmd(options, label, insert)
+        "glspl".cmd(options, label, insert)
+        "glsplural".cmd(options, label, insert)
+        "glssymbol".cmd(options, label, insert)
+        "glstext".cmd(options, label, insert)
+        "glsuseri".cmd(options, label, insert)
+        "glsuserii".cmd(options, label, insert)
+        "glsuseriii".cmd(options, label, insert)
+        "glsuseriv".cmd(options, label, insert)
+        "glsuserv".cmd(options, label, insert)
+        "glsuservi".cmd(options, label, insert)
 
         packageOf("acronym")
 
@@ -717,39 +717,37 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         }
     }
 
-    val colorDefinitionCommands = buildCommands {
-        setRequiredContext(LatexContexts.Preamble)
+    val colorRelatedCommands = buildCommands {
+        val colorArg = "color".required(LatexContexts.ColorReference)
+        underContext(LatexContexts.Preamble) {
+            val typeOpt = "type".optional
+            val nameReq = "name".required
+            val modelListReq = "model-list".required(LatexContexts.Literal)
+            val specListReq = "spec-list".required(LatexContexts.Literal)
 
-        val typeOpt = "type".optional
-        val nameReq = "name".required
-        val modelListReq = "model-list".required(LatexContexts.Literal)
-        val specListReq = "spec-list".required(LatexContexts.Literal)
+            packageOf("color")
+            "definecolor".cmd(typeOpt, nameReq, modelListReq, specListReq) { "Define a color" }
+            "DefineNamedColor".cmd("type".required, nameReq, modelListReq, specListReq) { "Define a named color" }
 
-        packageOf("color")
-        "definecolor".cmd(typeOpt, nameReq, modelListReq, specListReq) { "Define a color" }
-        "DefineNamedColor".cmd("type".required, nameReq, modelListReq, specListReq) { "Define a named color" }
-
-        packageOf("xcolor")
-        "providecolor".cmd(typeOpt, nameReq, modelListReq, specListReq) { "Provide a color" }
-        "colorlet".cmd(typeOpt, nameReq, "num model".optional, "color".required) { "Define a color based on another" }
-        "definecolorset".cmd(typeOpt, modelListReq, "head".required, "tail".required, "set spec".required) { "Define a color set" }
-        "providecolorset".cmd(typeOpt, modelListReq, "head".required, "tail".required, "set spec".required) { "Provide a color set" }
-        "preparecolor".cmd(typeOpt, nameReq, modelListReq, specListReq) { "Prepare a color" }
-        "preparecolorset".cmd(typeOpt, modelListReq, "head".required, "tail".required, "set spec".required) { "Prepare a color set" }
-        "definecolors".cmd("id-list".required) { "Define colors" }
-        "providecolors".cmd("id-list".required) { "Provide colors" }
-        "definecolorseries".cmd(
-            "name".required,
-            "core model".required,
-            "method".required,
-            "b-model".optional,
-            "b-spec".required,
-            "s-model".required,
-            "s-spec".required
-        ) { "Define a color series" }
-    }
-
-    val colorCommands = buildCommands {
+            packageOf("xcolor")
+            "providecolor".cmd(typeOpt, nameReq, modelListReq, specListReq) { "Provide a color" }
+            "colorlet".cmd(typeOpt, nameReq, "num model".optional, colorArg) { "Define a color based on another" }
+            "definecolorset".cmd(typeOpt, modelListReq, "head".required, "tail".required, "set spec".required) { "Define a color set" }
+            "providecolorset".cmd(typeOpt, modelListReq, "head".required, "tail".required, "set spec".required) { "Provide a color set" }
+            "preparecolor".cmd(typeOpt, nameReq, modelListReq, specListReq) { "Prepare a color" }
+            "preparecolorset".cmd(typeOpt, modelListReq, "head".required, "tail".required, "set spec".required) { "Prepare a color set" }
+            "definecolors".cmd("id-list".required) { "Define colors" }
+            "providecolors".cmd("id-list".required) { "Provide colors" }
+            "definecolorseries".cmd(
+                "name".required,
+                "core model".required,
+                "method".required,
+                "b-model".optional,
+                "b-spec".required,
+                "s-model".required,
+                "s-spec".required
+            ) { "Define a color series" }
+        }
 
         packageOf("xcolor")
         "blendcolors".cmd("mix expr".required) { "BLENDCOLORS" }
@@ -760,31 +758,31 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         +"colormask"
         +"colorseriescycle"
         "convertcolorspec".cmd("model".required, "spec".required, "target model".required, "cmd".required) { "CONVERTCOLORSPEC" }
-        "extractcolorspec".cmd("color".required, "cmd".required) { "EXTRACTCOLORSPEC" }
-        "extractcolorspecs".cmd("color".required, "model-cmd".required, "color-cmd".required) { "EXTRACTCOLORSPECS" }
+        "extractcolorspec".cmd(colorArg, "cmd".required) { "EXTRACTCOLORSPEC" }
+        "extractcolorspecs".cmd(colorArg, "model-cmd".required, "color-cmd".required) { "EXTRACTCOLORSPECS" }
         "fcolorbox".cmd("model-list".optional, "frame spec-list".required, "background spec-list".required, textArg) { "FCOLORBOX2" }
         "fcolorbox".cmd("frame model-list".optional, "frame spec-list".required, "background model-list".optional, "background spec-list".required, textArg) { "FCOLORBOX3" }
         "fcolorbox".cmd("frame color".required, "background model-list".optional, "background spec-list".required, textArg) { "FCOLORBOX4" }
         +"hiderowcolors"
-        "maskcolors".cmd("num model".optional, "color".required) { "MASKCOLORS" }
+        "maskcolors".cmd("num model".optional, colorArg) { "MASKCOLORS" }
         "pagecolor".cmd("model-list".optional, "spec-list".required) { "PAGECOLOR2" }
         "resetcolorseries".cmd("div".optional, "name".required) { "RESETCOLORSERIES" }
         "rowcolors".cmd("commands".optional, "row".required, "odd-row color".required, "even-row color".required) { "ROWCOLORS" }
         "rowcolors*".cmd("commands".optional, "row".required, "odd-row color".required, "even-row color".required) { "ROWCOLORS_STAR" }
         +"rownum"
         +"showrowcolors"
-        "testcolor".cmd("color".required) { "TESTCOLOR" }
+        "testcolor".cmd(colorArg) { "TESTCOLOR" }
         "testcolor".cmd("model-list".optional, "spec-list".required) { "TESTCOLOR2" }
         "textcolor".cmd("model-list".optional, "spec-list".required, textArg) { "TEXTCOLOR2" }
         +"xglobal"
 
         packageOf("color")
-        "color".cmd("color".required) { "COLOR_CMD" }
-        "colorbox".cmd("color".required, textArg) { "COLORBOX" }
+        "color".cmd(colorArg) { "COLOR_CMD" }
+        "colorbox".cmd(colorArg, textArg) { "COLORBOX" }
         "fcolorbox".cmd("frame color".required, "background color".required, textArg) { "FCOLORBOX" }
         +"nopagecolor"
         +"normalcolor"
-        "pagecolor".cmd("color".required) { "PAGECOLOR" }
-        "textcolor".cmd("color".required, textArg) { "TEXTCOLOR" }
+        "pagecolor".cmd(colorArg) { "PAGECOLOR" }
+        "textcolor".cmd(colorArg, textArg) { "TEXTCOLOR" }
     }
 }

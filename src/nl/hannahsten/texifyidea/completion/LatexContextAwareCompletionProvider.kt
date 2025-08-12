@@ -15,10 +15,17 @@ import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicLong
 
-abstract class LatexContextAwareCompletionProviderBase : CompletionProvider<CompletionParameters>() {
+interface LatexContextAwareCompletionProvider {
+
+    fun addContextAwareCompletions(
+        parameters: CompletionParameters, contexts: LContextSet, defBundle: DefinitionBundle, result: CompletionResultSet
+    )
+}
+
+abstract class LatexContextAwareCompletionAdaptor : CompletionProvider<CompletionParameters>(), LatexContextAwareCompletionProvider {
 
     protected fun buildApplicableContextStr(en: LSemanticEntity): String {
-        if(en.requiredContext.isEmpty()) {
+        if (en.requiredContext.isEmpty()) {
             return ""
         }
         return " in <${en.requiredContext.compactDisplayString()}>"
@@ -37,23 +44,19 @@ abstract class LatexContextAwareCompletionProviderBase : CompletionProvider<Comp
         }
     }
 
-    protected abstract fun addContextAwareCompletions(
-        parameters: CompletionParameters,
-        contexts: LContextSet,
-        defBundle: DefinitionBundle,
-        processingContext: ProcessingContext, result: CompletionResultSet
+    abstract override fun addContextAwareCompletions(
+        parameters: CompletionParameters, contexts: LContextSet, defBundle: DefinitionBundle, result: CompletionResultSet
     )
 
-    override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
+    final override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
         val project = parameters.editor.project ?: return
-
         countOfBuilds.incrementAndGet()
         val startTime = System.currentTimeMillis()
 
         val file = parameters.originalFile
         val defBundle = LatexDefinitionService.getInstance(project).getDefBundlesMerged(file)
-        val contexts = LatexPsiUtil.resolveContextUpward(parameters.position, defBundle)
-        addContextAwareCompletions(parameters, contexts, defBundle, context, result)
+        val latexContexts = LatexPsiUtil.resolveContextUpward(parameters.position, defBundle)
+        addContextAwareCompletions(parameters, latexContexts, defBundle, result)
         // Add a message to the user that this is an experimental feature.
         result.addLookupAdvertisement("Experimental feature: context-aware completion. ")
 

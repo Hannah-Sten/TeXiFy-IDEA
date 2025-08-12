@@ -24,8 +24,8 @@ class LatexProjectCacheInitializer : ProjectActivity {
         if (!isLatexProject) return
         withContext(Dispatchers.Default) {
             // Not sure on which thread this is run, run in background to be sure
-            val projectFilesets = LatexProjectStructure.updateFilesetsSuspend(project)
-            LatexDefinitionService.getInstance(project).ensureRefreshAll(projectFilesets)
+            val fileset = LatexProjectStructure.updateFilesetsSuspend(project)
+            LatexDefinitionService.getInstance(project).ensureRefreshFileset(fileset)
             // there will be an exception if we try to restart the daemon in unit tests
             // see FileStatusMap.CHANGES_NOT_ALLOWED_DURING_HIGHLIGHTING
             DaemonCodeAnalyzer.getInstance(project).restart()

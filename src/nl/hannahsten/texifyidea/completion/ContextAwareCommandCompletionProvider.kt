@@ -5,7 +5,6 @@ import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.completion.InsertHandler
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementBuilder
-import com.intellij.util.ProcessingContext
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.completion.handlers.NewLatexCommandInsertHandler
 import nl.hannahsten.texifyidea.index.DefinitionBundle
@@ -18,9 +17,9 @@ import nl.hannahsten.texifyidea.util.files.isStyleFile
 import nl.hannahsten.texifyidea.util.int
 import nl.hannahsten.texifyidea.util.repeat
 
-object LatexContextAwareCommandCompletionProvider : LatexContextAwareCompletionProviderBase() {
+object ContextAwareCommandCompletionProvider : LatexContextAwareCompletionAdaptor() {
 
-    override fun addContextAwareCompletions(parameters: CompletionParameters, contexts: LContextSet, defBundle: DefinitionBundle, processingContext: ProcessingContext, result: CompletionResultSet) {
+    override fun addContextAwareCompletions(parameters: CompletionParameters, contexts: LContextSet, defBundle: DefinitionBundle, result: CompletionResultSet) {
         val isClassOrStyleFile = parameters.originalFile.let { it.isClassFile() || it.isStyleFile() }
         val lookupElements = mutableListOf<LookupElementBuilder>()
         for (sd in defBundle.sourcedDefinitions()) {

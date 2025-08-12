@@ -3,8 +3,7 @@ package nl.hannahsten.texifyidea.completion
 import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.updateFilesets
-import org.junit.Test
+import nl.hannahsten.texifyidea.updateCommandDef
 
 class LatexCompletionTest : BasePlatformTestCase() {
 
@@ -13,7 +12,6 @@ class LatexCompletionTest : BasePlatformTestCase() {
         super.setUp()
     }
 
-    @Test
     fun testCompleteLatexReferences() {
         // given
         myFixture.configureByText(LatexFileType, """\ap<caret>""")
@@ -30,7 +28,6 @@ class LatexCompletionTest : BasePlatformTestCase() {
         }
     }
 
-    @Test
     fun testCompleteCustomCommandReferences() {
         // given
         myFixture.configureByText(
@@ -40,7 +37,7 @@ class LatexCompletionTest : BasePlatformTestCase() {
             \h<caret>
             """.trimIndent()
         )
-        myFixture.updateFilesets()
+        myFixture.updateCommandDef()
 
         // when
         val result = myFixture.complete(CompletionType.BASIC)

@@ -434,7 +434,15 @@ class LatexDefinitionService(
         scheduleRefreshAll()
     }
 
-    suspend fun ensureRefreshAll(projectFilesets: LatexProjectFilesets) {
+    /**
+     * Update the filesets and refresh all definitions.
+     */
+    suspend fun ensureRefreshAll() {
+        val filesets = LatexProjectStructure.updateFilesetsSuspend(project)
+        refreshAll(filesets.filesets)
+    }
+
+    suspend fun ensureRefreshFileset(projectFilesets: LatexProjectFilesets) {
         refreshAll(projectFilesets.filesets)
     }
 

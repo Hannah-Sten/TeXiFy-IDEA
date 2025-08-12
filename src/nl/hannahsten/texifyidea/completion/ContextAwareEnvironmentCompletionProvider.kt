@@ -3,14 +3,13 @@ package nl.hannahsten.texifyidea.completion
 import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.lookup.LookupElementBuilder
-import com.intellij.util.ProcessingContext
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.index.DefinitionBundle
 import nl.hannahsten.texifyidea.index.SourcedEnvDefinition
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LSemanticEnv
 
-object LatexContextAwareEnvironmentCompletionProvider : LatexContextAwareCompletionProviderBase() {
+object ContextAwareEnvironmentCompletionProvider : LatexContextAwareCompletionAdaptor() {
 
     private fun buildEnvironmentSignature(env: LSemanticEnv): String {
         return "${env.arguments.joinToString()} <${env.contextSignature}>"
@@ -32,7 +31,7 @@ object LatexContextAwareEnvironmentCompletionProvider : LatexContextAwareComplet
             .withIcon(TexifyIcons.DOT_ENVIRONMENT)
     }
 
-    override fun addContextAwareCompletions(parameters: CompletionParameters, contexts: LContextSet, defBundle: DefinitionBundle, processingContext: ProcessingContext, result: CompletionResultSet) {
+    override fun addContextAwareCompletions(parameters: CompletionParameters, contexts: LContextSet, defBundle: DefinitionBundle, result: CompletionResultSet) {
         val lookupElements = mutableListOf<LookupElementBuilder>()
         for (sd in defBundle.sourcedDefinitions()) {
             if (sd !is SourcedEnvDefinition) continue

@@ -1,10 +1,8 @@
 package nl.hannahsten.texifyidea.completion
 
 import com.intellij.codeInsight.completion.CompletionParameters
-import com.intellij.codeInsight.completion.CompletionProvider
 import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.lookup.LookupElementBuilder
-import com.intellij.util.ProcessingContext
 import nl.hannahsten.texifyidea.completion.handlers.MoveToEndOfCommandHandler
 import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.lang.commands.LatexGlossariesCommand.*
@@ -14,7 +12,7 @@ import nl.hannahsten.texifyidea.psi.LatexStrictKeyValPair
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.toStringMap
 
-object LatexGlossariesCompletionProvider : CompletionProvider<CompletionParameters>() {
+object LatexGlossariesCompletionProvider : LatexContextAgnosticCompletionProvider() {
 
     private fun getOptionsMap(pairs: List<LatexStrictKeyValPair>): LinkedHashMap<String, String> {
         return pairs.associate { pair -> Pair(pair.keyValKey, pair.keyValValue) }.toStringMap()
@@ -39,9 +37,7 @@ object LatexGlossariesCompletionProvider : CompletionProvider<CompletionParamete
             .withInsertHandler(MoveToEndOfCommandHandler)
 
     override fun addCompletions(
-        parameters: CompletionParameters,
-        context: ProcessingContext,
-        result: CompletionResultSet
+        parameters: CompletionParameters, result: CompletionResultSet
     ) {
         val glossaryCommands = NewSpecialCommandsIndex.getAllGlossaryEntries(parameters.originalFile)
         val lookupItems = glossaryCommands.mapNotNull { command: LatexCommands ->
@@ -53,6 +49,7 @@ object LatexGlossariesCompletionProvider : CompletionProvider<CompletionParamete
                     val description = command.requiredParameters().getOrNull(2) ?: return@mapNotNull null
                     buildLookupElement(command, label, short, prettyPrintParameter(description))
                 }
+
                 NEWGLOSSARYENTRY.cmd -> {
                     val label = command.requiredParametersText().getOrNull(0) ?: return@mapNotNull null
                     val options =
@@ -62,6 +59,7 @@ object LatexGlossariesCompletionProvider : CompletionProvider<CompletionParamete
                     val description = optionsMap.getOrDefault("description", "")
                     buildLookupElement(command, label, short, description)
                 }
+
                 LONGNEWGLOSSARYENTRY.cmd -> {
                     val label = command.requiredParametersText().getOrNull(0) ?: return@mapNotNull null
                     val options =
@@ -71,11 +69,13 @@ object LatexGlossariesCompletionProvider : CompletionProvider<CompletionParamete
                     val short = optionsMap.getOrDefault("name", "")
                     buildLookupElement(command, label, short, prettyPrintParameter(description))
                 }
+
                 ACRO.cmd, NEWACRO.cmd, ACRODEF.cmd -> {
                     val acronym = command.requiredParametersText().getOrNull(0) ?: return@mapNotNull null
                     val fullName = command.requiredParametersText().getOrNull(1) ?: return@mapNotNull null
                     buildLookupElement(command, acronym, "", fullName)
                 }
+
                 else -> {
                     null
                 }

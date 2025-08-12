@@ -1,10 +1,8 @@
 package nl.hannahsten.texifyidea.completion
 
 import com.intellij.codeInsight.completion.CompletionParameters
-import com.intellij.codeInsight.completion.CompletionProvider
 import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.lookup.LookupElementBuilder
-import com.intellij.util.ProcessingContext
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.completion.handlers.MoveToEndOfCommandHandler
 import nl.hannahsten.texifyidea.util.findAvailableDocumentClasses
@@ -12,7 +10,7 @@ import nl.hannahsten.texifyidea.util.findAvailableDocumentClasses
 /**
  * @author Hannah Schellekens
  */
-object LatexDocumentclassProvider : CompletionProvider<CompletionParameters>() {
+object LatexDocumentclassProvider : LatexContextAgnosticCompletionProvider() {
 
     /**
      * List of all available default documentclasses.
@@ -21,7 +19,7 @@ object LatexDocumentclassProvider : CompletionProvider<CompletionParameters>() {
         "article", "IEEEtran", "proc", "report", "book", "slides", "memoir", "letter", "beamer"
     )
 
-    override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
+    override fun addCompletions(parameters: CompletionParameters, result: CompletionResultSet) {
         val project = parameters.editor.project ?: return
         val classes = DEFAULT_CLASSES + project.findAvailableDocumentClasses()
         result.addAllElements(

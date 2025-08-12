@@ -48,7 +48,14 @@ object LatexContexts {
      */
     val Nothing = SimpleLatexContext("nothing")
 
+    /**
+     * Definitions of labels, such as `\label{...}`.
+     */
     val LabelDefinition = SimpleLatexContext("new.label")
+
+    /**
+     * References to labels, such as `\ref{...}` or `\eqref{...}`.
+     */
     val LabelReference = SimpleLatexContext("label.ref")
 
     /**
@@ -75,6 +82,8 @@ object LatexContexts {
 
     /**
      * Some string literal that may be meaningful, such as `cc` in `\begin{tabular}{cc}`.
+     *
+     * Creating more specific contexts for literals is preferred and auto-completion can be further provided.
      */
     val Literal = SimpleLatexContext("literal")
 
@@ -88,6 +97,9 @@ object LatexContexts {
      */
     val Numeric = SimpleLatexContext("numeric")
 
+    /**
+     * List names, such as `itemize` or `enumerate`.
+     */
     val ListType = SimpleLatexContext("list.type")
 
     val SingleFile = LFileInputContext(
@@ -113,8 +125,14 @@ object LatexContexts {
 
     object Folder : SimpleLatexContext("folder"), ILFileInputContext
 
-    object BibtexKey : SimpleLatexContext("bibtex.key"), ILFileInputContext
+    /**
+     * The citation key in `\cite{...}`.
+     */
+    val CitationKey = SimpleLatexContext("bibtex.key")
 
+    /**
+     * A context for BibTeX style files, such as `plain` in `\bibliographystyle{plain}`.
+     */
     val BibStyle = SimpleLatexContext("style")
 
     val URL = LFileInputContext("url")
@@ -122,6 +140,13 @@ object LatexContexts {
     val Algorithmicx = SimpleLatexContext("algorithmicx")
 
     val MintedFuntimeLand = SimpleLatexContext("minted.funtime.land")
+
+    /**
+     * A context for glossary entries, such as in `\gls{...}` or `\glsadd{...}`.
+     */
+    val GlossaryLabel = SimpleLatexContext("glossary")
+
+    val ColorReference = SimpleLatexContext("color")
 
     // environment contexts
 
