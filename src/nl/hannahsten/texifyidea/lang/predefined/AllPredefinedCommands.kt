@@ -1,10 +1,11 @@
 package nl.hannahsten.texifyidea.lang.predefined
 
 import nl.hannahsten.texifyidea.lang.LSemanticCommand
+import nl.hannahsten.texifyidea.lang.LatexSemanticsCommandLookup
 import nl.hannahsten.texifyidea.util.Log
 import kotlin.collections.iterator
 
-object AllPredefinedCommands {
+object AllPredefinedCommands  : LatexSemanticsCommandLookup {
 
     val allCommands: List<LSemanticCommand> =
         listOf(
@@ -36,5 +37,9 @@ object AllPredefinedCommands {
                 }
             }
         }
+    }
+
+    override fun lookupCommand(name: String): LSemanticCommand? {
+        return simpleNameLookup[name]
     }
 }

@@ -18,9 +18,9 @@ import nl.hannahsten.texifyidea.lang.LatexContextIntro
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LSemanticCommand
 import nl.hannahsten.texifyidea.lang.LatexContexts
-import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
-import nl.hannahsten.texifyidea.lang.commands.LatexCommand
+import nl.hannahsten.texifyidea.lang.predefined.AllPredefinedCommands
+import nl.hannahsten.texifyidea.lang.predefined.AllPredefinedEnvironments
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
@@ -143,22 +143,23 @@ fun PsiElement.findOccurrences(searchRoot: PsiElement): List<LatexExtractablePSI
     return visitor.foundOccurrences.map { it.asExtractable() }
 }
 
-fun PsiElement.findDependencies(): Set<LatexPackage> {
+fun PsiElement.findDependencies(): Set<String> {
     return this.collectSubtreeTo(mutableSetOf(), Int.MAX_VALUE) { e ->
         val dependency = when (e) {
             is LatexCommands -> {
                 // If the command is a known command, add its dependency.
-                LatexCommand.lookupInAll(e)?.firstOrNull()?.dependency
+                val nameNoSlash = e.name?.removePrefix("\\") ?: ""
+                AllPredefinedCommands.lookupCommand(nameNoSlash)?.dependency
             }
 
             is LatexEnvironment -> {
                 // If the environment is a known environment, add its dependency.
-                Environment.lookup(e.getEnvironmentName())?.dependency
+                AllPredefinedEnvironments.lookupEnv(e.getEnvironmentName())?.dependency
             }
 
             else -> null
         }
-        dependency?.takeIf { it.isDefault.not() }
+        dependency?.takeIf { it.isNotEmpty() }
     }
 }
 

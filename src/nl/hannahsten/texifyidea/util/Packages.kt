@@ -6,6 +6,7 @@ import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.TreeUtil
+import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.index.LatexProjectStructure.getFilesetScopeFor
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
@@ -20,6 +21,7 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
+import java.util.Collections
 import kotlin.collections.forEach
 
 /**
@@ -230,15 +232,20 @@ object PackageUtils {
     }
 
     /**
-     * Gets a list of all packages that are included in the fileset of the given PsiFile, which may contain duplicates.
+     * Returns a set of all packages that are included in the filesets of the given file.
+     *
+     * The returned set contains the extensions to distinguish between packages and classes,
+     * for example `{article.cls, amsmath.sty}`.
      */
     fun getIncludedPackagesInFileset(file: PsiFile): Set<String> {
-        val project = file.project
-        val scope = getFilesetScopeFor(file)
-        val commands = NewSpecialCommandsIndex.getAllPackageIncludes(project, scope)
+        val data = LatexProjectStructure.getFilesetDataFor(file) ?: return emptySet()
+        val filesets = data.filesets
+        if(filesets.isEmpty()) return emptySet()
+        if(filesets.size == 1) return filesets.first().libraries
         val result = mutableSetOf<String>()
-        getPackagesFromCommands(commands, result)
-        result.addAll(LatexExternalPackageIndex.getAllPackageInclusions(scope))
+        data.filesets.forEach {
+            result.addAll(it.libraries)
+        }
         return result
     }
 
