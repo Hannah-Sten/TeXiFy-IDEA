@@ -316,7 +316,10 @@ abstract class LSemanticEntity(
      * The namespace of the entity, i.e., the package or class it belongs to, including the suffix `.sty` or `.cls`.
      */
     val dependency: String = "",
-    val requiredContext: LContextSet = emptySet(),
+    /**
+     * This entity is applicable in any of these contexts, or anywhere if null.
+     */
+    val applicableContext: LContextSet? = null,
     var description: String = ""
 ) {
     val displayName: String
@@ -336,6 +339,15 @@ abstract class LSemanticEntity(
         result = 31 * result + dependency.hashCode()
         return result
     }
+
+    fun isApplicableIn(context: LContextSet): Boolean {
+        return applicableContext == null || applicableContext.any { it in context }
+    }
+
+    fun applicableContextDisplay(): String {
+        return if (applicableContext == null) "*"
+        else "<${applicableContext.joinToString("|") { it.name }}>" // they are union
+    }
 }
 
 class LSemanticCommand(
@@ -344,7 +356,7 @@ class LSemanticCommand(
      */
     name: String,
     namespace: String,
-    requiredContext: LContextSet = emptySet(),
+    applicableCtx: LContextSet? = null,
     /**
      * The list of arguments in order of appearance, including optional arguments.
      */
@@ -356,17 +368,17 @@ class LSemanticCommand(
 
     val display: String? = null,
     val nameWithSlash: String = "\\$name",
-) : LSemanticEntity(name, namespace, requiredContext, description) {
+) : LSemanticEntity(name, namespace, applicableCtx, description) {
 
     override fun toString(): String {
-        return "Cmd('$displayName', ctx=<${requiredContext.joinToString(",")}>, arg=${arguments.joinToString("")}, description='$description')"
+        return "Cmd('$displayName', ctx=${applicableContextDisplay()}, arg=${arguments.joinToString("")}, description='$description')"
     }
 }
 
 class LSemanticEnv(
     name: String,
     namespace: String,
-    requiredContext: LContextSet = emptySet(),
+    requiredContext: LContextSet? = null,
     /**
      * The list of arguments in order of appearance, including optional arguments.
      */
@@ -381,6 +393,6 @@ class LSemanticEnv(
     description: String = "",
 ) : LSemanticEntity(name, namespace, requiredContext, description) {
     override fun toString(): String {
-        return "Env($displayName, ctx=<${requiredContext.joinToString(",")}>, arg=${arguments.joinToString("")}, scope=$contextSignature, description='$description')"
+        return "Env($displayName, ctx=${applicableContextDisplay()}, arg=${arguments.joinToString("")}, scope=$contextSignature, description='$description')"
     }
 }

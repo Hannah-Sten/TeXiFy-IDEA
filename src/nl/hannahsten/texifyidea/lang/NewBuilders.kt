@@ -10,9 +10,10 @@ abstract class AbstractDSLLatexBuilderScope : DSLLatexBuilderScope {
     var namespace: String = ""
 
     /**
-     * The context set that is required for the commands in this scope.
+     * The context set that is the commands are applicable in,
+     * or null if the command is applicable in all contexts.
      */
-    var requiredContext: LContextSet = emptySet()
+    var applicableContexts: LContextSet? = null
 
     /**
      *
@@ -38,18 +39,32 @@ abstract class AbstractDSLLatexBuilderScope : DSLLatexBuilderScope {
         namespace = oldDependency
     }
 
-    fun setRequiredContext(vararg context: LatexContext) {
-        requiredContext = context.toSet()
+    fun applicableIn(vararg context: LatexContext) {
+        applicableContexts = context.toSet()
     }
 
-    inline fun underContext(
-        vararg context: LatexContext,
-        action: () -> Unit
-    ) {
-        val oldContext = requiredContext
-        requiredContext = context.toSet()
+    inline fun underAnyContext(action: () -> Unit) {
+        val oldContext = applicableContexts
+        applicableContexts = null
         action()
-        requiredContext = oldContext
+        applicableContexts = oldContext
+    }
+
+    inline fun underContext(context: LatexContext, action: () -> Unit) {
+        val oldContext = applicableContexts
+        applicableContexts = setOf(context)
+        action()
+        applicableContexts = oldContext
+    }
+
+    /**
+     * Under any of the given contexts, the commands/environments will be applicable.
+     */
+    inline fun underContexts(vararg context: LatexContext, action: () -> Unit) {
+        val oldContext = applicableContexts
+        applicableContexts = context.toSet()
+        action()
+        applicableContexts = oldContext
     }
 
     val String.required: LArgument
@@ -116,7 +131,7 @@ class DSLLatexCommandBuilderScope : AbstractDSLLatexBuilderScope() {
             arguments = arguments.toList(),
             description = desc,
             display = null,
-            requiredContext = requiredContext,
+            applicableCtx = applicableContexts,
         )
         commands.add(command)
         return command
@@ -140,7 +155,7 @@ class DSLLatexCommandBuilderScope : AbstractDSLLatexBuilderScope() {
             arguments = emptyList(),
             description = description ?: display ?: name,
             display = display,
-            requiredContext = requiredContext,
+            applicableCtx = applicableContexts,
         )
         commands.add(command)
         return command
@@ -174,7 +189,7 @@ class DSLLatexEnvironmentBuilderScope : AbstractDSLLatexBuilderScope() {
             contextSignature = context,
             arguments = arguments,
             description = description,
-            requiredContext = requiredContext,
+            requiredContext = applicableContexts,
         )
         environments.add(environment)
         return environment
@@ -232,21 +247,21 @@ abstract class PredefinedCommandSet {
 
     protected fun mathCommands(action: DSLLatexCommandBuilderScope.() -> Unit): List<LSemanticCommand> {
         return buildCommands {
-            setRequiredContext(LatexContexts.Math)
+            applicableIn(LatexContexts.Math)
             action()
         }
     }
 
     protected fun textCommands(action: DSLLatexCommandBuilderScope.() -> Unit): List<LSemanticCommand> {
         return buildCommands {
-            setRequiredContext(LatexContexts.Text)
+            applicableIn(LatexContexts.Text)
             action()
         }
     }
 
     protected fun preambleCommands(action: DSLLatexCommandBuilderScope.() -> Unit): List<LSemanticCommand> {
         return buildCommands {
-            setRequiredContext(LatexContexts.Preamble)
+            applicableIn(LatexContexts.Preamble)
             action()
         }
     }
@@ -274,7 +289,7 @@ abstract class PredefinedEnvironmentSet {
 
     protected fun mathEnvironments(action: DSLLatexEnvironmentBuilderScope.() -> Unit): List<LSemanticEnv> {
         return buildEnvironments {
-            setRequiredContext(LatexContexts.Math)
+            applicableIn(LatexContexts.Math)
             action()
         }
     }

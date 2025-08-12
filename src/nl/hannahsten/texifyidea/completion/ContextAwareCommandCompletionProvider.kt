@@ -29,7 +29,7 @@ object ContextAwareCommandCompletionProvider : LatexContextAwareCompletionAdapto
                 // skip internal commands for regular files
                 continue
             }
-            if (!contexts.containsAll(cmd.requiredContext)) continue
+            if (!cmd.isApplicableIn(contexts)) continue
             appendCommandLookupElements(sd, lookupElements, defBundle)
         }
         result.addAllElements(lookupElements)

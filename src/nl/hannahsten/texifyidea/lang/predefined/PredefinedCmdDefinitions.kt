@@ -107,7 +107,7 @@ object PredefinedCmdDefinitions : PredefinedCommandSet() {
     }
 
     val xargsDefinitionOfEnvironment = buildCommands {
-        setRequiredContext(LatexContexts.Preamble)
+        applicableIn(LatexContexts.Preamble)
         val numArgs = LArgument.optional("num args", LatexContexts.Numeric)
         val argsSpec = "args spec".required(LatexContexts.Literal)
         packageOf("xargs")

@@ -517,7 +517,7 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
 
     val algorithm = buildCommands {
         packageOf("algpseudocode")
-        setRequiredContext(LatexContexts.Algorithmicx)
+        applicableIn(LatexContexts.Algorithmicx)
         "ElsIf".cmd("condition".required) { "ELSIF" }
         "EndFor".cmd()
         "EndFunction".cmd()
@@ -550,14 +550,15 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         val label = "label".required(setOf(LatexContexts.Text, LatexContexts.GlossaryLabel))
         val insert = "insert".optional
 
-        setRequiredContext() // TODO: maybe setCommandContext(LatexContexts.Preamble)
-        "loadglsentries".cmd("glossariesfile".required(LatexContexts.SingleFile))
-        "longnewglossaryentry".cmd("name".required, "options".required, "description".required)
-        "newabbreviation".cmd(options, "name".required, "short".required, "long".required)
-        "newacronym".cmd(options, "name".required, "short".required, "long".required)
-        "newglossaryentry".cmd("name".required, "options".required)
+        underContext(LatexContexts.Preamble) {
+            "loadglsentries".cmd("glossariesfile".required(LatexContexts.SingleFile))
+            "longnewglossaryentry".cmd("name".required, "options".required, "description".required)
+            "newabbreviation".cmd(options, "name".required, "short".required, "long".required)
+            "newacronym".cmd(options, "name".required, "short".required, "long".required)
+            "newglossaryentry".cmd("name".required, "options".required)
+        }
 
-        setRequiredContext(LatexContexts.Text)
+        applicableIn(LatexContexts.Text)
         "GLS".cmd(options, label, insert)
         "GLSdesc".cmd(options, label, insert)
         "GLSfirst".cmd(options, label, insert)
@@ -609,16 +610,15 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         "glsuservi".cmd(options, label, insert)
 
         packageOf("acronym")
-
         val linebreakPenalty = "linebreak penalty".optional
         val acronym = "acronym".required(LatexContexts.Text)
+        underContext(LatexContexts.Preamble) {
+            "acro".cmd(acronym, "short name".optional, "full name".required)
+            "acrodef".cmd(acronym, "short name".optional, "full name".required)
+            "newacro".cmd(acronym, "short name".optional, "full name".required)
+        }
 
-        setRequiredContext()
-        "acro".cmd(acronym, "short name".optional, "full name".required)
-        "acrodef".cmd(acronym, "short name".optional, "full name".required)
-        "newacro".cmd(acronym, "short name".optional, "full name".required)
-
-        setRequiredContext(LatexContexts.Text)
+        applicableIn(LatexContexts.Text)
         "Ac".cmd(linebreakPenalty, acronym)
         "Ac*".cmd(linebreakPenalty, acronym)
         "Acf".cmd(linebreakPenalty, acronym)
@@ -669,7 +669,7 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
 
     val tcolorboxDefinitionCommands = buildCommands {
         packageOf("tcolorbox")
-        setRequiredContext(LatexContexts.Preamble)
+        applicableIn(LatexContexts.Preamble)
 
         val initOptionsOptional = "init options".optional
         val nameRequired = "name".required

@@ -136,7 +136,7 @@ object PredefinedEnvBasic : PredefinedEnvironmentSet() {
     }
 
     val additionalUnderMath = buildEnvironments {
-        setRequiredContext(LatexContexts.Math)
+        applicableIn(LatexContexts.Math)
         underPackage("gauss") {
             +"gmatrix"
         }

@@ -172,7 +172,7 @@ object PredefinedCmdMathSymbols : PredefinedCommandSet() {
     }
 
     val defaultMathSymbols = mathCommands {
-        underContext(LatexContexts.Math, LatexContexts.Text) {
+        underContexts(LatexContexts.Math, LatexContexts.Text) {
             // they can also be used in non-math contexts
             symbol("vdots", "⋮", "Vertical dots")
             symbol("ldots", "…", "Low dots")

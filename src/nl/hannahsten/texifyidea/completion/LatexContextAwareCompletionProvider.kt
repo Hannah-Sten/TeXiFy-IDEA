@@ -10,7 +10,6 @@ import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.index.SourcedDefinition
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LSemanticEntity
-import nl.hannahsten.texifyidea.lang.compactDisplayString
 import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicLong
@@ -25,10 +24,8 @@ interface LatexContextAwareCompletionProvider {
 abstract class LatexContextAwareCompletionAdaptor : CompletionProvider<CompletionParameters>(), LatexContextAwareCompletionProvider {
 
     protected fun buildApplicableContextStr(en: LSemanticEntity): String {
-        if (en.requiredContext.isEmpty()) {
-            return ""
-        }
-        return " in <${en.requiredContext.compactDisplayString()}>"
+        if(en.applicableContext == null) return ""
+        return " in ${en.applicableContextDisplay()}"
     }
 
     protected fun getContainingFileName(def: SourcedDefinition): String? {

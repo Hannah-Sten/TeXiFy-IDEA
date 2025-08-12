@@ -36,7 +36,7 @@ object ContextAwareEnvironmentCompletionProvider : LatexContextAwareCompletionAd
         for (sd in defBundle.sourcedDefinitions()) {
             if (sd !is SourcedEnvDefinition) continue
             val env = sd.entity
-            if (!contexts.containsAll(env.requiredContext)) continue
+            if(!env.isApplicableIn(contexts)) continue
             lookupElements.add(createEnvironmentLookupElement(sd))
         }
         result.addAllElements(lookupElements)

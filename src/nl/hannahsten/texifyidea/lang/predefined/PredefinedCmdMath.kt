@@ -13,7 +13,7 @@ object PredefinedCmdMath : PredefinedCommandSet() {
             }
         }
 
-        underContext {
+        underContexts(LatexContexts.Math, LatexContexts.Text, LatexContexts.InsideDefinition) {
             "ensuremath".cmd("math".required(LatexContexts.Math)) { "Ensure math mode" }
         }
     }

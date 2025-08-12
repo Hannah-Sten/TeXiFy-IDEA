@@ -294,39 +294,41 @@ object LatexDefinitionUtil {
                 // use the original command semantics
                 val description = "Alias for ${originalSemantic.displayName}"
                 return LSemanticCommand(
-                    name, "", originalSemantic.requiredContext, originalSemantic.arguments, description, originalSemantic.display
+                    name, "", originalSemantic.applicableContext, originalSemantic.arguments, description, originalSemantic.display
                 )
             }
         }
 
         val codeElement = LatexPsiHelper.createFromText(codeRawText, project)
-        val requiredContext = guessRequiredContext(codeElement, lookup)
+        val applicableContext = guessApplicableContexts(codeElement, lookup)
         if (argSignature.isEmpty()) {
-            return LSemanticCommand(name, "", requiredContext, description = codeRawText, arguments = emptyList())
+            return LSemanticCommand(name, "", applicableContext, description = codeRawText, arguments = emptyList())
         }
         val argIntro = guessArgumentContextIntroAndExitState(codeElement, argSignature.size, lookup).first
         val arguments = argIntro.mapIndexed { i, argIntro ->
             LArgument("#${i + 1}", argSignature[i], argIntro)
         }
-        return LSemanticCommand(name, "", requiredContext, arguments, description = codeText)
+        return LSemanticCommand(name, "", applicableContext, arguments, description = codeText)
     }
 
-    private fun guessRequiredContext(definitionElement: PsiElement?, lookup: LatexSemanticsLookup): LContextSet {
+    private fun guessApplicableContexts(definitionElement: PsiElement?, lookup: LatexSemanticsLookup): LContextSet? {
         definitionElement ?: return emptySet()
-        val necessaryContexts = mutableSetOf<LatexContext>()
+        val applicableContexts = mutableSetOf<LatexContext>()
         LatexPsiUtil.traverseRecordingContextIntro(definitionElement, lookup) { e, introList ->
             val requiredContext: LContextSet? = when (e) {
-                is LatexCommands -> lookup.lookupCommand(e.name?.removePrefix("\\") ?: "")?.requiredContext
-                is LatexEnvironment -> lookup.lookupEnv(e.getEnvironmentName())?.requiredContext
+                is LatexCommands -> lookup.lookupCommand(e.name?.removePrefix("\\") ?: "")?.applicableContext
+                is LatexEnvironment -> lookup.lookupEnv(e.getEnvironmentName())?.applicableContext
                 else -> null
             }
             if (requiredContext != null && requiredContext.isNotEmpty()) {
                 LatexContextIntro.computeMinimalRequiredContext(introList, requiredContext)?.forEach {
-                    necessaryContexts.add(it)
+                    applicableContexts.add(it)
                 } // we will ignore cases where the context cannot be satisfied
             }
         }
-        return necessaryContexts
+        if(applicableContexts.isEmpty()) return null // if we cannot find any context, just guess that it is applicable in all contexts
+        // actually it is the union of all sub-applicable contexts
+        return applicableContexts
     }
 
     private val parameterPlaceholderRegex = Regex("#[1-9]")
@@ -416,14 +418,14 @@ object LatexDefinitionUtil {
         defCommand: LatexCommands, lookup: LatexSemanticsLookup, project: Project
     ): LSemanticEnv {
         if (beginElement == null || endElement == null) return LSemanticEnv(envName, "")
-        val requiredContext = guessRequiredContext(beginElement, lookup)
+        val applicableContexts = guessApplicableContexts(beginElement, lookup)
         val (argIntro1, innerIntroList) = guessArgumentContextIntroAndExitState(beginElement, argTypeList.size, lookup)
         val innerIntro = LatexContextIntro.composeList(innerIntroList)
         val (argIntro2, _) = guessArgumentContextIntroAndExitState(endElement, argTypeList.size, lookup)
         val arguments = argTypeList.mapIndexed { i, type ->
             LArgument("#${i + 1}", type, LatexContextIntro.union(argIntro1[i], argIntro2[i]))
         }
-        return LSemanticEnv(envName, "", requiredContext, arguments, innerIntro)
+        return LSemanticEnv(envName, "", applicableContexts, arguments, innerIntro)
     }
 
     private fun mergeCmdDefinition(old: SourcedCmdDefinition, new: SourcedCmdDefinition): SourcedCmdDefinition {
