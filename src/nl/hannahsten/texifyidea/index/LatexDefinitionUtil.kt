@@ -156,32 +156,30 @@ object LatexDefinitionUtil {
      *
      * We only process regular command definitions
      */
-    fun collectCustomDefinitions(virtualFile: VirtualFile, project: Project, lookup: LatexSemanticsLookup): List<SourcedDefinition> {
+    fun collectCustomDefinitions(virtualFile: VirtualFile, project: Project, bundle: WorkingFilesetDefinitionBundle) {
         val psiManager = PsiManager.getInstance(project)
-        val psiFile = psiManager.findFile(virtualFile) as? LatexFile ?: return emptyList()
-        if (DumbService.isDumb(project)) return emptyList()
+        val psiFile = psiManager.findFile(virtualFile) as? LatexFile ?: return
+        if (DumbService.isDumb(project)) return
         // let us use the index to find the command definitions
-        val definitions = mutableListOf<SourcedDefinition>()
         val manager = SmartPointerManager.getInstance(project)
 
         val defCommands = NewSpecialCommandsIndex.getRegularCommandDef(project, virtualFile)
         for (defCommand in defCommands) {
-            val semantics = parseRegularCommandDef(defCommand, lookup, project) ?: continue
+            val semantics = parseRegularCommandDef(defCommand, bundle, project) ?: continue
             val pointer = manager.createSmartPsiElementPointer(defCommand, psiFile)
-            definitions.add(
+            bundle.addCustomDefinition(
                 SourcedCmdDefinition(semantics, pointer, DefinitionSource.UserDefined)
             )
         }
 
         val defEnvironments = NewSpecialCommandsIndex.getRegularEnvDef(project, virtualFile)
         for (defCommand in defEnvironments) {
-            val semantics = parseEnvironmentDef(defCommand, lookup, project) ?: continue
+            val semantics = parseEnvironmentDef(defCommand, bundle, project) ?: continue
             val pointer = manager.createSmartPsiElementPointer(defCommand, psiFile)
-            definitions.add(
+            bundle.addCustomDefinition(
                 SourcedEnvDefinition(semantics, pointer, DefinitionSource.UserDefined)
             )
         }
-        return definitions
     }
 
     private fun extractParameterTypeAndContent(command: LatexCommands): List<Pair<LArgumentType, String>> {

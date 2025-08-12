@@ -38,7 +38,7 @@ class LatexCommandDefinitionReference(element: LatexCommands) : PsiReferenceBase
         val project = element.project
         if (DumbService.isDumb(project)) return null // If the project is dumb, we cannot resolve definitions, so return null
         val defService = LatexDefinitionService.getInstance(project)
-        return defService.resolveCommandDef(virtualFile, name)?.definitionCommandPointer?.element
+        return defService.resolveCommandDef(virtualFile, name)?.definitionCommandPointer?.element?.definitionCommand()
     }
 
     // Find all command definitions and redefinitions which define the current element

@@ -320,6 +320,39 @@ class LatexLibraryDefinitionService(
     }
 }
 
+class WorkingFilesetDefinitionBundle(
+    libraryBundles: List<LibDefinitionBundle> = emptyList(),
+) : DefinitionBundle {
+    private val allNameLookup: MutableMap<String, SourcedDefinition> = mutableMapOf()
+
+    init {
+        val includedPackages = mutableSetOf<String>()
+        for (dep in libraryBundles) {
+            dep.appendDefinitions(allNameLookup, includedPackages)
+        }
+    }
+
+    override fun appendDefinitions(nameMap: MutableMap<String, SourcedDefinition>, includedPackages: MutableSet<String>) {
+        nameMap.putAll(allNameLookup)
+    }
+
+    override fun findDefinition(name: String): SourcedDefinition? {
+        return allNameLookup[name]
+    }
+
+    /**
+     * Overwrite the definition for a custom command or environment.
+     */
+    fun addCustomDefinition(def: SourcedDefinition) {
+        // always overwrite for user-defined commands
+        allNameLookup[def.entity.name] = def
+    }
+
+    override fun sourcedDefinitions(): Collection<SourcedDefinition> {
+        return allNameLookup.values
+    }
+}
+
 /**
  * Provide a unified definition service for LaTeX commands, including
  *   * those hard-coded in the plugin, see [nl.hannahsten.texifyidea.lang.predefined.AllPredefinedCommands], [nl.hannahsten.texifyidea.lang.predefined.AllPredefinedEnvironments].
@@ -333,38 +366,6 @@ class LatexDefinitionService(
 
     val expirationInMs: Long
         get() = TexifySettings.getInstance().filesetExpirationTimeMs.toLong()
-
-    private class WorkingFilesetDefinitionBundle(
-        libraryBundles: List<LibDefinitionBundle> = emptyList(),
-    ) : DefinitionBundle {
-        private val allNameLookup: MutableMap<String, SourcedDefinition> = mutableMapOf()
-
-        init {
-            val includedPackages = mutableSetOf<String>()
-            for (dep in libraryBundles) {
-                dep.appendDefinitions(allNameLookup, includedPackages)
-            }
-        }
-
-        override fun appendDefinitions(nameMap: MutableMap<String, SourcedDefinition>, includedPackages: MutableSet<String>) {
-            nameMap.putAll(allNameLookup)
-        }
-
-        override fun findDefinition(name: String): SourcedDefinition? {
-            return allNameLookup[name]
-        }
-
-        /**
-         * Overwrite the definition for a custom command or environment.
-         */
-        fun addCustomDefinition(def: SourcedDefinition) {
-            allNameLookup[def.entity.name] = def
-        }
-
-        override fun sourcedDefinitions(): Collection<SourcedDefinition> {
-            return allNameLookup.values
-        }
-    }
 
     private fun computeValue(key: Fileset, oldValue: DefinitionBundle?): DefinitionBundle {
         val startTime = System.currentTimeMillis()
@@ -381,11 +382,7 @@ class LatexDefinitionService(
         // a building placeholder for the bundle to make lookups work
         for (file in key.files) {
             if (!projectFileIndex.isInProject(file)) continue
-            val commandDefinitions = LatexDefinitionUtil.collectCustomDefinitions(file, project, bundle)
-            for (sourcedDef in commandDefinitions) {
-                // always overwrite for user-defined commands
-                bundle.addCustomDefinition(sourcedDef)
-            }
+            LatexDefinitionUtil.collectCustomDefinitions(file, project, bundle)
         }
         countOfBuilds.incrementAndGet()
         totalTimeCost.addAndGet(System.currentTimeMillis() - startTime)
