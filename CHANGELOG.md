@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Support no-break space character in parser
 
 ### Fixed
 
