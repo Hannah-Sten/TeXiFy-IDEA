@@ -19,26 +19,43 @@ object PredefinedCmdDefinitions : PredefinedCommandSet() {
     val regularDefinitionOfCommand = preambleCommands {
 
         val command = argCommandName
-        val numArgs = LArgument.optional("num args", LatexContexts.Numeric)
+        val nargs = LArgument.optional("nargs", LatexContexts.Numeric)
         val defaultOptional = "default".optional
         val code = argCode
 
-        "newcommand".cmd(command, numArgs, defaultOptional, code) { "Define a new command" }
-        "newcommand*".cmd(command, numArgs, defaultOptional, code) { "Define a new command (starred variant)" }
+        "newcommand".cmd(command, nargs, defaultOptional, code) { "Define a new command" }
+        "newcommand*".cmd(command, nargs, defaultOptional, code) { "Define a new command (starred variant)" }
 
         "newif".cmd(command) { "Define a new if conditional" }
 
-        "providecommand".cmd(command, numArgs, defaultOptional, code) { "Provide a command if not defined" }
-        "providecommand*".cmd(command, numArgs, defaultOptional, code) { "Provide a command if not defined (starred variant)" }
+        "providecommand".cmd(command, nargs, defaultOptional, code) { "Provide a command if not defined" }
+        "providecommand*".cmd(command, nargs, defaultOptional, code) { "Provide a command if not defined (starred variant)" }
 
-        "renewcommand".cmd(command, numArgs, defaultOptional, code) { "Redefine an existing command" }
-        "renewcommand*".cmd(command, numArgs, defaultOptional, code) { "Redefine an existing command (starred variant)" }
+        "renewcommand".cmd(command, nargs, defaultOptional, code) { "Redefine an existing command" }
+        "renewcommand*".cmd(command, nargs, defaultOptional, code) { "Redefine an existing command (starred variant)" }
+        "DeclareRobustCommand".cmd(command, nargs, defaultOptional, code) { "Declare a robust command" }
 
         underPackage("xargs") {
-            "newcommandx".cmd(command, numArgs, defaultOptional, code) { "Define a new command with extended args" }
-            "renewcommandx".cmd(command, numArgs, defaultOptional, code) { "Redefine a command with extended args" }
-            "providecommandx".cmd(command, numArgs, defaultOptional, code) { "Provide a command with extended args" }
-            "DeclareRobustCommandx".cmd(command, numArgs, defaultOptional, code) { "Declare a robust command with extended args" }
+            "newcommandx".cmd(command, nargs, defaultOptional, code) { "Define a new command with extended args" }
+            "renewcommandx".cmd(command, nargs, defaultOptional, code) { "Redefine a command with extended args" }
+            "providecommandx".cmd(command, nargs, defaultOptional, code) { "Provide a command with extended args" }
+            "DeclareRobustCommandx".cmd(command, nargs, defaultOptional, code) { "Declare a robust command with extended args" }
+        }
+    }
+
+    val definitionOfTextCommand = preambleCommands {
+        val command = argCommandName
+        val nargs = LArgument.optional("nargs", LatexContexts.Numeric)
+        val defaultOptional = "default".optional
+        val code = argCode
+        val encoding = "encoding".required(LatexContexts.Literal)
+        val slot = "slot".required(LatexContexts.Numeric)
+        "DeclareTextCommand".cmd(command, encoding, nargs, defaultOptional, code) { "Declare a text command with encoding" }
+
+        underPackage("fontenc") {
+            "DeclareTextSymbol".cmd(command, encoding, slot) { "Declare a text symbol with encoding" }
+            "DeclareTextAccent".cmd(command, encoding, slot) { "Declare a text accent with encoding" }
+            "DeclareTextComposite".cmd(command, encoding, "char".required, slot) { "Declare a text composite character with encoding" }
         }
     }
 
@@ -57,7 +74,7 @@ object PredefinedCmdDefinitions : PredefinedCommandSet() {
 
     val definitionOfMathCommand = preambleCommands {
         val command = argCode
-        underPackage("amsmath") {
+        underPackage("amsopn") {
             "DeclareMathOperator".cmd(
                 command, "operator".required(LatexContexts.Text)
             ) { "Declare a new math operator" }
@@ -145,6 +162,7 @@ object PredefinedCmdDefinitions : PredefinedCommandSet() {
         add("let")
         regularDefinitionOfCommand.forEach { add(it.name) }
         argSpecDefinitionOfCommand.forEach { add(it.name) }
+        definitionOfTextCommand.forEach { add(it.name) }
         definitionOfMathCommand.forEach { add(it.name) }
     }
 

@@ -16,6 +16,7 @@ import nl.hannahsten.texifyidea.lang.LArgument
 import nl.hannahsten.texifyidea.lang.LArgumentType
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LSemanticCommand
+import nl.hannahsten.texifyidea.lang.LSemanticEntity
 import nl.hannahsten.texifyidea.lang.LSemanticEnv
 import nl.hannahsten.texifyidea.lang.LatexContext
 import nl.hannahsten.texifyidea.lang.LatexContextIntro
@@ -219,6 +220,10 @@ object LatexDefinitionUtil {
         PredefinedCmdDefinitions.definitionOfMathCommand.mapTo(this) { it.name }
     }
 
+    private val namesOfCmdDefText = buildSet {
+        PredefinedCmdDefinitions.definitionOfTextCommand.mapTo(this) { it.name }
+    }
+
     private val namesOfCmdDefArgSpec = buildSet {
         PredefinedCmdDefinitions.argSpecDefinitionOfCommand.mapTo(this) { it.name }
     }
@@ -227,9 +232,9 @@ object LatexDefinitionUtil {
         val defCmdName = defCommand.name?.removePrefix("\\") ?: return null
         return when (defCmdName) {
             in namesOfCmdDefRegular -> parseRegularCommandDef(defCommand, lookup, project)
-            in namesOfCmdDefMath -> parseCommandDefNameOnlyUnderCtx(defCommand, setOf(LatexContexts.Math))
             in namesOfCmdDefArgSpec -> parseArgSpecCommandDef(defCommand, lookup, project)
-            // arg spec type like \NewDocumentCommand{\cmd}{mO{default}m}{code} are too complex to handle for now
+            in namesOfCmdDefMath -> parseCommandDefNameOnlyUnderCtx(defCommand, setOf(LatexContexts.Math))
+            in namesOfCmdDefText -> parseCommandDefNameOnlyUnderCtx(defCommand, setOf(LatexContexts.Text))
             else -> parseCommandDefNameOnlyUnderCtx(defCommand)
         }
     }
@@ -324,7 +329,7 @@ object LatexDefinitionUtil {
                 } // we will ignore cases where the context cannot be satisfied
             }
         }
-        if(applicableContexts.isEmpty()) return null // if we cannot find any context, just guess that it is applicable in all contexts
+        if (applicableContexts.isEmpty()) return null // if we cannot find any context, just guess that it is applicable in all contexts
         // actually it is the union of all sub-applicable contexts
         return applicableContexts
     }
@@ -426,14 +431,44 @@ object LatexDefinitionUtil {
         return LSemanticEnv(envName, "", applicableContexts, arguments, innerIntro)
     }
 
+    private fun mergeApplicableContexts(
+        old: LSemanticEntity, new: LSemanticEntity
+    ): LContextSet? {
+        val oldCtx = old.applicableContext
+        val newCtx = new.applicableContext
+        if (oldCtx == null) return newCtx
+        if (newCtx == null) return oldCtx
+        return oldCtx.union(newCtx)
+    }
+
     private fun mergeCmdDefinition(old: SourcedCmdDefinition, new: SourcedCmdDefinition): SourcedCmdDefinition {
         val pointer = new.definitionCommandPointer ?: old.definitionCommandPointer
-        return SourcedCmdDefinition(old.entity, pointer, old.source)
+        val oldCmd = old.entity
+        val newCmd = new.entity
+        val ctx = mergeApplicableContexts(oldCmd, newCmd)
+        val arg = newCmd.arguments.ifEmpty { oldCmd.arguments }
+        val description = newCmd.description.ifBlank { oldCmd.description }
+        val display = newCmd.display ?: oldCmd.display
+        val cmd = LSemanticCommand(
+            old.entity.name, old.entity.dependency,
+            ctx, arg, description, display
+        )
+        return SourcedCmdDefinition(cmd, pointer, old.source)
     }
 
     private fun mergeEnvDefinition(old: SourcedEnvDefinition, new: SourcedEnvDefinition): SourcedEnvDefinition {
         val pointer = new.definitionCommandPointer ?: old.definitionCommandPointer
-        return SourcedEnvDefinition(old.entity, pointer, old.source)
+        val oldEnv = old.entity
+        val newEnv = new.entity
+        val ctx = mergeApplicableContexts(oldEnv, newEnv)
+        val innerIntro = LatexContextIntro.union(newEnv.contextSignature, oldEnv.contextSignature)
+        val arg = newEnv.arguments.ifEmpty { oldEnv.arguments }
+        val description = newEnv.description.ifBlank { oldEnv.description }
+        val env = LSemanticEnv(
+            old.entity.name, old.entity.dependency,
+            ctx, arg, innerIntro, description
+        )
+        return SourcedEnvDefinition(env, pointer, old.source)
     }
 
     private fun overrideOrKeep(old: SourcedDefinition, new: SourcedDefinition): SourcedDefinition {
@@ -446,15 +481,16 @@ object LatexDefinitionUtil {
     }
 
     fun mergeDefinition(old: SourcedDefinition, new: SourcedDefinition): SourcedDefinition {
-        if (old.entity != new.entity) {
-            // TODO: change to log after testing
-            println("Merging commands: $old and $new")
-        }
         // do not override primitive definitions
         if (old.source == DefinitionSource.Primitive) return old
         if (new.source == DefinitionSource.Primitive) return new
         if (old.entity != new.entity) {
             return overrideOrKeep(old, new)
+        }
+
+        if (old.entity != new.entity) {
+            // TODO: change to log after testing
+            println("Merging commands: $old and $new")
         }
 
         return when (old) {

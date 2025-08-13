@@ -9,11 +9,10 @@ import com.intellij.openapi.roots.ProjectFileIndex
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPsiElementPointer
-import com.intellij.psi.search.GlobalSearchScope
 import kotlinx.coroutines.CoroutineScope
 import nl.hannahsten.texifyidea.action.debug.SimplePerformanceTracker
 import nl.hannahsten.texifyidea.index.SourcedDefinition.DefinitionSource
-import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex
+import nl.hannahsten.texifyidea.index.file.LatexRegexBasedIndex
 import nl.hannahsten.texifyidea.lang.LSemanticCommand
 import nl.hannahsten.texifyidea.lang.LSemanticEntity
 import nl.hannahsten.texifyidea.lang.LSemanticEnv
@@ -185,15 +184,18 @@ class LatexLibraryDefinitionService(
         libInfo: LatexLibraryInfo,
         currentSourcedDefinitions: MutableMap<String, SourcedDefinition>
     ) {
-        val scope = GlobalSearchScope.fileScope(project, libInfo.location)
-        // TODO: we need more efficient external command indexing, the current one is too slow
-        // Alternatively,
-        val externalIndexDefinitions = LatexExternalCommandIndex.getAllKeys(scope)
-        for (key in externalIndexDefinitions) {
-            val documentation = LatexExternalCommandIndex.getValuesByKey(key, scope).lastOrNull() ?: continue
-            val name = key.removePrefix("\\") // remove the leading backslash
+        val file = libInfo.location
+        for (name in LatexRegexBasedIndex.getCommandDefinitions(file, project)) {
             val sourcedDef = SourcedCmdDefinition(
-                LSemanticCommand(name, libInfo.name, description = documentation),
+                LSemanticCommand(name, libInfo.name),
+                null,
+                DefinitionSource.LibraryScan
+            )
+            currentSourcedDefinitions.merge(name, sourcedDef, LatexDefinitionUtil::mergeDefinition)
+        }
+        for (name in LatexRegexBasedIndex.getEnvironmentDefinitions(file, project)) {
+            val sourcedDef = SourcedEnvDefinition(
+                LSemanticEnv(name, libInfo.name),
                 null,
                 DefinitionSource.LibraryScan
             )
@@ -268,14 +270,13 @@ class LatexLibraryDefinitionService(
      * Should be long, since packages do not change much
      */
 
-
     fun getLibBundle(libName: String): LibDefinitionBundle {
         return getOrComputeNow(libName, libExpiration)
     }
 
     companion object : SimplePerformanceTracker {
 
-        val libExpiration : Duration = 1.hours
+        val libExpiration: Duration = 1.hours
 
         fun getInstance(project: Project): LatexLibraryDefinitionService {
             return project.service()

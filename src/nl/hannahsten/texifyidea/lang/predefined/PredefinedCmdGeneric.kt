@@ -200,7 +200,6 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         "stepcounter".cmd("counter".required) { "STEPCOUNTER" }
         +"stop"
         "stretch".cmd("factor".required) { "STRETCH" }
-        +"subinputfrom"
         +"subitem"
         "subparagraph".cmd("shorttitle".optional, titleArg) { "SUBPARAGRAPH" }
         "subparagraph*".cmd(titleArg) { "SUBPARAGRAPH_STAR" }

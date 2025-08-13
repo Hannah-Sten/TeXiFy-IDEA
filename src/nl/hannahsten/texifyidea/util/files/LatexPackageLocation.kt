@@ -13,6 +13,8 @@ import nl.hannahsten.texifyidea.util.isTestProject
 import nl.hannahsten.texifyidea.util.runCommand
 import java.nio.file.Path
 import kotlin.io.path.isRegularFile
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.hours
 
 /**
  * Cache locations of LaTeX packages in memory, because especially on Windows they can be expensive to retrieve
@@ -21,7 +23,7 @@ import kotlin.io.path.isRegularFile
  */
 object LatexPackageLocation {
 
-    private const val EXPIRATION_TIME = 100 * 60 * 60 * 1000L // 100 hour, or any other time that is reasonable to keep the cache around
+    private val EXPIRATION_TIME: Duration = 100.hours // 100 hour, or any other time that is reasonable to keep the cache around
 
     private var retries = AtomicInt(0)
 
@@ -96,7 +98,7 @@ object LatexPackageLocation {
             val cache = TexifyProjectCacheService.getInstance(project).getOrComputeNow(
                 locationCacheKey, EXPIRATION_TIME, ::computeLocationWithKpsewhich
             )
-            cache.get(name)
+            cache[name]
         }
         return path
     }
