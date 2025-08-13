@@ -17,7 +17,11 @@ import nl.hannahsten.texifyidea.lang.LArgumentType
 import nl.hannahsten.texifyidea.lang.LatexContextIntro
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LSemanticCommand
+import nl.hannahsten.texifyidea.lang.LSemanticEnv
 import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.lang.LatexLib
+import nl.hannahsten.texifyidea.lang.LatexSemanticsCommandLookup
+import nl.hannahsten.texifyidea.lang.LatexSemanticsEnvLookup
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefinedCommands
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefinedEnvironments
@@ -143,7 +147,7 @@ fun PsiElement.findOccurrences(searchRoot: PsiElement): List<LatexExtractablePSI
     return visitor.foundOccurrences.map { it.asExtractable() }
 }
 
-fun PsiElement.findDependencies(): Set<String> {
+fun PsiElement.findDependencies(): Set<LatexLib> {
     return this.collectSubtreeTo(mutableSetOf(), Int.MAX_VALUE) { e ->
         val dependency = when (e) {
             is LatexCommands -> {
@@ -159,8 +163,21 @@ fun PsiElement.findDependencies(): Set<String> {
 
             else -> null
         }
-        dependency?.takeIf { it.isNotEmpty() }
+        dependency?.takeIf { it.requiresImport }
     }
+}
+
+fun LatexSemanticsEnvLookup.lookupEnv(name: String?): LSemanticEnv? {
+    if (name == null) return null
+    return lookupEnv(name)
+}
+fun LatexSemanticsCommandLookup.lookupCommand(name: String?): LSemanticCommand? {
+    if (name == null) return null
+    return lookupCommand(name)
+}
+
+fun LatexSemanticsCommandLookup.lookupCommand(cmd: LatexCommands): LSemanticCommand? {
+    return lookupCommand(cmd.nameWithoutSlash)
 }
 
 /**

@@ -17,15 +17,15 @@ abstract class LSemanticEntity(
     /**
      * The namespace of the entity, i.e., the package or class it belongs to, including the suffix `.sty` or `.cls`.
      */
-    val dependency: String = "",
+    val dependency: LatexLib = LatexLib.CUSTOM,
     /**
      * This entity is applicable in any of these contexts, or anywhere if null.
      */
     val applicableContext: LContextSet? = null,
-    var description: String = ""
+    val description: String = ""
 ) {
     val displayName: String
-        get() = if (dependency.isEmpty()) name else "$name($dependency)"
+        get() = if (dependency.isDefault) name else "$name($dependency)"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -57,7 +57,7 @@ class LSemanticCommand(
      * The name of the command without the leading backslash.
      */
     name: String,
-    namespace: String,
+    namespace: LatexLib = LatexLib.CUSTOM,
     applicableCtx: LContextSet? = null,
     /**
      * The list of arguments in order of appearance, including optional arguments.
@@ -79,7 +79,7 @@ class LSemanticCommand(
 
 class LSemanticEnv(
     name: String,
-    namespace: String,
+    namespace: LatexLib,
     requiredContext: LContextSet? = null,
     /**
      * The list of arguments in order of appearance, including optional arguments.

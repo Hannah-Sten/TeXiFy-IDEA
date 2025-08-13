@@ -6,15 +6,15 @@ import com.intellij.lang.documentation.DocumentationProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
 import nl.hannahsten.texifyidea.CommandFailure
-import nl.hannahsten.texifyidea.lang.Dependend
-import nl.hannahsten.texifyidea.lang.Described
-import nl.hannahsten.texifyidea.lang.Environment
+import nl.hannahsten.texifyidea.index.DefinitionBundle
+import nl.hannahsten.texifyidea.index.LatexDefinitionService
+import nl.hannahsten.texifyidea.lang.LSemanticEntity
 import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.BibtexId
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvIdentifier
+import nl.hannahsten.texifyidea.psi.nameWithSlash
 import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.containsAny
@@ -30,7 +30,7 @@ class LatexDocumentationProvider : DocumentationProvider {
     /**
      * The currently active lookup item.
      */
-    private var lookup: Described? = null
+    private var lookup: LSemanticEntity? = null
 
     override fun getQuickNavigateInfo(psiElement: PsiElement, originalElement: PsiElement) = when (psiElement) {
         is LatexCommands -> LabelDeclarationLabel(psiElement).makeLabel()
@@ -45,32 +45,29 @@ class LatexDocumentationProvider : DocumentationProvider {
         if (element !is LatexCommands) {
             return false
         }
-
-        val command = LatexCommand.lookupInAll(element)
-        if (command.isNullOrEmpty()) return false
-        return command.first().commandWithSlash in CommandMagic.packageInclusionCommands
+        return element.nameWithSlash in CommandMagic.packageInclusionCommands
     }
 
     override fun getUrlFor(element: PsiElement?, originalElement: PsiElement?): List<String>? {
-        return getUrlForElement(element).getOrNull()
+        val bundle = originalElement?.containingFile?.let {
+            LatexDefinitionService.getInstance(it.project).getDefBundlesMerged(it)
+        }
+        return getUrlForElement(element, bundle).getOrNull()
     }
 
-    private fun getUrlForElement(element: PsiElement?): Either<CommandFailure, List<String>?> = either {
+    private fun getUrlForElement(element: PsiElement?, bundle: DefinitionBundle?): Either<CommandFailure, List<String>?> = either {
         if (element !is LatexCommands) {
             return@either null
         }
 
-        val command = LatexCommand.lookupInAll(element)
-
-        if (command.isNullOrEmpty()) return@either null
-
+        val command = bundle?.lookupCommand(element) ?: return@either null
         // Special case for package inclusion commands
-        if (isPackageInclusionCommand(element)) {
+        if (command.nameWithSlash in CommandMagic.packageInclusionCommands) {
             val pkg = element.requiredParametersText().getOrNull(0) ?: return@either null
             return runTexdoc(LatexPackage(pkg))
         }
 
-        return runTexdoc(command.first().dependency)
+        return runTexdoc(command.dependency.toLatexPackage())
     }
 
     /**
@@ -102,15 +99,17 @@ class LatexDocumentationProvider : DocumentationProvider {
         // Apparently the lookup item is not yet initialised, so let's do that first
         // Can happen when requesting documentation for an item for which the user didn't request documentation during autocompletion
         // In that case we shouldn't reassign lookup because then we would show documentation for the wrong item next time
-        val lookupItem = lookup ?: when(element) {
+        val file = element.containingFile
+        val defBundle = file?.let { LatexDefinitionService.getInstance(it.project).getDefBundlesMerged(it) }
+        val lookupItem = lookup ?: when (element) {
             is LatexCommands -> {
-                LatexCommand.lookupInAll(element)?.firstOrNull()
+                defBundle?.lookupCommand(element)
             }
+
             is LatexEnvIdentifier -> {
-                element.name?.let { envName ->
-                    Environment[envName] ?: Environment.lookupInIndex(envName, element.project).firstOrNull()
-                }
+                defBundle?.lookupEnv(element.name)
             }
+
             else -> null
         }
 
@@ -118,9 +117,10 @@ class LatexDocumentationProvider : DocumentationProvider {
 
         // Link to package docs
         originalElement ?: return null
-        val urlsMaybe = if (lookupItem is Dependend && !isPackageInclusionCommand(element)) runTexdoc((lookupItem as? Dependend)?.dependency) else getUrlForElement(
-            element
-        )
+        val urlsMaybe = if (!isPackageInclusionCommand(element)) {
+            runTexdoc(lookupItem?.dependency?.toLatexPackage())
+        }
+        else getUrlForElement(element, defBundle)
         val urlsText = urlsMaybe.fold(
             { it.output },
             { urls -> urls?.joinToString(separator = "<br>") { "<a href=\"file:///$it\">$it</a>" } }
@@ -156,12 +156,11 @@ class LatexDocumentationProvider : DocumentationProvider {
         obj: Any?,
         psiElement: PsiElement?
     ): PsiElement? {
-        if (obj == null || obj !is Described) {
+        if (obj == null || obj !is LSemanticEntity) {
             // Cancel documentation popup
             lookup = null
             return null
         }
-
         lookup = obj
         return psiElement
     }
@@ -193,7 +192,8 @@ class LatexDocumentationProvider : DocumentationProvider {
             else if (SystemEnvironment.isAvailable("mthelp")) {
                 // In some cases, texdoc may not be available but mthelp is
                 listOf("mthelp", "-l", name)
-            } else
+            }
+            else
                 raise(CommandFailure("Could not find mthelp or texdoc", 0))
         }
         val (output, exitCode) = runCommandWithExitCode(*command.toTypedArray(), returnExceptionMessage = true)

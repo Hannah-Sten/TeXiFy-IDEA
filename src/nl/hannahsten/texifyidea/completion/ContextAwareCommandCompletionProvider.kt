@@ -56,7 +56,7 @@ object ContextAwareCommandCompletionProvider : LatexContextAwareCompletionAdapto
         \mycommand[optional]{required}    (main.tex)
          */
         val cmd = sourced.entity
-        val default = cmd.dependency == ""
+        val default = cmd.dependency.isDefault
         val typeText = buildCommandSourceStr(sourced) // type text is at the right
         val presentableText = buildCommandDisplay(cmd, defBundle)
         val applicableCtxText = buildApplicableContextStr(cmd)

@@ -1,14 +1,6 @@
 package nl.hannahsten.texifyidea.lang
 
-import com.intellij.openapi.project.Project
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.util.indexing.FileBasedIndex
-import nl.hannahsten.texifyidea.index.file.LatexExternalEnvironmentIndex
 import nl.hannahsten.texifyidea.lang.commands.Argument
-import nl.hannahsten.texifyidea.lang.commands.LatexCommand
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
-import nl.hannahsten.texifyidea.util.files.removeFileExtension
-import nl.hannahsten.texifyidea.util.startsWithAny
 
 /**
  * @author Hannah Schellekens
@@ -26,47 +18,6 @@ interface Environment : Dependend, Described {
          * be found.
          */
         fun lookup(environmentName: String) = DefaultEnvironment[environmentName]
-
-        /**
-         * Create an [Environment] for the given environment name.
-         * See [LatexCommand.lookupInIndex].
-         */
-        fun lookupInIndex(environmentName: String, project: Project): Set<Environment> {
-            val envs = mutableSetOf<Environment>()
-            FileBasedIndex.getInstance().processValues(
-                LatexExternalEnvironmentIndex.Cache.id, environmentName, null, { file, value ->
-                    val dependency = file.name.removeFileExtension()
-                    val env = object : Environment {
-                        override val arguments = extractArgumentsFromDocs(value)
-                        override val description = value
-                        override val dependency =
-                            if (dependency.isBlank()) LatexPackage.DEFAULT else LatexPackage.create(file)
-                        override val context = Context.NORMAL
-                        override val initialContents = ""
-                        override val environmentName = environmentName
-                    }
-                    envs.add(env)
-                    true
-                },
-                GlobalSearchScope.everythingScope(project)
-            )
-
-            // See LatexCommand#lookUpInIndex()
-            return envs.distinctBy { listOf(it.environmentName, it.dependency, it.context, it.description).plus(it.arguments) }
-                .groupBy { listOf(it.environmentName, it.dependency, it.context) }
-                .mapValues { it.value.maxByOrNull { cmd -> cmd.description }!! }
-                .values.toSet()
-        }
-
-        fun extractArgumentsFromDocs(docs: String): Array<Argument> {
-            // Maybe the arguments are given right at the beginning of the docs
-            val argCommands = arrayOf(OARG, MARG, PARG, META).map { it.commandWithSlash }.toTypedArray()
-            if (docs.startsWithAny(*argCommands)) {
-                return LatexCommand.getArgumentsFromStartOfString(docs, 0)
-            }
-
-            return emptyArray()
-        }
 
         /**
          * @see [lookup]

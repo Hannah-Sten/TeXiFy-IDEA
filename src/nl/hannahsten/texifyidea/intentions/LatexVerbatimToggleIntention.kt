@@ -6,9 +6,9 @@ import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
-import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.lang.commands.LatexCommand
+import nl.hannahsten.texifyidea.lang.predefined.AllPredefinedCommands
+import nl.hannahsten.texifyidea.lang.predefined.AllPredefinedEnvironments
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
@@ -21,6 +21,7 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
+import nl.hannahsten.texifyidea.util.parser.lookupCommand
 import nl.hannahsten.texifyidea.util.runWriteCommandAction
 
 class LatexVerbatimToggleIntention : TexifyIntentionBase("Convert to other verbatim command or environment") {
@@ -104,9 +105,9 @@ class LatexVerbatimToggleIntention : TexifyIntentionBase("Convert to other verba
      */
     private fun findDependency(verbatim: PsiElement): LatexPackage? =
         (verbatim as? LatexCommands)?.let {
-            LatexCommand.lookupInAll(it)?.firstOrNull()?.dependency
+            AllPredefinedCommands.lookupCommand(it)?.dependency?.toLatexPackage()
         } ?: verbatim.getName()?.let {
-            Environment.lookup(it)?.dependency
+            AllPredefinedEnvironments.lookupEnv(it)?.dependency?.toLatexPackage()
         }
 
     /**

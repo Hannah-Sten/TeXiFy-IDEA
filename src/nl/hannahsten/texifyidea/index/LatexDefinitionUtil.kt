@@ -21,6 +21,7 @@ import nl.hannahsten.texifyidea.lang.LSemanticEnv
 import nl.hannahsten.texifyidea.lang.LatexContext
 import nl.hannahsten.texifyidea.lang.LatexContextIntro
 import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.lang.predefined.PredefinedCmdDefinitions
 import nl.hannahsten.texifyidea.psi.LatexCommands
@@ -241,7 +242,7 @@ object LatexDefinitionUtil {
 
     private fun parseCommandDefNameOnlyUnderCtx(defCommand: LatexCommands, requiredCtx: LContextSet = emptySet()): LSemanticCommand? {
         val declaredName = defCommand.requiredParameterText(0) ?: return null
-        return LSemanticCommand(declaredName.removePrefix("\\"), "", requiredCtx)
+        return LSemanticCommand(declaredName.removePrefix("\\"), LatexLib.CUSTOM, requiredCtx)
     }
 
     private fun buildRegularArgSignature(numArgs: Int, hasOptionalArgs: Boolean): List<LArgumentType> {
@@ -288,7 +289,7 @@ object LatexDefinitionUtil {
         rawName: String, codeRawText: String?, argSignature: List<LArgumentType>
     ): LSemanticCommand? {
         val name = rawName.removePrefix("\\") // remove the leading backslash
-        codeRawText ?: return LSemanticCommand(name, "")
+        codeRawText ?: return LSemanticCommand(name, LatexLib.CUSTOM)
         val codeText = codeRawText.trim()
         if (argSignature.isEmpty() && PatternMagic.commandToken.matches(codeText)) {
             // this is an alias definition, e.g., \newcommand{\cmd}{\othercmd}
@@ -297,7 +298,7 @@ object LatexDefinitionUtil {
                 // use the original command semantics
                 val description = "Alias for ${originalSemantic.displayName}"
                 return LSemanticCommand(
-                    name, "", originalSemantic.applicableContext, originalSemantic.arguments, description, originalSemantic.display
+                    name, LatexLib.CUSTOM, originalSemantic.applicableContext, originalSemantic.arguments, description, originalSemantic.display
                 )
             }
         }
@@ -305,13 +306,13 @@ object LatexDefinitionUtil {
         val codeElement = LatexPsiHelper.createFromText(codeRawText, project)
         val applicableContext = guessApplicableContexts(codeElement, lookup)
         if (argSignature.isEmpty()) {
-            return LSemanticCommand(name, "", applicableContext, description = codeRawText, arguments = emptyList())
+            return LSemanticCommand(name, LatexLib.CUSTOM, applicableContext, description = codeRawText, arguments = emptyList())
         }
         val argIntro = guessArgumentContextIntroAndExitState(codeElement, argSignature.size, lookup).first
         val arguments = argIntro.mapIndexed { i, argIntro ->
             LArgument("#${i + 1}", argSignature[i], argIntro)
         }
-        return LSemanticCommand(name, "", applicableContext, arguments, description = codeText)
+        return LSemanticCommand(name, LatexLib.CUSTOM, applicableContext, arguments, description = codeText)
     }
 
     private fun guessApplicableContexts(definitionElement: PsiElement?, lookup: LatexSemanticsLookup): LContextSet? {
@@ -371,7 +372,7 @@ object LatexDefinitionUtil {
 
     private fun parseEnvDefNameOnlyUnderCtx(defCommand: LatexCommands, requiredCtx: LContextSet = emptySet()): LSemanticEnv? {
         val declaredName = defCommand.requiredParameterText(0) ?: return null
-        return LSemanticEnv(declaredName, "", requiredCtx)
+        return LSemanticEnv(declaredName, LatexLib.CUSTOM, requiredCtx)
     }
 
     private fun rebuildEnvDefinitionCommand(
@@ -397,7 +398,7 @@ object LatexDefinitionUtil {
     private fun parseRegularEnvironmentDef(defCommand: LatexCommands, contents: List<Pair<LArgumentType, String>>, lookup: LatexSemanticsLookup, project: Project): LSemanticEnv? {
         // This will be something like \newenvironment{env}[num arg][default value]{begin code}{end code}
         val envName = contents.getNthRequiredArg(0) ?: return null
-        val codeElement = rebuildEnvDefinitionCommand(defCommand, contents, project) ?: return LSemanticEnv(envName, "")
+        val codeElement = rebuildEnvDefinitionCommand(defCommand, contents, project) ?: return LSemanticEnv(envName, LatexLib.CUSTOM)
         val numArg = contents.getNthOptionalArg(0)?.toIntOrNull() ?: 0
         val hasOptionalArg = contents.getNthOptionalArg(1) != null
         val beginElement = codeElement.getNthRequiredParameter(1)
@@ -408,7 +409,7 @@ object LatexDefinitionUtil {
     private fun parseArgSpecEnvironmentDef(defCommand: LatexCommands, contents: List<Pair<LArgumentType, String>>, lookup: LatexSemanticsLookup, project: Project): LSemanticEnv? {
         // This will be something like \NewDocumentEnvironment{env}{args spec}{begin code}{end code}
         val envName = contents.getNthRequiredArg(0) ?: return null
-        val codeElement = rebuildEnvDefinitionCommand(defCommand, contents, project) ?: return LSemanticEnv(envName, "")
+        val codeElement = rebuildEnvDefinitionCommand(defCommand, contents, project) ?: return LSemanticEnv(envName, LatexLib.CUSTOM)
         val argSignature = buildArgSpecSignature(contents.getNthRequiredArg(1))
         val beginElement = codeElement.getNthRequiredParameter(2)
         val endElement = codeElement.getNthRequiredParameter(3)
@@ -420,7 +421,7 @@ object LatexDefinitionUtil {
         argTypeList: List<LArgumentType>,
         defCommand: LatexCommands, lookup: LatexSemanticsLookup, project: Project
     ): LSemanticEnv {
-        if (beginElement == null || endElement == null) return LSemanticEnv(envName, "")
+        if (beginElement == null || endElement == null) return LSemanticEnv(envName, LatexLib.CUSTOM)
         val applicableContexts = guessApplicableContexts(beginElement, lookup)
         val (argIntro1, innerIntroList) = guessArgumentContextIntroAndExitState(beginElement, argTypeList.size, lookup)
         val innerIntro = LatexContextIntro.composeList(innerIntroList)
@@ -428,7 +429,7 @@ object LatexDefinitionUtil {
         val arguments = argTypeList.mapIndexed { i, type ->
             LArgument("#${i + 1}", type, LatexContextIntro.union(argIntro1[i], argIntro2[i]))
         }
-        return LSemanticEnv(envName, "", applicableContexts, arguments, innerIntro)
+        return LSemanticEnv(envName, LatexLib.CUSTOM, applicableContexts, arguments, innerIntro)
     }
 
     private fun mergeApplicableContexts(

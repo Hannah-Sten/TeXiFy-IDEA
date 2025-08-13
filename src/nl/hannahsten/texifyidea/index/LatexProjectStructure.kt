@@ -30,6 +30,7 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.file.LatexSourceFileType
 import nl.hannahsten.texifyidea.file.StyleFileType
 import nl.hannahsten.texifyidea.index.file.LatexRegexBasedIndex
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SUBFILES
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
@@ -146,7 +147,7 @@ data class LatexProjectFilesets(
 }
 
 class LatexLibraryInfo(
-    val name: String,
+    val name: LatexLib,
     val location: VirtualFile,
     val files: Set<VirtualFile>,
     /**
@@ -160,10 +161,10 @@ class LatexLibraryInfo(
 ) {
 
     val isPackage: Boolean
-        get() = name.endsWith(".sty")
+        get() = name.isPackageFile
 
     val isClass: Boolean
-        get() = name.endsWith(".cls")
+        get() = name.isClassFile
 
     override fun toString(): String {
         return "PackageInfo(name='$name', location=${location.path}, files=${files.size})"
@@ -274,7 +275,7 @@ class LatexLibraryStructureService(
                 allPackages.addAll(info.allIncludedPackageNames)
             }
         }
-        val info = LatexLibraryInfo(nameWithExt, file, allFiles, directDependencies, allPackages)
+        val info = LatexLibraryInfo(LatexLib.fromFileName(nameWithExt), file, allFiles, directDependencies, allPackages)
         putValue(nameWithExt, info)
         Log.info("LatexLibrary Loaded: $nameWithExt")
         return info
@@ -282,6 +283,11 @@ class LatexLibraryStructureService(
 
     fun getLibraryInfo(nameWithExt: String): LatexLibraryInfo? {
         return getOrComputeNow(nameWithExt, LIBRARY_FILESET_EXPIRATION_TIME)
+    }
+
+    fun getLibraryInfo(name: LatexLib): LatexLibraryInfo? {
+        if (name.isCustom) return null // Custom libraries are not supported
+        return getLibraryInfo(name.name)
     }
 
     fun getLibraryInfo(path: Path): LatexLibraryInfo? {

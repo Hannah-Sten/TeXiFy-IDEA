@@ -16,6 +16,7 @@ import nl.hannahsten.texifyidea.index.file.LatexRegexBasedIndex
 import nl.hannahsten.texifyidea.lang.LSemanticCommand
 import nl.hannahsten.texifyidea.lang.LSemanticEntity
 import nl.hannahsten.texifyidea.lang.LSemanticEnv
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefinedCommands
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefinedEnvironments
@@ -94,11 +95,11 @@ interface DefinitionBundle : LatexSemanticsLookup {
         return findDefinition(name)?.entity
     }
 
-    fun appendDefinitions(nameMap: MutableMap<String, SourcedDefinition>, includedPackages: MutableSet<String>)
+    fun appendDefinitions(nameMap: MutableMap<String, SourcedDefinition>, includedPackages: MutableSet<LatexLib>)
 
     fun sourcedDefinitions(): Collection<SourcedDefinition> {
         val nameMap = mutableMapOf<String, SourcedDefinition>()
-        val includedPackages = mutableSetOf<String>()
+        val includedPackages = mutableSetOf<LatexLib>()
         appendDefinitions(nameMap, includedPackages)
         return nameMap.values
     }
@@ -108,7 +109,7 @@ abstract class MergedDefinitionBundle(
     val introducedDefinitions: Map<String, SourcedDefinition> = emptyMap(),
     val directDependencies: List<DefinitionBundle> = emptyList(),
 ) : DefinitionBundle {
-    override fun appendDefinitions(nameMap: MutableMap<String, SourcedDefinition>, includedPackages: MutableSet<String>) {
+    override fun appendDefinitions(nameMap: MutableMap<String, SourcedDefinition>, includedPackages: MutableSet<LatexLib>) {
         for (dep in directDependencies) {
             dep.appendDefinitions(nameMap, includedPackages)
         }
@@ -140,17 +141,17 @@ open class CachedMergedDefinitionBundle(
 }
 
 class LibDefinitionBundle(
-    val libName: String,
+    val libName: LatexLib,
     introducedDefinitions: Map<String, SourcedDefinition> = emptyMap(),
     directDependencies: List<LibDefinitionBundle> = emptyList(),
-    val allLibraries: Set<String> = setOf(libName)
+    val allLibraries: Set<LatexLib> = setOf(libName)
 ) : CachedMergedDefinitionBundle(introducedDefinitions, directDependencies) {
 
     override fun toString(): String {
         return "Lib($libName, #defs=${introducedDefinitions.size})"
     }
 
-    override fun appendDefinitions(nameMap: MutableMap<String, SourcedDefinition>, includedPackages: MutableSet<String>) {
+    override fun appendDefinitions(nameMap: MutableMap<String, SourcedDefinition>, includedPackages: MutableSet<LatexLib>) {
         if (!includedPackages.add(libName)) return // do not process the same package twice
         super.appendDefinitions(nameMap, includedPackages)
     }
@@ -164,7 +165,7 @@ class LibDefinitionBundle(
 @Service(Service.Level.PROJECT)
 class LatexLibraryDefinitionService(
     val project: Project
-) : AbstractBlockingCacheService<String, LibDefinitionBundle>() {
+) : AbstractBlockingCacheService<LatexLib, LibDefinitionBundle>() {
 
     fun invalidateCache() {
         clearAllCache()
@@ -204,9 +205,9 @@ class LatexLibraryDefinitionService(
     }
 
     private fun computeDefinitionsRecur(
-        pkgName: String, processedPackages: MutableSet<String> // to prevent loops
+        pkgName: LatexLib, processedPackages: MutableSet<LatexLib> // to prevent loops
     ): LibDefinitionBundle {
-        if (pkgName.isEmpty()) {
+        if (pkgName.isDefault) {
             return baseLibBundle
         }
         getTimedValue(pkgName)?.takeIf { it.isNotExpired(libExpiration) }?.let { return it.value }
@@ -219,7 +220,7 @@ class LatexLibraryDefinitionService(
         processPredefinedCommandsAndEnvironments(pkgName, currentSourcedDefinitions)
 
         val directDependencies: List<LibDefinitionBundle>
-        val includedPackages: Set<String>
+        val includedPackages: Set<LatexLib>
         if (libInfo != null) {
             val directDependencyNames = libInfo.directDependencies
             includedPackages = mutableSetOf(pkgName) // do not process the same package twice
@@ -229,7 +230,8 @@ class LatexLibraryDefinitionService(
                       -> B2 -> C,D
              */
             directDependencies = mutableListOf()
-            for (dependency in directDependencyNames) {
+            for (name in directDependencyNames) {
+                val dependency = LatexLib(name)
                 if (!includedPackages.add(dependency)) {
                     continue
                 }
@@ -257,7 +259,7 @@ class LatexLibraryDefinitionService(
      *
      * @param key the name of the package (with the file extension)
      */
-    override fun computeValue(key: String, oldValue: LibDefinitionBundle?): LibDefinitionBundle {
+    override fun computeValue(key: LatexLib, oldValue: LibDefinitionBundle?): LibDefinitionBundle {
         val start = System.currentTimeMillis()
         val result = computeDefinitionsRecur(key, mutableSetOf())
         val buildTime = System.currentTimeMillis() - start
@@ -270,8 +272,12 @@ class LatexLibraryDefinitionService(
      * Should be long, since packages do not change much
      */
 
-    fun getLibBundle(libName: String): LibDefinitionBundle {
+    fun getLibBundle(libName: LatexLib): LibDefinitionBundle {
         return getOrComputeNow(libName, libExpiration)
+    }
+
+    fun getLibBundle(libName: String): LibDefinitionBundle {
+        return getLibBundle(LatexLib(libName))
     }
 
     companion object : SimplePerformanceTracker {
@@ -289,16 +295,17 @@ class LatexLibraryDefinitionService(
 
             // return the hard-coded basic commands
             val currentSourcedDefinitions = mutableMapOf<String, SourcedDefinition>()
-            processPredefinedCommandsAndEnvironments("", currentSourcedDefinitions)
+            val lib = LatexLib.BASE
+            processPredefinedCommandsAndEnvironments(lib, currentSourcedDefinitions)
 
             // overwrite the definitions with the primitive commands
             PredefinedPrimitives.allCommands.forEach {
                 currentSourcedDefinitions[it.name] = SourcedCmdDefinition(it, null, DefinitionSource.Primitive)
             }
-            LibDefinitionBundle("", currentSourcedDefinitions)
+            LibDefinitionBundle(lib, currentSourcedDefinitions)
         }
 
-        private fun processPredefinedCommandsAndEnvironments(name: String, defMap: MutableMap<String, SourcedDefinition>) {
+        private fun processPredefinedCommandsAndEnvironments(name: LatexLib, defMap: MutableMap<String, SourcedDefinition>) {
             AllPredefinedCommands.packageToCommands[name]?.forEach { command ->
                 defMap[command.name] = SourcedCmdDefinition(command, null, DefinitionSource.Predefined)
             }
@@ -327,13 +334,13 @@ class WorkingFilesetDefinitionBundle(
     private val allNameLookup: MutableMap<String, SourcedDefinition> = mutableMapOf()
 
     init {
-        val includedPackages = mutableSetOf<String>()
+        val includedPackages = mutableSetOf<LatexLib>()
         for (dep in libraryBundles) {
             dep.appendDefinitions(allNameLookup, includedPackages)
         }
     }
 
-    override fun appendDefinitions(nameMap: MutableMap<String, SourcedDefinition>, includedPackages: MutableSet<String>) {
+    override fun appendDefinitions(nameMap: MutableMap<String, SourcedDefinition>, includedPackages: MutableSet<LatexLib>) {
         nameMap.putAll(allNameLookup)
     }
 
@@ -377,7 +384,7 @@ class LatexDefinitionService(
         // packages first
         val packageService = LatexLibraryDefinitionService.getInstance(project)
         val libraries = ArrayList<LibDefinitionBundle>(key.libraries.size + 1)
-        libraries.add(packageService.getLibBundle("")) // add the default commands
+        libraries.add(packageService.getLibBundle(LatexLib.BASE)) // add the default commands
         key.libraries.mapTo(libraries) { packageService.getLibBundle(it) }
 
         val bundle = WorkingFilesetDefinitionBundle(libraries)
@@ -487,7 +494,7 @@ class LatexDefinitionService(
             return bundles.firstNotNullOfOrNull { it.findDefinition(name) }
         }
 
-        override fun appendDefinitions(nameMap: MutableMap<String, SourcedDefinition>, includedPackages: MutableSet<String>) {
+        override fun appendDefinitions(nameMap: MutableMap<String, SourcedDefinition>, includedPackages: MutableSet<LatexLib>) {
             for (bundle in bundles) {
                 bundle.sourcedDefinitions().forEach {
                     nameMap[it.entity.name] = it

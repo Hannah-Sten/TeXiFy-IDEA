@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.lang.predefined
 
 import nl.hannahsten.texifyidea.lang.LSemanticEnv
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.LatexSemanticsEnvLookup
 
 object AllPredefinedEnvironments : LatexSemanticsEnvLookup {
@@ -12,7 +13,7 @@ object AllPredefinedEnvironments : LatexSemanticsEnvLookup {
             it.allEnvironments
         }
 
-    val packageToEnvironments: Map<String, List<LSemanticEnv>> = allEnvironments.groupBy { it.dependency }
+    val packageToEnvironments: Map<LatexLib, List<LSemanticEnv>> = allEnvironments.groupBy { it.dependency }
 
     val simpleNameLookup = allEnvironments.associateBy { it.name }
 

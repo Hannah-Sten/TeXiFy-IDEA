@@ -33,11 +33,6 @@ class LatexMissingImportInspection : LatexMissingImportInspectionBase() {
 
     override fun getDisplayName() = "Missing imports"
 
-    private fun String.toPackageName(): String? {
-        return if (endsWith(".sty")) substring(0, length - 4)
-        else null
-    }
-
     override fun reportCommandMissingImport(
         command: LatexCommands, candidates: List<LSemanticCommand>,
         descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager, isOntheFly: Boolean

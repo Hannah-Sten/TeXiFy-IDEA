@@ -15,6 +15,7 @@ import nl.hannahsten.texifyidea.lang.predefined.AllPredefinedEnvironments
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
+import nl.hannahsten.texifyidea.psi.nameWithoutSlash
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 import nl.hannahsten.texifyidea.util.parser.traverse

@@ -250,18 +250,6 @@ interface LatexCommand : Described, Dependend {
             val cmdWithSlash = command.name ?: return null
             lookup(cmdWithSlash)?.let { return it }
             return lookupInIndex(cmdWithSlash, command.project)
-// //            if (command.inMathContext()) {
-// //                LatexMathCommand.getWithSlash(cmdWithSlash)?.let { return it }
-// //            }
-//            LatexRegularCommand.getWithSlash(cmdWithSlash)?.let { return it }
-//
-//            return if (command.inMathContext() && LatexMathCommand[cmdWithoutSlash] != null) {
-//                LatexMathCommand[cmdWithoutSlash]
-//            }
-//            else {
-//                // Attempt to avoid an error about slow operations on EDT
-//                lookupInIndex(cmdWithoutSlash, command.project)
-//            }
         }
     }
 }

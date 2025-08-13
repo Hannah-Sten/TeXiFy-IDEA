@@ -7,7 +7,7 @@ abstract class AbstractDSLLatexBuilderScope : DSLLatexBuilderScope {
      * The package name of the current scope.
      * This is used to determine the namespace of commands and environments.
      */
-    var namespace: String = ""
+    var namespace: LatexLib = LatexLib.BASE
 
     /**
      * The context set that is the commands are applicable in,
@@ -20,21 +20,20 @@ abstract class AbstractDSLLatexBuilderScope : DSLLatexBuilderScope {
      * `package` is a reserved keyword in Kotlin, so we use `packageOf` instead.
      */
     fun packageOf(name: String) {
-        namespace = toPackageName(name)
+        namespace = toPackage(name)
     }
 
     private fun appendSuffixIfNeeded(name: String, suffix: String): String {
         return if (name.endsWith(suffix)) name else "$name$suffix"
     }
 
-    fun toPackageName(name: String): String {
-        if (name.isEmpty()) return ""
-        return appendSuffixIfNeeded(name, ".sty")
+    fun toPackage(name: String): LatexLib {
+        return LatexLib.fromPackageName(name)
     }
 
     inline fun underPackage(name: String, action: () -> Unit) {
         val oldDependency = namespace
-        namespace = toPackageName(name)
+        namespace = toPackage(name)
         action()
         namespace = oldDependency
     }

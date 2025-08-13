@@ -18,7 +18,6 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.Diacritic
-import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexMathCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
@@ -206,7 +205,10 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
 
             runWriteCommandAction(project) {
                 replacement.findDependencies().forEach { pkg ->
-                    document?.psiFile(project)?.insertUsepackage(LatexPackage(pkg.substringBefore('.'))) // TODO
+                    pkg.toLatexPackage()?.let {
+                        // TODO
+                        document?.psiFile(project)?.insertUsepackage(it)
+                    }
                 }
 
                 val command = replacement.findFirstChildOfType(LatexContent::class) ?: return@runWriteCommandAction
