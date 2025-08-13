@@ -21,6 +21,8 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.search.FilenameIndex
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.search.ProjectScope
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import nl.hannahsten.texifyidea.action.debug.SimplePerformanceTracker
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexGraphicsPathProvider.getGraphicsPaths
 import nl.hannahsten.texifyidea.file.ClassFileType
@@ -64,6 +66,8 @@ import kotlin.io.path.extension
 import kotlin.io.path.invariantSeparatorsPathString
 import kotlin.io.path.name
 import kotlin.io.path.pathString
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 // May be modified in the future
 /**
@@ -188,7 +192,7 @@ class LatexLibraryStructureService(
         }
 
         // never expire unless invalidated manually
-        private const val LIBRARY_FILESET_EXPIRATION_TIME = Long.MAX_VALUE
+        private val LIBRARY_FILESET_EXPIRATION_TIME = Duration.INFINITE
 
         fun getInstance(project: Project): LatexLibraryStructureService {
             return project.service()
@@ -307,17 +311,17 @@ object LatexProjectStructure : SimplePerformanceTracker {
     override val countOfBuilds = AtomicInteger(0)
     override val totalTimeCost = AtomicLong(0)
 
-    private val expirationTimeInMs: Long
-        get() = TexifySettings.getInstance().filesetExpirationTimeMs.toLong()
+    private val expirationTime: Duration
+        get() = TexifySettings.getInstance().filesetExpirationTimeMs.milliseconds
 
     /**
      * Stores the files that are referenced by the latex command.
      */
     val userDataKeyFileReference = Key.create<
-        CacheValueTimed<
-            Pair<List<String>, List<Set<VirtualFile>>> // List of pairs of original text and set of files in order
-            >
-        >("latex.command.reference.files")
+            CacheValueTimed<
+                    Pair<List<String>, List<Set<VirtualFile>>> // List of pairs of original text and set of files in order
+                    >
+            >("latex.command.reference.files")
 
     fun getPossibleRootFiles(project: Project): Set<VirtualFile> {
         if (DumbService.isDumb(project)) return emptySet()
@@ -341,14 +345,14 @@ object LatexProjectStructure : SimplePerformanceTracker {
         // Check if the file is a library file, e.g. in the texlive distribution
         val filetype = file.fileType
         return (filetype == StyleFileType || filetype == ClassFileType || filetype == LatexSourceFileType) &&
-            !ProjectFileIndex.getInstance(project).isInProject(file)
+                !ProjectFileIndex.getInstance(project).isInProject(file)
     }
 
     private open class ProjectInfo(
         val project: Project,
         var rootDirs: Set<VirtualFile>,
         val bibInputPaths: Set<VirtualFile>,
-        val timestamp: Long = System.currentTimeMillis()
+        val timestamp: Instant = Clock.System.now()
     )
 
     private fun Path.findVirtualFile(): VirtualFile? = LocalFileSystem.getInstance().findFileByNioFile(this)
@@ -359,7 +363,7 @@ object LatexProjectStructure : SimplePerformanceTracker {
     private class FilesetProcessor(
         project: Project,
         rootDirs: MutableSet<VirtualFile>, bibInputPaths: MutableSet<VirtualFile>,
-        timestamp: Long,
+        timestamp: Instant,
         val root: VirtualFile,
     ) : ProjectInfo(project, rootDirs, bibInputPaths, timestamp) {
         /**
@@ -455,7 +459,8 @@ object LatexProjectStructure : SimplePerformanceTracker {
                     if (libraryInfo != null) {
                         addLibrary(libraryInfo)
                         refInfo.add(libraryInfo.location)
-                    } else {
+                    }
+                    else {
                         // even though we cannot find the library, we still add it to the libraries set
                         // so that the definition service can still find it
                         libraries.add(path.name)
@@ -913,8 +918,8 @@ object LatexProjectStructure : SimplePerformanceTracker {
      * Gets the recently built filesets for the given project and schedule a recomputation if they are not available or expired.
      */
     fun getFilesets(project: Project, callRefresh: Boolean = false): LatexProjectFilesets? {
-        val expirationInMs = if (callRefresh) 0L else expirationTimeInMs
-        return TexifyProjectCacheService.getInstance(project).getAndComputeLater(CACHE_KEY, expirationInMs, ::buildFilesetsSuspend)
+        val expiration = if (callRefresh) Duration.ZERO else expirationTime
+        return TexifyProjectCacheService.getInstance(project).getAndComputeLater(CACHE_KEY, expiration, ::buildFilesetsSuspend)
     }
 
     /**
@@ -996,7 +1001,7 @@ object LatexProjectStructure : SimplePerformanceTracker {
      */
     fun commandFileReferenceInfo(command: LatexCommands, project: Project = command.project): Pair<List<String>, List<Set<VirtualFile>>>? {
         val data = command.getUserData(userDataKeyFileReference)
-        if (data != null && data.isNotExpired(expirationTimeInMs)) {
+        if (data != null && data.isNotExpired(expirationTime)) {
             // If the data is already computed and not expired, return it
             return data.value
         }

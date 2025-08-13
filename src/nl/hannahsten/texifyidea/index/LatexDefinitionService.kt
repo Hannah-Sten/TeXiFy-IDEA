@@ -13,6 +13,7 @@ import com.intellij.psi.search.GlobalSearchScope
 import kotlinx.coroutines.CoroutineScope
 import nl.hannahsten.texifyidea.action.debug.SimplePerformanceTracker
 import nl.hannahsten.texifyidea.index.SourcedDefinition.DefinitionSource
+import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex
 import nl.hannahsten.texifyidea.lang.LSemanticCommand
 import nl.hannahsten.texifyidea.lang.LSemanticEntity
 import nl.hannahsten.texifyidea.lang.LSemanticEnv
@@ -26,6 +27,9 @@ import nl.hannahsten.texifyidea.util.AbstractBackgroundCacheService
 import nl.hannahsten.texifyidea.util.AbstractBlockingCacheService
 import nl.hannahsten.texifyidea.util.Log
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.milliseconds
 
 sealed class SourcedDefinition(
     val definitionCommandPointer: SmartPsiElementPointer<LatexCommands>?,
@@ -184,18 +188,17 @@ class LatexLibraryDefinitionService(
         val scope = GlobalSearchScope.fileScope(project, libInfo.location)
         // TODO: we need more efficient external command indexing, the current one is too slow
         // Alternatively,
-//        val externalIndexDefinitions = LatexExternalCommandIndex.getAllKeys(scope)
-//        externalIndexDefinitions.size
-//        for (key in externalIndexDefinitions) {
-//            val documentation = LatexExternalCommandIndex.getValuesByKey(key, scope).lastOrNull() ?: continue
-//            val name = key.removePrefix("\\") // remove the leading backslash
-//            val sourcedDef = SourcedCmdDefinition(
-//                LSemanticCommand(name, libInfo.name, description = documentation),
-//                null,
-//                DefinitionSource.Package
-//            )
-//            currentSourcedDefinitions.merge(name, sourcedDef, LatexDefinitionUtil::mergeDefinition)
-//        }
+        val externalIndexDefinitions = LatexExternalCommandIndex.getAllKeys(scope)
+        for (key in externalIndexDefinitions) {
+            val documentation = LatexExternalCommandIndex.getValuesByKey(key, scope).lastOrNull() ?: continue
+            val name = key.removePrefix("\\") // remove the leading backslash
+            val sourcedDef = SourcedCmdDefinition(
+                LSemanticCommand(name, libInfo.name, description = documentation),
+                null,
+                DefinitionSource.LibraryScan
+            )
+            currentSourcedDefinitions.merge(name, sourcedDef, LatexDefinitionUtil::mergeDefinition)
+        }
     }
 
     private fun computeDefinitionsRecur(
@@ -204,7 +207,7 @@ class LatexLibraryDefinitionService(
         if (pkgName.isEmpty()) {
             return baseLibBundle
         }
-        getTimedValue(pkgName)?.takeIf { it.isNotExpired(expirationInMs) }?.let { return it.value }
+        getTimedValue(pkgName)?.takeIf { it.isNotExpired(libExpiration) }?.let { return it.value }
         if (!processedPackages.add(pkgName)) {
             Log.warn("Recursive package dependency detected for package [$pkgName] !")
             return LibDefinitionBundle(pkgName)
@@ -262,15 +265,18 @@ class LatexLibraryDefinitionService(
     }
 
     /**
-     * Should be long, since packages do not change.
+     * Should be long, since packages do not change much
      */
-    val expirationInMs: Long = 100000L
+
 
     fun getLibBundle(libName: String): LibDefinitionBundle {
-        return getOrComputeNow(libName, expirationInMs)
+        return getOrComputeNow(libName, libExpiration)
     }
 
     companion object : SimplePerformanceTracker {
+
+        val libExpiration : Duration = 1.hours
+
         fun getInstance(project: Project): LatexLibraryDefinitionService {
             return project.service()
         }
@@ -361,8 +367,8 @@ class LatexDefinitionService(
     val project: Project, scope: CoroutineScope
 ) : AbstractBackgroundCacheService<Fileset, DefinitionBundle>(scope) {
 
-    val expirationInMs: Long
-        get() = TexifySettings.getInstance().filesetExpirationTimeMs.toLong()
+    val expiration: Duration
+        get() = TexifySettings.getInstance().filesetExpirationTimeMs.milliseconds
 
     private fun computeValue(key: Fileset, oldValue: DefinitionBundle?): DefinitionBundle {
         val startTime = System.currentTimeMillis()
@@ -393,7 +399,7 @@ class LatexDefinitionService(
     }
 
     fun getDefBundleForFileset(fileset: Fileset): DefinitionBundle {
-        return getAndComputeLater(fileset, expirationInMs, LatexLibraryDefinitionService.baseLibBundle)
+        return getAndComputeLater(fileset, expiration, LatexLibraryDefinitionService.baseLibBundle)
     }
 
     /**
