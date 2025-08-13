@@ -6,7 +6,7 @@ import com.intellij.codeInsight.completion.InsertHandler
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import nl.hannahsten.texifyidea.TexifyIcons
-import nl.hannahsten.texifyidea.completion.handlers.NewLatexCommandInsertHandler
+import nl.hannahsten.texifyidea.completion.handlers.LatexCommandInsertHandler
 import nl.hannahsten.texifyidea.index.DefinitionBundle
 import nl.hannahsten.texifyidea.index.SourcedCmdDefinition
 import nl.hannahsten.texifyidea.lang.LArgument
@@ -14,7 +14,6 @@ import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LSemanticCommand
 import nl.hannahsten.texifyidea.util.files.isClassFile
 import nl.hannahsten.texifyidea.util.files.isStyleFile
-import nl.hannahsten.texifyidea.util.int
 import nl.hannahsten.texifyidea.util.repeat
 
 /**
@@ -52,8 +51,9 @@ object ContextAwareCommandCompletionProvider : LatexContextAwareCompletionAdapto
     private fun appendCommandLookupElements(sourced: SourcedCmdDefinition, result: MutableCollection<LookupElementBuilder>, defBundle: DefinitionBundle) {
         /*
         The presentation looks like:
-        \alpha α                          (amsmath.sty)
-        \mycommand[optional]{required}    (main.tex)
+        \newcommand{name}{definition}     (base)
+        \alpha α                          amsmath.sty
+        \mycommand[optional]{required}    main.tex
          */
         val cmd = sourced.entity
         val default = cmd.dependency.isDefault
@@ -62,10 +62,10 @@ object ContextAwareCommandCompletionProvider : LatexContextAwareCompletionAdapto
         val applicableCtxText = buildApplicableContextStr(cmd)
         cmd.arguments.optionalPowerSet().forEachIndexed { index, subArgs ->
             // Add spaces to the lookup text to distinguish different versions of commands within the same package (optional parameters).
-            // Add the package name to the lookup text so we can distinguish between the same commands that come from different packages.
+            // Distinguishing between the same commands that come from different packages is already done by cmd
             // This 'extra' text will be automatically inserted by intellij and is removed by the LatexCommandArgumentInsertHandler after insertion.
             val tailText = buildArgumentInformation(cmd, subArgs) + applicableCtxText
-            val lookupString = cmd.nameWithSlash + " ".repeat(index + default.not().int) + cmd.dependency
+            val lookupString = cmd.nameWithSlash + " ".repeat(index)
             val l = LookupElementBuilder.create(cmd, lookupString)
                 .withPresentableText(presentableText)
                 .bold()
@@ -78,7 +78,7 @@ object ContextAwareCommandCompletionProvider : LatexContextAwareCompletionAdapto
     }
 
     fun createInsertHandler(semantics: LSemanticCommand, subArgs: List<LArgument>, defBundle: DefinitionBundle): InsertHandler<LookupElement> {
-        return NewLatexCommandInsertHandler(semantics, subArgs, defBundle)
+        return LatexCommandInsertHandler(semantics, subArgs, defBundle)
     }
 
     private fun List<LArgument>.optionalPowerSet(): List<List<LArgument>> {
