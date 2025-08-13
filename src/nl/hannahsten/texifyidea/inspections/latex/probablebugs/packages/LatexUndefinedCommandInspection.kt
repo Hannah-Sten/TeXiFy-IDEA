@@ -34,7 +34,7 @@ class LatexUndefinedCommandInspection : LatexMissingImportInspectionBase() {
             manager.createProblemDescriptor(
                 command,
                 TextRange(0, command.commandToken.textLength),
-                "Unknown command: ${command.name}",
+                "Undefined command: ${command.name}",
                 ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                 isOntheFly
             )
@@ -48,7 +48,7 @@ class LatexUndefinedCommandInspection : LatexMissingImportInspectionBase() {
             manager.createProblemDescriptor(
                 environment,
                 TextRange(7, 7 + name.length),
-                "Unknown environment: $name",
+                "Undefined environment: $name",
                 ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                 isOntheFly,
             )

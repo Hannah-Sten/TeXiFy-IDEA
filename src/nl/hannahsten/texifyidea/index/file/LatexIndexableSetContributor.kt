@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.index.file
 
 import arrow.atomic.AtomicBoolean
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
@@ -84,7 +85,7 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
 
     override fun getAdditionalProjectRootsToIndex(project: Project): Set<VirtualFile> {
         // Avoid indexing in tests
-        if (project.isTestProject()) {
+        if (ApplicationManager.getApplication().isUnitTestMode) {
             return emptySet()
         }
 
