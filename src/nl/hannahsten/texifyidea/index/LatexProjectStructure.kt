@@ -893,21 +893,21 @@ object LatexProjectStructure : SimplePerformanceTracker {
 
     private val CACHE_KEY = GenericCacheService.createKey<LatexProjectFilesets>()
 
-    private suspend fun buildFilesetsSuspend(project: Project): LatexProjectFilesets {
-        return smartReadAction(project) {
+    private suspend fun buildFilesetsSuspend(project: Project, previous: LatexProjectFilesets?): LatexProjectFilesets {
+        val newFileset = smartReadAction(project) {
             val startTime = System.currentTimeMillis()
             buildFilesets(project).also {
                 countOfBuilds.incrementAndGet()
                 totalTimeCost.addAndGet(System.currentTimeMillis() - startTime)
             }
-        }.also {
-            // refresh the inspections
-            if (!ApplicationManager.getApplication().isUnitTestMode) {
-                // there will be an exception if we try to restart the daemon in unit tests
-                // see FileStatusMap.CHANGES_NOT_ALLOWED_DURING_HIGHLIGHTING
-                DaemonCodeAnalyzer.getInstance(project).restart()
-            }
         }
+        if (!ApplicationManager.getApplication().isUnitTestMode && newFileset != previous) {
+            // refresh the inspections
+            DaemonCodeAnalyzer.getInstance(project).restart()
+            // there will be an exception if we try to restart the daemon in unit tests
+            // see FileStatusMap.CHANGES_NOT_ALLOWED_DURING_HIGHLIGHTING
+        }
+        return newFileset
     }
 
     /**

@@ -62,7 +62,8 @@ abstract class AbstractCacheServiceBase<K : Any, V> {
         val cachedValue = caches[key] ?: return null
         return if (cachedValue.isNotExpired(expiration)) {
             cachedValue.value
-        } else {
+        }
+        else {
             null
         }
     }
@@ -166,6 +167,10 @@ abstract class GenericCacheService<P>(val param: P, private val coroutineScope: 
             return PlainTypedKey()
         }
 
+        private fun <P, T> createKeyFromFunction2(f: suspend (P, T?) -> T?): TypedKey<T> {
+            return TypedKeyFromFunction(f::class)
+        }
+
         private fun <P, T> createKeyFromFunction(f: suspend (P) -> T?): TypedKey<T> {
             return TypedKeyFromFunction(f::class)
         }
@@ -235,26 +240,35 @@ abstract class GenericCacheService<P>(val param: P, private val coroutineScope: 
     fun <S, T : S & Any> getAndComputeLater(
         key: TypedKey<T>,
         expiration: Duration = 1.seconds,
-        instantResult: S, suspendComputation: suspend (P) -> T?
+        instantResult: S, suspendComputation: suspend (P, T?) -> T?
     ): S {
         val cachedValue = getTimed(key)
         if (cachedValue == null || cachedValue.isExpired(expiration)) {
             // If the value is not cached or expired, schedule the computation
-            scheduleComputation(key, suspendComputation)
+            scheduleComputation(key, cachedValue?.value, suspendComputation)
         }
         return cachedValue?.value ?: instantResult // Return the instant result while computation is in progress
     }
 
-    fun <T : Any> getAndComputeLater(expiration: Duration = 1.seconds, instantResult: T, f: suspend (P) -> T?): T {
-        return getAndComputeLater(createKeyFromFunction(f), expiration, instantResult, f)
+    fun <T : Any> getAndComputeLater(expiration: Duration = 1.seconds, instantResult: T, f: suspend (P, T?) -> T?): T {
+        return getAndComputeLater(createKeyFromFunction2(f), expiration, instantResult, f)
     }
 
-    fun <T : Any> getAndComputeLater(expiration: Duration = 1.seconds, f: suspend (P) -> T?): T? {
-        return getAndComputeLater(createKeyFromFunction(f), expiration, null, f)
+    fun <T : Any> getAndComputeLater(expiration: Duration = 1.seconds, f: suspend (P, T?) -> T?): T? {
+        return getAndComputeLater(createKeyFromFunction2(f), expiration, null, f)
     }
 
-    fun <T : Any> getAndComputeLater(key: TypedKey<T>, expiration: Duration = 1.seconds, f: suspend (P) -> T?): T? {
+    fun <T : Any> getAndComputeLater(key: TypedKey<T>, expiration: Duration = 1.seconds, f: suspend (P, T?) -> T?): T? {
         return getAndComputeLater(key, expiration, null, f)
+    }
+
+    private fun <T : Any> scheduleComputation(
+        key: TypedKey<T>, previousValue: T? = null, suspendComputation: suspend (P, T?) -> T?
+    ) {
+        if (getComputingState(key).isLocked) return // do not launch a new coroutine if there is already a computation in progress
+        coroutineScope.launch {
+            computeOrSkip(key, previousValue, suspendComputation)
+        }
     }
 
     /**
@@ -266,12 +280,9 @@ abstract class GenericCacheService<P>(val param: P, private val coroutineScope: 
      * @param suspendComputation the computation to run. It should return a value of type T or null if no value is available.
      */
     fun <T : Any> scheduleComputation(
-        key: TypedKey<T>, suspendComputation: suspend (P) -> T?
+        key: TypedKey<T>, suspendComputation: suspend (P, T?) -> T?
     ) {
-        if (getComputingState(key).isLocked) return // do not launch a new coroutine if there is already a computation in progress
-        coroutineScope.launch {
-            computeOrSkip(key, suspendComputation)
-        }
+        scheduleComputation(key, null, suspendComputation)
     }
 
     /**
@@ -283,11 +294,11 @@ abstract class GenericCacheService<P>(val param: P, private val coroutineScope: 
      * It is guaranteed that [suspendComputation] will not run in parallel with itself for the same key.
      */
     suspend fun <T : Any> computeOrSkip(
-        key: TypedKey<T>, suspendComputation: suspend (P) -> T?
+        key: TypedKey<T>, previousValue: T?, suspendComputation: suspend (P, T?) -> T?
     ) {
         val computing = getComputingState(key)
         computing.tryLockOrSkip {
-            suspendComputation(param)?.also { put(key, it) }
+            suspendComputation(param, previousValue)?.also { put(key, it) }
         }
     }
 
@@ -298,11 +309,11 @@ abstract class GenericCacheService<P>(val param: P, private val coroutineScope: 
      * It is guaranteed that [suspendComputation] will not run in parallel with itself for the same key.
      */
     suspend fun <T : Any> ensureRefresh(
-        key: TypedKey<T>, suspendComputation: suspend (P) -> T
+        key: TypedKey<T>, suspendComputation: suspend (P, T?) -> T
     ): T {
         val computing = getComputingState(key)
         computing.withLock {
-            return suspendComputation(param).also { put(key, it) }
+            return suspendComputation(param, null).also { put(key, it) }
         }
     }
 }
