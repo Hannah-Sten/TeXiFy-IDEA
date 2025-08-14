@@ -2,8 +2,9 @@ package nl.hannahsten.texifyidea.util.labels
 
 import com.intellij.psi.PsiElement
 import com.jetbrains.rd.util.first
+import nl.hannahsten.texifyidea.index.LatexDefinitionService
+import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.alias.CommandManager
-import nl.hannahsten.texifyidea.lang.alias.EnvironmentManager
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
@@ -46,10 +47,11 @@ fun PsiElement.extractLabelElement(): PsiElement? {
                 getLabelParameterText(beginCommand)
             }
             else {
+                val semantics = LatexDefinitionService.resolveEnv(this)
+                val position = semantics?.entity?.arguments?.indexOfFirst { it.contextSignature.introduces(LatexContexts.LabelDefinition) }
                 // Check for user defined environments
-                val labelPositions = EnvironmentManager.labelAliasesInfo.getOrDefault(getEnvironmentName(), null)
-                if (labelPositions != null) {
-                    this.beginCommand.parameterList.getOrNull(labelPositions.positions.first())?.findFirstChildOfType(LatexParameterText::class)
+                if (position != null) {
+                    this.beginCommand.parameterList.getOrNull(position)?.findFirstChildOfType(LatexParameterText::class)
                 }
                 else {
                     null
@@ -95,10 +97,13 @@ fun PsiElement.extractLabelName(externalDocumentCommand: LatexCommands? = null):
         is LatexEnvironment -> {
             return this.getLabel()
                 // Check if it is a user defined alias of a labeled environment
-                ?: EnvironmentManager.labelAliasesInfo.getOrDefault(getEnvironmentName(), null)?.let {
-                    this.beginCommand.parameterList.getOrNull(it.positions.first())?.findFirstChildOfType(LatexParameterText::class)?.text
-                }
-                ?: ""
+                ?: run {
+                    val semantics = LatexDefinitionService.resolveEnv(this)
+                    val position = semantics?.entity?.arguments?.indexOfFirst { it.contextSignature.introduces(LatexContexts.LabelDefinition) }
+                    position?.let {
+                        this.beginCommand.parameterList.getOrNull(position)?.findFirstChildOfType(LatexParameterText::class)?.text
+                    }
+                } ?: ""
         }
     }
     return text

@@ -37,6 +37,8 @@ sealed interface LatexContextIntro {
      */
     fun revoke(innerCtx: LContextSet): LContextSet?
 
+    fun introduces(context: LatexContext): Boolean
+
     /**
      * Inherits the context from the outer scope.
      * This is the default behavior, so it can be used to reset the context to the outer scope.
@@ -53,6 +55,9 @@ sealed interface LatexContextIntro {
         override fun toString(): String {
             return ""
         }
+        override fun introduces(context: LatexContext): Boolean {
+            return false
+        }
     }
 
     object Clear : LatexContextIntro {
@@ -66,6 +71,10 @@ sealed interface LatexContextIntro {
 
         override fun toString(): String {
             return "Clear"
+        }
+
+        override fun introduces(context: LatexContext): Boolean {
+            return false
         }
     }
 
@@ -84,6 +93,10 @@ sealed interface LatexContextIntro {
         override fun revoke(innerCtx: LContextSet): LContextSet? {
             if (contexts.containsAll(innerCtx)) return emptySet()
             return null
+        }
+
+        override fun introduces(context: LatexContext): Boolean {
+            return contexts.contains(context)
         }
 
         override fun toString(): String {
@@ -109,6 +122,10 @@ sealed interface LatexContextIntro {
         override fun revoke(innerCtx: LContextSet): LContextSet? {
             if (innerCtx.any { it in toRemove }) return null // impossible to satisfy
             return innerCtx - toAdd
+        }
+
+        override fun introduces(context: LatexContext): Boolean {
+            return context in toAdd
         }
 
         override fun toString(): String {

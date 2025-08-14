@@ -7,6 +7,7 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectFileIndex
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPsiElementPointer
 import kotlinx.coroutines.CoroutineScope
@@ -22,6 +23,9 @@ import nl.hannahsten.texifyidea.lang.predefined.AllPredefinedCommands
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefinedEnvironments
 import nl.hannahsten.texifyidea.lang.predefined.PredefinedPrimitives
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexEnvironment
+import nl.hannahsten.texifyidea.psi.getEnvironmentName
+import nl.hannahsten.texifyidea.psi.nameWithoutSlash
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.AbstractBackgroundCacheService
 import nl.hannahsten.texifyidea.util.AbstractBlockingCacheService
@@ -428,14 +432,14 @@ class LatexDefinitionService(
     }
 
     fun resolveDef(v: VirtualFile, name: String): SourcedDefinition? {
-        val filesetData = LatexProjectStructure.getFilesetDataFor(v, project) ?: return resolvePredefinedDef(name)
+        val filesetData = LatexProjectStructure.getFilesetDataFor(v, project) ?: return resolvePredefined(name)
         return filesetData.filesets.firstNotNullOfOrNull {
             getDefBundleForFileset(it).findDefinition(name)
         }
     }
 
     fun resolveDefInProject(name: String): SourcedDefinition? {
-        val pf = LatexProjectStructure.getFilesets(project) ?: return resolvePredefinedDef(name)
+        val pf = LatexProjectStructure.getFilesets(project) ?: return resolvePredefined(name)
         return pf.filesets.firstNotNullOfOrNull {
             getDefBundleForFileset(it).findDefinition(name)
         }
@@ -457,36 +461,6 @@ class LatexDefinitionService(
         refreshAll(projectFilesets.filesets)
     }
 
-    companion object : SimplePerformanceTracker {
-        fun getInstance(project: Project): LatexDefinitionService {
-            return project.service()
-        }
-
-        override val countOfBuilds = AtomicInteger(0)
-        override val totalTimeCost = AtomicLong(0)
-
-        fun resolvePredefinedDef(name: String): SourcedDefinition? {
-            return resolvePredefinedCommandDef(name) ?: resolvePredefinedEnvDef(name)
-        }
-
-        fun resolvePredefinedCommandDef(name: String): SourcedCmdDefinition? {
-            return AllPredefinedCommands.simpleNameLookup[name]?.let { cmd ->
-                return SourcedCmdDefinition(cmd, null, DefinitionSource.Predefined)
-            }
-        }
-
-        fun resolvePredefinedEnvDef(envName: String): SourcedEnvDefinition? {
-            return AllPredefinedEnvironments.simpleNameLookup[envName]?.let { env ->
-                SourcedEnvDefinition(env, null, DefinitionSource.Predefined)
-            }
-        }
-
-        fun union(list: List<DefinitionBundle>): DefinitionBundle {
-            if (list.size == 1) return list[0]
-            return CompositeOverridingDefinitionBundle(list)
-        }
-    }
-
     class CompositeOverridingDefinitionBundle(
         val bundles: List<DefinitionBundle>
     ) : DefinitionBundle {
@@ -500,6 +474,57 @@ class LatexDefinitionService(
                     nameMap[it.entity.name] = it
                 }
             }
+        }
+    }
+
+    companion object : SimplePerformanceTracker {
+        fun getInstance(project: Project): LatexDefinitionService {
+            return project.service()
+        }
+
+        override val countOfBuilds = AtomicInteger(0)
+        override val totalTimeCost = AtomicLong(0)
+
+        fun resolvePredefined(name: String): SourcedDefinition? {
+            return resolvePredefinedCommand(name) ?: resolvePredefinedEnv(name)
+        }
+
+        fun resolvePredefinedCommand(name: String): SourcedCmdDefinition? {
+            return AllPredefinedCommands.simpleNameLookup[name]?.let { cmd ->
+                return SourcedCmdDefinition(cmd, null, DefinitionSource.Predefined)
+            }
+        }
+
+        fun resolvePredefinedEnv(envName: String): SourcedEnvDefinition? {
+            return AllPredefinedEnvironments.simpleNameLookup[envName]?.let { env ->
+                SourcedEnvDefinition(env, null, DefinitionSource.Predefined)
+            }
+        }
+
+        fun baseBundle(): DefinitionBundle {
+            return LatexLibraryDefinitionService.baseLibBundle
+        }
+
+        fun union(list: List<DefinitionBundle>): DefinitionBundle {
+            if (list.size == 1) return list[0]
+            return CompositeOverridingDefinitionBundle(list)
+        }
+
+        private fun getBundleFor(element: PsiElement): DefinitionBundle {
+            val file = element.containingFile ?: return LatexLibraryDefinitionService.baseLibBundle
+            return getInstance(file.project).getDefBundlesMerged(file)
+        }
+
+        fun resolveEnv(env: LatexEnvironment): SourcedEnvDefinition? {
+            val bundle = getBundleFor(env)
+            val name = env.getEnvironmentName()
+            return bundle.findEnvDef(name)
+        }
+
+        fun resolveCommand(command: LatexCommands): SourcedCmdDefinition? {
+            val bundle = getBundleFor(command)
+            val name = command.nameWithoutSlash ?: return null
+            return bundle.findCmdDef(name)
         }
     }
 }

@@ -6,12 +6,10 @@ import nl.hannahsten.texifyidea.inspections.TexifyRegexInspection
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
-import nl.hannahsten.texifyidea.util.parser.inDirectEnvironment
 import nl.hannahsten.texifyidea.util.parser.isComment
 import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
 import nl.hannahsten.texifyidea.util.labels.getLabelReferenceCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -38,10 +36,6 @@ class LatexEscapeAmpersandInspection : TexifyRegexInspection(
     private fun PsiElement.isAmpersandAllowed(): Boolean {
         // Do not trigger inside comments.
         if (this.isComment()) return true
-
-        // Do not trigger in environments that use the ampersand as special character.
-        if (this.inDirectEnvironment(EnvironmentMagic.getAllTableEnvironments(project))) return true
-        if (this.inDirectEnvironment(EnvironmentMagic.alignableEnvironments)) return true
 
         val context = LatexPsiUtil.resolveContextUpward(this)
         if(LatexContexts.Tabular in context || LatexContexts.Alignable in context) return true
