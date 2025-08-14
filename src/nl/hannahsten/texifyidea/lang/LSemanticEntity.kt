@@ -25,7 +25,7 @@ sealed class LSemanticEntity(
     val description: String = ""
 ) {
     val displayName: String
-        get() = if (dependency.isCustom) name else if(dependency.isCustom) "$name(base)" else "$name($dependency)"
+        get() = if (dependency.isCustom) "'$name'" else if(dependency.isCustom) "'$name'(base)" else "'$name'($dependency)"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -73,7 +73,7 @@ class LSemanticCommand(
 ) : LSemanticEntity(name, namespace, applicableCtx, description) {
 
     override fun toString(): String {
-        return "Cmd('$displayName', ctx=${applicableContextDisplay()}, arg=${arguments.joinToString("")}, description='$description')"
+        return "Cmd($displayName, ctx=${applicableContextDisplay()}, arg=${arguments.joinToString("")}, description='$description')"
     }
 }
 

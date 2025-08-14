@@ -172,4 +172,6 @@ object PredefinedCmdDefinitions : PredefinedCommandSet() {
         xargsDefinitionOfEnvironment.forEach { add(it.name) }
         newTheoremDefinitionOfEnvironment.forEach { add(it.name) }
     }
+
+    val namesOfAllDef: Set<String> = namesOfAllCommandDef + namesOfAllEnvironmentDef
 }

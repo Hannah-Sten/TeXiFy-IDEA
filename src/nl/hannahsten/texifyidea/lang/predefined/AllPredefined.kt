@@ -61,7 +61,7 @@ object AllPredefined : LatexSemanticsLookup {
             val names = allEntities.groupBy { Pair(it.name, it.dependency) }
             for ((name, commands) in names) {
                 if (commands.size > 1) {
-                    Log.warn("Duplicate predefined command: ${name.first} in package ${name.second}")
+                    Log.warn("Duplicate predefined items: ${name.first}(${name.second}): ${commands.joinToString()}")
                 }
             }
         }

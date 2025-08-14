@@ -436,7 +436,7 @@ object LatexPsiUtil {
             action(e, state)
             if (e is LatexCommands) {
                 // special handling for begin/end commands that are not parsed as environments
-                val name = e.name
+                val name = e.nameWithSlash
                 if (name == "\\begin") e.requiredParameterText(0)?.let { enterBeginEnv(it) }
                 else if (name == "\\end") e.requiredParameterText(0)?.let { exitEndEnv(it) }
             }

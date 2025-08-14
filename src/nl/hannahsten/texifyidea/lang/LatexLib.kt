@@ -31,6 +31,9 @@ value class LatexLib(val name: String) {
         return if (isPackageFile) name.substringBefore('.') else null
     }
 
+    val displayString: String
+        get() = if (isDefault) "(base)" else if (isCustom) "" else name
+
     override fun toString(): String {
         return name
     }

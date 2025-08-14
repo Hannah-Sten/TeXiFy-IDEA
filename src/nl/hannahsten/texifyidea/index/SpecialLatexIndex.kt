@@ -9,7 +9,6 @@ import com.intellij.util.Processor
 import com.intellij.util.indexing.IdFilter
 import nl.hannahsten.texifyidea.lang.predefined.PredefinedCmdDefinitions
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.contentSearchScope
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 object SpecialKeys {
@@ -31,7 +30,7 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexWrapper<LatexCommands>(Late
     }
 
     override fun getVersion(): Int {
-        return 103
+        return 104
     }
 
     override fun buildFileset(baseFile: PsiFile): GlobalSearchScope {
@@ -42,7 +41,7 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexWrapper<LatexCommands>(Late
         CommandMagic.allFileIncludeCommands to SpecialKeys.FILE_INPUTS,
         PredefinedCmdDefinitions.namesOfAllCommandDef to SpecialKeys.COMMAND_DEFINITIONS,
         PredefinedCmdDefinitions.namesOfAllEnvironmentDef to SpecialKeys.ENV_DEFINITIONS,
-        CommandMagic.definitions to SpecialKeys.ALL_DEFINITIONS,
+        PredefinedCmdDefinitions.namesOfAllDef to SpecialKeys.ALL_DEFINITIONS,
         CommandMagic.packageInclusionCommands to SpecialKeys.PACKAGE_INCLUDES,
         CommandMagic.regularCommandDefinitionsAndRedefinitions to SpecialKeys.REGULAR_COMMAND_DEFINITION,
         CommandMagic.glossaryEntry to SpecialKeys.GLOSSARY_ENTRY
@@ -83,28 +82,12 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexWrapper<LatexCommands>(Late
         return getByName(SpecialKeys.COMMAND_DEFINITIONS, project, scope)
     }
 
-    fun getRegularCommandDef(project: Project, file: VirtualFile): Collection<LatexCommands> {
-        return getByName(SpecialKeys.COMMAND_DEFINITIONS, project, file)
-    }
-
     fun getAllCommandDefInFileset(file: PsiFile): Collection<LatexCommands> {
         return getByNameInFileSet(SpecialKeys.COMMAND_DEFINITIONS, file)
     }
 
-    fun getAllRegularCommandDef(project: Project, scope: GlobalSearchScope = project.contentSearchScope): Collection<LatexCommands> {
-        return getByName(SpecialKeys.REGULAR_COMMAND_DEFINITION, project, scope)
-    }
-
-    fun getRegularEnvDef(project: Project): Collection<LatexCommands> {
-        return getByName(SpecialKeys.ENV_DEFINITIONS, project)
-    }
-
-    fun getRegularEnvDef(scope: GlobalSearchScope): Collection<LatexCommands> {
-        return getByName(SpecialKeys.ENV_DEFINITIONS, scope)
-    }
-
-    fun getRegularEnvDef(project: Project, virtualFile: VirtualFile): Collection<LatexCommands> {
-        return getByName(SpecialKeys.ENV_DEFINITIONS, project, virtualFile)
+    fun getAllDefinitions(project: Project, file: VirtualFile): Collection<LatexCommands> {
+        return getByName(SpecialKeys.ALL_DEFINITIONS, project, GlobalSearchScope.fileScope(project, file))
     }
 
     fun processCommandDef(scope: GlobalSearchScope, filter: IdFilter?, processor: Processor<LatexCommands>) {
@@ -113,10 +96,6 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexWrapper<LatexCommands>(Late
 
     fun processEnvDef(scope: GlobalSearchScope, filter: IdFilter?, processor: Processor<LatexCommands>) {
         processByName(SpecialKeys.ENV_DEFINITIONS, scope.project!!, scope, filter, processor)
-    }
-
-    fun getAllEnvDefRelated(originalFile: PsiFile): Collection<LatexCommands> {
-        return getRegularEnvDef(originalFile.project)
     }
 
     /**

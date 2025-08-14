@@ -14,6 +14,7 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         symbol("LaTeX", "LaTeX")
         symbol("LaTeXe", "LaTeX2ε")
         symbol("$", "$")
+        "\\".cmd("margin".optional, display = "(linebreak)") { "Linebreak" }
         symbol("AA", "Å")
         symbol("AE", "Æ")
         +"Huge"
@@ -282,7 +283,6 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         +"upshape"
         "usepgfplotslibrary".cmd("libraries".required) { "USEPGFPLOTSLIBRARY" }
         "usetikzlibrary".cmd("libraries".required) { "USETIKZLIBRARY" }
-        symbol("vdots", "⋮")
         +"vline"
         "vspace".cmd("length".required) { "VSPACE" }
         "vspace*".cmd("length".required) { "VSPACE_STAR" }
@@ -470,6 +470,11 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
 
         +"refname"
 
+        underPackage("nameref") {
+            "nameref".cmd(labelArg) { "Reference to a label" }
+            "Nameref".cmd(labelArg) { "Reference to a label with page number" }
+        }
+
         underPackage("cleveref") {
             "Cpageref".cmd(labelArg) { "CPAGEREF_CAPITAL" }
             "Cpagerefrange".cmd(label1, label2) { "CPAGEREFRANGE_CAPITAL" }
@@ -493,7 +498,6 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
             "autoref".cmd(labelArg) { "AUTOREF" }
             "fullref".cmd(labelArg) { "FULLREF" }
             "hyperref".cmd("options".optional, labelArg) { "HYPERREF" }
-            "nameref".cmd(labelArg) { "NAMEREF" }
 
             val urlArg = LArgument.required("url", LatexContexts.URL)
             "href".cmd(urlArg, textArg) { "HREF" }
@@ -550,7 +554,7 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         val insert = "insert".optional
 
         underContext(LatexContexts.Preamble) {
-            "loadglsentries".cmd("glossariesfile".required(LatexContexts.SingleFile))
+//            "loadglsentries".cmd("glossariesfile".required(LatexContexts.SingleFile))
             "longnewglossaryentry".cmd("name".required, "options".required, "description".required)
             "newabbreviation".cmd(options, "name".required, "short".required, "long".required)
             "newacronym".cmd(options, "name".required, "short".required, "long".required)

@@ -32,6 +32,7 @@ import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.psi.contentText
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.psi.getNthRequiredParameter
+import nl.hannahsten.texifyidea.psi.nameWithoutSlash
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
@@ -163,18 +164,14 @@ object LatexDefinitionUtil {
         // let us use the index to find the command definitions
         val manager = SmartPointerManager.getInstance(project)
 
-        val defCommands = NewSpecialCommandsIndex.getRegularCommandDef(project, virtualFile)
+        val defCommands = NewSpecialCommandsIndex.getAllDefinitions(project, virtualFile)
         for (defCommand in defCommands) {
-            val semantics = parseRegularCommandDef(defCommand, bundle, project) ?: continue
-            val pointer = manager.createSmartPsiElementPointer(defCommand, psiFile)
-            bundle.addCustomDefinition(
-                SourcedDefinition(semantics, pointer, DefinitionSource.UserDefined)
-            )
-        }
-
-        val defEnvironments = NewSpecialCommandsIndex.getRegularEnvDef(project, virtualFile)
-        for (defCommand in defEnvironments) {
-            val semantics = parseEnvironmentDef(defCommand, bundle, project) ?: continue
+            val defCmdName = defCommand.nameWithoutSlash ?: continue
+            val semantics = when (defCmdName) {
+                in PredefinedCmdDefinitions.namesOfAllCommandDef -> parseCommandDef(defCmdName, defCommand, bundle, project)
+                in PredefinedCmdDefinitions.namesOfAllEnvironmentDef -> parseEnvironmentDef(defCmdName, defCommand, bundle, project)
+                else -> continue
+            } ?: continue
             val pointer = manager.createSmartPsiElementPointer(defCommand, psiFile)
             bundle.addCustomDefinition(
                 SourcedDefinition(semantics, pointer, DefinitionSource.UserDefined)
@@ -229,8 +226,9 @@ object LatexDefinitionUtil {
         PredefinedCmdDefinitions.argSpecDefinitionOfCommand.mapTo(this) { it.name }
     }
 
-    private fun parseCommandDef(defCommand: LatexCommands, lookup: LatexSemanticsLookup, project: Project): LSemanticCommand? {
-        val defCmdName = defCommand.name?.removePrefix("\\") ?: return null
+    private fun parseCommandDef(
+        defCmdName: String, defCommand: LatexCommands, lookup: LatexSemanticsLookup, project: Project
+    ): LSemanticCommand? {
         return when (defCmdName) {
             in namesOfCmdDefRegular -> parseRegularCommandDef(defCommand, lookup, project)
             in namesOfCmdDefArgSpec -> parseArgSpecCommandDef(defCommand, lookup, project)
@@ -360,8 +358,9 @@ object LatexDefinitionUtil {
         PredefinedCmdDefinitions.argSpecDefinitionOfEnvironment.mapTo(this) { it.name }
     }
 
-    private fun parseEnvironmentDef(defCommand: LatexCommands, lookup: LatexSemanticsLookup, project: Project): LSemanticEnv? {
-        val defCmdName = defCommand.name?.removePrefix("\\") ?: return null
+    private fun parseEnvironmentDef(
+        defCmdName: String, defCommand: LatexCommands, lookup: LatexSemanticsLookup, project: Project
+    ): LSemanticEnv? {
         val contents = extractParameterTypeAndContent(defCommand)
         return when (defCmdName) {
             in namesOfEnvDefRegular -> parseRegularEnvironmentDef(defCommand, contents, lookup, project)

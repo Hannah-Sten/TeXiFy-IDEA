@@ -108,18 +108,18 @@ open class DSLLatexBuilderScope {
         return command
     }
 
-    fun String.cmd(
-        vararg arguments: LArgument, desc: String = "",
-    ): LSemanticCommand {
-        return command(
-            name = this, arguments = arguments.toList(), description = desc, display = null
-        )
-    }
+//    fun String.cmd(
+//        vararg arguments: LArgument, desc: String = "",
+//    ): LSemanticCommand {
+//        return command(
+//            name = this, arguments = arguments.toList(), description = desc, display = null
+//        )
+//    }
 
     inline fun String.cmd(
-        vararg arguments: LArgument, desc: () -> String
+        vararg arguments: LArgument, display: String? = null, desc: () -> String = { "" }
     ): LSemanticCommand {
-        return cmd(*arguments, desc = desc())
+        return command(this, arguments.toList(), description = desc(), display = display)
     }
 
     fun symbol(name: String, display: String? = null, description: String? = null): LSemanticCommand {

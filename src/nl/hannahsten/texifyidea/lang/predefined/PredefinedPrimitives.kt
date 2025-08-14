@@ -9,7 +9,7 @@ object PredefinedPrimitives : PredefinedCommandSet() {
         val envArg = LArgument.required("env", LatexContexts.Identifier)
         "begin".cmd(envArg)
         "end".cmd(envArg)
-        underContext(LatexContexts.Nothing) { // The primitive commands will never be suggested for autocompletion.
+        underContexts { // The primitive commands will never be suggested for autocompletion.
             "begingroup".cmd { "Begin a group" }
             "endgroup".cmd { "End a group" }
 
@@ -26,6 +26,11 @@ object PredefinedPrimitives : PredefinedCommandSet() {
             "relax".cmd { "Do nothing" }
             +"csname"
             +"endcsname"
+            +"noexpand"
+            +"protect"
+            "expandafter".cmd { "Expand the next token after the next token" }
+            "makeatletter".cmd { "Make `@` a letter" }
+            "makeatother".cmd { "Make `@` not a letter" }
         }
     }
 }

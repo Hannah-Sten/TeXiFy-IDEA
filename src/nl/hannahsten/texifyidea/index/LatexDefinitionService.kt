@@ -170,20 +170,22 @@ class LatexLibraryDefinitionService(
     ) {
         val file = libInfo.location
         for (name in LatexRegexBasedIndex.getCommandDefinitions(file, project)) {
+            if(currentSourcedDefinitions.containsKey(name)) continue // do not overwrite existing definitions, as the regex-based index is fallible
             val sourcedDef = SourcedDefinition(
                 LSemanticCommand(name, libInfo.name),
                 null,
                 DefinitionSource.LibraryScan
             )
-            currentSourcedDefinitions.merge(name, sourcedDef, LatexDefinitionUtil::mergeDefinition)
+            currentSourcedDefinitions.put(name, sourcedDef)
         }
         for (name in LatexRegexBasedIndex.getEnvironmentDefinitions(file, project)) {
+            if(currentSourcedDefinitions.containsKey(name)) continue // do not overwrite existing definitions, as the regex-based index is fallible
             val sourcedDef = SourcedDefinition(
                 LSemanticEnv(name, libInfo.name),
                 null,
                 DefinitionSource.LibraryScan
             )
-            currentSourcedDefinitions.merge(name, sourcedDef, LatexDefinitionUtil::mergeDefinition)
+            currentSourcedDefinitions.put(name, sourcedDef)
         }
     }
 
