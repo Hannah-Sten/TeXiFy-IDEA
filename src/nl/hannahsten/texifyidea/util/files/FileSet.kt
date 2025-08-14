@@ -39,7 +39,7 @@ fun VirtualFile.findTectonicTomlFile(): VirtualFile? {
  */
 fun PsiFile.referencedFileSet(): Set<PsiFile> {
     val project = this.project
-    return LatexProjectStructure.getRelatedFilesFor(this).mapNotNull { it.findPsiFile(project) }.toSet()
+    return LatexProjectStructure.getRelatedFilesFor(this).filter { it.isValid }.mapNotNull { it.findPsiFile(project) }.toSet()
 }
 
 fun PsiFile.findExternalDocumentCommand(): LatexCommands? {
