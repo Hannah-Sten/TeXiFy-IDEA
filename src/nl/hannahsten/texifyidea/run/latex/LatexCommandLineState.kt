@@ -15,6 +15,7 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.platform.ide.progress.runWithModalProgressBlocking
@@ -152,7 +153,13 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         // checking for bibliography commands
         if (runConfig.bibRunConfigs.isEmpty() && !compiler.includesBibtex) {
             // Generating a bib run config involves PSI access, which requires a read action.
-            runReadAction { runConfig.generateBibRunConfig() }
+            runReadAction {
+                // If the index is not ready, we cannot check if a bib run config is needed, so skip this and run the main run config anyway
+                if (!DumbService.getInstance(runConfig.project).isDumb) {
+                    Log.debug("Not generating bibtex run config because index is not ready")
+                    runConfig.generateBibRunConfig()
+                }
+            }
 
             runConfig.bibRunConfigs.forEach {
                 // Pass necessary latex run configurations settings to the bibtex run configuration.

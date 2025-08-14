@@ -32,7 +32,7 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
         // Only make markers when dealing with commands.
         val command = element.parentOfType(LatexCommands::class) ?: return
         val (_, filesList) = LatexProjectStructure.commandFileReferenceInfo(command) ?: return
-        val virtualFiles = filesList.flatten()
+        val virtualFiles = filesList.flatten().filter { it.isValid }
         val extension = virtualFiles.firstOrNull()?.let {
             if (it.name.endsWith("synctex.gz")) "synctex.gz" else it.extension
         }
