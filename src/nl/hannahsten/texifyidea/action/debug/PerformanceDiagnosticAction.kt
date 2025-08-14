@@ -56,7 +56,7 @@ class PerformanceDiagnosticAction : AnAction() {
                 projectFilesets?.let { fs -> "${fs.mapping.size} files out of ${fs.filesets.size} sets" } ?: ""
             ),
             performance("Package Definitions", LatexLibraryDefinitionService),
-            performance("Command Definitions", LatexDefinitionService),
+            performance("Custom Definitions", LatexDefinitionService),
             performance("Completion Lookup", LatexContextAwareCompletionAdaptor)
         )
         val messageHtml = createHTML(true).html {
