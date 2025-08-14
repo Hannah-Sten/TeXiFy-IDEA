@@ -4,14 +4,18 @@ import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.editor.colors.TextAttributesKey
+import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.TextRange
+import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.elementType
 import com.intellij.psi.util.endOffset
 import com.intellij.psi.util.startOffset
+import nl.hannahsten.texifyidea.index.DefinitionBundle
+import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
-import nl.hannahsten.texifyidea.lang.Environment
+import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericMathCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
@@ -33,15 +37,29 @@ open class LatexAnnotator : Annotator {
          * All user defined commands, cached because it requires going over all commands, which we don't want to do for every command we need to annotate.
          */
         var allUserDefinedCommands = emptyList<String>()
+
+        internal val userDataKeyDefBundle = Key.create<DefinitionBundle>("LatexAnnotator.defBundle")
+    }
+
+    private fun getDefBundle(annotationHolder: AnnotationHolder): DefinitionBundle {
+        val session = annotationHolder.currentAnnotationSession
+        session.getUserData(Cache.userDataKeyDefBundle)?.let { return it }
+        val file = session.file
+        val defBundle = LatexDefinitionService.getInstance(file.project).getDefBundlesMerged(file)
+        session.putUserData(Cache.userDataKeyDefBundle, defBundle)
+        return defBundle
     }
 
     override fun annotate(psiElement: PsiElement, annotationHolder: AnnotationHolder) {
+        val session = annotationHolder.currentAnnotationSession
+        val defBundle = getDefBundle(annotationHolder)
+        val context = LatexPsiUtil.resolveContextUpward(psiElement, defBundle)
         // Math display
         if (psiElement is LatexInlineMath) {
             annotateInlineMath(psiElement, annotationHolder)
         }
         else if (psiElement is LatexDisplayMath ||
-            (psiElement is LatexEnvironment && psiElement.isContext(Environment.Context.MATH))
+            (psiElement is LatexEnvironment && LatexContexts.Math in context)
         ) {
             annotateDisplayMath(psiElement, annotationHolder)
 
@@ -76,7 +94,7 @@ open class LatexAnnotator : Annotator {
                 .textAttributes(LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY)
                 .create()
         }
-        else if (psiElement.isComment()) {
+        else if (psiElement is PsiComment || context.contains(LatexContexts.Comment)) {
             annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
                 .range(psiElement.textRange)
                 .textAttributes(LatexSyntaxHighlighter.COMMENT)
@@ -277,7 +295,7 @@ open class LatexAnnotator : Annotator {
         }
         else if (firstParamChild != null) {
             parameter.forEachChild {
-                if(it is LeafPsiElement && it.elementType == LatexTypes.NORMAL_TEXT_WORD) {
+                if (it is LeafPsiElement && it.elementType == LatexTypes.NORMAL_TEXT_WORD) {
                     this.newSilentAnnotation(HighlightSeverity.INFORMATION)
                         .range(it as PsiElement) // resolve overloading
                         .textAttributes(style)

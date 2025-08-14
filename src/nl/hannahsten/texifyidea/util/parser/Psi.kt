@@ -11,8 +11,6 @@ import com.intellij.psi.util.nextLeaf
 import com.intellij.util.ProcessingContext
 import nl.hannahsten.texifyidea.grammar.BibtexLanguage
 import nl.hannahsten.texifyidea.grammar.LatexLanguage
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment
-import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.lang.magic.TextBasedMagicCommentParser
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.files.document
@@ -226,7 +224,7 @@ val commandTokens = setOf(LatexTypes.COMMAND_TOKEN, LatexTypes.LEFT, LatexTypes.
  * Checks whether the psi element is part of a comment or not.
  */
 fun PsiElement.isComment(): Boolean {
-    return this is PsiComment || inDirectEnvironmentContext(Environment.Context.COMMENT)
+    return this is PsiComment // TODO: use new context aware functionalities but reuse the resolved context, don't resolve here
 }
 
 fun PsiElement.isLatexOrBibtex() = language == LatexLanguage || language == BibtexLanguage
@@ -274,16 +272,6 @@ fun PsiElement.isChildOf(parent: PsiElement?): Boolean {
     }
 
     return hasParentMatching(1000) { it == parent }
-}
-
-/**
- * Checks if the psi element has a direct environment with the given context.
- */
-fun PsiElement.inDirectEnvironmentContext(context: Environment.Context): Boolean {
-    val environment = parentOfType(LatexEnvironment::class) ?: return context == Environment.Context.NORMAL
-    return inDirectEnvironmentMatching {
-        DefaultEnvironment.fromPsi(environment)?.context == context
-    }
 }
 
 /**

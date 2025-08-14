@@ -11,13 +11,13 @@ import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
 import nl.hannahsten.texifyidea.index.stub.LatexParameterStub
 import nl.hannahsten.texifyidea.index.stub.requiredParamAt
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment
-import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.lang.LArgument
 import nl.hannahsten.texifyidea.lang.LArgumentType
 import nl.hannahsten.texifyidea.lang.LatexContextIntro
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LSemanticCommand
 import nl.hannahsten.texifyidea.lang.LSemanticEnv
+import nl.hannahsten.texifyidea.lang.LatexContext
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.LatexSemanticsCommandLookup
@@ -27,15 +27,6 @@ import nl.hannahsten.texifyidea.lang.predefined.AllPredefinedCommands
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefinedEnvironments
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-
-/**
- * Checks if the environment contains the given context.
- */
-fun LatexEnvironment.isContext(context: Environment.Context): Boolean {
-    val name = getEnvironmentName()
-    val environment = Environment[name] ?: return false
-    return environment.context == context
-}
 
 /**
  * Finds the [LatexEndCommand] that matches the begin command.
@@ -171,6 +162,7 @@ fun LatexSemanticsEnvLookup.lookupEnv(name: String?): LSemanticEnv? {
     if (name == null) return null
     return lookupEnv(name)
 }
+
 fun LatexSemanticsCommandLookup.lookupCommand(name: String?): LSemanticCommand? {
     if (name == null) return null
     return lookupCommand(name)
@@ -458,5 +450,13 @@ object LatexPsiUtil {
 
         val exitState: List<LatexContextIntro>
             get() = state
+    }
+
+    fun isContext(element: LatexEnvironment, lookup: LatexSemanticsLookup, context: LatexContext): Boolean {
+        val name = element.getEnvironmentName()
+        val semantics = lookup.lookupEnv(name) ?: return false
+        val signature = semantics.contextSignature
+        return (signature is LatexContextIntro.Assign && signature.contexts.contains(context)) ||
+            (signature is LatexContextIntro.Modify && signature.toAdd.contains(context))
     }
 }

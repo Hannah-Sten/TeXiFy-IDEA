@@ -7,24 +7,6 @@ import nl.hannahsten.texifyidea.lang.commands.Argument
  */
 interface Environment : Dependend, Described {
 
-    companion object {
-
-        /**
-         * Looks up a default environment by the given name.
-         *
-         * @param environmentName
-         *              The name of the environment object to get.
-         * @return The [DefaultEnvironment] with the given name, or `null` when it couldn't
-         * be found.
-         */
-        fun lookup(environmentName: String) = DefaultEnvironment[environmentName]
-
-        /**
-         * @see [lookup]
-         */
-        operator fun get(environmentName: String) = lookup(environmentName)
-    }
-
     /**
      * Get what type of context this enviroment has inside.
      */
