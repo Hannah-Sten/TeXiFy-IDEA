@@ -7,8 +7,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
 import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.lang.predefined.AllPredefinedCommands
-import nl.hannahsten.texifyidea.lang.predefined.AllPredefinedEnvironments
+import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
@@ -105,9 +104,9 @@ class LatexVerbatimToggleIntention : TexifyIntentionBase("Convert to other verba
      */
     private fun findDependency(verbatim: PsiElement): LatexPackage? =
         (verbatim as? LatexCommands)?.let {
-            AllPredefinedCommands.lookupCommand(it)?.dependency?.toLatexPackage()
+            AllPredefined.lookupCommand(it)?.dependency?.toLatexPackage()
         } ?: verbatim.getName()?.let {
-            AllPredefinedEnvironments.lookupEnv(it)?.dependency?.toLatexPackage()
+            AllPredefined.lookupEnv(it)?.dependency?.toLatexPackage()
         }
 
     /**

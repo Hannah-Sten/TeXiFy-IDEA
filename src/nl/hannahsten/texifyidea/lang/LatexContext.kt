@@ -39,6 +39,26 @@ sealed interface LatexContextIntro {
 
     fun introduces(context: LatexContext): Boolean
 
+    fun displayString(): String {
+        val intro = this
+        return when (intro) {
+            Inherit -> ""
+            is Clear -> "<>"
+            is Assign -> "<${intro.contexts.joinToString(",")}>"
+            is Modify -> buildString {
+                append("<")
+                if (intro.toAdd.isNotEmpty()) {
+                    append("+${intro.toAdd.joinToString(",")}")
+                }
+                if (intro.toRemove.isNotEmpty()) {
+                    if (intro.toAdd.isNotEmpty()) append(";")
+                    append("-${intro.toRemove.joinToString(",")}")
+                }
+                append(">")
+            }
+        }
+    }
+
     /**
      * Inherits the context from the outer scope.
      * This is the default behavior, so it can be used to reset the context to the outer scope.
@@ -55,6 +75,7 @@ sealed interface LatexContextIntro {
         override fun toString(): String {
             return ""
         }
+
         override fun introduces(context: LatexContext): Boolean {
             return false
         }

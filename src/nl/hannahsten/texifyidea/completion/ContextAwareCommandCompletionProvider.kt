@@ -8,7 +8,7 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.completion.handlers.LatexCommandInsertHandler
 import nl.hannahsten.texifyidea.index.DefinitionBundle
-import nl.hannahsten.texifyidea.index.SourcedCmdDefinition
+import nl.hannahsten.texifyidea.index.SourcedDefinition
 import nl.hannahsten.texifyidea.lang.LArgument
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LSemanticCommand
@@ -25,14 +25,13 @@ object ContextAwareCommandCompletionProvider : LatexContextAwareCompletionAdapto
         val isClassOrStyleFile = parameters.originalFile.let { it.isClassFile() || it.isStyleFile() }
         val lookupElements = mutableListOf<LookupElementBuilder>()
         for (sd in defBundle.sourcedDefinitions()) {
-            if (sd !is SourcedCmdDefinition) continue
-            val cmd = sd.entity
+            val cmd = sd.entity as? LSemanticCommand ?: continue
             if (!isClassOrStyleFile && cmd.name.contains('@')) {
                 // skip internal commands for regular files
                 continue
             }
             if (!cmd.isApplicableIn(contexts)) continue // context check
-            appendCommandLookupElements(sd, lookupElements, defBundle)
+            appendCommandLookupElements(cmd, sd, lookupElements, defBundle)
         }
         result.addAllElements(lookupElements)
     }
@@ -48,15 +47,13 @@ object ContextAwareCommandCompletionProvider : LatexContextAwareCompletionAdapto
         return cmd.nameWithSlash + " " + cmd.display
     }
 
-    private fun appendCommandLookupElements(sourced: SourcedCmdDefinition, result: MutableCollection<LookupElementBuilder>, defBundle: DefinitionBundle) {
+    private fun appendCommandLookupElements(cmd: LSemanticCommand, sourced: SourcedDefinition, result: MutableCollection<LookupElementBuilder>, defBundle: DefinitionBundle) {
         /*
         The presentation looks like:
         \newcommand{name}{definition}     (base)
         \alpha α                          amsmath.sty
         \mycommand[optional]{required}    main.tex
          */
-        val cmd = sourced.entity
-        val default = cmd.dependency.isDefault
         val typeText = buildCommandSourceStr(sourced) // type text is at the right
         val presentableText = buildCommandDisplay(cmd, defBundle)
         val applicableCtxText = buildApplicableContextStr(cmd)

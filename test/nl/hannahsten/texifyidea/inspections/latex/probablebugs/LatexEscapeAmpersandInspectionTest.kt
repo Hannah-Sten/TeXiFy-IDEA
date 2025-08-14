@@ -64,7 +64,9 @@ internal class LatexEscapeAmpersandInspectionTest : TexifyInspectionTestBase(Lat
         myFixture.configureByText(
             LatexFileType,
             """
+            \usepackage{amsmath}
             \begin{document}
+            
                 $\begin{split}
                     a& =b\\
                     c& =d
@@ -80,6 +82,8 @@ internal class LatexEscapeAmpersandInspectionTest : TexifyInspectionTestBase(Lat
             myFixture.configureByText(
                 LatexFileType,
                 """
+                \usepackage{mathtools}
+                \usepackage{gauss}
                 \begin{document}
                     $\begin{$environment}
                         a& =b\\

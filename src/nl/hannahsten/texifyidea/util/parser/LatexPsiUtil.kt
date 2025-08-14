@@ -23,8 +23,7 @@ import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.LatexSemanticsCommandLookup
 import nl.hannahsten.texifyidea.lang.LatexSemanticsEnvLookup
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
-import nl.hannahsten.texifyidea.lang.predefined.AllPredefinedCommands
-import nl.hannahsten.texifyidea.lang.predefined.AllPredefinedEnvironments
+import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
@@ -144,12 +143,12 @@ fun PsiElement.findDependencies(): Set<LatexLib> {
             is LatexCommands -> {
                 // If the command is a known command, add its dependency.
                 val nameNoSlash = e.name?.removePrefix("\\") ?: ""
-                AllPredefinedCommands.lookupCommand(nameNoSlash)?.dependency
+                AllPredefined.lookupCommand(nameNoSlash)?.dependency
             }
 
             is LatexEnvironment -> {
                 // If the environment is a known environment, add its dependency.
-                AllPredefinedEnvironments.lookupEnv(e.getEnvironmentName())?.dependency
+                AllPredefined.lookupEnv(e.getEnvironmentName())?.dependency
             }
 
             else -> null
@@ -452,11 +451,10 @@ object LatexPsiUtil {
             get() = state
     }
 
-    fun isContext(element: LatexEnvironment, lookup: LatexSemanticsLookup, context: LatexContext): Boolean {
+    fun isContextIntroduced(element: LatexEnvironment, lookup: LatexSemanticsLookup, context: LatexContext): Boolean {
         val name = element.getEnvironmentName()
         val semantics = lookup.lookupEnv(name) ?: return false
         val signature = semantics.contextSignature
-        return (signature is LatexContextIntro.Assign && signature.contexts.contains(context)) ||
-            (signature is LatexContextIntro.Modify && signature.toAdd.contains(context))
+        return signature.introduces(context)
     }
 }

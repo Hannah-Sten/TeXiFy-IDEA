@@ -7,7 +7,7 @@ import nl.hannahsten.texifyidea.lang.LatexContextIntro.Inherit
  *
  * @author Ezrnest
  */
-abstract class LSemanticEntity(
+sealed class LSemanticEntity(
     /**
      * The name of the entity.
      *
@@ -25,7 +25,7 @@ abstract class LSemanticEntity(
     val description: String = ""
 ) {
     val displayName: String
-        get() = if (dependency.isDefault) name else "$name($dependency)"
+        get() = if (dependency.isCustom) name else if(dependency.isCustom) "$name(base)" else "$name($dependency)"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -17,7 +17,11 @@ object PredefinedEnvBasic : PredefinedEnvironmentSet() {
         +"LARGE"
         +"Large"
         +"Verbatim"
-        +"abstract"
+
+        underContext(LatexContexts.Text) {
+            "abstract".env(LatexContexts.Text)
+        }
+
         +"algorithm"
         +"alltt"
         +"center"

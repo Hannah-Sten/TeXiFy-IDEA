@@ -5,8 +5,7 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.util.TextRange
 import nl.hannahsten.texifyidea.inspections.InsightGroup
-import nl.hannahsten.texifyidea.lang.LSemanticCommand
-import nl.hannahsten.texifyidea.lang.LSemanticEnv
+import nl.hannahsten.texifyidea.lang.LSemanticEntity
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 
@@ -55,9 +54,9 @@ class LatexUndefinedCommandInspection : LatexMissingImportInspectionBase() {
         )
     }
 
-    override fun reportCommandMissingImport(command: LatexCommands, candidates: List<LSemanticCommand>, descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager, isOntheFly: Boolean) {
+    override fun reportCommandMissingImport(command: LatexCommands, candidates: List<LSemanticEntity>, descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager, isOntheFly: Boolean) {
     }
 
-    override fun reportEnvironmentMissingImport(environment: LatexEnvironment, requiredEntity: LSemanticEnv, descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager, isOntheFly: Boolean) {
+    override fun reportEnvironmentMissingImport(environment: LatexEnvironment, candidates: List<LSemanticEntity>, descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager, isOntheFly: Boolean) {
     }
 }

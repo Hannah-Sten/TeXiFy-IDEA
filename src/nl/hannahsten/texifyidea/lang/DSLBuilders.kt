@@ -1,8 +1,6 @@
 package nl.hannahsten.texifyidea.lang
 
-interface DSLLatexBuilderScope
-
-abstract class AbstractDSLLatexBuilderScope : DSLLatexBuilderScope {
+open class DSLLatexBuilderScope {
     /**
      * The package name of the current scope.
      * This is used to determine the namespace of commands and environments.
@@ -20,26 +18,18 @@ abstract class AbstractDSLLatexBuilderScope : DSLLatexBuilderScope {
      * `package` is a reserved keyword in Kotlin, so we use `packageOf` instead.
      */
     fun packageOf(name: String) {
-        namespace = toPackage(name)
-    }
-
-    private fun appendSuffixIfNeeded(name: String, suffix: String): String {
-        return if (name.endsWith(suffix)) name else "$name$suffix"
-    }
-
-    fun toPackage(name: String): LatexLib {
-        return LatexLib.fromPackageName(name)
-    }
-
-    inline fun underPackage(name: String, action: () -> Unit) {
-        val oldDependency = namespace
-        namespace = toPackage(name)
-        action()
-        namespace = oldDependency
+        namespace = LatexLib.fromPackageName(name)
     }
 
     fun applicableIn(vararg context: LatexContext) {
         applicableContexts = context.toSet()
+    }
+
+    inline fun underPackage(name: String, action: () -> Unit) {
+        val oldDependency = namespace
+        namespace = LatexLib.fromPackageName(name)
+        action()
+        namespace = oldDependency
     }
 
     inline fun underAnyContext(action: () -> Unit) {
@@ -109,73 +99,31 @@ abstract class AbstractDSLLatexBuilderScope : DSLLatexBuilderScope {
     operator fun LatexContext.unaryMinus(): LatexContextIntro {
         return LatexContextIntro.remove(this)
     }
-}
 
-class DSLLatexCommandBuilderScope : AbstractDSLLatexBuilderScope() {
-
-    private val commands = mutableListOf<LSemanticCommand>()
-
-    fun build(): List<LSemanticCommand> {
-        return commands
-    }
-
-    fun String.cmd(
-        vararg arguments: LArgument,
-        desc: String = "",
+    fun command(
+        name: String, arguments: List<LArgument>, description: String, display: String?
     ): LSemanticCommand {
-        val name = this
-        val command = LSemanticCommand(
-            name = name,
-            namespace = namespace,
-            arguments = arguments.toList(),
-            description = desc,
-            display = null,
-            applicableCtx = applicableContexts,
-        )
-        commands.add(command)
+        val command = LSemanticCommand(name, namespace, applicableContexts, arguments, description, display)
+        add(command)
         return command
     }
 
+    fun String.cmd(
+        vararg arguments: LArgument, desc: String = "",
+    ): LSemanticCommand {
+        return command(
+            name = this, arguments = arguments.toList(), description = desc, display = null
+        )
+    }
+
     inline fun String.cmd(
-        vararg arguments: LArgument,
-        desc: () -> String,
+        vararg arguments: LArgument, desc: () -> String
     ): LSemanticCommand {
         return cmd(*arguments, desc = desc())
     }
 
-    operator fun String.unaryPlus(): LSemanticCommand {
-        return this.cmd()
-    }
-
     fun symbol(name: String, display: String? = null, description: String? = null): LSemanticCommand {
-        val command = LSemanticCommand(
-            name = name,
-            namespace = namespace,
-            arguments = emptyList(),
-            description = description ?: display ?: name,
-            display = display,
-            applicableCtx = applicableContexts,
-        )
-        commands.add(command)
-        return command
-    }
-
-    companion object {
-
-        inline fun buildCommands(action: DSLLatexCommandBuilderScope.() -> Unit): List<LSemanticCommand> {
-            val scope = DSLLatexCommandBuilderScope()
-            scope.action()
-            return scope.build()
-        }
-    }
-}
-
-class DSLLatexEnvironmentBuilderScope : AbstractDSLLatexBuilderScope() {
-
-    private val environments = mutableListOf<LSemanticEnv>()
-
-    fun build(): List<LSemanticEnv> {
-        return environments
+        return command(name, emptyList(), description ?: display ?: name, display)
     }
 
     fun environment(
@@ -190,7 +138,7 @@ class DSLLatexEnvironmentBuilderScope : AbstractDSLLatexBuilderScope() {
             description = description,
             requiredContext = applicableContexts,
         )
-        environments.add(environment)
+        add(environment)
         return environment
     }
 
@@ -218,71 +166,111 @@ class DSLLatexEnvironmentBuilderScope : AbstractDSLLatexBuilderScope() {
         return env(LatexContextIntro.Assign(context), *arguments, desc = desc)
     }
 
+    private val myEntities = mutableListOf<LSemanticEntity>()
+
+    fun add(entity: LSemanticEntity) {
+        myEntities.add(entity)
+    }
+
+    fun build(): List<LSemanticEntity> {
+        return myEntities.toList()
+    }
+}
+
+class DSLLatexCommandBuilderScope : DSLLatexBuilderScope() {
+    fun buildCommands(): List<LSemanticCommand> {
+        return build().filterIsInstance<LSemanticCommand>()
+    }
+
+    operator fun String.unaryPlus(): LSemanticCommand {
+        return this.cmd()
+    }
+}
+
+class DSLLatexEnvironmentBuilderScope : DSLLatexBuilderScope() {
+
+    fun buildEnvironments(): List<LSemanticEnv> {
+        return build().filterIsInstance<LSemanticEnv>()
+    }
+
     operator fun String.unaryPlus(): LSemanticEnv {
         return this.env(LatexContextIntro.inherit())
     }
+}
 
-    companion object {
+abstract class PredefinedEntitySet {
+    private val myAllEntities = mutableSetOf<LSemanticEntity>()
 
-        inline fun buildEnvironments(action: DSLLatexEnvironmentBuilderScope.() -> Unit): List<LSemanticEnv> {
-            val scope = DSLLatexEnvironmentBuilderScope()
-            scope.action()
-            return scope.build()
+    val allEntities: Set<LSemanticEntity>
+        get() = myAllEntities
+
+    fun addAll(entities: Collection<LSemanticEntity>) {
+        myAllEntities.addAll(entities)
+    }
+
+    protected inline fun definitions(action: DSLLatexBuilderScope.() -> Unit): List<LSemanticEntity> {
+        val scope = DSLLatexBuilderScope()
+        scope.action()
+        return scope.build().also {
+            addAll(it)
+        }
+    }
+
+    protected inline fun definedUnder(
+        packageName: String, action: DSLLatexBuilderScope.() -> Unit
+    ): List<LSemanticEntity> {
+        return definitions {
+            packageOf(packageName)
+            action()
         }
     }
 }
 
-abstract class PredefinedCommandSet {
-    private val myAllCommands = mutableSetOf<LSemanticCommand>()
+abstract class PredefinedCommandSet : PredefinedEntitySet() {
 
-    val allCommands: Set<LSemanticCommand>
-        get() = myAllCommands
+    val allCommands: List<LSemanticCommand>
+        get() = allEntities.filterIsInstance<LSemanticCommand>()
 
-    protected fun buildCommands(action: DSLLatexCommandBuilderScope.() -> Unit): List<LSemanticCommand> {
-        val built = DSLLatexCommandBuilderScope.buildCommands(action)
-        myAllCommands.addAll(built)
+    protected inline fun buildCommands(action: DSLLatexCommandBuilderScope.() -> Unit): List<LSemanticCommand> {
+        val scope = DSLLatexCommandBuilderScope()
+        scope.action()
+        val built = scope.buildCommands()
+        addAll(built)
         return built
     }
 
-    protected fun mathCommands(action: DSLLatexCommandBuilderScope.() -> Unit): List<LSemanticCommand> {
+    protected inline fun mathCommands(action: DSLLatexCommandBuilderScope.() -> Unit): List<LSemanticCommand> {
         return buildCommands {
             applicableIn(LatexContexts.Math)
             action()
         }
     }
 
-    protected fun textCommands(action: DSLLatexCommandBuilderScope.() -> Unit): List<LSemanticCommand> {
+    protected inline fun textCommands(action: DSLLatexCommandBuilderScope.() -> Unit): List<LSemanticCommand> {
         return buildCommands {
             applicableIn(LatexContexts.Text)
             action()
         }
     }
 
-    protected fun preambleCommands(action: DSLLatexCommandBuilderScope.() -> Unit): List<LSemanticCommand> {
+    protected inline fun preambleCommands(action: DSLLatexCommandBuilderScope.() -> Unit): List<LSemanticCommand> {
         return buildCommands {
             applicableIn(LatexContexts.Preamble)
             action()
         }
     }
-
-//    protected fun Collection<LSemanticCommand>.toSingleLookupMap(): Map<String, LSemanticCommand> {
-//        return this.associateBy { it.name }
-//    }
-//
-//    protected fun Collection<LSemanticCommand>.toLookupMap(): Map<String, List<LSemanticCommand>> {
-//        return this.groupBy { it.name }
-//    }
 }
 
-abstract class PredefinedEnvironmentSet {
-    private val myAllEnvironments = mutableSetOf<LSemanticEnv>()
+abstract class PredefinedEnvironmentSet : PredefinedEntitySet() {
 
-    val allEnvironments: Set<LSemanticEnv>
-        get() = myAllEnvironments
+    val allEnvironments: List<LSemanticEnv>
+        get() = allEntities.filterIsInstance<LSemanticEnv>()
 
     protected fun buildEnvironments(action: DSLLatexEnvironmentBuilderScope.() -> Unit): List<LSemanticEnv> {
-        val built = DSLLatexEnvironmentBuilderScope.buildEnvironments(action)
-        myAllEnvironments.addAll(built)
+        val scope = DSLLatexEnvironmentBuilderScope()
+        scope.action()
+        val built = scope.buildEnvironments()
+        addAll(built)
         return built
     }
 
@@ -291,21 +279,5 @@ abstract class PredefinedEnvironmentSet {
             applicableIn(LatexContexts.Math)
             action()
         }
-    }
-
-//    protected fun Collection<LSemanticEnv>.toSingleLookupMap(): Map<String, LSemanticEnv> {
-//        return this.associateBy { it.name }
-//    }
-//
-//    protected fun Collection<LSemanticEnv>.toLookupMap(): Map<String, List<LSemanticEnv>> {
-//        return this.groupBy { it.name }
-//    }
-}
-
-fun main() {
-    DSLLatexCommandBuilderScope.buildCommands {
-        packageOf("my.package")
-
-        symbol("alpha", "α", "Greek letter alpha")
     }
 }

@@ -19,8 +19,7 @@ import nl.hannahsten.texifyidea.lang.LSemanticEntity
 import nl.hannahsten.texifyidea.lang.LSemanticEnv
 import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
-import nl.hannahsten.texifyidea.lang.predefined.AllPredefinedCommands
-import nl.hannahsten.texifyidea.lang.predefined.AllPredefinedEnvironments
+import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.lang.predefined.PredefinedPrimitives
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
@@ -35,11 +34,11 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.milliseconds
 
-sealed class SourcedDefinition(
+class SourcedDefinition(
+    val entity: LSemanticEntity,
     val definitionCommandPointer: SmartPsiElementPointer<LatexCommands>?,
     val source: DefinitionSource = DefinitionSource.UserDefined
 ) {
-    abstract val entity: LSemanticEntity
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -72,27 +71,7 @@ sealed class SourcedDefinition(
     }
 }
 
-class SourcedCmdDefinition(
-    override val entity: LSemanticCommand,
-    definitionCommandPointer: SmartPsiElementPointer<LatexCommands>?,
-    source: DefinitionSource = DefinitionSource.UserDefined
-) : SourcedDefinition(definitionCommandPointer, source)
-
-class SourcedEnvDefinition(
-    override val entity: LSemanticEnv,
-    definitionCommandPointer: SmartPsiElementPointer<LatexCommands>?,
-    source: DefinitionSource = DefinitionSource.UserDefined
-) : SourcedDefinition(definitionCommandPointer, source)
-
 interface DefinitionBundle : LatexSemanticsLookup {
-    fun findCmdDef(name: String): SourcedCmdDefinition? {
-        return findDefinition(name) as? SourcedCmdDefinition
-    }
-
-    fun findEnvDef(name: String): SourcedEnvDefinition? {
-        return findDefinition(name) as? SourcedEnvDefinition
-    }
-
     fun findDefinition(name: String): SourcedDefinition?
 
     override fun lookup(name: String): LSemanticEntity? {
@@ -191,7 +170,7 @@ class LatexLibraryDefinitionService(
     ) {
         val file = libInfo.location
         for (name in LatexRegexBasedIndex.getCommandDefinitions(file, project)) {
-            val sourcedDef = SourcedCmdDefinition(
+            val sourcedDef = SourcedDefinition(
                 LSemanticCommand(name, libInfo.name),
                 null,
                 DefinitionSource.LibraryScan
@@ -199,7 +178,7 @@ class LatexLibraryDefinitionService(
             currentSourcedDefinitions.merge(name, sourcedDef, LatexDefinitionUtil::mergeDefinition)
         }
         for (name in LatexRegexBasedIndex.getEnvironmentDefinitions(file, project)) {
-            val sourcedDef = SourcedEnvDefinition(
+            val sourcedDef = SourcedDefinition(
                 LSemanticEnv(name, libInfo.name),
                 null,
                 DefinitionSource.LibraryScan
@@ -304,29 +283,14 @@ class LatexLibraryDefinitionService(
 
             // overwrite the definitions with the primitive commands
             PredefinedPrimitives.allCommands.forEach {
-                currentSourcedDefinitions[it.name] = SourcedCmdDefinition(it, null, DefinitionSource.Primitive)
+                currentSourcedDefinitions[it.name] = SourcedDefinition(it, null, DefinitionSource.Primitive)
             }
             LibDefinitionBundle(lib, currentSourcedDefinitions)
         }
 
         private fun processPredefinedCommandsAndEnvironments(name: LatexLib, defMap: MutableMap<String, SourcedDefinition>) {
-            AllPredefinedCommands.packageToCommands[name]?.forEach { command ->
-                defMap[command.name] = SourcedCmdDefinition(command, null, DefinitionSource.Predefined)
-            }
-            AllPredefinedEnvironments.packageToEnvironments[name]?.forEach { env ->
-                defMap[env.name] = SourcedEnvDefinition(env, null, DefinitionSource.Predefined)
-            }
-        }
-
-        private fun processAllPredefinedCommands(defMap: MutableMap<String, SourcedDefinition>) {
-            AllPredefinedCommands.allCommands.forEach { command ->
-                defMap[command.name] = SourcedCmdDefinition(command, null, DefinitionSource.Predefined)
-            }
-        }
-
-        private fun processAllPredefinedEnvironments(defMap: MutableMap<String, SourcedDefinition>) {
-            AllPredefinedEnvironments.allEnvironments.forEach { env ->
-                defMap[env.name] = SourcedEnvDefinition(env, null, DefinitionSource.Predefined)
+            AllPredefined.packageToEntities(name).forEach { entity ->
+                defMap[entity.name] = SourcedDefinition(entity, null, DefinitionSource.Predefined)
             }
         }
     }
@@ -367,7 +331,7 @@ class WorkingFilesetDefinitionBundle(
 
 /**
  * Provide a unified definition service for LaTeX commands, including
- *   * those hard-coded in the plugin, see [nl.hannahsten.texifyidea.lang.predefined.AllPredefinedCommands], [nl.hannahsten.texifyidea.lang.predefined.AllPredefinedEnvironments].
+ *   * those hard-coded in the plugin, see [nl.hannahsten.texifyidea.lang.predefined.AllPredefined].
  *   * those indexed by stub-based index [NewDefinitionIndex]
  *   * those indexed by file-based index [nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex]
  *
@@ -423,12 +387,12 @@ class LatexDefinitionService(
         return union(filesetData.filesets.map { getDefBundleForFileset(it) })
     }
 
-    fun resolveCommandDef(v: VirtualFile, commandName: String): SourcedCmdDefinition? {
-        return resolveDef(v, commandName.removePrefix("\\")) as? SourcedCmdDefinition
+    fun resolveCommandDef(v: VirtualFile, commandName: String): SourcedDefinition? {
+        return resolveDef(v, commandName.removePrefix("\\"))
     }
 
-    fun resolveEnvDef(v: VirtualFile, envName: String): SourcedEnvDefinition? {
-        return resolveDef(v, envName) as? SourcedEnvDefinition
+    fun resolveEnvDef(v: VirtualFile, envName: String): SourcedDefinition? {
+        return resolveDef(v, envName)
     }
 
     fun resolveDef(v: VirtualFile, name: String): SourcedDefinition? {
@@ -486,18 +450,8 @@ class LatexDefinitionService(
         override val totalTimeCost = AtomicLong(0)
 
         fun resolvePredefined(name: String): SourcedDefinition? {
-            return resolvePredefinedCommand(name) ?: resolvePredefinedEnv(name)
-        }
-
-        fun resolvePredefinedCommand(name: String): SourcedCmdDefinition? {
-            return AllPredefinedCommands.simpleNameLookup[name]?.let { cmd ->
-                return SourcedCmdDefinition(cmd, null, DefinitionSource.Predefined)
-            }
-        }
-
-        fun resolvePredefinedEnv(envName: String): SourcedEnvDefinition? {
-            return AllPredefinedEnvironments.simpleNameLookup[envName]?.let { env ->
-                SourcedEnvDefinition(env, null, DefinitionSource.Predefined)
+            return AllPredefined.lookup(name)?.let {
+                SourcedDefinition(it, null, DefinitionSource.Predefined)
             }
         }
 
@@ -515,16 +469,16 @@ class LatexDefinitionService(
             return getInstance(file.project).getDefBundlesMerged(file)
         }
 
-        fun resolveEnv(env: LatexEnvironment): SourcedEnvDefinition? {
+        fun resolveEnv(env: LatexEnvironment): LSemanticEnv? {
             val bundle = getBundleFor(env)
             val name = env.getEnvironmentName()
-            return bundle.findEnvDef(name)
+            return bundle.findDefinition(name)?.entity as? LSemanticEnv
         }
 
-        fun resolveCommand(command: LatexCommands): SourcedCmdDefinition? {
+        fun resolveCommand(command: LatexCommands): LSemanticCommand? {
             val bundle = getBundleFor(command)
             val name = command.nameWithoutSlash ?: return null
-            return bundle.findCmdDef(name)
+            return bundle.findDefinition(name)?.entity as? LSemanticCommand
         }
     }
 }

@@ -32,27 +32,8 @@ class LArgument(
     val isOptional: Boolean
         get() = type == LArgumentType.OPTIONAL
 
-    private fun contextIntroDisplay(): String {
-        return when (contextSignature) {
-            LatexContextIntro.Inherit -> ""
-            is LatexContextIntro.Clear -> "<>"
-            is LatexContextIntro.Assign -> "<${contextSignature.contexts.joinToString(",")}>"
-            is LatexContextIntro.Modify -> buildString {
-                append("<")
-                if (contextSignature.toAdd.isNotEmpty()) {
-                    append("+${contextSignature.toAdd.joinToString(",")}")
-                }
-                if (contextSignature.toRemove.isNotEmpty()) {
-                    if (contextSignature.toAdd.isNotEmpty()) append(";")
-                    append("-${contextSignature.toRemove.joinToString(",")}")
-                }
-                append(">")
-            }
-        }
-    }
-
     override fun toString(): String {
-        val introDisplay = contextIntroDisplay()
+        val introDisplay = contextSignature.displayString()
         return when (type) {
             LArgumentType.REQUIRED -> "{$name$introDisplay}"
             LArgumentType.OPTIONAL -> "[$name$introDisplay]"

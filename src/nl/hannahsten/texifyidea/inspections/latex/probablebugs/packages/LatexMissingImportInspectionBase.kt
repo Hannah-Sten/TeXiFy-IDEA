@@ -7,11 +7,9 @@ import nl.hannahsten.texifyidea.index.DefinitionBundle
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.lang.LSemanticCommand
-import nl.hannahsten.texifyidea.lang.LSemanticEnv
+import nl.hannahsten.texifyidea.lang.LSemanticEntity
 import nl.hannahsten.texifyidea.lang.LatexContexts
-import nl.hannahsten.texifyidea.lang.predefined.AllPredefinedCommands
-import nl.hannahsten.texifyidea.lang.predefined.AllPredefinedEnvironments
+import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
@@ -61,7 +59,7 @@ abstract class LatexMissingImportInspectionBase : TexifyInspectionBase() {
         val contexts = LatexPsiUtil.resolveContextUpward(command, bundle)
         if (LatexContexts.CommandDeclaration in contexts) return // skip declaration of command
 
-        val candidates = AllPredefinedCommands.findAll(name)
+        val candidates = AllPredefined.findAll(name)
         if (candidates.isNotEmpty()) {
             reportCommandMissingImport(command, candidates, descriptors, manager, isOntheFly)
         }
@@ -73,22 +71,22 @@ abstract class LatexMissingImportInspectionBase : TexifyInspectionBase() {
     private fun analyzeEnvironment(e: LatexEnvironment, bundle: DefinitionBundle, descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager, isOntheFly: Boolean) {
         val name = e.getEnvironmentName()
         if (bundle.lookupEnv(name) != null) return
-        val candidate = AllPredefinedEnvironments.lookupEnv(name)
-        if (candidate == null) {
-            reportUnknownEnvironment(name, e, descriptors, manager, isOntheFly)
+        val candidate = AllPredefined.findAll(name)
+        if (candidate.isNotEmpty()) {
+            reportEnvironmentMissingImport(e, candidate, descriptors, manager, isOntheFly)
         }
         else {
-            reportEnvironmentMissingImport(e, candidate, descriptors, manager, isOntheFly)
+            reportUnknownEnvironment(name, e, descriptors, manager, isOntheFly)
         }
     }
 
     protected abstract fun reportCommandMissingImport(
-        command: LatexCommands, candidates: List<LSemanticCommand>,
+        command: LatexCommands, candidates: List<LSemanticEntity>,
         descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager, isOntheFly: Boolean
     )
 
     protected abstract fun reportEnvironmentMissingImport(
-        environment: LatexEnvironment, requiredEntity: LSemanticEnv,
+        environment: LatexEnvironment, candidates: List<LSemanticEntity>,
         descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager, isOntheFly: Boolean
     )
 

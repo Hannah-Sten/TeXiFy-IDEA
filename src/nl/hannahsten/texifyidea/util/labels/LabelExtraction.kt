@@ -48,7 +48,7 @@ fun PsiElement.extractLabelElement(): PsiElement? {
             }
             else {
                 val semantics = LatexDefinitionService.resolveEnv(this)
-                val position = semantics?.entity?.arguments?.indexOfFirst { it.contextSignature.introduces(LatexContexts.LabelDefinition) }
+                val position = semantics?.arguments?.indexOfFirst { it.contextSignature.introduces(LatexContexts.LabelDefinition) }
                 // Check for user defined environments
                 if (position != null) {
                     this.beginCommand.parameterList.getOrNull(position)?.findFirstChildOfType(LatexParameterText::class)
@@ -99,7 +99,7 @@ fun PsiElement.extractLabelName(externalDocumentCommand: LatexCommands? = null):
                 // Check if it is a user defined alias of a labeled environment
                 ?: run {
                     val semantics = LatexDefinitionService.resolveEnv(this)
-                    val position = semantics?.entity?.arguments?.indexOfFirst { it.contextSignature.introduces(LatexContexts.LabelDefinition) }
+                    val position = semantics?.arguments?.indexOfFirst { it.contextSignature.introduces(LatexContexts.LabelDefinition) }
                     position?.let {
                         this.beginCommand.parameterList.getOrNull(position)?.findFirstChildOfType(LatexParameterText::class)?.text
                     }

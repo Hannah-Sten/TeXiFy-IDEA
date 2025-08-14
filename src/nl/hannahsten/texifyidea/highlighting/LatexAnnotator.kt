@@ -51,7 +51,6 @@ open class LatexAnnotator : Annotator {
     }
 
     override fun annotate(psiElement: PsiElement, annotationHolder: AnnotationHolder) {
-        val session = annotationHolder.currentAnnotationSession
         val defBundle = getDefBundle(annotationHolder)
         val context = LatexPsiUtil.resolveContextUpward(psiElement, defBundle)
         // Math display
@@ -59,7 +58,7 @@ open class LatexAnnotator : Annotator {
             annotateInlineMath(psiElement, annotationHolder)
         }
         else if (psiElement is LatexDisplayMath ||
-            (psiElement is LatexEnvironment && LatexContexts.Math in context)
+            (psiElement is LatexEnvironment && LatexPsiUtil.isContextIntroduced(psiElement, defBundle, LatexContexts.Math))
         ) {
             annotateDisplayMath(psiElement, annotationHolder)
 

@@ -67,7 +67,7 @@ object EnvironmentMagic {
         "matrix*", "pmatrix*", "bmatrix*", "vmatrix*", "Bmatrix*", "Vmatrix*",
         "smallmatrix", "psmallmatrix", "bsmallmatrix", "vsmallmatrix", "Bsmallmatrix", "Vsmallmatrix",
         "smallmatrix*", "psmallmatrix*", "bsmallmatrix*", "vsmallmatrix*", "Bsmallmatrix*", "Vsmallmatrix*",
-        "gmatrix", "tikz-cd"
+        "gmatrix", "tikzcd"
     )
 
     val alignableEnvironments = setOf(

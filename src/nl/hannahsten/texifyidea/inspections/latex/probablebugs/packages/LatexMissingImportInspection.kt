@@ -9,12 +9,12 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import nl.hannahsten.texifyidea.inspections.InsightGroup
-import nl.hannahsten.texifyidea.lang.LSemanticCommand
-import nl.hannahsten.texifyidea.lang.LSemanticEnv
+import nl.hannahsten.texifyidea.lang.LSemanticEntity
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
+import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.util.PackageUtils
 import java.util.*
 
@@ -34,7 +34,7 @@ class LatexMissingImportInspection : LatexMissingImportInspectionBase() {
     override fun getDisplayName() = "Missing imports"
 
     override fun reportCommandMissingImport(
-        command: LatexCommands, candidates: List<LSemanticCommand>,
+        command: LatexCommands, candidates: List<LSemanticEntity>,
         descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager, isOntheFly: Boolean
     ) {
         val packageNames = candidates.mapNotNull { it.dependency.toPackageName() }
@@ -54,18 +54,21 @@ class LatexMissingImportInspection : LatexMissingImportInspectionBase() {
     }
 
     override fun reportEnvironmentMissingImport(
-        environment: LatexEnvironment, requiredEntity: LSemanticEnv,
+        environment: LatexEnvironment, candidates: List<LSemanticEntity>,
         descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager, isOntheFly: Boolean
     ) {
-        val pack = requiredEntity.dependency.toPackageName() ?: return
+        val packageNames = candidates.mapNotNull { it.dependency.toPackageName() }
+        if (packageNames.isEmpty()) return
+        val fixes = packageNames.map { ImportPackageFix(it) }.toTypedArray()
+        val range = TextRange(7, 7 + environment.getEnvironmentName().length)
         descriptors.add(
             manager.createProblemDescriptor(
                 environment,
-                TextRange(7, 7 + requiredEntity.name.length),
-                "Environment requires package $pack",
+                range,
+                "Environment requires any of the packages: ${packageNames.joinToString(", ")}",
                 ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                 isOntheFly,
-                ImportPackageFix(pack)
+                *fixes
             )
         )
     }
