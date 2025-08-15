@@ -345,9 +345,6 @@ class LatexDefinitionService(
     val project: Project, scope: CoroutineScope
 ) : AbstractBackgroundCacheService<Fileset, DefinitionBundle>(scope) {
 
-    val expiration: Duration
-        get() = TexifySettings.getInstance().filesetExpirationTimeMs.milliseconds
-
     private fun computeValue(key: Fileset, oldValue: DefinitionBundle?): DefinitionBundle {
         val startTime = System.currentTimeMillis()
 
@@ -377,7 +374,7 @@ class LatexDefinitionService(
     }
 
     fun getDefBundleForFileset(fileset: Fileset): DefinitionBundle {
-        return getAndComputeLater(fileset, expiration, LatexLibraryDefinitionService.baseLibBundle)
+        return getAndComputeLater(fileset, expirationTime, LatexLibraryDefinitionService.baseLibBundle)
     }
 
     /**
@@ -444,6 +441,10 @@ class LatexDefinitionService(
     }
 
     companion object : SimplePerformanceTracker {
+
+        val expirationTime: Duration
+            get() = TexifySettings.getInstance().filesetExpirationTimeMs.milliseconds
+
         fun getInstance(project: Project): LatexDefinitionService {
             return project.service()
         }

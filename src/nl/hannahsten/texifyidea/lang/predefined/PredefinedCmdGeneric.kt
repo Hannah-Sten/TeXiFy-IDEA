@@ -774,7 +774,6 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         "rowcolors*".cmd("commands".optional, "row".required, "odd-row color".required, "even-row color".required) { "ROWCOLORS_STAR" }
         +"rownum"
         +"showrowcolors"
-        "textcolor".cmd(colorArg) { "TESTCOLOR" }
         "textcolor".cmd("model-list".optional, colorArg) { "TESTCOLOR2" }
         "textcolor".cmd("model-list".optional, colorArg, textArg) { "TEXTCOLOR2" }
         +"xglobal"

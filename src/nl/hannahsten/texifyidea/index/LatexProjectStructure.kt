@@ -316,7 +316,7 @@ object LatexProjectStructure : SimplePerformanceTracker {
     override val countOfBuilds = AtomicInteger(0)
     override val totalTimeCost = AtomicLong(0)
 
-    private val expirationTime: Duration
+    val expirationTime: Duration
         get() = TexifySettings.getInstance().filesetExpirationTimeMs.milliseconds
 
     /**
