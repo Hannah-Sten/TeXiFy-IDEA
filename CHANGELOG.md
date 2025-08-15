@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Automatically reload pdf when using latexmk continuous update
 * Support no-break space character in parser
 
 ### Fixed
