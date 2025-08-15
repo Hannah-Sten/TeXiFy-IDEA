@@ -88,7 +88,7 @@ class PerformanceDiagnosticAction : AnAction() {
                 table {
                     tr {
                         td { +"Name" }
-                        td { +"Total Time (ms)" }
+                        td { +"CPU Time (ms)" }
                         td { +"% of Total Uptime" }
                         td { +"Count of Builds" }
                         td { +"Average Time" }

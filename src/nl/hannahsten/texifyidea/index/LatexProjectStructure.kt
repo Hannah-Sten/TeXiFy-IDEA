@@ -915,7 +915,6 @@ object LatexProjectStructure : SimplePerformanceTracker {
      * This will ensure that the filesets are recomputed and up-to-date.
      */
     suspend fun updateFilesetsSuspend(project: Project): LatexProjectFilesets {
-        LatexLibraryStructureService.getInstance(project).invalidateLibraryCache()
         return TexifyProjectCacheService.getInstance(project).ensureRefresh(CACHE_KEY, ::buildFilesetsSuspend)
     }
 

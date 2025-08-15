@@ -27,8 +27,21 @@ class LatexCommandInsertHandler(
     val arguments: List<LArgument>,
     val definitionBundle: DefinitionBundle
 ) : InsertHandler<LookupElement> {
+
+    /**
+     * Remove whitespaces and everything after that that was inserted by the lookup text.
+     */
+    private fun keepOnlyCommandToken(context: InsertionContext) {
+        val editor = context.editor
+        val offset = editor.caretModel.offset
+        // context.startOffset is the offset of the start of the just inserted text.
+        val commandEndOffset = context.startOffset + semantics.nameWithSlash.length
+        if(commandEndOffset >= offset) return
+        // Remove the command token and everything after it.
+        editor.document.deleteString(commandEndOffset, offset)
+    }
     override fun handleInsert(context: InsertionContext, item: LookupElement) {
-        removeWhiteSpaces(context)
+        keepOnlyCommandToken(context)
         when (semantics.name) {
             "begin" -> {
                 insertBegin(context)
@@ -83,20 +96,6 @@ class LatexCommandInsertHandler(
             "enumerate" to "\\item ",
             "itemize" to "\\item ",
         )
-
-        /**
-         * Remove whitespaces and everything after that that was inserted by the lookup text.
-         */
-        internal fun removeWhiteSpaces(context: InsertionContext) {
-            val editor = context.editor
-            val document = editor.document
-            val offset = editor.caretModel.offset
-            // context.startOffset is the offset of the start of the just inserted text.
-            val insertedText = document.text.substring(context.startOffset, offset)
-            val indexFirstSpace = insertedText.indexOfFirst { it == ' ' }
-            if (indexFirstSpace == -1) return
-            document.deleteString(context.startOffset + indexFirstSpace, offset)
-        }
 
         /**
          * Insert a live template for the required arguments. When there are  no required

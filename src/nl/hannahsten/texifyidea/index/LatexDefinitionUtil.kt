@@ -253,11 +253,14 @@ object LatexDefinitionUtil {
     private fun buildArgSpecSignature(argSpec: String?): List<LArgumentType> {
         if (argSpec == null || argSpec.isEmpty()) return emptyList()
         return buildList {
+            var bracketCount = 0
             for (c in argSpec) {
                 when (c) {
-                    'm' -> add(LArgumentType.REQUIRED)
-                    'o', 'O' -> add(LArgumentType.OPTIONAL)
+                    'm' -> if (bracketCount == 0) add(LArgumentType.REQUIRED) // 'm' is for mandatory
+                    'o', 'O' -> if (bracketCount == 0) add(LArgumentType.OPTIONAL) // 'o' is for optional, 'O' is for optional with default value
                     // ignore other specifiers for now
+                    '{' -> bracketCount++
+                    '}' -> bracketCount--
                 }
             }
         }
@@ -306,7 +309,7 @@ object LatexDefinitionUtil {
         if (argSignature.isEmpty()) {
             return LSemanticCommand(name, LatexLib.CUSTOM, applicableContext, description = codeRawText, arguments = emptyList())
         }
-        val argIntro = guessArgumentContextIntroAndExitState(codeElement, argSignature.size, lookup).first
+        val argIntro = guessArgumentContextIntro(codeElement, argSignature.size, lookup)
         val arguments = argIntro.mapIndexed { i, argIntro ->
             LArgument("#${i + 1}", argSignature[i], argIntro)
         }
@@ -335,8 +338,9 @@ object LatexDefinitionUtil {
 
     private val parameterPlaceholderRegex = Regex("#[1-9]")
 
-    private fun guessArgumentContextIntroAndExitState(codeElement: PsiElement, argCount: Int, lookup: LatexSemanticsLookup): Pair<List<LatexContextIntro>, List<LatexContextIntro>> {
-        val contextIntroList = Array(argCount) { LatexContextIntro.inherit() }
+    private fun guessArgumentContextIntroAndExitState(
+        codeElement: PsiElement, argCount: Int, lookup: LatexSemanticsLookup, contextIntroArr: Array<LatexContextIntro?> = arrayOfNulls(argCount)
+    ): Pair<Array<LatexContextIntro?>, List<LatexContextIntro>> {
         val exitState = LatexPsiUtil.traverseRecordingContextIntro(codeElement, lookup) traverse@{ e, introList ->
             if (e.elementType != LatexTypes.NORMAL_TEXT_WORD) return@traverse
             if (!e.textContains('#')) return@traverse
@@ -344,11 +348,21 @@ object LatexDefinitionUtil {
                 val paramIndex = match.value.removePrefix("#").toIntOrNull() ?: return@forEach
                 if (paramIndex < 1 || paramIndex > argCount) return@forEach
                 val reducedIntro = LatexContextIntro.composeList(introList)
-                val prevIntro = contextIntroList[paramIndex - 1]
-                contextIntroList[paramIndex - 1] = LatexContextIntro.union(prevIntro, reducedIntro)
+                val prevIntro = contextIntroArr[paramIndex - 1]
+                contextIntroArr[paramIndex - 1] = prevIntro?.let { LatexContextIntro.union(it, reducedIntro) } ?: reducedIntro
             }
         }
-        return contextIntroList.asList() to exitState
+
+        return contextIntroArr to exitState
+    }
+
+    private fun guessArgumentContextIntro(
+        codeElement: PsiElement, argCount: Int, lookup: LatexSemanticsLookup,
+        contextIntroArr: Array<LatexContextIntro?> = arrayOfNulls(argCount)
+    ): List<LatexContextIntro> {
+        return guessArgumentContextIntroAndExitState(codeElement, argCount, lookup, contextIntroArr).first.map {
+            it ?: LatexContextIntro.assign(LatexContexts.Comment) // this argument is somehow not used, so we assign it to the comment context
+        }
     }
 
     private val namesOfEnvDefRegular = buildSet {
@@ -424,9 +438,9 @@ object LatexDefinitionUtil {
         val applicableContexts = guessApplicableContexts(beginElement, lookup)
         val (argIntro1, innerIntroList) = guessArgumentContextIntroAndExitState(beginElement, argTypeList.size, lookup)
         val innerIntro = LatexContextIntro.composeList(innerIntroList)
-        val (argIntro2, _) = guessArgumentContextIntroAndExitState(endElement, argTypeList.size, lookup)
+        val argIntro2 = guessArgumentContextIntro(endElement, argTypeList.size, lookup, argIntro1)
         val arguments = argTypeList.mapIndexed { i, type ->
-            LArgument("#${i + 1}", type, LatexContextIntro.union(argIntro1[i], argIntro2[i]))
+            LArgument("#${i + 1}", type, argIntro2[i])
         }
         return LSemanticEnv(envName, LatexLib.CUSTOM, applicableContexts, arguments, innerIntro)
     }

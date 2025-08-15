@@ -11,6 +11,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPsiElementPointer
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import nl.hannahsten.texifyidea.action.debug.SimplePerformanceTracker
 import nl.hannahsten.texifyidea.index.SourcedDefinition.DefinitionSource
 import nl.hannahsten.texifyidea.index.file.LatexRegexBasedIndex
@@ -409,7 +410,9 @@ class LatexDefinitionService(
     }
 
     fun requestRefresh() {
-        scheduleRefreshAll()
+        coroutineScope.launch {
+            ensureRefreshAll()
+        }
     }
 
     /**

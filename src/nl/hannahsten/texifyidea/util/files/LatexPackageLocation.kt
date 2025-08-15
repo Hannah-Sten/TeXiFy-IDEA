@@ -43,7 +43,7 @@ object LatexPackageLocation {
      */
     private fun computeLocationWithKpsewhich(project: Project): Map<String, Path> {
         /** Map filename with extension to full path. */
-        if(project.isTestProject()) return emptyMap()
+        if(isTestProject()) return emptyMap()
         // We will get all search paths that kpsewhich has, expand them and find all files
         // Source: https://www.tug.org/texinfohtml/kpathsea.html#Casefolding-search
         // We cannot just fill the cache on the fly, because then we will also run kpsewhich when the user is still typing a package name, so we will run it once for every letter typed and this is already too expensive.

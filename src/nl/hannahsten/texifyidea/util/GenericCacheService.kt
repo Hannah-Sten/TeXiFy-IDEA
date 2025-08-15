@@ -77,7 +77,7 @@ abstract class AbstractCacheServiceBase<K : Any, V> {
     }
 }
 
-abstract class AbstractBackgroundCacheService<K : Any, V : Any>(private val coroutineScope: CoroutineScope) : AbstractCacheServiceBase<K, V>() {
+abstract class AbstractBackgroundCacheService<K : Any, V : Any>(protected val coroutineScope: CoroutineScope) : AbstractCacheServiceBase<K, V>() {
 
     protected abstract suspend fun computeValueSuspend(key: K, oldValue: V?): V?
 

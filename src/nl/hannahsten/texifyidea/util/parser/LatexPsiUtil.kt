@@ -10,7 +10,6 @@ import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
 import nl.hannahsten.texifyidea.index.stub.LatexParameterStub
 import nl.hannahsten.texifyidea.index.stub.requiredParamAt
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.LArgument
 import nl.hannahsten.texifyidea.lang.LArgumentType
 import nl.hannahsten.texifyidea.lang.LatexContextIntro
@@ -42,7 +41,7 @@ fun LatexBeginCommand.endCommand(): LatexEndCommand? = nextSiblingOfType(LatexEn
  */
 fun LatexBeginCommand.isEntryPoint(): Boolean {
     // Currently: only allowing `\begin{document}`.
-    return this.environmentName() == DefaultEnvironment.DOCUMENT.environmentName
+    return this.environmentName() == "document"
 }
 
 /**
