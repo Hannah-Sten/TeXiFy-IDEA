@@ -24,7 +24,7 @@ open class LatexQuoteInsertHandler : TypedHandlerDelegate() {
 
     override fun charTyped(char: Char, project: Project, editor: Editor, file: PsiFile): Result {
         // Only do this for latex files and if the option is enabled
-        if (file.fileType != LatexFileType || TexifySettings.getInstance().automaticQuoteReplacement == TexifySettings.QuoteReplacement.NONE) {
+        if (file.fileType != LatexFileType || TexifySettings.getState().automaticQuoteReplacement == TexifySettings.QuoteReplacement.NONE) {
             return super.charTyped(char, project, editor, file)
         }
 
@@ -60,7 +60,7 @@ open class LatexQuoteInsertHandler : TypedHandlerDelegate() {
     private fun insertReplacement(document: Document, file: PsiFile, caret: CaretModel, offset: Int, char: Char) {
         val replacementPair = getOpenAndCloseQuotes(char)
         val openingQuotes = replacementPair.first
-        val closingQuotes = if (TexifySettings.getInstance().automaticQuoteReplacement == TexifySettings.QuoteReplacement.CSQUOTES) "" else replacementPair.second
+        val closingQuotes = if (TexifySettings.getState().automaticQuoteReplacement == TexifySettings.QuoteReplacement.CSQUOTES) "" else replacementPair.second
 
         // The default replacement of the typed double quotes is a pair of closing quotes
         var isOpeningQuotes = false
@@ -89,7 +89,7 @@ open class LatexQuoteInsertHandler : TypedHandlerDelegate() {
             }
 
             // If we are not closing the quotes, assume we are opening it (instead of doing nothing)
-            if (TexifySettings.getInstance().automaticQuoteReplacement == TexifySettings.QuoteReplacement.CSQUOTES &&
+            if (TexifySettings.getState().automaticQuoteReplacement == TexifySettings.QuoteReplacement.CSQUOTES &&
                 document.getText(TextRange.from(min(offset, document.textLength - 1), 1)) != "}"
             ) {
                 isOpeningQuotes = true
@@ -112,7 +112,7 @@ open class LatexQuoteInsertHandler : TypedHandlerDelegate() {
      * Special behaviour for \enquote, because it is a command, not just opening and closing quotes.
      */
     private fun handleCsquotesInsertion(document: Document, file: PsiFile, isOpeningQuotes: Boolean, caret: CaretModel, char: Char) {
-        if (TexifySettings.getInstance().automaticQuoteReplacement == TexifySettings.QuoteReplacement.CSQUOTES) {
+        if (TexifySettings.getState().automaticQuoteReplacement == TexifySettings.QuoteReplacement.CSQUOTES) {
             if (isOpeningQuotes) {
                 // Insert } after the cursor to close the command
                 document.insertString(caret.offset, "}")

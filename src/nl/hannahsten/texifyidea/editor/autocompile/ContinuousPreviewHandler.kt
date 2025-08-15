@@ -21,7 +21,7 @@ class ContinuousPreviewHandler : TypedHandlerDelegate() {
     override fun charTyped(char: Char, project: Project, editor: Editor, file: PsiFile): Result {
         run {
             // Only do this for latex files and if the option is enabled
-            if (file.fileType != LatexFileType || !TexifySettings.getInstance().continuousPreview) {
+            if (file.fileType != LatexFileType || !TexifySettings.getState().continuousPreview) {
                 return@run
             }
 

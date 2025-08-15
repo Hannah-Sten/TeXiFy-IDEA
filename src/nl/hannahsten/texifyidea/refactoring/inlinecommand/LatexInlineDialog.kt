@@ -25,6 +25,7 @@ abstract class LatexInlineDialog(project: Project?, genericDefinition: PsiElemen
             .toList().size
     }
 
+    @Deprecated("Deprecated in Java")
     override fun getBorderTitle(): String {
         return RefactoringBundle.message("inline.method.border.title")
     }

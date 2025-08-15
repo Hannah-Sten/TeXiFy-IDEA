@@ -17,7 +17,7 @@ import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexInlineMath
 import nl.hannahsten.texifyidea.psi.LatexTypes
-import nl.hannahsten.texifyidea.settings.TexifySettings.Companion.getInstance
+import nl.hannahsten.texifyidea.settings.TexifySettings.Companion.getState
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.orFalse
 import nl.hannahsten.texifyidea.util.parser.inVerbatim
@@ -69,7 +69,7 @@ class LatexTypedHandler : TypedHandlerDelegate() {
     override fun charTyped(c: Char, project: Project, editor: Editor, file: PsiFile): Result {
         if (file is LatexFile && !getElementAtCaret(editor)?.inVerbatim().orFalse()) {
             val dollarSign = LatexGenericRegularCommand.DOLLAR_SIGN.command.toCharArray().first()
-            if (c == dollarSign && getInstance().automaticSecondInlineMathSymbol) {
+            if (c == dollarSign && getState().automaticSecondInlineMathSymbol) {
                 val tokenType = getTypedTokenType(editor)
                 if (tokenType !== LatexTypes.COMMAND_TOKEN && tokenType !== LatexTypes.COMMENT_TOKEN && tokenType !== LatexTypes.INLINE_MATH_END) {
                     editor.document.insertString(

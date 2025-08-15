@@ -446,7 +446,7 @@ class LatexDefinitionService(
     companion object : SimplePerformanceTracker {
 
         val expirationTime: Duration
-            get() = TexifySettings.getInstance().filesetExpirationTimeMs.milliseconds
+            get() = TexifySettings.getState().filesetExpirationTimeMs.milliseconds
 
         fun getInstance(project: Project): LatexDefinitionService {
             return project.service()

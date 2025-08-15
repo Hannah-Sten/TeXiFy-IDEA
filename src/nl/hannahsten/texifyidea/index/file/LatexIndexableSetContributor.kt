@@ -89,7 +89,7 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
             return emptySet()
         }
 
-        if (!TexifySettings.getInstance().enableExternalIndex) return emptySet()
+        if (!TexifySettings.getState().enableExternalIndex) return emptySet()
 
         // Add source files
         val roots = LatexSdkUtil.getSdkSourceRoots(project) { sdk, homePath -> sdk.getDefaultSourcesPath(homePath) }.toMutableSet()

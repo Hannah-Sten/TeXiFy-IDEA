@@ -24,7 +24,7 @@ import javax.swing.JPanel
 @Suppress("SameParameterValue")
 class TexifyConfigurable : SearchableConfigurable {
 
-    private val settings: TexifySettings = TexifySettings.getInstance()
+    private val settings = TexifySettings.getState()
 
     private var automaticSecondInlineMathSymbol: JBCheckBox? = null
     private var automaticUpDownBracket: JBCheckBox? = null
@@ -48,19 +48,21 @@ class TexifyConfigurable : SearchableConfigurable {
     /**
      * Map UI variables to underlying setting variables
      */
-    private val booleanSettings = listOf(
-        Pair(::automaticSecondInlineMathSymbol, settings::automaticSecondInlineMathSymbol),
-        Pair(::automaticUpDownBracket, settings::automaticUpDownBracket),
-        Pair(::automaticItemInItemize, settings::automaticItemInItemize),
-        Pair(::automaticDependencyCheck, settings::automaticDependencyCheck),
-        Pair(::automaticBibtexImport, settings::automaticBibtexImport),
-        Pair(::continuousPreview, settings::continuousPreview),
-        Pair(::includeBackslashInSelection, settings::includeBackslashInSelection),
-        Pair(::showPackagesInStructureView, settings::showPackagesInStructureView),
-        Pair(::enableExternalIndex, settings::enableExternalIndex),
-        Pair(::enableSpellcheckEverywhere, settings::enableSpellcheckEverywhere),
-        Pair(::enableTextidote, settings::enableTextidote),
-    )
+    private val booleanSettings = settings.let { state ->
+        listOf(
+            Pair(::automaticSecondInlineMathSymbol, state::automaticSecondInlineMathSymbol),
+            Pair(::automaticUpDownBracket, state::automaticUpDownBracket),
+            Pair(::automaticItemInItemize, state::automaticItemInItemize),
+            Pair(::automaticDependencyCheck, state::automaticDependencyCheck),
+            Pair(::automaticBibtexImport, state::automaticBibtexImport),
+            Pair(::continuousPreview, state::continuousPreview),
+            Pair(::includeBackslashInSelection, state::includeBackslashInSelection),
+            Pair(::showPackagesInStructureView, state::showPackagesInStructureView),
+            Pair(::enableExternalIndex, state::enableExternalIndex),
+            Pair(::enableSpellcheckEverywhere, state::enableSpellcheckEverywhere),
+            Pair(::enableTextidote, state::enableTextidote),
+        )
+    }
 
     override fun getId() = "TexifyConfigurable"
 
@@ -71,7 +73,6 @@ class TexifyConfigurable : SearchableConfigurable {
             add(
                 JPanel().apply {
                     layout = BoxLayout(this, BoxLayout.Y_AXIS)
-
                     automaticSecondInlineMathSymbol = addCheckbox("Automatically insert second '$'")
                     automaticUpDownBracket = addCheckbox("Automatically insert braces around text in subscript and superscript")
                     automaticItemInItemize = addCheckbox("Automatically insert '\\item' in itemize-like environments on pressing enter")
@@ -83,8 +84,8 @@ class TexifyConfigurable : SearchableConfigurable {
                     enableExternalIndex = addCheckbox("Enable indexing of MiKTeX/TeX Live package files (requires restart)")
                     enableSpellcheckEverywhere = addCheckbox("Enable spellcheck inspection in all scopes")
                     enableTextidote = addCheckbox("Enable the Textidote linter")
-                    textidoteOptions = addCommandLineEditor("Textidote", TexifySettingsState().textidoteOptions)
-                    latexIndentOptions = addCommandLineEditor("Latexindent", TexifySettingsState().latexIndentOptions)
+                    textidoteOptions = addCommandLineEditor("Textidote", TexifySettings.DEFAULT_TEXTIDOTE_OPTIONS)
+                    latexIndentOptions = addCommandLineEditor("Latexindent", "")
                     addSumatraPathField(this)
                     automaticQuoteReplacement = addComboBox("Smart quote substitution: ", "Off", "TeX ligatures", "TeX commands", "csquotes")
                     htmlPasteTranslator = addComboBox("HTML paste translator", "Built-in", "Pandoc", "Disabled")
@@ -210,31 +211,33 @@ class TexifyConfigurable : SearchableConfigurable {
         for (setting in booleanSettings) {
             setting.second.set(setting.first.get()?.isSelected == true)
         }
-        settings.textidoteOptions = textidoteOptions?.text ?: ""
-        settings.latexIndentOptions = latexIndentOptions?.text ?: ""
-        settings.automaticQuoteReplacement = TexifySettings.QuoteReplacement.entries.toTypedArray()[automaticQuoteReplacement?.selectedIndex ?: 0]
-        settings.htmlPasteTranslator = TexifySettings.HtmlPasteTranslator.entries.toTypedArray()[htmlPasteTranslator?.selectedIndex ?: 0]
-        settings.autoCompileOption = TexifySettings.AutoCompile.entries.toTypedArray()[autoCompileOption?.selectedIndex ?: 0]
+        val ss = settings
+        ss.textidoteOptions = textidoteOptions?.text ?: ""
+        ss.latexIndentOptions = latexIndentOptions?.text ?: ""
+        ss.automaticQuoteReplacement = TexifySettings.QuoteReplacement.entries.toTypedArray()[automaticQuoteReplacement?.selectedIndex ?: 0]
+        ss.htmlPasteTranslator = TexifySettings.HtmlPasteTranslator.entries.toTypedArray()[htmlPasteTranslator?.selectedIndex ?: 0]
+        ss.autoCompileOption = TexifySettings.AutoCompile.entries.toTypedArray()[autoCompileOption?.selectedIndex ?: 0]
         val path = getUISumatraPath()
         if (path != null) {
             if (!SumatraViewer.trySumatraPath(path)) {
                 throw RuntimeConfigurationError("Path to SumatraPDF is not valid: $path")
             }
         }
-        settings.pathToSumatra = path
-        settings.filesetExpirationTimeMs = filesetExpirationTimeMs?.value ?: 2000
+        ss.pathToSumatra = path
+        ss.filesetExpirationTimeMs = filesetExpirationTimeMs?.value ?: 2000
     }
 
     override fun reset() {
         for (setting in booleanSettings) {
             setting.first.get()?.isSelected = setting.second.get()
         }
-        textidoteOptions?.text = settings.textidoteOptions
-        latexIndentOptions?.text = settings.latexIndentOptions
-        automaticQuoteReplacement?.selectedIndex = settings.automaticQuoteReplacement.ordinal
-        htmlPasteTranslator?.selectedIndex = settings.htmlPasteTranslator.ordinal
-        autoCompileOption?.selectedIndex = settings.autoCompileOption.ordinal
-        sumatraPath?.text = settings.pathToSumatra ?: ""
-        filesetExpirationTimeMs?.value = settings.filesetExpirationTimeMs
+        val state = settings
+        textidoteOptions?.text = state.textidoteOptions
+        latexIndentOptions?.text = state.latexIndentOptions
+        automaticQuoteReplacement?.selectedIndex = state.automaticQuoteReplacement.ordinal
+        htmlPasteTranslator?.selectedIndex = state.htmlPasteTranslator.ordinal
+        autoCompileOption?.selectedIndex = state.autoCompileOption.ordinal
+        sumatraPath?.text = state.pathToSumatra ?: ""
+        filesetExpirationTimeMs?.value = state.filesetExpirationTimeMs
     }
 }

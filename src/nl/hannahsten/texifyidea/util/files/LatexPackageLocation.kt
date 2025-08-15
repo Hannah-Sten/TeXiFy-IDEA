@@ -102,4 +102,15 @@ object LatexPackageLocation {
         }
         return path
     }
+
+    /**
+     * Get all known package names in the LaTeX installation.
+     */
+    fun getAllPackageNames(project: Project): Set<String> {
+        if(ApplicationManager.getApplication().isUnitTestMode) {
+            return emptySet()
+        }
+        val cache = TexifyProjectCacheService.getInstance(project).getOrNull(locationCacheKey) ?: return emptySet()
+        return cache.keys
+    }
 }

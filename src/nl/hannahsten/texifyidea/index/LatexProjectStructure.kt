@@ -317,7 +317,7 @@ object LatexProjectStructure : SimplePerformanceTracker {
     override val totalTimeCost = AtomicLong(0)
 
     val expirationTime: Duration
-        get() = TexifySettings.getInstance().filesetExpirationTimeMs.milliseconds
+        get() = TexifySettings.getState().filesetExpirationTimeMs.milliseconds
 
     /**
      * Stores the files that are referenced by the latex command.
