@@ -33,7 +33,7 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
         """^[a-zA-Z0-9]$""".toRegex()
 
     override fun charTyped(c: Char, project: Project, editor: Editor, file: PsiFile): Result {
-        if (!TexifySettings.getInstance().automaticUpDownBracket) {
+        if (!TexifySettings.getState().automaticUpDownBracket) {
             return Result.CONTINUE
         }
 

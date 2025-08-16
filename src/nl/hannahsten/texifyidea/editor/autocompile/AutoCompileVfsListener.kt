@@ -20,7 +20,7 @@ import nl.hannahsten.texifyidea.util.TexifyCoroutine
 class AutoCompileVfsListener : AsyncFileListener {
 
     override fun prepareChange(events: MutableList<out VFileEvent>): ChangeApplier? {
-        if (TexifySettings.getInstance().autoCompileOption != TexifySettings.AutoCompile.AFTER_DOCUMENT_SAVE || !events.any { it.file?.fileType == LatexFileType }) return null
+        if (TexifySettings.getState().autoCompileOption != TexifySettings.AutoCompile.AFTER_DOCUMENT_SAVE || !events.any { it.file?.fileType == LatexFileType }) return null
         return object : ChangeApplier {
             override fun afterVfsChange() {
                 super.afterVfsChange()

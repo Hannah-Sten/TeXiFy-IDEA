@@ -10,8 +10,8 @@ import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexParameter
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
+import nl.hannahsten.texifyidea.psi.traverseCommands
 import nl.hannahsten.texifyidea.util.PackageUtils.getDefaultInsertAnchor
-import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.definitions
 import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
@@ -25,7 +25,7 @@ import nl.hannahsten.texifyidea.util.parser.traverseTyped
 fun insertCommandDefinition(file: PsiFile, commandText: String, newCommandName: String = "mycommand"): PsiElement? {
     if (!file.isWritable) return null
 
-    val commands = file.commandsInFile()
+    val commands = file.traverseCommands()
 
     var last: LatexCommands? = null
     for (cmd in commands) {

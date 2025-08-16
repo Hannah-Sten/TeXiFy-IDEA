@@ -41,14 +41,11 @@ object LatexStubIndexKeys {
 object LatexFileBasedIndexKeys {
     val EXTERNAL_COMMANDS: ID<String, String> = ID.create("nl.hannahsten.texifyidea.external.commands")
 
-    val PACKAGE_INCLUSIONS = ID.create<String, String>("nl.hannahsten.texifyidea.external.package.inclusions")
+    val REGEX_PACKAGE_INCLUSIONS =
+        ID.create<Int, List<String>>("nl.hannahsten.texifyidea.regex.package.inclusions")
 
-//    val EXTERNAL_ENVIRONMENTS =
-//        ID.create<String, String>("nl.hannahsten.texifyidea.external.environments")
-//
-//    val EXTERNAL_LABELS =
-//        ID.create<String, String>("nl.hannahsten.texifyidea.external.labels")
-//
-//    val EXTERNAL_REFERENCES =
-//        ID.create<String, String>("nl.hannahsten.texifyidea.external.references")
+    val REGEX_COMMAND_DEFINITIONS =
+        ID.create<Int, List<String>>("nl.hannahsten.texifyidea.regex.def.commands")
+    val REGEX_ENVIRONMENT_DEFINITIONS =
+        ID.create<Int, List<String>>("nl.hannahsten.texifyidea.regex.def.environments")
 }

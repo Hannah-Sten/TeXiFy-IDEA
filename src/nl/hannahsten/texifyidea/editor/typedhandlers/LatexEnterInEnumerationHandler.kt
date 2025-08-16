@@ -139,7 +139,7 @@ class LatexEnterInEnumerationHandler : EnterHandlerDelegate {
      */
     private fun hasValidContext(element: PsiElement?, context: DataContext): Boolean {
         if (
-            !TexifySettings.getInstance().automaticItemInItemize ||
+            !TexifySettings.getState().automaticItemInItemize ||
             element == null ||
             DataManager.getInstance().loadFromDataContext(
                 context,

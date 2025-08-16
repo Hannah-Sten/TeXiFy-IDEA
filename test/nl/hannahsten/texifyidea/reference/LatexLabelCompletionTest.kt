@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.reference
 import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.updateCommandDef
 import org.junit.Test
 
 class LatexLabelCompletionTest : BasePlatformTestCase() {
@@ -63,6 +64,7 @@ class LatexLabelCompletionTest : BasePlatformTestCase() {
         myFixture.configureByText(
             LatexFileType,
             """
+            \usepackage{cleveref}
             \begin{document}
                 \label{blub}
                 \label{kameel}
@@ -70,6 +72,7 @@ class LatexLabelCompletionTest : BasePlatformTestCase() {
             \end{document}
             """.trimIndent()
         )
+        myFixture.updateCommandDef()
 
         // when
         val result = myFixture.complete(CompletionType.BASIC)

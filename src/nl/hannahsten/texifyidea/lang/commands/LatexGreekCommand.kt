@@ -3,6 +3,8 @@ package nl.hannahsten.texifyidea.lang.commands
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSMATH
 
+// finished
+
 /**
  * @author Hannah Schellekens
  */
