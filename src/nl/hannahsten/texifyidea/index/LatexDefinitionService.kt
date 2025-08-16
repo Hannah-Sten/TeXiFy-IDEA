@@ -30,6 +30,7 @@ import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.AbstractBackgroundCacheService
 import nl.hannahsten.texifyidea.util.AbstractBlockingCacheService
 import nl.hannahsten.texifyidea.util.Log
+import nl.hannahsten.texifyidea.util.files.LatexPackageLocation
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
@@ -87,6 +88,8 @@ interface DefinitionBundle : LatexSemanticsLookup {
         appendDefinitions(nameMap, includedPackages)
         return nameMap.values
     }
+
+    fun containsLibrary(lib: LatexLib): Boolean
 }
 
 abstract class MergedDefinitionBundle(
@@ -101,26 +104,35 @@ abstract class MergedDefinitionBundle(
             nameMap.merge(sourcedDef.entity.name, sourcedDef, LatexDefinitionUtil::mergeDefinition)
         }
     }
+
+    override fun containsLibrary(lib: LatexLib): Boolean {
+        return directDependencies.any { it.containsLibrary(lib) }
+    }
 }
 
 open class CachedMergedDefinitionBundle(
     introducedDefinitions: Map<String, SourcedDefinition> = emptyMap(),
     directDependencies: List<DefinitionBundle> = emptyList()
 ) : MergedDefinitionBundle(introducedDefinitions, directDependencies) {
-    private val allNameLookup: Map<String, SourcedDefinition> by lazy {
+    private val simpleNameLookup: Map<String, SourcedDefinition> by lazy {
         buildMap {
             // let us cache the full lookup map since a package can be used frequently
             appendDefinitions(this, mutableSetOf())
         }
     }
+    private val allEntities: Set<LSemanticEntity> by lazy {
+        buildSet {
+            simpleNameLookup.values.mapTo(this) { it.entity }
+        }
+    }
 
     final override fun sourcedDefinitions(): Collection<SourcedDefinition> {
-        return allNameLookup.values
+        return simpleNameLookup.values
     }
 
     final override fun findDefinition(name: String): SourcedDefinition? {
         // this would load the cached full map, but necessary
-        return allNameLookup[name]
+        return simpleNameLookup[name]
     }
 }
 
@@ -130,6 +142,10 @@ class LibDefinitionBundle(
     directDependencies: List<LibDefinitionBundle> = emptyList(),
     val allLibraries: Set<LatexLib> = setOf(libName)
 ) : CachedMergedDefinitionBundle(introducedDefinitions, directDependencies) {
+
+    override fun containsLibrary(lib: LatexLib): Boolean {
+        return allLibraries.contains(lib)
+    }
 
     override fun toString(): String {
         return "Lib($libName, #defs=${introducedDefinitions.size})"
@@ -266,6 +282,19 @@ class LatexLibraryDefinitionService(
         return getLibBundle(LatexLib(libName))
     }
 
+    /**
+     * Build definition bundles for all packages found in the project.
+     *
+     * This can take a relatively long time.
+     */
+    fun buildAllLibBundles(): Map<LatexLib, LibDefinitionBundle> {
+        val allNames = LatexPackageLocation.getAllPackageNames(project)
+        return allNames.associate {
+            val lib = LatexLib(it)
+            lib to getLibBundle(lib)
+        }
+    }
+
     companion object : SimplePerformanceTracker {
 
         val libExpiration: Duration = 1.hours
@@ -300,7 +329,7 @@ class LatexLibraryDefinitionService(
 }
 
 class WorkingFilesetDefinitionBundle(
-    libraryBundles: List<LibDefinitionBundle> = emptyList(),
+    private val libraryBundles: List<LibDefinitionBundle> = emptyList(),
 ) : DefinitionBundle {
     private val allNameLookup: MutableMap<String, SourcedDefinition> = mutableMapOf()
 
@@ -329,6 +358,10 @@ class WorkingFilesetDefinitionBundle(
 
     override fun sourcedDefinitions(): Collection<SourcedDefinition> {
         return allNameLookup.values
+    }
+
+    override fun containsLibrary(lib: LatexLib): Boolean {
+        return libraryBundles.any { it.containsLibrary(lib) }
     }
 }
 
@@ -379,7 +412,7 @@ class LatexDefinitionService(
     }
 
     /**
-     * Get the definition bundle for the given [psiFile],
+     * Get the merged definition bundle for the given [psiFile], which may belong to multiple filesets.
      */
     fun getDefBundlesMerged(psiFile: PsiFile): DefinitionBundle {
         val filesetData = LatexProjectStructure.getFilesetDataFor(psiFile) ?: return LatexLibraryDefinitionService.baseLibBundle
@@ -440,6 +473,10 @@ class LatexDefinitionService(
                     nameMap[it.entity.name] = it
                 }
             }
+        }
+
+        override fun containsLibrary(lib: LatexLib): Boolean {
+            return bundles.any { it.containsLibrary(lib) }
         }
     }
 

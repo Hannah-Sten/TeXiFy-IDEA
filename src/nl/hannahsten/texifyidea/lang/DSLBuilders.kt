@@ -18,7 +18,7 @@ open class DSLLatexBuilderScope {
      * `package` is a reserved keyword in Kotlin, so we use `packageOf` instead.
      */
     fun packageOf(name: String) {
-        namespace = LatexLib.fromPackageName(name)
+        namespace = LatexLib.Package(name)
     }
 
     fun applicableIn(vararg context: LatexContext) {
@@ -27,7 +27,7 @@ open class DSLLatexBuilderScope {
 
     inline fun underPackage(name: String, action: () -> Unit) {
         val oldDependency = namespace
-        namespace = LatexLib.fromPackageName(name)
+        namespace = LatexLib.Package(name)
         action()
         namespace = oldDependency
     }

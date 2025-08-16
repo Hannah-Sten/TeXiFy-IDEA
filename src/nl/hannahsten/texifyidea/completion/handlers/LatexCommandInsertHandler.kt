@@ -2,31 +2,31 @@ package nl.hannahsten.texifyidea.completion.handlers
 
 import com.intellij.codeInsight.completion.InsertHandler
 import com.intellij.codeInsight.completion.InsertionContext
-import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.template.Template
 import com.intellij.codeInsight.template.TemplateEditingListener
 import com.intellij.codeInsight.template.TemplateManager
 import com.intellij.codeInsight.template.impl.TemplateImpl
 import com.intellij.codeInsight.template.impl.TemplateState
 import com.intellij.codeInsight.template.impl.TextExpression
-import nl.hannahsten.texifyidea.index.DefinitionBundle
+import nl.hannahsten.texifyidea.completion.SimpleWithDefLookupElement
+import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.lang.LArgument
 import nl.hannahsten.texifyidea.lang.LSemanticCommand
 import nl.hannahsten.texifyidea.lang.LSemanticEnv
+import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.TypographyMagic
 
 /**
  * @author Hannah Schellekens, Sten Wessel
  */
-class LatexCommandInsertHandler(
+data class LatexCommandInsertHandler(
     val semantics: LSemanticCommand,
     /**
      * The arguments for insertion. Some optional arguments may be skipped, so this may be a subset of the full arguments.
      */
-    val arguments: List<LArgument>,
-    val definitionBundle: DefinitionBundle
-) : InsertHandler<LookupElement> {
+    val arguments: List<LArgument>
+) : InsertHandler<SimpleWithDefLookupElement> {
 
     /**
      * Remove whitespaces and everything after that that was inserted by the lookup text.
@@ -36,11 +36,12 @@ class LatexCommandInsertHandler(
         val offset = editor.caretModel.offset
         // context.startOffset is the offset of the start of the just inserted text.
         val commandEndOffset = context.startOffset + semantics.nameWithSlash.length
-        if(commandEndOffset >= offset) return
+        if (commandEndOffset >= offset) return
         // Remove the command token and everything after it.
         editor.document.deleteString(commandEndOffset, offset)
     }
-    override fun handleInsert(context: InsertionContext, item: LookupElement) {
+
+    override fun handleInsert(context: InsertionContext, item: SimpleWithDefLookupElement) {
         keepOnlyCommandToken(context)
         when (semantics.name) {
             "begin" -> {
@@ -57,7 +58,7 @@ class LatexCommandInsertHandler(
         }
 
         SemanticRightInsertHandler.handleInsert(context, item, semantics)
-        // TODO: now automatic package inclusion is disabled as we only show command that are already included in packages.
+        LatexAddImportInsertHandler.handleInsert(context, item)
     }
 
     private fun insertPseudocodeEnd(cmd: LSemanticCommand, context: InsertionContext) {
@@ -86,7 +87,7 @@ class LatexCommandInsertHandler(
         template.addVariable(TextExpression(""), true)
 
         TemplateManager.getInstance(context.project)
-            .startTemplate(context.editor, template, EnvironmentInsertImports(context, definitionBundle))
+            .startTemplate(context.editor, template, EnvironmentInsertRequiredArg(context))
     }
 
     companion object {
@@ -120,32 +121,16 @@ class LatexCommandInsertHandler(
      *
      * @author Hannah Schellekens
      */
-    private class EnvironmentInsertImports(
-        val context: InsertionContext,
-        val definitionBundle: DefinitionBundle
-    ) : TemplateEditingListener {
+    private class EnvironmentInsertRequiredArg(val context: InsertionContext) : TemplateEditingListener {
 
         override fun beforeTemplateFinished(templateState: TemplateState, template: Template?) {
             val envName = templateState.getVariableValue("__Variable0")?.text ?: return
-            val envSemantic = definitionBundle.lookupEnv(envName)
+            val defBundle = LatexDefinitionService.getInstance(context.project).getDefBundlesMerged(context.file)
+            val envSemantic = defBundle.lookupEnv(envName) ?: AllPredefined.lookupEnv(envName) // try to resolve it anyway
             insertRequiredArguments(envSemantic, context)
             envSemantic ?: return
-
             val editor = context.editor
-
-            // TODO: re-enable automatic package inclusion
-//            val pack = LatexPackage(envSemantic.dependency)
-//            val file = context.file
-//            val envDefinitions = file.definitionsAndRedefinitionsInFileSet().asSequence()
-//                .filter { it.isEnvironmentDefinition() }
-//                .mapNotNull { it.requiredParameterText(0) }
-//                .toSet()
-//
-//            // Include packages.
-//            if (!file.includedPackagesInFileset().contains(pack) && envName !in envDefinitions) {
-//                file.insertUsepackage(pack)
-//            }
-
+            // Adding import for the environment is done in environment name autocompletion, not here
             // Add initial contents.
             val initial = environmentInitialContentsMap[envName] ?: ""
             editor.insertAndMove(context.editor.caretModel.offset, initial)

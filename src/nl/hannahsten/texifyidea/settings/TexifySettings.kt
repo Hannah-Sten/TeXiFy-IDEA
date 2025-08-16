@@ -60,20 +60,21 @@ class TexifySettings : SimplePersistentStateComponent<TexifySettings.State>(Stat
     }
 
     enum class CompletionMode {
-        /**
-         * Show all completions entries from all packages, not context-aware.
-         */
-        ALL_PACKAGES,
-
-        /**
-         * Show only completions entries from the current file and its dependencies, but not context-aware.
-         */
-        BASIC,
 
         /**
          * Show only context-aware completions entries from the current file and its dependencies.
          */
-        CONTEXT_AWARE,
+        SMART,
+
+        /**
+         * Show only completions entries from the current file and its dependencies, but not context-aware.
+         */
+        INCLUDED_ONLY,
+
+        /**
+         * Show all completions entries from all packages, not context-aware.
+         */
+        ALL_PACKAGES,
     }
 
     class State : BaseState() {
@@ -89,7 +90,7 @@ class TexifySettings : SimplePersistentStateComponent<TexifySettings.State>(Stat
         var enableSpellcheckEverywhere by property(false)
         var enableTextidote by property(false)
         var textidoteOptions by string(DEFAULT_TEXTIDOTE_OPTIONS)
-        var latexIndentOptions by string("")
+        var latexIndentOptions by string(null)
         var automaticQuoteReplacement by enum(QuoteReplacement.NONE)
         var htmlPasteTranslator by enum(HtmlPasteTranslator.BUILTIN)
         var autoCompileOption by enum<AutoCompile>(AutoCompile.OFF)
@@ -97,6 +98,7 @@ class TexifySettings : SimplePersistentStateComponent<TexifySettings.State>(Stat
         var pathToSumatra by string(null)
         var hasApprovedDetexify by property(false)
         var filesetExpirationTimeMs by property(DEFAULT_FILESET_EXPIRATION_TIME_MS)
+        var completionMode by enum(CompletionMode.SMART)
     }
 
     override fun initializeComponent() {

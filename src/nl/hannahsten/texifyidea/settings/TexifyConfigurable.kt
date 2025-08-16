@@ -17,6 +17,8 @@ import java.awt.FlowLayout
 import javax.swing.BoxLayout
 import javax.swing.JComponent
 import javax.swing.JPanel
+import kotlin.enums.EnumEntries
+import kotlin.reflect.KMutableProperty0
 
 /**
  * @author Hannah Schellekens, Sten Wessel
@@ -44,6 +46,21 @@ class TexifyConfigurable : SearchableConfigurable {
     private var autoCompileOption: ComboBox<String>? = null
     private var sumatraPath: TextFieldWithBrowseButton? = null
     private var filesetExpirationTimeMs: IntegerField? = null
+    private var completionMode: ComboBox<String>? = null
+
+    /**
+     * Helper class to map settings to UI components.
+     */
+    private data class EnumSetting<E : Enum<E>>(
+        val comboBox: KMutableProperty0<ComboBox<String>?>,
+        val setting: KMutableProperty0<E>,
+        val values: EnumEntries<E>
+    ) {
+        fun setValueBySelected() {
+            val selectedIndex = comboBox.get()?.selectedIndex ?: 0
+            setting.set(values[selectedIndex])
+        }
+    }
 
     /**
      * Map UI variables to underlying setting variables
@@ -64,6 +81,18 @@ class TexifyConfigurable : SearchableConfigurable {
         )
     }
 
+    /**
+     * Map UI variables to underlying setting variables
+     */
+    private val enumSettings = settings.let { state ->
+        listOf(
+            EnumSetting(::completionMode, state::completionMode, TexifySettings.CompletionMode.entries),
+            EnumSetting(::automaticQuoteReplacement, state::automaticQuoteReplacement, TexifySettings.QuoteReplacement.entries),
+            EnumSetting(::htmlPasteTranslator, state::htmlPasteTranslator, TexifySettings.HtmlPasteTranslator.entries),
+            EnumSetting(::autoCompileOption, state::autoCompileOption, TexifySettings.AutoCompile.entries),
+        )
+    }
+
     override fun getId() = "TexifyConfigurable"
 
     override fun getDisplayName() = "TeXiFy"
@@ -76,6 +105,7 @@ class TexifyConfigurable : SearchableConfigurable {
                     automaticSecondInlineMathSymbol = addCheckbox("Automatically insert second '$'")
                     automaticUpDownBracket = addCheckbox("Automatically insert braces around text in subscript and superscript")
                     automaticItemInItemize = addCheckbox("Automatically insert '\\item' in itemize-like environments on pressing enter")
+                    completionMode = addComboBox("Autocompletion mode", "Smart", "Included only", "All packages")
                     automaticDependencyCheck = addCheckbox("Automatically check for required package dependencies and insert them")
                     automaticBibtexImport = addCheckbox("Automatically copy BibTeX entries from remote libraries to the local library")
                     continuousPreview = addCheckbox("Automatically refresh preview of math and TikZ pictures")
@@ -198,11 +228,9 @@ class TexifyConfigurable : SearchableConfigurable {
 
     override fun isModified(): Boolean {
         return booleanSettings.any { it.first.get()?.isSelected != it.second.get() } ||
-            textidoteOptions?.text != settings.textidoteOptions ||
-            latexIndentOptions?.text != settings.latexIndentOptions ||
-            automaticQuoteReplacement?.selectedIndex != settings.automaticQuoteReplacement.ordinal ||
-            htmlPasteTranslator?.selectedIndex != settings.htmlPasteTranslator.ordinal ||
-            autoCompileOption?.selectedIndex != settings.autoCompileOption.ordinal ||
+            textidoteOptions?.text != (settings.textidoteOptions ?: "") ||
+            latexIndentOptions?.text != (settings.latexIndentOptions ?: "") ||
+            enumSettings.any { it.comboBox.get()?.selectedIndex != it.setting.get().ordinal } ||
             getUISumatraPath() != settings.pathToSumatra ||
             filesetExpirationTimeMs?.value != settings.filesetExpirationTimeMs
     }
@@ -212,11 +240,11 @@ class TexifyConfigurable : SearchableConfigurable {
             setting.second.set(setting.first.get()?.isSelected == true)
         }
         val ss = settings
-        ss.textidoteOptions = textidoteOptions?.text ?: ""
-        ss.latexIndentOptions = latexIndentOptions?.text ?: ""
-        ss.automaticQuoteReplacement = TexifySettings.QuoteReplacement.entries.toTypedArray()[automaticQuoteReplacement?.selectedIndex ?: 0]
-        ss.htmlPasteTranslator = TexifySettings.HtmlPasteTranslator.entries.toTypedArray()[htmlPasteTranslator?.selectedIndex ?: 0]
-        ss.autoCompileOption = TexifySettings.AutoCompile.entries.toTypedArray()[autoCompileOption?.selectedIndex ?: 0]
+        ss.textidoteOptions = textidoteOptions?.text
+        ss.latexIndentOptions = latexIndentOptions?.text
+        for (setting in enumSettings) {
+            setting.setValueBySelected()
+        }
         val path = getUISumatraPath()
         if (path != null) {
             if (!SumatraViewer.trySumatraPath(path)) {
@@ -234,9 +262,9 @@ class TexifyConfigurable : SearchableConfigurable {
         val state = settings
         textidoteOptions?.text = state.textidoteOptions
         latexIndentOptions?.text = state.latexIndentOptions
-        automaticQuoteReplacement?.selectedIndex = state.automaticQuoteReplacement.ordinal
-        htmlPasteTranslator?.selectedIndex = state.htmlPasteTranslator.ordinal
-        autoCompileOption?.selectedIndex = state.autoCompileOption.ordinal
+        for (setting in enumSettings) {
+            setting.comboBox.get()?.selectedIndex = setting.setting.get().ordinal
+        }
         sumatraPath?.text = state.pathToSumatra ?: ""
         filesetExpirationTimeMs?.value = state.filesetExpirationTimeMs
     }

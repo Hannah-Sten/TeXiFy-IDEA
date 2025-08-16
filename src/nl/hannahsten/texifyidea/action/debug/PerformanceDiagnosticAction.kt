@@ -73,7 +73,7 @@ class PerformanceDiagnosticAction : AnAction() {
                 "Loaded Libraries: ${libService.librarySize()}"
             ),
             PerformanceData(
-                "Fileset", LatexProjectStructure.countOfBuilds.get(), LatexProjectStructure.totalTimeCost.get() - LatexLibraryStructureService.totalTimeCost.get(),
+                "Fileset", LatexProjectStructure.countOfBuilds.get(), LatexProjectStructure.totalTimeCost.get(),
                 buildFilesetInfo(projectFilesets)
             ),
             performance("Package Definitions", LatexLibraryDefinitionService),

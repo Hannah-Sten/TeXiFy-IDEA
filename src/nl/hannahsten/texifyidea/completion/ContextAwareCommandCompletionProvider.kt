@@ -2,17 +2,20 @@ package nl.hannahsten.texifyidea.completion
 
 import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionResultSet
-import com.intellij.codeInsight.completion.InsertHandler
 import com.intellij.codeInsight.lookup.LookupElement
-import com.intellij.codeInsight.lookup.LookupElementBuilder
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.completion.handlers.LatexCommandInsertHandler
 import nl.hannahsten.texifyidea.index.DefinitionBundle
+import nl.hannahsten.texifyidea.index.LatexLibraryDefinitionService
 import nl.hannahsten.texifyidea.index.SourcedDefinition
 import nl.hannahsten.texifyidea.lang.LArgument
 import nl.hannahsten.texifyidea.lang.LArgumentType
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LSemanticCommand
+import nl.hannahsten.texifyidea.lang.LatexLib
+import nl.hannahsten.texifyidea.settings.TexifySettings
+import nl.hannahsten.texifyidea.settings.TexifySettings.CompletionMode
+import nl.hannahsten.texifyidea.util.files.LatexPackageLocation
 import nl.hannahsten.texifyidea.util.files.isClassFile
 import nl.hannahsten.texifyidea.util.files.isStyleFile
 
@@ -22,25 +25,55 @@ import nl.hannahsten.texifyidea.util.files.isStyleFile
 object ContextAwareCommandCompletionProvider : LatexContextAwareCompletionAdaptor() {
 
     override fun addContextAwareCompletions(parameters: CompletionParameters, contexts: LContextSet, defBundle: DefinitionBundle, result: CompletionResultSet) {
+        val completionMode = TexifySettings.getState().completionMode
         val isClassOrStyleFile = parameters.originalFile.let { it.isClassFile() || it.isStyleFile() }
-        val lookupElements = mutableListOf<LookupElementBuilder>()
+        addBundleCommands(
+            parameters, result, defBundle, isClassOrStyleFile,
+            checkCtx = completionMode == CompletionMode.SMART, contexts = contexts
+        )
+        if (completionMode == CompletionMode.ALL_PACKAGES) {
+            addAllExternalCommands(parameters, result, isClassOrStyleFile)
+        }
+    }
+
+    private fun addBundleCommands(
+        parameters: CompletionParameters, result: CompletionResultSet, defBundle: DefinitionBundle,
+        isClassOrStyleFile: Boolean, checkCtx: Boolean = true, contexts: LContextSet = emptySet()
+    ) {
+        val lookupElements = mutableListOf<LookupElement>()
         for (sd in defBundle.sourcedDefinitions()) {
             val cmd = sd.entity as? LSemanticCommand ?: continue
             if (!isClassOrStyleFile && cmd.name.contains('@')) {
                 // skip internal commands for regular files
                 continue
             }
-            if (!cmd.isApplicableIn(contexts)) continue // context check
+            if (checkCtx && !cmd.isApplicableIn(contexts)) continue // context check
             appendCommandLookupElements(cmd, sd, lookupElements, defBundle)
         }
         result.addAllElements(lookupElements)
+    }
+
+    private fun addAllExternalCommands(
+        parameters: CompletionParameters, result: CompletionResultSet, isClassOrStyleFile: Boolean
+    ) {
+        val project = parameters.originalFile.project
+        val addedLibs = mutableSetOf<LatexLib>()
+        val allNames = LatexPackageLocation.getAllPackageNames(project)
+        val defService = LatexLibraryDefinitionService.getInstance(project)
+        for (name in allNames) {
+            val lib = LatexLib(name)
+            if (!addedLibs.add(lib)) continue // skip already added libs
+            val libBundle = defService.getLibBundle(name)
+            addBundleCommands(parameters, result, libBundle, isClassOrStyleFile, checkCtx = false)
+            addedLibs.addAll(libBundle.allLibraries)
+        }
     }
 
     private fun buildArgumentInformation(cmd: LSemanticCommand, args: List<LArgument>): String {
         return args.joinToString("")
     }
 
-    private fun buildCommandDisplay(cmd: LSemanticCommand, defBundle: DefinitionBundle): String {
+    private fun buildCommandDisplay(cmd: LSemanticCommand): String {
         if (cmd.display == null) {
             return cmd.nameWithSlash
         }
@@ -57,7 +90,7 @@ object ContextAwareCommandCompletionProvider : LatexContextAwareCompletionAdapto
         }
     }
 
-    private fun appendCommandLookupElements(cmd: LSemanticCommand, sourced: SourcedDefinition, result: MutableCollection<LookupElementBuilder>, defBundle: DefinitionBundle) {
+    private fun appendCommandLookupElements(cmd: LSemanticCommand, sourced: SourcedDefinition, result: MutableCollection<LookupElement>, defBundle: DefinitionBundle) {
         /*
         The presentation looks like:
         \newcommand{name}{definition}     (base)
@@ -65,7 +98,7 @@ object ContextAwareCommandCompletionProvider : LatexContextAwareCompletionAdapto
         \mycommand[optional]{required}    main.tex
          */
         val typeText = buildCommandSourceStr(sourced) // type text is at the right
-        val presentableText = buildCommandDisplay(cmd, defBundle)
+        val presentableText = buildCommandDisplay(cmd)
         val applicableCtxText = buildApplicableContextStr(cmd)
         cmd.arguments.optionalPowerSet().forEachIndexed { index, subArgs ->
             // Add spaces to the lookup text to distinguish different versions of commands within the same package (optional parameters).
@@ -73,19 +106,16 @@ object ContextAwareCommandCompletionProvider : LatexContextAwareCompletionAdapto
             // This 'extra' text will be automatically inserted by intellij and is removed by the LatexCommandArgumentInsertHandler after insertion.
             val tailText = buildArgumentInformation(cmd, subArgs) + applicableCtxText
             val lookupString = buildLookupString(cmd, subArgs)
-            val l = LookupElementBuilder.create(cmd, lookupString)
-                .withPresentableText(presentableText)
-                .bold()
-                .withTailText(tailText, true)
-                .withTypeText(typeText)
-                .withInsertHandler(createInsertHandler(cmd, subArgs, defBundle))
-                .withIcon(TexifyIcons.DOT_COMMAND)
-            result.add(l)
+            val element = SimpleWithDefLookupElement.create(
+                sourced, lookupString,
+                presentableText = presentableText, bold = true,
+                typeText = typeText,
+                tailText = tailText, tailTextGrayed = true,
+                insertHandler = LatexCommandInsertHandler(cmd, subArgs),
+                icon = TexifyIcons.DOT_COMMAND
+            )
+            result.add(element)
         }
-    }
-
-    fun createInsertHandler(semantics: LSemanticCommand, subArgs: List<LArgument>, defBundle: DefinitionBundle): InsertHandler<LookupElement> {
-        return LatexCommandInsertHandler(semantics, subArgs, defBundle)
     }
 
     /**
@@ -117,10 +147,6 @@ object ContextAwareCommandCompletionProvider : LatexContextAwareCompletionAdapto
         return result
     }
 
-    /**
-     * 辅助函数：为当前 result 中的每个子集，添加 optional 段的所有前缀组合（包括空组合），生成新的子集。
-     * 这确保了连续 optional 参数不能跳跃（只允许前缀形式）。
-     */
     private fun addOptionalPrefixes(
         result: MutableList<MutableList<LArgument>>,
         optionalSegment: List<LArgument>, totalSize: Int

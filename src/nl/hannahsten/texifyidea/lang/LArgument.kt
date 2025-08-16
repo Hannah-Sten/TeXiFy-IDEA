@@ -5,7 +5,7 @@ enum class LArgumentType {
     OPTIONAL
 }
 
-class LArgument(
+data class LArgument(
     /**
      * The name of the argument, used mainly for documentation (rather than named arguments).
      *
@@ -38,6 +38,24 @@ class LArgument(
             LArgumentType.REQUIRED -> "{$name$introDisplay}"
             LArgumentType.OPTIONAL -> "[$name$introDisplay]"
         }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as LArgument
+
+        if (name != other.name) return false
+        if (type != other.type) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = name.hashCode()
+        result = 31 * result + type.hashCode()
+        return result
     }
 
     companion object {
