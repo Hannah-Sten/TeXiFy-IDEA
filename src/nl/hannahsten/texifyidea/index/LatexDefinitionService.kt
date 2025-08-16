@@ -31,6 +31,7 @@ import nl.hannahsten.texifyidea.util.AbstractBackgroundCacheService
 import nl.hannahsten.texifyidea.util.AbstractBlockingCacheService
 import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.files.LatexPackageLocation
+import nl.hannahsten.texifyidea.util.isTestProject
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
@@ -443,6 +444,7 @@ class LatexDefinitionService(
     }
 
     fun requestRefresh() {
+        if(isTestProject()) return // refresh in unit tests is done manually
         coroutineScope.launch {
             ensureRefreshAll()
         }

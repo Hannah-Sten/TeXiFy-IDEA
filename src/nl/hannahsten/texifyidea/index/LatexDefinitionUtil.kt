@@ -482,7 +482,7 @@ object LatexDefinitionUtil {
             // do not override predefined environments with package definitions (they are messy)
             return old
         }
-        println("Def overridden: $old by $new")
+//        println("Def overridden: $old by $new")
         return new
     }
 

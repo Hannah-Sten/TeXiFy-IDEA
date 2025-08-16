@@ -22,11 +22,6 @@ value class LatexLib(val name: String) {
     val isCustom: Boolean
         get() = this == CUSTOM
 
-    fun toLatexPackage(): LatexPackage? {
-        if (!isPackageFile) return null
-        return LatexPackage(name.substringBefore('.'))
-    }
-
     fun toPackageName(): String? {
         return if (isPackageFile) name.substringBefore('.') else null
     }
@@ -129,4 +124,9 @@ value class LatexLib(val name: String) {
         val XCOLOR = Package("xcolor")
         val XPARSE = Package("xparse")
     }
+}
+
+fun LatexLib.toLatexPackage(): LatexPackage? {
+    if (!isPackageFile) return null
+    return LatexPackage(name.substringBefore('.'))
 }

@@ -205,9 +205,8 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
 
             runWriteCommandAction(project) {
                 replacement.findDependencies().forEach { pkg ->
-                    pkg.toLatexPackage()?.let {
-                        // TODO
-                        document?.psiFile(project)?.insertUsepackage(it)
+                    document?.psiFile(project)?.let { file ->
+                        PackageUtils.insertUsePackage(file, pkg)
                     }
                 }
 

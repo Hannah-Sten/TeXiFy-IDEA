@@ -5,6 +5,7 @@ import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.TreeUtil
+import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.index.LatexProjectStructure.getFilesetScopeFor
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
@@ -84,7 +85,7 @@ object PackageUtils {
         command += if (parameters == null || "" == parameters) "" else "[$parameters]"
         command += "{$packageName}"
 
-        return insertPreambleText(file, command)
+        insertPreambleText(file, command)
     }
 
     /**
@@ -177,7 +178,7 @@ object PackageUtils {
         if (pack.isDefault) {
             return true
         }
-        return insertUsePackage(file, LatexLib.Package(pack.name))
+        return insertUsePackage(file, LatexLib.Package(pack.name), pack.parameters.asList())
     }
 
     private val conflictingPackagesList = listOf(
@@ -191,25 +192,28 @@ object PackageUtils {
         }
     }
 
-    fun insertUsePackage(file: PsiFile, lib: LatexLib): Boolean {
+    fun insertUsePackage(file: PsiFile, lib: LatexLib, options: List<String> = emptyList()): Boolean {
         if (lib.isDefault || lib.isCustom) return true
         val packName = lib.toPackageName() ?: return false
-        val filesetData = LatexProjectStructure.getFilesetDataFor(file) ?: return false
-        if (lib.name in filesetData.libraries) return true
-        conflictingPackageMap[lib.name]?.let { conflicts ->
-            // Don't insert when a conflicting package is already present
-            if (conflicts.any {
-                    lib.name != it && filesetData.libraries.contains(it)
+        val filesetData = LatexProjectStructure.getFilesetDataFor(file)
+        if (filesetData != null) {
+            if (lib.name in filesetData.libraries) return true
+            conflictingPackageMap[lib.name]?.let { conflicts ->
+                // Don't insert when a conflicting package is already present
+                if (conflicts.any {
+                        lib.name != it && filesetData.libraries.contains(it)
+                    }
+                ) {
+                    return false
                 }
-            ) {
-                return false
             }
         }
 
         // Packages should always be included in the root file
         val rootFile = file.findRootFile()
 
-        insertUsepackage(rootFile, packName, null)
+        insertUsepackage(rootFile, packName, options.joinToString(","))
+        LatexDefinitionService.getInstance(file.project).requestRefresh()
 
         return true
     }
