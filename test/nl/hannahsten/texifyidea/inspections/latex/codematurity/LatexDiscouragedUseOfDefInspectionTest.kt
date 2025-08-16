@@ -15,6 +15,27 @@ class LatexDiscouragedUseOfDefInspectionTest : TexifyInspectionTestBase(LatexDis
         quickFixName = "Convert to \\newcommand"
     )
 
+    fun `test quick fix def in newenvironment`() = testNamedQuickFix(
+        before = """
+            \newenvironment{hasdef}{
+            	\def\skittle{nevis}
+            	\begin{center}
+            }{
+            	\end{center}
+            }
+        """.trimIndent(),
+        after = """
+            \newenvironment{hasdef}{
+            	\newcommand{\skittle}{nevis}
+            	\begin{center}
+            }{
+            	\end{center}
+            }
+        """.trimIndent(),
+        numberOfFixes = 2,
+        quickFixName = "Convert to \\newcommand"
+    )
+
     fun `test quick fix def to newcommand 2`() = testNamedQuickFix(
         before = """
                 \def \indentpar {\hangindent=1cm \hangafter=0}
