@@ -11,6 +11,9 @@ import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.index.SourcedDefinition
 import javax.swing.Icon
 
+/**
+ * This customized [LookupElement] is used to represent a definition with a specific lookup string.
+ */
 data class SimpleWithDefLookupElement(
     val def: SourcedDefinition, private val lookupString: String,
     private val caseSensitive: Boolean = true,

@@ -498,11 +498,9 @@ object LatexDefinitionUtil {
             // so we just override or keep the old one
             return overrideOrKeep(old, new)
         }
-
-        if (oldEntity != newEntity) {
-            // TODO: change to log after testing
-            println("Merging commands: $old and $new")
-        }
+//        if (oldEntity != newEntity) {
+//            println("Merging commands: $old and $new")
+//        }
         val pointer = new.definitionCommandPointer ?: old.definitionCommandPointer
         val entity = when (oldEntity) {
             is LSemanticCommand -> when (newEntity) {

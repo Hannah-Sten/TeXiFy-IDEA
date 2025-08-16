@@ -14,6 +14,7 @@ import nl.hannahsten.texifyidea.completion.LatexContextAwareCompletionAdaptor
 import nl.hannahsten.texifyidea.completion.handlers.CompositeHandler
 import nl.hannahsten.texifyidea.completion.handlers.FileNameInsertionHandler
 import nl.hannahsten.texifyidea.completion.handlers.LatexReferenceInsertHandler
+import nl.hannahsten.texifyidea.completion.handlers.RefreshFilesetHandler
 import nl.hannahsten.texifyidea.index.DefinitionBundle
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.SimpleFileInputContext
@@ -173,7 +174,8 @@ abstract class LatexContextAwarePathProviderBase : LatexContextAwareCompletionAd
                 .withInsertHandler(
                     CompositeHandler(
                         LatexReferenceInsertHandler(),
-                        FileNameInsertionHandler()
+                        FileNameInsertionHandler(),
+                        RefreshFilesetHandler
                     )
                 )
                 .withIcon(icon)
