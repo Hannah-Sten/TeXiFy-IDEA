@@ -13,9 +13,10 @@
         <fileBasedIndex implementation="nl.hannahsten.texifyidea.index.file.LatexRegexBasedCommandDefIndex" />
         <fileBasedIndex implementation="nl.hannahsten.texifyidea.index.file.LatexRegexBasedEnvironmentDefIndex" />
         <fileBasedIndex implementation="nl.hannahsten.texifyidea.index.file.LatexRegexBasedPackageInclusionIndex" />
+<!--        The following two indices are temporarily disabled -->
+<!--        <fileBasedIndex implementation="nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndexEx" />-->
+<!--        <fileBasedIndex implementation="nl.hannahsten.texifyidea.index.file.LatexExternalEnvironmentIndex" />-->
 
-        <fileBasedIndex implementation="nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndexEx" />
-        <fileBasedIndex implementation="nl.hannahsten.texifyidea.index.file.LatexExternalEnvironmentIndex" />
         <indexedRootsProvider implementation="nl.hannahsten.texifyidea.index.file.LatexIndexableSetContributor" />
         <indexPatternSearch implementation="nl.hannahsten.texifyidea.index.LatexTodoSearcher"/>
         <indexPatternProvider implementation="nl.hannahsten.texifyidea.index.LatexTodoIndexPatternProvider"/>
