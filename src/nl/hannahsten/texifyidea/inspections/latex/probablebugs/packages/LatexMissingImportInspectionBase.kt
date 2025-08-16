@@ -32,14 +32,14 @@ import nl.hannahsten.texifyidea.util.parser.traverse
 abstract class LatexMissingImportInspectionBase : TexifyInspectionBase() {
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        if (!TexifySettings.Companion.getState().automaticDependencyCheck) {
+        if (!TexifySettings.getState().automaticDependencyCheck) {
             return emptyList()
         }
         val project = file.project
         if (!LatexProjectStructure.isProjectFilesetsAvailable(project)) {
             return emptyList()
         }
-        val bundle = LatexDefinitionService.Companion.getInstance(project).getDefBundlesMerged(file)
+        val bundle = LatexDefinitionService.getInstance(project).getDefBundlesMerged(file)
 
         val descriptors = descriptorList()
         file.traverse().forEach {

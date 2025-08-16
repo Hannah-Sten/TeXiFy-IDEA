@@ -194,7 +194,7 @@ class LatexLibraryDefinitionService(
                 null,
                 DefinitionSource.LibraryScan
             )
-            currentSourcedDefinitions.put(name, sourcedDef)
+            currentSourcedDefinitions[name] = sourcedDef
         }
         for (name in LatexRegexBasedIndex.getEnvironmentDefinitions(file, project)) {
             if(currentSourcedDefinitions.containsKey(name)) continue // do not overwrite existing definitions, as the regex-based index is fallible
@@ -203,7 +203,7 @@ class LatexLibraryDefinitionService(
                 null,
                 DefinitionSource.LibraryScan
             )
-            currentSourcedDefinitions.put(name, sourcedDef)
+            currentSourcedDefinitions[name] = sourcedDef
         }
     }
 

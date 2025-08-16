@@ -166,7 +166,7 @@ fun LatexSemanticsCommandLookup.lookupCommand(name: String?): LSemanticCommand? 
     return lookupCommand(name)
 }
 
-fun LatexSemanticsCommandLookup.lookupCommand(cmd: LatexCommands): LSemanticCommand? {
+fun LatexSemanticsCommandLookup.lookupCommandPsi(cmd: LatexCommands): LSemanticCommand? {
     return lookupCommand(cmd.nameWithoutSlash)
 }
 

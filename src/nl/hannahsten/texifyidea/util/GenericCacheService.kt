@@ -137,7 +137,7 @@ abstract class AbstractBackgroundCacheService<K : Any, V : Any>(protected val co
     }
 }
 
-abstract class AbstractBlockingCacheService<K : Any, V>() : AbstractCacheServiceBase<K, V>() {
+abstract class AbstractBlockingCacheService<K : Any, V> : AbstractCacheServiceBase<K, V>() {
 
     protected abstract fun computeValue(key: K, oldValue: V?): V
 

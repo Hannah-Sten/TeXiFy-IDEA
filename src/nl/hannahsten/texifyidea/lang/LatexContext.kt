@@ -1,7 +1,5 @@
 package nl.hannahsten.texifyidea.lang
 
-import nl.hannahsten.texifyidea.lang.LatexContextIntro.*
-
 /**
  * The base interface for a context so that we can provide context-specific sematic features such as autocompletion or validation.
  *
@@ -40,8 +38,7 @@ sealed interface LatexContextIntro {
     fun introduces(context: LatexContext): Boolean
 
     fun displayString(): String {
-        val intro = this
-        return when (intro) {
+        return when (val intro = this) {
             Inherit -> ""
             is Clear -> "<>"
             is Assign -> "<${intro.contexts.joinToString(",")}>"
@@ -81,17 +78,13 @@ sealed interface LatexContextIntro {
         }
     }
 
-    object Clear : LatexContextIntro {
+    data object Clear : LatexContextIntro {
         override fun applyTo(outerCtx: LContextSet): LContextSet {
             return emptySet()
         }
 
         override fun revoke(innerCtx: LContextSet): LContextSet? {
             return if (innerCtx.isEmpty()) emptySet() else null
-        }
-
-        override fun toString(): String {
-            return "Clear"
         }
 
         override fun introduces(context: LatexContext): Boolean {

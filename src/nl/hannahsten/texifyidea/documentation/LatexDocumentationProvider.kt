@@ -61,7 +61,7 @@ class LatexDocumentationProvider : DocumentationProvider {
             return@either null
         }
 
-        val command = bundle?.lookupCommand(element) ?: return@either null
+        val command = bundle?.lookupCommandPsi(element) ?: return@either null
         // Special case for package inclusion commands
         if (command.nameWithSlash in CommandMagic.packageInclusionCommands) {
             val pkg = element.requiredParametersText().getOrNull(0) ?: return@either null
@@ -104,7 +104,7 @@ class LatexDocumentationProvider : DocumentationProvider {
         val defBundle = file?.let { LatexDefinitionService.getInstance(it.project).getDefBundlesMerged(it) }
         val lookupItem = lookup ?: when (element) {
             is LatexCommands -> {
-                defBundle?.lookupCommand(element)
+                defBundle?.lookupCommandPsi(element)
             }
 
             is LatexEnvIdentifier -> {

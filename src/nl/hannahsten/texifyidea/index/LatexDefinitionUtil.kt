@@ -251,7 +251,7 @@ object LatexDefinitionUtil {
     }
 
     private fun buildArgSpecSignature(argSpec: String?): List<LArgumentType> {
-        if (argSpec == null || argSpec.isEmpty()) return emptyList()
+        if(argSpec.isNullOrEmpty()) return emptyList()
         return buildList {
             var bracketCount = 0
             for (c in argSpec) {
@@ -325,7 +325,7 @@ object LatexDefinitionUtil {
                 is LatexEnvironment -> lookup.lookupEnv(e.getEnvironmentName())?.applicableContext
                 else -> null
             }
-            if (requiredContext != null && requiredContext.isNotEmpty()) {
+            if (!requiredContext.isNullOrEmpty()) {
                 LatexContextIntro.computeMinimalRequiredContext(introList, requiredContext)?.forEach {
                     applicableContexts.add(it)
                 } // we will ignore cases where the context cannot be satisfied
