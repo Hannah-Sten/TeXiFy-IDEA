@@ -117,24 +117,26 @@ object PredefinedCmdFiles : PredefinedCommandSet() {
 
     val commands = buildCommands {
 
+        underBase {
+            "bibliography".cmd("bibliographyfile".required(LatexContexts.MultipleBibFiles)) {
+                "Specify bibliography files (comma-separated)"
+            }
+        }
+
         // Bibliography-related file inputs.
-        packageOf("biblatex")
-
-        "addbibresource".cmd("bibliographyfile".required(LatexContexts.SingleBibFile)) {
-            "Add a bibliography resource file"
+        underPackage(LatexLib.BIBLATEX) {
+            "addbibresource".cmd("bibliographyfile".required(LatexContexts.SingleBibFile)) {
+                "Add a bibliography resource file"
+            }
         }
 
-        "bibliography".cmd("bibliographyfile".required(LatexContexts.MultipleBibFiles)) {
-            "Specify bibliography files (comma-separated)"
-        }
-
-        // Standalone package.
-        packageOf("standalone")
-        "includestandalone".cmd(
-            "mode".optional,
-            "filename".required(relativeStandalone)
-        ) {
-            "Include a standalone TeX or graphics file"
+        underPackage(LatexLib.STANDALONE) {
+            "includestandalone".cmd(
+                "mode".optional,
+                "filename".required(relativeStandalone)
+            ) {
+                "Include a standalone TeX or graphics file"
+            }
         }
 
         // Other miscellaneous file inputs, e.g., from glossaries.

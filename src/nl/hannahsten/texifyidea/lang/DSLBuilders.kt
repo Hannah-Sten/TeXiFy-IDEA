@@ -21,13 +21,31 @@ open class DSLLatexBuilderScope {
         namespace = LatexLib.Package(name)
     }
 
+    fun packageOf(lib: LatexLib) {
+        namespace = lib
+    }
+
     fun applicableIn(vararg context: LatexContext) {
         applicableContexts = context.toSet()
     }
 
     inline fun underPackage(name: String, action: () -> Unit) {
         val oldDependency = namespace
-        namespace = LatexLib.Package(name)
+        packageOf(name)
+        action()
+        namespace = oldDependency
+    }
+
+    inline fun underPackage(lib: LatexLib, action: () -> Unit) {
+        val oldDependency = namespace
+        packageOf(lib)
+        action()
+        namespace = oldDependency
+    }
+
+    inline fun underBase(action: () -> Unit) {
+        val oldDependency = namespace
+        packageOf(LatexLib.BASE)
         action()
         namespace = oldDependency
     }

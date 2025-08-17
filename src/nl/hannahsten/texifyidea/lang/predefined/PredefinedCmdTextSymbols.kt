@@ -5,6 +5,16 @@ import nl.hannahsten.texifyidea.lang.PredefinedCommandSet
 
 object PredefinedCmdTextSymbols : PredefinedCommandSet() {
 
+    val escapedSymbols = buildCommands {
+        symbol("$", "$", "Dollar sign")
+        symbol("%", "%", "Percent sign")
+        symbol("&", "&", "Ampersand")
+        symbol("#", "#", "Hash sign")
+        symbol("{", "{", "Opening brace")
+        symbol("}", "}", "Closing brace")
+        symbol("_", "_", "Underscore")
+    }
+
     val textcomp = buildCommands {
         packageOf("textcomp")
         symbol("textacutedbl", "̋")
