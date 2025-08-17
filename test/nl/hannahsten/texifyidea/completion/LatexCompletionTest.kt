@@ -4,6 +4,7 @@ import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.updateCommandDef
+import nl.hannahsten.texifyidea.updateFilesets
 
 class LatexCompletionTest : BasePlatformTestCase() {
 
@@ -133,6 +134,7 @@ class LatexCompletionTest : BasePlatformTestCase() {
             ~\ref{la<caret>}
             """.trimIndent()
         )
+        myFixture.updateFilesets()
 
         val result = myFixture.complete(CompletionType.BASIC)
 

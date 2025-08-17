@@ -4,11 +4,10 @@ import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.updateCommandDef
-import org.junit.Test
+import nl.hannahsten.texifyidea.updateFilesets
 
 class LatexLabelCompletionTest : BasePlatformTestCase() {
 
-    @Test
     fun testLabelReferenceCompletion() {
         // given
         myFixture.configureByText(
@@ -27,7 +26,7 @@ class LatexLabelCompletionTest : BasePlatformTestCase() {
             \end{document}
             """.trimIndent()
         )
-
+        myFixture.updateFilesets()
         // when
         val result = myFixture.complete(CompletionType.BASIC)
 
@@ -38,7 +37,6 @@ class LatexLabelCompletionTest : BasePlatformTestCase() {
         assertTrue(result.any { l -> l.lookupString == "sec:some-section" })
     }
 
-    @Test
     fun testCommandParameterLabelReferenceCompletion() {
         // given
         myFixture.configureByText(
@@ -50,7 +48,7 @@ class LatexLabelCompletionTest : BasePlatformTestCase() {
             \end{document}
             """.trimIndent()
         )
-
+        myFixture.updateFilesets()
         // when
         val result = myFixture.complete(CompletionType.BASIC)
 
