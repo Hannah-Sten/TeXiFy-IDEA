@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.inspections.latex.probablebugs.packages
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.testutils.writeCommand
+import nl.hannahsten.texifyidea.updateFilesets
 
 class LatexPackageNameDoesNotMatchFileNameInspectionTest : BasePlatformTestCase() {
 
@@ -43,26 +44,32 @@ class LatexPackageNameDoesNotMatchFileNameInspectionTest : BasePlatformTestCase(
         )
     }
 
-    // TODO(TEX-213) Fix tests using file set cache
-//    fun testNoWarnings() {
-//        try {
-//            myFixture.configureByFilesWithMockCache("pkg/secondpackage.sty", "main.tex")
-//            myFixture.checkHighlighting()
-//        }
-//        finally {
-//            clearAllMocks()
-//            unmockkAll()
-//        }
-//    }
-//
-//    fun testSubdirWarnings() {
-//        try {
-//            myFixture.configureByFilesWithMockCache("pkg/mypackage.sty", "main.tex")
-//            myFixture.checkHighlighting()
-//        }
-//        finally {
-//            clearAllMocks()
-//            unmockkAll()
-//        }
-//    }
+    fun testAddingDirectory() {
+        myFixture.configureByFiles("pkg/mypackagequickfix.sty", "main.tex")
+        myFixture.updateFilesets()
+        val quickFixes = myFixture.getAllQuickFixes()
+        assertEquals(1, quickFixes.size)
+        writeCommand(myFixture.project) {
+            quickFixes.first().invoke(myFixture.project, myFixture.editor, myFixture.file)
+        }
+
+        myFixture.checkResult(
+            """
+            \NeedsTeXFormat{LaTeX2e}
+            \ProvidesPackage{pkg/mypackagequickfix}[My Package]
+            """.trimIndent()
+        )
+    }
+
+    fun testNoWarnings() {
+        myFixture.configureByFiles("pkg/secondpackage.sty", "main.tex")
+        myFixture.updateFilesets()
+        myFixture.checkHighlighting()
+    }
+
+    fun testSubdirWarnings() {
+        myFixture.configureByFiles("pkg/mypackage.sty", "main.tex")
+        myFixture.updateFilesets()
+        myFixture.checkHighlighting()
+    }
 }

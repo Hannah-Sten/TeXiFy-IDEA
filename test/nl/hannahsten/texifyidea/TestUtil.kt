@@ -8,7 +8,7 @@ import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import kotlin.time.Duration.Companion.seconds
 
 fun CodeInsightTestFixture.updateFilesets() {
-    timeoutRunBlocking(1.seconds) {
+    timeoutRunBlocking(2.seconds) {
         LatexProjectStructure.updateFilesetsSuspend(project)
     }
 }

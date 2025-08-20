@@ -23,12 +23,16 @@ class LatexPrimitiveStyleInspectionTest : TexifyInspectionTestBase(LatexPrimitiv
         testQuickFix("""\it""", """\textit""")
     }
 
-    fun `test implicit rexuired argument quickfix`() {
+    fun `test implicit required argument quickfix`() {
         testQuickFix("""\it test""", """\textit test""")
     }
 
     fun `test quickfix in group`() {
         testQuickFix("""{help abc \it is italic}""", """help abc \textit{is italic}""")
+    }
+
+    fun `test quickfix in parameter`() {
+        testQuickFix("""{ text \noindent {\bf Applications.} }""", """{ text \noindent \textbf{Applications.} }""")
     }
 
     fun `test file`() {
