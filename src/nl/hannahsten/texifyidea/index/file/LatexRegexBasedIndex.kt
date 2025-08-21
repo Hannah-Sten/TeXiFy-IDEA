@@ -156,4 +156,12 @@ object LatexRegexBasedIndex {
             GlobalSearchScope.allScope(project)
         )
     }
+
+    fun getDtxDefinitions(lib: LatexLib, project: Project): List<LatexSimpleDefinition> {
+        val definitions = mutableListOf<LatexSimpleDefinition>()
+        processDtxDefinitions(lib, project) { definition ->
+            definitions.add(definition)
+        }
+        return definitions
+    }
 }

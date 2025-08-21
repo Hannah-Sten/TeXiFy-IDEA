@@ -105,13 +105,6 @@ interface LatexCommand : Described, Dependend {
         }
 
         /**
-         * Do the last bit of formatting, to remove things that [nl.hannahsten.texifyidea.index.file.LatexDocsRegexer] needed to keep in because we needed the information here.
-         */
-        fun format(docs: String): String {
-            return """^(?:\s*\\[mop]arg\{[^}]+}\s*)*(?:\\\\)?\s*""".toRegex().replace(docs, "")
-        }
-
-        /**
          * Parse arguments from docs string, assuming they appear at index [counterInit] (only initial sequence of arguments is considered).
          */
         fun getArgumentsFromStartOfString(docs: String, counterInit: Int = 0): Array<Argument> {

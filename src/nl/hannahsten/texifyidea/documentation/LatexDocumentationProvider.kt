@@ -92,6 +92,40 @@ class LatexDocumentationProvider : DocumentationProvider {
     }
 
     /**
+     * Regexes and replacements which clean up the documentation.
+     *
+     * **test**
+     * Arguments \[mop\]arg should be left in, because they are needed when adding to the autocomplete
+     */
+    private val dtxFormattingReplacers = listOf(
+        // Commands to remove entirely,, making sure to capture in the argument nested braces
+        Pair("""\\(cite|footnote)\{(\{[^}]*}|[^}])+?}\s*""".toRegex()) { "" },
+        // \cs command from the doctools package
+        Pair("""(?<pre>[^|]|^)\\c[sn]\{(?<command>[^}]+?)}""".toRegex()) { result -> result.groups["pre"]?.value + "<tt>\\" + result.groups["command"]?.value + "</tt>" },
+        // Other commands, except when in short verbatim
+        Pair("""(?<pre>[^|]|^)\\(?:textsf|textsc|cmd|pkg|env)\{(?<argument>(\{[^}]*}|[^}])+?)}""".toRegex()) { result -> result.groups["pre"]?.value + "<tt>" + result.groups["argument"]?.value + "</tt>" },
+        // Replace \textbf with <b> tags
+        Pair("""\\textbf\{(?<argument>(\{[^}]*}|[^}])+?)}""".toRegex()) { result -> "<b>${result.groups["argument"]?.value}</b>" },
+        // Replace \emph and \textit with <i> tags
+        Pair<Regex, (MatchResult) -> String>("""\\(textit|emph)\{(?<argument>(\{[^}]*}|[^}])+?)}""".toRegex()) { result -> "<i>${result.groups["argument"]?.value}</i>" },
+        // Short verbatim, provided by ltxdoc
+        Pair("""\|""".toRegex()) { "" },
+        // While it is true that text reflows in the documentation popup, so we don't need linebreaks, often package authors include an environment or something else
+        // which does depend on linebreaks to be readable, and therefore we keep linebreaks by default.
+        Pair("""\n""".toRegex()) { "<br>" },
+    )
+
+    /**
+     * Should format to valid HTML as used in the docs popup.
+     * Only done when indexing, but it should still be fast because it can be done up to 28714 times for full TeX Live.
+     */
+    fun formatDtxSource(docs: String): String {
+        var formatted = docs.trim()
+        dtxFormattingReplacers.forEach { formatted = it.first.replace(formatted, it.second).trim() }
+        return formatted.trim()
+    }
+
+    /**
      * Generate the content that should be shown in the documentation popup.
      * Works for commands and environments
      */
@@ -113,33 +147,33 @@ class LatexDocumentationProvider : DocumentationProvider {
 
             else -> null
         }
+        return buildString {
+            lookupItem?.description?.let { append(formatDtxSource(it)) }
+            // Link to package docs
+            originalElement ?: return@buildString
+            val urlsMaybe = if (!isPackageInclusionCommand(element)) {
+                runTexdoc(lookupItem?.dependency?.toLatexPackage())
+            }
+            else getUrlForElement(element, defBundle)
+            val urlsText = urlsMaybe.fold(
+                { it.output },
+                { urls -> urls?.joinToString(separator = "<br>") { "<a href=\"file:///$it\">$it</a>" } }
+            )
 
-        var docString = lookupItem?.description ?: ""
+            // Add a line break if necessary
+            if (isNotBlank() && urlsText?.isNotBlank() == true) {
+                append("<br>")
+            }
 
-        // Link to package docs
-        originalElement ?: return null
-        val urlsMaybe = if (!isPackageInclusionCommand(element)) {
-            runTexdoc(lookupItem?.dependency?.toLatexPackage())
+            append(urlsText)
+            if (element.previousSiblingIgnoreWhitespace() == null) {
+                lookup = null
+            }
+            // If we return a blank string, the popup will just say "Fetching documentation..."
+            if (isBlank()) {
+                append("<br>")
+            }
         }
-        else getUrlForElement(element, defBundle)
-        val urlsText = urlsMaybe.fold(
-            { it.output },
-            { urls -> urls?.joinToString(separator = "<br>") { "<a href=\"file:///$it\">$it</a>" } }
-        )
-
-        // Add a line break if necessary
-        if (docString.isNotBlank() && urlsText?.isNotBlank() == true) {
-            docString += "<br>"
-        }
-
-        docString += urlsText
-
-        if (element.previousSiblingIgnoreWhitespace() == null) {
-            lookup = null
-        }
-
-        // If we return a blank string, the popup will just say "Fetching documentation..."
-        return docString.ifBlank { "<br>" }
     }
 
     // originalElement: element under the mouse cursor

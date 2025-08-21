@@ -49,6 +49,9 @@ object LatexDtxDefinitionDataIndexer : DataIndexer<String, List<LatexSimpleDefin
         val docs: String = docLines.joinToString("\n")
     )
 
+    val maxLines = 20
+    val maxChars = 1000
+
     private fun parseDtxLines(fileName: String, lines: Sequence<String>): DtxDoc {
         val docLines = mutableListOf<String>()
         val macroStarts = mutableListOf<DefStart>()
@@ -74,7 +77,7 @@ object LatexDtxDefinitionDataIndexer : DataIndexer<String, List<LatexSimpleDefin
                 if (text.contains("\\end{macro}") || text.contains("\\end{environment}")) {
                     if (macroStarts.isNotEmpty()) {
                         val defStart = macroStarts.removeLast()
-                        val docString = docLines.subList(defStart.docLineStart, docLines.size).joinToString("\n")
+                        val docString = docLines.subList(defStart.docLineStart, docLines.size).take(maxLines).joinToString("\n").take(maxChars)
                         val isEnv = text.contains("\\end{environment}")
                         var name = defStart.name
                         if (!isEnv) name = name.removePrefix("\\")
@@ -104,13 +107,13 @@ object LatexDtxDefinitionDataIndexer : DataIndexer<String, List<LatexSimpleDefin
     }
 
     val regexDescribeMacro = """
-        \\DescribeMacro\s*\{?(?<name>\\[a-zA-Z@]+\*?)}?(?<params>([\s\\]*\\(marg|oarg|meta)\{[^}]+})*)?
+        \\DescribeMacro\s*\{?(?<name>\\[a-zA-Z@]+\*?)}?(?<params>([\s\\]*\\(marg|oarg|parg|meta)\{[^}]+})*)?
     """.trimIndent().toRegex()
     val regexDescribeEnv = """
-        \\DescribeMacro\{(?<name>[a-zA-Z@]+\*?)}(?<params>([\s\\]*\\(marg|oarg|meta)\{[^}]+})*)?
+        \\DescribeMacro\{(?<name>[a-zA-Z@]+\*?)}(?<params>([\s\\]*\\(marg|oarg|parg|meta)\{[^}]+})*)?
     """.trimIndent().toRegex()
     val regexParam = """
-        \\(?<type>(marg|oarg|meta))\{(?<name>[^}]+)}
+        \\(?<type>(marg|oarg|parg|meta))\{(?<name>[^}]+)}
     """.trimIndent().toRegex()
 
     fun extractDescribeBlocks(lines: List<String>): List<String> {
@@ -132,21 +135,19 @@ object LatexDtxDefinitionDataIndexer : DataIndexer<String, List<LatexSimpleDefin
             }
         }
         if (describing) {
-            describeBlocks.add(lines.subList(describeStart, lines.size).joinToString("\n"))
+            describeBlocks.add(lines.subList(describeStart, lines.size).take(maxLines).joinToString("\n").take(maxChars))
         }
         return describeBlocks
     }
 
     private fun parseArguments(params: String?): List<LArgument> {
         if (params == null) return emptyList()
-        val paramList = mutableListOf<LArgument>()
-        regexParam.findAll(params).forEach { match ->
-            val typeText = match.groups["type"]?.value ?: return@forEach
-            val name = match.groups["name"]?.value ?: return@forEach
+        return regexParam.findAll(params).mapTo(mutableListOf()) { match ->
+            val typeText = match.groups["type"]!!.value
+            val name = match.groups["name"]!!.value
             val type = if (typeText == "oarg") LArgumentType.OPTIONAL else LArgumentType.REQUIRED
             LArgument(name, type)
         }
-        return paramList
     }
 
     fun parseDocDefinitions(lines: List<String>, lib: LatexLib): MutableList<LatexSimpleDefinition> {
@@ -168,7 +169,7 @@ object LatexDtxDefinitionDataIndexer : DataIndexer<String, List<LatexSimpleDefin
                 pos = match.range.last
             }
             pos = block.indexOf('\n', pos) + 1 // move to the next line after the match
-            val description = block.substring(pos).trim()
+            val description = block.substring(pos).trim().take(maxChars)
             for (i in curSize until result.size) {
                 result[i].description = description
             }
@@ -208,7 +209,7 @@ class LatexDtxDefinitionIndexEx : FileBasedIndexExtension<String, List<LatexSimp
         return MyValueExternalizer
     }
 
-    override fun getVersion() = 1
+    override fun getVersion() = 4
 
     override fun getInputFilter(): FileBasedIndex.InputFilter {
         return myInputFilter
