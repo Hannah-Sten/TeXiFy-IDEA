@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.index
 
 import com.intellij.psi.stubs.StubIndexKey
 import com.intellij.util.indexing.ID
+import nl.hannahsten.texifyidea.index.file.LatexSimpleDefinition
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexComposite
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
@@ -40,6 +41,8 @@ object LatexStubIndexKeys {
 
 object LatexFileBasedIndexKeys {
     val EXTERNAL_COMMANDS: ID<String, String> = ID.create("nl.hannahsten.texifyidea.external.commands")
+
+    val DTX_DEFINITIONS: ID<String, List<LatexSimpleDefinition>> = ID.create("nl.hannahsten.texifyidea.dtx.definitions")
 
     val REGEX_PACKAGE_INCLUSIONS =
         ID.create<Int, List<String>>("nl.hannahsten.texifyidea.regex.package.inclusions")

@@ -186,20 +186,29 @@ class LatexLibraryDefinitionService(
         libInfo: LatexLibraryInfo,
         currentSourcedDefinitions: MutableMap<String, SourcedDefinition>
     ) {
+        val lib = libInfo.name
+        LatexRegexBasedIndex.processDtxDefinitions(libInfo.name, project) { sd ->
+            val entity =
+                if (sd.isEnv) LSemanticEnv(sd.name, lib, arguments = sd.arguments, description = sd.description)
+                else LSemanticCommand(sd.name, lib, arguments = sd.arguments, description = sd.description)
+            val sourced = SourcedDefinition(entity, null, DefinitionSource.LibraryScan)
+            currentSourcedDefinitions.merge(sd.name, sourced, LatexDefinitionUtil::mergeDefinition)
+        }
+
         val file = libInfo.location
         for (name in LatexRegexBasedIndex.getCommandDefinitions(file, project)) {
-            if(currentSourcedDefinitions.containsKey(name)) continue // do not overwrite existing definitions, as the regex-based index is fallible
+            if (currentSourcedDefinitions.containsKey(name)) continue // do not overwrite existing definitions, as the regex-based index is fallible
             val sourcedDef = SourcedDefinition(
-                LSemanticCommand(name, libInfo.name),
+                LSemanticCommand(name, lib),
                 null,
                 DefinitionSource.LibraryScan
             )
             currentSourcedDefinitions[name] = sourcedDef
         }
         for (name in LatexRegexBasedIndex.getEnvironmentDefinitions(file, project)) {
-            if(currentSourcedDefinitions.containsKey(name)) continue // do not overwrite existing definitions, as the regex-based index is fallible
+            if (currentSourcedDefinitions.containsKey(name)) continue // do not overwrite existing definitions, as the regex-based index is fallible
             val sourcedDef = SourcedDefinition(
-                LSemanticEnv(name, libInfo.name),
+                LSemanticEnv(name, lib),
                 null,
                 DefinitionSource.LibraryScan
             )
@@ -444,7 +453,7 @@ class LatexDefinitionService(
     }
 
     fun requestRefresh() {
-        if(isTestProject()) return // refresh in unit tests is done manually
+        if (isTestProject()) return // refresh in unit tests is done manually
         coroutineScope.launch {
             ensureRefreshAll()
         }

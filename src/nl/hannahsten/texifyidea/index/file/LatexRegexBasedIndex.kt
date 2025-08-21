@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.index.file
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.DefaultFileTypeSpecificInputFilter
 import com.intellij.util.indexing.FileBasedIndex
 import com.intellij.util.indexing.FileContent
@@ -15,6 +16,7 @@ import nl.hannahsten.texifyidea.file.ClassFileType
 import nl.hannahsten.texifyidea.file.StyleFileType
 import nl.hannahsten.texifyidea.index.LatexFileBasedIndexKeys
 import nl.hannahsten.texifyidea.index.file.LatexRegexBasedIndex.PACKAGE_FILE_INPUT_FILTER
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.predefined.PredefinedCmdDefinitions
 
 private fun StringBuilder.makeCommandRegex(names: Collection<String>) {
@@ -136,5 +138,22 @@ object LatexRegexBasedIndex {
      */
     fun getPackageInclusions(vf: VirtualFile, project: Project): List<String> {
         return retrieveIndexData(vf, project, LatexFileBasedIndexKeys.REGEX_PACKAGE_INCLUSIONS)
+    }
+
+    fun processDtxDefinitions(lib: LatexLib, project: Project, callback: (LatexSimpleDefinition) -> Unit) {
+        if (DumbService.isDumb(project)) return
+        val fIndex = FileBasedIndex.getInstance()
+        fIndex.processValues(
+            LatexFileBasedIndexKeys.DTX_DEFINITIONS, lib.name, null,
+            FileBasedIndex.ValueProcessor { file, definitions ->
+                if (file.isValid) {
+                    definitions.forEach { definition ->
+                        callback(definition)
+                    }
+                }
+                true
+            },
+            GlobalSearchScope.allScope(project)
+        )
     }
 }

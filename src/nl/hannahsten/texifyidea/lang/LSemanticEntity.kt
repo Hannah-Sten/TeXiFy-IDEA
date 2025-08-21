@@ -22,7 +22,7 @@ sealed class LSemanticEntity(
      * This entity is applicable in any of these contexts, or anywhere if null.
      */
     val applicableContext: LContextSet? = null,
-    val description: String = ""
+    var description: String = ""
 ) {
     val displayName: String
         get() = if (dependency.isCustom) "'$name'" else if(dependency.isCustom) "'$name'(base)" else "'$name'($dependency)"

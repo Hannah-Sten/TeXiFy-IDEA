@@ -470,7 +470,7 @@ object LatexDefinitionUtil {
         val ctx = mergeApplicableContexts(oldEnv, newEnv)
         val innerIntro = LatexContextIntro.union(newEnv.contextSignature, oldEnv.contextSignature)
         val arg = newEnv.arguments.ifEmpty { oldEnv.arguments }
-        val description = newEnv.description.ifBlank { oldEnv.description }
+        val description = if(newEnv.description.length > oldEnv.description.length) newEnv.description else oldEnv.description
         return LSemanticEnv(
             oldEnv.name, oldEnv.dependency,
             ctx, arg, innerIntro, description
