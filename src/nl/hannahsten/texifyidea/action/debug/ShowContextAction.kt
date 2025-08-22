@@ -1,7 +1,9 @@
 package nl.hannahsten.texifyidea.action.debug
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.application.ApplicationManager
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
@@ -33,5 +35,15 @@ class ShowContextAction : AnAction() {
             val cmdDef = LatexDefinitionService.getInstance(project).resolveCommandDef(file.virtualFile, cmdName)
             println("Definition of [$cmdName]: ${cmdDef ?: "Not found"}")
         }
+    }
+
+    override fun update(e: AnActionEvent) {
+        // internal mode only
+        val isInternalMode = ApplicationManager.getApplication().isInternal
+        e.presentation.isEnabledAndVisible = e.project != null && isInternalMode
+    }
+
+    override fun getActionUpdateThread(): ActionUpdateThread {
+        return ActionUpdateThread.BGT
     }
 }

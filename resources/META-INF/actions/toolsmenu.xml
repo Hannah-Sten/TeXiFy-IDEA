@@ -46,7 +46,8 @@
                     text="Performance Diagnostic" description="Run a performance diagnostic to find potential bottlenecks in TeXiFy IDEA."/>
             <!-- Debug actions -->
             <action class="nl.hannahsten.texifyidea.action.debug.ShowContextAction" id="texify.ShowContext"
-                    text="Show Context" description="Show the context of the current file in the TeXiFy IDEA plugin."/>
+                    text="Show Context"
+                    description="Show the context of the current file in the TeXiFy IDEA plugin."/>
         </group>
     </actions>
 </idea-plugin>
