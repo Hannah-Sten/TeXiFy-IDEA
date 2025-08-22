@@ -12,6 +12,8 @@ import com.intellij.util.io.IOUtil
 import com.intellij.util.io.KeyDescriptor
 import nl.hannahsten.texifyidea.file.LatexSourceFileType
 import nl.hannahsten.texifyidea.index.LatexFileBasedIndexKeys
+import nl.hannahsten.texifyidea.index.file.LatexSimpleDefinition.Type.COMMAND
+import nl.hannahsten.texifyidea.index.file.LatexSimpleDefinition.Type.ENVIRONMENT
 import nl.hannahsten.texifyidea.lang.LArgument
 import nl.hannahsten.texifyidea.lang.LArgumentType
 import nl.hannahsten.texifyidea.lang.LatexLib
@@ -19,18 +21,30 @@ import nl.hannahsten.texifyidea.util.Log
 import java.io.DataInput
 import java.io.DataOutput
 
+/**
+ * A simple definition of a LaTeX command or environment.
+ */
 data class LatexSimpleDefinition(
     /**
      * Without the leading backslash.
      */
     var name: String,
-    var isEnv: Boolean,
+    var type: Type,
     var arguments: List<LArgument> = emptyList(),
     var description: String = ""
 ) {
+
+    val isEnv: Boolean
+        get() = type == ENVIRONMENT
+
     override fun toString(): String {
         val displayName = if(isEnv) name else "\\$name"
         return "Def('$displayName', ${arguments.joinToString("")}, desc='${description.take(20)}')"
+    }
+
+    enum class Type {
+        COMMAND,
+        ENVIRONMENT
     }
 }
 
@@ -99,10 +113,10 @@ object LatexDtxDefinitionDataIndexer : DataIndexer<String, List<LatexSimpleDefin
                 if (macroStarts.isNotEmpty() && (text.contains("\\end{macro}") || text.contains("\\end{environment}"))) {
                     val defStart = macroStarts.removeLast()
                     val docString = docLines.subList(defStart.docLineStart, docLines.size).joinToString("\n").truncate(MAX_CHARS, fileName)
-                    val isEnv = text.contains("\\end{environment}")
+                    val type = if (text.contains("\\end{environment}")) ENVIRONMENT else COMMAND
                     var name = defStart.name
-                    if (!isEnv) name = name.removePrefix("\\")
-                    definitions.add(LatexSimpleDefinition(name, isEnv, description = docString))
+                    if (type == COMMAND) name = name.removePrefix("\\")
+                    definitions.add(LatexSimpleDefinition(name, type, description = docString))
                     continue
                 }
                 val match = regexBeginMacro.find(text)
@@ -193,13 +207,13 @@ object LatexDtxDefinitionDataIndexer : DataIndexer<String, List<LatexSimpleDefin
             regexDescribeMacro.findAll(block).forEach { match ->
                 val name = match.groups["name"]?.value?.removePrefix("\\") ?: return@forEach
                 val args = parseArguments(match.groups["params"]?.value)
-                result.add(LatexSimpleDefinition(name, isEnv = false, args))
+                result.add(LatexSimpleDefinition(name, COMMAND, args))
                 pos = match.range.last
             }
             regexDescribeEnv.findAll(block).forEach { match ->
                 val name = match.groups["name"]?.value ?: return@forEach
                 val args = parseArguments(match.groups["params"]?.value)
-                result.add(LatexSimpleDefinition(name, isEnv = true, args))
+                result.add(LatexSimpleDefinition(name, ENVIRONMENT, args))
                 pos = match.range.last
             }
             pos = block.indexOf('\n', pos) + 1 // move to the next line after the match
@@ -247,7 +261,7 @@ object LatexDtxDefinitionDataIndexer : DataIndexer<String, List<LatexSimpleDefin
                 if (args.isEmpty()) continue
                 val original = map[name]
                 if (original == null) {
-                    map[name] = LatexSimpleDefinition(name, isEnv = false, args)
+                    map[name] = LatexSimpleDefinition(name, COMMAND, args)
                 }
                 else {
                     if (original.arguments.size < args.size) {
@@ -337,7 +351,8 @@ class LatexDtxDefinitionIndexEx : FileBasedIndexExtension<String, List<LatexSimp
                     }
                 }
                 val description = IOUtil.readUTFFast(buffer, input)
-                LatexSimpleDefinition(name, isEnv, arguments, description)
+                val type = if (isEnv) ENVIRONMENT else COMMAND
+                LatexSimpleDefinition(name, type, arguments, description)
             }
             return definitions
         }

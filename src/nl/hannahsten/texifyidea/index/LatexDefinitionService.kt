@@ -379,7 +379,9 @@ class WorkingFilesetDefinitionBundle(
  * Provide a unified definition service for LaTeX commands, including
  *   * those hard-coded in the plugin, see [nl.hannahsten.texifyidea.lang.predefined.AllPredefined].
  *   * those indexed by stub-based index [NewDefinitionIndex]
- *   * those indexed by file-based index [nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex]
+ *   * those indexed by file-based index in both `.sty` and `.dtx` files:
+ *   [LatexRegexBasedIndex]
+ *
  *
  *
  * @author Ezrnest
