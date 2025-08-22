@@ -153,15 +153,14 @@ object LatexRegexBasedIndex {
                 }
                 true
             },
-            GlobalSearchScope.allScope(project)
+            GlobalSearchScope.everythingScope(project)
         )
     }
 
     fun getDtxDefinitions(lib: LatexLib, project: Project): List<LatexSimpleDefinition> {
-        val definitions = mutableListOf<LatexSimpleDefinition>()
-        processDtxDefinitions(lib, project) { definition ->
-            definitions.add(definition)
-        }
-        return definitions
+        if (DumbService.isDumb(project)) return emptyList()
+        val fIndex = FileBasedIndex.getInstance()
+        val result = fIndex.getValues(LatexFileBasedIndexKeys.DTX_DEFINITIONS, lib.name, GlobalSearchScope.everythingScope(project)).flatten()
+        return result
     }
 }

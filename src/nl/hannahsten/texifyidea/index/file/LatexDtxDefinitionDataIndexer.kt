@@ -8,18 +8,31 @@ import com.intellij.util.indexing.FileContent
 import com.intellij.util.indexing.ID
 import com.intellij.util.io.DataExternalizer
 import com.intellij.util.io.EnumeratorStringDescriptor
+import com.intellij.util.io.IOUtil
 import com.intellij.util.io.KeyDescriptor
 import nl.hannahsten.texifyidea.file.LatexSourceFileType
 import nl.hannahsten.texifyidea.index.LatexFileBasedIndexKeys
 import nl.hannahsten.texifyidea.lang.LArgument
 import nl.hannahsten.texifyidea.lang.LArgumentType
 import nl.hannahsten.texifyidea.lang.LatexLib
+import nl.hannahsten.texifyidea.util.Log
+import java.io.DataInput
+import java.io.DataOutput
 
 data class LatexSimpleDefinition(
-    var name: String, var isEnv: Boolean,
+    /**
+     * Without the leading backslash.
+     */
+    var name: String,
+    var isEnv: Boolean,
     var arguments: List<LArgument> = emptyList(),
     var description: String = ""
-)
+) {
+    override fun toString(): String {
+        val displayName = if(isEnv) name else "\\$name"
+        return "Def('$displayName', ${arguments.joinToString("")}, desc='${description.take(20)}')"
+    }
+}
 
 /**
  *
@@ -28,13 +41,10 @@ object LatexDtxDefinitionDataIndexer : DataIndexer<String, List<LatexSimpleDefin
 
     //    private val regexRrovidesPackage = "(?<=\\\\ProvidesPackage\\{)(?<name>[a-zA-Z0-9_]+)(?=\\})".toRegex()
     private val regexProvidesPackage = """
-        (?<=\\ProvidesPackage\{)(?<name>[a-zA-Z0-9_]+)(?=})
+        \\ProvidesPackage\{(?<name>[a-zA-Z0-9_]+)}
     """.trimIndent().toRegex()
     private val regexBeginMacro = """
-        (?<=\\begin\{macro}\{)(?<name>\\[a-zA-Z@]+\*?)(?=})
-    """.trimIndent().toRegex()
-    private val regexBeginEnv = """
-        (?<=\\begin\{environment}\{)(?<name>[a-zA-Z@]+\*?)(?=})
+        \\begin\{(macro|environment)}\{(?<name>\\?[a-zA-Z@]+\*?)}
     """.trimIndent().toRegex()
 
     private data class DefStart(
@@ -49,8 +59,20 @@ object LatexDtxDefinitionDataIndexer : DataIndexer<String, List<LatexSimpleDefin
         val docs: String = docLines.joinToString("\n")
     )
 
-    val maxLines = 20
-    val maxChars = 1000
+    /**
+     * Maximum number of characters to extract from documentation blocks.
+     */
+    const val MAX_CHARS = 100000
+
+    private fun String.truncate(maxLength: Int, fileName: String): String {
+        return if (this.length > maxLength) {
+            Log.warn(("Truncating in $fileName: ${this.take(50)}"))
+            this.take(maxLength)
+        }
+        else {
+            this
+        }
+    }
 
     private fun parseDtxLines(fileName: String, lines: Sequence<String>): DtxDoc {
         val docLines = mutableListOf<String>()
@@ -61,7 +83,7 @@ object LatexDtxDefinitionDataIndexer : DataIndexer<String, List<LatexSimpleDefin
 
         // extract code blocks between \begin{macrocode} and \end{macrocode}
         for (line in lines) {
-            var text = line.trim()
+            var text = line
             if (text.startsWith('%')) {
                 text = text.substring(1)
                 if (text.contains("\\begin{macrocode}")) {
@@ -74,24 +96,21 @@ object LatexDtxDefinitionDataIndexer : DataIndexer<String, List<LatexSimpleDefin
                 }
             }
             if (!inMacroCode) {
-                if (text.contains("\\end{macro}") || text.contains("\\end{environment}")) {
-                    if (macroStarts.isNotEmpty()) {
-                        val defStart = macroStarts.removeLast()
-                        val docString = docLines.subList(defStart.docLineStart, docLines.size).take(maxLines).joinToString("\n").take(maxChars)
-                        val isEnv = text.contains("\\end{environment}")
-                        var name = defStart.name
-                        if (!isEnv) name = name.removePrefix("\\")
-                        definitions.add(LatexSimpleDefinition(name, isEnv, description = docString))
-                    }
+                if (macroStarts.isNotEmpty() && (text.contains("\\end{macro}") || text.contains("\\end{environment}"))) {
+                    val defStart = macroStarts.removeLast()
+                    val docString = docLines.subList(defStart.docLineStart, docLines.size).joinToString("\n").truncate(MAX_CHARS, fileName)
+                    val isEnv = text.contains("\\end{environment}")
+                    var name = defStart.name
+                    if (!isEnv) name = name.removePrefix("\\")
+                    definitions.add(LatexSimpleDefinition(name, isEnv, description = docString))
                     continue
                 }
-                val match = regexBeginMacro.find(text) ?: regexBeginEnv.find(text)
+                val match = regexBeginMacro.find(text)
                 if (match != null) {
                     val name = match.groups["name"]!!.value
                     macroStarts.add(DefStart(name, docLines.size))
                     continue
                 }
-
                 docLines.add(text)
             }
             if (packageName == null) {
@@ -106,17 +125,18 @@ object LatexDtxDefinitionDataIndexer : DataIndexer<String, List<LatexSimpleDefin
         return DtxDoc(lib, docLines, definitions)
     }
 
-    val regexDescribeMacro = """
-        \\DescribeMacro\s*\{?(?<name>\\[a-zA-Z@]+\*?)}?(?<params>([\s\\]*\\(marg|oarg|parg|meta)\{[^}]+})*)?
-    """.trimIndent().toRegex()
-    val regexDescribeEnv = """
-        \\DescribeMacro\{(?<name>[a-zA-Z@]+\*?)}(?<params>([\s\\]*\\(marg|oarg|parg|meta)\{[^}]+})*)?
-    """.trimIndent().toRegex()
-    val regexParam = """
+    private val regexSingleParam = """
         \\(?<type>(marg|oarg|parg|meta))\{(?<name>[^}]+)}
     """.trimIndent().toRegex()
 
-    fun extractDescribeBlocks(lines: List<String>): List<String> {
+    private val regexDescribeMacro = """
+        \\DescribeMacro\s*\{?(?<name>\\[a-zA-Z@]+\*?)}?\s*(\\star|\*)?(?<params>([\s\\]*\\(marg|oarg|parg|meta)\{[^}]+})*)?
+    """.trimIndent().toRegex()
+    private val regexDescribeEnv = """
+        \\DescribeEnv\s*\{(?<name>[a-zA-Z@]+\*?)}\s*(\\star|\*)?(?<params>([\s\\]*\\(marg|oarg|parg|meta)\{[^}]+})*)?
+    """.trimIndent().toRegex()
+
+    private fun extractDescribeBlocks(lines: List<String>, fileName: String): List<String> {
         var describing = false
         var describeStart = 0
         val describeBlocks = mutableListOf<String>()
@@ -125,7 +145,8 @@ object LatexDtxDefinitionDataIndexer : DataIndexer<String, List<LatexSimpleDefin
             if (describing) {
                 if (line.isBlank()) {
                     describing = false
-                    describeBlocks.add(lines.subList(describeStart, i).joinToString("\n"))
+                    val text = lines.subList(describeStart, i).joinToString("\n").truncate(MAX_CHARS, fileName)
+                    describeBlocks.add(text)
                 }
                 continue
             }
@@ -135,23 +156,36 @@ object LatexDtxDefinitionDataIndexer : DataIndexer<String, List<LatexSimpleDefin
             }
         }
         if (describing) {
-            describeBlocks.add(lines.subList(describeStart, lines.size).take(maxLines).joinToString("\n").take(maxChars))
+            val text = lines.subList(describeStart, lines.size).joinToString("\n").truncate(MAX_CHARS, fileName)
+            describeBlocks.add(text)
         }
         return describeBlocks
     }
 
     private fun parseArguments(params: String?): List<LArgument> {
         if (params == null) return emptyList()
-        return regexParam.findAll(params).mapTo(mutableListOf()) { match ->
-            val typeText = match.groups["type"]!!.value
-            val name = match.groups["name"]!!.value
-            val type = if (typeText == "oarg") LArgumentType.OPTIONAL else LArgumentType.REQUIRED
-            LArgument(name, type)
+        var args = emptyList<LArgument>()
+        /*
+        We assume that the parameters are placed in one line
+        We just select the line with the most arguments.
+            \DescribeMacro\colorbox\marg{color}\marg{text}\\
+              \oarg{model-list}\marg{spec-list}\marg{text}\\
+         */
+        params.split("\\\\").forEach { line ->
+            val candidate = regexSingleParam.findAll(line).mapTo(mutableListOf()) { match ->
+                val typeText = match.groups["type"]!!.value
+                val name = match.groups["name"]!!.value
+                val type = if (typeText == "oarg") LArgumentType.OPTIONAL else LArgumentType.REQUIRED
+                LArgument(name, type)
+            }
+            if (candidate.size > args.size) {
+                args = candidate
+            }
         }
+        return args
     }
 
-    fun parseDocDefinitions(lines: List<String>, lib: LatexLib): MutableList<LatexSimpleDefinition> {
-        val describeBlocks = extractDescribeBlocks(lines)
+    private fun extractDefinitionsFromBlocks(describeBlocks: List<String>): List<LatexSimpleDefinition> {
         val result = mutableListOf<LatexSimpleDefinition>()
         for (block in describeBlocks) {
             val curSize = result.size
@@ -169,7 +203,7 @@ object LatexDtxDefinitionDataIndexer : DataIndexer<String, List<LatexSimpleDefin
                 pos = match.range.last
             }
             pos = block.indexOf('\n', pos) + 1 // move to the next line after the match
-            val description = block.substring(pos).trim().take(maxChars)
+            val description = block.substring(pos).trim().take(MAX_CHARS)
             for (i in curSize until result.size) {
                 result[i].description = description
             }
@@ -177,10 +211,60 @@ object LatexDtxDefinitionDataIndexer : DataIndexer<String, List<LatexSimpleDefin
         return result
     }
 
+    private val regexOneLineArgs = """
+        \\(?<type>(marg|oarg|parg|meta))\{(?<name>[^}]+)}
+    """.trimIndent().toRegex()
+
+    private val parameterSuffix = """
+        \s*(\\star|\*)?(?<params>(\s*\\(marg|oarg|parg|meta)\{[^}]+})+)
+    """.trimIndent()
+
+    private val regexOneLineCmdDefinitions = listOf(
+        """
+            \|\\(?<name>[a-zA-Z@]+\*?)\|$parameterSuffix
+        """.trimIndent().toRegex(),
+        """
+            \\cs\{(?<name>[a-zA-Z@]+\*?)}$parameterSuffix
+        """.trimIndent().toRegex(),
+    )
+
+    private fun parseDocDefinitions(lines: List<String>, lib: LatexLib, fileName: String): Collection<LatexSimpleDefinition> {
+        val describeBlocks = extractDescribeBlocks(lines, fileName)
+        val map = mutableMapOf<String, LatexSimpleDefinition>()
+        extractDefinitionsFromBlocks(describeBlocks).forEach {
+            map[it.name] = it
+        }
+        // parse one-line definitions
+        /*
+        \cs{phy@define@key} \marg{module} \marg{key} \oarg{default value} \marg{code}
+        |\bezier|\marg{N}\parg{AX,AY}\parg{BX,BY}\parg{CX,CY}\\
+         */
+        for (line in lines) {
+            for (regex in regexOneLineCmdDefinitions) {
+                val match = regex.find(line) ?: continue
+                val name = match.groups["name"]?.value ?: continue
+                val args = parseArguments(match.groups["params"]?.value)
+                if (args.isEmpty()) continue
+                val original = map[name]
+                if (original == null) {
+                    map[name] = LatexSimpleDefinition(name, isEnv = false, args)
+                }
+                else {
+                    if (original.arguments.size < args.size) {
+                        // If the new definition has more arguments, replace the old one
+                        original.arguments = args
+                    }
+                }
+            }
+        }
+
+        return map.values
+    }
+
     override fun map(inputData: FileContent): Map<String, List<LatexSimpleDefinition>> {
         val lines = inputData.contentAsText.lineSequence()
         val dtxInfo = parseDtxLines(inputData.fileName, lines)
-        val definitions = parseDocDefinitions(dtxInfo.docLines, dtxInfo.lib)
+        val definitions = parseDocDefinitions(dtxInfo.docLines, dtxInfo.lib, inputData.fileName).toMutableList()
         val names = mutableSetOf<String>().apply { definitions.forEach { add(it.name) } }
         for (def in dtxInfo.definitions) {
             if (def.name in names) continue
@@ -209,7 +293,7 @@ class LatexDtxDefinitionIndexEx : FileBasedIndexExtension<String, List<LatexSimp
         return MyValueExternalizer
     }
 
-    override fun getVersion() = 4
+    override fun getVersion() = 6
 
     override fun getInputFilter(): FileBasedIndex.InputFilter {
         return myInputFilter
@@ -220,7 +304,8 @@ class LatexDtxDefinitionIndexEx : FileBasedIndexExtension<String, List<LatexSimp
     override fun traceKeyHashToVirtualFileMapping() = false
 
     private object MyValueExternalizer : DataExternalizer<List<LatexSimpleDefinition>> {
-        override fun save(out: java.io.DataOutput, value: List<LatexSimpleDefinition>) {
+        override fun save(out: DataOutput, value: List<LatexSimpleDefinition>) {
+            val buffer = IOUtil.allocReadWriteUTFBuffer()
             out.writeInt(value.size)
             for (def in value) {
                 out.writeUTF(def.name)
@@ -230,11 +315,12 @@ class LatexDtxDefinitionIndexEx : FileBasedIndexExtension<String, List<LatexSimp
                     out.writeUTF(arg.name)
                     out.writeBoolean(arg.type == LArgumentType.OPTIONAL)
                 }
-                out.writeUTF(def.description)
+                IOUtil.writeUTFFast(buffer, out, def.description)
             }
         }
 
-        override fun read(input: java.io.DataInput): List<LatexSimpleDefinition> {
+        override fun read(input: DataInput): List<LatexSimpleDefinition> {
+            val buffer = IOUtil.allocReadWriteUTFBuffer()
             val size = input.readInt()
             val definitions = List(size) {
                 val name = input.readUTF()
@@ -250,7 +336,7 @@ class LatexDtxDefinitionIndexEx : FileBasedIndexExtension<String, List<LatexSimp
                         LArgument(argName, argType)
                     }
                 }
-                val description = input.readUTF()
+                val description = IOUtil.readUTFFast(buffer, input)
                 LatexSimpleDefinition(name, isEnv, arguments, description)
             }
             return definitions

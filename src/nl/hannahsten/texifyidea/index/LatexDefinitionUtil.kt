@@ -455,10 +455,19 @@ object LatexDefinitionUtil {
         return oldCtx.union(newCtx)
     }
 
-    private fun mergeCmdDefinition(oldCmd: LSemanticCommand, newCmd: LSemanticCommand): LSemanticCommand {
+    private fun chooseByLength(old: String, new: String): String {
+        return if (new.length > old.length) new else old
+    }
+    private fun chooseArgs(old: List<LArgument>, new: List<LArgument>, isOldPredefined: Boolean): List<LArgument> {
+        if (new.isEmpty()) return old
+        if(old.isEmpty()) return new
+        return if(isOldPredefined) old else if(new.size > old.size) new else old
+    }
+
+    private fun mergeCmdDefinition(oldCmd: LSemanticCommand, newCmd: LSemanticCommand, isOldPredefined: Boolean): LSemanticCommand {
         val ctx = mergeApplicableContexts(oldCmd, newCmd)
-        val arg = newCmd.arguments.ifEmpty { oldCmd.arguments }
-        val description = newCmd.description.ifBlank { oldCmd.description }
+        val arg = chooseArgs(oldCmd.arguments, newCmd.arguments, isOldPredefined)
+        val description = chooseByLength(oldCmd.description, newCmd.description)
         val display = newCmd.display ?: oldCmd.display
         return LSemanticCommand(
             oldCmd.name, oldCmd.dependency,
@@ -466,24 +475,15 @@ object LatexDefinitionUtil {
         )
     }
 
-    private fun mergeEnvDefinition(oldEnv: LSemanticEnv, newEnv: LSemanticEnv): LSemanticEnv {
+    private fun mergeEnvDefinition(oldEnv: LSemanticEnv, newEnv: LSemanticEnv, isOldPredefined: Boolean): LSemanticEnv {
         val ctx = mergeApplicableContexts(oldEnv, newEnv)
         val innerIntro = LatexContextIntro.union(newEnv.contextSignature, oldEnv.contextSignature)
-        val arg = newEnv.arguments.ifEmpty { oldEnv.arguments }
-        val description = if(newEnv.description.length > oldEnv.description.length) newEnv.description else oldEnv.description
+        val arg = chooseArgs(oldEnv.arguments, newEnv.arguments, isOldPredefined)
+        val description = chooseByLength(oldEnv.description, newEnv.description)
         return LSemanticEnv(
             oldEnv.name, oldEnv.dependency,
             ctx, arg, innerIntro, description
         )
-    }
-
-    private fun overrideOrKeep(old: SourcedDefinition, new: SourcedDefinition): SourcedDefinition {
-        if (old.source == DefinitionSource.Predefined && new.source == DefinitionSource.LibraryScan) {
-            // do not override predefined environments with package definitions (they are messy)
-            return old
-        }
-//        println("Def overridden: $old by $new")
-        return new
     }
 
     fun mergeDefinition(old: SourcedDefinition, new: SourcedDefinition): SourcedDefinition {
@@ -496,20 +496,21 @@ object LatexDefinitionUtil {
         if (oldEntity != newEntity) {
             // if the entities are not the same, we cannot merge them
             // so we just override or keep the old one
-            return overrideOrKeep(old, new)
+            if (old.source == DefinitionSource.Predefined && new.source == DefinitionSource.LibraryScan) {
+                return old
+            }
+            return new
         }
-//        if (oldEntity != newEntity) {
-//            println("Merging commands: $old and $new")
-//        }
         val pointer = new.definitionCommandPointer ?: old.definitionCommandPointer
+        val isOldPredefined = old.source == DefinitionSource.Predefined
         val entity = when (oldEntity) {
             is LSemanticCommand -> when (newEntity) {
-                is LSemanticCommand -> mergeCmdDefinition(oldEntity, newEntity)
+                is LSemanticCommand -> mergeCmdDefinition(oldEntity, newEntity, isOldPredefined)
                 else -> newEntity // cannot merge command and environment
             }
 
             is LSemanticEnv -> when (newEntity) {
-                is LSemanticEnv -> mergeEnvDefinition(oldEntity, newEntity)
+                is LSemanticEnv -> mergeEnvDefinition(oldEntity, newEntity, isOldPredefined)
                 else -> newEntity // cannot merge command and environment
             }
         }

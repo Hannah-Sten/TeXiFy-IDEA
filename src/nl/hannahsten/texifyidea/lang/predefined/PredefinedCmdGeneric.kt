@@ -784,8 +784,7 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         "rowcolors*".cmd("commands".optional, "row".required, "odd-row color".required, "even-row color".required) { "ROWCOLORS_STAR" }
         +"rownum"
         +"showrowcolors"
-        "textcolor".cmd("model-list".optional, colorArg) { "TESTCOLOR2" }
-        "textcolor".cmd("model-list".optional, colorArg, textArg) { "TEXTCOLOR2" }
+        "textcolor".cmd("model-list".optional, colorArg, textArg)
         +"xglobal"
 
         packageOf("color")
@@ -795,6 +794,6 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         +"nopagecolor"
         +"normalcolor"
         "pagecolor".cmd(colorArg) { "PAGECOLOR" }
-        "textcolor".cmd(colorArg, textArg) { "TEXTCOLOR" }
+        "textcolor".cmd(colorArg, textArg)
     }
 }

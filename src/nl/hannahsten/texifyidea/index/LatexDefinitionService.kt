@@ -187,9 +187,7 @@ class LatexLibraryDefinitionService(
         currentSourcedDefinitions: MutableMap<String, SourcedDefinition>
     ) {
         val lib = libInfo.name
-        val dtxDefinitions = LatexRegexBasedIndex.getDtxDefinitions(lib, project)
-//        LatexRegexBasedIndex.processDtxDefinitions(libInfo.name, project) { sd ->
-        dtxDefinitions.forEach { sd ->
+        LatexRegexBasedIndex.processDtxDefinitions(lib, project) { sd ->
             val entity =
                 if (sd.isEnv) LSemanticEnv(sd.name, lib, arguments = sd.arguments, description = sd.description)
                 else LSemanticCommand(sd.name, lib, arguments = sd.arguments, description = sd.description)
