@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.settings.codestyle
 
-import com.intellij.application.options.IndentOptionsEditor
 import com.intellij.application.options.SmartIndentOptionsEditor
 import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings
@@ -41,9 +40,9 @@ class LatexIndentOptionsEditor(provider: LatexLanguageCodeStyleSettingsProvider)
         val isModified = super.isModified(settings, options)
         val latexSettings = settings?.getCustomSettings(LatexCodeStyleSettings::class.java) ?: return false
         return isModified ||
-            IndentOptionsEditor.isFieldModified(sectionIndents, latexSettings.INDENT_SECTIONS) ||
-            IndentOptionsEditor.isFieldModified(environmentIndent, latexSettings.INDENT_ENVIRONMENTS) ||
-            IndentOptionsEditor.isFieldModified(documentIndent, latexSettings.INDENT_DOCUMENT_ENVIRONMENT)
+            isFieldModified(sectionIndents, latexSettings.INDENT_SECTIONS) ||
+            isFieldModified(environmentIndent, latexSettings.INDENT_ENVIRONMENTS) ||
+            isFieldModified(documentIndent, latexSettings.INDENT_DOCUMENT_ENVIRONMENT)
     }
 
     override fun apply(settings: CodeStyleSettings?, options: CommonCodeStyleSettings.IndentOptions?) {

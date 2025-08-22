@@ -73,7 +73,7 @@ object PatternMagic {
     /**
      * Matches leading and trailing whitespace on a string.
      */
-    val excessWhitespace = RegexPattern.compile("(^(\\s+).*(\\s*)\$)|(^(\\s*).*(\\s+)\$)")!!
+    val excessWhitespace = RegexPattern.compile("(^(\\s+).*(\\s*)$)|(^(\\s*).*(\\s+)$)")!!
 
     /**
      * Matches a non-ASCII character.

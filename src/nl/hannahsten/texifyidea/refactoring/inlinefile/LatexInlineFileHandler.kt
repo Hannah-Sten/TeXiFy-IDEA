@@ -97,9 +97,7 @@ class LatexInlineFileHandler : LatexInlineHandler() {
             element: PsiElement,
             editor: Editor?
         ): PsiElement? {
-            return if (element is LatexCommands)
-                element
-            else if (editor != null) {
+            return element as? LatexCommands ?: if (editor != null) {
                 val ref: LatexCommands? = getElementAtCaret(editor)?.firstParentOfType(LatexCommands::class)
                 if (ref != null)
                     ref

@@ -14,7 +14,7 @@ object LatexLineWarningHandler : LatexMessageHandler(
 ) {
 
     override fun findMessage(text: String, newText: String, currentFile: String?): LatexLogMessage? {
-        LatexLineWarningHandler.regex.forEach {
+        regex.forEach {
             it.find(text)?.apply {
                 val message = groups["message"]?.value?.trim() ?: return@apply
                 val line = groups["line"]?.value?.toInt() ?: return@apply

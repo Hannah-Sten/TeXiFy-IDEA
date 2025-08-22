@@ -43,6 +43,6 @@ class LatexEscapeAmpersandInspection : TexifyRegexInspection(
         val command = this.firstParentOfType(LatexCommands::class)?.name
         return command in CommandMagic.urls ||
             command in project.getLabelReferenceCommands() ||
-            command in project.getLabelDefinitionCommands()
+            command in getLabelDefinitionCommands()
     }
 }

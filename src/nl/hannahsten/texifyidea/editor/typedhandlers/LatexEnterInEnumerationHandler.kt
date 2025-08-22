@@ -57,7 +57,7 @@ class LatexEnterInEnumerationHandler : EnterHandlerDelegate {
             }
             else {
                 // Use live template, so that the user can choose to replace the label and press enter to jump out of the optional argument
-                val template = TemplateImpl("", "\\item[\$__Variable0\$] ", "")
+                val template = TemplateImpl("", "\\item[\$__Variable0$] ", "")
                 template.addVariable(TextExpression(previousMarker.trim('[', ']')), true)
                 TemplateManager.getInstance(file.project).startTemplate(editor, template)
             }

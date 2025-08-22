@@ -8,7 +8,6 @@ import nl.hannahsten.texifyidea.index.NewDefinitionIndex
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexParameter
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.psi.traverseCommands
 import nl.hannahsten.texifyidea.util.PackageUtils.getDefaultInsertAnchor
@@ -79,18 +78,5 @@ fun expandCommandsOnce(inputText: String, project: Project, file: VirtualFile?):
     return text
 }
 
-/**
- * Get the index of the parameter in the command. This includes both required and optional parameters.
- */
-fun LatexParameter.indexOf() = indexOfChildByType<LatexParameter, LatexCommands>()
-
-/**
- * Get the predefined [LatexCommand] if a matching one could be found.
- * When multiple versions are available, only a random one will be selected.
- */
-fun LatexCommands.defaultCommand(): LatexCommand? {
-    return LatexCommand.lookup(this.name)?.firstOrNull()
-}
-
 fun LatexCommands.isFigureLabel(): Boolean =
-    name in project.getLabelDefinitionCommands() && inDirectEnvironment(EnvironmentMagic.figures)
+    name in getLabelDefinitionCommands() && inDirectEnvironment(EnvironmentMagic.figures)

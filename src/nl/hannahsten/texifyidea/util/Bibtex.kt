@@ -147,7 +147,7 @@ fun BibtexDefinedString.evaluate(): String {
         return content.evaluate()
     }
 
-    return "${'$'}$stringName${'$'}"
+    return "$$stringName$"
 }
 
 /**

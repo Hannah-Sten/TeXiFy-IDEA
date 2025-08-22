@@ -30,7 +30,7 @@ class LatexRedundantEscapeInspectionTest : TexifyInspectionTestBase(LatexRedunda
     fun `test no warning in math mode`() {
         setUnicodeSupport(myFixture.project, true)
 
-        myFixture.configureByText(LatexFileType, "\$\\alpha\$")
+        myFixture.configureByText(LatexFileType, "$\\alpha$")
         myFixture.checkHighlighting()
     }
 

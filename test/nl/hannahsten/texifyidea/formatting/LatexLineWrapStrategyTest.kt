@@ -73,7 +73,7 @@ class LatexLineWrapStrategyTest : BasePlatformTestCase() {
             Über die grüne Wiese hüpft
             er das gemeinsame Frühstück
         
-            Beisammensein, onders ${'$'}^{,}${'$'} bei
+            Beisammensein, onders $^{,}$ bei
         
             jedoch \footfullcite{author} abhielt
         
@@ -89,7 +89,7 @@ class LatexLineWrapStrategyTest : BasePlatformTestCase() {
             Frühstück
         
             Beisammensein, onders
-            ${'$'}^{,}${'$'} bei
+            $^{,}$ bei
         
             jedoch
             \footfullcite{author}

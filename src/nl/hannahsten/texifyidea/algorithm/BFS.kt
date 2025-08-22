@@ -95,7 +95,7 @@ class BFS<N>(startNode: N, private val adjacencyFunction: (N) -> List<N>, endNod
         }
 
         // Keep on keepin' on until all nodes are covered.
-        while (toCover.size > 0) {
+        while (toCover.isNotEmpty()) {
             // The node that is currently being processed.
             val current = toCover.remove()
 

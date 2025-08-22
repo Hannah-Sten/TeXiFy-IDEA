@@ -49,7 +49,7 @@ class LatexMathOperatorEscapeInspection : TexifyInspectionBase() {
                             element,
                             LatexMathContent::class.java,
                             false
-                        ) { it is LatexCommands && it.name == "\\text" }.size > 0
+                        ) { it is LatexCommands && it.name == "\\text" }.isNotEmpty()
 
                         fun descriptorAlreadyExists() = descriptors.firstOrNull {
                             it.psiElement == element && it.descriptionTemplate == "Non-escaped math operator"
