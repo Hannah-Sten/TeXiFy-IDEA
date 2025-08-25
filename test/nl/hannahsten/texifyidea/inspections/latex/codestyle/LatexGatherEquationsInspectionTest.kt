@@ -110,7 +110,8 @@ class LatexGatherEquationsInspectionTest : TexifyInspectionTestBase(LatexGatherE
             \end{equation}
             """.trimIndent(),
             3,
-            2
+            2,
+            updateCommand = true
         )
     }
 }

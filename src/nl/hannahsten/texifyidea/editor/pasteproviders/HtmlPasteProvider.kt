@@ -47,7 +47,7 @@ class HtmlPasteProvider : PasteProvider {
         }
     }
 
-    override fun isPasteEnabled(dataContext: DataContext) = isPastePossible(dataContext) && TexifySettings.getInstance().htmlPasteTranslator != TexifySettings.HtmlPasteTranslator.DISABLED
+    override fun isPasteEnabled(dataContext: DataContext) = isPastePossible(dataContext) && TexifySettings.getState().htmlPasteTranslator != TexifySettings.HtmlPasteTranslator.DISABLED
 
     override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
@@ -66,7 +66,7 @@ class HtmlPasteProvider : PasteProvider {
      * Use various converters to convert all the tables, image references and styled text to LaTeX.
      */
     fun convertHtmlToLatex(htmlIn: Node, latexFile: LatexFile): String {
-        return when(TexifySettings.getInstance().htmlPasteTranslator) {
+        return when(TexifySettings.getState().htmlPasteTranslator) {
             TexifySettings.HtmlPasteTranslator.BUILTIN -> convertHtmlToLatex(htmlIn.childNodes(), latexFile)
             TexifySettings.HtmlPasteTranslator.PANDOC -> PandocHtmlToLatexConverter().translateHtml(htmlIn.toString()) ?: convertHtmlToLatex(htmlIn.childNodes(), latexFile)
             TexifySettings.HtmlPasteTranslator.DISABLED -> htmlIn.toString() // Should not happen

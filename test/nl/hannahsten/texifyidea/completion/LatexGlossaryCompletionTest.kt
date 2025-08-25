@@ -5,6 +5,7 @@ import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementPresentation
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.updateCommandDef
 
 class LatexGlossaryCompletionTest : BasePlatformTestCase() {
 
@@ -29,7 +30,7 @@ class LatexGlossaryCompletionTest : BasePlatformTestCase() {
     fun testCompleteGlossaryCommandEntries() {
         // given
         myFixture.configureByFiles("${getTestName(false)}.tex")
-
+        myFixture.updateCommandDef()
         // when
         val result = myFixture.complete(CompletionType.BASIC)
 
@@ -53,6 +54,7 @@ class LatexGlossaryCompletionTest : BasePlatformTestCase() {
             \end{document}
             """.trimIndent()
         )
+        myFixture.updateCommandDef()
 
         // when
         val result = myFixture.complete(CompletionType.BASIC)

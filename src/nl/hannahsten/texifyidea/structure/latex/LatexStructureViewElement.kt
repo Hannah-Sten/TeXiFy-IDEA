@@ -108,7 +108,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
 
                 else -> {
                     var includedFiles = InputFileReference.getIncludedFiles(command)
-                    if (!TexifySettings.getInstance().showPackagesInStructureView) {
+                    if (!TexifySettings.getState().showPackagesInStructureView) {
                         includedFiles = includedFiles.filter {
                             it.virtualFile?.fileType == LatexFileType || it.virtualFile?.fileType == BibtexFileType
                         }

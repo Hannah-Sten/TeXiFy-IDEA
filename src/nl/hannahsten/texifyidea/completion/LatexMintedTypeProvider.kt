@@ -1,11 +1,9 @@
 package nl.hannahsten.texifyidea.completion
 
 import com.intellij.codeInsight.completion.CompletionParameters
-import com.intellij.codeInsight.completion.CompletionProvider
 import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementBuilder
-import com.intellij.util.ProcessingContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
@@ -17,7 +15,7 @@ import nl.hannahsten.texifyidea.util.runCommandWithExitCode
  *
  * @author jojo2357
  */
-object LatexMintedTypeProvider : CompletionProvider<CompletionParameters>() {
+object LatexMintedTypeProvider : LatexContextAgnosticCompletionProvider() {
     private val FALLBACK_LANGUAGES = setOf(
         LatexMintedLanguage("JSONBareObject", listOf(""), listOf()),
         LatexMintedLanguage("Raw token data", listOf(""), listOf()),
@@ -156,12 +154,13 @@ object LatexMintedTypeProvider : CompletionProvider<CompletionParameters>() {
 
         if (back.second != 0) {
             FALLBACK_LANGUAGES
-        } else {
+        }
+        else {
             Json.parseToJsonElement(retJason).jsonObject["lexers"]!!.jsonObject.entries.map { (key, value) -> LatexMintedLanguage(key, value.jsonObject["aliases"]!!.jsonArray.map { it.jsonPrimitive.content }, value.jsonObject["filenames"]!!.jsonArray.map { it.jsonPrimitive.content }) }.toSet()
         }
     }
 
-    override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
+    override fun addCompletions(parameters: CompletionParameters, result: CompletionResultSet) {
         result.addAllElements(
             LANGUAGES.map { lang -> lang.createLookupElement() }.flatten()
         )

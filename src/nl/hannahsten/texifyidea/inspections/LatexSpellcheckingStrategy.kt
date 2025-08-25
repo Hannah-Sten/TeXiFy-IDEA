@@ -85,7 +85,7 @@ class LatexSpellcheckingStrategy : SpellcheckingStrategy() {
         // Code
         if (scope.contains(SpellCheckingInspection.SpellCheckingScope.Code)) {
             // Override the default to disable spellchecking for code unless enabled in TeXiFy settings
-            return TexifySettings.getInstance().enableSpellcheckEverywhere
+            return TexifySettings.getState().enableSpellcheckEverywhere
         }
 
         return false

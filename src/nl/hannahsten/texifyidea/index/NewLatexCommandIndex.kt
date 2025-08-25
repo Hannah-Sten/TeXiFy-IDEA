@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.index
 
 import com.intellij.psi.stubs.IndexSink
+import com.intellij.psi.stubs.PsiFileStub
 import com.intellij.psi.stubs.StubIndexKey
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
 import nl.hannahsten.texifyidea.psi.LatexCommands
@@ -28,12 +29,13 @@ val NewCommandsIndex = NewCommandsIndexEx()
  */
 class NewDefinitionIndexEx : LatexCompositeTransformedStubIndex<LatexCommandsStub, LatexCommands>(LatexCommands::class.java) {
     override fun getVersion(): Int {
-        return 1003
+        return 1004
     }
 
     override fun sinkIndex(stub: LatexCommandsStub, sink: IndexSink) {
         val command = stub.commandToken
         if (command !in CommandMagic.definitions) return
+        if(stub.parentStub !is PsiFileStub) return
         LatexPsiUtil.getDefinedCommandName(stub)?.let {
             sink.occurrence(key, it)
         }

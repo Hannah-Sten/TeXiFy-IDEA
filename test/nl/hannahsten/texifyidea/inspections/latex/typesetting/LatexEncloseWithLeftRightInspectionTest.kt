@@ -10,7 +10,7 @@ class LatexEncloseWithLeftRightInspectionTest : TexifyInspectionTestBase(LatexEn
         myFixture.configureByText(
             LatexFileType,
             """
-            ${'$'} <weak_warning descr="Parentheses pair could be replaced by \left(..\right)">(</weak_warning>\frac 1 2<weak_warning descr="Parentheses pair could be replaced by \left(..\right)">)</weak_warning>${'$'}
+            $ <weak_warning descr="Parentheses pair could be replaced by \left(..\right)">(</weak_warning>\frac 1 2<weak_warning descr="Parentheses pair could be replaced by \left(..\right)">)</weak_warning>$
             """.trimIndent()
         )
         myFixture.checkHighlighting()
@@ -20,7 +20,7 @@ class LatexEncloseWithLeftRightInspectionTest : TexifyInspectionTestBase(LatexEn
         myFixture.configureByText(
             LatexFileType,
             """
-            ${'$'} (\frac 1 2)${'$'}
+            $ (\frac 1 2)$
             """.trimIndent()
         )
 
@@ -32,7 +32,7 @@ class LatexEncloseWithLeftRightInspectionTest : TexifyInspectionTestBase(LatexEn
 
         myFixture.checkResult(
             """
-            ${'$'} \left(\frac 1 2\right)${'$'}
+            $ \left(\frac 1 2\right)$
             """.trimIndent()
         )
     }
@@ -41,7 +41,7 @@ class LatexEncloseWithLeftRightInspectionTest : TexifyInspectionTestBase(LatexEn
         myFixture.configureByText(
             LatexFileType,
             """
-            ${'$'} ((\frac 1 2))${'$'}
+            $ ((\frac 1 2))$
             """.trimIndent()
         )
 
@@ -53,7 +53,7 @@ class LatexEncloseWithLeftRightInspectionTest : TexifyInspectionTestBase(LatexEn
 
         myFixture.checkResult(
             """
-            ${'$'} \left(\left(\frac 1 2\right)\right)${'$'}
+            $ \left(\left(\frac 1 2\right)\right)$
             """.trimIndent()
         )
     }
@@ -62,7 +62,7 @@ class LatexEncloseWithLeftRightInspectionTest : TexifyInspectionTestBase(LatexEn
         myFixture.configureByText(
             LatexFileType,
             """
-            ${'$'} (\frac {\cos(\frac{1}{2} \pi)}{2})${'$'}
+            $ (\frac {\cos(\frac{1}{2} \pi)}{2})$
             """.trimIndent()
         )
 
@@ -74,7 +74,7 @@ class LatexEncloseWithLeftRightInspectionTest : TexifyInspectionTestBase(LatexEn
 
         myFixture.checkResult(
             """
-            ${'$'} \left(\frac {\cos\left(\frac{1}{2} \pi\right)}{2}\right)${'$'}
+            $ \left(\frac {\cos\left(\frac{1}{2} \pi\right)}{2}\right)$
             """.trimIndent()
         )
     }

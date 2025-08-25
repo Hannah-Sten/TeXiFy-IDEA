@@ -57,7 +57,7 @@ object GeneralMagic {
             |
             |    \section{Mathematics}\label{sec:mathematics}
             |    To start the party, as ``announced'' in Section~\ref{sec:introduction}, please take a look at the value of <inlineMath>${'$'}x <inlineCommand>\times</inlineCommand>
-            |    <inlineCommand>\frac</inlineCommand>{5}{<inlineCommand>\sqrt</inlineCommand>{3}}${'$'}</inlineMath> in the following equation:
+            |    <inlineCommand>\frac</inlineCommand>{5}{<inlineCommand>\sqrt</inlineCommand>{3}}$</inlineMath> in the following equation:
             |    <displayMath>\[
             |       x <displayCommand>\times</displayCommand> <displayCommand>\frac</displayCommand>{5}{<displayCommand>\sqrt</displayCommand>{3}} = y <displayCommand>\cdot</displayCommand> <displayCommand>\max\left</displayCommand>{ 4, <displayCommand>\alpha</displayCommand>, 6 <displayCommand>\right</displayCommand>} +
             |           <displayCommand>\sqrt</displayCommand>[<optionalParam>1234</optionalParam>]{5678}.
@@ -84,7 +84,7 @@ object GeneralMagic {
             |
             |    \section{Results}\label{sec:results}
             |    In this section we describe the results. 
-            |    So basically <inlineMath>${'$'}x${'$'}</inlineMath> but maybe also <inlineMath>${'$'}<inlineCommand>\hat</inlineCommand>{x}^{2y}${'$'}</inlineMath>.
+            |    So basically <inlineMath>${'$'}x$</inlineMath> but maybe also <inlineMath>$<inlineCommand>\hat</inlineCommand>{x}^{2y}$</inlineMath>.
             |
             |    \section{Conclusions}\label{sec:conclusions}
             |    We worked hard, and achieved very little. 

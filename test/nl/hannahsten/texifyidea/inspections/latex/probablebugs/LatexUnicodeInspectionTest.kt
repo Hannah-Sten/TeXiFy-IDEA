@@ -4,6 +4,7 @@ import io.mockk.every
 import io.mockk.mockkStatic
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
+import nl.hannahsten.texifyidea.updateFilesets
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 
 class OutsideMathLatexUnicodeInspectionTest : LatexUnicodeInspectionTest() {
@@ -26,6 +27,7 @@ class OutsideMathLatexUnicodeInspectionTest : LatexUnicodeInspectionTest() {
             î
             """.trimIndent()
         )
+        myFixture.updateFilesets()
         myFixture.checkHighlighting()
     }
 
@@ -48,7 +50,7 @@ class InsideMathLatexUnicodeInspectionTest : LatexUnicodeInspectionTest() {
     fun `test without support`() {
         setUnicodeSupport(false)
 
-        myFixture.configureByText(LatexFileType, "\$<error descr=\"Unsupported non-ASCII character\">î</error>\$")
+        myFixture.configureByText(LatexFileType, "$<error descr=\"Unsupported non-ASCII character\">î</error>$")
         myFixture.checkHighlighting()
     }
 
@@ -59,7 +61,7 @@ class InsideMathLatexUnicodeInspectionTest : LatexUnicodeInspectionTest() {
             LatexFileType,
             "\\usepackage[utf8]{inputenc}\n" +
                 "            \\usepackage[T1]{fontenc}\n" +
-                "\$<error descr=\"Unsupported non-ASCII character\">î</error>\$"
+                "$<error descr=\"Unsupported non-ASCII character\">î</error>$"
         )
         myFixture.checkHighlighting()
     }
@@ -67,7 +69,7 @@ class InsideMathLatexUnicodeInspectionTest : LatexUnicodeInspectionTest() {
     fun `test with compiler compatibility`() {
         setUnicodeSupport()
 
-        myFixture.configureByText(LatexFileType, "\$<error descr=\"Unsupported non-ASCII character\">î</error>\$")
+        myFixture.configureByText(LatexFileType, "$<error descr=\"Unsupported non-ASCII character\">î</error>$")
         myFixture.checkHighlighting()
     }
 }
@@ -167,14 +169,14 @@ class LatexUnicodeInspectionQuickFix : LatexUnicodeInspectionTest() {
     fun `test escape unicode quick fix known math command`() {
         setUnicodeSupport(false)
 
-        testNamedQuickFix("\$α\$", "\$\\alpha\$", "Escape Unicode character", 1)
+        testNamedQuickFix("\$α$", "$\\alpha$", "Escape Unicode character", 1)
     }
 
     fun `test escape unicode quick fix math command`() {
         setUnicodeSupport(false)
 
         // ℂ cannot be converted.
-        testNamedQuickFix("\$ℂ\$", "\$ℂ\$", "Escape Unicode character", 1)
+        testNamedQuickFix("\$ℂ$", "\$ℂ$", "Escape Unicode character", 1)
     }
 }
 

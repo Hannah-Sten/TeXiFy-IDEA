@@ -63,11 +63,11 @@ class TextidoteAnnotator : DumbAware, ExternalAnnotator<TextidoteAnnotatorInitia
 
     override fun doAnnotate(collectedInfo: TextidoteAnnotatorInitialInfo?): TextidoteAnnotationResult? {
         if (collectedInfo == null) return null
-        if (!TexifySettings.getInstance().enableTextidote) {
+        if (!TexifySettings.getState().enableTextidote) {
             return TextidoteAnnotationResult(emptyList(), collectedInfo.document)
         }
 
-        val arguments = TexifySettings.getInstance().textidoteOptions
+        val arguments = TexifySettings.getState().textidoteOptions ?: ""
         val command = listOf("textidote") + ParametersListUtil.parse(arguments) + listOf(collectedInfo.fileName)
         val (output, exitCode) = runCommandWithExitCode(
             *command.toTypedArray(),
