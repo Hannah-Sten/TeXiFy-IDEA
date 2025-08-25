@@ -4,6 +4,7 @@ import nl.hannahsten.texifyidea.lang.LatexContextIntro
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.LatexContexts.Alignable
 import nl.hannahsten.texifyidea.lang.LatexContexts.Literal
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.PredefinedEnvironmentSet
 
 object PredefinedEnvBasic : PredefinedEnvironmentSet() {
@@ -215,10 +216,10 @@ object PredefinedEnvBasic : PredefinedEnvironmentSet() {
         }
     }
 
-    val beamer = buildEnvironments {
-        packageOf("beamer")
-        +"frame"
-        +"frame*"
+    val frames = buildEnvironments {
+        underPackage(LatexLib.Class("beamer")) {
+            "frame".env(LatexContexts.Text)
+        }
     }
 
     val algorithm = buildEnvironments {
