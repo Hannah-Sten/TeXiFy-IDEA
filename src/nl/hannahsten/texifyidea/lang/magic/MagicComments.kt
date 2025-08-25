@@ -121,7 +121,7 @@ fun PsiElement.magicCommentLookup(
     next: PsiElement.() -> PsiElement?,
     reversed: Boolean = false
 ): MagicComment<String, String> {
-    val commentLines = LinkedList<String>()
+    val commentLines = mutableListOf<String>()
 
     // Scan (backward) through all the magic comments preceding the element.
     var current: PsiElement? = initial() ?: return MagicComment.empty()
