@@ -43,6 +43,11 @@ value class LatexLib(val name: String) {
             return if (name.isEmpty()) BASE else LatexLib("$name.sty")
         }
 
+        @Suppress("FunctionName")
+        fun Class(name: String): LatexLib {
+            return if (name.isEmpty()) BASE else LatexLib("$name.cls")
+        }
+
         fun fromFileName(fileName: String): LatexLib {
             return if (fileName.isEmpty()) BASE else LatexLib(fileName)
         }
