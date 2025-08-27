@@ -353,7 +353,7 @@ object LatexPsiUtil {
         return semantics.contextSignature
     }
 
-    private val baseContext = setOf(LatexContexts.Preamble, LatexContexts.Text)
+    val baseContext = setOf(LatexContexts.Preamble, LatexContexts.Text)
 
     fun resolveContextUpward(e: PsiElement): LContextSet {
         val file = e.containingFile ?: return emptySet()
@@ -361,7 +361,11 @@ object LatexPsiUtil {
         return resolveContextUpward(e, lookup)
     }
 
-    fun resolveContextUpward(e: PsiElement, lookup: LatexSemanticsLookup): LContextSet {
+    /**
+     * Resolve the context at the given element by traversing the PSI tree upwards and collecting context changes.
+     * If no context changes are found, the [baseContext] is returned.
+     */
+    fun resolveContextUpward(e: PsiElement, lookup: LatexSemanticsLookup, baseContext: LContextSet = LatexPsiUtil.baseContext): LContextSet {
         var collectedContextIntro: MutableList<LatexContextIntro>? = null
         var current: PsiElement = e
         // see Latex.bnf
@@ -398,6 +402,15 @@ object LatexPsiUtil {
         return LatexContextIntro.buildContext(collectedContextIntro.asReversed(), baseContext)
     }
 
+    /**
+     * Traverse the given element and all its children, recording context introductions.
+     * The action is executed at each element, with the current list of context introductions.
+     * The list is ordered from outermost to innermost context introduction.
+     *
+     * Returns the list of context introductions at the end of the traversal, which may not be empty if unmatched context introductions are present,
+     * for example when traversing a `\begin` command without the matching `\end` command.
+     *
+     */
     fun traverseRecordingContextIntro(
         e: PsiElement,
         lookup: LatexSemanticsLookup,
@@ -411,7 +424,7 @@ object LatexPsiUtil {
     private class RecordingContextIntroTraverser(
         lookup: LatexSemanticsLookup,
         private val action: (PsiElement, List<LatexContextIntro>) -> Unit
-    ) : LatexWithContextTraverser<MutableList<LatexContextIntro>>(mutableListOf(), lookup) {
+    ) : LatexWithContextStateTraverser<MutableList<LatexContextIntro>>(mutableListOf(), lookup) {
         override fun enterContextIntro(intro: LatexContextIntro) {
             state.add(intro)
         }
@@ -450,6 +463,9 @@ object LatexPsiUtil {
             get() = state
     }
 
+    /**
+     * Check if the given environment introduces the given context.
+     */
     fun isContextIntroduced(element: LatexEnvironment, lookup: LatexSemanticsLookup, context: LatexContext): Boolean {
         val name = element.getEnvironmentName()
         val semantics = lookup.lookupEnv(name) ?: return false

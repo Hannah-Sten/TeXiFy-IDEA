@@ -2,13 +2,24 @@ package nl.hannahsten.texifyidea.psi
 
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.lang.LArgument
+import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LSemanticEnv
 import nl.hannahsten.texifyidea.lang.LatexContextIntro
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 import nl.hannahsten.texifyidea.util.parser.forEachDirectChild
 
-abstract class LatexWithContextTraverser<S>(
+/**
+ * A traverser that keeps track of the current context, updating it when entering math mode or
+ * when entering commands/environments with a specific context intro.
+ *
+ * The state is updated by applying the [LatexContextIntro] to the current state.
+ *
+ * @param S The type of the state being tracked.
+ *
+ * @author Li Ernest
+ */
+abstract class LatexWithContextStateTraverser<S>(
     initialState: S,
     protected val lookup: LatexSemanticsLookup
 ) {
@@ -19,14 +30,31 @@ abstract class LatexWithContextTraverser<S>(
         STOP_WALK
     }
 
+    /**
+     * Current state of the traverser.
+     * It can be updated when entering/exiting contexts.
+     */
     protected var state: S = initialState
 
+    /**
+     * Called when starting to process an element.
+     *
+     */
     protected open fun elementStart(e: PsiElement): WalkAction {
         return WalkAction.CONTINUE
     }
 
+    /**
+     * Update the [state] when entering a context intro.
+     */
     protected abstract fun enterContextIntro(intro: LatexContextIntro)
 
+    /**
+     * Restore the state when exiting a context intro.
+     *
+     * @param old The old state recorded before entering the context intro.
+     * @param intro The context intro that is being exited.
+     */
     protected open fun exitContextIntro(old: S, intro: LatexContextIntro) {
         state = old
     }
@@ -102,4 +130,20 @@ abstract class LatexWithContextTraverser<S>(
     }
 }
 
-abstract class Latex
+/**
+ * A traverser that keeps track of the current LaTeX context.
+ *
+ * It can be used in context-aware inspections.
+ */
+abstract class LatexWithContextTraverser(
+    initialState: LContextSet, lookup: LatexSemanticsLookup
+) : LatexWithContextStateTraverser<LContextSet>(initialState, lookup) {
+
+    override fun enterContextIntro(intro: LatexContextIntro) {
+        state = intro.applyTo(state)
+    }
+
+    override fun exitContextIntro(old: LContextSet, intro: LatexContextIntro) {
+        state = old
+    }
+}
