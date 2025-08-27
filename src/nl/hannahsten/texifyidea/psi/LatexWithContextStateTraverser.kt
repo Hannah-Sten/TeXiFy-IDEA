@@ -26,7 +26,15 @@ abstract class LatexWithContextStateTraverser<S>(
 
     protected enum class WalkAction {
         CONTINUE,
+
+        /**
+         * Skip the children of the current element, but continue with the next sibling/parent.
+         */
         SKIP_CHILDREN,
+
+        /**
+         * Stop the whole traversal.
+         */
         STOP_WALK
     }
 
@@ -38,10 +46,18 @@ abstract class LatexWithContextStateTraverser<S>(
 
     /**
      * Called when starting to process an element.
-     *
      */
     protected open fun elementStart(e: PsiElement): WalkAction {
         return WalkAction.CONTINUE
+    }
+
+    /**
+     * Called when finishing processing an element.
+     *
+     * @return Whether to continue the whole traversal.
+     */
+    protected open fun elementFinish(e: PsiElement): Boolean {
+        return true
     }
 
     /**
@@ -68,7 +84,7 @@ abstract class LatexWithContextStateTraverser<S>(
             exitContextIntro(oldState, intro)
             if (!action) return false
         }
-        return true
+        return elementFinish(e)
     }
 
     protected fun traverseEnvironmentRecur(e: LatexEnvironment, semantics: LSemanticEnv): Boolean {
@@ -80,7 +96,7 @@ abstract class LatexWithContextStateTraverser<S>(
             exitContextIntro(oldState, semantics.contextSignature)
             if (!ret) return false
         }
-        return true
+        return elementFinish(e)
     }
 
     protected fun traverseRecur(e: PsiElement): Boolean {
@@ -126,7 +142,7 @@ abstract class LatexWithContextStateTraverser<S>(
             }
         }
         if (currentIntro != null) exitContextIntro(oldState, currentIntro)
-        return ret
+        return ret && elementFinish(e)
     }
 }
 
