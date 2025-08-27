@@ -11,8 +11,11 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.createSmartPointer
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.lang.LContextSet
+import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
+import nl.hannahsten.texifyidea.lang.magic.MagicComment
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.lang.magic.MutableMagicComment
 import nl.hannahsten.texifyidea.lang.magic.addMagicCommentToPsiElement
@@ -107,6 +110,7 @@ abstract class TexifyContextAwareInspectionBase : LocalInspectionTool() {
         if (file.fileType !in inspectionGroup.fileTypes) {
             return null
         }
+        val lookup = LatexDefinitionService.getInstance(file.project).getDefBundlesMerged(file)
 
         // Check for file inspection suppression seperately as it is relatively cheap.
         // Do not execute the (relative expensive) inspection when it is suppressed globally.
@@ -115,12 +119,25 @@ abstract class TexifyContextAwareInspectionBase : LocalInspectionTool() {
         }
     }
 
-    protected class WithMetaTraverser() : LatexWithContextTraverser<S>
+    protected class WithMetaTraverser(lookup: LatexSemanticsLookup, baseContexts: LContextSet) :
+        LatexWithContextTraverser(baseContexts, lookup) {
+
+        var magicCommentStack: ArrayDeque<MagicComment<String, String>> = ArrayDeque()
+
+        override fun elementStart(e: PsiElement): WalkAction {
+            return super.elementStart(e)
+        }
+
+        override fun elementFinish(e: PsiElement): WalkAction {
+            return super.elementFinish(e)
+        }
+    }
 
     /**
      * @author Hannah Schellekens
      */
-    private abstract inner class SuppressionFixBase(val targetElement: SmartPsiElementPointer<out PsiElement>) : SuppressQuickFix {
+    private abstract inner class SuppressionFixBase(val targetElement: SmartPsiElementPointer<out PsiElement>) :
+        SuppressQuickFix {
 
         /**
          * The scope to which to apply the suppression.
@@ -137,7 +154,8 @@ abstract class TexifyContextAwareInspectionBase : LocalInspectionTool() {
          * There is no use for a preview for suppression "fixes" (there also is no preview when suppressing Java and Kotlin inspections),
          * disable it manually to avoid [Field blocks intention preview](https://www.jetbrains.com/help/inspectopedia/ActionIsNotPreviewFriendly.html) warnings.
          */
-        override fun generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo = IntentionPreviewInfo.EMPTY
+        override fun generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo =
+            IntentionPreviewInfo.EMPTY
 
         override fun isAvailable(project: Project, context: PsiElement): Boolean {
             return context.containingFile.fileType == LatexFileType
@@ -159,7 +177,8 @@ abstract class TexifyContextAwareInspectionBase : LocalInspectionTool() {
     /**
      * @author Hannah Schellekens
      */
-    private inner class EnvironmentSuppressionFix(parentEnvironment: LatexEnvironment) : SuppressionFixBase(parentEnvironment.createSmartPointer()) {
+    private inner class EnvironmentSuppressionFix(parentEnvironment: LatexEnvironment) :
+        SuppressionFixBase(parentEnvironment.createSmartPointer()) {
 
         /**
          * The name of the environment to suppress, or `null` when there is no environment name available.
@@ -178,7 +197,8 @@ abstract class TexifyContextAwareInspectionBase : LocalInspectionTool() {
     /**
      * @author Hannah Schellekens
      */
-    private inner class MathEnvironmentSuppressionFix(parentMathEnvironment: LatexMathEnvironment) : SuppressionFixBase(parentMathEnvironment.createSmartPointer()) {
+    private inner class MathEnvironmentSuppressionFix(parentMathEnvironment: LatexMathEnvironment) :
+        SuppressionFixBase(parentMathEnvironment.createSmartPointer()) {
 
         override val suppressionScope = MagicCommentScope.MATH_ENVIRONMENT
 
@@ -188,7 +208,8 @@ abstract class TexifyContextAwareInspectionBase : LocalInspectionTool() {
     /**
      * @author Hannah Schellekens
      */
-    private inner class CommandSuppressionFix(parentCommand: LatexCommands) : SuppressionFixBase(parentCommand.createSmartPointer()) {
+    private inner class CommandSuppressionFix(parentCommand: LatexCommands) :
+        SuppressionFixBase(parentCommand.createSmartPointer()) {
 
         /**
          * The name of the command to suppress, or `null` when there is no command name available.
@@ -207,7 +228,8 @@ abstract class TexifyContextAwareInspectionBase : LocalInspectionTool() {
     /**
      * @author Hannah Schellekens
      */
-    private inner class GroupSuppressionFix(parentGroup: LatexGroup) : SuppressionFixBase(parentGroup.createSmartPointer()) {
+    private inner class GroupSuppressionFix(parentGroup: LatexGroup) :
+        SuppressionFixBase(parentGroup.createSmartPointer()) {
 
         override val suppressionScope = MagicCommentScope.GROUP
 
