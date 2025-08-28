@@ -353,8 +353,6 @@ object LatexPsiUtil {
         return semantics.contextSignature
     }
 
-    val baseContext = setOf(LatexContexts.Preamble, LatexContexts.Text)
-
     fun resolveContextUpward(e: PsiElement): LContextSet {
         val file = e.containingFile ?: return emptySet()
         val lookup = LatexDefinitionService.getInstance(file.project).getDefBundlesMerged(file)
@@ -365,7 +363,7 @@ object LatexPsiUtil {
      * Resolve the context at the given element by traversing the PSI tree upwards and collecting context changes.
      * If no context changes are found, the [baseContext] is returned.
      */
-    fun resolveContextUpward(e: PsiElement, lookup: LatexSemanticsLookup, baseContext: LContextSet = LatexPsiUtil.baseContext): LContextSet {
+    fun resolveContextUpward(e: PsiElement, lookup: LatexSemanticsLookup, baseContext: LContextSet = LatexContexts.baseContexts): LContextSet {
         var collectedContextIntro: MutableList<LatexContextIntro>? = null
         var current: PsiElement = e
         // see Latex.bnf

@@ -114,6 +114,8 @@ object LatexContexts {
      */
     val Text = SimpleLatexContext("text")
 
+    val baseContexts = setOf(Preamble, Text)
+
     /**
      * A number is expected, for example in `\setcounter{...}{...}`.
      */

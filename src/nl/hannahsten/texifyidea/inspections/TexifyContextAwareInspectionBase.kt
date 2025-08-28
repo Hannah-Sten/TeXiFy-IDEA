@@ -6,46 +6,52 @@ import com.intellij.codeInspection.LocalInspectionTool
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.SuppressQuickFix
 import com.intellij.openapi.project.Project
+import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.createSmartPointer
+import com.intellij.util.SmartList
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
+import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase.Companion.suppressionElement
 import nl.hannahsten.texifyidea.lang.LContextSet
+import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
-import nl.hannahsten.texifyidea.lang.magic.MagicComment
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.lang.magic.MutableMagicComment
 import nl.hannahsten.texifyidea.lang.magic.addMagicCommentToPsiElement
-import nl.hannahsten.texifyidea.lang.magic.allParentMagicComments
 import nl.hannahsten.texifyidea.lang.magic.containsPair
 import nl.hannahsten.texifyidea.lang.magic.magicComment
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexContent
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexGroup
+import nl.hannahsten.texifyidea.psi.LatexMagicComment
 import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
+import nl.hannahsten.texifyidea.psi.LatexNoMathContent
 import nl.hannahsten.texifyidea.psi.LatexWithContextTraverser
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
-import nl.hannahsten.texifyidea.util.parser.isComment
+import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
+import nl.hannahsten.texifyidea.util.parser.traverse
 
-abstract class TexifyContextAwareInspectionBase : LocalInspectionTool() {
-
+abstract class TexifyContextAwareInspectionBase(
     /**
      * The inspectionGroup the inspection falls under.
      */
-    abstract val inspectionGroup: InsightGroup
-
+    val inspectionGroup: InsightGroup,
     /**
-     * A unique string indentifier for the inspection.
+     * A unique string identifier for the inspection.
      */
-    abstract val inspectionId: String
+    val inspectionId: String
+) : LocalInspectionTool() {
 
     /**
      * The magic comment scopes that should not have a [SuppressQuickFix].
      */
-    open val ignoredSuppressionScopes: Set<MagicCommentScope> = emptySet()
+    open val ignoredSuppressionScopes: Set<MagicCommentScope>
+        get() = emptySet()
 
     /**
      * All the scopes whose suppression quick fix should target the _parent/outer_ PsiElement.
@@ -54,29 +60,17 @@ abstract class TexifyContextAwareInspectionBase : LocalInspectionTool() {
      * quick fix to result in `\ref{ %! Suppress = ... }`, but rather to target the group in which the
      * `\ref` is contained (if it exists).
      */
-    open val outerSuppressionScopes: Set<MagicCommentScope> = emptySet()
+    open val outerSuppressionScopes: Set<MagicCommentScope>
+        get() = emptySet()
 
+    /**
+     *
+     */
     abstract fun inspectElement(
         element: PsiElement, contexts: LContextSet,
         manager: InspectionManager, isOnTheFly: Boolean,
         descriptors: MutableList<ProblemDescriptor>
     )
-
-    /**
-     * Checks if the element is in the correct context for the inspection to be applied.
-     *
-     * @return `true` if the inspection is allowed for this element in its context, `false` otherwise.
-     */
-    open fun checkContext(element: PsiElement) = element.isComment().not() && element.isSuppressed().not()
-
-    /**
-     * Checks whether the inspection must be suppressed (`true`) or not (`false`) based on the position of the given
-     * PsiElement.
-     */
-    protected open fun PsiElement.isSuppressed(): Boolean {
-        return magicComment()?.containsPair("suppress", inspectionId) == true ||
-            allParentMagicComments().containsPair("suppress", inspectionId)
-    }
 
     override fun getBatchSuppressActions(element: PsiElement?): Array<SuppressQuickFix> {
         val result = ArrayList<SuppressionFixBase>()
@@ -84,16 +78,17 @@ abstract class TexifyContextAwareInspectionBase : LocalInspectionTool() {
         element?.let { elt ->
             elt.containingFile?.let { result.add(FileSuppressionFix(it.createSmartPointer())) }
 
-            elt.suppressionElement<LatexEnvironment>(MagicCommentScope.ENVIRONMENT)?.let {
+            elt.suppressionElement<LatexEnvironment>(MagicCommentScope.ENVIRONMENT, outerSuppressionScopes)?.let {
                 result.add(EnvironmentSuppressionFix(it))
             }
-            elt.suppressionElement<LatexMathEnvironment>(MagicCommentScope.MATH_ENVIRONMENT)?.let {
-                result.add(MathEnvironmentSuppressionFix(it))
-            }
-            elt.suppressionElement<LatexCommands>(MagicCommentScope.COMMAND)?.let {
+            elt.suppressionElement<LatexMathEnvironment>(MagicCommentScope.MATH_ENVIRONMENT, outerSuppressionScopes)
+                ?.let {
+                    result.add(MathEnvironmentSuppressionFix(it))
+                }
+            elt.suppressionElement<LatexCommands>(MagicCommentScope.COMMAND, outerSuppressionScopes)?.let {
                 result.add(CommandSuppressionFix(it))
             }
-            elt.suppressionElement<LatexGroup>(MagicCommentScope.GROUP)?.let {
+            elt.suppressionElement<LatexGroup>(MagicCommentScope.GROUP, outerSuppressionScopes)?.let {
                 result.add(GroupSuppressionFix(it))
             }
         }
@@ -101,35 +96,69 @@ abstract class TexifyContextAwareInspectionBase : LocalInspectionTool() {
         return result.filter { it.suppressionScope !in ignoredSuppressionScopes }.toTypedArray()
     }
 
-    override fun getShortName() = inspectionGroup.prefix + inspectionId
-
-    override fun getGroupDisplayName() = inspectionGroup.displayName
-
     override fun checkFile(file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean): Array<ProblemDescriptor>? {
         // Only inspect the right file types.
         if (file.fileType !in inspectionGroup.fileTypes) {
             return null
         }
-        val lookup = LatexDefinitionService.getInstance(file.project).getDefBundlesMerged(file)
+        if (!isFileApplicable(file)) return null
+        if (isFileSuppressed(file)) return null
 
-        // Check for file inspection suppression seperately as it is relatively cheap.
-        // Do not execute the (relative expensive) inspection when it is suppressed globally.
-        if (file.isSuppressed()) {
-            return null
-        }
+        val lookup = LatexDefinitionService.getInstance(file.project).getDefBundlesMerged(file)
+        val traverser = InspectionTraverser(
+            manager, isOnTheFly, lookup, LatexContexts.baseContexts
+        )
+        val result = traverser.doInspect(file)
+        return if (result.isEmpty()) ProblemDescriptor.EMPTY_ARRAY else result.toTypedArray()
     }
 
-    protected class WithMetaTraverser(lookup: LatexSemanticsLookup, baseContexts: LContextSet) :
-        LatexWithContextTraverser(baseContexts, lookup) {
+    protected open fun isFileApplicable(file: PsiFile): Boolean {
+        return true
+    }
 
-        var magicCommentStack: ArrayDeque<MagicComment<String, String>> = ArrayDeque()
+    protected fun isFileSuppressed(file: PsiFile): Boolean {
+        val content = file.findFirstChildTyped<LatexContent>() ?: return true // Empty file, nothing to inspect.
+        for (e in content.traverse(4)) {
+            if (e is LatexNoMathContent) continue
+            if (e !is LatexMagicComment) break
+            e.magicComment()?.let {
+                if (it.containsPair("suppress", inspectionId)) return true
+            }
+        }
+        return false
+    }
+
+    protected inner class InspectionTraverser(
+        private val manager: InspectionManager, private val isOnTheFly: Boolean,
+        lookup: LatexSemanticsLookup, baseContexts: LContextSet
+    ) : LatexWithContextTraverser(baseContexts, lookup) {
+
+        private val descriptors: MutableList<ProblemDescriptor> = SmartList()
+
+        private var isSuppressedNext: Boolean = false
 
         override fun elementStart(e: PsiElement): WalkAction {
-            return super.elementStart(e)
+            if (e is LatexMagicComment) {
+                if (e.magicComment()?.containsPair("suppress", inspectionId) == true) {
+                    isSuppressedNext = true
+                }
+                return WalkAction.SKIP_CHILDREN
+            }
+            if (e is PsiComment) return WalkAction.SKIP_CHILDREN
+            if (LatexContexts.Comment in state) return WalkAction.SKIP_CHILDREN
+            if (isSuppressedNext) {
+                // Do not inspect this element, it is suppressed previously by a magic comment.
+                isSuppressedNext = false
+                return WalkAction.SKIP_CHILDREN
+            }
+
+            inspectElement(e, state, manager, isOnTheFly, descriptors)
+            return WalkAction.CONTINUE
         }
 
-        override fun elementFinish(e: PsiElement): WalkAction {
-            return super.elementFinish(e)
+        fun doInspect(file: PsiFile): List<ProblemDescriptor> {
+            traverseRecur(file)
+            return descriptors
         }
     }
 

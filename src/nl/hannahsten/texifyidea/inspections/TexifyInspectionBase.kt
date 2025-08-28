@@ -116,7 +116,7 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
          * Get the element relative to `this` element that must be targeted by the suppression quick fix given the
          * magic comment scope.
          */
-        private inline fun <reified Psi : PsiElement> PsiElement.suppressionElement(scope: MagicCommentScope, outerSuppressionScopes: Set<MagicCommentScope>): Psi? {
+        inline fun <reified Psi : PsiElement> PsiElement.suppressionElement(scope: MagicCommentScope, outerSuppressionScopes: Set<MagicCommentScope>): Psi? {
             val parent = parentOfType(Psi::class)
 
             return if (scope in outerSuppressionScopes) {
