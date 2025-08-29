@@ -6,7 +6,7 @@ import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.DataProvider
-import com.intellij.openapi.application.smartReadAction
+import com.intellij.openapi.application.readAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.openapi.wm.ToolWindow
@@ -34,7 +34,7 @@ class RemoteLibrariesToolWindowFactory : ToolWindowFactory {
         toolWindow.contentManager.addContent(content)
     }
 
-    override suspend fun isApplicableAsync(project: Project) = smartReadAction(project) { project.isLatexProject() }
+    override suspend fun isApplicableAsync(project: Project) = readAction { project.isLatexProject() }
 
     /**
      * The tool window panel that contains the toolbar and the actual window (which is [RemoteLibraryToolWindow]).
