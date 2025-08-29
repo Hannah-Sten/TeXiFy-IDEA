@@ -1,6 +1,6 @@
 package nl.hannahsten.texifyidea.ui
 
-import com.intellij.openapi.application.smartReadAction
+import com.intellij.openapi.application.readAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.showOkCancelDialog
@@ -34,7 +34,7 @@ class DetexifyToolWindowFactory : ToolWindowFactory {
     }
 
     // Non-idea has no concept of modules so we need to use some other criterion based on the project
-    override suspend fun isApplicableAsync(project: Project) = smartReadAction(project) { project.isLatexProject() }
+    override suspend fun isApplicableAsync(project: Project) = readAction { project.isLatexProject() }
 
     class DetexifyToolWindow {
 
