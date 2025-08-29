@@ -73,7 +73,7 @@ object PatternMagic {
     /**
      * Matches leading and trailing whitespace on a string.
      */
-    val excessWhitespace = RegexPattern.compile("(^(\\s+).*(\\s*)\$)|(^(\\s*).*(\\s+)\$)")!!
+    val excessWhitespace = RegexPattern.compile("(^(\\s+).*(\\s*)$)|(^(\\s*).*(\\s+)$)")!!
 
     /**
      * Matches a non-ASCII character.
@@ -132,4 +132,6 @@ object PatternMagic {
      * Matches any consecutive sequence of LaTeX quote characters
      */
     val quotePattern = """["'`]+""".toRegex()
+
+    val commandToken = "\\\\[a-zA-Z@]+".toRegex()
 }

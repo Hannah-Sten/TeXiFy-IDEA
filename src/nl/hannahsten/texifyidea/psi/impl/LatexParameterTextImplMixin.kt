@@ -20,9 +20,9 @@ import nl.hannahsten.texifyidea.util.parser.remove
 
 abstract class LatexParameterTextImplMixin(node: ASTNode) : LatexParameterText, ASTWrapperPsiElement(node) {
 
-//    override fun getReferences(): Array<out PsiReference?> {
-//
-//    }
+    override fun toString(): String {
+        return "ParameterText(${this.text})"
+    }
 
     /**
      * If the normal text is the parameter of a \ref-like command, get the references to the label declaration.

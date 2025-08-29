@@ -6,20 +6,13 @@ import com.intellij.codeInsight.completion.CompletionProvider
 import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.patterns.PlatformPatterns
 import nl.hannahsten.texifyidea.TexifyIcons
-import nl.hannahsten.texifyidea.completion.pathcompletion.LatexFileProvider
-import nl.hannahsten.texifyidea.completion.pathcompletion.LatexFolderProvider
-import nl.hannahsten.texifyidea.completion.pathcompletion.LatexGraphicsPathProvider
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import nl.hannahsten.texifyidea.inspections.ALL_TEXIFY_INSPECTIONS
 import nl.hannahsten.texifyidea.inspections.InsightGroup
-import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
-import nl.hannahsten.texifyidea.util.*
-import nl.hannahsten.texifyidea.util.magic.ColorMagic
-import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.CommentMagic
 import nl.hannahsten.texifyidea.util.parser.*
 import java.util.*
@@ -32,132 +25,48 @@ import java.util.*
  *
  * @author Sten Wessel, Hannah Schellekens
  */
-open class LatexCompletionContributor : CompletionContributor() {
+class LatexCompletionContributor : CompletionContributor() {
 
     init {
-        registerRegularCommandCompletion()
-        registerMathModeCompletion()
-        registerFileNameCompletion()
-        registerFolderNameCompletion()
-        registerGraphicPathCompletion()
-        registerColorCompletion()
+        registerContextAwareCommandCompletion()
+        registerContextAwareParameterCompletion()
+        registerEnvironmentNameCompletion()
         registerMagicCommentCompletion()
-        registerLabelReferenceCompletion()
-        registerBibliographyReferenceCompletion()
-        registerPackageNameCompletion()
-        registerGlossariesCompletion()
-        registerDocumentClassCompletion()
-        registerLatexArgumentTypeCompletion()
-        registerDefaultEnvironmentCompletion()
     }
 
     /**
      * Adds the commands outside math context to the autocomplete.
      */
-    private fun registerRegularCommandCompletion() = extend(
+    private fun registerContextAwareCommandCompletion() = extend(
         CompletionType.BASIC,
         PlatformPatterns.psiElement(LatexTypes.COMMAND_TOKEN)
-            .andNot(PlatformPatterns.psiElement().inside(LatexMathEnvironment::class.java))
-            .withPattern { psiElement, _ -> psiElement.inMathContext().not() }
             .withLanguage(LatexLanguage),
-        LatexNormalCommandCompletionProvider
+        ContextAwareCommandCompletionProvider
     )
 
     /**
-     * Adds the commands inside math context to the autocomplete.
+     * Adds default environment names to the autocompletion.
      */
-    private fun registerMathModeCompletion() {
-        extend(
-            CompletionType.BASIC,
-            PlatformPatterns.psiElement(LatexTypes.COMMAND_TOKEN)
-                .withPattern { psiElement, _ -> psiElement.inMathContext() }
-                .withLanguage(LatexLanguage),
-            LatexMathCommandCompletionProvider
-        )
-        extend(
-            CompletionType.BASIC,
-            PlatformPatterns.psiElement(LatexTypes.COMMAND_TOKEN)
-                .inside(LatexMathEnvMarker::class.java)
-                .withLanguage(LatexLanguage),
-            LatexMathCommandCompletionProvider
-        )
-    }
+    private fun registerEnvironmentNameCompletion() = extend(
+        CompletionType.BASIC,
+        PlatformPatterns.psiElement()
+            .inside(LatexEnvIdentifier::class.java)
+            .inside(PlatformPatterns.or(PlatformPatterns.psiElement(LatexBeginCommand::class.java), PlatformPatterns.psiElement(LatexEndCommand::class.java)))
+            .withLanguage(LatexLanguage),
+        ContextAwareEnvironmentCompletionProvider
+    )
 
     /**
-     * Adds file name support to the autocomplete.
+     * Contains lots of context-aware completion providers that are activated for particular contexts by the dispatcher.
+     *
+     * The context is computed once and passed to all providers, making it efficient.
      */
-    private fun registerFileNameCompletion() = extend(
+    private fun registerContextAwareParameterCompletion() = extend(
         CompletionType.BASIC,
         PlatformPatterns.psiElement()
             .inside(LatexParameterText::class.java)
-            .inside(LatexRequiredParam::class.java)
-            .withPattern("File name completion pattern") { psiElement, processingContext ->
-                val command = getParentOfType(psiElement, LatexCommands::class.java) ?: return@withPattern false
-                val name = command.name ?: return@withPattern false
-                val cmd = LatexRegularCommand[name.substring(1)] ?: return@withPattern false
-
-                val args = cmd.first().getArgumentsOf(RequiredFileArgument::class)
-                if (args.isNotEmpty()) processingContext?.put("type", args.first())
-                args.isNotEmpty()
-            }
             .withLanguage(LatexLanguage),
-        LatexFileProvider()
-    )
-
-    /**
-     * Adds folder name support to the autocomplete.
-     */
-    private fun registerFolderNameCompletion() = extend(
-        CompletionType.BASIC,
-        PlatformPatterns.psiElement()
-            .inside(LatexRequiredParam::class.java)
-            .withPattern("Folder name completion pattern") { psiElement, processingContext ->
-                val command = getParentOfType(psiElement, LatexCommands::class.java) ?: return@withPattern false
-                val name = command.name ?: return@withPattern false
-                val cmd = LatexRegularCommand[name.substring(1)] ?: return@withPattern false
-
-                val args = cmd.first().getArgumentsOf(RequiredFolderArgument::class)
-                if (args.isNotEmpty()) processingContext?.put("type", args.first())
-                args.isNotEmpty()
-            }
-            .withLanguage(LatexLanguage),
-        LatexFolderProvider()
-    )
-
-    /**
-     * Adds graphics path support to the autocomplete.
-     */
-    private fun registerGraphicPathCompletion() = extend(
-        CompletionType.BASIC,
-        PlatformPatterns.psiElement()
-            .inside(LatexParameterText::class.java)
-            .inside(LatexRequiredParam::class.java)
-            .withPattern("Folder name completion pattern") { psiElement, processingContext ->
-                val command = getParentOfType(psiElement, LatexCommands::class.java) ?: return@withPattern false
-                val name = command.commandToken.text
-                val cmd = LatexRegularCommand[name.substring(1)] ?: return@withPattern false
-
-                val args = cmd.first().getArgumentsOf(RequiredPicturePathArgument::class)
-                if (args.isNotEmpty()) processingContext?.put("type", args.first())
-                args.isNotEmpty()
-            }
-            .withLanguage(LatexLanguage),
-        LatexGraphicsPathProvider
-    )
-
-    /**
-     * Adds color support to the autocomplete.
-     */
-    private fun registerColorCompletion() = extend(
-        CompletionType.BASIC,
-        PlatformPatterns.psiElement()
-            .inside(LatexRequiredParam::class.java)
-            .withPattern("xcolor color completion pattern") { psiElement, _ ->
-                val command = getParentOfType(psiElement, LatexCommands::class.java) ?: return@withPattern false
-                val name = command.commandToken.text
-                name in ColorMagic.takeColorCommands
-            },
-        LatexXColorProvider
+        ContextAwareCompletionProviderDispatcher
     )
 
     /**
@@ -275,99 +184,5 @@ open class LatexCompletionContributor : CompletionContributor() {
             }
             .withLanguage(LatexLanguage),
         completionProvider
-    )
-
-    private fun registerLabelReferenceCompletion() {
-        extendLatexCommands(LatexLabelReferenceProvider, CommandMagic.labelReference.keys)
-    }
-
-    /**
-     * Adds support for bibliography references to the autocomplete.
-     */
-    private fun registerBibliographyReferenceCompletion() {
-        extendLatexCommands(LatexBibliographyReferenceProvider, CommandMagic.bibliographyReference)
-    }
-
-    /**
-     * Adds support for package names to the autocomplete.
-     */
-    private fun registerPackageNameCompletion() {
-        extendLatexCommands(LatexPackageNameProvider, "\\usepackage", "\\RequirePackage")
-    }
-
-    private fun registerGlossariesCompletion() {
-        extendLatexCommands(LatexGlossariesCompletionProvider, CommandMagic.glossaryReference)
-    }
-
-    /**
-     * Adds support for document classes to the autocomplete.
-     */
-    private fun registerDocumentClassCompletion() = extendLatexCommands(
-        LatexDocumentclassProvider,
-        "\\documentclass", "\\LoadClass", "\\LoadClassWithOptions"
-    )
-
-    /**
-     * Adds autocompletion for parameters that have been given a default [Argument.Type].
-     * When the type contains a completion contributor, it will be registered to the correct6 argument.
-     */
-    private fun registerLatexArgumentTypeCompletion() = Argument.Type.entries.forEach { type ->
-        val completionProvider = type.completionProvider ?: return@forEach
-        extend(
-            CompletionType.BASIC,
-            PlatformPatterns.psiElement()
-                .inside(LatexParameterText::class.java)
-                .withPattern { psiElement, _ ->
-                    val parameter = psiElement.parentOfType(LatexParameter::class) ?: return@withPattern false
-                    val psiCommand = parameter.parentOfType(LatexCommands::class) ?: return@withPattern false
-                    val command = psiCommand.defaultCommand() ?: return@withPattern false
-                    val index = parameter.indexOf() ?: return@withPattern false
-                    val argument = command.arguments.getOrNull(index) ?: return@withPattern false
-                    argument.type == type
-                }
-                .withLanguage(LatexLanguage),
-            completionProvider
-        )
-    }
-
-    /**
-     * Adds default environment names to the autocompletion.
-     */
-    private fun registerDefaultEnvironmentCompletion() = extend(
-        CompletionType.BASIC,
-        PlatformPatterns.psiElement()
-            .inside(LatexEnvIdentifier::class.java)
-            .inside(PlatformPatterns.or(PlatformPatterns.psiElement(LatexBeginCommand::class.java), PlatformPatterns.psiElement(LatexEndCommand::class.java)))
-            .withLanguage(LatexLanguage),
-        LatexEnvironmentCompletionProvider
-    )
-
-    /**
-     * Adds a completion contributor that gets activated within the first required parameter of a given set of commands.
-     */
-    private fun extendLatexCommands(
-        provider: CompletionProvider<CompletionParameters>,
-        vararg commandNamesWithSlash: String
-    ) = extendLatexCommands(provider, setOf(*commandNamesWithSlash))
-
-    /**
-     * Adds a completion contributor that gets activated within the first required parameter of a given set of commands.
-     */
-    private fun extendLatexCommands(
-        provider: CompletionProvider<CompletionParameters>,
-        commandNamesWithSlash: Set<String>
-    ) = extend(
-        CompletionType.BASIC,
-        PlatformPatterns.psiElement()
-            .inside(LatexParameterText::class.java)
-            .inside(LatexRequiredParam::class.java)
-            .withPattern { psiElement, _ ->
-                val command = psiElement.parentOfType(LatexCommands::class) ?: return@withPattern false
-                command.name in commandNamesWithSlash
-//                CommandManager.updateAliases(commandNamesWithSlash, psiElement.project)
-//                CommandManager.getAliases(command.commandToken.text).intersect(commandNamesWithSlash).isNotEmpty()
-            }
-            .withLanguage(LatexLanguage),
-        provider
     )
 }

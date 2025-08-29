@@ -250,13 +250,11 @@ class CommandManagerTest {
         manager!!.registerAlias("\\three", "\\tien")
         manager!!.registerAlias("\\ten", "\\tien", isRedefinition = true)
         manager!!.registerAlias("\\tien", "\\dix", isRedefinition = true)
-        checkDefaultAliases(
-            Function { command: String? ->
-                manager!!.getAliases(
-                    command!!
-                )
-            }
-        )
+        checkDefaultAliases { command: String? ->
+            manager!!.getAliases(
+                command!!
+            )
+        }
     }
 
     @Test
@@ -276,39 +274,33 @@ class CommandManagerTest {
         manager!!.registerAliasNoSlash("three", "tien")
         manager!!.registerAliasNoSlash("ten", "tien", isRedefinition = true)
         manager!!.registerAliasNoSlash("tien", "dix")
-        checkDefaultAliases(
-            Function { command: String? ->
-                manager!!.getAliases(
-                    command!!
-                )
-            }
-        )
+        checkDefaultAliases { command: String? ->
+            manager!!.getAliases(
+                command!!
+            )
+        }
     }
 
     @Test
     @Throws(Exception::class)
     fun testGetAliases() {
         resetup(defaultAliasGroups)
-        checkDefaultAliases(
-            Function { command: String? ->
-                manager!!.getAliases(
-                    command!!
-                )
-            }
-        )
+        checkDefaultAliases { command: String? ->
+            manager!!.getAliases(
+                command!!
+            )
+        }
     }
 
     @Test
     @Throws(Exception::class)
     fun testGetAliasesNoSlash() {
         resetup(defaultAliasGroups)
-        checkDefaultAliasesNoSlash(
-            Function { commandNoSlash: String? ->
-                manager!!.getAliasesNoSlash(
-                    commandNoSlash!!
-                )
-            }
-        )
+        checkDefaultAliasesNoSlash { commandNoSlash: String? ->
+            manager!!.getAliasesNoSlash(
+                commandNoSlash!!
+            )
+        }
     }
 
     @Test

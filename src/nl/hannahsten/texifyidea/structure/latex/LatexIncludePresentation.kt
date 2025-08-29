@@ -10,7 +10,7 @@ import nl.hannahsten.texifyidea.reference.InputFileReference
  */
 class LatexIncludePresentation(labelCommand: LatexCommands) : ItemPresentation {
 
-    private val fileName by lazy { labelCommand.references.filterIsInstance<InputFileReference>().joinToString { it.key } }
+    private val fileName by lazy { labelCommand.references.filterIsInstance<InputFileReference>().joinToString { it.refText } }
 
     // This method has to be really quick because it is used for example in sorting entries before they are shown to the user in the structure popup, so we cannot resolve to the actual file here
     override fun getPresentableText() = fileName

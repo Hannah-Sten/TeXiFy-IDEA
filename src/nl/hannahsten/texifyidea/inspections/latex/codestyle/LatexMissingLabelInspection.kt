@@ -25,7 +25,6 @@ import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettingsMa
 import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.hasLabel
-import nl.hannahsten.texifyidea.util.parser.hasStar
 import nl.hannahsten.texifyidea.util.parser.traverseTyped
 import org.jetbrains.annotations.Nls
 import java.util.*

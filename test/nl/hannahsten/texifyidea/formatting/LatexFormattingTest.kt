@@ -220,8 +220,8 @@ fun Int?.ifPositiveAddTwo(): Int =
     fun testAlgorithmicx() {
         """
             \begin{algorithm} \begin{algorithmic} \State begin 
-            \If {$ i\geq maxval${'$'}} \State $ i\gets 0${'$'} 
-            \Else \If {$ i+k\leq maxval${'$'}} \State $ i\gets i+k${'$'} 
+            \If {$ i\geq maxval$} \State $ i\gets 0$ 
+            \Else \If {$ i+k\leq maxval$} \State $ i\gets i+k$ 
             \EndIf 
             \EndIf \end{algorithmic} \caption{Insertion sort}\label{alg:algorithm2} \end{algorithm}
         """.trimIndent() `should be reformatted to` """

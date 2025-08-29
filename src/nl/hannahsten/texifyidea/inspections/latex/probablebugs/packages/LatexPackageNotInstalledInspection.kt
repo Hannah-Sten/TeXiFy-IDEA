@@ -74,7 +74,7 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
         for (command in commands) {
             val references = InputFileReference.getFileArgumentsReferences(command)
             for (ref in references) {
-                val pack = ref.key
+                val pack = ref.refText
                 if(pack in packages) continue
                 if(knownNotInstalledPackages.contains(pack) && ref.resolve() == null) {
                     descriptors.add(
