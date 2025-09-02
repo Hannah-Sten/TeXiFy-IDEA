@@ -49,7 +49,7 @@ data class LatexSimpleDefinition(
 }
 
 /**
- *
+ * The indexer for `.dtx` files, extracting command and environment definitions.
  */
 object LatexDtxDefinitionDataIndexer : DataIndexer<String, List<LatexSimpleDefinition>, FileContent> {
 
@@ -135,7 +135,7 @@ object LatexDtxDefinitionDataIndexer : DataIndexer<String, List<LatexSimpleDefin
                 }
             }
         }
-        val lib = LatexLib.Package(packageName ?: fileName.substringBeforeLast('.'))
+        val lib = packageName?.let { LatexLib.Package(it) } ?: LatexLib.fromFileName(fileName)
         return DtxDoc(lib, docLines, definitions)
     }
 
@@ -307,7 +307,7 @@ class LatexDtxDefinitionIndexEx : FileBasedIndexExtension<String, List<LatexSimp
         return MyValueExternalizer
     }
 
-    override fun getVersion() = 6
+    override fun getVersion() = 7
 
     override fun getInputFilter(): FileBasedIndex.InputFilter {
         return myInputFilter

@@ -182,18 +182,24 @@ class LatexLibraryDefinitionService(
         }
     }
 
+    private fun processDtxDefinitions(
+        lib: LatexLib, currentSourcedDefinitions: MutableMap<String, SourcedDefinition>, assignedLib: LatexLib = lib
+    ) {
+        LatexRegexBasedIndex.processDtxDefinitions(lib, project) { sd ->
+            val entity =
+                if (sd.isEnv) LSemanticEnv(sd.name, assignedLib, arguments = sd.arguments, description = sd.description)
+                else LSemanticCommand(sd.name, assignedLib, arguments = sd.arguments, description = sd.description)
+            val sourced = SourcedDefinition(entity, null, DefinitionSource.LibraryScan)
+            currentSourcedDefinitions.merge(sd.name, sourced, LatexDefinitionUtil::mergeDefinition)
+        }
+    }
+
     private fun processExternalDefinitions(
         libInfo: LatexLibraryInfo,
         currentSourcedDefinitions: MutableMap<String, SourcedDefinition>
     ) {
         val lib = libInfo.name
-        LatexRegexBasedIndex.processDtxDefinitions(lib, project) { sd ->
-            val entity =
-                if (sd.isEnv) LSemanticEnv(sd.name, lib, arguments = sd.arguments, description = sd.description)
-                else LSemanticCommand(sd.name, lib, arguments = sd.arguments, description = sd.description)
-            val sourced = SourcedDefinition(entity, null, DefinitionSource.LibraryScan)
-            currentSourcedDefinitions.merge(sd.name, sourced, LatexDefinitionUtil::mergeDefinition)
-        }
+        processDtxDefinitions(lib, currentSourcedDefinitions)
 
         val file = libInfo.location
         for (name in LatexRegexBasedIndex.getCommandDefinitions(file, project)) {
@@ -220,7 +226,7 @@ class LatexLibraryDefinitionService(
         pkgName: LatexLib, processedPackages: MutableSet<LatexLib> // to prevent loops
     ): LibDefinitionBundle {
         if (pkgName.isDefault) {
-            return baseLibBundle
+            return predefinedBaseLibBundle
         }
         getTimedValue(pkgName)?.takeIf { it.isNotExpired(libExpiration) }?.let { return it.value }
         if (!processedPackages.add(pkgName)) {
@@ -273,11 +279,35 @@ class LatexLibraryDefinitionService(
      */
     override fun computeValue(key: LatexLib, oldValue: LibDefinitionBundle?): LibDefinitionBundle {
         val start = System.currentTimeMillis()
-        val result = computeDefinitionsRecur(key, mutableSetOf())
+        val result = if (key == LatexLib.BASE) {
+            computeBaseBundle()
+        }
+        else {
+            computeDefinitionsRecur(key, mutableSetOf())
+        }
         val buildTime = System.currentTimeMillis() - start
         countOfBuilds.incrementAndGet()
         totalTimeCost.addAndGet(buildTime)
         return result
+    }
+
+    private fun computeBaseBundle(): LibDefinitionBundle {
+        val baseDtxFiles = listOf(
+            // all .dtx files from LaTeX2e sources from latexrelease.ins, see https://ctan.org/tex-archive/macros/latex/base
+            "ltclass.dtx", "ltvers.dtx", "latexrelease.dtx", "ltdirchk.dtx", "ltplain.dtx", "ltluatex.dtx", "ltexpl.dtx", "ltdefns.dtx",
+            "ltcmd.dtx", "lthooks.dtx", "ltcmdhooks.dtx", "ltsockets.dtx", "lttemplates.dtx", "ltalloc.dtx", "ltcntrl.dtx", "lterror.dtx",
+            "ltpar.dtx", "ltpara.dtx", "ltmeta.dtx", "ltspace.dtx", "ltlogos.dtx", "ltfiles.dtx", "ltoutenc.dtx", "ltcounts.dtx", "ltlength.dtx",
+            "ltfssbas.dtx", "ltfssaxes.dtx", "ltfsstrc.dtx", "ltfssdcl.dtx", "ltfssini.dtx", "fontdef.dtx", "ltfntcmd.dtx", "lttextcomp.dtx",
+            "ltpageno.dtx", "ltxref.dtx", "ltproperties.dtx", "ltmiscen.dtx", "ltmath.dtx", "ltlists.dtx", "ltboxes.dtx", "lttab.dtx",
+            "ltpictur.dtx", "ltthm.dtx", "ltsect.dtx", "ltfloat.dtx", "ltidxglo.dtx", "ltbibl.dtx", "ltmarks.dtx", "ltpage.dtx",
+            "ltclass.dtx", "ltfilehook.dtx", "ltshipout.dtx", "ltoutput.dtx", "ltfsscmp.dtx", "ltfinal.dtx",
+            "ltxrelease.dtx"
+        )
+        val defs = predefinedBaseLibBundle.introducedDefinitions.toMutableMap()
+        for (dtx in baseDtxFiles) {
+            processDtxDefinitions(LatexLib.fromFileName(dtx), defs, LatexLib.BASE) // assign all definitions to the base package, rather than the dtx file
+        }
+        return LibDefinitionBundle(LatexLib.BASE, defs)
     }
 
     /**
@@ -290,6 +320,10 @@ class LatexLibraryDefinitionService(
 
     fun getLibBundle(libName: String): LibDefinitionBundle {
         return getLibBundle(LatexLib(libName))
+    }
+
+    fun getBaseBundle(): LibDefinitionBundle {
+        return getLibBundle(LatexLib.BASE)
     }
 
     /**
@@ -316,8 +350,7 @@ class LatexLibraryDefinitionService(
         override val countOfBuilds = AtomicInteger(0)
         override val totalTimeCost = AtomicLong(0)
 
-        val baseLibBundle: LibDefinitionBundle by lazy {
-
+        val predefinedBaseLibBundle: LibDefinitionBundle by lazy {
             // return the hard-coded basic commands
             val currentSourcedDefinitions = mutableMapOf<String, SourcedDefinition>()
             val lib = LatexLib.BASE
@@ -327,6 +360,7 @@ class LatexLibraryDefinitionService(
             PredefinedPrimitives.allCommands.forEach {
                 currentSourcedDefinitions[it.name] = SourcedDefinition(it, null, DefinitionSource.Primitive)
             }
+
             LibDefinitionBundle(lib, currentSourcedDefinitions)
         }
 
@@ -397,7 +431,7 @@ class LatexDefinitionService(
         // packages first
         val packageService = LatexLibraryDefinitionService.getInstance(project)
         val libraries = ArrayList<LibDefinitionBundle>(key.libraries.size + 1)
-        libraries.add(packageService.getLibBundle(LatexLib.BASE)) // add the default commands
+        libraries.add(packageService.getBaseBundle()) // add the default commands
         key.libraries.mapTo(libraries) { packageService.getLibBundle(it) }
 
         val bundle = WorkingFilesetDefinitionBundle(libraries)
@@ -420,14 +454,14 @@ class LatexDefinitionService(
     }
 
     fun getDefBundleForFileset(fileset: Fileset): DefinitionBundle {
-        return getAndComputeLater(fileset, expirationTime, LatexLibraryDefinitionService.baseLibBundle)
+        return getAndComputeLater(fileset, expirationTime, LatexLibraryDefinitionService.predefinedBaseLibBundle)
     }
 
     /**
      * Get the merged definition bundle for the given [psiFile], which may belong to multiple filesets.
      */
     fun getDefBundlesMerged(psiFile: PsiFile): DefinitionBundle {
-        val filesetData = LatexProjectStructure.getFilesetDataFor(psiFile) ?: return LatexLibraryDefinitionService.baseLibBundle
+        val filesetData = LatexProjectStructure.getFilesetDataFor(psiFile) ?: return LatexLibraryDefinitionService.predefinedBaseLibBundle
         if (filesetData.filesets.size == 1) return getDefBundleForFileset(filesetData.filesets.first())
         return union(filesetData.filesets.map { getDefBundleForFileset(it) })
     }
@@ -512,7 +546,7 @@ class LatexDefinitionService(
         }
 
         fun baseBundle(): DefinitionBundle {
-            return LatexLibraryDefinitionService.baseLibBundle
+            return LatexLibraryDefinitionService.predefinedBaseLibBundle
         }
 
         fun union(list: List<DefinitionBundle>): DefinitionBundle {
@@ -521,7 +555,7 @@ class LatexDefinitionService(
         }
 
         private fun getBundleFor(element: PsiElement): DefinitionBundle {
-            val file = element.containingFile ?: return LatexLibraryDefinitionService.baseLibBundle
+            val file = element.containingFile ?: return LatexLibraryDefinitionService.predefinedBaseLibBundle
             return getInstance(file.project).getDefBundlesMerged(file)
         }
 
