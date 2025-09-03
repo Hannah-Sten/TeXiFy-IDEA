@@ -301,7 +301,8 @@ class LatexLibraryDefinitionService(
             "ltpageno.dtx", "ltxref.dtx", "ltproperties.dtx", "ltmiscen.dtx", "ltmath.dtx", "ltlists.dtx", "ltboxes.dtx", "lttab.dtx",
             "ltpictur.dtx", "ltthm.dtx", "ltsect.dtx", "ltfloat.dtx", "ltidxglo.dtx", "ltbibl.dtx", "ltmarks.dtx", "ltpage.dtx",
             "ltclass.dtx", "ltfilehook.dtx", "ltshipout.dtx", "ltoutput.dtx", "ltfsscmp.dtx", "ltfinal.dtx",
-            "ltxrelease.dtx"
+            "ltxrelease.dtx",
+            "exscale.dtx", "newlfont.dtx", "inputenc.dtx", "alltt.dtx" // some additional .dtx files
         )
         val defs = predefinedBaseLibBundle.introducedDefinitions.toMutableMap()
         for (dtx in baseDtxFiles) {
