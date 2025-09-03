@@ -8,6 +8,7 @@ import com.intellij.psi.PsiManager
 import nl.hannahsten.texifyidea.CommandFailure
 import nl.hannahsten.texifyidea.index.DefinitionBundle
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
+import nl.hannahsten.texifyidea.index.SourcedDefinition
 import nl.hannahsten.texifyidea.lang.LSemanticEntity
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.toLatexPackage
@@ -171,7 +172,7 @@ class LatexDocumentationProvider : DocumentationProvider {
             }
             // If we return a blank string, the popup will just say "Fetching documentation..."
             if (isBlank()) {
-                append("<br>")
+                append("<i>No documentation found.</i>")
             }
         }
     }
@@ -191,12 +192,12 @@ class LatexDocumentationProvider : DocumentationProvider {
         obj: Any?,
         psiElement: PsiElement?
     ): PsiElement? {
-        if (obj == null || obj !is LSemanticEntity) {
+        if(obj !is SourcedDefinition) {
             // Cancel documentation popup
             lookup = null
             return null
         }
-        lookup = obj
+        lookup = obj.entity
         return psiElement
     }
 
