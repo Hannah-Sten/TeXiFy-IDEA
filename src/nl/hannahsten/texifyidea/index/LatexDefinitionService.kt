@@ -225,12 +225,9 @@ class LatexLibraryDefinitionService(
     private fun computeDefinitionsRecur(
         pkgName: LatexLib, processedPackages: MutableSet<LatexLib> // to prevent loops
     ): LibDefinitionBundle {
-        if (pkgName.isDefault) {
-            return predefinedBaseLibBundle
-        }
         getTimedValue(pkgName)?.takeIf { it.isNotExpired(libExpiration) }?.let { return it.value }
         if (!processedPackages.add(pkgName)) {
-            Log.warn("Recursive package dependency detected for package [$pkgName] !")
+            Log.debug("Recursive package dependency detected for package [$pkgName] !")
             return LibDefinitionBundle(pkgName)
         }
         val libInfo = LatexLibraryStructureService.getInstance(project).getLibraryInfo(pkgName)

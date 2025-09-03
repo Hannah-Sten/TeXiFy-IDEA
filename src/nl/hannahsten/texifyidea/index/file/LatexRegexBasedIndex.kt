@@ -70,7 +70,7 @@ object LatexIndexRegexes {
 
     val ENVIRONMENT_DEFINITION = Regex(
         buildString {
-            makeCommandRegex(PredefinedCmdDefinitions.namesOfAllCommandDef)
+            makeCommandRegex(PredefinedCmdDefinitions.namesOfAllEnvironmentDef)
             append("\\s*\\{\\s*") // white space and optional opening brace
             append("""(?<name>[a-zA-Z@]+\*?)""")
         }
@@ -85,7 +85,7 @@ class LatexRegexBasedCommandDefIndex : AbstractLatexRegexBasedDefIndexExtension(
         return myIndexer
     }
 
-    override fun getVersion() = 1
+    override fun getVersion() = 2
 
     override fun getName(): ID<Int, List<String>> {
         return LatexFileBasedIndexKeys.REGEX_COMMAND_DEFINITIONS
@@ -99,7 +99,7 @@ class LatexRegexBasedEnvironmentDefIndex : AbstractLatexRegexBasedDefIndexExtens
         return myIndexer
     }
 
-    override fun getVersion() = 1
+    override fun getVersion() = 2
 
     override fun getName(): ID<Int, List<String>> {
         return LatexFileBasedIndexKeys.REGEX_ENVIRONMENT_DEFINITIONS
