@@ -294,19 +294,20 @@ class LatexLibraryDefinitionService(
     private fun computeBaseBundle(): LibDefinitionBundle {
         val baseDtxFiles = listOf(
             // all .dtx files from LaTeX2e sources from latexrelease.ins, see https://ctan.org/tex-archive/macros/latex/base
-            "ltclass.dtx", "ltvers.dtx", "latexrelease.dtx", "ltdirchk.dtx", "ltplain.dtx", "ltluatex.dtx", "ltexpl.dtx", "ltdefns.dtx",
-            "ltcmd.dtx", "lthooks.dtx", "ltcmdhooks.dtx", "ltsockets.dtx", "lttemplates.dtx", "ltalloc.dtx", "ltcntrl.dtx", "lterror.dtx",
-            "ltpar.dtx", "ltpara.dtx", "ltmeta.dtx", "ltspace.dtx", "ltlogos.dtx", "ltfiles.dtx", "ltoutenc.dtx", "ltcounts.dtx", "ltlength.dtx",
-            "ltfssbas.dtx", "ltfssaxes.dtx", "ltfsstrc.dtx", "ltfssdcl.dtx", "ltfssini.dtx", "fontdef.dtx", "ltfntcmd.dtx", "lttextcomp.dtx",
-            "ltpageno.dtx", "ltxref.dtx", "ltproperties.dtx", "ltmiscen.dtx", "ltmath.dtx", "ltlists.dtx", "ltboxes.dtx", "lttab.dtx",
-            "ltpictur.dtx", "ltthm.dtx", "ltsect.dtx", "ltfloat.dtx", "ltidxglo.dtx", "ltbibl.dtx", "ltmarks.dtx", "ltpage.dtx",
-            "ltclass.dtx", "ltfilehook.dtx", "ltshipout.dtx", "ltoutput.dtx", "ltfsscmp.dtx", "ltfinal.dtx",
-            "ltxrelease.dtx",
-            "exscale.dtx", "newlfont.dtx", "inputenc.dtx", "alltt.dtx" // some additional .dtx files
+            "ltclass", "ltvers", "latexrelease", "ltdirchk", "ltplain", "ltluatex", "ltexpl", "ltdefns",
+            "ltcmd", "lthooks", "ltcmdhooks", "ltsockets", "lttemplates", "ltalloc", "ltcntrl", "lterror",
+            "ltpar", "ltpara", "ltmeta", "ltspace", "ltlogos", "ltfiles", "ltoutenc", "ltcounts", "ltlength",
+            "ltfssbas", "ltfssaxes", "ltfsstrc", "ltfssdcl", "ltfssini", "fontdef", "ltfntcmd", "lttextcomp",
+            "ltpageno", "ltxref", "ltproperties", "ltmiscen", "ltmath", "ltlists", "ltboxes", "lttab",
+            "ltpictur", "ltthm", "ltsect", "ltfloat", "ltidxglo", "ltbibl", "ltmarks", "ltpage",
+            "ltfilehook", "ltshipout", "ltoutput", "ltfsscmp", "ltfinal",
+            "latexrelease",
+            "exscale", "newlfont", "inputenc", "alltt" // some additional  files
         )
         val defs = predefinedBaseLibBundle.introducedDefinitions.toMutableMap()
         for (dtx in baseDtxFiles) {
-            processDtxDefinitions(LatexLib.fromFileName(dtx), defs, LatexLib.BASE) // assign all definitions to the base package, rather than the dtx file
+            // those dtx files are scanned and stored as packages, see LatexDtxDefinitionDataIndexer
+            processDtxDefinitions(LatexLib.Package(dtx), defs, LatexLib.BASE) // assign all definitions to the base package, rather than the dtx file
         }
         return LibDefinitionBundle(LatexLib.BASE, defs)
     }

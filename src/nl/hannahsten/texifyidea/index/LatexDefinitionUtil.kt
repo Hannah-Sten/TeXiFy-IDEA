@@ -455,9 +455,10 @@ object LatexDefinitionUtil {
         return oldCtx.union(newCtx)
     }
 
-    private fun chooseByLength(old: String, new: String): String {
-        return if (new.length > old.length) new else old
+    private fun replaceIfEmpty(old: String, new: String): String {
+        return old.ifEmpty { new }
     }
+
     private fun chooseArgs(old: List<LArgument>, new: List<LArgument>, isOldPredefined: Boolean): List<LArgument> {
         if (new.isEmpty()) return old
         if(old.isEmpty()) return new
@@ -467,7 +468,7 @@ object LatexDefinitionUtil {
     private fun mergeCmdDefinition(oldCmd: LSemanticCommand, newCmd: LSemanticCommand, isOldPredefined: Boolean): LSemanticCommand {
         val ctx = mergeApplicableContexts(oldCmd, newCmd)
         val arg = chooseArgs(oldCmd.arguments, newCmd.arguments, isOldPredefined)
-        val description = chooseByLength(oldCmd.description, newCmd.description)
+        val description = replaceIfEmpty(oldCmd.description, newCmd.description)
         val display = newCmd.display ?: oldCmd.display
         return LSemanticCommand(
             oldCmd.name, oldCmd.dependency,
@@ -479,7 +480,7 @@ object LatexDefinitionUtil {
         val ctx = mergeApplicableContexts(oldEnv, newEnv)
         val innerIntro = LatexContextIntro.union(newEnv.contextSignature, oldEnv.contextSignature)
         val arg = chooseArgs(oldEnv.arguments, newEnv.arguments, isOldPredefined)
-        val description = chooseByLength(oldEnv.description, newEnv.description)
+        val description = replaceIfEmpty(oldEnv.description, newEnv.description)
         return LSemanticEnv(
             oldEnv.name, oldEnv.dependency,
             ctx, arg, innerIntro, description

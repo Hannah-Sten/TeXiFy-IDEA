@@ -58,7 +58,9 @@ object PredefinedEnvBasic : PredefinedEnvironmentSet() {
         "enumerate".env(+LatexContexts.Enumerate) {
             "A numbered list."
         }
-        "itemize".env(+LatexContexts.Enumerate)
+        "itemize".env(+LatexContexts.Enumerate) {
+            "A bulleted list."
+        }
 
         +"array"
 
