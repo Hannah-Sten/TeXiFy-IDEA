@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.lang.predefined
 
+import com.intellij.openapi.application.ApplicationManager
 import nl.hannahsten.texifyidea.lang.LSemanticCommand
 import nl.hannahsten.texifyidea.lang.LSemanticEntity
 import nl.hannahsten.texifyidea.lang.LSemanticEnv
@@ -54,14 +55,12 @@ object AllPredefined : LatexSemanticsLookup {
         return findAll(name).filterIsInstance<LSemanticEnv>()
     }
 
-    private const val CHECK_DUPLICATION = true
-
     init {
-        if (CHECK_DUPLICATION) {
-            val names = allEntities.groupBy { Pair(it.name, it.dependency) }
-            for ((name, commands) in names) {
+        if (ApplicationManager.getApplication().isInternal) {
+            val names = allEntities.groupBy { it }
+            for ((item, commands) in names) {
                 if (commands.size > 1) {
-                    Log.warn("Duplicate predefined items: ${name.first}(${name.second}): ${commands.joinToString()}")
+                    Log.warn("Duplicate predefined items: ${item.name}(${item.dependency}): ${commands.joinToString()}")
                 }
             }
         }

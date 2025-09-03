@@ -31,6 +31,8 @@ sealed class LSemanticEntity(
         if (this === other) return true
         if (other !is LSemanticEntity) return false
 
+        if(this::class != other::class) return false
+
         if (name != other.name) return false
         if (dependency != other.dependency) return false
         return true
