@@ -4,6 +4,7 @@ import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyContextAwareInspectionBase
 import nl.hannahsten.texifyidea.lang.LContextSet
 
@@ -23,7 +24,7 @@ import nl.hannahsten.texifyidea.lang.LContextSet
 
 class LatexEscapeHashOutsideCommandInspection : TexifyContextAwareInspectionBase(
     inspectionId = "EscapeHashOutsideCommand",
-    regex = """(?<!\\)#""".toRegex(),
+    inspectionGroup = InsightGroup.LATEX
 ) {
     override fun errorMessage(matcher: MatchResult, file: PsiFile): String {
         return "Unescaped #"

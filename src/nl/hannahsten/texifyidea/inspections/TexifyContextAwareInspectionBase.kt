@@ -12,6 +12,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.createSmartPointer
 import com.intellij.util.SmartList
+import nl.hannahsten.texifyidea.action.debug.SimplePerformanceTracker
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase.Companion.suppressionElement
@@ -35,6 +36,8 @@ import nl.hannahsten.texifyidea.psi.LatexWithContextTraverser
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
 import nl.hannahsten.texifyidea.util.parser.traverse
+import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicLong
 
 abstract class TexifyContextAwareInspectionBase(
     /**
@@ -64,7 +67,7 @@ abstract class TexifyContextAwareInspectionBase(
         get() = emptySet()
 
     /**
-     *
+     * Inspects a single element, given the contexts it is in.
      */
     abstract fun inspectElement(
         element: PsiElement, contexts: LContextSet,
@@ -160,6 +163,11 @@ abstract class TexifyContextAwareInspectionBase(
             traverseRecur(file)
             return descriptors
         }
+    }
+
+    object PerformanceTracker : SimplePerformanceTracker {
+        override val countOfBuilds: AtomicInteger = AtomicInteger(0)
+        override val totalTimeCost: AtomicLong = AtomicLong(0)
     }
 
     /**
