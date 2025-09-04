@@ -1,6 +1,6 @@
 package nl.hannahsten.texifyidea.ui.symbols
 
-import com.intellij.openapi.application.smartReadAction
+import com.intellij.openapi.application.readAction
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
@@ -39,7 +39,7 @@ open class SymbolToolWindowFactory : ToolWindowFactory, DumbAware {
     }
 
     // Non-idea has no concept of modules so we need to use some other criterion based on the project
-    override suspend fun isApplicableAsync(project: Project) = smartReadAction(project) { project.isLatexProject() }
+    override suspend fun isApplicableAsync(project: Project) = readAction { project.isLatexProject() }
 
     /**
      * The swing contents of the symbol tool window.
