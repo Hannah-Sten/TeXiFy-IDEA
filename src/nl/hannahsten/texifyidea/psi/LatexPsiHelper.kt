@@ -54,8 +54,7 @@ class LatexPsiHelper(private val project: Project) {
     /**
      * Create a PsiFile containing the given text.
      */
-    fun createFromText(text: String): PsiFile =
-        PsiFileFactory.getInstance(project).createFileFromText("DUMMY.tex", LatexLanguage, text, false, true)
+    fun createFromText(text: String): PsiFile = createFromText(text, project)
 
     fun createBibtexFromText(text: String): PsiFile =
         PsiFileFactory.getInstance(project).createFileFromText("DUMMY.bib", BibtexLanguage, text, false, true)
@@ -172,4 +171,11 @@ class LatexPsiHelper(private val project: Project) {
     fun createSpacing(space: String = " "): PsiWhiteSpace? = LatexPsiHelper(project)
         .createFromText(space)
         .findFirstChildOfType(PsiWhiteSpace::class)
+
+    companion object {
+
+        fun createFromText(text: String, project: Project): PsiFile {
+            return PsiFileFactory.getInstance(project).createFileFromText("DUMMY.tex", LatexLanguage, text, false, true)
+        }
+    }
 }

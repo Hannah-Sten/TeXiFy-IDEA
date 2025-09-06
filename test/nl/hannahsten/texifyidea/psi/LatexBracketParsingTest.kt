@@ -47,7 +47,7 @@ class LatexBracketParsingTest : BasePlatformTestCase() {
                     ~\ref{eq:equation}
                 \end{equation}
             %[0,2)
-                ${'$'}[0,2)${'$'}
+                $[0,2)$
             \end{document}
             """.trimIndent()
 

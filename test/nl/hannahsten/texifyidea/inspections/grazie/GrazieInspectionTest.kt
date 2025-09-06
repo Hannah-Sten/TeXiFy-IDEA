@@ -32,7 +32,7 @@ class GrazieInspectionTest : BasePlatformTestCase() {
     }
 
     fun testSingleSentence() {
-        myFixture.configureByText(LatexFileType, """Is these an error with a sentence ${'$'}\xi${'$'} end or not.""")
+        myFixture.configureByText(LatexFileType, """Is these an error with a sentence $\xi$ end or not.""")
         myFixture.checkHighlighting()
     }
 
@@ -108,7 +108,7 @@ class GrazieInspectionTest : BasePlatformTestCase() {
             LatexFileType,
             """
             \begin{document}
-                Das ist eine Function ${'$'} f${'$'}.
+                Das ist eine Function $ f$.
                 Nur zum Testen.
 
                 Dies ist <GRAMMAR_ERROR descr="Möglicherweise passen das Nomen und die Wörter, die das Nomen beschreiben, grammatisch nicht zusammen.">eine deutscher Satz</GRAMMAR_ERROR>.
@@ -139,7 +139,7 @@ class GrazieInspectionTest : BasePlatformTestCase() {
         myFixture.configureByText(
             LatexFileType,
             """
-            Eine \textbf{Folge oder Zahlenfolge} in ${'$'}M${'$'} ist eine Abbildung
+            Eine \textbf{Folge oder Zahlenfolge} in ${'$'}M$ ist eine Abbildung
             """.trimIndent()
         )
         myFixture.checkHighlighting()
@@ -164,8 +164,8 @@ class GrazieInspectionTest : BasePlatformTestCase() {
             LatexFileType,
             """
                 \begin{tabular}{llll}
-                    ${'$'}a${'$'}:                 & ${'$'}\mathbb{N}${'$'} & \rightarrow & ${'$'}M${'$'}     \\
-                    \multicolumn{1}{l}{} & ${'$'}n${'$'}          & \mapsto     & ${'$'}a(n)${'$'}.
+                    ${'$'}a$:                 & $\mathbb{N}$ & \rightarrow & ${'$'}M$     \\
+                    \multicolumn{1}{l}{} & ${'$'}n$          & \mapsto     & ${'$'}a(n)$.
                 \end{tabular}
 
                 Ich bin über die Entwicklung sehr froh.

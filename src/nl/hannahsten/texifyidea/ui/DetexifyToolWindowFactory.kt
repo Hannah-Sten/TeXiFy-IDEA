@@ -16,7 +16,7 @@ class DetexifyToolWindowFactory : ToolWindowFactory {
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         val detexifyToolWindow = DetexifyToolWindow()
 
-        val hasApprovedDetexify = TexifySettings.getInstance().hasApprovedDetexify
+        val hasApprovedDetexify = TexifySettings.getState().hasApprovedDetexify
 
         // If not approved, ask for approval every time, otherwise remember it
         if (!hasApprovedDetexify) {
@@ -25,7 +25,7 @@ class DetexifyToolWindowFactory : ToolWindowFactory {
                 return
             }
             else {
-                TexifySettings.getInstance().hasApprovedDetexify = true
+                TexifySettings.getState().hasApprovedDetexify = true
             }
         }
 

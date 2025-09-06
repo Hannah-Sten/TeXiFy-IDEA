@@ -33,6 +33,7 @@ class LatexProjectGeneratorPeer : ProjectGeneratorPeer<TexifySettings> {
         listeners += listener
     }
 
+    @Deprecated("Deprecated in Java")
     override fun getComponent(): JComponent {
         return JPanel(FlowLayout(FlowLayout.LEFT)).apply {
             bibtexEnabled = JBCheckBox("Configure with BibTeX support")

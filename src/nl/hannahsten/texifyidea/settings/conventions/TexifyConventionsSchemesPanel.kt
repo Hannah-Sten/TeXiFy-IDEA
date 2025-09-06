@@ -103,7 +103,7 @@ internal class TexifyConventionsSchemesPanel(val settings: TexifyConventionsSett
          *
          * @param scheme the scheme that has become the selected scheme
          */
-        public override fun onSchemeChanged(scheme: TexifyConventionsScheme?) {
+        override fun onSchemeChanged(scheme: TexifyConventionsScheme?) {
             if (scheme == null)
                 return
 

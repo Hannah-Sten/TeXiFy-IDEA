@@ -9,6 +9,10 @@ import nl.hannahsten.texifyidea.psi.LatexParameter
 
 abstract class LatexParameterImplMixin(node: ASTNode) : ASTWrapperPsiElement(node), LatexParameter {
 
+    override fun toString(): String {
+        return "Parameter"
+    }
+
     override fun isValidHost(): Boolean {
         return true
     }

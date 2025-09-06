@@ -1,8 +1,6 @@
 package nl.hannahsten.texifyidea.util.magic
 
-import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment.*
-import nl.hannahsten.texifyidea.lang.alias.EnvironmentManager
 
 object EnvironmentMagic {
 
@@ -14,14 +12,6 @@ object EnvironmentMagic {
             PMATRIX_STAR, VMATRIX, VMATRIX_STAR, VMATRIX_CAPITAL, VMATRIX_CAPITAL_STAR, WIDETABULAR, BLOCKARRAY, BLOCK, TBLR, LONGTBLR, TALLTBLR
         ).map { it.env }
             .toSet()
-
-    /**
-     * Get all table environments in the project, including any user defined aliases.
-     */
-    fun getAllTableEnvironments(project: Project): Set<String> {
-        EnvironmentManager.updateAliases(tableEnvironmentsWithoutCustomEnvironments, project)
-        return EnvironmentManager.getAliases(tableEnvironmentsWithoutCustomEnvironments.first())
-    }
 
     /**
      * Environments that define their label via an optional parameter
@@ -77,7 +67,7 @@ object EnvironmentMagic {
         "matrix*", "pmatrix*", "bmatrix*", "vmatrix*", "Bmatrix*", "Vmatrix*",
         "smallmatrix", "psmallmatrix", "bsmallmatrix", "vsmallmatrix", "Bsmallmatrix", "Vsmallmatrix",
         "smallmatrix*", "psmallmatrix*", "bsmallmatrix*", "vsmallmatrix*", "Bsmallmatrix*", "Vsmallmatrix*",
-        "gmatrix", "tikz-cd"
+        "gmatrix", "tikzcd"
     )
 
     val alignableEnvironments = setOf(

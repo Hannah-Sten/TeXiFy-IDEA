@@ -66,7 +66,7 @@ internal class ImagePanel : JPanel() {
         else Dimension(image!!.getWidth(this), image!!.getHeight(this))
     }
 
-    public override fun paintComponent(g: Graphics) {
+    override fun paintComponent(g: Graphics) {
         super.paintComponent(g)
         if (this.scaled != null) {
             g.drawImage(scaled, 0, 0, null)

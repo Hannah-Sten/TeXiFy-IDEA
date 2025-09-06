@@ -5,7 +5,7 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 class LatexMathOperatorEscapeInspectionTest : TexifyInspectionTestBase(LatexMathOperatorEscapeInspection()) {
 
     fun `test inspection triggered in inline math`() {
-        testHighlighting("""Hallo ${'$'}y = <warning descr="Non-escaped math operator">cos</warning>(x)${'$'}""")
+        testHighlighting("""Hallo ${'$'}y = <warning descr="Non-escaped math operator">cos</warning>(x)$""")
     }
 
     fun `test no trigger outside math mode`() {
@@ -17,7 +17,7 @@ class LatexMathOperatorEscapeInspectionTest : TexifyInspectionTestBase(LatexMath
             """
             \[
                 \begin{cases}
-                    1 & \text{if ${'$'}<warning descr="Non-escaped math operator">cos</warning>(x) = 1${'$'}} \\
+                    1 & \text{if $<warning descr="Non-escaped math operator">cos</warning>(x) = 1$} \\
                     0 & \text{otherwise}
                 \end{cases}
             \]
@@ -26,6 +26,6 @@ class LatexMathOperatorEscapeInspectionTest : TexifyInspectionTestBase(LatexMath
     }
 
     fun `test no trigger inside text in inline math`() {
-        testHighlighting("""Hallo ${'$'}\text{cos}(x)${'$'}""")
+        testHighlighting("""Hallo $\text{cos}(x)$""")
     }
 }

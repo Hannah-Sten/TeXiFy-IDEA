@@ -268,7 +268,7 @@ class LatexRunConfiguration(
             // the previous setting was the folder containing the SumatraPDF executable
             runInBackgroundNonBlocking(project, "Set SumatraPDF path") {
                 // a write action
-                val settings = TexifySettings.getInstance()
+                val settings = TexifySettings.getState()
                 val isSumatraPathSet = readAction { settings.pathToSumatra != null }
                 if (isSumatraPathSet) {
                     return@runInBackgroundNonBlocking
@@ -282,7 +282,7 @@ class LatexRunConfiguration(
                 }
                 if (SumatraViewer.trySumatraPath(path)) {
                     writeAction {
-                        TexifySettings.getInstance().pathToSumatra = path.absolutePathString()
+                        TexifySettings.getState().pathToSumatra = path.absolutePathString()
                     }
                 }
             }

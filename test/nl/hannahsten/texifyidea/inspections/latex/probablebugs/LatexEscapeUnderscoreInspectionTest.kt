@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.inspections.latex.probablebugs
 
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
+import nl.hannahsten.texifyidea.updateCommandDef
 
 internal class LatexEscapeUnderscoreInspectionTest : TexifyInspectionTestBase(LatexEscapeUnderscoreInspection()) {
 
@@ -175,6 +176,7 @@ internal class LatexEscapeUnderscoreInspectionTest : TexifyInspectionTestBase(La
         myFixture.configureByText(
             LatexFileType,
             """
+            \usepackage{blkarray}
             This block is not in math context.
             \begin{block}{block title}
                 a<warning descr="Escape character \ expected">_</warning> underscore
@@ -195,6 +197,7 @@ internal class LatexEscapeUnderscoreInspectionTest : TexifyInspectionTestBase(La
             \end{equation*}
             """.trimIndent()
         )
+        myFixture.updateCommandDef()
         myFixture.checkHighlighting(true, false, false, false)
     }
 }

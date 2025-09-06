@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.psi
 
 import com.intellij.openapi.paths.WebReference
 import com.intellij.psi.PsiDocumentManager
-import com.intellij.testFramework.UsefulTestCase
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import junit.framework.TestCase
 import nl.hannahsten.texifyidea.file.BibtexFileType
@@ -39,7 +38,7 @@ class BibtexEntryImplUtilTest : BasePlatformTestCase() {
 
     fun testEntryGetReferences() {
         listOf(WebReference(entryElement, url)).map { it.url }.forEach {
-            UsefulTestCase.assertContainsElements(entryElement.references.map { reference -> (reference as WebReference).url }, it)
+            assertContainsElements(entryElement.references.map { reference -> (reference as WebReference).url }, it)
         }
     }
 

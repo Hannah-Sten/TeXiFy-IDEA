@@ -6,7 +6,7 @@ import io.mockk.mockkStatic
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import nl.hannahsten.texifyidea.testutils.writeCommand
-import nl.hannahsten.texifyidea.updateFilesets
+import nl.hannahsten.texifyidea.updateCommandDef
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 
 class LatexMissingImportInspectionTest : TexifyInspectionTestBase(LatexMissingImportInspection()) {
@@ -27,11 +27,11 @@ class LatexMissingImportInspectionTest : TexifyInspectionTestBase(LatexMissingIm
         myFixture.configureByText(
             LatexFileType,
             """
-            <error descr="Command requires color, or xcolor package">\color</error>{blue}
+            <error descr="Command requires any of the packages: xcolor, color">\color</error>{blue}
             """.trimIndent()
 
         )
-        myFixture.updateFilesets()
+        myFixture.updateCommandDef()
         myFixture.checkHighlighting()
     }
 
@@ -48,11 +48,11 @@ class LatexMissingImportInspectionTest : TexifyInspectionTestBase(LatexMissingIm
             \end{document}
             """.trimIndent()
         )
-        myFixture.updateFilesets()
+        myFixture.updateCommandDef()
         val quickFixes = myFixture.getAllQuickFixes()
         assertEquals(2, quickFixes.size)
         writeCommand(myFixture.project) {
-            quickFixes.last().invoke(myFixture.project, myFixture.editor, myFixture.file)
+            quickFixes.first { it.text.contains("xcolor") }.invoke(myFixture.project, myFixture.editor, myFixture.file)
         }
 
         myFixture.checkResult(
@@ -71,11 +71,13 @@ class LatexMissingImportInspectionTest : TexifyInspectionTestBase(LatexMissingIm
 
     fun `test package imported in subfile root`() {
         myFixture.configureByFiles("main.tex", "sub.tex")
+        myFixture.updateCommandDef()
         myFixture.checkHighlighting()
     }
 
     fun `test package not imported in subfile root`() {
         myFixture.configureByFiles("missingsub.tex", "missingmain.tex")
+        myFixture.updateCommandDef()
         myFixture.checkHighlighting()
     }
 
@@ -97,7 +99,7 @@ class LatexMissingImportInspectionTest : TexifyInspectionTestBase(LatexMissingIm
             \end{document}
             """.trimIndent(),
         )
-        myFixture.updateFilesets()
+        myFixture.updateCommandDef()
         myFixture.checkHighlighting()
     }
 
@@ -121,7 +123,7 @@ class LatexMissingImportInspectionTest : TexifyInspectionTestBase(LatexMissingIm
             """.trimIndent(),
         )
         myFixture.configureByFiles("sub1/sub2/two.tex", "sub1/one.tex")
-        myFixture.updateFilesets()
+        myFixture.updateCommandDef()
         myFixture.checkHighlighting()
     }
 }

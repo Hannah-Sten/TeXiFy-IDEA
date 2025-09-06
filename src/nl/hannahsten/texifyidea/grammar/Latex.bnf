@@ -185,24 +185,18 @@ magic_comment ::= MAGIC_COMMENT_TOKEN {
     stubClass="nl.hannahsten.texifyidea.index.stub.LatexMagicCommentStub"
 }
 
-math_environment ::= inline_math | display_math {
-    implements="nl.hannahsten.texifyidea.psi.LatexMathEnvMarker"
-}
+math_environment ::= inline_math | display_math
 
 inline_math ::= INLINE_MATH_START math_content? INLINE_MATH_END {
     pin=1
-    implements="nl.hannahsten.texifyidea.psi.LatexMathEnvMarker"
 }
 
 display_math ::= DISPLAY_MATH_START math_content? DISPLAY_MATH_END {
     pin=1
-    implements="nl.hannahsten.texifyidea.psi.LatexMathEnvMarker"
 }
 
 // Since the content in a math environment is of the same type as not in a math environment, just reuse the psi
 // element (having a math_content element allows for easily finding all contents in a math environment for example)
-math_content ::= no_math_content+ {
-    implements="nl.hannahsten.texifyidea.psi.LatexMathEnvMarker"
-}
+math_content ::= no_math_content+
 
 raw_text ::= RAW_TEXT_TOKEN+

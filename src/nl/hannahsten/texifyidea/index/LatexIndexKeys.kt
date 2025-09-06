@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.index
 
 import com.intellij.psi.stubs.StubIndexKey
 import com.intellij.util.indexing.ID
+import nl.hannahsten.texifyidea.index.file.LatexSimpleDefinition
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexComposite
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
@@ -41,14 +42,13 @@ object LatexStubIndexKeys {
 object LatexFileBasedIndexKeys {
     val EXTERNAL_COMMANDS: ID<String, String> = ID.create("nl.hannahsten.texifyidea.external.commands")
 
-    val PACKAGE_INCLUSIONS = ID.create<String, String>("nl.hannahsten.texifyidea.external.package.inclusions")
+    val DTX_DEFINITIONS: ID<String, List<LatexSimpleDefinition>> = ID.create("nl.hannahsten.texifyidea.dtx.definitions")
 
-//    val EXTERNAL_ENVIRONMENTS =
-//        ID.create<String, String>("nl.hannahsten.texifyidea.external.environments")
-//
-//    val EXTERNAL_LABELS =
-//        ID.create<String, String>("nl.hannahsten.texifyidea.external.labels")
-//
-//    val EXTERNAL_REFERENCES =
-//        ID.create<String, String>("nl.hannahsten.texifyidea.external.references")
+    val REGEX_PACKAGE_INCLUSIONS =
+        ID.create<Int, List<String>>("nl.hannahsten.texifyidea.regex.package.inclusions")
+
+    val REGEX_COMMAND_DEFINITIONS =
+        ID.create<Int, List<String>>("nl.hannahsten.texifyidea.regex.def.commands")
+    val REGEX_ENVIRONMENT_DEFINITIONS =
+        ID.create<Int, List<String>>("nl.hannahsten.texifyidea.regex.def.environments")
 }
