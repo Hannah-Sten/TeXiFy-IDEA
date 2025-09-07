@@ -1,30 +1,54 @@
 package nl.hannahsten.texifyidea.inspections.latex.typesetting.spacing
 
+import com.intellij.codeInspection.ProblemDescriptor
+import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
-import nl.hannahsten.texifyidea.inspections.TexifyRegexInspection
-import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.parser.inDirectEnvironment
-import java.util.regex.Matcher
-import java.util.regex.Pattern
+import nl.hannahsten.texifyidea.inspections.TexifyContextAwareRegexInspectionBase
+import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.util.parser.findNextAdjacentWhiteSpace
 
 /**
  * @author Hannah Schellekens
  */
-open class LatexSentenceEndWithCapitalInspection : TexifyRegexInspection(
-    inspectionDisplayName = "End-of-sentence space after sentences ending with capitals",
+class LatexSentenceEndWithCapitalInspection : TexifyContextAwareRegexInspectionBase(
     inspectionId = "SentenceEndWithCapital",
-    errorMessage = { "Sentences ending with a capital letter should end with an end-of-sentence space" },
-    pattern = Pattern.compile("[A-ZÀ-Ý](\\.)[ \\t]*\\n"),
-    replacement = { _, _ -> "\\@." },
-    replacementRange = { it.start(1)..it.start(1) + 1 },
-    quickFixName = { "Add an end-of-sentence space" },
-    cancelIf = { matcher, file -> isInElement<LatexCommands>(matcher, file) }
+    regex = """(?<=[A-ZÀ-Ý])\.""".toRegex(),
+    applicableContexts = setOf(LatexContexts.Text)
 ) {
+    override fun errorMessage(matcher: MatchResult): String {
+        return "Sentences ending with a capital letter should end with an end-of-sentence space"
+    }
 
-    override fun checkContext(matcher: Matcher, element: PsiElement): Boolean {
-        if (element.inDirectEnvironment(setOf("verbatim", "verbatim*", "lstlisting"))) {
-            return false
-        }
-        return super.checkContext(matcher, element)
+    override fun quickFixName(matcher: MatchResult): String {
+        return "Add an end-of-sentence space"
+    }
+
+    override fun getReplacement(match: MatchResult, project: Project, problemDescriptor: ProblemDescriptor): String {
+        return "\\@."
+    }
+
+    override fun additionalChecks(element: PsiElement, text: String, match: MatchResult): Boolean {
+        val nextWhiteSpace = element.findNextAdjacentWhiteSpace() ?: return false
+        // Check if there is a newline in the whitespace
+        return nextWhiteSpace.textContains('\n')
     }
 }
+
+// open class LatexSentenceEndWithCapitalInspection : TexifyRegexInspection(
+//    inspectionDisplayName = "End-of-sentence space after sentences ending with capitals",
+//    inspectionId = "SentenceEndWithCapital",
+//    errorMessage = { "Sentences ending with a capital letter should end with an end-of-sentence space" },
+//    pattern = Pattern.compile("[A-ZÀ-Ý](\\.)[ \\t]*\\n"),
+//    replacement = { _, _ -> "\\@." },
+//    replacementRange = { it.start(1)..it.start(1) + 1 },
+//    quickFixName = { "Add an end-of-sentence space" },
+//    cancelIf = { matcher, file -> isInElement<LatexCommands>(matcher, file) }
+// ) {
+//
+//    override fun checkContext(matcher: Matcher, element: PsiElement): Boolean {
+//        if (element.inDirectEnvironment(setOf("verbatim", "verbatim*", "lstlisting"))) {
+//            return false
+//        }
+//        return super.checkContext(matcher, element)
+//    }
+// }

@@ -97,7 +97,7 @@ class PerformanceDiagnosticAction : AnAction() {
             performance("Package Definitions", LatexLibraryDefinitionService.performanceTracker),
             performance("Custom Definitions", LatexDefinitionService.performanceTracker, buildCustomDefinitionsInfo(project)),
             performance("Completion Lookup", LatexContextAwareCompletionAdaptor.performanceTracker),
-            performance("Inspections", TexifyContextAwareInspectionBase.performanceTracker)
+            performance("Ctx-aware Inspections", TexifyContextAwareInspectionBase.performanceTracker)
         )
 
         val totalRunningTime = ManagementFactory.getRuntimeMXBean().uptime + 1 // +1 to avoid division by zero

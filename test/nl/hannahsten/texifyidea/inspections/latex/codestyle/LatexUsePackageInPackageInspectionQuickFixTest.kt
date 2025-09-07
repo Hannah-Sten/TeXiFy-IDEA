@@ -3,23 +3,7 @@ package nl.hannahsten.texifyidea.inspections.latex.codestyle
 import io.mockk.every
 import io.mockk.mockkStatic
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
-import nl.hannahsten.texifyidea.inspections.latex.TexifyRegexInspectionTestBase
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
-
-class LatexUsePackageInPackageInspectionRegexTest : TexifyRegexInspectionTestBase(LatexUsePackageInPackageInspection()) {
-
-    override val successfulMatches: List<String> = listOf(
-        """\usepackage{xcolor, twee}""",
-        """\usepackage[colorlinks]{hyperref}""",
-        """\usepackage[aaa, bbb]{test}""",
-        """\usepackage[options]{packagename}[version]""",
-        """\usepackage{name}[version]"""
-    )
-
-    override val failingMatches: List<String> = listOf(
-        """\usepackage[a][b]{test}"""
-    )
-}
 
 class LatexUsePackageInPackageInspectionQuickFixTest : TexifyInspectionTestBase(LatexUsePackageInPackageInspection()) {
 
@@ -52,4 +36,18 @@ class LatexUsePackageInPackageInspectionQuickFixTest : TexifyInspectionTestBase(
         after = """\RequirePackage[optional]{xcolor}[version]""",
         fileName = "mypackage.sty"
     )
+
+// TODO: Enable again when it is re-implemented.
+//
+//    override val successfulMatches: List<String> = listOf(
+//        """\usepackage{xcolor, twee}""",
+//        """\usepackage[colorlinks]{hyperref}""",
+//        """\usepackage[aaa, bbb]{test}""",
+//        """\usepackage[options]{packagename}[version]""",
+//        """\usepackage{name}[version]"""
+//    )
+//
+//    override val failingMatches: List<String> = listOf(
+//        """\usepackage[a][b]{test}"""
+//    )
 }

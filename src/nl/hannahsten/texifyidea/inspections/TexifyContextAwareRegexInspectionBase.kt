@@ -39,32 +39,28 @@ abstract class TexifyContextAwareRegexInspectionBase(
 
     protected abstract fun errorMessage(matcher: MatchResult): String
 
-    protected abstract fun getReplacement(matcher: MatchResult): String
-
-    protected open fun quickFixName(matcher: MatchResult): String {
-        return "Do fix please"
-    }
-
-    protected open fun getReplacementRange(matcher: MatchResult): IntRange {
-        return matcher.range
-    }
+    protected abstract fun quickFixName(matcher: MatchResult): String
 
     protected open fun getHighlightRange(matcher: MatchResult): IntRange {
         return matcher.range
     }
 
     /**
-     * Optional groups provider, defaults to returning all captured groups (excluding the full match at index 0).
+     * Gets the replacement string for the given match.
      */
-    protected open fun groups(matcher: MatchResult): List<String> = matcher.groupValues.drop(1)
+    protected abstract fun getReplacement(
+        match: MatchResult, project: Project, problemDescriptor: ProblemDescriptor
+    ): String
 
     /**
      * Whether this element should be inspected under the given contexts.
      */
     protected fun isApplicableInContexts(contexts: LContextSet): Boolean {
-        if (contexts.any { it in excludedContexts }) return false
-        val app = applicableContexts ?: return true
-        return contexts.any { it in app }
+        if (applicableContexts != null) {
+            if (contexts.none { it in applicableContexts }) return false
+        }
+        if (excludedContexts.isNotEmpty() && contexts.any { it in excludedContexts }) return false
+        return true
     }
 
     /**
@@ -74,7 +70,14 @@ abstract class TexifyContextAwareRegexInspectionBase(
         return element.elementType == LatexTypes.NORMAL_TEXT_WORD
     }
 
-    protected open fun additionalChecks(element: PsiElement): Boolean {
+    /**
+     * Additional checks to be performed after a regex match is found.
+     *
+     * @return Whether to report the found match.
+     */
+    protected open fun additionalChecks(
+        element: PsiElement, text: String, match: MatchResult
+    ): Boolean {
         return true
     }
 
@@ -88,18 +91,19 @@ abstract class TexifyContextAwareRegexInspectionBase(
     ) {
         if (!isApplicableInContexts(contexts)) return
         if (!shouldInspectElement(element, lookup)) return
-        val text = element.text
-        if (text.isEmpty()) return
-        if (!regex.containsMatchIn(text)) return
-        for (match in regex.findAll(text)) {
-            val textRange = getHighlightRange(match).toTextRange()
-            if (textRange.isEmpty || textRange.startOffset < 0 || textRange.endOffset > text.length) continue
+        val elementText = element.text
+        if (elementText.isEmpty()) return
+        if (!regex.containsMatchIn(elementText)) return
+        for (match in regex.findAll(elementText)) {
+            val matchText = match.value
+            if (!additionalChecks(element, matchText, match)) continue
+            val highlightRange = getHighlightRange(match)
+            if (highlightRange.isEmpty() || !match.range.contains(highlightRange)) continue
+            val textRange = highlightRange.toTextRange()
 
-            val rangeLocal = getReplacementRange(match)
             val error = errorMessage(match)
             val quickFix = quickFixName(match)
-            val replacementContent = getReplacement(match)
-            val fix = RegexFix(quickFix, rangeLocal, replacementContent, match)
+            val fix = RegexFix(quickFix, match)
 
             descriptors.add(
                 manager.createProblemDescriptor(
@@ -115,24 +119,17 @@ abstract class TexifyContextAwareRegexInspectionBase(
     }
 
     /**
-     * Replaces all text in the [replacementRange] by the correct replacement.
      *
-     * When overriding this, probably also override [doGeneratePreview] to fix the intention preview.
-     *
-     * @return The total increase in document length, e.g. if << is replaced by
-     * \\ll and \\usepackage{amsmath} is added then the total increase is 3 + 20 - 2.
      */
     protected open fun doApplyFix(
-        project: Project, descriptor: ProblemDescriptor, regexFix: RegexFix,
+        project: Project, descriptor: ProblemDescriptor, match: MatchResult
     ): Int {
-        val replacementRange = regexFix.replacementRange
-        val replacement = regexFix.replacement
         val element = descriptor.psiElement
         val document = element.containingFile.document() ?: return 0
-        val elementStart = element.startOffset
-        val repRange = replacementRange.toTextRange().shiftRight(elementStart)
-        document.replaceString(repRange, replacement)
-        return replacement.length - replacementRange.length
+        val repRange = match.range.toTextRange().shiftRight(element.startOffset)
+        val rep = getReplacement(match, project, descriptor)
+        document.replaceString(repRange, rep)
+        return rep.length - match.value.length
     }
 
     /**
@@ -141,32 +138,27 @@ abstract class TexifyContextAwareRegexInspectionBase(
      * Override when overriding [doApplyFix].
      */
     protected open fun doGeneratePreview(
-        project: Project, descriptor: ProblemDescriptor, regexFix: RegexFix,
+        project: Project, descriptor: ProblemDescriptor, match: MatchResult,
     ): IntentionPreviewInfo {
-        val replacementRange = regexFix.replacementRange
-        val replacement = regexFix.replacement
-        val original = descriptor.psiElement.containingFile.text.substring(replacementRange)
-        return IntentionPreviewInfo.CustomDiff(LatexFileType, original, replacement)
+        val replacement = getReplacement(match, project, descriptor)
+        return IntentionPreviewInfo.CustomDiff(LatexFileType, match.value, replacement)
     }
 
     /**
      * A local quick fix capable of applying one or multiple regex replacements.
      */
     protected inner class RegexFix(
-        private val fixName: String,
-        val replacementRange: IntRange,
-        val replacement: String,
-        val matcher: MatchResult
+        private val fixName: String, val match: MatchResult
     ) : LocalQuickFix {
 
         override fun getFamilyName(): String = fixName
 
         override fun applyFix(project: Project, problemDescriptor: ProblemDescriptor) {
-            doApplyFix(project, problemDescriptor, this)
+            doApplyFix(project, problemDescriptor, match)
         }
 
         override fun generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo {
-            return doGeneratePreview(project, previewDescriptor, this)
+            return doGeneratePreview(project, previewDescriptor, match)
         }
     }
 }

@@ -57,6 +57,10 @@ fun IntRange.toTextRange() = TextRange(this.first, this.last + 1)
 val IntRange.length: Int
     get() = endInclusive - start + 1
 
+fun IntRange.contains(other: IntRange): Boolean {
+    return this.first <= other.first && this.last >= other.last
+}
+
 /**
  * Converts the range to a range representation with the given seperator.
  * When the range has size 0, it will only print the single number.

@@ -1,6 +1,8 @@
 package nl.hannahsten.texifyidea.inspections.latex.probablebugs
 
+import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.inspections.TexifyContextAwareRegexInspectionBase
 import nl.hannahsten.texifyidea.lang.LatexContexts
 
@@ -25,7 +27,7 @@ class LatexEscapeUnderscoreInspection : TexifyContextAwareRegexInspectionBase(
         return """Escape character \ expected"""
     }
 
-    override fun getReplacement(matcher: MatchResult): String {
+    override fun getReplacement(match: MatchResult, project: Project, problemDescriptor: ProblemDescriptor): String {
         return """\_"""
     }
 
