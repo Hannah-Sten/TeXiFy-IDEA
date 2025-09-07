@@ -58,7 +58,9 @@ object PredefinedEnvBasic : PredefinedEnvironmentSet() {
         "enumerate".env(+LatexContexts.Enumerate) {
             "A numbered list."
         }
-        "itemize".env(+LatexContexts.Enumerate)
+        "itemize".env(+LatexContexts.Enumerate) {
+            "A bulleted list."
+        }
 
         +"array"
 
@@ -122,7 +124,6 @@ object PredefinedEnvBasic : PredefinedEnvironmentSet() {
         }
 
         underPackage("blkarray") {
-            "block".env(LatexContextIntro.inherit(), "title".required(LatexContexts.Text))
             "blockarray".env(alignableMath, "cols".required(Literal)) {
                 "A block array environment."
             }
@@ -218,7 +219,12 @@ object PredefinedEnvBasic : PredefinedEnvironmentSet() {
 
     val frames = buildEnvironments {
         underPackage(LatexLib.Class("beamer")) {
-            "frame".env(LatexContexts.Text)
+            "frame".env(LatexContexts.Text, "title".required(LatexContexts.Text)) {
+                "A frame environment."
+            }
+            "block".env(LatexContexts.Text, "title".required(LatexContexts.Text)) {
+                "A block environment."
+            }
         }
     }
 

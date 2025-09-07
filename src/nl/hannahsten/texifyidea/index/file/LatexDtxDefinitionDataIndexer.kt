@@ -38,7 +38,7 @@ data class LatexSimpleDefinition(
         get() = type == ENVIRONMENT
 
     override fun toString(): String {
-        val displayName = if(isEnv) name else "\\$name"
+        val displayName = if (isEnv) name else "\\$name"
         return "Def('$displayName', ${arguments.joinToString("")}, desc='${description.take(20)}')"
     }
 
@@ -49,14 +49,18 @@ data class LatexSimpleDefinition(
 }
 
 /**
- *
+ * The indexer for `.dtx` files, extracting command and environment definitions.
  */
 object LatexDtxDefinitionDataIndexer : DataIndexer<String, List<LatexSimpleDefinition>, FileContent> {
 
     //    private val regexRrovidesPackage = "(?<=\\\\ProvidesPackage\\{)(?<name>[a-zA-Z0-9_]+)(?=\\})".toRegex()
     private val regexProvidesPackage = """
-        \\ProvidesPackage\{(?<name>[a-zA-Z0-9_]+)}
+        \\ProvidesPackage\{(?<name>[a-zA-Z0-9_-]+)}
     """.trimIndent().toRegex()
+    private val regexProvidesClass = """
+        \\ProvidesClass\{(?<name>[a-zA-Z0-9_-]+)}
+    """.trimIndent().toRegex()
+
     private val regexBeginMacro = """
         \\begin\{(macro|environment)}\{(?<name>\\?[a-zA-Z@]+\*?)}
     """.trimIndent().toRegex()
@@ -92,13 +96,14 @@ object LatexDtxDefinitionDataIndexer : DataIndexer<String, List<LatexSimpleDefin
         val docLines = mutableListOf<String>()
         val macroStarts = mutableListOf<DefStart>()
         var inMacroCode = false
-        var packageName: String? = null
+        var libName: LatexLib? = null
         val definitions = mutableListOf<LatexSimpleDefinition>()
 
         // extract code blocks between \begin{macrocode} and \end{macrocode}
         for (line in lines) {
             var text = line
-            if (text.startsWith('%')) {
+            val inComment = text.startsWith('%')
+            if (inComment) {
                 text = text.substring(1)
                 if (text.contains("\\begin{macrocode}")) {
                     inMacroCode = true
@@ -127,16 +132,21 @@ object LatexDtxDefinitionDataIndexer : DataIndexer<String, List<LatexSimpleDefin
                 }
                 docLines.add(text)
             }
-            if (packageName == null) {
+            if (!inComment && libName == null) {
                 regexProvidesPackage.find(text)?.let { match ->
+                    libName = LatexLib.Package(match.groups["name"]!!.value)
                     // If the match is not null, it means we found a \ProvidesPackage command
                     // We can extract the package name from the match
-                    packageName = match.groups["name"]?.value
+                } ?: regexProvidesClass.find(text)?.let { match ->
+                    libName = LatexLib.Class(match.groups["name"]!!.value)
                 }
             }
         }
-        val lib = LatexLib.Package(packageName ?: fileName.substringBeforeLast('.'))
-        return DtxDoc(lib, docLines, definitions)
+        if(libName == null) {
+            // we just assume it's a package with the same name as the file
+            libName = LatexLib.Package(fileName.substringBeforeLast('.'))
+        }
+        return DtxDoc(libName, docLines, definitions)
     }
 
     private val regexSingleParam = """
@@ -307,7 +317,7 @@ class LatexDtxDefinitionIndexEx : FileBasedIndexExtension<String, List<LatexSimp
         return MyValueExternalizer
     }
 
-    override fun getVersion() = 6
+    override fun getVersion() = 8
 
     override fun getInputFilter(): FileBasedIndex.InputFilter {
         return myInputFilter

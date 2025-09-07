@@ -17,7 +17,7 @@ import nl.hannahsten.texifyidea.util.files.LatexPackageLocation
 object ContextAwareEnvironmentCompletionProvider : LatexContextAwareCompletionAdaptor() {
 
     private fun buildEnvironmentSignature(env: LSemanticEnv): String = buildString {
-        env.arguments.joinTo(this)
+        env.arguments.joinTo(this, separator = "")
         append(' ')
         append(env.contextSignature.displayString())
     }

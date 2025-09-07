@@ -118,7 +118,7 @@ data class ExternalDocumentInfo(
 /**
  * Integrated descriptions of all filesets that are related to a specific file.
  */
-class FilesetData(
+data class FilesetData(
     val filesets: Set<Fileset>,
     /**
      * The union of all files in the related [filesets].
@@ -132,7 +132,21 @@ class FilesetData(
     val libraries: Set<String>,
 
     val externalDocumentInfo: List<ExternalDocumentInfo>
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        // filesets uniquely determine the rest of the data
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as FilesetData
+
+        return filesets == other.filesets
+    }
+
+    override fun hashCode(): Int {
+        return filesets.hashCode()
+    }
+}
 
 /**
  * Describes the filesets of a project, containing all filesets and a mapping from files to their fileset data.
@@ -143,6 +157,20 @@ data class LatexProjectFilesets(
 ) {
     fun getData(file: VirtualFile): FilesetData? {
         return mapping[file]
+    }
+
+    override fun equals(other: Any?): Boolean {
+        // we only need to compare the filesets, as they uniquely determine the mapping
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as LatexProjectFilesets
+
+        return filesets == other.filesets
+    }
+
+    override fun hashCode(): Int {
+        return filesets.hashCode()
     }
 }
 
@@ -502,7 +530,7 @@ object LatexProjectStructure : SimplePerformanceTracker {
 
         private fun pathTextExtraProcessing(
             text: String, command: LatexCommands, file: VirtualFile
-        ): String? {
+        ): String {
             var result = expandCommandsOnce(text, project, file)
             result = result.trim()
             return result
