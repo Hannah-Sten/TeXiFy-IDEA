@@ -147,6 +147,50 @@ abstract class LatexWithContextStateTraverser<S>(
 }
 
 /**
+ * A traverser that records all context introductions that are currently active.
+ *
+ */
+abstract class RecordingContextIntroTraverser(
+    lookup: LatexSemanticsLookup,
+) : LatexWithContextStateTraverser<MutableList<LatexContextIntro>>(mutableListOf(), lookup) {
+    override fun enterContextIntro(intro: LatexContextIntro) {
+        state.add(intro)
+    }
+
+    override fun exitContextIntro(old: MutableList<LatexContextIntro>, intro: LatexContextIntro) {
+        val lastIntro = state.lastOrNull()
+        if (lastIntro === intro) state.removeLast() // they should be exactly the same object
+    }
+
+    private fun enterBeginEnv(envName: String) {
+        val semantics = lookup.lookupEnv(envName) ?: return
+        enterContextIntro(semantics.contextSignature)
+    }
+
+    private fun exitEndEnv(envName: String) {
+        val semantics = lookup.lookupEnv(envName) ?: return
+        exitContextIntro(state, semantics.contextSignature)
+    }
+
+    override fun elementStart(e: PsiElement): WalkAction {
+        if (e is LatexCommands) {
+            // special handling for begin/end commands that are not parsed as environments
+            val name = e.nameWithSlash
+            if (name == "\\begin") e.requiredParameterText(0)?.let { enterBeginEnv(it) }
+            else if (name == "\\end") e.requiredParameterText(0)?.let { exitEndEnv(it) }
+        }
+        return WalkAction.CONTINUE
+    }
+
+    fun traverse(e: PsiElement): Boolean {
+        return traverseRecur(e)
+    }
+
+    val exitState: List<LatexContextIntro>
+        get() = state
+}
+
+/**
  * A traverser that keeps track of the current LaTeX context.
  *
  * It can be used in context-aware inspections.

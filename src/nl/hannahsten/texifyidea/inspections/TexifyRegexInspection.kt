@@ -26,7 +26,6 @@ import kotlin.math.max
  * @author Hannah Schellekens
  */
 abstract class TexifyRegexInspection(
-
     /**
      * The display name of the inspection.
      */

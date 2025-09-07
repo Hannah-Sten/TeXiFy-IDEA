@@ -34,6 +34,7 @@ import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
 import nl.hannahsten.texifyidea.psi.LatexNoMathContent
 import nl.hannahsten.texifyidea.psi.LatexWithContextTraverser
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
+import nl.hannahsten.texifyidea.psi.getMagicComment
 import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
 import nl.hannahsten.texifyidea.util.parser.traverse
 import java.util.concurrent.atomic.AtomicInteger
@@ -47,7 +48,7 @@ abstract class TexifyContextAwareInspectionBase(
     /**
      * A unique string identifier for the inspection.
      */
-    val inspectionId: String
+    val inspectionId: String,
 ) : LocalInspectionTool() {
 
     /**
@@ -115,6 +116,10 @@ abstract class TexifyContextAwareInspectionBase(
         return if (result.isEmpty()) ProblemDescriptor.EMPTY_ARRAY else result.toTypedArray()
     }
 
+    /**
+     * Make a quick check to see if the file is applicable for this inspection.
+     *
+     */
     protected open fun isFileApplicable(file: PsiFile): Boolean {
         return true
     }
@@ -123,12 +128,16 @@ abstract class TexifyContextAwareInspectionBase(
         val content = file.findFirstChildTyped<LatexContent>() ?: return true // Empty file, nothing to inspect.
         for (e in content.traverse(4)) {
             if (e is LatexNoMathContent) continue
+            if (e is PsiComment) continue
             if (e !is LatexMagicComment) break
-            e.magicComment()?.let {
-                if (it.containsPair("suppress", inspectionId)) return true
-            }
+            val commentMap = e.getMagicComment()
+            if (commentMap.containsPair("suppress", inspectionId)) return true
         }
         return false
+    }
+
+    protected open fun shouldInspectChildrenOf(element: PsiElement, state: LContextSet): Boolean {
+        return true
     }
 
     protected inner class InspectionTraverser(
@@ -156,7 +165,7 @@ abstract class TexifyContextAwareInspectionBase(
             }
 
             inspectElement(e, state, manager, isOnTheFly, descriptors)
-            return WalkAction.CONTINUE
+            return if (shouldInspectChildrenOf(e, state)) WalkAction.CONTINUE else WalkAction.SKIP_CHILDREN
         }
 
         fun doInspect(file: PsiFile): List<ProblemDescriptor> {

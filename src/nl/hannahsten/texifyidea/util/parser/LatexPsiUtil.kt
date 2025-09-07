@@ -414,51 +414,19 @@ object LatexPsiUtil {
         lookup: LatexSemanticsLookup,
         action: (PsiElement, List<LatexContextIntro>) -> Unit
     ): List<LatexContextIntro> {
-        val visitor = RecordingContextIntroTraverser(lookup, action)
+        val visitor = RecordingContextIntroTraverserWithAction(lookup, action)
         visitor.traverse(e)
         return visitor.exitState
     }
 
-    private class RecordingContextIntroTraverser(
+    private class RecordingContextIntroTraverserWithAction(
         lookup: LatexSemanticsLookup,
         private val action: (PsiElement, List<LatexContextIntro>) -> Unit
-    ) : LatexWithContextStateTraverser<MutableList<LatexContextIntro>>(mutableListOf(), lookup) {
-        override fun enterContextIntro(intro: LatexContextIntro) {
-            state.add(intro)
-        }
-
-        override fun exitContextIntro(old: MutableList<LatexContextIntro>, intro: LatexContextIntro) {
-            val lastIntro = state.lastOrNull()
-            if (lastIntro === intro) state.removeLast() // they should be exactly the same object
-        }
-
-        private fun enterBeginEnv(envName: String) {
-            val semantics = lookup.lookupEnv(envName) ?: return
-            enterContextIntro(semantics.contextSignature)
-        }
-
-        private fun exitEndEnv(envName: String) {
-            val semantics = lookup.lookupEnv(envName) ?: return
-            exitContextIntro(state, semantics.contextSignature)
-        }
-
+    ) : RecordingContextIntroTraverser(lookup) {
         override fun elementStart(e: PsiElement): WalkAction {
             action(e, state)
-            if (e is LatexCommands) {
-                // special handling for begin/end commands that are not parsed as environments
-                val name = e.nameWithSlash
-                if (name == "\\begin") e.requiredParameterText(0)?.let { enterBeginEnv(it) }
-                else if (name == "\\end") e.requiredParameterText(0)?.let { exitEndEnv(it) }
-            }
-            return WalkAction.CONTINUE
+            return super.elementStart(e)
         }
-
-        fun traverse(e: PsiElement): Boolean {
-            return traverseRecur(e)
-        }
-
-        val exitState: List<LatexContextIntro>
-            get() = state
     }
 
     /**
