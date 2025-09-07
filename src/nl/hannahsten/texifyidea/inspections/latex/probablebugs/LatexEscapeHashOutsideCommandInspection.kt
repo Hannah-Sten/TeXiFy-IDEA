@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.inspections.latex.probablebugs
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyContextAwareRegexInspectionBase
+import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.parentOfType
@@ -26,8 +27,8 @@ class LatexEscapeHashOutsideCommandInspection : TexifyContextAwareRegexInspectio
         return "\\#"
     }
 
-    override fun shouldInspectElement(element: PsiElement): Boolean {
-        if (!super.shouldInspectElement(element)) return false
+    override fun shouldInspectElement(element: PsiElement, lookup: LatexSemanticsLookup): Boolean {
+        if (!super.shouldInspectElement(element, lookup)) return false
         // Do not inspect inside command definitions/redefinitions
         if (element.parentsOfType<LatexCommands>().any { it.isDefinitionOrRedefinition() }) return false
         // Do not inspect inside URL-like commands

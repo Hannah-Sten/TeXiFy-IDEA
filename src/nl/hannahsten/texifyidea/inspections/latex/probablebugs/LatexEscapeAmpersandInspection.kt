@@ -5,6 +5,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.util.elementType
 import nl.hannahsten.texifyidea.inspections.TexifyContextAwareRegexInspectionBase
 import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.psi.LatexTypes
 
 /**
@@ -21,7 +22,7 @@ class LatexEscapeAmpersandInspection : TexifyContextAwareRegexInspectionBase(
         LatexContexts.LabelReference, LatexContexts.LabelDefinition // Label names and URLs may contain &.
     )
 ) {
-    override fun shouldInspectElement(element: PsiElement): Boolean {
+    override fun shouldInspectElement(element: PsiElement, lookup: LatexSemanticsLookup): Boolean {
         return element.elementType == LatexTypes.AMPERSAND
     }
 

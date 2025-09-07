@@ -11,6 +11,7 @@ import com.intellij.psi.util.elementType
 import com.intellij.psi.util.startOffset
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.lang.LContextSet
+import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.document
@@ -69,7 +70,7 @@ abstract class TexifyContextAwareRegexInspectionBase(
     /**
      * By default, only inspect leaf elements to avoid duplicate matches across overlapping PSI nodes.
      */
-    protected open fun shouldInspectElement(element: PsiElement): Boolean {
+    protected open fun shouldInspectElement(element: PsiElement, lookup: LatexSemanticsLookup): Boolean {
         return element.elementType == LatexTypes.NORMAL_TEXT_WORD
     }
 
@@ -77,16 +78,16 @@ abstract class TexifyContextAwareRegexInspectionBase(
         return true
     }
 
-    override fun shouldInspectChildrenOf(element: PsiElement, state: LContextSet): Boolean {
+    override fun shouldInspectChildrenOf(element: PsiElement, state: LContextSet, lookup: LatexSemanticsLookup): Boolean {
         return true
     }
 
     override fun inspectElement(
-        element: PsiElement, contexts: LContextSet, manager: InspectionManager,
-        isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>
+        element: PsiElement, contexts: LContextSet, lookup: LatexSemanticsLookup,
+        manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>
     ) {
         if (!isApplicableInContexts(contexts)) return
-        if (!shouldInspectElement(element)) return
+        if (!shouldInspectElement(element, lookup)) return
         val text = element.text
         if (text.isEmpty()) return
         if (!regex.containsMatchIn(text)) return
