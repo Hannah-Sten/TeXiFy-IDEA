@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.inspections.latex.probablebugs
 
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyContextAwareRegexInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
@@ -15,15 +14,15 @@ class LatexEscapeHashOutsideCommandInspection : TexifyContextAwareRegexInspectio
     regex = Regex("""(?<!\\)#"""),
     inspectionGroup = InsightGroup.LATEX
 ) {
-    override fun errorMessage(matcher: MatchResult, file: PsiFile): String {
+    override fun errorMessage(matcher: MatchResult): String {
         return "Unescaped #"
     }
 
-    override fun quickFixName(matcher: MatchResult, file: PsiFile): String {
+    override fun quickFixName(matcher: MatchResult): String {
         return "Escape #"
     }
 
-    override fun getReplacement(matcher: MatchResult, file: PsiFile): String {
+    override fun getReplacement(matcher: MatchResult): String {
         return "\\#"
     }
 

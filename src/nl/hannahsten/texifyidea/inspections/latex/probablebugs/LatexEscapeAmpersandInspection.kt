@@ -2,47 +2,38 @@ package nl.hannahsten.texifyidea.inspections.latex.probablebugs
 
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.psi.PsiElement
-import nl.hannahsten.texifyidea.inspections.TexifyRegexInspection
+import com.intellij.psi.util.elementType
+import nl.hannahsten.texifyidea.inspections.TexifyContextAwareRegexInspectionBase
 import nl.hannahsten.texifyidea.lang.LatexContexts
-import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.parser.firstParentOfType
-import nl.hannahsten.texifyidea.util.parser.isComment
-import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
-import nl.hannahsten.texifyidea.util.labels.getLabelReferenceCommands
-import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
-import java.util.regex.Matcher
-import java.util.regex.Pattern
+import nl.hannahsten.texifyidea.psi.LatexTypes
 
 /**
- * @author Johannes Berger
+ * @author Johannes Berger, Li Ernest
  */
-class LatexEscapeAmpersandInspection : TexifyRegexInspection(
-    inspectionDisplayName = "Unescaped & character",
+class LatexEscapeAmpersandInspection : TexifyContextAwareRegexInspectionBase(
     inspectionId = "EscapeAmpersand",
-    errorMessage = { """Escape character \ expected""" },
+    regex = Regex.fromLiteral("&"),
     highlight = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-    pattern = Pattern.compile("""(?<!\\)&"""),
-    replacement = { _, _ -> """\&""" },
-    quickFixName = { """Change to \&""" }
+    excludedContexts = setOf(
+        LatexContexts.Tabular, LatexContexts.Alignable, // Tabular and align environments handle & correctly.
+        LatexContexts.Comment, LatexContexts.MintedFuntimeLand, // Comments and verbatim-like environments do not need escaping.
+        LatexContexts.Literal, // just ignore literal blocks
+        LatexContexts.LabelReference, LatexContexts.LabelDefinition // Label names and URLs may contain &.
+    )
 ) {
-
-    override fun checkContext(matcher: Matcher, element: PsiElement): Boolean {
-        if (element.isAmpersandAllowed()) return false
-        if (element.isComment()) return false
-        return checkContext(element)
+    override fun shouldInspectElement(element: PsiElement): Boolean {
+        return element.elementType == LatexTypes.AMPERSAND
     }
 
-    private fun PsiElement.isAmpersandAllowed(): Boolean {
-        // Do not trigger inside comments.
-        if (this.isComment()) return true
+    override fun errorMessage(matcher: MatchResult): String {
+        return """Escape character \ expected"""
+    }
 
-        val context = LatexPsiUtil.resolveContextUpward(this)
-        if(LatexContexts.Tabular in context || LatexContexts.Alignable in context) return true
-        // Other exceptions
-        val command = this.firstParentOfType(LatexCommands::class)?.name
-        return command in CommandMagic.urls ||
-            command in project.getLabelReferenceCommands() ||
-            command in getLabelDefinitionCommands()
+    override fun getReplacement(matcher: MatchResult): String {
+        return """\&"""
+    }
+
+    override fun quickFixName(matcher: MatchResult): String {
+        return """Change to \&"""
     }
 }

@@ -69,6 +69,8 @@ abstract class TexifyContextAwareInspectionBase(
 
     /**
      * Inspects a single element, given the contexts it is in.
+     *
+     * @param isOnTheFly Whether the inspection is run on-the-fly (in the editor) or in batch mode (code inspection).
      */
     abstract fun inspectElement(
         element: PsiElement, contexts: LContextSet,
@@ -77,9 +79,9 @@ abstract class TexifyContextAwareInspectionBase(
     )
 
     override fun getBatchSuppressActions(element: PsiElement?): Array<SuppressQuickFix> {
+        element ?: return SuppressQuickFix.EMPTY_ARRAY
         val result = ArrayList<SuppressionFixBase>()
-
-        element?.let { elt ->
+        element.let { elt ->
             elt.containingFile?.let { result.add(FileSuppressionFix(it.createSmartPointer())) }
 
             elt.suppressionElement<LatexEnvironment>(MagicCommentScope.ENVIRONMENT, outerSuppressionScopes)?.let {

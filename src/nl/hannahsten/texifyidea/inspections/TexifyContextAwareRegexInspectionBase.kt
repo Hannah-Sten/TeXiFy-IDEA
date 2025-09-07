@@ -5,10 +5,8 @@ import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
-import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
 import com.intellij.psi.util.elementType
 import com.intellij.psi.util.startOffset
 import nl.hannahsten.texifyidea.file.LatexFileType
@@ -16,7 +14,6 @@ import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.document
-import kotlin.math.max
 
 /**
  * A regex-based inspection for plain text contents.
@@ -32,16 +29,18 @@ abstract class TexifyContextAwareRegexInspectionBase(
     val applicableContexts: LContextSet? = null,
     /**
      * The contexts in which this inspection should not be applied.
+     *
+     * Note that comment is always excluded.
      */
     val excludedContexts: LContextSet = emptySet(),
     inspectionGroup: InsightGroup = InsightGroup.LATEX,
 ) : TexifyContextAwareInspectionBase(inspectionGroup, inspectionId) {
 
-    protected abstract fun errorMessage(matcher: MatchResult, file: PsiFile): String
+    protected abstract fun errorMessage(matcher: MatchResult): String
 
-    protected abstract fun getReplacement(matcher: MatchResult, file: PsiFile): String
+    protected abstract fun getReplacement(matcher: MatchResult): String
 
-    protected open fun quickFixName(matcher: MatchResult, file: PsiFile): String {
+    protected open fun quickFixName(matcher: MatchResult): String {
         return "Do fix please"
     }
 
@@ -74,6 +73,10 @@ abstract class TexifyContextAwareRegexInspectionBase(
         return element.elementType == LatexTypes.NORMAL_TEXT_WORD
     }
 
+    protected open fun additionalChecks(element: PsiElement): Boolean {
+        return true
+    }
+
     override fun shouldInspectChildrenOf(element: PsiElement, state: LContextSet): Boolean {
         return true
     }
@@ -87,17 +90,15 @@ abstract class TexifyContextAwareRegexInspectionBase(
         val text = element.text
         if (text.isEmpty()) return
         if (!regex.containsMatchIn(text)) return
-
-        val file = element.containingFile ?: return
         for (match in regex.findAll(text)) {
             val textRange = getHighlightRange(match).toTextRange()
             if (textRange.isEmpty || textRange.startOffset < 0 || textRange.endOffset > text.length) continue
 
             val rangeLocal = getReplacementRange(match)
-            val error = errorMessage(match, file)
-            val quickFix = quickFixName(match, file)
-            val replacementContent = getReplacement(match, file)
-            val groupValues = groups(match)
+            val error = errorMessage(match)
+            val quickFix = quickFixName(match)
+            val replacementContent = getReplacement(match)
+            val fix = RegexFix(quickFix, rangeLocal, replacementContent, match)
 
             descriptors.add(
                 manager.createProblemDescriptor(
@@ -106,12 +107,7 @@ abstract class TexifyContextAwareRegexInspectionBase(
                     error,
                     highlight,
                     true,
-                    RegexFixes(
-                        quickFix,
-                        arrayListOf(replacementContent),
-                        arrayListOf(rangeLocal),
-                        arrayListOf(groupValues)
-                    )
+                    fix
                 )
             )
         }
@@ -120,93 +116,56 @@ abstract class TexifyContextAwareRegexInspectionBase(
     /**
      * Replaces all text in the [replacementRange] by the correct replacement.
      *
-     * When overriding this, probably also override [generatePreview] to fix the intention preview.
+     * When overriding this, probably also override [doGeneratePreview] to fix the intention preview.
      *
      * @return The total increase in document length, e.g. if << is replaced by
      * \\ll and \\usepackage{amsmath} is added then the total increase is 3 + 20 - 2.
      */
-    open fun applyFix(
-        descriptor: ProblemDescriptor,
-        replacementRange: IntRange,
-        replacement: String,
-        groups: List<String>
+    protected open fun doApplyFix(
+        project: Project, descriptor: ProblemDescriptor, regexFix: RegexFix,
     ): Int {
+        val replacementRange = regexFix.replacementRange
+        val replacement = regexFix.replacement
         val element = descriptor.psiElement
         val document = element.containingFile.document() ?: return 0
         val elementStart = element.startOffset
         val repRange = replacementRange.toTextRange().shiftRight(elementStart)
         document.replaceString(repRange, replacement)
-        return replacement.length - repRange.length
-    }
-
-    /**
-     * Generates the preview of applying the quick fix of the element at the cursor.
-     */
-    fun generatePreview(
-        project: Project,
-        descriptor: ProblemDescriptor,
-        replacementRanges: List<IntRange>,
-        replacements: List<String>,
-        groups: List<List<String>>
-    ): IntentionPreviewInfo {
-        val editor = FileEditorManager.getInstance(project).selectedTextEditor ?: return IntentionPreviewInfo.EMPTY
-        // +1 because the caret seems to always be at the start of the text highlighted in the inspection.
-        // Take the first replacement as best guess default.
-        val replacementIndex = max(replacementRanges.indexOfFirst { it.contains(editor.caretOffset() + 1) }, 0)
-        return generatePreview(project, descriptor, replacementRanges[replacementIndex], replacements[replacementIndex], groups[replacementIndex])
+        return replacement.length - replacementRange.length
     }
 
     /**
      * Generates the preview for a single replacement.
      *
-     * Override when overriding [applyFix].
+     * Override when overriding [doApplyFix].
      */
-    fun generatePreview(
-        project: Project,
-        descriptor: ProblemDescriptor,
-        replacementRange: IntRange,
-        replacement: String,
-        groups: List<String>
+    protected open fun doGeneratePreview(
+        project: Project, descriptor: ProblemDescriptor, regexFix: RegexFix,
     ): IntentionPreviewInfo {
+        val replacementRange = regexFix.replacementRange
+        val replacement = regexFix.replacement
         val original = descriptor.psiElement.containingFile.text.substring(replacementRange)
         return IntentionPreviewInfo.CustomDiff(LatexFileType, original, replacement)
-    }
-
-    open fun applyFixes(
-        descriptor: ProblemDescriptor,
-        replacementRanges: List<IntRange>,
-        replacements: List<String>,
-        groups: List<List<String>>
-    ) {
-        require(replacementRanges.size == replacements.size) { "The number of replacement values has to equal the number of ranges of those replacements." }
-        var accumulatedDisplacement = 0
-        for (i in replacements.indices) {
-            val replacementRange = replacementRanges[i]
-            val replacement = replacements[i]
-            val newRange = IntRange(replacementRange.first + accumulatedDisplacement, replacementRange.last + accumulatedDisplacement)
-            val replacementLength = applyFix(descriptor, newRange, replacement, groups[i])
-            accumulatedDisplacement += replacementLength
-        }
     }
 
     /**
      * A local quick fix capable of applying one or multiple regex replacements.
      */
-    inner class RegexFixes(
+    protected inner class RegexFix(
         private val fixName: String,
-        val replacements: List<String>,
-        val replacementRanges: List<IntRange>,
-        val groups: List<List<String>>
+        val replacementRange: IntRange,
+        val replacement: String,
+        val matcher: MatchResult
     ) : LocalQuickFix {
 
         override fun getFamilyName(): String = fixName
 
         override fun applyFix(project: Project, problemDescriptor: ProblemDescriptor) {
-            applyFixes(problemDescriptor, replacementRanges, replacements, groups)
+            doApplyFix(project, problemDescriptor, this)
         }
 
         override fun generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo {
-            return generatePreview(project, previewDescriptor, replacementRanges, replacements, groups)
+            return doGeneratePreview(project, previewDescriptor, this)
         }
     }
 }
