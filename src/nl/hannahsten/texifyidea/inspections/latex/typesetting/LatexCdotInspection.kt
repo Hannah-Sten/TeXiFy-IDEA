@@ -38,10 +38,6 @@ class LatexCdotInspection : TexifyContextAwareRegexInspectionBase(
         return "Change to \\cdot"
     }
 
-    override fun getReplacementRange(matcher: MatchResult): IntRange {
-        return matcher.groups[1]?.range ?: matcher.range
-    }
-
     override fun additionalChecks(element: PsiElement): Boolean {
         return element.prevSibling is PsiWhiteSpace && element.nextSibling is PsiWhiteSpace
     }
