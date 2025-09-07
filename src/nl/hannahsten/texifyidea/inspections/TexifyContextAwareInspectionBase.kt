@@ -37,8 +37,6 @@ import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.psi.getMagicComment
 import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
 import nl.hannahsten.texifyidea.util.parser.traverse
-import java.util.concurrent.atomic.AtomicInteger
-import java.util.concurrent.atomic.AtomicLong
 
 abstract class TexifyContextAwareInspectionBase(
     /**
@@ -73,7 +71,7 @@ abstract class TexifyContextAwareInspectionBase(
      * @param isOnTheFly Whether the inspection is run on-the-fly (in the editor) or in batch mode (code inspection).
      */
     abstract fun inspectElement(
-        element: PsiElement, contexts: LContextSet,
+        element: PsiElement, contexts: LContextSet, lookup: LatexSemanticsLookup,
         manager: InspectionManager, isOnTheFly: Boolean,
         descriptors: MutableList<ProblemDescriptor>
     )
@@ -103,19 +101,21 @@ abstract class TexifyContextAwareInspectionBase(
     }
 
     override fun checkFile(file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean): Array<ProblemDescriptor>? {
-        // Only inspect the right file types.
-        if (file.fileType !in inspectionGroup.fileTypes) {
-            return null
-        }
-        if (!isFileApplicable(file)) return null
-        if (isFileSuppressed(file)) return null
+        return performanceTracker.track {
+            // Only inspect the right file types.
+            if (file.fileType !in inspectionGroup.fileTypes) {
+                return@track null
+            }
+            if (!isFileApplicable(file)) return@track null
+            if (isFileSuppressed(file)) return@track null
 
-        val lookup = LatexDefinitionService.getInstance(file.project).getDefBundlesMerged(file)
-        val traverser = InspectionTraverser(
-            manager, isOnTheFly, lookup, LatexContexts.baseContexts
-        )
-        val result = traverser.doInspect(file)
-        return if (result.isEmpty()) ProblemDescriptor.EMPTY_ARRAY else result.toTypedArray()
+            val lookup = LatexDefinitionService.getInstance(file.project).getDefBundlesMerged(file)
+            val traverser = InspectionTraverser(
+                manager, isOnTheFly, lookup, LatexContexts.baseContexts
+            )
+            val result = traverser.doInspect(file)
+            if (result.isEmpty()) ProblemDescriptor.EMPTY_ARRAY else result.toTypedArray()
+        }
     }
 
     /**
@@ -138,7 +138,7 @@ abstract class TexifyContextAwareInspectionBase(
         return false
     }
 
-    protected open fun shouldInspectChildrenOf(element: PsiElement, state: LContextSet): Boolean {
+    protected open fun shouldInspectChildrenOf(element: PsiElement, state: LContextSet, lookup: LatexSemanticsLookup): Boolean {
         return true
     }
 
@@ -166,8 +166,8 @@ abstract class TexifyContextAwareInspectionBase(
                 return WalkAction.SKIP_CHILDREN
             }
 
-            inspectElement(e, state, manager, isOnTheFly, descriptors)
-            return if (shouldInspectChildrenOf(e, state)) WalkAction.CONTINUE else WalkAction.SKIP_CHILDREN
+            inspectElement(e, state, lookup, manager, isOnTheFly, descriptors)
+            return if (shouldInspectChildrenOf(e, state, lookup)) WalkAction.CONTINUE else WalkAction.SKIP_CHILDREN
         }
 
         fun doInspect(file: PsiFile): List<ProblemDescriptor> {
@@ -176,9 +176,8 @@ abstract class TexifyContextAwareInspectionBase(
         }
     }
 
-    object PerformanceTracker : SimplePerformanceTracker {
-        override val countOfBuilds: AtomicInteger = AtomicInteger(0)
-        override val totalTimeCost: AtomicLong = AtomicLong(0)
+    companion object {
+        val performanceTracker = SimplePerformanceTracker()
     }
 
     /**

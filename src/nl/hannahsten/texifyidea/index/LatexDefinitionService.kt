@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.index
 
-import arrow.atomic.AtomicLong
 import com.intellij.openapi.application.smartReadAction
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
@@ -32,7 +31,6 @@ import nl.hannahsten.texifyidea.util.AbstractBlockingCacheService
 import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.files.LatexPackageLocation
 import nl.hannahsten.texifyidea.util.isTestProject
-import java.util.concurrent.atomic.AtomicInteger
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.milliseconds
@@ -275,17 +273,14 @@ class LatexLibraryDefinitionService(
      * @param key the name of the package (with the file extension)
      */
     override fun computeValue(key: LatexLib, oldValue: LibDefinitionBundle?): LibDefinitionBundle {
-        val start = System.currentTimeMillis()
-        val result = if (key == LatexLib.BASE) {
-            computeBaseBundle()
+        return performanceTracker.track {
+            if (key == LatexLib.BASE) {
+                computeBaseBundle()
+            }
+            else {
+                computeDefinitionsRecur(key, mutableSetOf())
+            }
         }
-        else {
-            computeDefinitionsRecur(key, mutableSetOf())
-        }
-        val buildTime = System.currentTimeMillis() - start
-        countOfBuilds.incrementAndGet()
-        totalTimeCost.addAndGet(buildTime)
-        return result
     }
 
     private fun computeBaseBundle(): LibDefinitionBundle {
@@ -338,7 +333,7 @@ class LatexLibraryDefinitionService(
         }
     }
 
-    companion object : SimplePerformanceTracker {
+    companion object {
 
         val libExpiration: Duration = 1.hours
 
@@ -346,8 +341,7 @@ class LatexLibraryDefinitionService(
             return project.service()
         }
 
-        override val countOfBuilds = AtomicInteger(0)
-        override val totalTimeCost = AtomicLong(0)
+        val performanceTracker = SimplePerformanceTracker()
 
         val predefinedBaseLibBundle: LibDefinitionBundle by lazy {
             // return the hard-coded basic commands
@@ -425,25 +419,23 @@ class LatexDefinitionService(
 ) : AbstractBackgroundCacheService<Fileset, DefinitionBundle>(scope) {
 
     private fun computeValue(key: Fileset, oldValue: DefinitionBundle?): DefinitionBundle {
-        val startTime = System.currentTimeMillis()
+        return performanceTracker.track {
+            // packages first
+            val packageService = LatexLibraryDefinitionService.getInstance(project)
+            val libraries = ArrayList<LibDefinitionBundle>(key.libraries.size + 1)
+            libraries.add(packageService.getBaseBundle()) // add the default commands
+            key.libraries.mapTo(libraries) { packageService.getLibBundle(it) }
 
-        // packages first
-        val packageService = LatexLibraryDefinitionService.getInstance(project)
-        val libraries = ArrayList<LibDefinitionBundle>(key.libraries.size + 1)
-        libraries.add(packageService.getBaseBundle()) // add the default commands
-        key.libraries.mapTo(libraries) { packageService.getLibBundle(it) }
+            val bundle = WorkingFilesetDefinitionBundle(libraries)
 
-        val bundle = WorkingFilesetDefinitionBundle(libraries)
-
-        val projectFileIndex = ProjectFileIndex.getInstance(project)
-        // a building placeholder for the bundle to make lookups work
-        for (file in key.files) {
-            if (!projectFileIndex.isInProject(file)) continue
-            LatexDefinitionUtil.collectCustomDefinitions(file, project, bundle)
+            val projectFileIndex = ProjectFileIndex.getInstance(project)
+            // a building placeholder for the bundle to make lookups work
+            for (file in key.files) {
+                if (!projectFileIndex.isInProject(file)) continue
+                LatexDefinitionUtil.collectCustomDefinitions(file, project, bundle)
+            }
+            bundle
         }
-        countOfBuilds.incrementAndGet()
-        totalTimeCost.addAndGet(System.currentTimeMillis() - startTime)
-        return bundle
     }
 
     override suspend fun computeValueSuspend(key: Fileset, oldValue: DefinitionBundle?): DefinitionBundle {
@@ -526,7 +518,7 @@ class LatexDefinitionService(
         }
     }
 
-    companion object : SimplePerformanceTracker {
+    companion object {
 
         val expirationTime: Duration
             get() = TexifySettings.getState().filesetExpirationTimeMs.milliseconds
@@ -535,8 +527,7 @@ class LatexDefinitionService(
             return project.service()
         }
 
-        override val countOfBuilds = AtomicInteger(0)
-        override val totalTimeCost = AtomicLong(0)
+        val performanceTracker = SimplePerformanceTracker()
 
         fun resolvePredefined(name: String): SourcedDefinition? {
             return AllPredefined.lookup(name)?.let {
