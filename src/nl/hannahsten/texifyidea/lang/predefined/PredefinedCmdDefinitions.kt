@@ -14,7 +14,7 @@ import nl.hannahsten.texifyidea.lang.LatexContexts
 object PredefinedCmdDefinitions : PredefinedCommandSet() {
 
     private val argCommandName = required("name", LatexContexts.CommandDeclaration)
-    private val argCode = required("code", LatexContextIntro.add(LatexContexts.InsideDefinition))
+    private val argCode = required("code", LatexContexts.InsideDefinition)
 
     val regularDefinitionOfCommand = preambleCommands {
 
@@ -113,6 +113,15 @@ object PredefinedCmdDefinitions : PredefinedCommandSet() {
         "newtheorem*".cmd(
             argEnvName, "caption".required(LatexContexts.Text)
         ) { "Define a new theorem-like environment" }
+
+        underPackage("mdframed") {
+            "newmdenv".cmd("param".optional, argEnvName) {
+                "Define a new mdframed environment"
+            }
+            "newmdtheoremenv".cmd(
+                argEnvName, "numberedlike".optional, "caption".required(LatexContexts.Text)
+            )
+        }
     }
 
     val argSpecDefinitionOfEnvironment = preambleCommands {
