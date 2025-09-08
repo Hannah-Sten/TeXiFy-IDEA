@@ -15,6 +15,10 @@ abstract class LatexBeginCommandImplMixin(node: ASTNode) : LatexBeginCommand, AS
         return "\\begin"
     }
 
+    override fun hasStar(): Boolean {
+        return false // The \begin command does not have a star version.
+    }
+
     override fun getOptionalParameterMap() = getOptionalParameterMapFromParameters(this.parameterList)
 
     override fun getReference(): PsiReference? {

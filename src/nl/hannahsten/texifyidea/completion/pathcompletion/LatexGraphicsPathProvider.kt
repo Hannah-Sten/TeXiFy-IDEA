@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.completion.pathcompletion
 
+import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
@@ -13,11 +14,11 @@ import java.io.File
 /**
  * Autocompletion roots based on graphicspaths.
  */
-object LatexGraphicsPathProvider : LatexPathProviderBase() {
+object LatexGraphicsPathProvider : LatexContextAwarePathProviderBase() {
 
-    override fun selectScanRoots(file: PsiFile): ArrayList<VirtualFile> {
-        val paths = getProjectRoots()
-
+    override fun selectScanRoots(parameters: CompletionParameters): ArrayList<VirtualFile> {
+        val paths = getProjectRoots(parameters)
+        val file = parameters.originalFile
         val rootDirectory = file.findRootFile().containingDirectory?.virtualFile ?: return arrayListOf()
         getGraphicsPathsInFileSet(file).forEach {
             paths.add(rootDirectory.findVirtualFileByAbsoluteOrRelativePath(it) ?: return@forEach)

@@ -4,6 +4,7 @@ import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.updateCommandDef
 import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -38,10 +39,16 @@ class LatexAbsolutePathCompletionTest : BasePlatformTestCase() {
     }
 
     fun testSupportedPictureExtensions() {
-        myFixture.configureByText(LatexFileType, """\includegraphics{$absoluteWorkingPath/test/resources/completion/path/<caret>}""")
+        myFixture.configureByText(
+            "main.tex",
+            """
+            \usepackage{graphicx}
+            \includegraphics{$absoluteWorkingPath/test/resources/completion/path/<caret>}
+            """.trimIndent()
+        )
+        myFixture.updateCommandDef()
 
         val result = myFixture.complete(CompletionType.BASIC).removeFolderEntries()
-
         // is only allowed to show folders and the png file
         assertEquals(1, result.size)
     }

@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.util.parser
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
-import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.nextLeaf
 import nl.hannahsten.texifyidea.lang.alias.CommandManager
@@ -66,13 +65,6 @@ fun LatexCommands.definitionCommand(): LatexCommands? = forcedFirstRequiredParam
  * Get the name of the command that is defined by `this` command.
  */
 fun LatexCommands.definedCommandName() = definitionCommand()?.name
-
-/**
- * Checks whether the command has a star or not.
- */
-fun LatexCommands.hasStar() = collectSubtreeTyped<LeafPsiElement>().any {
-    it.elementType == LatexTypes.STAR
-}
 
 /**
  * Looks for the next command relative to the given command.

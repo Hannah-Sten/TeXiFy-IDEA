@@ -22,6 +22,11 @@ interface LatexCommandWithParams : LatexComposite {
 
     val parameterList: List<LatexParameter>
 
+    /**
+     * Whether this command has a star, such as in `\section*{Title}`.
+     */
+    fun hasStar(): Boolean
+
     fun firstParameter(): LatexParameter? {
         forEachDirectChild {
             if (it is LatexParameter) return it
@@ -91,3 +96,9 @@ interface LatexCommandWithParams : LatexComposite {
 
     fun getOptionalParameterMap(): Map<LatexOptionalKeyValKey, LatexKeyValValue?>
 }
+
+val LatexCommandWithParams.nameWithoutSlash: String?
+    get() = getName()?.removePrefix("\\")
+
+val LatexCommandWithParams.nameWithSlash: String?
+    get() = getName()

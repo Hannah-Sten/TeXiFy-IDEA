@@ -3,8 +3,7 @@ package nl.hannahsten.texifyidea.util.parser
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment
-import nl.hannahsten.texifyidea.lang.Environment
+import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.psi.LatexCommandWithParams
 import kotlin.reflect.KClass
@@ -19,17 +18,25 @@ import kotlin.reflect.KClass
  * Typically, PSI related extensions are called from a read action, so we must avoid wrapping these methods in a read action.
  */
 
+/**
+ * Find the first parent (including this element) of this PsiElement that matches the given predicate.
+ */
 inline fun PsiElement.firstParent(maxDepth: Int = Int.MAX_VALUE, predicate: (PsiElement) -> Boolean): PsiElement? {
-    var current: PsiElement? = this
-    var depth = -1
-    while (current != null && depth < maxDepth) {
+    var current: PsiElement = this
+    for (depth in 0..maxDepth) {
         if (predicate(current)) {
             return current
         }
-        current = current.parent?.let { if (it.isValid) it else null }
-        depth++
+        current = current.parent ?: return null
     }
     return null
+}
+
+/**
+ * Find the first parent excluding this element that matches the given predicate.
+ */
+inline fun PsiElement.firstStrictParent(maxDepth: Int = Int.MAX_VALUE, predicate: (PsiElement) -> Boolean): PsiElement? {
+    return this.parent?.firstParent(maxDepth, predicate)
 }
 
 /**
@@ -42,15 +49,7 @@ inline fun PsiElement.firstParent(maxDepth: Int = Int.MAX_VALUE, predicate: (Psi
  * @see [firstParentOfType]
  */
 inline fun <reified T : PsiElement> PsiElement.firstParentOfType(maxDepth: Int = Int.MAX_VALUE): T? {
-    var current: PsiElement = this
-    for (depth in 0..maxDepth) {
-        if (current is T) {
-            return current
-        }
-        current = current.parent ?: return null
-        if (!current.isValid) return null
-    }
-    return null
+    return firstParent(maxDepth) { it is T } as? T
 }
 
 inline fun PsiElement.traverseParents(action: (PsiElement) -> Unit) {
@@ -93,26 +92,18 @@ fun PsiElement.startOffsetInAncestor(ancestor: PsiElement): Int {
 fun PsiElement.textRangeInAncestor(ancestor: PsiElement): TextRange? {
     // If the ancestor is not a parent, return null
     val startOffset = this.startOffsetInAncestor(ancestor)
-    if(startOffset < 0) return null
+    if (startOffset < 0) return null
     return TextRange.from(startOffset, this.textLength)
 }
 
 /**
- * Checks if the psi element is in math mode or not.
+ * Checks if the psi element is in math mode or not using **advanced context resolution**.
  *
- * **This function is slow as it checks all parents of the psi element.**
  *
  * @return `true` when the element is in math mode, `false` when the element is in no math mode.
  */
 fun PsiElement.inMathContext(): Boolean {
-    traverseParents {
-        if (it is LatexMathEnvMarker) return true
-        if (it is LatexEnvironment) {
-            // TODO: make it possible to check if the environment QUITs math mode
-            if (DefaultEnvironment.fromPsi(it)?.context == Environment.Context.MATH) return true
-        }
-    }
-    return false
+    return LatexPsiUtil.resolveContextUpward(this).contains(LatexContexts.Math)
 }
 
 /**
@@ -295,6 +286,17 @@ inline fun <reified T : PsiElement> PsiElement.forEachChildTyped(depth: Int = In
             action(it)
         }
     }
+}
+
+inline fun PsiElement.getNthChildThat(n: Int, predicate: (PsiElement) -> Boolean): PsiElement? {
+    var count = 0
+    forEachDirectChild { child ->
+        if (predicate(child)) {
+            if (count == n) return child
+            count++
+        }
+    }
+    return null
 }
 
 /**

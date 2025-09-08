@@ -5,24 +5,26 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiRecursiveElementVisitor
 import nl.hannahsten.texifyidea.file.LatexFile
+import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
+import nl.hannahsten.texifyidea.index.stub.LatexParameterStub
 import nl.hannahsten.texifyidea.index.stub.requiredParamAt
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment
-import nl.hannahsten.texifyidea.lang.Environment
-import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.lang.commands.LatexCommand
+import nl.hannahsten.texifyidea.lang.LArgument
+import nl.hannahsten.texifyidea.lang.LArgumentType
+import nl.hannahsten.texifyidea.lang.LatexContextIntro
+import nl.hannahsten.texifyidea.lang.LContextSet
+import nl.hannahsten.texifyidea.lang.LSemanticCommand
+import nl.hannahsten.texifyidea.lang.LSemanticEnv
+import nl.hannahsten.texifyidea.lang.LatexContext
+import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.lang.LatexLib
+import nl.hannahsten.texifyidea.lang.LatexSemanticsCommandLookup
+import nl.hannahsten.texifyidea.lang.LatexSemanticsEnvLookup
+import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
+import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-
-/**
- * Checks if the environment contains the given context.
- */
-fun LatexEnvironment.isContext(context: Environment.Context): Boolean {
-    val name = getEnvironmentName()
-    val environment = Environment[name] ?: return false
-    return environment.context == context
-}
 
 /**
  * Finds the [LatexEndCommand] that matches the begin command.
@@ -39,7 +41,7 @@ fun LatexBeginCommand.endCommand(): LatexEndCommand? = nextSiblingOfType(LatexEn
  */
 fun LatexBeginCommand.isEntryPoint(): Boolean {
     // Currently: only allowing `\begin{document}`.
-    return this.environmentName() == DefaultEnvironment.DOCUMENT.environmentName
+    return this.environmentName() == "document"
 }
 
 /**
@@ -134,21 +136,38 @@ fun PsiElement.findOccurrences(searchRoot: PsiElement): List<LatexExtractablePSI
     return visitor.foundOccurrences.map { it.asExtractable() }
 }
 
-fun PsiElement.findDependencies(): Set<LatexPackage> {
+fun PsiElement.findDependencies(): Set<LatexLib> {
     return this.collectSubtreeTo(mutableSetOf(), Int.MAX_VALUE) { e ->
         val dependency = when (e) {
             is LatexCommands -> {
                 // If the command is a known command, add its dependency.
-                LatexCommand.lookupInAll(e)?.firstOrNull()?.dependency
+                val nameNoSlash = e.name?.removePrefix("\\") ?: ""
+                AllPredefined.lookupCommand(nameNoSlash)?.dependency
             }
+
             is LatexEnvironment -> {
                 // If the environment is a known environment, add its dependency.
-                Environment.lookup(e.getEnvironmentName())?.dependency
+                AllPredefined.lookupEnv(e.getEnvironmentName())?.dependency
             }
+
             else -> null
         }
-        dependency?.takeIf { it.isDefault.not() }
+        dependency?.takeIf { it.requiresImport }
     }
+}
+
+fun LatexSemanticsEnvLookup.lookupEnv(name: String?): LSemanticEnv? {
+    if (name == null) return null
+    return lookupEnv(name)
+}
+
+fun LatexSemanticsCommandLookup.lookupCommand(name: String?): LSemanticCommand? {
+    if (name == null) return null
+    return lookupCommand(name)
+}
+
+fun LatexSemanticsCommandLookup.lookupCommandPsi(cmd: LatexCommands): LSemanticCommand? {
+    return lookupCommand(cmd.nameWithoutSlash)
 }
 
 /**
@@ -191,6 +210,13 @@ object LatexPsiUtil {
         return nextCommand.name
     }
 
+    fun getDefinedCommandElement(cmd: LatexCommands): LatexCommands? {
+        cmd.firstRequiredParameter()?.let {
+            return it.findFirstChildTyped<LatexCommands>()
+        }
+        return cmd.nextContextualSibling { true } as? LatexCommands
+    }
+
     fun isInsideDefinition(cmd: LatexComposite): Boolean {
         return isInsideNewCommandDef(cmd) || isInsidePlainDef(cmd)
     }
@@ -215,5 +241,235 @@ object LatexPsiUtil {
         if (prevCmd.name !in CommandMagic.definitions) return false
         if (prevCmd.hasRequiredParameter()) return false
         return true
+    }
+
+    fun stubTypeToLArgumentType(type: Int): LArgumentType {
+        return when (type) {
+            LatexParameterStub.REQUIRED -> LArgumentType.REQUIRED
+            LatexParameterStub.OPTIONAL -> LArgumentType.OPTIONAL
+            else -> LArgumentType.REQUIRED
+        }
+    }
+
+    fun parameterToLArgumentType(parameter: LatexParameter): LArgumentType {
+        return when {
+            parameter.requiredParam != null -> LArgumentType.REQUIRED
+            parameter.optionalParam != null -> LArgumentType.OPTIONAL
+            else -> LArgumentType.REQUIRED // default to required if no parameters are present
+        }
+    }
+
+    fun parameterTypeMatchesStub(parameter: LatexParameterStub, type: LArgumentType): Boolean {
+        return when (type) {
+            LArgumentType.REQUIRED -> parameter.type == LatexParameterStub.REQUIRED
+            LArgumentType.OPTIONAL -> parameter.type == LatexParameterStub.OPTIONAL
+        }
+    }
+
+    inline fun processArgumentsWithSemantics(cmd: LatexCommandWithParams, semantics: LSemanticCommand, action: (LatexParameter, LArgument?) -> Unit) {
+        processArgumentsWithSemantics(cmd, semantics.arguments, action)
+    }
+
+    inline fun processArgumentsWithSemantics(cmd: LatexCommandWithParams, argList: List<LArgument>, action: (LatexParameter, LArgument?) -> Unit) {
+        var argIdx = 0
+        val argSize = argList.size
+        cmd.forEachParameter forEach@{ param ->
+            if (argIdx >= argSize) {
+                action(param, null) // no suitable arguments
+                return@forEach
+            }
+            var arg: LArgument? = null
+            val paramType = parameterToLArgumentType(param)
+            when (paramType) {
+                LArgumentType.REQUIRED -> while (argIdx < argSize) {
+                    // find the next required argument
+                    val argument = argList[argIdx++]
+                    if (argument.type == LArgumentType.REQUIRED) {
+                        arg = argument
+                        break
+                    }
+                }
+
+                LArgumentType.OPTIONAL -> {
+                    val argument = argList[argIdx]
+                    if (argument.type == LArgumentType.OPTIONAL) {
+                        arg = argument
+                        argIdx++
+                    }
+                    // just skip if the next argument is not optional
+                }
+            }
+            action(param, arg)
+        }
+    }
+
+    inline fun processArgumentsWithSemantics(cmd: LatexCommandsStub, semantics: LSemanticCommand, action: (LatexParameterStub, LArgument) -> Unit) {
+        val arguments = semantics.arguments
+        var argIdx = 0
+        val argSize = arguments.size
+        cmd.parameters.forEach { param ->
+            if (argIdx >= argSize) return
+            while (true) {
+                val argument = arguments[argIdx]
+                if (parameterTypeMatchesStub(param, argument.type)) {
+                    action(param, argument)
+                    argIdx++
+                    return@forEach // continue to next parameter
+                }
+                else if (argument.type == LArgumentType.OPTIONAL) {
+                    argIdx++ // skip optional arguments that are not present
+                }
+            }
+        }
+    }
+
+    fun alignCommandArgument(command: LatexCommandWithParams, parameter: LatexParameter, arguments: List<LArgument>): LArgument? {
+        val command = parameter.firstParentOfType<LatexCommands>() ?: return null
+        processArgumentsWithSemantics(command, arguments) { p, arg ->
+            if (p == parameter) return arg
+        }
+        return null
+    }
+
+    private fun resolveBeginCommandContext(parameter: LatexParameter, lookup: LatexSemanticsLookup): LatexContextIntro? {
+        val beginCommand = parameter.firstParentOfType<LatexBeginCommand>(3) ?: return null
+        val name = beginCommand.environmentName() ?: return null
+        val semantics = lookup.lookupEnv(name) ?: return null
+        val arg = alignCommandArgument(beginCommand, parameter, semantics.arguments) ?: return null
+        return arg.contextSignature
+    }
+
+    private fun resolveCommandParameterContext(parameter: LatexParameter, lookup: LatexSemanticsLookup): LatexContextIntro? {
+        val command = parameter.firstParentOfType<LatexCommands>(3) ?: return resolveBeginCommandContext(parameter, lookup)
+        val name = command.name?.removePrefix("\\") ?: return null
+        val semantics = lookup.lookupCommand(name) ?: return null
+        val arg = alignCommandArgument(command, parameter, semantics.arguments) ?: return null
+        return arg.contextSignature
+    }
+
+    private fun resolveEnvironmentContext(env: LatexEnvironment, lookup: LatexSemanticsLookup): LatexContextIntro? {
+        val name = env.getEnvironmentName()
+        val semantics = lookup.lookupEnv(name) ?: return null
+        return semantics.contextSignature
+    }
+
+    val baseContext = setOf(LatexContexts.Preamble, LatexContexts.Text)
+
+    fun resolveContextUpward(e: PsiElement): LContextSet {
+        val file = e.containingFile ?: return emptySet()
+        val lookup = LatexDefinitionService.getInstance(file.project).getDefBundlesMerged(file)
+        return resolveContextUpward(e, lookup)
+    }
+
+    /**
+     * Resolve the context at the given element by traversing the PSI tree upwards and collecting context changes.
+     * If no context changes are found, the [baseContext] is returned.
+     */
+    fun resolveContextUpward(e: PsiElement, lookup: LatexSemanticsLookup, baseContext: LContextSet = LatexPsiUtil.baseContext): LContextSet {
+        var collectedContextIntro: MutableList<LatexContextIntro>? = null
+        var current: PsiElement = e
+        // see Latex.bnf
+        while (true) {
+            current = current.firstStrictParent { // `firstParent` is inclusive
+                it is LatexParameter || it is LatexEnvironment || it is LatexMathEnvironment
+            } ?: break
+            val intro = when (current) {
+                is LatexParameter -> resolveCommandParameterContext(current, lookup) ?: continue
+                is LatexEnvironment -> resolveEnvironmentContext(current, lookup) ?: continue
+                is LatexMathEnvironment -> LatexContextIntro.ASSIGN_MATH
+                else -> continue
+            }
+            when (intro) {
+                is LatexContextIntro.Assign -> {
+                    if (collectedContextIntro == null) return intro.contexts
+                    collectedContextIntro.add(intro)
+                    break
+                }
+
+                LatexContextIntro.Clear -> {
+                    if (collectedContextIntro == null) return emptySet()
+                    collectedContextIntro.add(intro)
+                    break
+                }
+
+                else -> {
+                    if (collectedContextIntro == null) collectedContextIntro = mutableListOf()
+                    collectedContextIntro.add(intro)
+                }
+            }
+        }
+        collectedContextIntro ?: return baseContext
+        return LatexContextIntro.buildContext(collectedContextIntro.asReversed(), baseContext)
+    }
+
+    /**
+     * Traverse the given element and all its children, recording context introductions.
+     * The action is executed at each element, with the current list of context introductions.
+     * The list is ordered from outermost to innermost context introduction.
+     *
+     * Returns the list of context introductions at the end of the traversal, which may not be empty if unmatched context introductions are present,
+     * for example when traversing a `\begin` command without the matching `\end` command.
+     *
+     */
+    fun traverseRecordingContextIntro(
+        e: PsiElement,
+        lookup: LatexSemanticsLookup,
+        action: (PsiElement, List<LatexContextIntro>) -> Unit
+    ): List<LatexContextIntro> {
+        val visitor = RecordingContextIntroTraverser(lookup, action)
+        visitor.traverse(e)
+        return visitor.exitState
+    }
+
+    private class RecordingContextIntroTraverser(
+        lookup: LatexSemanticsLookup,
+        private val action: (PsiElement, List<LatexContextIntro>) -> Unit
+    ) : LatexWithContextStateTraverser<MutableList<LatexContextIntro>>(mutableListOf(), lookup) {
+        override fun enterContextIntro(intro: LatexContextIntro) {
+            state.add(intro)
+        }
+
+        override fun exitContextIntro(old: MutableList<LatexContextIntro>, intro: LatexContextIntro) {
+            val lastIntro = state.lastOrNull()
+            if (lastIntro === intro) state.removeLast() // they should be exactly the same object
+        }
+
+        private fun enterBeginEnv(envName: String) {
+            val semantics = lookup.lookupEnv(envName) ?: return
+            enterContextIntro(semantics.contextSignature)
+        }
+
+        private fun exitEndEnv(envName: String) {
+            val semantics = lookup.lookupEnv(envName) ?: return
+            exitContextIntro(state, semantics.contextSignature)
+        }
+
+        override fun elementStart(e: PsiElement): WalkAction {
+            action(e, state)
+            if (e is LatexCommands) {
+                // special handling for begin/end commands that are not parsed as environments
+                val name = e.nameWithSlash
+                if (name == "\\begin") e.requiredParameterText(0)?.let { enterBeginEnv(it) }
+                else if (name == "\\end") e.requiredParameterText(0)?.let { exitEndEnv(it) }
+            }
+            return WalkAction.CONTINUE
+        }
+
+        fun traverse(e: PsiElement): Boolean {
+            return traverseRecur(e)
+        }
+
+        val exitState: List<LatexContextIntro>
+            get() = state
+    }
+
+    /**
+     * Check if the given environment introduces the given context.
+     */
+    fun isContextIntroduced(element: LatexEnvironment, lookup: LatexSemanticsLookup, context: LatexContext): Boolean {
+        val name = element.getEnvironmentName()
+        val semantics = lookup.lookupEnv(name) ?: return false
+        val signature = semantics.contextSignature
+        return signature.introduces(context)
     }
 }

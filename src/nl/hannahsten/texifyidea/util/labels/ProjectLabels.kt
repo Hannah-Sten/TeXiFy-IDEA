@@ -23,25 +23,8 @@ fun getLabelDefinitionCommandsNoUpdate() = CommandManager.getAliases(CommandMagi
  *
  * This will check if the cache of user defined commands needs to be updated, based on the given project, and therefore may take some time.
  */
-fun Project.getLabelDefinitionCommands(): Set<String> {
+fun getLabelDefinitionCommands(): Set<String> {
+    // TODO: replace using DefinitionService
     // Check if updates are needed
     return CommandMagic.labels
-    // TODO: improve the aliases update mechanism with better caching
-//    CommandManager.updateAliases(CommandMagic.labels, this)
-//    return CommandManager.getAliases(CommandMagic.labels.first())
-}
-
-/**
- * See [getLabelDefinitionCommands], but will not wait until the update is finished.
- */
-fun Project.getLabelDefinitionCommandsAndUpdateLater(): Set<String> {
-    return CommandMagic.labels
-    // TODO
-    // Check if updates are needed
-//    runInBackgroundWithoutProgress {
-//        smartReadAction(this) {
-//            CommandManager.updateAliases(CommandMagic.labels, this)
-//        }
-//    }
-//    return CommandManager.getAliases(CommandMagic.labels.first())
 }

@@ -16,7 +16,7 @@ import nl.hannahsten.texifyidea.lang.LatexPackage
 /* General wrappers. */
 internal object LatexWrapWithInlineMathPostfixTemplate : ConstantStringBasedPostfixTemplate(
     "math",
-    "\$expr\$",
+    "\$expr$",
     "$$\$expr$$$\$END$",
     textOnly = true
 )

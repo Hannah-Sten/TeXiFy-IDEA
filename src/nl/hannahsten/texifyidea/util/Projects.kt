@@ -70,7 +70,7 @@ fun Project.findAvailableDocumentClasses(): Set<String> {
 }
 
 /**
- * Get all the virtual files that are in the project of a given file type.
+ * Whether the project contains a file of the given [FileType].
  */
 fun Project.containsFileOfType(type: FileType): Boolean {
     if (!isInitialized) return false
@@ -97,6 +97,11 @@ fun Project.containsFileOfType(type: FileType): Boolean {
 fun Project.getLatexRunConfigurations(): Collection<LatexRunConfiguration> {
     if (isDisposed) return emptyList()
     return RunManager.getInstance(this).allConfigurationsList.filterIsInstance<LatexRunConfiguration>()
+}
+
+fun Project.hasLatexRunConfigurations(): Boolean {
+    if (isDisposed) return false
+    return RunManager.getInstance(this).allConfigurationsList.any { it is LatexRunConfiguration }
 }
 
 fun Project.getBibtexRunConfigurations(): Collection<BibtexRunConfiguration> {
@@ -156,7 +161,7 @@ fun Project.isLatexProject(): Boolean {
 /**
  * True if we are probably in a unit test.
  */
-fun Project.isTestProject() = ApplicationManager.getApplication().isUnitTestMode
+fun isTestProject() = ApplicationManager.getApplication().isUnitTestMode
 
 /**
  * Finds all section marker commands (as defined in [CommandMagic.sectionNameToLevel]) in the project.

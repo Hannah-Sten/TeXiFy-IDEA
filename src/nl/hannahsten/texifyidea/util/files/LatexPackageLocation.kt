@@ -13,6 +13,8 @@ import nl.hannahsten.texifyidea.util.isTestProject
 import nl.hannahsten.texifyidea.util.runCommand
 import java.nio.file.Path
 import kotlin.io.path.isRegularFile
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.hours
 
 /**
  * Cache locations of LaTeX packages in memory, because especially on Windows they can be expensive to retrieve
@@ -21,19 +23,19 @@ import kotlin.io.path.isRegularFile
  */
 object LatexPackageLocation {
 
-    private const val EXPIRATION_TIME = 100 * 60 * 60 * 1000L // 100 hour, or any other time that is reasonable to keep the cache around
+    private val EXPIRATION_TIME: Duration = 100.hours // 100 hour, or any other time that is reasonable to keep the cache around
 
     private var retries = AtomicInt(0)
 
     private val locationCacheKey = GenericCacheService.createKey<Map<String, Path>>()
 
-    /**
-     * Fill cache with all paths of all files in the LaTeX installation.
-     * Note: this can take a long time.
-     */
-    suspend fun updateLocationWithKpsewhichSuspend(project: Project) {
-        TexifyProjectCacheService.getInstance(project).computeOrSkip(locationCacheKey, ::computeLocationWithKpsewhich)
-    }
+//    /**
+//     * Fill cache with all paths of all files in the LaTeX installation.
+//     * Note: this can take a long time.
+//     */
+//    suspend fun updateLocationWithKpsewhichSuspend(project: Project) {
+//        TexifyProjectCacheService.getInstance(project).ensureRefresh(locationCacheKey, ::computeLocationWithKpsewhich)
+//    }
 
     /**
      * Fill cache with all paths of all files in the LaTeX installation.
@@ -41,7 +43,7 @@ object LatexPackageLocation {
      */
     private fun computeLocationWithKpsewhich(project: Project): Map<String, Path> {
         /** Map filename with extension to full path. */
-        if(project.isTestProject()) return emptyMap()
+        if(isTestProject()) return emptyMap()
         // We will get all search paths that kpsewhich has, expand them and find all files
         // Source: https://www.tug.org/texinfohtml/kpathsea.html#Casefolding-search
         // We cannot just fill the cache on the fly, because then we will also run kpsewhich when the user is still typing a package name, so we will run it once for every letter typed and this is already too expensive.
@@ -93,11 +95,22 @@ object LatexPackageLocation {
             pathOrNull((projectSdk.sdkType as TectonicSdk).getPackageLocation(name, projectSdk.homePath))
         }
         else {
-            val cache = TexifyProjectCacheService.getInstance(project).getAndComputeLater(
+            val cache = TexifyProjectCacheService.getInstance(project).getOrComputeNow(
                 locationCacheKey, EXPIRATION_TIME, ::computeLocationWithKpsewhich
             )
-            cache?.get(name)
+            cache[name]
         }
         return path
+    }
+
+    /**
+     * Get all known package names in the LaTeX installation.
+     */
+    fun getAllPackageNames(project: Project): Set<String> {
+        if(ApplicationManager.getApplication().isUnitTestMode) {
+            return emptySet()
+        }
+        val cache = TexifyProjectCacheService.getInstance(project).getOrNull(locationCacheKey) ?: return emptySet()
+        return cache.keys
     }
 }

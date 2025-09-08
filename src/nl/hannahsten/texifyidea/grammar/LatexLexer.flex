@@ -140,7 +140,7 @@ ELSE=\\else
 END_IFS=\\fi
 
 %states INLINE_MATH INLINE_MATH_LATEX DISPLAY_MATH TEXT_INSIDE_INLINE_MATH NESTED_INLINE_MATH PARTIAL_DEFINITION ENVIRONMENT_INSIDE_INLINE_MATH
-%states NEW_ENVIRONMENT_DEFINITION_NAME NEW_ENVIRONMENT_DEFINITION NEW_ENVIRONMENT_SKIP_BRACE NEW_ENVIRONMENT_DEFINITION_END NEW_DOCUMENT_ENV_DEFINITION_NAME NEW_DOCUMENT_ENV_DEFINITION_ARGS_SPEC NEW_COMMAND_DEFINITION_PARAM1 NEW_COMMAND_DEFINITION_PARAM2
+%states NEW_ENVIRONMENT_DEFINITION_NAME NEW_ENVIRONMENT_DEFINITION NEW_ENVIRONMENT_DEFINITION_END NEW_DOCUMENT_ENV_DEFINITION_NAME NEW_DOCUMENT_ENV_DEFINITION_ARGS_SPEC NEW_COMMAND_DEFINITION_PARAM1 NEW_COMMAND_DEFINITION_PARAM2
 
 // latex3 has some special syntax
 %states LATEX3
@@ -385,6 +385,7 @@ END_IFS=\\fi
 }
 
 // We are visiting a second parameter of a \newenvironment definition, so we need to keep track of braces
+// TODO: the original hack is counter-intuitive and make it hard for parsing definitions,
 // The idea is that we will skip the }{ separating the second and third parameter, so that the \begin and \end of the
 // environment to be defined will not appear in a separate group
 // Include possible verbatim begin state, because after a \begin we are in that state (and we cannot leave it because we might be needing to start a verbatim environment)
@@ -394,23 +395,25 @@ END_IFS=\\fi
     {CLOSE_BRACE}      {
         newEnvironmentBracesNesting--;
         if(newEnvironmentBracesNesting == 0) {
-            yypopState(); yypushState(NEW_ENVIRONMENT_SKIP_BRACE);
+            yypopState(); yypushState(NEW_ENVIRONMENT_DEFINITION_END);
             // We could have returned normal text, but in this way the braces still match
-            return OPEN_BRACE;
+            return CLOSE_BRACE;
         } else {
             return CLOSE_BRACE;
         }
     }
+    {BEGIN_TOKEN}       { return COMMAND_TOKEN; }
+    {END_TOKEN}         { return COMMAND_TOKEN; }
     // To avoid changing state and thus tripping over the not matching group }{ in the middle, catch characters here which would otherwise change state
-    "\\["               { return DISPLAY_MATH_START; }
-    "\\]"               { return DISPLAY_MATH_END; }
+    "\\["               { return NORMAL_TEXT_WORD; }
+    "\\]"               { return NORMAL_TEXT_WORD; }
     "$"                 { return NORMAL_TEXT_WORD; }
 }
 
-// Skip the next open brace of the third parameter, just as we skipped the close brace of the second
-<NEW_ENVIRONMENT_SKIP_BRACE> {
-    {OPEN_BRACE}        { yypopState(); newEnvironmentBracesNesting = 1; yypushState(NEW_ENVIRONMENT_DEFINITION_END); return CLOSE_BRACE; }
-}
+//// Skip the next open brace of the third parameter, just as we skipped the close brace of the second
+//<NEW_ENVIRONMENT_SKIP_BRACE> {
+//    {OPEN_BRACE}        { yypopState(); newEnvironmentBracesNesting = 1; yypushState(NEW_ENVIRONMENT_DEFINITION_END); return CLOSE_BRACE; }
+//}
 
 // In the third parameter, still skip the state-changing characters
 <NEW_ENVIRONMENT_DEFINITION_END> {
@@ -422,8 +425,10 @@ END_IFS=\\fi
         }
         return CLOSE_BRACE;
     }
-    "\\["               { return DISPLAY_MATH_START; }
-    "\\]"               { return DISPLAY_MATH_END; }
+    {BEGIN_TOKEN}       { return COMMAND_TOKEN; }
+    {END_TOKEN}         { return COMMAND_TOKEN; }
+    "\\["               { return NORMAL_TEXT_WORD; }
+    "\\]"               { return NORMAL_TEXT_WORD; }
     "$"                 { return NORMAL_TEXT_WORD; }
 }
 

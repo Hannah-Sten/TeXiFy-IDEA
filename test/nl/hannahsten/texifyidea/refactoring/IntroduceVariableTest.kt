@@ -43,11 +43,11 @@ class IntroduceVariableTest : BasePlatformTestCase() {
         
             2.718 is a special number.
         
-            ${'$'}\lim_{x \to \infty} (1+\frac{1}{x})^{x}=2.718${'$'}
+            $\lim_{x \to \infty} (1+\frac{1}{x})^{x}=2.718$
         
             Some old guy discovered 2.7<caret>18 and was amazed!
         
-            Not to be confused with 2.714, or ${'$'}3\pi!-6\pi${'$'}
+            Not to be confused with 2.714, or $3\pi!-6\pi$
         
         \end{document}
     """,
@@ -68,11 +68,11 @@ class IntroduceVariableTest : BasePlatformTestCase() {
             
                 \mycommand is a special number.
             
-                ${'$'}\lim_{x \to \infty} (1+\frac{1}{x})^{x}=\mycommand${'$'}
+                $\lim_{x \to \infty} (1+\frac{1}{x})^{x}=\mycommand$
             
                 Some old guy discovered \mycommand and was amazed!
             
-                Not to be confused with 2.714, or ${'$'}3\pi!-6\pi${'$'}
+                Not to be confused with 2.714, or $3\pi!-6\pi$
             
             \end{document}
         """,
@@ -84,7 +84,7 @@ class IntroduceVariableTest : BasePlatformTestCase() {
         \documentclass[11pt]{article}
         \begin{document}
             
-            ${'$'}5.25 * 2.68291 = 450${'$'}
+            $5.25 * 2.68291 = 450$
         
             \begin{table}[ht!]
                 \begin{tabular}{| r |}
@@ -113,7 +113,7 @@ class IntroduceVariableTest : BasePlatformTestCase() {
         \newcommand{\mycommand}{2.68291}
         \begin{document}
             
-            ${'$'}5.25 * \mycommand = 450${'$'}
+            $5.25 * \mycommand = 450$
         
             \begin{table}[ht!]
                 \begin{tabular}{| r |}

@@ -205,7 +205,9 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
 
             runWriteCommandAction(project) {
                 replacement.findDependencies().forEach { pkg ->
-                    document?.psiFile(project)?.insertUsepackage(pkg)
+                    document?.psiFile(project)?.let { file ->
+                        PackageUtils.insertUsePackage(file, pkg)
+                    }
                 }
 
                 val command = replacement.findFirstChildOfType(LatexContent::class) ?: return@runWriteCommandAction

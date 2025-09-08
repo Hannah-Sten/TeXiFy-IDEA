@@ -234,7 +234,7 @@ fun PsiFile.findExpressionAtCaret(offset: Int): PsiElement? {
 }
 
 fun PsiFile.rerunInspections() {
-    if (!project.isTestProject()) {
+    if (!isTestProject()) {
         // PSI/document/model changes are not allowed during highlighting in tests
         DaemonCodeAnalyzer.getInstance(project).restart(this)
     }

@@ -38,12 +38,16 @@
                     text="Configure Inverse Search for Skim" description="Instructions for configuring inverse search."/>
 
             <separator/>
-            <!-- Fileset actions -->
-            <action class="nl.hannahsten.texifyidea.action.RefreshFilesetAction" id="texify.RefreshFileset"
-                    text="Refresh Fileset" description="Refresh the fileset of the current project."/>
+            <!-- Refresh actions -->
+            <action class="nl.hannahsten.texifyidea.action.RefreshTexifyCachesAction" id="texify.RefreshFileset"
+                    text="Refresh TeXiFy Caches" description="Refresh the fileset and command definition caches of the project"/>
             <!-- Performance diagnostic -->
             <action class="nl.hannahsten.texifyidea.action.debug.PerformanceDiagnosticAction" id="texify.PerformanceDiagnostic"
                     text="Performance Diagnostic" description="Run a performance diagnostic to find potential bottlenecks in TeXiFy IDEA."/>
+            <!-- Debug actions -->
+            <action class="nl.hannahsten.texifyidea.action.debug.ShowContextAction" id="texify.ShowContext"
+                    text="Show Context"
+                    description="Show the context of the current file in the TeXiFy IDEA plugin."/>
         </group>
     </actions>
 </idea-plugin>

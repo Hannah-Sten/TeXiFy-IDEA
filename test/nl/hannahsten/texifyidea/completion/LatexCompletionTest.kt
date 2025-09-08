@@ -3,7 +3,8 @@ package nl.hannahsten.texifyidea.completion
 import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
-import org.junit.Test
+import nl.hannahsten.texifyidea.updateCommandDef
+import nl.hannahsten.texifyidea.updateFilesets
 
 class LatexCompletionTest : BasePlatformTestCase() {
 
@@ -12,7 +13,6 @@ class LatexCompletionTest : BasePlatformTestCase() {
         super.setUp()
     }
 
-    @Test
     fun testCompleteLatexReferences() {
         // given
         myFixture.configureByText(LatexFileType, """\ap<caret>""")
@@ -21,15 +21,15 @@ class LatexCompletionTest : BasePlatformTestCase() {
         val result = myFixture.complete(CompletionType.BASIC)
 
         // then
-        if(result == null) {
+        if (result == null) {
             // single candidate autocompletion
             myFixture.checkResult("\\appendix<caret>")
-        } else {
+        }
+        else {
             assertTrue("LaTeX autocompletion should be available", result.any { it.lookupString.startsWith("\\appendix") })
         }
     }
 
-    @Test
     fun testCompleteCustomCommandReferences() {
         // given
         myFixture.configureByText(
@@ -39,14 +39,16 @@ class LatexCompletionTest : BasePlatformTestCase() {
             \h<caret>
             """.trimIndent()
         )
+        myFixture.updateCommandDef()
 
         // when
         val result = myFixture.complete(CompletionType.BASIC)
 
-        if(result == null) {
+        if (result == null) {
             // single candidate autocompletion
             myFixture.checkResult("\\hi<caret>")
-        } else {
+        }
+        else {
             // when multiple candidates are available
             assertTrue("LaTeX autocompletion of custom commands should be available", result.any { it.lookupString == "\\hi" })
         }
@@ -56,10 +58,12 @@ class LatexCompletionTest : BasePlatformTestCase() {
         myFixture.configureByText(
             LatexFileType,
             """
+            \usepackage{xcolor}
             \colorlet{fadedred}{red!70!}
             \color{r<caret>}
             """.trimIndent()
         )
+        myFixture.updateCommandDef()
 
         val result = myFixture.complete(CompletionType.BASIC)
 
@@ -80,48 +84,45 @@ class LatexCompletionTest : BasePlatformTestCase() {
         assertTrue(result.any { it.lookupString.startsWith("\\textbf") })
     }
 
-    // fun testCustomCommandAliasCompletion() {
-    //     myFixture.configureByText(LatexFileType, """
-    //         \begin{thebibliography}{9}
-    //             \bibitem{testkey}
-    //             Reference.
-    //         \end{thebibliography}
-    //
-    //         \newcommand{\mycite}[1]{\cite{#1}}
-    //
-    //         \mycite{<caret>}
-    //     """.trimIndent())
-    //     CommandManager.updateAliases(setOf("\\cite"), project)
-    //     val result = myFixture.complete(CompletionType.BASIC)
-    //
-    //     assertTrue(result.any { it.lookupString == "testkey" })
-    // }
+    fun testCustomCommandAliasCompletion() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+             \begin{thebibliography}{9}
+                 \bibitem{testkey}
+                 Reference.
+             \end{thebibliography}
 
-    // Test doesn't work
-    // fun testTwoLevelCustomCommandAliasCompletion() {
-    //     myFixture.configureByText(LatexFileType, """
-    //         \begin{thebibliography}{9}
-    //             \bibitem{testkey}
-    //             Reference.
-    //         \end{thebibliography}
-    //
-    //         \newcommand{\mycite}[1]{\cite{#1}}
-    //         <caret>
-    //     """.trimIndent())
-    //
-    //     // For n-level autocompletion, the autocompletion needs to run n times (but only runs when the number of indexed
-    //     // newcommands changes)
-    //     CommandManager.updateAliases(setOf("\\cite"), project)
-    //     CommandManager.updateAliases(setOf("\\cite"), project)
-    //
-    //     myFixture.complete(CompletionType.BASIC)
-    //     myFixture.type("""\newcommand{\myothercite}[1]{\mycite{#1}}""")
-    //     myFixture.type("""\myother""")
-    //     myFixture.complete(CompletionType.BASIC)
-    //     val result = myFixture.complete(CompletionType.BASIC, 2)
-    //
-    //     assertTrue(result.any { it.lookupString == "testkey" })
-    // }
+             \newcommand{\mycite}[1]{\cite{#1}}
+
+             \mycite{<caret>}
+            """.trimIndent()
+        )
+        myFixture.updateCommandDef()
+
+        val result = myFixture.complete(CompletionType.BASIC)
+        assertTrue(result.any { it.lookupString == "testkey" })
+    }
+
+    // Test doesn't work before, now work with context-aware completion!
+    fun testTwoLevelCustomCommandAliasCompletion() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+             \begin{thebibliography}{9}
+                 \bibitem{testkey}
+                 Reference.
+             \end{thebibliography}
+
+             \newcommand{\mycite}[1]{\cite{#1}}
+             \newcommand{\myothercite}[1]{This is \mycite{#1}}
+             \myothercite{<caret>}
+            """.trimIndent()
+        )
+        myFixture.updateCommandDef()
+        val result = myFixture.complete(CompletionType.BASIC)
+        assertTrue(result.any { it.lookupString == "testkey" })
+    }
 
     fun testLabelCompletion() {
         myFixture.configureByText(
@@ -133,6 +134,7 @@ class LatexCompletionTest : BasePlatformTestCase() {
             ~\ref{la<caret>}
             """.trimIndent()
         )
+        myFixture.updateFilesets()
 
         val result = myFixture.complete(CompletionType.BASIC)
 
@@ -140,7 +142,7 @@ class LatexCompletionTest : BasePlatformTestCase() {
         assertTrue(result.any { it.lookupString == "label2" })
     }
 
-    // TODO: We should implement this functionality in the future in more efficient ways.
+    // TODO: The following can be implemented but not now
 //    fun testCustomLabelAliasCompletion() {
 //        myFixture.configureByText(
 //            LatexFileType,

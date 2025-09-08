@@ -11,11 +11,15 @@ import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.stubs.PsiFileStubImpl
+import com.intellij.psi.stubs.StubElement
+import com.intellij.psi.stubs.StubInputStream
+import com.intellij.psi.stubs.StubOutputStream
 import com.intellij.psi.tree.IStubFileElementType
 import com.intellij.psi.tree.TokenSet
 import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.parser.LatexParser
 import nl.hannahsten.texifyidea.psi.LatexTypes
+import org.jetbrains.annotations.NonNls
 
 /**
  * @author Sten Wessel
@@ -26,7 +30,7 @@ class LatexParserDefinition : ParserDefinition {
 
     override fun createParser(project: Project): PsiParser = LatexParser()
 
-    override fun getFileNodeType(): IStubFileElementType<*> = Cache.FILE
+    override fun getFileNodeType(): IStubFileElementType<*> = LatexStubFileElementType
 
     override fun getWhitespaceTokens(): TokenSet = LatexTokenSets.WHITE_SPACES
 
@@ -42,15 +46,25 @@ class LatexParserDefinition : ParserDefinition {
         left: ASTNode,
         right: ASTNode
     ): SpaceRequirements = SpaceRequirements.MAY
+}
 
-    object Cache {
-        // debugName is required to let IntelliJ distinguish between this FILE and BibtexParserDefinition.FILE
-        val FILE: IStubFileElementType<*> = object : IStubFileElementType<LatexFileStub>(
-            "LatexStubFileElementType", Language.findInstance(LatexLanguage::class.java)
-        ) {
-            override fun getStubVersion(): Int = 87
-        }
+object LatexStubFileElementType : IStubFileElementType<LatexFileStub>(
+    // debugName is required to let IntelliJ distinguish between this FILE and BibtexParserDefinition.FILE
+    "LatexStubFileElementType", Language.findInstance(LatexLanguage::class.java)
+) {
+    override fun getStubVersion(): Int = 88
+
+    override fun getExternalId(): @NonNls String {
+        return "texify.latex.LatexStubFileElementType"
     }
 
-    class LatexFileStub(file: LatexFile) : PsiFileStubImpl<LatexFile>(file)
+    override fun deserialize(dataStream: StubInputStream, parentStub: StubElement<*>?): LatexFileStub {
+        return LatexFileStub(null)
+    }
+
+    override fun serialize(stub: LatexFileStub, dataStream: StubOutputStream) {
+        super.serialize(stub, dataStream)
+    }
 }
+
+class LatexFileStub(file: LatexFile?) : PsiFileStubImpl<LatexFile>(file)

@@ -6,6 +6,8 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.parser.forEachChildTyped
 import nl.hannahsten.texifyidea.util.parser.forEachDirectChild
+import nl.hannahsten.texifyidea.util.parser.forEachDirectChildTyped
+import nl.hannahsten.texifyidea.util.parser.getNthChildThat
 import nl.hannahsten.texifyidea.util.parser.getOptionalParameterMapFromParameters
 import nl.hannahsten.texifyidea.util.parser.toStringMap
 import nl.hannahsten.texifyidea.util.parser.traversePruneIf
@@ -236,23 +238,21 @@ fun PsiElement.traverseCommands(depth: Int = Int.MAX_VALUE): Sequence<LatexComma
 inline fun LatexCommandWithParams.forEachOptionalParameter(
     action: (LatexOptionalKeyValKey, LatexKeyValValue?) -> Unit
 ) {
-    parameterList.forEach {
+    forEachParameter {
         it.optionalParam?.optionalKeyValPairList?.forEach { kvPair ->
             action(kvPair.optionalKeyValKey, kvPair.keyValValue)
         }
     }
 }
 
+inline fun LatexCommandWithParams.forEachParameter(
+    action: (LatexParameter) -> Unit
+) {
+    forEachDirectChildTyped<LatexParameter>(action)
+}
+
 private fun PsiElement.getParameterTexts0(): Sequence<LatexParameterText> {
     return this.traversePruneIf { it is LatexCommandWithParams }.filterIsInstance<LatexParameterText>()
-}
-
-fun LatexRequiredParam.getParameterTexts(): Sequence<LatexParameterText> {
-    return getParameterTexts0()
-}
-
-fun LatexOptionalParam.getParameterTexts(): Sequence<LatexParameterText> {
-    return getParameterTexts0()
 }
 
 fun LatexCommandWithParams.getParameterTexts(): Sequence<LatexParameterText> {
@@ -260,13 +260,36 @@ fun LatexCommandWithParams.getParameterTexts(): Sequence<LatexParameterText> {
 }
 
 fun LatexParameter.contentText(): String {
-    return stripContentText(text)
+    requiredParam?.let {
+        return stripContentText(it.text, '{', '}')
+    }
+    optionalParam?.let {
+        return stripContentText(it.text, '[', ']')
+    }
+    pictureParam?.let {
+        return stripContentText(it.text, '(', ')')
+    }
+    return text
 }
 
-private fun stripContentText(text: String): String {
-    var stripped = text.trim()
-    if (stripped.length >= 2) {
-        stripped = stripped.substring(1, stripped.length - 1)
+private fun stripContentText(text: String, prefix: Char, suffix: Char): String {
+    var result = text
+    if (result.length >= 2 && result.first() == prefix && result.last() == suffix) {
+        result = result.substring(1, result.length - 1)
     }
-    return stripped.trim()
+    return result.trim()
+}
+
+fun LatexCommandWithParams.getNthRequiredParameter(n: Int): LatexRequiredParam? {
+    val parameter = getNthChildThat(n) {
+        it is LatexParameter && it.requiredParam != null
+    } as? LatexParameter
+    return parameter?.requiredParam
+}
+
+fun LatexCommandWithParams.getNthOptionalParameter(n: Int): LatexOptionalParam? {
+    val parameter = getNthChildThat(n) {
+        it is LatexParameter && it.optionalParam != null
+    } as? LatexParameter
+    return parameter?.optionalParam
 }

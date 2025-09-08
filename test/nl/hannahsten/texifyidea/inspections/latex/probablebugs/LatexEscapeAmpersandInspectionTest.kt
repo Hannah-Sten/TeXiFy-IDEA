@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.inspections.latex.probablebugs
 
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
+import nl.hannahsten.texifyidea.updateCommandDef
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 
 internal class LatexEscapeAmpersandInspectionTest : TexifyInspectionTestBase(LatexEscapeAmpersandInspection()) {
@@ -32,21 +33,23 @@ internal class LatexEscapeAmpersandInspectionTest : TexifyInspectionTestBase(Lat
         myFixture.checkHighlighting(true, false, false, false)
     }
 
-    // TODO: Re-enable this test when custom environments are supported
-//    fun `test that ampersand in custom tabular environment does not trigger a warning`() {
-//        myFixture.configureByText(
-//            LatexFileType,
-//            """
-//            \newenvironment{kwak}{ \begin{tabular}{lc} }{ \end{tabular} }
-//            \begin{document}
-//                \begin{kwak}
-//                    kwik & kwek \\
-//                \end{kwak}
-//            \end{document}
-//            """.trimIndent()
-//        )
-//        myFixture.checkHighlighting(true, false, false, false)
-//    }
+    fun `test that ampersand in custom tabular environment does not trigger a warning`() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \newenvironment{kwak}{ \begin{tabular}{lc} }{ \end{tabular} }
+            \newcommand{\kwek}[1]{ \begin{kwak} #1 \end{kwak} }
+            \begin{document}
+                \begin{kwak}
+                    kwik & kwek \\
+                \end{kwak}
+                \kwek{kwak & kwek}
+            \end{document}
+            """.trimIndent()
+        )
+        myFixture.updateCommandDef()
+        myFixture.checkHighlighting(true, false, false, false)
+    }
 
     fun `test that ampersand in math environment does trigger a warning`() {
         myFixture.configureByText(
@@ -64,7 +67,9 @@ internal class LatexEscapeAmpersandInspectionTest : TexifyInspectionTestBase(Lat
         myFixture.configureByText(
             LatexFileType,
             """
+            \usepackage{amsmath}
             \begin{document}
+            
                 $\begin{split}
                     a& =b\\
                     c& =d
@@ -72,6 +77,7 @@ internal class LatexEscapeAmpersandInspectionTest : TexifyInspectionTestBase(Lat
             \end{document}
             """.trimIndent()
         )
+        myFixture.updateCommandDef()
         myFixture.checkHighlighting(true, false, false, false)
     }
 
@@ -80,6 +86,9 @@ internal class LatexEscapeAmpersandInspectionTest : TexifyInspectionTestBase(Lat
             myFixture.configureByText(
                 LatexFileType,
                 """
+                \usepackage{amsmath,mathtools}
+                \usepackage{gauss}
+                \usepackage{tikzcd}
                 \begin{document}
                     $\begin{$environment}
                         a& =b\\
@@ -88,6 +97,7 @@ internal class LatexEscapeAmpersandInspectionTest : TexifyInspectionTestBase(Lat
                 \end{document}
                 """.trimIndent()
             )
+            myFixture.updateCommandDef()
             myFixture.checkHighlighting(true, false, false, false)
         }
     }

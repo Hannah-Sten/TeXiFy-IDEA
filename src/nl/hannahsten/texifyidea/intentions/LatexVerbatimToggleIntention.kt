@@ -6,21 +6,21 @@ import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
-import nl.hannahsten.texifyidea.lang.Environment
-import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.lang.commands.LatexCommand
+import nl.hannahsten.texifyidea.lang.LatexLib
+import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.ui.PopupChooserCellRenderer
+import nl.hannahsten.texifyidea.util.PackageUtils
 import nl.hannahsten.texifyidea.util.files.getAllRequiredArguments
 import nl.hannahsten.texifyidea.util.files.isLatexFile
-import nl.hannahsten.texifyidea.util.insertUsepackage
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
+import nl.hannahsten.texifyidea.util.parser.lookupCommandPsi
 import nl.hannahsten.texifyidea.util.runWriteCommandAction
 
 class LatexVerbatimToggleIntention : TexifyIntentionBase("Convert to other verbatim command or environment") {
@@ -95,19 +95,24 @@ class LatexVerbatimToggleIntention : TexifyIntentionBase("Convert to other verba
             }
 
             // Check if the newly inserted verbatim depends on a package and insert the package when needed.
-            findDependency(newElement)?.let { file.insertUsepackage(it) }
+            findDependency(newElement)?.let {
+                PackageUtils.insertUsePackage(file, it)
+            }
         }
     }
 
     /**
      * Use the index to find if the `verbatim` element we insert depends on a package.
      */
-    private fun findDependency(verbatim: PsiElement): LatexPackage? =
-        (verbatim as? LatexCommands)?.let {
-            LatexCommand.lookupInAll(it)?.firstOrNull()?.dependency
-        } ?: verbatim.getName()?.let {
-            Environment.lookup(it)?.dependency
+    private fun findDependency(verbatim: PsiElement): LatexLib? {
+        if(verbatim is LatexCommands) {
+            return AllPredefined.lookupCommandPsi(verbatim)?.dependency
         }
+
+        return verbatim.getName()?.let {
+            AllPredefined.lookup(it)?.dependency
+        }
+    }
 
     /**
      * Get all information about [oldVerbatim] that is needed to replace it with a new verbatim.

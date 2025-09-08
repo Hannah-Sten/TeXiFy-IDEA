@@ -19,7 +19,10 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
  */
 class InputFileReference(
     element: LatexCommands,
-    val key: String,
+    /**
+     * The text of the file name as it appears in the command without any processing.
+     */
+    val refText: String,
     /**
      * The range of the file name within the command text.
      * This is used to replace the file name when renaming the file.
@@ -126,7 +129,7 @@ class InputFileReference(
     }
 
     override fun handleElementRename(newElementName: String): PsiElement {
-        return handleElementRename(element, newElementName, true, key, range)
+        return handleElementRename(element, newElementName, true, refText, range)
     }
 
     // Required for moving referenced files
@@ -134,7 +137,7 @@ class InputFileReference(
         val newFile = givenElement as? PsiFile ?: return this.element
         // Assume LaTeX will accept paths relative to the root file
         val newFileName = newFile.virtualFile?.path?.toRelativePath(this.element.containingFile.findRootFile().virtualFile.parent.path) ?: return this.element
-        return handleElementRename(element, newFileName, false, key, range)
+        return handleElementRename(element, newFileName, false, refText, range)
     }
 
     /**

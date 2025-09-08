@@ -41,3 +41,9 @@ enum class LatexIfCommand(
     override val identifier: String
         get() = name
 }
+
+fun main() {
+    LatexIfCommand.entries.forEach {
+        println("+\"${it.command}\"")
+    }
+}

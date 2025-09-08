@@ -8,34 +8,22 @@ import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.index.LatexProjectStructure
-import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.inspections.InsightGroup
-import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment
+import nl.hannahsten.texifyidea.lang.LSemanticEntity
 import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.DEFAULT
-import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.psi.forEachCommand
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
-import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.PackageUtils
-import nl.hannahsten.texifyidea.util.files.definitionsAndRedefinitionsInFileSet
-import nl.hannahsten.texifyidea.util.includedPackagesInFileset
-import nl.hannahsten.texifyidea.util.magic.PackageMagic
-import nl.hannahsten.texifyidea.util.parser.*
 import java.util.*
 
 /**
- * Currently works for built-in commands and environments.
+ * Missing import inspection for LaTeX files, works on predefined commands and environments.
  *
  * @author Hannah Schellekens
  */
-open class LatexMissingImportInspection : TexifyInspectionBase() {
+class LatexMissingImportInspection : LatexMissingImportInspectionBase() {
 
     override val inspectionGroup = InsightGroup.LATEX
 
@@ -45,150 +33,66 @@ open class LatexMissingImportInspection : TexifyInspectionBase() {
 
     override fun getDisplayName() = "Missing imports"
 
-    override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        if (!TexifySettings.getInstance().automaticDependencyCheck) {
-            return emptyList()
-        }
-        if (!LatexProjectStructure.isProjectFilesetsAvailable(file.project)) {
-            return emptyList()
-        }
-
-        val descriptors = descriptorList()
-
-        val includedPackages = file.includedPackagesInFileset()
-        analyseCommands(file, includedPackages, descriptors, manager, isOntheFly)
-        analyseEnvironments(file, includedPackages, descriptors, manager, isOntheFly)
-
-        return descriptors
-    }
-
-    private fun analyseEnvironments(
-        file: PsiFile, includedPackages: Collection<LatexPackage>,
-        descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager,
-        isOntheFly: Boolean
+    override fun reportCommandMissingImport(
+        command: LatexCommands, candidates: List<LSemanticEntity>,
+        descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager, isOntheFly: Boolean
     ) {
-        val defined = file.definitionsAndRedefinitionsInFileSet().asSequence()
-            .filter { it.isEnvironmentDefinition() }
-            .mapNotNull { it.requiredParameterText(0) }
-            .toSet()
-
-        file.forEachChildTyped<LatexEnvironment> { env ->
-            val name = env.getEnvironmentName()
-            // Don't consider environments that have been defined.
-            if(name in defined) return@forEachChildTyped
-
-            val environment = DefaultEnvironment[name] ?: return@forEachChildTyped
-            val pack = environment.dependency
-            if (pack == DEFAULT || includedPackages.contains(pack)) {
-                return@forEachChildTyped
-            }
-            // Packages included in other packages
-            for (packageInclusion in PackageMagic.packagesLoadingOtherPackages) {
-                if (packageInclusion == pack && includedPackages.contains(packageInclusion.key)) {
-                    return@forEachChildTyped
-                }
-            }
-
-            descriptors.add(
-                manager.createProblemDescriptor(
-                    env,
-                    TextRange(7, 7 + name.length),
-                    "Environment requires ${pack.name} package",
-                    ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                    isOntheFly,
-                    ImportEnvironmentFix(pack.name)
-                )
+        val packageNames = candidates.mapNotNull { it.dependency.toPackageName() }
+        if (packageNames.isEmpty()) return
+        val fixes = packageNames.map { ImportPackageFix(it) }.toTypedArray()
+        val range = TextRange(0, command.commandToken.textLength)
+        descriptors.add(
+            manager.createProblemDescriptor(
+                command,
+                range,
+                "Command requires any of the packages: ${packageNames.joinToString(", ")}",
+                ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                isOntheFly,
+                *fixes
             )
-        }
+        )
     }
 
-    private fun analyseCommands(
-        file: PsiFile, includedPackages: Set<LatexPackage>,
-        descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager,
-        isOntheFly: Boolean
+    override fun reportEnvironmentMissingImport(
+        environment: LatexEnvironment, candidates: List<LSemanticEntity>,
+        descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager, isOntheFly: Boolean
     ) {
-        // This loops over all commands, so we don't want to do this again for every command in the file for performance
-        val commandDefinitionsInProject = NewSpecialCommandsIndex.getAllCommandDefInFileset(file).map { it.definedCommandName() }
+        val packageNames = candidates.mapNotNull { it.dependency.toPackageName() }
+        if (packageNames.isEmpty()) return
+        val fixes = packageNames.map { ImportPackageFix(it) }.toTypedArray()
+        val range = TextRange(7, 7 + environment.getEnvironmentName().length)
+        descriptors.add(
+            manager.createProblemDescriptor(
+                environment,
+                range,
+                "Environment requires any of the packages: ${packageNames.joinToString(", ")}",
+                ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                isOntheFly,
+                *fixes
+            )
+        )
+    }
 
-        file.forEachCommand commandLoop@{ command ->
-            // If we are actually defining the command, then it doesn't need any dependency
-            if (command.parent?.firstParentOfType(LatexCommands::class).isCommandDefinition()) {
-                return@commandLoop
-            }
+    override fun reportUnknownCommand(command: LatexCommands, descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager, isOntheFly: Boolean) {
+    }
 
-            // If defined within the project, also fine
-            if (commandDefinitionsInProject.contains(command.name)) {
-                return@commandLoop
-            }
-
-            val name = command.commandToken.text.substring(1)
-            val latexCommands = LatexCommand.lookup(name) ?: return@commandLoop
-
-            // In case there are multiple commands with this name, we don't know which one the user wants.
-            // So we don't know which of the dependencies the user needs: we assume that if at least one of them is present it will be the right one.
-            val dependencies = latexCommands.map { it.dependency }.toSet()
-
-            if (dependencies.isEmpty() || dependencies.any { it.isDefault }) {
-                return@commandLoop
-            }
-
-            // Packages included in other packages
-            for (packageInclusion in PackageMagic.packagesLoadingOtherPackages) {
-                if (packageInclusion.value.intersect(dependencies).isNotEmpty() && includedPackages.contains(packageInclusion.key)) {
-                    return@commandLoop
-                }
-            }
-
-            // If none of the dependencies are included
-            if (includedPackages.intersect(dependencies).isEmpty()) {
-                // We know dependencies is not empty
-                val range = TextRange(0, latexCommands.minByOrNull { it.command.length }!!.command.length + 1)
-                val dependencyNames = dependencies.joinToString { it.name }.replaceAfterLast(", ", "or ${dependencies.last().name}")
-                val fixes = dependencies.map { ImportCommandFix(it) }.toTypedArray()
-                descriptors.add(
-                    manager.createProblemDescriptor(
-                        command,
-                        range,
-                        "Command requires $dependencyNames package",
-                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                        isOntheFly,
-                        *fixes
-                    )
-                )
-            }
-        }
+    override fun reportUnknownEnvironment(name: String, environment: LatexEnvironment, descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager, isOntheFly: Boolean) {
     }
 
     /**
      * @author Hannah Schellekens
      */
-    private class ImportCommandFix(val pack: LatexPackage) : LocalQuickFix {
+    private class ImportPackageFix(val packName: String) : LocalQuickFix {
 
-        override fun getFamilyName() = "Add import for package '${pack.name}' which provides this command"
+        override fun getFamilyName() = "Add import for package '$packName' which provides this environment"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            val command = descriptor.psiElement as LatexCommands
-            val file = command.containingFile
-
-            if (!PackageUtils.insertUsepackage(file, pack)) {
-                Notification("LaTeX", "Conflicting package detected", "The package ${pack.name} was not inserted because a conflicting package was detected.", NotificationType.INFORMATION).notify(project)
+            if (!PackageUtils.insertUsepackage(descriptor.psiElement.containingFile, LatexPackage(packName))) {
+                Notification(
+                    "LaTeX", "Conflicting package detected",
+                    "The package $packName was not inserted because a conflicting package was detected.", NotificationType.INFORMATION
+                ).notify(project)
             }
-        }
-    }
-
-    /**
-     * @author Hannah Schellekens
-     */
-    private class ImportEnvironmentFix(val import: String) : LocalQuickFix {
-
-        override fun getFamilyName() = "Add import for package '$import' which provides this environment"
-
-        override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            val environment = descriptor.psiElement as? LatexEnvironment ?: return
-            val thingy = DefaultEnvironment.fromPsi(environment) ?: return
-            val file = environment.containingFile
-
-            PackageUtils.insertUsepackage(file, thingy.dependency)
         }
     }
 }

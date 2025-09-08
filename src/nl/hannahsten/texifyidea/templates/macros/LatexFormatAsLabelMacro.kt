@@ -2,7 +2,7 @@ package nl.hannahsten.texifyidea.templates.macros
 
 import com.intellij.codeInsight.template.*
 import com.intellij.codeInsight.template.macro.MacroBase
-import nl.hannahsten.texifyidea.templates.LatexContext
+import nl.hannahsten.texifyidea.templates.TemplateLatexContext
 import nl.hannahsten.texifyidea.util.formatAsLabel
 
 class LatexFormatAsLabelMacro : MacroBase("latexFormatAsLabel", "latexFormatAsLabel(String)") {
@@ -12,5 +12,5 @@ class LatexFormatAsLabelMacro : MacroBase("latexFormatAsLabel", "latexFormatAsLa
         return TextResult(text.formatAsLabel())
     }
 
-    override fun isAcceptableInContext(context: TemplateContextType?) = context is LatexContext
+    override fun isAcceptableInContext(context: TemplateContextType?) = context is TemplateLatexContext
 }
