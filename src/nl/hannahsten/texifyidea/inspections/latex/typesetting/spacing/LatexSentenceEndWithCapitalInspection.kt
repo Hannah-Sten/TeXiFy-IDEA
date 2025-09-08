@@ -27,7 +27,7 @@ class LatexSentenceEndWithCapitalInspection : TexifyContextAwareRegexInspectionB
         return "\\@."
     }
 
-    override fun additionalChecks(element: PsiElement, text: String, match: MatchResult): Boolean {
+    override fun additionalChecks(element: PsiElement, match: MatchResult): Boolean {
         val nextWhiteSpace = element.findNextAdjacentWhiteSpace() ?: return false
         // Check if there is a newline in the whitespace
         return nextWhiteSpace.textContains('\n')

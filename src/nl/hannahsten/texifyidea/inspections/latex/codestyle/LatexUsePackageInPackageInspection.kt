@@ -1,20 +1,38 @@
 package nl.hannahsten.texifyidea.inspections.latex.codestyle
 
+import com.intellij.codeInspection.InspectionManager
+import com.intellij.codeInspection.ProblemDescriptor
+import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.file.ClassFileType
 import nl.hannahsten.texifyidea.file.StyleFileType
-import nl.hannahsten.texifyidea.inspections.TexifyRegexInspection
-import java.util.regex.Pattern
+import nl.hannahsten.texifyidea.inspections.TexifyCommandInspectionBase
+import nl.hannahsten.texifyidea.lang.LContextSet
+import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
+import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.nameWithoutSlash
 
-class LatexUsePackageInPackageInspection : TexifyRegexInspection(
-    inspectionDisplayName = "Use of \\usepackage{...} instead of \\RequirePackage{...}",
-    inspectionId = "UsePackageInPackage",
-    errorMessage = { "Use \\RequirePackage{...} instead of \\usepackage{...}" },
-    // The \\usepackage syntax is \\usepackage[<options>]{<package name>}[<version info>].
-    pattern = Pattern.compile("\\\\usepackage(\\[[^]]*])?\\{([^}]*)}(\\[[^]]*])?"),
-    quickFixName = { "Replace with \\RequirePackage" },
-    replacement = { matcher, _ -> "\\RequirePackage${matcher.group(1) ?: ""}{${matcher.group(2)}}${matcher.group(3) ?: ""}" },
-    cancelIf = { _, psiFile ->
-        // Cancel if the usepackage was found outside a class or style file.
-        psiFile.virtualFile?.extension !in setOf(ClassFileType.defaultExtension, StyleFileType.defaultExtension)
+class LatexUsePackageInPackageInspection : TexifyCommandInspectionBase(
+    inspectionId = "UsePackageInPackage"
+) {
+    private val applicableFileExtensions = setOf(ClassFileType, StyleFileType)
+
+    override fun isFileApplicable(file: PsiFile): Boolean {
+        val fileType = file.virtualFile?.fileType ?: file.fileType
+        // don't know why but sometimes file.fileType is not the same as file.virtualFile?.fileType
+        return fileType in applicableFileExtensions
     }
-)
+
+    override fun inspectCommand(command: LatexCommands, contexts: LContextSet, lookup: LatexSemanticsLookup, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {
+        val name = command.nameWithoutSlash ?: return
+        if (name != "usepackage") return
+        val descriptor = manager.createProblemDescriptor(
+            command,
+            "Use \\RequirePackage{...} instead of \\usepackage{...}",
+            ReplaceCommandQuickFix("Replace with \\RequirePackage", "RequirePackage"),
+            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+            isOnTheFly
+        )
+        descriptors.add(descriptor)
+    }
+}

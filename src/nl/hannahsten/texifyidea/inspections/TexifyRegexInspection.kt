@@ -289,7 +289,7 @@ abstract class TexifyRegexInspection(
 
         document.replaceString(replacementRange.first, replacementRange.last, replacement)
 
-        return replacement.length - replacementRange.length
+        return replacement.length - replacementRange.length + 1
     }
 
     /**

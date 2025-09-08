@@ -1,0 +1,55 @@
+package nl.hannahsten.texifyidea.inspections
+
+import com.intellij.codeInspection.InspectionManager
+import com.intellij.codeInspection.LocalQuickFix
+import com.intellij.codeInspection.ProblemDescriptor
+import com.intellij.codeInspection.util.IntentionFamilyName
+import com.intellij.openapi.project.Project
+import com.intellij.psi.PsiElement
+import nl.hannahsten.texifyidea.lang.LContextSet
+import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
+import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexMagicComment
+import nl.hannahsten.texifyidea.psi.LatexNormalText
+
+abstract class TexifyCommandInspectionBase(
+    inspectionId: String,
+    applicableContexts: LContextSet? = null,
+    excludedContexts: LContextSet = emptySet(),
+    inspectionGroup: InsightGroup = InsightGroup.LATEX,
+) :
+    TexifyContextAwareInspectionBase(inspectionGroup, inspectionId, applicableContexts, excludedContexts) {
+
+    override fun shouldInspectChildrenOf(element: PsiElement, state: LContextSet, lookup: LatexSemanticsLookup): Boolean {
+        // if there cannot be commands inside, do not inspect children
+        if (element is LatexNormalText) return false
+        if (element is LatexMagicComment) return false
+        return true
+    }
+
+    override fun inspectElement(element: PsiElement, contexts: LContextSet, lookup: LatexSemanticsLookup, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {
+        if (element !is LatexCommands) return
+        inspectCommand(element, contexts, lookup, manager, isOnTheFly, descriptors)
+    }
+
+    /**
+     * Inspects a command.
+     *
+     * It is the caller's responsibility to check the context via [isApplicableInContexts] since some pre-checks can be done more efficiently.
+     */
+    protected abstract fun inspectCommand(command: LatexCommands, contexts: LContextSet, lookup: LatexSemanticsLookup, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>)
+
+    protected class ReplaceCommandQuickFix(
+        val fixName: String,
+        private val newNameWithoutSlash: String
+    ) : LocalQuickFix {
+        override fun getFamilyName(): @IntentionFamilyName String {
+            return fixName
+        }
+
+        override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
+            val element = descriptor.psiElement as? LatexCommands ?: return
+            element.setName(newNameWithoutSlash)
+        }
+    }
+}

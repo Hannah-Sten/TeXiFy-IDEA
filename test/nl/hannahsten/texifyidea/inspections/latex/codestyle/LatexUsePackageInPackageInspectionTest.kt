@@ -5,7 +5,7 @@ import io.mockk.mockkStatic
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 
-class LatexUsePackageInPackageInspectionQuickFixTest : TexifyInspectionTestBase(LatexUsePackageInPackageInspection()) {
+class LatexUsePackageInPackageInspectionTest : TexifyInspectionTestBase(LatexUsePackageInPackageInspection()) {
 
     override fun setUp() {
         super.setUp()

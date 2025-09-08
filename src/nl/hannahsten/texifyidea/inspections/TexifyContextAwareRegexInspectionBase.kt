@@ -23,19 +23,10 @@ abstract class TexifyContextAwareRegexInspectionBase(
     inspectionId: String,
     val regex: Regex,
     val highlight: ProblemHighlightType = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-    /**
-     * If null, applies to all contexts except those in [excludedContexts].
-     * If non-null, applies only to those contexts, except those in [excludedContexts].
-     */
-    val applicableContexts: LContextSet? = null,
-    /**
-     * The contexts in which this inspection should not be applied.
-     *
-     * Note that comment is always excluded.
-     */
-    val excludedContexts: LContextSet = emptySet(),
+    applicableContexts: LContextSet? = null,
+    excludedContexts: LContextSet = emptySet(),
     inspectionGroup: InsightGroup = InsightGroup.LATEX,
-) : TexifyContextAwareInspectionBase(inspectionGroup, inspectionId) {
+) : TexifyContextAwareInspectionBase(inspectionGroup, inspectionId, applicableContexts, excludedContexts) {
 
     protected abstract fun errorMessage(matcher: MatchResult): String
 
@@ -53,17 +44,6 @@ abstract class TexifyContextAwareRegexInspectionBase(
     ): String
 
     /**
-     * Whether this element should be inspected under the given contexts.
-     */
-    protected fun isApplicableInContexts(contexts: LContextSet): Boolean {
-        if (applicableContexts != null) {
-            if (contexts.none { it in applicableContexts }) return false
-        }
-        if (excludedContexts.isNotEmpty() && contexts.any { it in excludedContexts }) return false
-        return true
-    }
-
-    /**
      * By default, only inspect leaf elements to avoid duplicate matches across overlapping PSI nodes.
      */
     protected open fun shouldInspectElement(element: PsiElement, lookup: LatexSemanticsLookup): Boolean {
@@ -75,9 +55,7 @@ abstract class TexifyContextAwareRegexInspectionBase(
      *
      * @return Whether to report the found match.
      */
-    protected open fun additionalChecks(
-        element: PsiElement, text: String, match: MatchResult
-    ): Boolean {
+    protected open fun additionalChecks(element: PsiElement, match: MatchResult): Boolean {
         return true
     }
 
@@ -96,7 +74,7 @@ abstract class TexifyContextAwareRegexInspectionBase(
         if (!regex.containsMatchIn(elementText)) return
         for (match in regex.findAll(elementText)) {
             val matchText = match.value
-            if (!additionalChecks(element, matchText, match)) continue
+            if (!additionalChecks(element, match)) continue
             val highlightRange = getHighlightRange(match)
             if (highlightRange.isEmpty() || !match.range.contains(highlightRange)) continue
             val textRange = highlightRange.toTextRange()

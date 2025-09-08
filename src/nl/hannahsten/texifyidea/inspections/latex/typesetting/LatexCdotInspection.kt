@@ -14,7 +14,7 @@ import nl.hannahsten.texifyidea.util.parser.findPrevAdjacentWhiteSpace
  */
 class LatexCdotInspection : TexifyContextAwareRegexInspectionBase(
     inspectionId = "Cdot",
-    regex = Regex.fromLiteral("."),
+    regex = Regex("^\\.$"),
     highlight = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
     applicableContexts = setOf(LatexContexts.Math),
 ) {
@@ -30,7 +30,7 @@ class LatexCdotInspection : TexifyContextAwareRegexInspectionBase(
         return "Change to \\cdot"
     }
 
-    override fun additionalChecks(element: PsiElement, text: String, match: MatchResult): Boolean {
+    override fun additionalChecks(element: PsiElement, match: MatchResult): Boolean {
         return element.findPrevAdjacentWhiteSpace() != null && element.findNextAdjacentWhiteSpace() != null
     }
 }

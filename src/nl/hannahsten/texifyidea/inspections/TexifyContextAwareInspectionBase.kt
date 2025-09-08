@@ -47,6 +47,17 @@ abstract class TexifyContextAwareInspectionBase(
      * A unique string identifier for the inspection.
      */
     val inspectionId: String,
+    /**
+     * If null, applies to all contexts except those in [excludedContexts].
+     * If non-null, applies only to those contexts, except those in [excludedContexts].
+     */
+    val applicableContexts: LContextSet?,
+    /**
+     * The contexts in which this inspection should not be applied.
+     *
+     * Note that comment is always excluded.
+     */
+    val excludedContexts: LContextSet
 ) : LocalInspectionTool() {
 
     /**
@@ -64,6 +75,17 @@ abstract class TexifyContextAwareInspectionBase(
      */
     open val outerSuppressionScopes: Set<MagicCommentScope>
         get() = emptySet()
+
+    /**
+     * Whether this element should be inspected under the given contexts.
+     */
+    protected fun isApplicableInContexts(contexts: LContextSet): Boolean {
+        if (applicableContexts != null) {
+            if (contexts.none { it in applicableContexts }) return false
+        }
+        if (excludedContexts.isNotEmpty() && contexts.any { it in excludedContexts }) return false
+        return true
+    }
 
     /**
      * Inspects a single element, given the contexts it is in.
