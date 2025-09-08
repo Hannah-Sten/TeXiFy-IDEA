@@ -208,6 +208,9 @@ fun PsiElement.nextContextualSibling(predicate: (PsiElement) -> Boolean): PsiEle
     return null
 }
 
+fun PsiElement.nextContextualSiblingIgnoreWhitespace(): PsiElement? =
+    nextContextualSibling { it !is PsiWhiteSpace }
+
 /**
  * Gets the name of the command from the [PsiElement] if it is a command or is a content containing a command.
  */

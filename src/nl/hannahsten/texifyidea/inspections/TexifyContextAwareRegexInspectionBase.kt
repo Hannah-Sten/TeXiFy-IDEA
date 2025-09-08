@@ -44,10 +44,17 @@ abstract class TexifyContextAwareRegexInspectionBase(
     ): String
 
     /**
-     * By default, only inspect leaf elements to avoid duplicate matches across overlapping PSI nodes.
+     * Decides whether the regex should try to match the given element.
+     *
+     * By default, only `LatexTypes.NORMAL_TEXT_WORD` elements are inspected.
+     * Also override [shouldInspectChildrenOf] to avoid descending into unwanted elements.
      */
     protected open fun shouldInspectElement(element: PsiElement, lookup: LatexSemanticsLookup): Boolean {
         return element.elementType == LatexTypes.NORMAL_TEXT_WORD
+    }
+
+    override fun shouldInspectChildrenOf(element: PsiElement, state: LContextSet, lookup: LatexSemanticsLookup): Boolean {
+        return true
     }
 
     /**
@@ -56,10 +63,6 @@ abstract class TexifyContextAwareRegexInspectionBase(
      * @return Whether to report the found match.
      */
     protected open fun additionalChecks(element: PsiElement, match: MatchResult): Boolean {
-        return true
-    }
-
-    override fun shouldInspectChildrenOf(element: PsiElement, state: LContextSet, lookup: LatexSemanticsLookup): Boolean {
         return true
     }
 

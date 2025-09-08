@@ -1,18 +1,36 @@
 package nl.hannahsten.texifyidea.inspections.latex.typesetting
 
-import nl.hannahsten.texifyidea.inspections.TexifyRegexInspection
-import java.util.regex.Pattern
+import com.intellij.codeInspection.ProblemDescriptor
+import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.openapi.project.Project
+import com.intellij.psi.PsiElement
+import nl.hannahsten.texifyidea.inspections.TexifyContextAwareRegexInspectionBase
+import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.util.parser.findNextAdjacentWhiteSpace
+import nl.hannahsten.texifyidea.util.parser.findPrevAdjacentWhiteSpace
 
-/**
- * @author Hannah Schellekens
- */
-open class LatexXInsteadOfTimesInspection : TexifyRegexInspection(
-    inspectionDisplayName = "Use of x instead of \\times",
+class LatexXInsteadOfTimesInspection : TexifyContextAwareRegexInspectionBase(
     inspectionId = "XInsteadOfTimes",
-    errorMessage = { "\\times expected" },
-    pattern = Pattern.compile("[0-9]\\s+(x)\\s+[0-9]"),
-    mathMode = true,
-    replacement = { _, _ -> "\\times" },
-    replacementRange = { it.groupRange(1) },
-    quickFixName = { "Change to \\times" }
-)
+    regex = Regex("^x$", RegexOption.IGNORE_CASE),
+    highlight = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+    applicableContexts = setOf(LatexContexts.Math),
+) {
+    override fun errorMessage(matcher: MatchResult): String {
+        return "\\times expected"
+    }
+
+    override fun getReplacement(match: MatchResult, project: Project, problemDescriptor: ProblemDescriptor): String {
+        return "\\times"
+    }
+
+    override fun quickFixName(matcher: MatchResult): String {
+        return "Change to \\times"
+    }
+
+    override fun additionalChecks(element: PsiElement, match: MatchResult): Boolean {
+        // inspection only triggers when x is surrounded by whitespace and both sides are numbers
+        val prev = element.findPrevAdjacentWhiteSpace()?.prevSibling
+        val next = element.findNextAdjacentWhiteSpace()?.nextSibling
+        return prev != null && next != null && prev.text.matches(Regex("\\d+")) && next.text.matches(Regex("\\d+"))
+    }
+}

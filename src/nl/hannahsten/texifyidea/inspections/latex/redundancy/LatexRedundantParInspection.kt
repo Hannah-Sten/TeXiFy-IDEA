@@ -1,38 +1,56 @@
 package nl.hannahsten.texifyidea.inspections.latex.redundancy
 
-import com.intellij.psi.PsiElement
-import com.intellij.psi.impl.source.tree.LeafPsiElement
-import nl.hannahsten.texifyidea.inspections.TexifyRegexInspection
-import nl.hannahsten.texifyidea.psi.LatexTypes
-import nl.hannahsten.texifyidea.util.toTextRange
-import java.util.regex.Matcher
-import java.util.regex.Pattern
+import com.intellij.codeInspection.InspectionManager
+import com.intellij.codeInspection.LocalQuickFix
+import com.intellij.codeInspection.ProblemDescriptor
+import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.openapi.project.Project
+import com.intellij.psi.PsiWhiteSpace
+import nl.hannahsten.texifyidea.inspections.InsightGroup.LATEX
+import nl.hannahsten.texifyidea.inspections.TexifyCommandInspectionBase
+import nl.hannahsten.texifyidea.lang.LContextSet
+import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
+import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.nameWithoutSlash
+import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.parser.findNextAdjacentWhiteSpace
+import nl.hannahsten.texifyidea.util.parser.findPrevAdjacentWhiteSpace
 
-/**
- * @author Hannah Schellekens
- */
-open class LatexRedundantParInspection : TexifyRegexInspection(
-    inspectionDisplayName = "Redundant use of \\par",
+class LatexRedundantParInspection : TexifyCommandInspectionBase(
     inspectionId = "RedundantPar",
-    errorMessage = { "Use of \\par is redundant here" },
-    pattern = Pattern.compile("((\\s*\\n\\s*\\n\\s*(\\\\par))|(\\n\\s*(\\\\par)\\s*\\n)|((\\\\par)\\s*\\n\\s*\\n))"),
-    replacement = { _, _ -> "" },
-    replacementRange = Util::parRange,
-    quickFixName = { "Remove \\par" },
-    highlightRange = { Util.parRange(it).toTextRange() }
+    inspectionGroup = LATEX,
 ) {
 
-    object Util {
+    override fun inspectCommand(command: LatexCommands, contexts: LContextSet, lookup: LatexSemanticsLookup, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {
+        if (command.nameWithoutSlash != "par") return
 
-        fun parRange(it: Matcher) = when {
-            it.group(3) != null -> it.groupRange(3)
-            it.group(5) != null -> it.groupRange(5)
-            else -> it.groupRange(7)
+        val prev = command.findPrevAdjacentWhiteSpace()
+        val next = command.findNextAdjacentWhiteSpace()
+        if(lineBreakCount(prev) + lineBreakCount(next) >= 2) {
+            // There are already blank lines around this \par
+            descriptors.add(
+                manager.createProblemDescriptor(
+                    command,
+                    "Use of \\par is redundant here",
+                    RemoveParQuickFix(),
+                    ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                    isOnTheFly
+                )
+            )
         }
     }
 
-    override fun checkContext(matcher: Matcher, element: PsiElement): Boolean {
-        val elt = element.containingFile.findElementAt(matcher.end()) as? LeafPsiElement
-        return super.checkContext(matcher, element) && elt?.elementType != (LatexTypes.COMMAND_TOKEN ?: true)
+    private fun lineBreakCount(element: PsiWhiteSpace?): Int {
+        if (element == null) return 0
+        return element.text.count { it == '\n' }
+    }
+
+    private class RemoveParQuickFix : LocalQuickFix {
+        override fun getFamilyName() = "Remove \\par"
+        override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
+            val range = descriptor.psiElement.textRange
+            val document = descriptor.psiElement.containingFile.document() ?: return
+            document.deleteString(range.startOffset, range.endOffset)
+        }
     }
 }
