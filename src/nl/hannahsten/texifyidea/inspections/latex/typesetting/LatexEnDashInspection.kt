@@ -6,6 +6,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.inspections.TexifyContextAwareRegexInspectionBase
 import nl.hannahsten.texifyidea.lang.LContextSet
+import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
@@ -14,6 +15,7 @@ class LatexEnDashInspection : TexifyContextAwareRegexInspectionBase(
     inspectionId = "EnDash",
     regex = Regex("(?<![0-9\\-])\\s+(([0-9]+)\\s*[\\- ]+\\s*([0-9]+))(\\s+|.)(?=[^0-9\\-])"),
     highlight = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+    applicableContexts = setOf(LatexContexts.Text)
 ) {
     override fun errorMessage(matcher: MatchResult): String = "En dash expected"
 
