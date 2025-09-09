@@ -10,25 +10,56 @@ If you are contributing UI, please read the IntelliJ Platform UI guidelines at [
 TeXiFy inspections and other functionality relies in many cases on certain magic knowledge about commands or environments.
 Often, this information is manually hardcoded in the source code, and can be incomplete or incorrect.
 Most often this is really easy to fix, even without any knowledge of the source code of TeXiFy.
-If you think something can be improved, you are encouraged to scroll through the files in [https://github.com/Hannah-Sten/TeXiFy-IDEA/tree/master/src/nl/hannahsten/texifyidea/util/magic](https://github.com/Hannah-Sten/TeXiFy-IDEA/tree/master/src/nl/hannahsten/texifyidea/util/magic) for example CommandMagic and EnvironmentMagic.
-You can also look at previous pull requests for inspiration, for example [#2245](https://github.com/Hannah-Sten/TeXiFy-IDEA/pull/2245).
+
+If you think something can be improved, you are encouraged to add semantic definitions for them.
+You can take a look predefined commands/environments in [predefined/](https://github.com/Hannah-Sten/TeXiFy-IDEA/tree/master/src/nl/hannahsten/texifyidea/lang/predefined)
+and also [LatexContexts](https://github.com/Hannah-Sten/TeXiFy-IDEA/tree/master/src/nl/hannahsten/texifyidea/lang/LatexContexts.kt)
+which encompasses a lot of the predefined knowledge about commands.
 
 Note, if commands are just missing from the autocompletion, this is likely more complicated because these shouldn’t be hardcoded, but detected automatically.
 
 ### Adding support for command: example
-Note: [#2245](https://github.com/Hannah-Sten/TeXiFy-IDEA/pull/2245 presents it very clearly and if You just want to see some code, go that way. Stay here, if You want explanations.
 
-Let's use `\newcommandx` as our example. As the name suggests, this is alternative form of `\newcommand` with additional features.
-First, optional step: add the package the command is from to the list of predefined packages (if it's not already there). List is located in [nl/hannahsten/texifyidea/lang/LatexPackage](https://github.com/Hannah-Sten/TeXiFy-IDEA/tree/master/src/nl/hannahsten/texifyidea/lang/LatexPackage.kt)
+If you want to add support for a command, you usually have to do three steps.
+Let's use `\textcolor` as our example.
 
-Second step: declare the command. Commands are declared in [src/nl/hannahsten/texifyidea/lang/commands](https://github.com/Hannah-Sten/TeXiFy-IDEA/tree/master/src/nl/hannahsten/texifyidea/lang/commands) package and in our example we are going to use [LatexNewDefinitionCommand](https://github.com/Hannah-Sten/TeXiFy-IDEA/tree/master/src/nl/hannahsten/texifyidea/lang/commands/LatexNewDefinitionCommand.kt) class.
-Other types of commands should go to respective classes (names should be self-explanatory).
-Add your command using the syntax analogous to the already existing commands.
+First step: we look at what this command does.
+This command is from the `xcolor` package and colors text.
+Its first argument is the color, the second argument is the text to be colored, both are required.
 
-Third, and the last step: add handling for the command. Usual place is: [src/nl/hannahsten/texifyidea/util/magic](https://github.com/Hannah-Sten/TeXiFy-IDEA/tree/master/src/nl/hannahsten/texifyidea/util/magic), with the class [CommandMagic](https://github.com/Hannah-Sten/TeXiFy-IDEA/tree/master/src/nl/hannahsten/texifyidea/util/magic/CommandMagic.kt) in our example.
-Here we add `\newcommandx` to the `regularStrictCommandDefinitions`, which is the set of all standard command defining commands.
+Second step: declare the command/environment. Predefined commands or environments are declared in [src/nl/hannahsten/texifyidea/lang/predefined](https://github.com/Hannah-Sten/TeXiFy-IDEA/tree/master/src/nl/hannahsten/texifyidea/lang/predefined).
+If you do not know where to put it, `MorePackages.kt` is a good place.
+We use a simple DSL to define the command.
+You can look at other definitions for examples.
+For our example, we can add the following code inside the object:
+```kotlin
+val xcolor = definitions {
+    underPackage("xcolor"){
+        "textcolor".cmd(
+            "color".required, "text".required
+        )
+    }
+}
+```
+The commands will be automatically registered.
 
-And here You go: it's done (at least for this simple example)
+
+Third step: add context information (optional).
+This is not always necessary, but in our case it is: the first argument should be a color.
+Therefore, we modify our code as follows:
+```kotlin
+val xcolor = definitions {
+    underPackage("xcolor"){
+        "textcolor".cmd(
+            "color".required(LatexContexts.ColorReference),
+            "text".required
+        )
+    }
+}
+```
+
+And here You go: it's done (at least for this simple example).
+You can take a look at other predefined commands for more complicated examples.
 
 ## Building from source
 
