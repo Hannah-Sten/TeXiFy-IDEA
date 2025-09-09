@@ -3,6 +3,11 @@
 ## [Unreleased]
 
 ### Added
+* The context of commands and environments (math, reference, etc) is now also supported for custom defined commands
+* Seperate arguments can even have different contexts
+* This context is now also shown in the autocompletion
+* Fix many issues related to custom command definitions
+* Improvements to predefined command and environment definitions
 * Automatically reload pdf when using latexmk continuous update
 * Support no-break space character in parser
 
