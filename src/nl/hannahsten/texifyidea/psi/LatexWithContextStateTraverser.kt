@@ -127,7 +127,7 @@ abstract class LatexWithContextStateTraverser<S>(
             }
 
             is LatexMathContent -> {
-                currentIntro = LatexContextIntro.ASSIGN_MATH
+                currentIntro = LatexContextIntro.MATH
             }
         }
         val oldState = state
