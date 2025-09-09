@@ -7,7 +7,7 @@ import nl.hannahsten.texifyidea.updateFilesets
 class LatexMissingGlossaryReferenceInspectionTest : TexifyInspectionTestBase(LatexMissingGlossaryReferenceInspection()) {
 
     fun testMissingReference() {
-        myFixture.configureByText(LatexFileType, """\newglossaryentry{sample}{name={sample},description={an example}} \gls{sample} \Glslink{sample} <warning descr="Missing glossary reference">sample</warning>""")
+        myFixture.configureByText(LatexFileType, """\newglossaryentry{sample}{name={sample},description={an example}} \gls{sample} \Glslink{sample} <warning descr="Missing glossary or acronym reference">sample</warning>""")
         myFixture.checkHighlighting()
     }
 
@@ -96,7 +96,7 @@ class LatexMissingGlossaryReferenceInspectionTest : TexifyInspectionTestBase(Lat
             
             \begin{document}
                 A \gls{sample}.
-                <warning descr="Missing glossary reference">sample</warning>
+                <warning descr="Missing glossary or acronym reference">sample</warning>
             \end{document}
             """.trimIndent()
         )
