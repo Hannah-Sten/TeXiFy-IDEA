@@ -57,8 +57,9 @@ val xcolor = definitions {
     }
 }
 ```
+In this way, the autocompletion will suggest colors for the first argument.
 
-And here You go: it's done (at least for this simple example).
+And here you go: it's done (at least for this simple example).
 You can take a look at other predefined commands for more complicated examples.
 
 ## Building from source
