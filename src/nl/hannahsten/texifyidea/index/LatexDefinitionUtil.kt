@@ -9,6 +9,7 @@ import com.intellij.psi.stubs.PsiFileStub
 import com.intellij.psi.stubs.StubElement
 import com.intellij.psi.util.elementType
 import nl.hannahsten.texifyidea.file.LatexFile
+import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.index.SourcedDefinition.DefinitionSource
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
 import nl.hannahsten.texifyidea.index.stub.requiredParamAt
@@ -154,17 +155,18 @@ object LatexDefinitionUtil {
     }
 
     /**
+     * We only process regular command definitions and environment definitions here.
+     * `\let` and `\def` are not processed because they are too flexible to parse.
      *
-     *
-     * We only process regular command definitions
      */
     fun collectCustomDefinitions(virtualFile: VirtualFile, project: Project, bundle: WorkingFilesetDefinitionBundle) {
         val psiManager = PsiManager.getInstance(project)
         val psiFile = psiManager.findFile(virtualFile) as? LatexFile ?: return
-        // let us use the index to find the command definitions
         val manager = SmartPointerManager.getInstance(project)
 
+        // let us use the index to find the command definitions
         val defCommands = NewSpecialCommandsIndex.getAllDefinitions(project, virtualFile)
+        val source = if(virtualFile.fileType == LatexFileType) DefinitionSource.UserDefined else DefinitionSource.LibraryScan
         for (defCommand in defCommands) {
             val defCmdName = defCommand.nameWithoutSlash ?: continue
             val semantics = when (defCmdName) {
@@ -174,7 +176,7 @@ object LatexDefinitionUtil {
             } ?: continue
             val pointer = manager.createSmartPsiElementPointer(defCommand, psiFile)
             bundle.addCustomDefinition(
-                SourcedDefinition(semantics, pointer, DefinitionSource.UserDefined)
+                SourcedDefinition(semantics, pointer, source)
             )
         }
     }
@@ -487,6 +489,9 @@ object LatexDefinitionUtil {
         )
     }
 
+    /**
+     * Merge a new definition parsed _from a library_ into an old definition.
+     */
     fun mergeDefinition(old: SourcedDefinition, new: SourcedDefinition): SourcedDefinition {
         // do not override primitive definitions
         if (old.source == DefinitionSource.Primitive) return old

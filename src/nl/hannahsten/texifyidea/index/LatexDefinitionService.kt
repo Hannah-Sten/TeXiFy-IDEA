@@ -395,8 +395,13 @@ class WorkingFilesetDefinitionBundle(
      * Overwrite the definition for a custom command or environment.
      */
     fun addCustomDefinition(def: SourcedDefinition) {
-        // always overwrite for user-defined commands
-        allNameLookup[def.entity.name] = def
+        // if we find that nothing is parsed for a user-defined command, we try to merge it anyway
+        if (def.source == DefinitionSource.UserDefined) {
+            allNameLookup[def.entity.name] = def
+        }
+        else {
+            allNameLookup.merge(def.entity.name, def, LatexDefinitionUtil::mergeDefinition)
+        }
     }
 
     override fun sourcedDefinitions(): Collection<SourcedDefinition> {
