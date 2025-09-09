@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Add support for acronym package to missing aronym references inspection
 * Automatically reload pdf when using latexmk continuous update
 * Support no-break space character in parser
 

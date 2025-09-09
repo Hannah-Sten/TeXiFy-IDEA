@@ -103,4 +103,30 @@ class LatexMissingGlossaryReferenceInspectionTest : TexifyInspectionTestBase(Lat
         myFixture.updateFilesets()
         myFixture.checkHighlighting()
     }
+
+    fun testAcronym() {
+        testQuickFix(
+            """
+            \documentclass{article}
+            \usepackage{acronym}
+            \begin{document}
+            	\begin{acronym}
+            		\acro{CD}{Compact Disc}
+            	\end{acronym}
+            	Play CD.
+            \end{document}
+            """.trimIndent(),
+            """
+            \documentclass{article}
+            \usepackage{acronym}
+            \begin{document}
+            	\begin{acronym}
+            		\acro{CD}{Compact Disc}
+            	\end{acronym}
+                Play \ac{CD}.
+            \end{document}
+            """.trimIndent(),
+            updateCommand = true,
+        )
+    }
 }
