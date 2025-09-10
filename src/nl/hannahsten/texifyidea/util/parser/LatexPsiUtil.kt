@@ -362,10 +362,10 @@ object LatexPsiUtil {
     }
 
     /**
-     * Resolve the context at the given element by traversing the PSI tree upwards and collecting context changes.
-     * If no context changes are found, the [baseContext] is returned.
+     * Resolve the context introductions at the given element by traversing the PSI tree upwards and collecting context changes.
+     * The list is ordered from innermost to outermost context introduction.
      */
-    fun resolveContextUpward(e: PsiElement, lookup: LatexSemanticsLookup, baseContext: LContextSet = LatexPsiUtil.baseContext): LContextSet {
+    fun resolveContextIntroUpward(e: PsiElement, lookup: LatexSemanticsLookup, shortCircuit: Boolean = false): List<LatexContextIntro> {
         var collectedContextIntro: MutableList<LatexContextIntro>? = null
         var current: PsiElement = e
         // see Latex.bnf
@@ -376,30 +376,31 @@ object LatexPsiUtil {
             val intro = when (current) {
                 is LatexParameter -> resolveCommandParameterContext(current, lookup) ?: continue
                 is LatexEnvironment -> resolveEnvironmentContext(current, lookup) ?: continue
-                is LatexMathEnvironment -> LatexContextIntro.ASSIGN_MATH
+                is LatexMathEnvironment -> LatexContextIntro.MATH
                 else -> continue
             }
-            when (intro) {
-                is LatexContextIntro.Assign -> {
-                    if (collectedContextIntro == null) return intro.contexts
+            if (shortCircuit) {
+                if (intro is LatexContextIntro.Assign || intro is LatexContextIntro.Clear) {
+                    if (collectedContextIntro == null) return listOf(intro)
                     collectedContextIntro.add(intro)
-                    break
-                }
-
-                LatexContextIntro.Clear -> {
-                    if (collectedContextIntro == null) return emptySet()
-                    collectedContextIntro.add(intro)
-                    break
-                }
-
-                else -> {
-                    if (collectedContextIntro == null) collectedContextIntro = mutableListOf()
-                    collectedContextIntro.add(intro)
+                    return collectedContextIntro
                 }
             }
+            if (intro is LatexContextIntro.Inherit) continue
+            if (collectedContextIntro == null) collectedContextIntro = mutableListOf()
+            collectedContextIntro.add(intro)
         }
-        collectedContextIntro ?: return baseContext
-        return LatexContextIntro.buildContext(collectedContextIntro.asReversed(), baseContext)
+        return collectedContextIntro ?: emptyList()
+    }
+
+    /**
+     * Resolve the context at the given element by traversing the PSI tree upwards and collecting context changes.
+     * If no context changes are found, the [baseContext] is returned.
+     */
+    fun resolveContextUpward(e: PsiElement, lookup: LatexSemanticsLookup, baseContext: LContextSet = LatexPsiUtil.baseContext): LContextSet {
+        val list = resolveContextIntroUpward(e, lookup, shortCircuit = true)
+        if (list.isEmpty()) return baseContext
+        return LatexContextIntro.buildContextReversedList(list, baseContext)
     }
 
     /**

@@ -113,6 +113,15 @@ object PredefinedCmdDefinitions : PredefinedCommandSet() {
         "newtheorem*".cmd(
             argEnvName, "caption".required(LatexContexts.Text)
         ) { "Define a new theorem-like environment" }
+
+        underPackage("mdframed") {
+            "newmdenv".cmd("param".optional, argEnvName) {
+                "Define a new mdframed environment"
+            }
+            "newmdtheoremenv".cmd(
+                argEnvName, "numberedlike".optional, "caption".required(LatexContexts.Text)
+            )
+        }
     }
 
     val argSpecDefinitionOfEnvironment = preambleCommands {

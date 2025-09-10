@@ -65,7 +65,7 @@ sealed interface LatexContextIntro {
             return outerCtx
         }
 
-        override fun revoke(innerCtx: LContextSet): LContextSet? {
+        override fun revoke(innerCtx: LContextSet): LContextSet {
             return innerCtx
         }
 
@@ -186,6 +186,12 @@ sealed interface LatexContextIntro {
             }
         }
 
+        fun buildContextReversedList(introList: List<LatexContextIntro>, innerCtx: LContextSet = emptySet()): LContextSet {
+            return introList.foldRight(innerCtx) { intro, ctx ->
+                intro.applyTo(ctx)
+            }
+        }
+
         private operator fun LContextSet.plus(other: LContextSet): LContextSet {
             if (this.isEmpty()) return other
             if (other.isEmpty()) return this
@@ -258,6 +264,9 @@ sealed interface LatexContextIntro {
             }
         }
 
-        val ASSIGN_MATH = assign(LatexContexts.Math)
+        /**
+         * Introduces the math context.
+         */
+        val MATH = Assign(LatexContexts.Math)
     }
 }
