@@ -78,6 +78,8 @@ object PredefinedCmdMathSymbols : PredefinedCommandSet() {
         symbol("Leftarrow", "⇐", "Left double arrow")
         symbol("rightarrow", "→", "Right arrow")
         symbol("Rightarrow", "⇒", "Right double arrow")
+        symbol("to", "→", "Right arrow (alias)")
+        symbol("gets", "←", "Left arrow (alias)")
         symbol("leftrightarrow", "↔", "Left and right arrow")
         symbol("Leftrightarrow", "⇔", "Left and right double arrow")
         symbol("longleftarrow", "⟵", "Long left arrow")

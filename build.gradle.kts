@@ -264,7 +264,7 @@ tasks.test {
     useJUnitPlatform()
     // Show test results
     testLogging {
-        events(TestLogEvent.FAILED, TestLogEvent.SKIPPED, TestLogEvent.PASSED)
+        events(TestLogEvent.FAILED, TestLogEvent.SKIPPED)
         exceptionFormat = TestExceptionFormat.FULL
     }
 

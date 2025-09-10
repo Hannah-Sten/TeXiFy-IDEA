@@ -767,7 +767,7 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         "blendcolors*".cmd("mix expr".required) { "BLENDCOLORS_STAR" }
         "boxframe".cmd("width".required, "height".required, "depth".required) { "BOXFRAME" }
         "color".cmd("model-list".optional, colorArg) { "COLOR2" }
-        "colorbox".cmd("model-list".optional, colorArg, textArg) { "COLORBOX2" }
+        "colorbox".cmd("model-list".optional, colorArg, "text".required) { "COLORBOX2" }
         +"colormask"
         +"colorseriescycle"
         "convertcolorspec".cmd("model".required, "spec".required, "target model".required, "cmd".required) { "CONVERTCOLORSPEC" }
@@ -784,13 +784,13 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         "rowcolors*".cmd("commands".optional, "row".required, "odd-row color".required, "even-row color".required) { "ROWCOLORS_STAR" }
         +"rownum"
         +"showrowcolors"
-        "textcolor".cmd("model-list".optional, colorArg, textArg)
+        "textcolor".cmd("model-list".optional, colorArg, "text".required)
         +"xglobal"
 
         packageOf("color")
         "color".cmd(colorArg) { "COLOR_CMD" }
-        "colorbox".cmd(colorArg, textArg) { "COLORBOX" }
-        "fcolorbox".cmd("frame color".required, "background color".required, textArg) { "FCOLORBOX" }
+        "colorbox".cmd(colorArg, "text".required) { "COLORBOX" }
+        "fcolorbox".cmd("frame color".required, "background color".required, "text".required) { "FCOLORBOX" }
         +"nopagecolor"
         +"normalcolor"
         "pagecolor".cmd(colorArg) { "PAGECOLOR" }
