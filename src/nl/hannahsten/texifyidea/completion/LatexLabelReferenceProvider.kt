@@ -7,9 +7,11 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.completion.handlers.LatexReferenceInsertHandler
+import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.index.FilesetData
 import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.index.NewLabelsIndex
+import nl.hannahsten.texifyidea.index.restrictedByFileTypes
 
 object LatexLabelReferenceProvider : LatexContextAgnosticCompletionProvider() {
 
@@ -57,7 +59,7 @@ object LatexLabelReferenceProvider : LatexContextAgnosticCompletionProvider() {
 
         val rs = result.withPrefixMatcher(PlainPrefixMatcher(result.prefixMatcher.prefix, false))
         // the label names are not necessarily camel case, so we use a plain prefix matcher
-        addCompletionsUnderFileset(parameters, rs, filesetData.filesetScope)
+        addCompletionsUnderFileset(parameters, rs, filesetData.filesetScope.restrictedByFileTypes(LatexFileType))
         addExternalDocumentCompletions(parameters, rs, filesetData)
     }
 }
