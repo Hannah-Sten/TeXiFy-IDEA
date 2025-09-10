@@ -240,7 +240,7 @@ object LatexDefinitionUtil {
         }
     }
 
-    private fun parseCommandDefNameOnlyUnderCtx(defCommand: LatexCommands, requiredCtx: LContextSet = emptySet()): LSemanticCommand? {
+    private fun parseCommandDefNameOnlyUnderCtx(defCommand: LatexCommands, requiredCtx: LContextSet? = null): LSemanticCommand? {
         val declaredName = defCommand.requiredParameterText(0) ?: return null
         return LSemanticCommand(declaredName.removePrefix("\\"), LatexLib.CUSTOM, requiredCtx)
     }
@@ -290,7 +290,7 @@ object LatexDefinitionUtil {
     private fun buildCommandSemantics(
         project: Project, lookup: LatexSemanticsLookup,
         rawName: String, codeRawText: String?, argSignature: List<LArgumentType>
-    ): LSemanticCommand? {
+    ): LSemanticCommand {
         val name = rawName.removePrefix("\\") // remove the leading backslash
         codeRawText ?: return LSemanticCommand(name, LatexLib.CUSTOM)
         val codeText = codeRawText.trim()
@@ -319,7 +319,7 @@ object LatexDefinitionUtil {
     }
 
     private fun guessApplicableContexts(definitionElement: PsiElement?, lookup: LatexSemanticsLookup): LContextSet? {
-        definitionElement ?: return emptySet()
+        definitionElement ?: return null
         val applicableContexts = mutableSetOf<LatexContext>()
         LatexPsiUtil.traverseRecordingContextIntro(definitionElement, lookup) { e, introList ->
             val requiredContext: LContextSet? = when (e) {
@@ -348,7 +348,7 @@ object LatexDefinitionUtil {
             if (!e.textContains('#')) return@traverse
             parameterPlaceholderRegex.findAll(e.text).forEach { match ->
                 val paramIndex = match.value.removePrefix("#").toIntOrNull() ?: return@forEach
-                if (paramIndex < 1 || paramIndex > argCount) return@forEach
+                if (paramIndex !in 1..argCount) return@forEach
                 val reducedIntro = LatexContextIntro.composeList(introList)
                 val prevIntro = contextIntroArr[paramIndex - 1]
                 contextIntroArr[paramIndex - 1] = prevIntro?.let { LatexContextIntro.union(it, reducedIntro) } ?: reducedIntro
@@ -385,7 +385,7 @@ object LatexDefinitionUtil {
         }
     }
 
-    private fun parseEnvDefNameOnlyUnderCtx(defCommand: LatexCommands, requiredCtx: LContextSet = emptySet()): LSemanticEnv? {
+    private fun parseEnvDefNameOnlyUnderCtx(defCommand: LatexCommands, requiredCtx: LContextSet? = null): LSemanticEnv? {
         val declaredName = defCommand.requiredParameterText(0) ?: return null
         return LSemanticEnv(declaredName, LatexLib.CUSTOM, requiredCtx)
     }
