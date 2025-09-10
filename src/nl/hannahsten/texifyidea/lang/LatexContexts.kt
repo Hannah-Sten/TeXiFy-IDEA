@@ -166,7 +166,6 @@ object LatexContexts {
     val PicturePath = SimpleLatexContext("picture.path")
 
     // environment contexts
-
     val Enumerate = SimpleLatexContext("env.enumerate")
     val Figure = SimpleLatexContext("env.figure")
     val Table = SimpleLatexContext("env.table")

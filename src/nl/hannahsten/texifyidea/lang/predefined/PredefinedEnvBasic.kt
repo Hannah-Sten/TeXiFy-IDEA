@@ -10,7 +10,11 @@ import nl.hannahsten.texifyidea.lang.PredefinedEnvironmentSet
 object PredefinedEnvBasic : PredefinedEnvironmentSet() {
 
     val basic = buildEnvironments {
-        "document".env(LatexContexts.Text) {
+        val mainTextIntro = LatexContextIntro.Modify(
+            toAdd = setOf(LatexContexts.Text),
+            toRemove = setOf(LatexContexts.Preamble)
+        )
+        "document".env(mainTextIntro) {
             "The main document environment."
         }
 

@@ -51,6 +51,7 @@ open class LatexAnnotator : Annotator {
     }
 
     override fun annotate(psiElement: PsiElement, annotationHolder: AnnotationHolder) {
+        // TODO: how can we avoid doing this for every element, namely, find a top-down ways of annotating?
         val defBundle = getDefBundle(annotationHolder)
         val context = LatexPsiUtil.resolveContextUpward(psiElement, defBundle)
         // Math display
