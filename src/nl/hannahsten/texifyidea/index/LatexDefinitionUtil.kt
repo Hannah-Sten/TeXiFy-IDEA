@@ -241,6 +241,7 @@ object LatexDefinitionUtil {
     }
 
     private fun parseCommandDefNameOnlyUnderCtx(defCommand: LatexCommands, requiredCtx: LContextSet? = null): LSemanticCommand? {
+        // note that requiredCtx == null means applicable in all contexts
         val declaredName = defCommand.requiredParameterText(0) ?: return null
         return LSemanticCommand(declaredName.removePrefix("\\"), LatexLib.CUSTOM, requiredCtx)
     }
@@ -386,6 +387,7 @@ object LatexDefinitionUtil {
     }
 
     private fun parseEnvDefNameOnlyUnderCtx(defCommand: LatexCommands, requiredCtx: LContextSet? = null): LSemanticEnv? {
+        // note that requiredCtx == null means applicable in all contexts
         val declaredName = defCommand.requiredParameterText(0) ?: return null
         return LSemanticEnv(declaredName, LatexLib.CUSTOM, requiredCtx)
     }
