@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.inspections.latex.codestyle
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
-import nl.hannahsten.texifyidea.inspections.TexifyContextAwareRegexInspectionBase
+import nl.hannahsten.texifyidea.inspections.AbstractTexifyRegexBasedInspection
 import nl.hannahsten.texifyidea.lang.LatexContexts
 
 /**
@@ -33,7 +33,7 @@ import nl.hannahsten.texifyidea.lang.LatexContexts
 //    }
 // }
 
-class LatexGroupedSubSupScriptInspection : TexifyContextAwareRegexInspectionBase(
+class LatexGroupedSubSupScriptInspection : AbstractTexifyRegexBasedInspection(
     inspectionId = "GroupedSubSupScript",
     regex = """(?<!(\\)|(\\string))(?<subsup>[_^])(?<content>[a-zA-Z0-9]{2,})""".toRegex(),
     highlight = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,

@@ -14,6 +14,7 @@ import com.intellij.psi.createSmartPointer
 import com.intellij.util.SmartList
 import nl.hannahsten.texifyidea.action.debug.SimplePerformanceTracker
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.index.DefinitionBundle
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase.Companion.suppressionElement
 import nl.hannahsten.texifyidea.lang.LContextSet
@@ -38,7 +39,7 @@ import nl.hannahsten.texifyidea.psi.getMagicComment
 import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
 import nl.hannahsten.texifyidea.util.parser.traverse
 
-abstract class TexifyContextAwareInspectionBase(
+abstract class AbstractTexifyContextAwareInspection(
     /**
      * The inspectionGroup the inspection falls under.
      */
@@ -93,7 +94,7 @@ abstract class TexifyContextAwareInspectionBase(
      * @param isOnTheFly Whether the inspection is run on-the-fly (in the editor) or in batch mode (code inspection).
      */
     abstract fun inspectElement(
-        element: PsiElement, contexts: LContextSet, lookup: LatexSemanticsLookup,
+        element: PsiElement, contexts: LContextSet, lookup: DefinitionBundle,
         manager: InspectionManager, isOnTheFly: Boolean,
         descriptors: MutableList<ProblemDescriptor>
     )
@@ -128,12 +129,13 @@ abstract class TexifyContextAwareInspectionBase(
             if (file.fileType !in inspectionGroup.fileTypes) {
                 return@track null
             }
-            if (!isFileApplicable(file)) return@track null
             if (isFileSuppressed(file)) return@track null
 
-            val lookup = LatexDefinitionService.getInstance(file.project).getDefBundlesMerged(file)
+            val defBundle = LatexDefinitionService.getInstance(file.project).getDefBundlesMerged(file)
+            if (!isFileApplicable(file, defBundle)) return@track null
+
             val traverser = InspectionTraverser(
-                manager, isOnTheFly, lookup, LatexContexts.baseContexts
+                manager, isOnTheFly, defBundle, LatexContexts.baseContexts
             )
             val result = traverser.doInspect(file)
             if (result.isEmpty()) ProblemDescriptor.EMPTY_ARRAY else result.toTypedArray()
@@ -143,8 +145,11 @@ abstract class TexifyContextAwareInspectionBase(
     /**
      * Make a quick check to see if the file is applicable for this inspection.
      *
+     * If you do not need [bundle] to make this decision, prefer overriding [isAvailableForFile] instead.
+     *
+     * @see isAvailableForFile
      */
-    protected open fun isFileApplicable(file: PsiFile): Boolean {
+    protected open fun isFileApplicable(file: PsiFile, bundle: DefinitionBundle): Boolean {
         return true
     }
 
@@ -166,8 +171,8 @@ abstract class TexifyContextAwareInspectionBase(
 
     protected inner class InspectionTraverser(
         private val manager: InspectionManager, private val isOnTheFly: Boolean,
-        lookup: LatexSemanticsLookup, baseContexts: LContextSet
-    ) : LatexWithContextTraverser(baseContexts, lookup) {
+        val bundle: DefinitionBundle, baseContexts: LContextSet
+    ) : LatexWithContextTraverser(baseContexts, bundle) {
 
         private val descriptors: MutableList<ProblemDescriptor> = SmartList()
 
@@ -188,7 +193,7 @@ abstract class TexifyContextAwareInspectionBase(
                 return WalkAction.SKIP_CHILDREN
             }
 
-            inspectElement(e, state, lookup, manager, isOnTheFly, descriptors)
+            inspectElement(e, state, bundle, manager, isOnTheFly, descriptors)
             return if (shouldInspectChildrenOf(e, state, lookup)) WalkAction.CONTINUE else WalkAction.SKIP_CHILDREN
         }
 

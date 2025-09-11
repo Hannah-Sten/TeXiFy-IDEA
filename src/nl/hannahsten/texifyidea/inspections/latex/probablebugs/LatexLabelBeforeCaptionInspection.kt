@@ -9,16 +9,15 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
-import nl.hannahsten.texifyidea.inspections.TexifyCommandInspectionBase
+import nl.hannahsten.texifyidea.inspections.AbstractTexifyCommandBasedInspection
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.nameWithoutSlash
 import nl.hannahsten.texifyidea.psi.nextContextualSiblingIgnoreWhitespace
 import nl.hannahsten.texifyidea.psi.prevContextualSiblingIgnoreWhitespace
-import nl.hannahsten.texifyidea.util.files.document
 
-class LatexLabelBeforeCaptionInspection : TexifyCommandInspectionBase(
+class LatexLabelBeforeCaptionInspection : AbstractTexifyCommandBasedInspection(
     inspectionId = "LabelBeforeCaption"
 ) {
     override fun inspectCommand(command: LatexCommands, contexts: LContextSet, lookup: LatexSemanticsLookup, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {

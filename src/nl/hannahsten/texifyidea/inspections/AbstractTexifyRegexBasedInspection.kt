@@ -10,6 +10,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.util.elementType
 import com.intellij.psi.util.startOffset
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.index.DefinitionBundle
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.psi.LatexTypes
@@ -19,14 +20,14 @@ import nl.hannahsten.texifyidea.util.files.document
 /**
  * A regex-based inspection for plain text contents.
  */
-abstract class TexifyContextAwareRegexInspectionBase(
+abstract class AbstractTexifyRegexBasedInspection(
     inspectionId: String,
     val regex: Regex,
     val highlight: ProblemHighlightType = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
     applicableContexts: LContextSet? = null,
     excludedContexts: LContextSet = emptySet(),
     inspectionGroup: InsightGroup = InsightGroup.LATEX,
-) : TexifyContextAwareInspectionBase(inspectionGroup, inspectionId, applicableContexts, excludedContexts) {
+) : AbstractTexifyContextAwareInspection(inspectionGroup, inspectionId, applicableContexts, excludedContexts) {
 
     protected abstract fun errorMessage(matcher: MatchResult): String
 
@@ -67,7 +68,7 @@ abstract class TexifyContextAwareRegexInspectionBase(
     }
 
     override fun inspectElement(
-        element: PsiElement, contexts: LContextSet, lookup: LatexSemanticsLookup,
+        element: PsiElement, contexts: LContextSet, lookup: DefinitionBundle,
         manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>
     ) {
         if (!isApplicableInContexts(contexts)) return

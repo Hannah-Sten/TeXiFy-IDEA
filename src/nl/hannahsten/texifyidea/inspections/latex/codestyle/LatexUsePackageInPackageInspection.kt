@@ -6,18 +6,18 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.file.ClassFileType
 import nl.hannahsten.texifyidea.file.StyleFileType
-import nl.hannahsten.texifyidea.inspections.TexifyCommandInspectionBase
+import nl.hannahsten.texifyidea.inspections.AbstractTexifyCommandBasedInspection
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.nameWithoutSlash
 
-class LatexUsePackageInPackageInspection : TexifyCommandInspectionBase(
+class LatexUsePackageInPackageInspection : AbstractTexifyCommandBasedInspection(
     inspectionId = "UsePackageInPackage"
 ) {
     private val applicableFileExtensions = setOf(ClassFileType, StyleFileType)
 
-    override fun isFileApplicable(file: PsiFile): Boolean {
+    override fun isAvailableForFile(file: PsiFile): Boolean {
         val fileType = file.virtualFile?.fileType ?: file.fileType
         // don't know why but sometimes file.fileType is not the same as file.virtualFile?.fileType
         return fileType in applicableFileExtensions

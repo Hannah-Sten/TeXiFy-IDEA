@@ -4,12 +4,12 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
-import nl.hannahsten.texifyidea.inspections.TexifyContextAwareRegexInspectionBase
+import nl.hannahsten.texifyidea.inspections.AbstractTexifyRegexBasedInspection
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.util.parser.findNextAdjacentWhiteSpace
 import nl.hannahsten.texifyidea.util.parser.findPrevAdjacentWhiteSpace
 
-class LatexXInsteadOfTimesInspection : TexifyContextAwareRegexInspectionBase(
+class LatexXInsteadOfTimesInspection : AbstractTexifyRegexBasedInspection(
     inspectionId = "XInsteadOfTimes",
     regex = Regex("^x$", RegexOption.IGNORE_CASE),
     highlight = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,

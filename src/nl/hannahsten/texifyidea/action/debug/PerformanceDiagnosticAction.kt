@@ -20,7 +20,7 @@ import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.index.LatexLibraryDefinitionService
 import nl.hannahsten.texifyidea.index.LatexLibraryStructureService
 import nl.hannahsten.texifyidea.index.LatexProjectFilesets
-import nl.hannahsten.texifyidea.inspections.TexifyContextAwareInspectionBase
+import nl.hannahsten.texifyidea.inspections.AbstractTexifyContextAwareInspection
 import java.lang.management.ManagementFactory
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicLong
@@ -97,7 +97,7 @@ class PerformanceDiagnosticAction : AnAction() {
             performance("Package Definitions", LatexLibraryDefinitionService.performanceTracker),
             performance("Custom Definitions", LatexDefinitionService.performanceTracker, buildCustomDefinitionsInfo(project)),
             performance("Completion Lookup", LatexContextAwareCompletionAdaptor.performanceTracker),
-            performance("Ctx-aware Inspections", TexifyContextAwareInspectionBase.performanceTracker)
+            performance("Ctx-aware Inspections", AbstractTexifyContextAwareInspection.performanceTracker)
         )
 
         val totalRunningTime = ManagementFactory.getRuntimeMXBean().uptime + 1 // +1 to avoid division by zero

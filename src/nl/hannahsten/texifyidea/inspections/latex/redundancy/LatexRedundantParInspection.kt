@@ -3,11 +3,11 @@ package nl.hannahsten.texifyidea.inspections.latex.redundancy
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
-import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiWhiteSpace
 import nl.hannahsten.texifyidea.inspections.InsightGroup.LATEX
-import nl.hannahsten.texifyidea.inspections.TexifyCommandInspectionBase
+import nl.hannahsten.texifyidea.inspections.AbstractTexifyCommandBasedInspection
+import nl.hannahsten.texifyidea.inspections.createDescriptor
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.psi.LatexCommands
@@ -16,7 +16,7 @@ import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.parser.findNextAdjacentWhiteSpace
 import nl.hannahsten.texifyidea.util.parser.findPrevAdjacentWhiteSpace
 
-class LatexRedundantParInspection : TexifyCommandInspectionBase(
+class LatexRedundantParInspection : AbstractTexifyCommandBasedInspection(
     inspectionId = "RedundantPar",
     inspectionGroup = LATEX,
 ) {
@@ -26,15 +26,14 @@ class LatexRedundantParInspection : TexifyCommandInspectionBase(
 
         val prev = command.findPrevAdjacentWhiteSpace()
         val next = command.findNextAdjacentWhiteSpace()
-        if(lineBreakCount(prev) + lineBreakCount(next) >= 2) {
+        if (lineBreakCount(prev) + lineBreakCount(next) >= 2) {
             // There are already blank lines around this \par
             descriptors.add(
-                manager.createProblemDescriptor(
+                manager.createDescriptor(
                     command,
                     "Use of \\par is redundant here",
-                    RemoveParQuickFix(),
-                    ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                    isOnTheFly
+                    isOnTheFly = isOnTheFly,
+                    fix = RemoveParQuickFix(),
                 )
             )
         }

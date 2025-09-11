@@ -2,11 +2,14 @@ package nl.hannahsten.texifyidea.inspections.latex.probablebugs.packages
 
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.ProblemDescriptor
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.index.DefinitionBundle
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.index.LatexProjectStructure
-import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
+import nl.hannahsten.texifyidea.inspections.InsightGroup
+import nl.hannahsten.texifyidea.inspections.AbstractTexifyContextAwareInspection
+import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LSemanticEntity
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
@@ -16,7 +19,6 @@ import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.psi.nameWithoutSlash
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
-import nl.hannahsten.texifyidea.util.parser.traverse
 
 /**
  *
@@ -29,27 +31,23 @@ import nl.hannahsten.texifyidea.util.parser.traverse
  * @see LatexUndefinedCommandInspection
  * @author Li Ernest
  */
-abstract class LatexMissingImportInspectionBase : TexifyInspectionBase() {
-
-    override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
+abstract class LatexMissingImportInspectionBase(inspectionId: String) : AbstractTexifyContextAwareInspection(
+    InsightGroup.LATEX,
+    inspectionId, null, emptySet()
+) {
+    override fun isAvailableForFile(file: PsiFile): Boolean {
         if (!TexifySettings.getState().automaticDependencyCheck) {
-            return emptyList()
+            return false
         }
         val project = file.project
-        if (!LatexProjectStructure.isProjectFilesetsAvailable(project)) {
-            return emptyList()
-        }
-        val bundle = LatexDefinitionService.getInstance(project).getDefBundlesMerged(file)
+        return LatexProjectStructure.isProjectFilesetsAvailable(project)
+    }
 
-        val descriptors = descriptorList()
-        file.traverse().forEach {
-            when (it) {
-                is LatexCommands -> analyzeCommand(it, bundle, descriptors, manager, isOntheFly)
-                is LatexEnvironment -> analyzeEnvironment(it, bundle, descriptors, manager, isOntheFly)
-            }
+    override fun inspectElement(element: PsiElement, contexts: LContextSet, lookup: DefinitionBundle, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {
+        when(element) {
+            is LatexCommands -> analyzeCommand(element, lookup, descriptors, manager, isOnTheFly)
+            is LatexEnvironment -> analyzeEnvironment(element, lookup, descriptors, manager, isOnTheFly)
         }
-
-        return descriptors
     }
 
     private fun analyzeCommand(command: LatexCommands, bundle: DefinitionBundle, descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager, isOntheFly: Boolean) {

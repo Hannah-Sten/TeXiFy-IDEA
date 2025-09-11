@@ -187,7 +187,7 @@ inline fun PsiElement.traverseContextualSiblingsPrev(action: (PsiElement) -> Uni
     return traverseContextualSiblingsTemplate(action) { it.prevSibling }
 }
 
-inline fun PsiElement.prevContextualSibling(predicate: (PsiElement) -> Boolean): PsiElement? {
+inline fun PsiElement.prevContextualSibling(predicate: (PsiElement) -> Boolean = { true }): PsiElement? {
     traverseContextualSiblingsPrev { sibling ->
         if (predicate(sibling)) {
             return sibling
@@ -199,7 +199,7 @@ inline fun PsiElement.prevContextualSibling(predicate: (PsiElement) -> Boolean):
 fun PsiElement.prevContextualSiblingIgnoreWhitespace(): PsiElement? =
     prevContextualSibling { it !is PsiWhiteSpace }
 
-fun PsiElement.nextContextualSibling(predicate: (PsiElement) -> Boolean): PsiElement? {
+fun PsiElement.nextContextualSibling(predicate: (PsiElement) -> Boolean = { true }): PsiElement? {
     traverseContextualSiblingsNext { sibling ->
         if (predicate(sibling)) {
             return sibling

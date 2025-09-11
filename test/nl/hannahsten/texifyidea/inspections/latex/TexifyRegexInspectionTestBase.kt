@@ -1,6 +1,6 @@
 package nl.hannahsten.texifyidea.inspections.latex
 
-import nl.hannahsten.texifyidea.inspections.TexifyContextAwareRegexInspectionBase
+import nl.hannahsten.texifyidea.inspections.AbstractTexifyRegexBasedInspection
 import org.junit.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -8,7 +8,7 @@ import kotlin.test.assertTrue
 /**
  * @author Hannah Schellekens
  */
-abstract class TexifyRegexInspectionTestBase(regexInspection: TexifyContextAwareRegexInspectionBase) {
+abstract class TexifyRegexInspectionTestBase(regexInspection: AbstractTexifyRegexBasedInspection) {
 
     val regex = regexInspection.regex
 

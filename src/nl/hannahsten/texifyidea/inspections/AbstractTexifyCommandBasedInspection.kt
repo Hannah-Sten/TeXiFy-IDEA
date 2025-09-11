@@ -6,19 +6,25 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.util.IntentionFamilyName
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
+import nl.hannahsten.texifyidea.index.DefinitionBundle
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexMagicComment
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 
-abstract class TexifyCommandInspectionBase(
+/**
+ * Base class for inspections that mainly focus on LaTeX commands as anchors.
+ *
+ * @author Li Ernest
+ */
+abstract class AbstractTexifyCommandBasedInspection(
     inspectionId: String,
     applicableContexts: LContextSet? = null,
     excludedContexts: LContextSet = emptySet(),
     inspectionGroup: InsightGroup = InsightGroup.LATEX,
 ) :
-    TexifyContextAwareInspectionBase(inspectionGroup, inspectionId, applicableContexts, excludedContexts) {
+    AbstractTexifyContextAwareInspection(inspectionGroup, inspectionId, applicableContexts, excludedContexts) {
 
     override fun shouldInspectChildrenOf(element: PsiElement, state: LContextSet, lookup: LatexSemanticsLookup): Boolean {
         // if there cannot be commands inside, do not inspect children
@@ -27,7 +33,7 @@ abstract class TexifyCommandInspectionBase(
         return true
     }
 
-    override fun inspectElement(element: PsiElement, contexts: LContextSet, lookup: LatexSemanticsLookup, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {
+    override fun inspectElement(element: PsiElement, contexts: LContextSet, lookup: DefinitionBundle, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {
         if (element !is LatexCommands) return
         inspectCommand(element, contexts, lookup, manager, isOnTheFly, descriptors)
     }

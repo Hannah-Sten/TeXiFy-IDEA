@@ -5,7 +5,7 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.elementType
-import nl.hannahsten.texifyidea.inspections.TexifyContextAwareRegexInspectionBase
+import nl.hannahsten.texifyidea.inspections.AbstractTexifyRegexBasedInspection
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.psi.LatexTypes
@@ -13,7 +13,7 @@ import nl.hannahsten.texifyidea.psi.LatexTypes
 /**
  * @author Johannes Berger, Li Ernest
  */
-class LatexEscapeAmpersandInspection : TexifyContextAwareRegexInspectionBase(
+class LatexEscapeAmpersandInspection : AbstractTexifyRegexBasedInspection(
     inspectionId = "EscapeAmpersand",
     regex = Regex.fromLiteral("&"),
     highlight = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,

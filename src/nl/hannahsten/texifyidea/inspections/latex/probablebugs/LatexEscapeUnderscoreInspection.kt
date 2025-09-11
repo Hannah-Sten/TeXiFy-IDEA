@@ -3,13 +3,13 @@ package nl.hannahsten.texifyidea.inspections.latex.probablebugs
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
-import nl.hannahsten.texifyidea.inspections.TexifyContextAwareRegexInspectionBase
+import nl.hannahsten.texifyidea.inspections.AbstractTexifyRegexBasedInspection
 import nl.hannahsten.texifyidea.lang.LatexContexts
 
 /**
  * @author Johannes Berger, Li Ernest
  */
-class LatexEscapeUnderscoreInspection : TexifyContextAwareRegexInspectionBase(
+class LatexEscapeUnderscoreInspection : AbstractTexifyRegexBasedInspection(
     inspectionId = "EscapeUnderscore",
     regex = Regex.fromLiteral("_"),
     highlight = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,

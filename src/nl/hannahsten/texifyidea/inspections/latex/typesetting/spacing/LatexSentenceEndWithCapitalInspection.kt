@@ -3,14 +3,14 @@ package nl.hannahsten.texifyidea.inspections.latex.typesetting.spacing
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
-import nl.hannahsten.texifyidea.inspections.TexifyContextAwareRegexInspectionBase
+import nl.hannahsten.texifyidea.inspections.AbstractTexifyRegexBasedInspection
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.util.parser.findNextAdjacentWhiteSpace
 
 /**
  * @author Hannah Schellekens
  */
-class LatexSentenceEndWithCapitalInspection : TexifyContextAwareRegexInspectionBase(
+class LatexSentenceEndWithCapitalInspection : AbstractTexifyRegexBasedInspection(
     inspectionId = "SentenceEndWithCapital",
     regex = """(?<=[A-ZÀ-Ý])\.""".toRegex(),
     applicableContexts = setOf(LatexContexts.Text)
