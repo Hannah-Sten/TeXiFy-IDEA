@@ -9,6 +9,7 @@ import com.intellij.psi.stubs.PsiFileStub
 import com.intellij.psi.stubs.StubElement
 import com.intellij.psi.util.elementType
 import nl.hannahsten.texifyidea.file.LatexFile
+import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.index.SourcedDefinition.DefinitionSource
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
 import nl.hannahsten.texifyidea.index.stub.requiredParamAt
@@ -154,17 +155,18 @@ object LatexDefinitionUtil {
     }
 
     /**
+     * We only process regular command definitions and environment definitions here.
+     * `\let` and `\def` are not processed because they are too flexible to parse.
      *
-     *
-     * We only process regular command definitions
      */
     fun collectCustomDefinitions(virtualFile: VirtualFile, project: Project, bundle: WorkingFilesetDefinitionBundle) {
         val psiManager = PsiManager.getInstance(project)
         val psiFile = psiManager.findFile(virtualFile) as? LatexFile ?: return
-        // let us use the index to find the command definitions
         val manager = SmartPointerManager.getInstance(project)
 
+        // let us use the index to find the command definitions
         val defCommands = NewSpecialCommandsIndex.getAllDefinitions(project, virtualFile)
+        val source = if(virtualFile.fileType == LatexFileType) DefinitionSource.UserDefined else DefinitionSource.LibraryScan
         for (defCommand in defCommands) {
             val defCmdName = defCommand.nameWithoutSlash ?: continue
             val semantics = when (defCmdName) {
@@ -174,7 +176,7 @@ object LatexDefinitionUtil {
             } ?: continue
             val pointer = manager.createSmartPsiElementPointer(defCommand, psiFile)
             bundle.addCustomDefinition(
-                SourcedDefinition(semantics, pointer, DefinitionSource.UserDefined)
+                SourcedDefinition(semantics, pointer, source)
             )
         }
     }
@@ -238,7 +240,8 @@ object LatexDefinitionUtil {
         }
     }
 
-    private fun parseCommandDefNameOnlyUnderCtx(defCommand: LatexCommands, requiredCtx: LContextSet = emptySet()): LSemanticCommand? {
+    private fun parseCommandDefNameOnlyUnderCtx(defCommand: LatexCommands, requiredCtx: LContextSet? = null): LSemanticCommand? {
+        // note that requiredCtx == null means applicable in all contexts
         val declaredName = defCommand.requiredParameterText(0) ?: return null
         return LSemanticCommand(declaredName.removePrefix("\\"), LatexLib.CUSTOM, requiredCtx)
     }
@@ -288,7 +291,7 @@ object LatexDefinitionUtil {
     private fun buildCommandSemantics(
         project: Project, lookup: LatexSemanticsLookup,
         rawName: String, codeRawText: String?, argSignature: List<LArgumentType>
-    ): LSemanticCommand? {
+    ): LSemanticCommand {
         val name = rawName.removePrefix("\\") // remove the leading backslash
         codeRawText ?: return LSemanticCommand(name, LatexLib.CUSTOM)
         val codeText = codeRawText.trim()
@@ -317,7 +320,7 @@ object LatexDefinitionUtil {
     }
 
     private fun guessApplicableContexts(definitionElement: PsiElement?, lookup: LatexSemanticsLookup): LContextSet? {
-        definitionElement ?: return emptySet()
+        definitionElement ?: return null
         val applicableContexts = mutableSetOf<LatexContext>()
         LatexPsiUtil.traverseRecordingContextIntro(definitionElement, lookup) { e, introList ->
             val requiredContext: LContextSet? = when (e) {
@@ -346,7 +349,7 @@ object LatexDefinitionUtil {
             if (!e.textContains('#')) return@traverse
             parameterPlaceholderRegex.findAll(e.text).forEach { match ->
                 val paramIndex = match.value.removePrefix("#").toIntOrNull() ?: return@forEach
-                if (paramIndex < 1 || paramIndex > argCount) return@forEach
+                if (paramIndex !in 1..argCount) return@forEach
                 val reducedIntro = LatexContextIntro.composeList(introList)
                 val prevIntro = contextIntroArr[paramIndex - 1]
                 contextIntroArr[paramIndex - 1] = prevIntro?.let { LatexContextIntro.union(it, reducedIntro) } ?: reducedIntro
@@ -383,7 +386,8 @@ object LatexDefinitionUtil {
         }
     }
 
-    private fun parseEnvDefNameOnlyUnderCtx(defCommand: LatexCommands, requiredCtx: LContextSet = emptySet()): LSemanticEnv? {
+    private fun parseEnvDefNameOnlyUnderCtx(defCommand: LatexCommands, requiredCtx: LContextSet? = null): LSemanticEnv? {
+        // note that requiredCtx == null means applicable in all contexts
         val declaredName = defCommand.requiredParameterText(0) ?: return null
         return LSemanticEnv(declaredName, LatexLib.CUSTOM, requiredCtx)
     }
@@ -487,6 +491,9 @@ object LatexDefinitionUtil {
         )
     }
 
+    /**
+     * Merge a new definition parsed _from a library_ into an old definition.
+     */
     fun mergeDefinition(old: SourcedDefinition, new: SourcedDefinition): SourcedDefinition {
         // do not override primitive definitions
         if (old.source == DefinitionSource.Primitive) return old
