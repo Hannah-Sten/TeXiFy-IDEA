@@ -78,7 +78,6 @@ abstract class AbstractTexifyRegexBasedInspection(
         if (elementText.isEmpty()) return
         if (!regex.containsMatchIn(elementText)) return
         for (match in regex.findAll(elementText)) {
-            val matchText = match.value
             if (!additionalChecks(element, match)) continue
             val highlightRange = getHighlightRange(match)
             if (highlightRange.isEmpty() || !match.range.contains(highlightRange)) continue

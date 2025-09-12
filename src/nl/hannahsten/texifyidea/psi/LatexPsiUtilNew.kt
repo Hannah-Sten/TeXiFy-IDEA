@@ -155,7 +155,6 @@ fun <T : Any> PsiElement.contextualSiblings(): List<LatexComposite> {
                 }
             }
         }
-        true // continue iterating
     }
     return result
 }
