@@ -9,8 +9,10 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.createSmartPointer
+import com.intellij.psi.util.elementType
 import com.intellij.util.SmartList
 import nl.hannahsten.texifyidea.action.debug.SimplePerformanceTracker
 import nl.hannahsten.texifyidea.file.LatexFileType
@@ -33,6 +35,7 @@ import nl.hannahsten.texifyidea.psi.LatexGroup
 import nl.hannahsten.texifyidea.psi.LatexMagicComment
 import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
 import nl.hannahsten.texifyidea.psi.LatexNoMathContent
+import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.psi.LatexWithContextTraverser
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.psi.getMagicComment
@@ -157,8 +160,8 @@ abstract class AbstractTexifyContextAwareInspection(
     protected fun isFileSuppressed(file: PsiFile): Boolean {
         val content = file.findFirstChildTyped<LatexContent>() ?: return true // Empty file, nothing to inspect.
         for (e in content.traverse(4)) {
-            if (e is LatexNoMathContent) continue
-            if (e is PsiComment) continue
+            if (e is LatexContent || e is LatexNoMathContent || e is PsiWhiteSpace || e is PsiComment) continue
+            if (e.elementType == LatexTypes.MAGIC_COMMENT_TOKEN) continue
             if (e !is LatexMagicComment) break
             val commentMap = e.getMagicComment()
             if (commentMap.containsPair("suppress", inspectionId)) return true
@@ -212,7 +215,7 @@ abstract class AbstractTexifyContextAwareInspection(
     /**
      * @author Hannah Schellekens
      */
-    private abstract inner class SuppressionFixBase(val targetElement: SmartPsiElementPointer<out PsiElement>) :
+    protected abstract inner class SuppressionFixBase(val targetElement: SmartPsiElementPointer<out PsiElement>) :
         SuppressQuickFix {
 
         /**
@@ -243,7 +246,7 @@ abstract class AbstractTexifyContextAwareInspection(
     /**
      * @author Hannah Schellekens
      */
-    private inner class FileSuppressionFix(val file: SmartPsiElementPointer<PsiFile>) : SuppressionFixBase(file) {
+    protected inner class FileSuppressionFix(val file: SmartPsiElementPointer<PsiFile>) : SuppressionFixBase(file) {
 
         override val suppressionScope = MagicCommentScope.FILE
 
@@ -253,7 +256,7 @@ abstract class AbstractTexifyContextAwareInspection(
     /**
      * @author Hannah Schellekens
      */
-    private inner class EnvironmentSuppressionFix(parentEnvironment: LatexEnvironment) :
+    protected inner class EnvironmentSuppressionFix(parentEnvironment: LatexEnvironment) :
         SuppressionFixBase(parentEnvironment.createSmartPointer()) {
 
         /**
@@ -273,7 +276,7 @@ abstract class AbstractTexifyContextAwareInspection(
     /**
      * @author Hannah Schellekens
      */
-    private inner class MathEnvironmentSuppressionFix(parentMathEnvironment: LatexMathEnvironment) :
+    protected inner class MathEnvironmentSuppressionFix(parentMathEnvironment: LatexMathEnvironment) :
         SuppressionFixBase(parentMathEnvironment.createSmartPointer()) {
 
         override val suppressionScope = MagicCommentScope.MATH_ENVIRONMENT
@@ -284,7 +287,7 @@ abstract class AbstractTexifyContextAwareInspection(
     /**
      * @author Hannah Schellekens
      */
-    private inner class CommandSuppressionFix(parentCommand: LatexCommands) :
+    protected inner class CommandSuppressionFix(parentCommand: LatexCommands) :
         SuppressionFixBase(parentCommand.createSmartPointer()) {
 
         /**
@@ -304,7 +307,7 @@ abstract class AbstractTexifyContextAwareInspection(
     /**
      * @author Hannah Schellekens
      */
-    private inner class GroupSuppressionFix(parentGroup: LatexGroup) :
+    protected inner class GroupSuppressionFix(parentGroup: LatexGroup) :
         SuppressionFixBase(parentGroup.createSmartPointer()) {
 
         override val suppressionScope = MagicCommentScope.GROUP

@@ -5,9 +5,11 @@ import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.codeInspection.SuppressQuickFix
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.createSmartPointer
 import com.intellij.psi.util.elementType
 import com.intellij.psi.util.startOffset
 import nl.hannahsten.texifyidea.file.LatexFileType
@@ -142,5 +144,42 @@ abstract class AbstractTexifyRegexBasedInspection(
         override fun generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo {
             return doGeneratePreview(project, previewDescriptor, match)
         }
+    }
+}
+
+/**
+ * An adaptor class for the existing regex-based inspections that scan the whole file.
+ *
+ * Note that they can be messy.
+ */
+abstract class AbstractTexifyWholeFileRegexBasedInspection(
+    inspectionId: String, regex: Regex,
+    highlight: ProblemHighlightType = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+    applicableContexts: LContextSet? = null,
+    excludedContexts: LContextSet = emptySet(),
+    inspectionGroup: InsightGroup = InsightGroup.LATEX,
+) : AbstractTexifyRegexBasedInspection(
+    inspectionId,
+    regex,
+    highlight,
+    applicableContexts,
+    excludedContexts,
+    inspectionGroup
+) {
+
+    override fun shouldInspectElement(element: PsiElement, lookup: LatexSemanticsLookup): Boolean {
+        return element is PsiFile // Only inspect the whole file
+    }
+
+    override fun shouldInspectChildrenOf(element: PsiElement, state: LContextSet, lookup: LatexSemanticsLookup): Boolean {
+        return false // so that we don't descend into children
+    }
+
+    override fun getBatchSuppressActions(element: PsiElement?): Array<SuppressQuickFix> {
+        // we do not scan for local suppressions for performance reasons (which can be costly in large files)
+        // so we only offer to suppress the whole file
+        element ?: return SuppressQuickFix.EMPTY_ARRAY
+        val file = element.containingFile ?: return SuppressQuickFix.EMPTY_ARRAY
+        return arrayOf(FileSuppressionFix(file.createSmartPointer()))
     }
 }
