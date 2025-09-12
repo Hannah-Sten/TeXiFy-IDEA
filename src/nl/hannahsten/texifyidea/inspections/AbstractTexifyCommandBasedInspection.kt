@@ -6,12 +6,15 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.util.IntentionFamilyName
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.index.DefinitionBundle
 import nl.hannahsten.texifyidea.lang.LContextSet
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexMagicComment
 import nl.hannahsten.texifyidea.psi.LatexNormalText
+import nl.hannahsten.texifyidea.util.PackageUtils
 
 /**
  * Base class for inspections that mainly focus on LaTeX commands as anchors.
@@ -33,9 +36,9 @@ abstract class AbstractTexifyCommandBasedInspection(
         return true
     }
 
-    override fun inspectElement(element: PsiElement, contexts: LContextSet, lookup: DefinitionBundle, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {
+    override fun inspectElement(element: PsiElement, contexts: LContextSet, lookup: DefinitionBundle, file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {
         if (element !is LatexCommands) return
-        inspectCommand(element, contexts, lookup, manager, isOnTheFly, descriptors)
+        inspectCommand(element, contexts, lookup, file, manager, isOnTheFly, descriptors)
     }
 
     /**
@@ -43,11 +46,16 @@ abstract class AbstractTexifyCommandBasedInspection(
      *
      * It is the caller's responsibility to check the context via [isApplicableInContexts] since some pre-checks can be done more efficiently.
      */
-    protected abstract fun inspectCommand(command: LatexCommands, contexts: LContextSet, lookup: LatexSemanticsLookup, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>)
+    protected abstract fun inspectCommand(
+        command: LatexCommands, contexts: LContextSet,
+        lookup: LatexSemanticsLookup, file: PsiFile,
+        manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>
+    )
 
     protected class ReplaceCommandQuickFix(
         val fixName: String,
-        private val newNameWithoutSlash: String
+        private val newNameWithoutSlash: String,
+        private val requiredPkg: LatexLib = LatexLib.BASE
     ) : LocalQuickFix {
         override fun getFamilyName(): @IntentionFamilyName String {
             return fixName
@@ -56,6 +64,10 @@ abstract class AbstractTexifyCommandBasedInspection(
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val element = descriptor.psiElement as? LatexCommands ?: return
             element.setName(newNameWithoutSlash)
+            // Ensure the required package is imported
+            if(requiredPkg != LatexLib.BASE) {
+                PackageUtils.insertUsePackage(element.containingFile, requiredPkg)
+            }
         }
     }
 }

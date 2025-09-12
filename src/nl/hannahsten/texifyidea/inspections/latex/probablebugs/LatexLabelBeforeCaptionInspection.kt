@@ -8,6 +8,7 @@ import com.intellij.codeInspection.util.IntentionFamilyName
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.inspections.AbstractTexifyCommandBasedInspection
 import nl.hannahsten.texifyidea.lang.LContextSet
@@ -20,7 +21,7 @@ import nl.hannahsten.texifyidea.psi.prevContextualSiblingIgnoreWhitespace
 class LatexLabelBeforeCaptionInspection : AbstractTexifyCommandBasedInspection(
     inspectionId = "LabelBeforeCaption"
 ) {
-    override fun inspectCommand(command: LatexCommands, contexts: LContextSet, lookup: LatexSemanticsLookup, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {
+    override fun inspectCommand(command: LatexCommands, contexts: LContextSet, lookup: LatexSemanticsLookup, file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {
         val name = command.nameWithoutSlash
         if (name != "caption") return // locate the caption command
         val previousSibling = command.prevContextualSiblingIgnoreWhitespace() ?: return

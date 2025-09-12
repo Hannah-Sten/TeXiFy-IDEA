@@ -7,6 +7,7 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
 import com.intellij.psi.util.elementType
 import com.intellij.psi.util.startOffset
 import nl.hannahsten.texifyidea.file.LatexFileType
@@ -69,7 +70,7 @@ abstract class AbstractTexifyRegexBasedInspection(
 
     override fun inspectElement(
         element: PsiElement, contexts: LContextSet, lookup: DefinitionBundle,
-        manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>
+        file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>
     ) {
         if (!isApplicableInContexts(contexts)) return
         if (!shouldInspectElement(element, lookup)) return

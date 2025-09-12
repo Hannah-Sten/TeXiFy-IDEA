@@ -1,36 +1,77 @@
 package nl.hannahsten.texifyidea.inspections.latex.codestyle
 
+import com.intellij.codeInspection.InspectionManager
+import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
-import nl.hannahsten.texifyidea.index.NewLabelsIndex
-import nl.hannahsten.texifyidea.inspections.TexifyRegexInspection
-import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.util.insertUsepackage
-import nl.hannahsten.texifyidea.util.parser.findOuterMathEnvironment
-import java.util.regex.Pattern
+import com.intellij.codeInspection.util.IntentionFamilyName
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.TextRange
+import com.intellij.psi.PsiFile
+import com.intellij.psi.util.findParentOfType
+import nl.hannahsten.texifyidea.inspections.AbstractTexifyCommandBasedInspection
+import nl.hannahsten.texifyidea.inspections.InsightGroup
+import nl.hannahsten.texifyidea.inspections.createDescriptor
+import nl.hannahsten.texifyidea.lang.LContextSet
+import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.lang.LatexLib
+import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
+import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.nameWithoutSlash
+import nl.hannahsten.texifyidea.reference.LatexLabelParameterReference
+import nl.hannahsten.texifyidea.util.PackageUtils
+import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.get
+import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 
-open class LatexEquationReferenceInspection : TexifyRegexInspection(
-    inspectionDisplayName = "Use of (\\ref{...}) instead of \\eqref{...}",
+class LatexEquationReferenceInspection : AbstractTexifyCommandBasedInspection(
     inspectionId = "EquationReference",
-    errorMessage = { "Use \\eqref" },
-    pattern = Pattern.compile("(\\(\\\\ref\\{)([\\w:]+)(}\\))"),
-    replacement = { matcher, _ -> "\\eqref{${matcher.group(2)}}" },
-    replacementRange = { it.groupRange(0) },
-    quickFixName = { "Replace with \\eqref" },
-    groupFetcher = { listOf(it.group(2)) },
-//     TODO: Re-implement this in better ways
-    cancelIf = cancelIf@{ matcher, psiFile ->
-        // Cancel if the label was defined outside a math environment.
-        val refName = matcher.group(2) ?: return@cancelIf true
-        val labels = NewLabelsIndex.getByNameInFileSet(refName, psiFile)
-        labels.isEmpty() || labels.any { it.findOuterMathEnvironment() == null }
-    }
+    inspectionGroup = InsightGroup.LATEX
 ) {
+    override fun inspectCommand(
+        command: LatexCommands, contexts: LContextSet,
+        lookup: LatexSemanticsLookup, file: PsiFile, manager: InspectionManager,
+        isOnTheFly: Boolean,
+        descriptors: MutableList<ProblemDescriptor>
+    ) {
+        if (command.nameWithoutSlash != "ref") return
+        if (!isApplicableInContexts(contexts)) return
+        val labelName = command.requiredParameterText(0) ?: return
+        val range = command.textRange
+        val doc = file.fileDocument
+        if (doc[range.startOffset - 1] != "(" || doc[range.endOffset] != ")") return
+        val refLabel = LatexLabelParameterReference.multiResolve(labelName, file)
+        if (refLabel.isEmpty()) return
+        if (refLabel.any { res ->
+                val labelElement = res.element.findParentOfType<LatexCommands>() ?: return@any false
+                // if any of the labels is defined outside math environment, do not trigger
+                !LatexPsiUtil.isInsideContext(labelElement, LatexContexts.Math, lookup)
+            }
+        ) return
+        val descriptor = manager.createDescriptor(
+            command,
+            "Use \\eqref for equation references",
+            rangeInElement = TextRange.from(0, 4), // only highlight the command
+            isOnTheFly = isOnTheFly,
+            fix = ReplaceEquationReferenceQuickFix()
+        )
+        descriptors.add(descriptor)
+    }
 
-    override fun applyFixes(descriptor: ProblemDescriptor, replacementRanges: List<IntRange>, replacements: List<String>, groups: List<List<String>>) {
-        super.applyFixes(descriptor, replacementRanges, replacements, groups)
+    private class ReplaceEquationReferenceQuickFix : LocalQuickFix {
+        override fun getFamilyName(): @IntentionFamilyName String {
+            return "Replace with \\eqref"
+        }
 
-        // We overrode applyFixes instead of applyFix because all fixes need to be applied together, and only after that we insert any required package.
-        val file = descriptor.psiElement.containingFile ?: return
-        file.insertUsepackage(LatexPackage.AMSMATH)
+        override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
+            val element = descriptor.psiElement as? LatexCommands ?: return
+            val range = element.textRange
+            val text = element.text
+            val file = element.containingFile ?: return
+            val doc = file.document() ?: return
+            // delete the parentheses around the command
+            doc.replaceString(range.startOffset - 1, range.endOffset + 1, "\\eqref${text.substring(4)}")
+            // Ensure the amsmath package is imported
+            PackageUtils.insertUsePackage(file, LatexLib.AMSMATH)
+        }
     }
 }

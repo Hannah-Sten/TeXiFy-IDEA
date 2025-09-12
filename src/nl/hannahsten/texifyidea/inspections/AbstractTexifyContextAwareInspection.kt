@@ -94,7 +94,8 @@ abstract class AbstractTexifyContextAwareInspection(
      * @param isOnTheFly Whether the inspection is run on-the-fly (in the editor) or in batch mode (code inspection).
      */
     abstract fun inspectElement(
-        element: PsiElement, contexts: LContextSet, lookup: DefinitionBundle,
+        element: PsiElement, contexts: LContextSet,
+        lookup: DefinitionBundle, file: PsiFile,
         manager: InspectionManager, isOnTheFly: Boolean,
         descriptors: MutableList<ProblemDescriptor>
     )
@@ -135,7 +136,7 @@ abstract class AbstractTexifyContextAwareInspection(
             if (!isFileApplicable(file, defBundle)) return@track null
 
             val traverser = InspectionTraverser(
-                manager, isOnTheFly, defBundle, LatexContexts.baseContexts
+                manager, isOnTheFly, defBundle, file, LatexContexts.baseContexts
             )
             val result = traverser.doInspect(file)
             if (result.isEmpty()) ProblemDescriptor.EMPTY_ARRAY else result.toTypedArray()
@@ -171,7 +172,8 @@ abstract class AbstractTexifyContextAwareInspection(
 
     protected inner class InspectionTraverser(
         private val manager: InspectionManager, private val isOnTheFly: Boolean,
-        val bundle: DefinitionBundle, baseContexts: LContextSet
+        val bundle: DefinitionBundle, val file: PsiFile,
+        baseContexts: LContextSet
     ) : LatexWithContextTraverser(baseContexts, bundle) {
 
         private val descriptors: MutableList<ProblemDescriptor> = SmartList()
@@ -193,7 +195,7 @@ abstract class AbstractTexifyContextAwareInspection(
                 return WalkAction.SKIP_CHILDREN
             }
 
-            inspectElement(e, state, bundle, manager, isOnTheFly, descriptors)
+            inspectElement(e, state, bundle, file, manager, isOnTheFly, descriptors)
             return if (shouldInspectChildrenOf(e, state, lookup)) WalkAction.CONTINUE else WalkAction.SKIP_CHILDREN
         }
 

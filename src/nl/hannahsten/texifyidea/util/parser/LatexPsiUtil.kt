@@ -401,6 +401,11 @@ object LatexPsiUtil {
         return LatexContextIntro.buildContextReversedList(list, baseContext)
     }
 
+    fun isInsideContext(e: PsiElement, context: LatexContext, lookup: LatexSemanticsLookup, baseContext: LContextSet = LatexContexts.baseContexts): Boolean {
+        val currentContext = resolveContextUpward(e, lookup, baseContext)
+        return context in currentContext
+    }
+
     /**
      * Traverse the given element and all its children, recording context introductions.
      * The action is executed at each element, with the current list of context introductions.

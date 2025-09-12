@@ -23,7 +23,7 @@ class LatexUsePackageInPackageInspection : AbstractTexifyCommandBasedInspection(
         return fileType in applicableFileExtensions
     }
 
-    override fun inspectCommand(command: LatexCommands, contexts: LContextSet, lookup: LatexSemanticsLookup, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {
+    override fun inspectCommand(command: LatexCommands, contexts: LContextSet, lookup: LatexSemanticsLookup, file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {
         val name = command.nameWithoutSlash ?: return
         if (name != "usepackage") return
         val descriptor = manager.createProblemDescriptor(

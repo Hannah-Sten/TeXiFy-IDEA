@@ -6,6 +6,7 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.util.IntentionFamilyName
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
+import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.inspections.AbstractTexifyCommandBasedInspection
 import nl.hannahsten.texifyidea.inspections.createDescriptor
 import nl.hannahsten.texifyidea.lang.LContextSet
@@ -34,7 +35,11 @@ class LatexCiteBeforePeriodInspection : AbstractTexifyCommandBasedInspection(
         return PatternMagic.abbreviation.toRegex().find(text)?.groups?.isNotEmpty() == true || PatternMagic.unRegexableAbbreviations.any { text.contains(it) }
     }
 
-    override fun inspectCommand(command: LatexCommands, contexts: LContextSet, lookup: LatexSemanticsLookup, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {
+    override fun inspectCommand(
+        command: LatexCommands, contexts: LContextSet,
+        lookup: LatexSemanticsLookup, file: PsiFile,
+        manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>
+    ) {
         if (command.nameWithoutSlash != "cite") return
         if (!isApplicableInContexts(contexts)) return
         val prev = command.prevContextualSibling() ?: return

@@ -29,7 +29,7 @@ class LatexMakeatletterInspection : AbstractTexifyCommandBasedInspection(
         return type == LatexFileType
     }
 
-    override fun inspectCommand(command: LatexCommands, contexts: LContextSet, lookup: LatexSemanticsLookup, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {
+    override fun inspectCommand(command: LatexCommands, contexts: LContextSet, lookup: LatexSemanticsLookup, file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {
         val name = command.nameWithoutSlash ?: return
         if (name != "makeatletter" && name != "makeatother") return
         val descriptor = manager.createProblemDescriptor(
