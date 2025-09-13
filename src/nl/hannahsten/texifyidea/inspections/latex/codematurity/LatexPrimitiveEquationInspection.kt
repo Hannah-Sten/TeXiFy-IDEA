@@ -5,13 +5,13 @@ import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.inspections.AbstractTexifyWholeFileRegexBasedInspection
 
 /**
+ * This inspection can be messy if we encounter comments or other false positive `$$`.
+ *
  * @author Hannah Schellekens
  */
 class LatexPrimitiveEquationInspection : AbstractTexifyWholeFileRegexBasedInspection(
     inspectionId = "PrimitiveEquation",
-    regex = """
-        \$\$((?:[^$]|\$(?!\$))+)\$\$
-    """.trimIndent().toRegex()
+    regex = """\$\$[\s\S]*?\$\$""".toRegex() // Matches $$...$$ with minimal content in between
 ) {
 
     override fun errorMessage(matcher: MatchResult): String {

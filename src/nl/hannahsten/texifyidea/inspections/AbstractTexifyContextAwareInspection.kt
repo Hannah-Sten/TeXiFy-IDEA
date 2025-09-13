@@ -20,6 +20,7 @@ import nl.hannahsten.texifyidea.index.DefinitionBundle
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase.Companion.suppressionElement
 import nl.hannahsten.texifyidea.lang.LContextSet
+import nl.hannahsten.texifyidea.lang.LatexContextIntro
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
@@ -27,7 +28,6 @@ import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.lang.magic.MutableMagicComment
 import nl.hannahsten.texifyidea.lang.magic.addMagicCommentToPsiElement
 import nl.hannahsten.texifyidea.lang.magic.containsPair
-import nl.hannahsten.texifyidea.lang.magic.magicComment
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexContent
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
@@ -183,6 +183,11 @@ abstract class AbstractTexifyContextAwareInspection(
 
         private var isSuppressedNext: Boolean = false
 
+        override fun enterContextIntro(intro: LatexContextIntro): WalkAction {
+            if(intro.introduces(LatexContexts.Comment)) return WalkAction.SKIP_CHILDREN
+            return super.enterContextIntro(intro)
+        }
+
         override fun elementStart(e: PsiElement): WalkAction {
             if (e is LatexMagicComment) {
                 if (e.getMagicComment().containsPair("suppress", inspectionId)) {
@@ -191,7 +196,6 @@ abstract class AbstractTexifyContextAwareInspection(
                 return WalkAction.SKIP_CHILDREN
             }
             if (e is PsiComment || e is PsiWhiteSpace) return WalkAction.SKIP_CHILDREN
-            if (LatexContexts.Comment in state) return WalkAction.SKIP_CHILDREN
             if (isSuppressedNext) {
                 // Do not inspect this element, it is suppressed previously by a magic comment.
                 isSuppressedNext = false
