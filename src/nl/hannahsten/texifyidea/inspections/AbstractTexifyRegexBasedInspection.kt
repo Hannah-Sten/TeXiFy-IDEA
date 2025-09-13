@@ -78,7 +78,6 @@ abstract class AbstractTexifyRegexBasedInspection(
         if (!shouldInspectElement(element, lookup)) return
         val elementText = element.text
         if (elementText.isEmpty()) return
-        if (!regex.containsMatchIn(elementText)) return
         for (match in regex.findAll(elementText)) {
             if (!additionalChecks(element, match)) continue
             val highlightRange = getHighlightRange(match)
@@ -107,13 +106,12 @@ abstract class AbstractTexifyRegexBasedInspection(
      */
     protected open fun doApplyFix(
         project: Project, descriptor: ProblemDescriptor, match: MatchResult
-    ): Int {
+    ) {
         val element = descriptor.psiElement
-        val document = element.containingFile.document() ?: return 0
+        val document = element.containingFile.document() ?: return
         val repRange = match.range.toTextRange().shiftRight(element.startOffset)
         val rep = getReplacement(match, project, descriptor)
         document.replaceString(repRange, rep)
-        return rep.length - match.value.length
     }
 
     /**

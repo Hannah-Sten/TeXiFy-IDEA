@@ -185,12 +185,12 @@ abstract class AbstractTexifyContextAwareInspection(
 
         override fun elementStart(e: PsiElement): WalkAction {
             if (e is LatexMagicComment) {
-                if (e.magicComment()?.containsPair("suppress", inspectionId) == true) {
+                if (e.getMagicComment().containsPair("suppress", inspectionId)) {
                     isSuppressedNext = true
                 }
                 return WalkAction.SKIP_CHILDREN
             }
-            if (e is PsiComment) return WalkAction.SKIP_CHILDREN
+            if (e is PsiComment || e is PsiWhiteSpace) return WalkAction.SKIP_CHILDREN
             if (LatexContexts.Comment in state) return WalkAction.SKIP_CHILDREN
             if (isSuppressedNext) {
                 // Do not inspect this element, it is suppressed previously by a magic comment.
