@@ -4,6 +4,7 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.inspections.AbstractTexifyRegexBasedInspection
+import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.util.parser.findNextAdjacentWhiteSpace
 
@@ -15,11 +16,11 @@ class LatexSentenceEndWithCapitalInspection : AbstractTexifyRegexBasedInspection
     regex = """(?<=[A-ZÀ-Ý])\.""".toRegex(),
     applicableContexts = setOf(LatexContexts.Text)
 ) {
-    override fun errorMessage(matcher: MatchResult): String {
+    override fun errorMessage(matcher: MatchResult, context: LContextSet): String {
         return "Sentences ending with a capital letter should end with an end-of-sentence space"
     }
 
-    override fun quickFixName(matcher: MatchResult): String {
+    override fun quickFixName(matcher: MatchResult, contexts: LContextSet): String {
         return "Add an end-of-sentence space"
     }
 

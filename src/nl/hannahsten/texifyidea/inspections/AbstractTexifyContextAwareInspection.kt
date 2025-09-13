@@ -39,6 +39,7 @@ import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.psi.LatexWithContextTraverser
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.psi.getMagicComment
+import nl.hannahsten.texifyidea.util.existsIntersect
 import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
 import nl.hannahsten.texifyidea.util.parser.traverse
 
@@ -84,11 +85,13 @@ abstract class AbstractTexifyContextAwareInspection(
      * Whether this element should be inspected under the given contexts.
      */
     protected fun isApplicableInContexts(contexts: LContextSet): Boolean {
+        val applicableContexts = this.applicableContexts
         if (applicableContexts != null) {
-            if (contexts.none { it in applicableContexts }) return false
+            // Only inspect if at least one of the applicable contexts is present, namely the intersection is non-empty.
+            if(!applicableContexts.existsIntersect(contexts)) return false
         }
-        if (excludedContexts.isNotEmpty() && contexts.any { it in excludedContexts }) return false
-        return true
+        val excludedContexts = this.excludedContexts
+        return excludedContexts.isEmpty() || !contexts.any { it in excludedContexts }
     }
 
     /**

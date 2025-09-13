@@ -43,20 +43,3 @@ class LatexMakeatletterInspection : AbstractTexifyCommandBasedInspection(
         // we should not provide a quickfix, as the user needs to check if it is safe to remove these commands
     }
 }
-
-// open class LatexMakeatletterInspection : TexifyRegexInspection(
-//    inspectionDisplayName = "Discouraged use of \\makeatletter in tex sources",
-//    inspectionId = "Makeatletter",
-//    highlight = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-//    errorMessage = { "${it.group(1)} should only be used when necessary" },
-//    pattern = Pattern.compile("(\\\\makeatletter|\\\\makeatother)"),
-//    replacement = { _, _ -> "" },
-//    quickFixName = { "Remove command" }
-// ) {
-//
-//    override fun checkContext(matcher: Matcher, element: PsiElement): Boolean {
-//        val file = element.containingFile
-//        val extension = file.virtualFile.extension
-//        return extension?.lowercase(Locale.getDefault()) == "tex" && super.checkContext(matcher, element)
-//    }
-// }

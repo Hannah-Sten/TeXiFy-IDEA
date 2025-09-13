@@ -56,3 +56,21 @@ fun InspectionManager.createDescriptor(
         *fixes
     )
 }
+
+fun InspectionManager.createDescriptor(
+    element: PsiElement,
+    descriptionTemplate: String,
+    isOnTheFly: Boolean,
+    highlightType: ProblemHighlightType = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+    rangeInElement: TextRange? = null,
+    fixes: Array<LocalQuickFix>
+): ProblemDescriptor {
+    return createProblemDescriptor(
+        element,
+        rangeInElement,
+        descriptionTemplate,
+        highlightType,
+        isOnTheFly,
+        *fixes
+    )
+}

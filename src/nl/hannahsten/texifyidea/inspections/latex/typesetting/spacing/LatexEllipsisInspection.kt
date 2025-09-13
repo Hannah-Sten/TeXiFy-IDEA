@@ -10,10 +10,13 @@ import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.startOffset
+import nl.hannahsten.texifyidea.inspections.AbstractTexifyRegexBasedInspection
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment
+import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSMATH
+import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
@@ -22,10 +25,35 @@ import nl.hannahsten.texifyidea.util.parser.inMathContext
 import nl.hannahsten.texifyidea.util.parser.isComment
 import nl.hannahsten.texifyidea.util.parser.forEachChildTyped
 
+class LatexEllipsisInspection : AbstractTexifyRegexBasedInspection(
+    inspectionId = "Ellipsis",
+    regex = """(?<!\.)(\.\.\.)(?!\.)""".toRegex(),
+) {
+    override fun errorMessage(matcher: MatchResult, context: LContextSet): String {
+        return "Ellipsis with ... instead of \\ldots or \\dots"
+    }
+
+    override fun quickFixName(matcher: MatchResult, contexts: LContextSet): String {
+        return "Convert to ${if (matcher.groupValues[1].isNotEmpty()) "\\dots (amsmath package)" else "\\ldots"}"
+    }
+
+    override fun getReplacement(match: MatchResult, project: Project, problemDescriptor: ProblemDescriptor): String {
+        TODO("Not yet implemented")
+    }
+
+    override fun shouldInspectElement(element: PsiElement, lookup: LatexSemanticsLookup): Boolean {
+        return element is LatexNormalText
+    }
+
+    override fun shouldInspectChildrenOf(element: PsiElement, state: LContextSet, lookup: LatexSemanticsLookup): Boolean {
+        return !shouldInspectElement(element, lookup)
+    }
+}
+
 /**
  * @author Sten Wessel
  */
-open class LatexEllipsisInspection : TexifyInspectionBase() {
+open class LatexEllipsisInspection1 : TexifyInspectionBase() {
 
     override val inspectionGroup = InsightGroup.LATEX
 

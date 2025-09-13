@@ -17,9 +17,9 @@ class LatexEnDashInspection : AbstractTexifyRegexBasedInspection(
     highlight = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
     applicableContexts = setOf(LatexContexts.Text)
 ) {
-    override fun errorMessage(matcher: MatchResult): String = "En dash expected"
+    override fun errorMessage(matcher: MatchResult, context: LContextSet): String = "En dash expected"
 
-    override fun quickFixName(matcher: MatchResult): String = "Convert to en dash"
+    override fun quickFixName(matcher: MatchResult, contexts: LContextSet): String = "Convert to en dash"
 
     override fun getReplacement(match: MatchResult, project: Project, problemDescriptor: ProblemDescriptor): String {
         return "${match.groupValues[2]}--${match.groupValues[3]}"

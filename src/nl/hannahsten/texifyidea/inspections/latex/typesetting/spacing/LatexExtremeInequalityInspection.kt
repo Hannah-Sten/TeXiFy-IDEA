@@ -21,11 +21,11 @@ class LatexExtremeInequalityInspection : AbstractTexifyRegexBasedInspection(
     """.trimIndent().toRegex(),
     applicableContexts = setOf(LatexContexts.Math)
 ) {
-    override fun errorMessage(matcher: MatchResult): String {
+    override fun errorMessage(matcher: MatchResult, context: LContextSet): String {
         return "Use the amssymb symbol instead."
     }
 
-    override fun quickFixName(matcher: MatchResult): String {
+    override fun quickFixName(matcher: MatchResult, contexts: LContextSet): String {
         return "Insert amssymb symbol."
     }
 

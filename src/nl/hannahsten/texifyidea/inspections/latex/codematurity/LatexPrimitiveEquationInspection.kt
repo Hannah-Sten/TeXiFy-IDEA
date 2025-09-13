@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.inspections.latex.codematurity
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.inspections.AbstractTexifyWholeFileRegexBasedInspection
+import nl.hannahsten.texifyidea.lang.LContextSet
 
 /**
  * This inspection can be messy if we encounter comments or other false positive `$$`.
@@ -14,11 +15,11 @@ class LatexPrimitiveEquationInspection : AbstractTexifyWholeFileRegexBasedInspec
     regex = """\$\$[\s\S]*?\$\$""".toRegex() // Matches $$...$$ with minimal content in between
 ) {
 
-    override fun errorMessage(matcher: MatchResult): String {
+    override fun errorMessage(matcher: MatchResult, context: LContextSet): String {
         return "Use '\\[..\\]' instead of primitive TeX display math."
     }
 
-    override fun quickFixName(matcher: MatchResult): String {
+    override fun quickFixName(matcher: MatchResult, contexts: LContextSet): String {
         return "Replace with '\\[..\\]'"
     }
 

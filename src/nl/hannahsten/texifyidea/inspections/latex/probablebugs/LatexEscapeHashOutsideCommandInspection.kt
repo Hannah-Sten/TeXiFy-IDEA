@@ -5,6 +5,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.AbstractTexifyRegexBasedInspection
+import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
@@ -17,11 +18,11 @@ class LatexEscapeHashOutsideCommandInspection : AbstractTexifyRegexBasedInspecti
     regex = Regex("""(?<!\\)#"""),
     inspectionGroup = InsightGroup.LATEX
 ) {
-    override fun errorMessage(matcher: MatchResult): String {
+    override fun errorMessage(matcher: MatchResult, context: LContextSet): String {
         return "Unescaped #"
     }
 
-    override fun quickFixName(matcher: MatchResult): String {
+    override fun quickFixName(matcher: MatchResult, contexts: LContextSet): String {
         return "Escape #"
     }
 

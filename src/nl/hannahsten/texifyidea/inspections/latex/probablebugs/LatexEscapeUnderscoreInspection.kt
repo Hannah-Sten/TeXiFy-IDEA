@@ -4,6 +4,7 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.inspections.AbstractTexifyRegexBasedInspection
+import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
 
 /**
@@ -23,7 +24,7 @@ class LatexEscapeUnderscoreInspection : AbstractTexifyRegexBasedInspection(
         LatexContexts.LabelDefinition, LatexContexts.LabelReference, LatexContexts.URL // Label names and URLs may contain _.
     ),
 ) {
-    override fun errorMessage(matcher: MatchResult): String {
+    override fun errorMessage(matcher: MatchResult, context: LContextSet): String {
         return """Escape character \ expected"""
     }
 
@@ -31,7 +32,7 @@ class LatexEscapeUnderscoreInspection : AbstractTexifyRegexBasedInspection(
         return """\_"""
     }
 
-    override fun quickFixName(matcher: MatchResult): String {
+    override fun quickFixName(matcher: MatchResult, contexts: LContextSet): String {
         return """Change to \_"""
     }
 }

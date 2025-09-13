@@ -32,9 +32,9 @@ abstract class AbstractTexifyRegexBasedInspection(
     inspectionGroup: InsightGroup = InsightGroup.LATEX,
 ) : AbstractTexifyContextAwareInspection(inspectionGroup, inspectionId, applicableContexts, excludedContexts) {
 
-    protected abstract fun errorMessage(matcher: MatchResult): String
+    protected abstract fun errorMessage(matcher: MatchResult, context: LContextSet): String
 
-    protected abstract fun quickFixName(matcher: MatchResult): String
+    protected abstract fun quickFixName(matcher: MatchResult, contexts: LContextSet): String
 
     protected open fun getHighlightRange(matcher: MatchResult): IntRange {
         return matcher.range
@@ -84,8 +84,8 @@ abstract class AbstractTexifyRegexBasedInspection(
             if (highlightRange.isEmpty() || !match.range.contains(highlightRange)) continue
             val textRange = highlightRange.toTextRange()
 
-            val error = errorMessage(match)
-            val quickFix = quickFixName(match)
+            val error = errorMessage(match, contexts)
+            val quickFix = quickFixName(match, contexts)
             val fix = RegexFix(quickFix, match)
 
             descriptors.add(

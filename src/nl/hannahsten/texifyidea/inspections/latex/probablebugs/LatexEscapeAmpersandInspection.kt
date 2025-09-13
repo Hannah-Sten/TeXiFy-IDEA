@@ -6,6 +6,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.elementType
 import nl.hannahsten.texifyidea.inspections.AbstractTexifyRegexBasedInspection
+import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.psi.LatexTypes
@@ -28,7 +29,7 @@ class LatexEscapeAmpersandInspection : AbstractTexifyRegexBasedInspection(
         return element.elementType == LatexTypes.AMPERSAND
     }
 
-    override fun errorMessage(matcher: MatchResult): String {
+    override fun errorMessage(matcher: MatchResult, context: LContextSet): String {
         return """Escape character \ expected"""
     }
 
@@ -36,7 +37,7 @@ class LatexEscapeAmpersandInspection : AbstractTexifyRegexBasedInspection(
         return """\&"""
     }
 
-    override fun quickFixName(matcher: MatchResult): String {
+    override fun quickFixName(matcher: MatchResult, contexts: LContextSet): String {
         return """Change to \&"""
     }
 }

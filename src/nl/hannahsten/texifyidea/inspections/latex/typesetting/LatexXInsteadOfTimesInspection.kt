@@ -5,6 +5,7 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.inspections.AbstractTexifyRegexBasedInspection
+import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.util.parser.findNextAdjacentWhiteSpace
 import nl.hannahsten.texifyidea.util.parser.findPrevAdjacentWhiteSpace
@@ -15,7 +16,7 @@ class LatexXInsteadOfTimesInspection : AbstractTexifyRegexBasedInspection(
     highlight = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
     applicableContexts = setOf(LatexContexts.Math),
 ) {
-    override fun errorMessage(matcher: MatchResult): String {
+    override fun errorMessage(matcher: MatchResult, context: LContextSet): String {
         return "\\times expected"
     }
 
@@ -23,7 +24,7 @@ class LatexXInsteadOfTimesInspection : AbstractTexifyRegexBasedInspection(
         return "\\times"
     }
 
-    override fun quickFixName(matcher: MatchResult): String {
+    override fun quickFixName(matcher: MatchResult, contexts: LContextSet): String {
         return "Change to \\times"
     }
 
