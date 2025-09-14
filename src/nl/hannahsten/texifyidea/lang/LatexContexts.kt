@@ -114,6 +114,8 @@ object LatexContexts {
      */
     val Text = SimpleLatexContext("text")
 
+    val Comment = SimpleLatexContext("comment")
+
     val baseContexts = setOf(Preamble, Text)
 
     /**
@@ -177,5 +179,5 @@ object LatexContexts {
 
     val Alignable = SimpleLatexContext("alignable")
 
-    val Comment = SimpleLatexContext("comment")
+    val TikzPicture = SimpleLatexContext("tikz.picture")
 }

@@ -260,7 +260,7 @@ object PredefinedEnvBasic : PredefinedEnvironmentSet() {
         "testcolors".env(LatexContexts.Text, "num models".optional) //
 
         packageOf("tikz")
-        +"tikzpicture"
+        "tikzpicture".env(LatexContexts.TikzPicture)
 
         packageOf("widetable")
         +"widetable"
