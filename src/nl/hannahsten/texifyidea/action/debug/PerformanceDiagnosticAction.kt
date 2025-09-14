@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicLong
 import javax.swing.JLabel
 import javax.swing.SwingConstants
+import kotlin.time.Duration.Companion.milliseconds
 
 class SimplePerformanceTracker {
     private val myCountOfBuilds: AtomicInteger = AtomicInteger(0)
@@ -141,7 +142,7 @@ class PerformanceDiagnosticAction : AnAction() {
                 }
                 // add a separator line
                 hr { }
-                +"Total Uptime reflects real elapsed time, not CPU time. "
+                +"Total Uptime (${totalRunningTime.milliseconds}) reflects real elapsed time, not CPU time."
                 br
                 +"Total CPU time may significantly exceed uptime due to multi-core processing."
             }
