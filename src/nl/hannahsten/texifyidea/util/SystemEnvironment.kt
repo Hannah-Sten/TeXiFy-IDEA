@@ -138,7 +138,9 @@ fun getTexinputsPaths(
 
     // Most files are searched for in subdirectories of tex/generic or tex/latex, see kpsewhich -help-format | grep -1 sty
     (configurationTexmfhomeVariables + systemTexmfhome)
-        .mapNotNull { it?.trim('\'', '/')?.replaceFirst("~", System.getProperty("user.home")) }
+        .filterNotNull()
+        .flatMap { it.split(",") }
+        .map { it.trim('\'', '/').replaceFirst("~", System.getProperty("user.home")) }
         .mapNotNull { LocalFileSystem.getInstance().findFileByPath("$it/tex") }
         .forEach { parent ->
             searchPaths.addAll(
