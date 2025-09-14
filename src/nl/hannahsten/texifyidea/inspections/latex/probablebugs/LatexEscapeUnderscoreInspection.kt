@@ -18,11 +18,11 @@ class LatexEscapeUnderscoreInspection : AbstractTexifyRegexBasedInspection(
         LatexContexts.Text
     ),
     excludedContexts = setOf(
+        LatexContexts.InsideDefinition,
         LatexContexts.Math, // Math mode handles _ correctly.
         LatexContexts.Comment, LatexContexts.MintedFuntimeLand, // Comments and verbatim-like environments do not need escaping.
         LatexContexts.Literal, // just ignore literal blocks
         LatexContexts.LabelDefinition, LatexContexts.LabelReference, LatexContexts.URL, // Label names and URLs may contain _.
-        LatexContexts.TikzPicture
     ),
 ) {
     override fun errorMessage(matcher: MatchResult, context: LContextSet): String {
