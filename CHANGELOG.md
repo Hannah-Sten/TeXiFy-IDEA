@@ -3,17 +3,27 @@
 ## [Unreleased]
 
 ### Added
-* The context of commands and environments (math, reference, etc) is now also supported for custom defined commands
-* Seperate arguments can even have different contexts
-* This context is now also shown in the autocompletion
-* Fix many issues related to custom command definitions
-* Improvements to predefined command and environment definitions
+
+### Fixed
+
+## [0.11.3] - 2025-09-14
+
+Welcome to TeXiFy IDEA 0.11.3! For this release, @Ezrnest has (re-)added a much improved support for custom command definitions (using \newcommand etc), including showing the parameter context in autocompletion.
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
+
+### Added
+
+* The context of commands and environments (math, reference, etc) is now also supported for custom defined commands, by @Ezrnest
+* Seperate arguments can even have different contexts, by @Ezrnest
+* This context is now also shown in the autocompletion, by @Ezrnest
+* Fix many issues related to custom command definitions, by @Ezrnest
+* Improvements to predefined command and environment definitions, by @Ezrnest
 * Add support for acronym package to missing aronym references inspection
 * Automatically reload pdf when using latexmk continuous update
 * Support no-break space character in parser
 * Add support for multiple paths (comma-separated) in TEXMFHOME environment variables
-
-### Fixed
 
 ## [0.11.2] - 2025-08-10
 
@@ -655,7 +665,8 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.2...HEAD
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.3...HEAD
+[0.11.3]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.2...v0.11.3
 [0.11.2]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.1...v0.11.2
 [0.11.1]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.4...v0.11.1
 [0.11.0]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.4...v0.11.0
