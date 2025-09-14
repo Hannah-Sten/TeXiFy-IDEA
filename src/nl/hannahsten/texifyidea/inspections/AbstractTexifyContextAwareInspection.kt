@@ -27,7 +27,6 @@ import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.lang.magic.MutableMagicComment
 import nl.hannahsten.texifyidea.lang.magic.addMagicCommentToPsiElement
-import nl.hannahsten.texifyidea.lang.magic.containsPair
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexContent
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
@@ -37,8 +36,8 @@ import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
 import nl.hannahsten.texifyidea.psi.LatexNoMathContent
 import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.psi.LatexWithContextTraverser
+import nl.hannahsten.texifyidea.psi.containsKeyValuePair
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
-import nl.hannahsten.texifyidea.psi.getMagicComment
 import nl.hannahsten.texifyidea.util.existsIntersect
 import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
 import nl.hannahsten.texifyidea.util.parser.traverse
@@ -160,18 +159,25 @@ abstract class AbstractTexifyContextAwareInspection(
         return true
     }
 
+    /**
+     * Looks at the start of the file to see if there is a magic comment that suppresses this inspection.
+     */
     protected fun isFileSuppressed(file: PsiFile): Boolean {
         val content = file.findFirstChildTyped<LatexContent>() ?: return true // Empty file, nothing to inspect.
         for (e in content.traverse(4)) {
             if (e is LatexContent || e is LatexNoMathContent || e is PsiWhiteSpace || e is PsiComment) continue
             if (e.elementType == LatexTypes.MAGIC_COMMENT_TOKEN) continue
             if (e !is LatexMagicComment) break
-            val commentMap = e.getMagicComment()
-            if (commentMap.containsPair("suppress", inspectionId)) return true
+            if (e.containsKeyValuePair("suppress", inspectionId)) return true
         }
         return false
     }
 
+    /**
+     * Decides whether the children of the given element should be inspected.
+     *
+     * Overriding this method can be used to avoid descending into certain elements to improve performance.
+     */
     protected open fun shouldInspectChildrenOf(element: PsiElement, state: LContextSet, lookup: LatexSemanticsLookup): Boolean {
         return true
     }
@@ -193,7 +199,7 @@ abstract class AbstractTexifyContextAwareInspection(
 
         override fun elementStart(e: PsiElement): WalkAction {
             if (e is LatexMagicComment) {
-                if (e.getMagicComment().containsPair("suppress", inspectionId)) {
+                if (e.containsKeyValuePair("suppress", inspectionId)) {
                     isSuppressedNext = true
                 }
                 return WalkAction.SKIP_CHILDREN
