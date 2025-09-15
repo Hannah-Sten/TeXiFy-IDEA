@@ -4,93 +4,90 @@ import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.util.TextRange
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.index.DefinitionBundle
 import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.index.NewBibtexEntryIndex
-import nl.hannahsten.texifyidea.index.NewLabelsIndex
+import nl.hannahsten.texifyidea.inspections.AbstractTexifyContextAwareInspection
 import nl.hannahsten.texifyidea.inspections.InsightGroup
-import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
+import nl.hannahsten.texifyidea.lang.LContextSet
+import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
-import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.traverseCommands
+import nl.hannahsten.texifyidea.psi.LatexParameter
+import nl.hannahsten.texifyidea.psi.contentText
 import nl.hannahsten.texifyidea.reference.LatexLabelParameterReference
-import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.magic.cmd
-import nl.hannahsten.texifyidea.util.parser.firstParentOfType
+import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 import java.lang.Integer.max
 import java.util.*
 
 /**
  * @author Hannah Schellekens
  */
-open class LatexUnresolvedReferenceInspection : TexifyInspectionBase() {
-
-    override val inspectionGroup = InsightGroup.LATEX
-
-    override val inspectionId = "UnresolvedReference"
+class LatexUnresolvedReferenceInspection : AbstractTexifyContextAwareInspection(
+    inspectionId = "UnresolvedReference",
+    inspectionGroup = InsightGroup.LATEX,
+    applicableContexts = setOf(LatexContexts.LabelReference, LatexContexts.CitationReference),
+    excludedContexts = setOf(LatexContexts.InsideDefinition, LatexContexts.Preamble)
+) {
 
     override val outerSuppressionScopes = EnumSet.of(MagicCommentScope.COMMAND, MagicCommentScope.GROUP)!!
 
-    override fun getDisplayName() = "Unresolved reference"
+    override fun isAvailableForFile(file: PsiFile): Boolean {
+        // If the project filesets are not available, we do not inspect the file.
+        return LatexProjectStructure.isProjectFilesetsAvailable(file.project)
+    }
 
-    override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        if (!LatexProjectStructure.isProjectFilesetsAvailable(file.project)) {
-            // If the project filesets are not available, we cannot inspect the file.
-            return emptyList()
-        }
+    override fun shouldInspectChildrenOf(element: PsiElement, state: LContextSet, lookup: LatexSemanticsLookup): Boolean {
+        // inspect only the commands that can be references
+        return LatexContexts.LabelReference !in state
+    }
 
-        val descriptors = descriptorList()
-        val commands = file.traverseCommands()
-        val project = file.project
-        val filesetScope = LatexProjectStructure.getFilesetScopeFor(file)
+    private fun isInsideDefinition(element: PsiElement, lookup: DefinitionBundle): Boolean {
+        // unfortunately, the context does not contain enough information to determine whether we are inside a command definition as they can be overridden
+        // For example, in `\newcommand{\myref}[1]{$ \text{\ref{#1}} $}`,  `#1` only has the context, while `\ref` has context `<text>`.
+        // To improve it, we have to introduce penetrating context or conflicting context, making our context system more complex.
+        // When we find more use cases requiring advanced context system later, we can upgrade it to fit the needs
+        val introList = LatexPsiUtil.resolveContextIntroUpward(element, lookup, shortCircuit = false)
+        return introList.any { it.introduces(LatexContexts.InsideDefinition) }
+    }
 
-        for (command in commands) {
-            if (!CommandMagic.reference.contains(command.name)) {
-                continue
-            }
-
-            // Don't resolve references in command definitions, as in \cite{#1} the #1 is not a reference
-            if (command.parent?.firstParentOfType(LatexCommands::class)?.name in CommandMagic.commandDefinitionsAndRedefinitions) {
-                continue
-            }
-
-            val required = command.requiredParametersText()
-            if (required.isEmpty()) {
-                continue
-            }
-
-            val parts = required[0].split(",")
-            for (i in parts.indices) {
-                val part = parts[i].trim()
-                if (part == "*") continue
-
-                // The cleveref package allows empty items to customize enumerations
-                if (part.isEmpty() && (command.name == LatexGenericRegularCommand.CREF.cmd || command.name == LatexGenericRegularCommand.CREF_CAPITAL.cmd)) continue
-                if (NewLabelsIndex.existsByName(part, project, filesetScope)) continue // a simple check
-                if(LatexLabelParameterReference.multiResolve(part, file).isNotEmpty()) continue
-                if (NewBibtexEntryIndex.existsByName(part, project, filesetScope)) continue
-                // If there is no label with this required label parameter value
-                // We have to subtract from the total length, because we do not know whether optional
-                // parameters were included with [a][b][c] or [a,b,c] in which case the
-                // indices of the parts are different with respect to the start of the command
-                var offset = command.textLength - parts.sumOf { it.length + 1 }
-                for (j in 0 until i) {
-                    offset += parts[j].length + 1
+    override fun inspectElement(element: PsiElement, contexts: LContextSet, lookup: DefinitionBundle, file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {
+        if(element !is LatexParameter) return
+        if(!isApplicableInContexts(contexts)) return
+        val parts = element.contentText().split(",")
+        var offset = 1 // account for {[(
+        var checkedInsideDefinition = false
+        for (part in parts) {
+            val label = part.trim()
+            run {
+                if (label.isEmpty() || label == "*") {
+                    return@run
                 }
-
+                if (LatexLabelParameterReference.isLabelDefined(label, file)) {
+                    return@run
+                }
+                if (NewBibtexEntryIndex.existsByNameInFileSet(part, file)) {
+                    return@run
+                }
+                if (!checkedInsideDefinition) {
+                    if (isInsideDefinition(element, lookup)) {
+                        return // skip all if inside definition
+                    }
+                    checkedInsideDefinition = true
+                }
                 descriptors.add(
                     manager.createProblemDescriptor(
-                        command,
-                        TextRange.from(max(offset, 0), part.length),
-                        "Unresolved reference '$part'",
+                        element,
+                        TextRange.from(max(offset, 0), label.length),
+                        "Unresolved reference '$label'",
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                        isOntheFly
+                        isOnTheFly
                     )
                 )
             }
+            offset += part.length + 1
         }
-
-        return descriptors
     }
 }

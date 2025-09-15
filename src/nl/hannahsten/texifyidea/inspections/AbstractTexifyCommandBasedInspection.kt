@@ -48,7 +48,7 @@ abstract class AbstractTexifyCommandBasedInspection(
      */
     protected abstract fun inspectCommand(
         command: LatexCommands, contexts: LContextSet,
-        lookup: LatexSemanticsLookup, file: PsiFile,
+        defBundle: DefinitionBundle, file: PsiFile,
         manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>
     )
 

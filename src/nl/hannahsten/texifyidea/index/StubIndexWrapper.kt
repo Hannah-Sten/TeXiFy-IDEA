@@ -20,10 +20,10 @@ abstract class StringStubIndexWrapper<Psi : PsiElement>(
     val clazz: Class<Psi>,
 ) : StringStubIndexExtension<Psi>() {
 
-    protected open fun buildFileset(
+    protected fun buildFileset(
         baseFile: PsiFile,
     ): GlobalSearchScope {
-        return GlobalSearchScope.fileScope(baseFile)
+        return LatexProjectStructure.getFilesetScopeFor(baseFile)
     }
 
     @RequiresReadLock
@@ -184,6 +184,12 @@ abstract class StringStubIndexWrapper<Psi : PsiElement>(
         val project = file.project
         val scope = buildFileset(file)
         return getByNames(name, project, scope)
+    }
+
+    fun existsByNameInFileSet(name: String, file: PsiFile): Boolean {
+        val project = file.project
+        val scope = buildFileset(file)
+        return existsByName(name, project, scope)
     }
 }
 

@@ -274,7 +274,7 @@ fun LatexParameter.contentText(): String {
     return text
 }
 
-private fun stripContentText(text: String, prefix: Char, suffix: Char): String {
+fun stripContentText(text: String, prefix: Char, suffix: Char): String {
     var result = text
     if (result.length >= 2 && result.first() == prefix && result.last() == suffix) {
         result = result.substring(1, result.length - 1)

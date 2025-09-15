@@ -33,10 +33,6 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexWrapper<LatexCommands>(Late
         return 104
     }
 
-    override fun buildFileset(baseFile: PsiFile): GlobalSearchScope {
-        return LatexProjectStructure.getFilesetScopeFor(baseFile)
-    }
-
     val mappingPairs = listOf(
         CommandMagic.allFileIncludeCommands to SpecialKeys.FILE_INPUTS,
         PredefinedCmdDefinitions.namesOfAllCommandDef to SpecialKeys.COMMAND_DEFINITIONS,

@@ -8,13 +8,13 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.findParentOfType
+import nl.hannahsten.texifyidea.index.DefinitionBundle
 import nl.hannahsten.texifyidea.inspections.AbstractTexifyCommandBasedInspection
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.createDescriptor
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.LatexLib
-import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.nameWithoutSlash
 import nl.hannahsten.texifyidea.reference.LatexLabelParameterReference
@@ -29,7 +29,7 @@ class LatexEquationReferenceInspection : AbstractTexifyCommandBasedInspection(
 ) {
     override fun inspectCommand(
         command: LatexCommands, contexts: LContextSet,
-        lookup: LatexSemanticsLookup, file: PsiFile, manager: InspectionManager,
+        defBundle: DefinitionBundle, file: PsiFile, manager: InspectionManager,
         isOnTheFly: Boolean,
         descriptors: MutableList<ProblemDescriptor>
     ) {
@@ -44,7 +44,7 @@ class LatexEquationReferenceInspection : AbstractTexifyCommandBasedInspection(
         if (refLabel.any { res ->
                 val labelElement = res.element.findParentOfType<LatexCommands>() ?: return@any false
                 // if any of the labels is defined outside math environment, do not trigger
-                !LatexPsiUtil.isInsideContext(labelElement, LatexContexts.Math, lookup)
+                !LatexPsiUtil.isInsideContext(labelElement, LatexContexts.Math, defBundle)
             }
         ) return
         val descriptor = manager.createDescriptor(
