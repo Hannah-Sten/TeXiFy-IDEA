@@ -24,6 +24,7 @@ object PredefinedPrimitives : PredefinedCommandSet() {
             "xdef".cmd(paramMacro, paramDef) { "LaTex primitive xdef" }
             "futurelet".cmd(paramMacro, paramDef) { "LaTex primitive futurelet" }
             "relax".cmd { "Do nothing" }
+            "undefined".cmd { "Undefined." }
             +"csname"
             +"endcsname"
             +"noexpand"
