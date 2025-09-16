@@ -19,7 +19,7 @@ import nl.hannahsten.texifyidea.util.PackageUtils
 /**
  * Base class for inspections that mainly focus on LaTeX commands as anchors.
  *
- * @author Li Ernest
+ * @author Ezrnest
  */
 abstract class AbstractTexifyCommandBasedInspection(
     inspectionId: String,

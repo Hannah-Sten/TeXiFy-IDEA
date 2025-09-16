@@ -42,6 +42,12 @@ import nl.hannahsten.texifyidea.util.existsIntersect
 import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
 import nl.hannahsten.texifyidea.util.parser.traverse
 
+/**
+ * Base class for context-aware inspections.
+ * The inspection will traverse the whole file, and compute the contexts along the way.
+ *
+ * @author Ezrnest
+ */
 abstract class AbstractTexifyContextAwareInspection(
     /**
      * The inspectionGroup the inspection falls under.
@@ -81,7 +87,7 @@ abstract class AbstractTexifyContextAwareInspection(
         get() = emptySet()
 
     /**
-     * Whether this element should be inspected under the given contexts.
+     * Whether this inspection should be activated under the given contexts.
      */
     protected fun isApplicableInContexts(contexts: LContextSet): Boolean {
         val applicableContexts = this.applicableContexts
@@ -95,6 +101,7 @@ abstract class AbstractTexifyContextAwareInspection(
 
     /**
      * Inspects a single element, given the contexts it is in.
+     * It is the caller's responsibility to check the context via [isApplicableInContexts].
      *
      * @param isOnTheFly Whether the inspection is run on-the-fly (in the editor) or in batch mode (code inspection).
      */
