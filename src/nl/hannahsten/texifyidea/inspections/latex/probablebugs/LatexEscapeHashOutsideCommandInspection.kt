@@ -27,7 +27,7 @@ class LatexEscapeHashOutsideCommandInspection : AbstractTexifyRegexBasedInspecti
         return "Escape #"
     }
 
-    override fun getReplacement(match: MatchResult, project: Project, problemDescriptor: ProblemDescriptor): String {
+    override fun getReplacement(match: MatchResult, fullElementText: String, project: Project, problemDescriptor: ProblemDescriptor): String {
         return "\\#"
     }
 

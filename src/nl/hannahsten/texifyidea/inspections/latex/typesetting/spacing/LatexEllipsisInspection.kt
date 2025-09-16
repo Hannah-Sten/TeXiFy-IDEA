@@ -32,7 +32,7 @@ class LatexEllipsisInspection : AbstractTexifyRegexBasedInspection(
         }
     }
 
-    override fun getReplacement(match: MatchResult, project: Project, problemDescriptor: ProblemDescriptor): String {
+    override fun getReplacement(match: MatchResult, fullElementText: String, project: Project, problemDescriptor: ProblemDescriptor): String {
         val lookup = LatexDefinitionService.getInstance(project).getDefBundlesMerged(problemDescriptor.psiElement.containingFile)
         return if (LatexPsiUtil.isInsideContext(problemDescriptor.psiElement, LatexContexts.Math, lookup)) {
             "\\dots"
@@ -42,11 +42,11 @@ class LatexEllipsisInspection : AbstractTexifyRegexBasedInspection(
         }
     }
 
-    override fun doApplyFix(project: Project, descriptor: ProblemDescriptor, match: MatchResult) {
+    override fun doApplyFix(project: Project, descriptor: ProblemDescriptor, match: MatchResult, fullElementText: String) {
         val element = descriptor.psiElement
         val document = element.containingFile.document() ?: return
         val repRange = match.range.toTextRange().shiftRight(element.startOffset)
-        val rep = getReplacement(match, project, descriptor)
+        val rep = getReplacement(match, fullElementText, project, descriptor)
         document.replaceString(repRange, rep)
         if (rep == "\\dots") {
             element.containingFile.insertUsepackage(AMSMATH)

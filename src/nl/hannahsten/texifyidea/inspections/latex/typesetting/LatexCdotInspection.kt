@@ -25,7 +25,7 @@ class LatexCdotInspection : AbstractTexifyRegexBasedInspection(
         return "\\cdot expected"
     }
 
-    override fun getReplacement(match: MatchResult, project: Project, problemDescriptor: ProblemDescriptor): String {
+    override fun getReplacement(match: MatchResult, fullElementText: String, project: Project, problemDescriptor: ProblemDescriptor): String {
         return "\\cdot"
     }
 

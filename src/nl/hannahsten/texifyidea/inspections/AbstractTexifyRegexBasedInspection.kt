@@ -44,7 +44,7 @@ abstract class AbstractTexifyRegexBasedInspection(
      * Gets the replacement string for the given match.
      */
     protected abstract fun getReplacement(
-        match: MatchResult, project: Project, problemDescriptor: ProblemDescriptor
+        match: MatchResult, fullElementText: String, project: Project, problemDescriptor: ProblemDescriptor
     ): String
 
     /**
@@ -89,7 +89,7 @@ abstract class AbstractTexifyRegexBasedInspection(
 
             val error = errorMessage(match, contexts)
             val quickFix = quickFixName(match, contexts)
-            val fix = RegexFix(quickFix, match)
+            val fix = RegexFix(quickFix, match, elementText)
 
             descriptors.add(
                 manager.createProblemDescriptor(
@@ -108,12 +108,12 @@ abstract class AbstractTexifyRegexBasedInspection(
      *
      */
     protected open fun doApplyFix(
-        project: Project, descriptor: ProblemDescriptor, match: MatchResult
+        project: Project, descriptor: ProblemDescriptor, match: MatchResult, fullElementText: String
     ) {
         val element = descriptor.psiElement
         val document = element.containingFile.document() ?: return
         val repRange = match.range.toTextRange().shiftRight(element.startOffset)
-        val rep = getReplacement(match, project, descriptor)
+        val rep = getReplacement(match, fullElementText, project, descriptor)
         document.replaceString(repRange, rep)
     }
 
@@ -123,9 +123,9 @@ abstract class AbstractTexifyRegexBasedInspection(
      * Override when overriding [doApplyFix].
      */
     protected open fun doGeneratePreview(
-        project: Project, descriptor: ProblemDescriptor, match: MatchResult,
+        project: Project, descriptor: ProblemDescriptor, match: MatchResult, fullElementText: String
     ): IntentionPreviewInfo {
-        val replacement = getReplacement(match, project, descriptor)
+        val replacement = getReplacement(match, fullElementText, project, descriptor)
         return IntentionPreviewInfo.CustomDiff(LatexFileType, match.value, replacement)
     }
 
@@ -133,17 +133,17 @@ abstract class AbstractTexifyRegexBasedInspection(
      * A local quick fix capable of applying one or multiple regex replacements.
      */
     protected inner class RegexFix(
-        private val fixName: String, val match: MatchResult
+        private val fixName: String, val match: MatchResult, val fullElementText: String
     ) : LocalQuickFix {
 
         override fun getFamilyName(): String = fixName
 
         override fun applyFix(project: Project, problemDescriptor: ProblemDescriptor) {
-            doApplyFix(project, problemDescriptor, match)
+            doApplyFix(project, problemDescriptor, match, fullElementText)
         }
 
         override fun generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo {
-            return doGeneratePreview(project, previewDescriptor, match)
+            return doGeneratePreview(project, previewDescriptor, match, fullElementText)
         }
     }
 }

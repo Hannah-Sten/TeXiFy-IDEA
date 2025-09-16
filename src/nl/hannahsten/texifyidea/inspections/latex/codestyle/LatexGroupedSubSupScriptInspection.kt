@@ -53,7 +53,7 @@ class LatexGroupedSubSupScriptInspection : AbstractTexifyRegexBasedInspection(
         return matcher.groups["content"]?.range ?: matcher.range
     }
 
-    override fun getReplacement(match: MatchResult, project: Project, problemDescriptor: ProblemDescriptor): String {
+    override fun getReplacement(match: MatchResult, fullElementText: String, project: Project, problemDescriptor: ProblemDescriptor): String {
         val content = match.groups["content"]?.value ?: ""
         val op = match.groups["subsup"]?.value ?: "_"
         return "$op{$content}"

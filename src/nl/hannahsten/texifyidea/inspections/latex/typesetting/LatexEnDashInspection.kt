@@ -23,7 +23,7 @@ class LatexEnDashInspection : AbstractTexifyRegexBasedInspection(
 
     override fun quickFixName(matcher: MatchResult, contexts: LContextSet): String = "Convert to en dash"
 
-    override fun getReplacement(match: MatchResult, project: Project, problemDescriptor: ProblemDescriptor): String {
+    override fun getReplacement(match: MatchResult, fullElementText: String, project: Project, problemDescriptor: ProblemDescriptor): String {
         return "${match.groupValues[2]}--${match.groupValues[3]}"
     }
 

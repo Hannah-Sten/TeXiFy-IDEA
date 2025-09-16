@@ -22,7 +22,7 @@ class LatexXInsteadOfTimesInspection : AbstractTexifyRegexBasedInspection(
         return "\\times expected"
     }
 
-    override fun getReplacement(match: MatchResult, project: Project, problemDescriptor: ProblemDescriptor): String {
+    override fun getReplacement(match: MatchResult, fullElementText: String, project: Project, problemDescriptor: ProblemDescriptor): String {
         return "\\times"
     }
 

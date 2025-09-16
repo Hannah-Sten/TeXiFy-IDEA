@@ -14,8 +14,6 @@ import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
-import nl.hannahsten.texifyidea.util.files.document
-import nl.hannahsten.texifyidea.util.get
 import nl.hannahsten.texifyidea.util.insertUsepackage
 import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 
@@ -56,18 +54,16 @@ class LatexVerticallyCenteredColonInspection : AbstractTexifyRegexBasedInspectio
         return !shouldInspectElement(element, lookup)
     }
 
-    override fun getReplacement(match: MatchResult, project: Project, problemDescriptor: ProblemDescriptor): String {
+    override fun getReplacement(match: MatchResult, fullElementText: String, project: Project, problemDescriptor: ProblemDescriptor): String {
         val key = Util.PATTERNS.keys.firstOrNull { match.value.replace(Util.WHITESPACE, "") == it }
         val replacement = key?.let { Util.PATTERNS[it]?.command } ?: match.value
-        val file = problemDescriptor.psiElement.containingFile
-        val doc = file.document()
-        val end = match.range.last
-        val nextChar = doc?.get(end)?.getOrNull(0)
+        val end = match.range.last + 1
+        val nextChar = fullElementText.getOrNull(end)
         return if (nextChar?.isLetter() == true) "$replacement " else replacement
     }
 
-    override fun doApplyFix(project: Project, descriptor: ProblemDescriptor, match: MatchResult) {
-        super.doApplyFix(project, descriptor, match)
+    override fun doApplyFix(project: Project, descriptor: ProblemDescriptor, match: MatchResult, fullElementText: String) {
+        super.doApplyFix(project, descriptor, match, fullElementText)
         val file = descriptor.psiElement.containingFile ?: return
         file.insertUsepackage(LatexPackage.MATHTOOLS)
     }

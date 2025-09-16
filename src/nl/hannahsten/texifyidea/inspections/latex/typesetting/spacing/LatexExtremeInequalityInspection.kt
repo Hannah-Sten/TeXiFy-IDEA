@@ -41,7 +41,7 @@ class LatexExtremeInequalityInspection : AbstractTexifyRegexBasedInspection(
         return !shouldInspectElement(element, lookup)
     }
 
-    override fun getReplacement(match: MatchResult, project: Project, problemDescriptor: ProblemDescriptor): String {
+    override fun getReplacement(match: MatchResult, fullElementText: String, project: Project, problemDescriptor: ProblemDescriptor): String {
         val rep = when (val operator = match.groups[1]!!.value) {
             "<<" -> "\\ll"
             "<<<" -> "\\lll"
@@ -58,11 +58,10 @@ class LatexExtremeInequalityInspection : AbstractTexifyRegexBasedInspection(
         }
     }
 
-    override fun doApplyFix(project: Project, descriptor: ProblemDescriptor, match: MatchResult) {
-        super.doApplyFix(project, descriptor, match)
+    override fun doApplyFix(project: Project, descriptor: ProblemDescriptor, match: MatchResult, fullElementText: String) {
+        super.doApplyFix(project, descriptor, match, fullElementText)
         val file = descriptor.psiElement.containingFile ?: return
         file.insertUsepackage(AMSSYMB)
-        return
     }
 }
 // open class LatexExtremeInequalityInspection : TexifyRegexInspection(

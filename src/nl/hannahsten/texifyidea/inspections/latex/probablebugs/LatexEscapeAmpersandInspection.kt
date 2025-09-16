@@ -33,7 +33,7 @@ class LatexEscapeAmpersandInspection : AbstractTexifyRegexBasedInspection(
         return """Escape character \ expected"""
     }
 
-    override fun getReplacement(match: MatchResult, project: Project, problemDescriptor: ProblemDescriptor): String {
+    override fun getReplacement(match: MatchResult, fullElementText: String, project: Project, problemDescriptor: ProblemDescriptor): String {
         return """\&"""
     }
 
