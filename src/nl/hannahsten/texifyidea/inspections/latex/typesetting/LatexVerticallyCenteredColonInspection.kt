@@ -61,7 +61,7 @@ class LatexVerticallyCenteredColonInspection : AbstractTexifyRegexBasedInspectio
         val replacement = key?.let { Util.PATTERNS[it]?.command } ?: match.value
         val file = problemDescriptor.psiElement.containingFile
         val doc = file.document()
-        val end = match.range.last + 1
+        val end = match.range.last
         val nextChar = doc?.get(end)?.getOrNull(0)
         return if (nextChar?.isLetter() == true) "$replacement " else replacement
     }
@@ -99,69 +99,3 @@ class LatexVerticallyCenteredColonInspection : AbstractTexifyRegexBasedInspectio
         internal val REGEX = PATTERNS.values.joinToString(prefix = "(", separator = "|", postfix = ")") { it.regex }.toRegex()
     }
 }
-// open class LatexVerticallyCenteredColonInspection1 : TexifyRegexInspection(
-//    inspectionDisplayName = "Vertically uncentered colon",
-//    inspectionId = "VerticallyCenteredColon",
-//    errorMessage = { "Colon is vertically uncentered" },
-//    highlight = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-//    pattern = Util.REGEX,
-//    mathMode = true,
-//    replacement = Util::replacement,
-//    replacementRange = { it.groupRange(0) },
-//    quickFixName = { "Change to ${Util.PATTERNS[it.group(0).replace(Util.WHITESPACE, "")]!!.command} (mathtools)" },
-//    cancelIf = { _, file ->
-//        // Per mathtools documentation, colons are automatically centered when this option is set.
-//        // It is impossible to determine whether this option is actually set (think scoping, but this option can also be
-//        // turned of with \mathtoolsset{centercolon=false})
-//        // Thus, whenever someone fiddles with this, we turn off the inspection to prevent false positives.
-//        NewCommandsIndex.getByNameInFileSet("\\mathtoolsset", file)
-//            .any { it.requiredParameterText(0)?.contains("centercolon") == true }
-//    }
-// ) {
-//
-//    internal data class Pattern(val regex: String, val command: String)
-//
-//    object Util {
-//        // Whitespace in between is matched, except for newlines (we have to draw the line somewhere...)
-//        internal val PATTERNS = mapOf(
-//            ":=" to Pattern(""":[^\S\r\n]*=""", "\\coloneqq"),
-//            "::=" to Pattern(""":[^\S\r\n]*:[^\S\r\n]*=""", "\\Coloneqq"),
-//            ":-" to Pattern(""":[^\S\r\n]*-""", "\\coloneq"),
-//            "::-" to Pattern(""":[^\S\r\n]*:[^\S\r\n]*-""", "\\Coloneq"),
-//            "=:" to Pattern("""=[^\S\r\n]*:""", "\\eqqcolon"),
-//            "=::" to Pattern("""=[^\S\r\n]*:[^\S\r\n]*:""", "\\Eqqcolon"),
-//            "-:" to Pattern("""-[^\S\r\n]*:""", "\\eqcolon"),
-//            "-::" to Pattern("""-[^\S\r\n]*:[^\S\r\n]*:""", "\\Eqcolon"),
-//            ":\\approx" to Pattern(""":[^\S\r\n]*\\approx(?![a-zA-Z])""", "\\colonapprox"),
-//            "::\\approx" to Pattern(""":[^\S\r\n]*:[^\S\r\n]*\\approx(?![a-zA-Z])""", "\\Colonapprox"),
-//            ":\\sim" to Pattern(""":[^\S\r\n]*\\sim(?![a-zA-Z])""", "\\colonsim"),
-//            "::\\sim" to Pattern(""":[^\S\r\n]*:[^\S\r\n]*\\sim(?![a-zA-Z])""", "\\Colonsim"),
-//            "::" to Pattern(""":[^\S\r\n]*:""", "\\dblcolon"),
-//        )
-//        internal val WHITESPACE = """[^\S\r\n]+""".toRegex()
-//        internal val REGEX = PATTERNS.values.joinToString(prefix = "(", separator = "|", postfix = ")") { it.regex }.toPattern()
-//        fun replacement(matcher: Matcher, file: PsiFile): String {
-//            val replacement = PATTERNS[matcher.group(0).replace(WHITESPACE, "")]!!.command
-//
-//            // If the next character would be a letter, it would mess up the command that is inserted: append a space as well
-//            if (file.document()?.get(matcher.end())?.getOrNull(0)?.isLetter() == true) {
-//                return "$replacement "
-//            }
-//
-//            return replacement
-//        }
-//    }
-//
-//    override fun applyFixes(
-//        descriptor: ProblemDescriptor,
-//        replacementRanges: List<IntRange>,
-//        replacements: List<String>,
-//        groups: List<List<String>>
-//    ) {
-//        super.applyFixes(descriptor, replacementRanges, replacements, groups)
-//
-//        // We override applyFixes instead of applyFix because all fixes need to be applied together, and only after that we insert any required package.
-//        val file = descriptor.psiElement.containingFile ?: return
-//        file.insertUsepackage(LatexPackage.MATHTOOLS)
-//    }
-// }
