@@ -66,20 +66,23 @@ abstract class AbstractTexifyRegexBasedInspection(
      *
      * @return Whether to report the found match.
      */
-    protected open fun additionalChecks(element: PsiElement, match: MatchResult): Boolean {
+    protected open fun additionalChecks(
+        element: PsiElement, match: MatchResult,
+        bundle: DefinitionBundle, file: PsiFile
+    ): Boolean {
         return true
     }
 
     override fun inspectElement(
-        element: PsiElement, contexts: LContextSet, lookup: DefinitionBundle,
+        element: PsiElement, contexts: LContextSet, bundle: DefinitionBundle,
         file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>
     ) {
         if (!isApplicableInContexts(contexts)) return
-        if (!shouldInspectElement(element, lookup)) return
+        if (!shouldInspectElement(element, bundle)) return
         val elementText = element.text
         if (elementText.isEmpty()) return
         for (match in regex.findAll(elementText)) {
-            if (!additionalChecks(element, match)) continue
+            if (!additionalChecks(element, match, bundle, file)) continue
             val highlightRange = getHighlightRange(match)
             if (highlightRange.isEmpty() || !match.range.contains(highlightRange)) continue
             val textRange = highlightRange.toTextRange()

@@ -4,6 +4,8 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.index.DefinitionBundle
 import nl.hannahsten.texifyidea.inspections.AbstractTexifyRegexBasedInspection
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
@@ -28,7 +30,7 @@ class LatexXInsteadOfTimesInspection : AbstractTexifyRegexBasedInspection(
         return "Change to \\times"
     }
 
-    override fun additionalChecks(element: PsiElement, match: MatchResult): Boolean {
+    override fun additionalChecks(element: PsiElement, match: MatchResult, bundle: DefinitionBundle, file: PsiFile): Boolean {
         // inspection only triggers when x is surrounded by whitespace and both sides are numbers
         val prev = element.findPrevAdjacentWhiteSpace()?.prevSibling
         val next = element.findNextAdjacentWhiteSpace()?.nextSibling

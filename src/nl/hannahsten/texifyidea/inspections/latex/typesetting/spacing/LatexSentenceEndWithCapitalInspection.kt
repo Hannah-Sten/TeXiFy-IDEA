@@ -3,6 +3,8 @@ package nl.hannahsten.texifyidea.inspections.latex.typesetting.spacing
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.index.DefinitionBundle
 import nl.hannahsten.texifyidea.inspections.AbstractTexifyRegexBasedInspection
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
@@ -28,7 +30,7 @@ class LatexSentenceEndWithCapitalInspection : AbstractTexifyRegexBasedInspection
         return "\\@."
     }
 
-    override fun additionalChecks(element: PsiElement, match: MatchResult): Boolean {
+    override fun additionalChecks(element: PsiElement, match: MatchResult, bundle: DefinitionBundle, file: PsiFile): Boolean {
         val nextWhiteSpace = element.findNextAdjacentWhiteSpace() ?: return false
         // Check if there is a newline in the whitespace
         return nextWhiteSpace.textContains('\n')

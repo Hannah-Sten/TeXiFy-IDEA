@@ -36,9 +36,9 @@ abstract class AbstractTexifyCommandBasedInspection(
         return true
     }
 
-    override fun inspectElement(element: PsiElement, contexts: LContextSet, lookup: DefinitionBundle, file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {
+    override fun inspectElement(element: PsiElement, contexts: LContextSet, bundle: DefinitionBundle, file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {
         if (element !is LatexCommands) return
-        inspectCommand(element, contexts, lookup, file, manager, isOnTheFly, descriptors)
+        inspectCommand(element, contexts, bundle, file, manager, isOnTheFly, descriptors)
     }
 
     /**

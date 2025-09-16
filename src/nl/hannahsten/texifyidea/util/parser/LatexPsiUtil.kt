@@ -407,6 +407,18 @@ object LatexPsiUtil {
     }
 
     /**
+     * Check if the given element is nested inside a command definition (maybe deeply).
+     */
+    fun isInsideDefinition(e: PsiElement, lookup: LatexSemanticsLookup): Boolean {
+        // unfortunately, the context does not contain enough information to determine whether we are inside a command definition as they can be overridden
+        // For example, in `\newcommand{\myref}[1]{$ \text{\ref{#1}} $}`,  `#1` only has the context, while `\ref` has context `<text>`.
+        // To improve it, we have to introduce penetrating context or conflicting context, making our context system more complex.
+        // When we find more use cases requiring advanced context system later, we can upgrade it to fit the needs
+        val introList = resolveContextIntroUpward(e, lookup, shortCircuit = false)
+        return introList.any { it.introduces(LatexContexts.InsideDefinition) }
+    }
+
+    /**
      * Traverse the given element and all its children, recording context introductions.
      * The action is executed at each element, with the current list of context introductions.
      * The list is ordered from outermost to innermost context introduction.

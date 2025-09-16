@@ -3,15 +3,16 @@ package nl.hannahsten.texifyidea.inspections.latex.probablebugs
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.index.DefinitionBundle
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.AbstractTexifyRegexBasedInspection
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 import nl.hannahsten.texifyidea.util.parser.parentOfType
-import nl.hannahsten.texifyidea.util.parser.parentsOfType
-import nl.hannahsten.texifyidea.util.parser.isDefinitionOrRedefinition
 
 class LatexEscapeHashOutsideCommandInspection : AbstractTexifyRegexBasedInspection(
     inspectionId = "EscapeHashOutsideCommand",
@@ -30,14 +31,15 @@ class LatexEscapeHashOutsideCommandInspection : AbstractTexifyRegexBasedInspecti
         return "\\#"
     }
 
+    override fun additionalChecks(element: PsiElement, match: MatchResult, bundle: DefinitionBundle, file: PsiFile): Boolean {
+        return !LatexPsiUtil.isInsideDefinition(element, bundle)
+    }
+
     override fun shouldInspectElement(element: PsiElement, lookup: LatexSemanticsLookup): Boolean {
         if (!super.shouldInspectElement(element, lookup)) return false
         // Do not inspect inside command definitions/redefinitions
-        // TODO: improve
-        if (element.parentsOfType<LatexCommands>().any { it.isDefinitionOrRedefinition() }) return false
         // Do not inspect inside URL-like commands
         val parentCmd = element.parentOfType(LatexCommands::class)
-        if (parentCmd?.name in CommandMagic.urls) return false
-        return true
+        return parentCmd?.name !in CommandMagic.urls
     }
 }

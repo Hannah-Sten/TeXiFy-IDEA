@@ -44,16 +44,7 @@ class LatexUnresolvedReferenceInspection : AbstractTexifyContextAwareInspection(
         return LatexContexts.LabelReference !in state
     }
 
-    private fun isInsideDefinition(element: PsiElement, lookup: DefinitionBundle): Boolean {
-        // unfortunately, the context does not contain enough information to determine whether we are inside a command definition as they can be overridden
-        // For example, in `\newcommand{\myref}[1]{$ \text{\ref{#1}} $}`,  `#1` only has the context, while `\ref` has context `<text>`.
-        // To improve it, we have to introduce penetrating context or conflicting context, making our context system more complex.
-        // When we find more use cases requiring advanced context system later, we can upgrade it to fit the needs
-        val introList = LatexPsiUtil.resolveContextIntroUpward(element, lookup, shortCircuit = false)
-        return introList.any { it.introduces(LatexContexts.InsideDefinition) }
-    }
-
-    override fun inspectElement(element: PsiElement, contexts: LContextSet, lookup: DefinitionBundle, file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {
+    override fun inspectElement(element: PsiElement, contexts: LContextSet, bundle: DefinitionBundle, file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {
         if(element !is LatexParameter) return
         if(!isApplicableInContexts(contexts)) return
         val parts = element.contentText().split(",")
@@ -72,7 +63,7 @@ class LatexUnresolvedReferenceInspection : AbstractTexifyContextAwareInspection(
                     return@run
                 }
                 if (!checkedInsideDefinition) {
-                    if (isInsideDefinition(element, lookup)) {
+                    if (LatexPsiUtil.isInsideDefinition(element, bundle)) {
                         return // skip all if inside definition
                     }
                     checkedInsideDefinition = true

@@ -100,7 +100,7 @@ abstract class AbstractTexifyContextAwareInspection(
      */
     abstract fun inspectElement(
         element: PsiElement, contexts: LContextSet,
-        lookup: DefinitionBundle, file: PsiFile,
+        bundle: DefinitionBundle, file: PsiFile,
         manager: InspectionManager, isOnTheFly: Boolean,
         descriptors: MutableList<ProblemDescriptor>
     )

@@ -43,10 +43,10 @@ abstract class LatexMissingImportInspectionBase(inspectionId: String) : Abstract
         return LatexProjectStructure.isProjectFilesetsAvailable(project)
     }
 
-    override fun inspectElement(element: PsiElement, contexts: LContextSet, lookup: DefinitionBundle, file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {
+    override fun inspectElement(element: PsiElement, contexts: LContextSet, bundle: DefinitionBundle, file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {
         when(element) {
-            is LatexCommands -> analyzeCommand(element, lookup, descriptors, manager, isOnTheFly)
-            is LatexEnvironment -> analyzeEnvironment(element, lookup, descriptors, manager, isOnTheFly)
+            is LatexCommands -> analyzeCommand(element, bundle, descriptors, manager, isOnTheFly)
+            is LatexEnvironment -> analyzeEnvironment(element, bundle, descriptors, manager, isOnTheFly)
         }
     }
 
