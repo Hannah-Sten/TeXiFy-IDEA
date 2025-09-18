@@ -5,61 +5,56 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.inspections.InsightGroup
-import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.lang.commands.LatexCommand
-import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
-import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
-import nl.hannahsten.texifyidea.util.files.commandsInFile
-import java.io.File
+import nl.hannahsten.texifyidea.index.DefinitionBundle
+import nl.hannahsten.texifyidea.index.pathOrNull
+import nl.hannahsten.texifyidea.inspections.AbstractTexifyCommandBasedInspection
+import nl.hannahsten.texifyidea.inspections.createDescriptor
+import nl.hannahsten.texifyidea.lang.LContextSet
+import nl.hannahsten.texifyidea.lang.LatexContextIntro
+import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.lang.SimpleFileInputContext
+import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexParameter
+import nl.hannahsten.texifyidea.psi.contentText
+import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
+import nl.hannahsten.texifyidea.util.parser.lookupCommandPsi
 
 /**
  * @author Thomas
  */
-class LatexAbsolutePathInspection : TexifyInspectionBase() {
+class LatexAbsolutePathInspection : AbstractTexifyCommandBasedInspection(
+    inspectionId = "AbsolutePath",
+    skipChildrenInContext = setOf(LatexContexts.Comment, LatexContexts.InsideDefinition)
+) {
 
-    override val inspectionGroup = InsightGroup.LATEX
+    private fun checkAbsolutePath(
+        command: LatexCommands,
+        parameter: LatexParameter, fileArg: SimpleFileInputContext,
+        manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>
+    ) {
+        if (fileArg.isAbsolutePathSupported) return
+        val fileName = parameter.contentText()
+        val path = pathOrNull(fileName) ?: return
+        if (!path.isAbsolute) return
+        val range = TextRange.from(1, fileName.length)
+        descriptors.add(
+            manager.createDescriptor(
+                parameter,
+                "No absolute path allowed here",
+                isOnTheFly = isOnTheFly,
+                highlightType = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                rangeInElement = range,
+            )
+        )
+    }
 
-    override val inspectionId = "AbsolutePath"
-
-    override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        val descriptors = descriptorList()
-
-        val commands = file.commandsInFile()
-
-        // Loop through commands of file
-        for (command in commands) {
-            // There may be multiple commands with this name, just guess the first one
-            val latexCommand = LatexCommand.lookup(command.name)?.firstOrNull() ?: continue
-
-            // Arguments from the LatexCommand (so the command as hardcoded in e.g. LatexRegularCommand)
-            val requiredArguments = latexCommand.arguments.mapNotNull { it as? RequiredArgument }
-
-            // Loop through arguments
-            for (i in command.requiredParametersText().indices) {
-                // Find the corresponding requiredArgument
-                val requiredArgument = if (i < requiredArguments.size) requiredArguments[i] else requiredArguments.lastOrNull() ?: continue
-
-                // Check if the actual argument is a file argument or continue with the next argument
-                val fileArgument = requiredArgument as? RequiredFileArgument ?: continue
-                val offset = command.text.indexOf(command.requiredParametersText()[i])
-                if (offset == -1) continue
-                val range = TextRange(0, command.requiredParametersText()[i].length).shiftRight(offset)
-
-                if (File(range.substring(command.text)).isAbsolute && !fileArgument.isAbsolutePathSupported) {
-                    descriptors.add(
-                        manager.createProblemDescriptor(
-                            command,
-                            range,
-                            "No absolute path allowed here",
-                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                            isOntheFly
-                        )
-                    )
-                }
-            }
+    override fun inspectCommand(command: LatexCommands, contexts: LContextSet, defBundle: DefinitionBundle, file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {
+        val semantics = defBundle.lookupCommandPsi(command) ?: return
+        LatexPsiUtil.processArgumentsWithSemantics(command, semantics) arg@{ param, arg ->
+            if (arg == null) return
+            val assign = arg.contextSignature as? LatexContextIntro.Assign ?: return@arg
+            val fileArg = assign.contexts.firstNotNullOfOrNull { it as? SimpleFileInputContext } ?: return@arg
+            checkAbsolutePath(command, param, fileArg, manager, isOnTheFly, descriptors)
         }
-
-        return descriptors
     }
 }
