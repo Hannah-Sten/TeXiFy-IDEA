@@ -1023,7 +1023,7 @@ object LatexProjectStructure {
      */
     fun commandFileReferenceInfo(command: LatexCommands, requestRefresh: Boolean = false): Pair<List<String>, List<Set<VirtualFile>>>? {
         val data = command.getUserData(userDataKeyFileReference)
-        if(!requestRefresh) {
+        if(!requestRefresh && !ApplicationManager.getApplication().isUnitTestMode) {
             return data?.value
         }
         if (data != null && data.isNotExpired(expirationTime)) {

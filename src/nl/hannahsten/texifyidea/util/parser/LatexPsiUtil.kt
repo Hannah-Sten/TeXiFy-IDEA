@@ -426,6 +426,14 @@ object LatexPsiUtil {
     }
 
     /**
+     * Check if the given element is the command being defined, e.g. `\hi` in case of `\newcommand{\hi}{}`.
+     */
+    fun isCommandBeingDefined(element: LatexCommands): Boolean {
+        val bundle = LatexDefinitionService.getBundleFor(element)
+        return isInsideContext(element, LatexContexts.CommandDeclaration, bundle)
+    }
+
+    /**
      * Traverse the given element and all its children, recording context introductions.
      * The action is executed at each element, with the current list of context introductions.
      * The list is ordered from outermost to innermost context introduction.

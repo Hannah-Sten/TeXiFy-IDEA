@@ -4,7 +4,6 @@ import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
@@ -45,8 +44,7 @@ class LatexFileNotFoundInspection : AbstractTexifyCommandBasedInspection(
     }
 
     override fun inspectCommand(command: LatexCommands, contexts: LContextSet, defBundle: DefinitionBundle, file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {
-        val requireRefresh = ApplicationManager.getApplication().isUnitTestMode
-        val referencesList = InputFileReference.getFileArgumentsReferences(command, requireRefresh = requireRefresh)
+        val referencesList = InputFileReference.getFileArgumentsReferences(command)
         for (reference in referencesList) {
             if (reference.refText.isNotEmpty() && reference.resolve() == null) {
                 createQuickFixes(reference, descriptors, manager, isOnTheFly)
