@@ -163,7 +163,7 @@ fun <T, R> Collection<T>.unionBy(f: (T) -> Set<R>): Set<R> {
 /**
  * Checks if this set has any intersection with the other set.
  */
-fun <T> Set<T>.existsIntersect(other: Set<T>): Boolean {
+fun <T> Set<T>.existsIntersection(other: Set<T>): Boolean {
     if(this.isEmpty() || other.isEmpty()) return false
     val (small, large) = if(this.size < other.size) this to other else other to this
     return small.any { it in large }

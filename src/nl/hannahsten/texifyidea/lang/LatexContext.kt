@@ -1,6 +1,6 @@
 package nl.hannahsten.texifyidea.lang
 
-import nl.hannahsten.texifyidea.util.existsIntersect
+import nl.hannahsten.texifyidea.util.existsIntersection
 
 /**
  * The base interface for a context so that we can provide context-specific sematic features such as autocompletion or validation.
@@ -128,7 +128,8 @@ sealed interface LatexContextIntro {
         }
 
         override fun introducesAny(candidates: LContextSet): Boolean {
-            return contexts.existsIntersect(candidates)
+            //
+            return contexts.existsIntersection(candidates)
         }
 
         override fun toString(): String {
@@ -161,7 +162,7 @@ sealed interface LatexContextIntro {
         }
 
         override fun introducesAny(candidates: LContextSet): Boolean {
-            return candidates.existsIntersect(toAdd)
+            return candidates.existsIntersection(toAdd)
         }
 
         override fun toString(): String {

@@ -38,7 +38,7 @@ import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.psi.LatexWithContextTraverser
 import nl.hannahsten.texifyidea.psi.containsKeyValuePair
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
-import nl.hannahsten.texifyidea.util.existsIntersect
+import nl.hannahsten.texifyidea.util.existsIntersection
 import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
 import nl.hannahsten.texifyidea.util.parser.traverse
 
@@ -100,7 +100,7 @@ abstract class AbstractTexifyContextAwareInspection(
         val applicableContexts = this.applicableContexts
         if (applicableContexts != null) {
             // Only inspect if at least one of the applicable contexts is present, namely the intersection is non-empty.
-            if(!applicableContexts.existsIntersect(contexts)) return false
+            if(!applicableContexts.existsIntersection(contexts)) return false
         }
         val excludedContexts = this.excludedContexts
         return excludedContexts.isEmpty() || !contexts.any { it in excludedContexts }
@@ -155,7 +155,7 @@ abstract class AbstractTexifyContextAwareInspection(
             if (!isFileApplicable(file, defBundle)) return@track null
 
             val traverser = InspectionTraverser(
-                manager, isOnTheFly, defBundle, file, LatexContexts.baseContexts, skipChildrenInContext
+                manager, isOnTheFly, defBundle, file, LatexContexts.baseContexts
             )
             val result = traverser.doInspect(file)
             if (result.isEmpty()) ProblemDescriptor.EMPTY_ARRAY else result.toTypedArray()
@@ -199,7 +199,6 @@ abstract class AbstractTexifyContextAwareInspection(
     protected inner class InspectionTraverser(
         private val manager: InspectionManager, private val isOnTheFly: Boolean,
         val bundle: DefinitionBundle, val file: PsiFile,
-        val skipChildrenInContext: LContextSet,
         baseContexts: LContextSet
     ) : LatexWithContextTraverser(baseContexts, bundle) {
 
