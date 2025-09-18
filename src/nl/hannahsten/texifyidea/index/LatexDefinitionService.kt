@@ -549,7 +549,7 @@ class LatexDefinitionService(
             return CompositeOverridingDefinitionBundle(list)
         }
 
-        private fun getBundleFor(element: PsiElement): DefinitionBundle {
+        fun getBundleFor(element: PsiElement): DefinitionBundle {
             val file = element.containingFile ?: return LatexLibraryDefinitionService.predefinedBaseLibBundle
             return getInstance(file.project).getDefBundlesMerged(file)
         }

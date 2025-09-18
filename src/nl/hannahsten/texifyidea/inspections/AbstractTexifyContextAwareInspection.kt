@@ -67,7 +67,14 @@ abstract class AbstractTexifyContextAwareInspection(
      *
      * Note that comment is always excluded.
      */
-    val excludedContexts: LContextSet
+    val excludedContexts: LContextSet,
+    /**
+     * The contexts in which all the children should not be skipped.
+     * By default, children inside comments are skipped.
+     *
+     * For example, "reference not found" inspection should additionally skip children inside definitions.
+     */
+    val skipChildrenInContext: LContextSet
 ) : LocalInspectionTool() {
 
     /**
@@ -148,7 +155,7 @@ abstract class AbstractTexifyContextAwareInspection(
             if (!isFileApplicable(file, defBundle)) return@track null
 
             val traverser = InspectionTraverser(
-                manager, isOnTheFly, defBundle, file, LatexContexts.baseContexts
+                manager, isOnTheFly, defBundle, file, LatexContexts.baseContexts, skipChildrenInContext
             )
             val result = traverser.doInspect(file)
             if (result.isEmpty()) ProblemDescriptor.EMPTY_ARRAY else result.toTypedArray()
@@ -192,6 +199,7 @@ abstract class AbstractTexifyContextAwareInspection(
     protected inner class InspectionTraverser(
         private val manager: InspectionManager, private val isOnTheFly: Boolean,
         val bundle: DefinitionBundle, val file: PsiFile,
+        val skipChildrenInContext: LContextSet,
         baseContexts: LContextSet
     ) : LatexWithContextTraverser(baseContexts, bundle) {
 
@@ -200,7 +208,9 @@ abstract class AbstractTexifyContextAwareInspection(
         private var isSuppressedNext: Boolean = false
 
         override fun enterContextIntro(intro: LatexContextIntro): WalkAction {
-            if(intro.introduces(LatexContexts.Comment)) return WalkAction.SKIP_CHILDREN
+            if(intro.introducesAny(skipChildrenInContext)) {
+                return WalkAction.SKIP_CHILDREN
+            }
             return super.enterContextIntro(intro)
         }
 

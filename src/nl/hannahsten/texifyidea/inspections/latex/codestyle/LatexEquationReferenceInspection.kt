@@ -10,7 +10,6 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.util.findParentOfType
 import nl.hannahsten.texifyidea.index.DefinitionBundle
 import nl.hannahsten.texifyidea.inspections.AbstractTexifyCommandBasedInspection
-import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.createDescriptor
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
@@ -25,7 +24,6 @@ import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 
 class LatexEquationReferenceInspection : AbstractTexifyCommandBasedInspection(
     inspectionId = "EquationReference",
-    inspectionGroup = InsightGroup.LATEX
 ) {
     override fun inspectCommand(
         command: LatexCommands, contexts: LContextSet,

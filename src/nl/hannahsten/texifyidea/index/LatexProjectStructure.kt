@@ -1021,14 +1021,19 @@ object LatexProjectStructure {
      *
      * @see nl.hannahsten.texifyidea.reference.InputFileReference
      */
-    fun commandFileReferenceInfo(command: LatexCommands, project: Project = command.project): Pair<List<String>, List<Set<VirtualFile>>>? {
+    fun commandFileReferenceInfo(command: LatexCommands, requestRefresh: Boolean = false): Pair<List<String>, List<Set<VirtualFile>>>? {
         val data = command.getUserData(userDataKeyFileReference)
+        if(!requestRefresh) {
+            return data?.value
+        }
         if (data != null && data.isNotExpired(expirationTime)) {
             // If the data is already computed and not expired, return it
             return data.value
         }
+        val containingFile = command.containingFile
+        val project = containingFile.project
         val projectFS = getFilesets(project) // call for an update if needed
-        val root = command.containingFile.virtualFile ?: return null
+        val root = containingFile.virtualFile ?: return null
         if (projectFS == null || root in projectFS.mapping || !ProjectFileIndex.getInstance(project).isInProject(root)) {
             // if the file is already in the mapping, we should totally rely on the computed data
             return data?.value

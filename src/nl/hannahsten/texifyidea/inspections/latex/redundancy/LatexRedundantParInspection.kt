@@ -7,7 +7,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
 import nl.hannahsten.texifyidea.index.DefinitionBundle
-import nl.hannahsten.texifyidea.inspections.InsightGroup.LATEX
 import nl.hannahsten.texifyidea.inspections.AbstractTexifyCommandBasedInspection
 import nl.hannahsten.texifyidea.inspections.createDescriptor
 import nl.hannahsten.texifyidea.lang.LContextSet
@@ -18,8 +17,7 @@ import nl.hannahsten.texifyidea.util.parser.findNextAdjacentWhiteSpace
 import nl.hannahsten.texifyidea.util.parser.findPrevAdjacentWhiteSpace
 
 class LatexRedundantParInspection : AbstractTexifyCommandBasedInspection(
-    inspectionId = "RedundantPar",
-    inspectionGroup = LATEX,
+    inspectionId = "RedundantPar"
 ) {
 
     override fun inspectCommand(command: LatexCommands, contexts: LContextSet, defBundle: DefinitionBundle, file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {

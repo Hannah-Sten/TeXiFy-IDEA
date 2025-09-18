@@ -9,6 +9,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.index.DefinitionBundle
 import nl.hannahsten.texifyidea.lang.LContextSet
+import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.psi.LatexCommands
@@ -25,9 +26,9 @@ abstract class AbstractTexifyCommandBasedInspection(
     inspectionId: String,
     applicableContexts: LContextSet? = null,
     excludedContexts: LContextSet = emptySet(),
-    inspectionGroup: InsightGroup = InsightGroup.LATEX,
+    skipChildrenInContext: LContextSet = setOf(LatexContexts.Comment),
 ) :
-    AbstractTexifyContextAwareInspection(inspectionGroup, inspectionId, applicableContexts, excludedContexts) {
+    AbstractTexifyContextAwareInspection(InsightGroup.LATEX, inspectionId, applicableContexts, excludedContexts, skipChildrenInContext) {
 
     override fun shouldInspectChildrenOf(element: PsiElement, state: LContextSet, lookup: LatexSemanticsLookup): Boolean {
         // if there cannot be commands inside, do not inspect children

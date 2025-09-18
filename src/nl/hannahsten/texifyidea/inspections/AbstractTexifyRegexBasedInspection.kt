@@ -15,6 +15,7 @@ import com.intellij.psi.util.startOffset
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.index.DefinitionBundle
 import nl.hannahsten.texifyidea.lang.LContextSet
+import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.util.*
@@ -29,8 +30,9 @@ abstract class AbstractTexifyRegexBasedInspection(
     val highlight: ProblemHighlightType = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
     applicableContexts: LContextSet? = null,
     excludedContexts: LContextSet = emptySet(),
+    skipChildrenInContext: LContextSet = setOf(LatexContexts.Comment),
     inspectionGroup: InsightGroup = InsightGroup.LATEX,
-) : AbstractTexifyContextAwareInspection(inspectionGroup, inspectionId, applicableContexts, excludedContexts) {
+) : AbstractTexifyContextAwareInspection(inspectionGroup, inspectionId, applicableContexts, excludedContexts, skipChildrenInContext) {
 
     protected abstract fun errorMessage(matcher: MatchResult, context: LContextSet): String
 
@@ -158,6 +160,7 @@ abstract class AbstractTexifyWholeFileRegexBasedInspection(
     highlight: ProblemHighlightType = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
     applicableContexts: LContextSet? = null,
     excludedContexts: LContextSet = emptySet(),
+    skipChildrenInContext: LContextSet = setOf(LatexContexts.Comment),
     inspectionGroup: InsightGroup = InsightGroup.LATEX,
 ) : AbstractTexifyRegexBasedInspection(
     inspectionId,
@@ -165,6 +168,7 @@ abstract class AbstractTexifyWholeFileRegexBasedInspection(
     highlight,
     applicableContexts,
     excludedContexts,
+    skipChildrenInContext,
     inspectionGroup
 ) {
 

@@ -217,10 +217,6 @@ object LatexPsiUtil {
         return cmd.nextContextualSibling { true } as? LatexCommands
     }
 
-    fun isInsideDefinition(cmd: LatexComposite): Boolean {
-        return isInsideNewCommandDef(cmd) || isInsidePlainDef(cmd)
-    }
-
     /**
      * Check if the command is inside a definition command as a parameter, like `\newcommand{\cmd}{}`.
      */
@@ -235,7 +231,7 @@ object LatexPsiUtil {
         return defCommand.firstParameter() === parentParameter // they should be exactly the same object
     }
 
-    private fun isInsidePlainDef(cmd: LatexComposite): Boolean {
+    private fun isInsidePlainDef(cmd: PsiElement): Boolean {
         // \def\cmd\something
         val prevCmd = cmd.prevContextualSibling { it is LatexCommands } as? LatexCommands ?: return false
         if (prevCmd.name !in CommandMagic.definitions) return false
@@ -414,8 +410,19 @@ object LatexPsiUtil {
         // For example, in `\newcommand{\myref}[1]{$ \text{\ref{#1}} $}`,  `#1` only has the context, while `\ref` has context `<text>`.
         // To improve it, we have to introduce penetrating context or conflicting context, making our context system more complex.
         // When we find more use cases requiring advanced context system later, we can upgrade it to fit the needs
+        if(isInsidePlainDef(e)) {
+            return true
+        }
         val introList = resolveContextIntroUpward(e, lookup, shortCircuit = false)
         return introList.any { it.introduces(LatexContexts.InsideDefinition) }
+    }
+
+    /**
+     * Check if the given element is nested inside a command definition (maybe deeply).
+     */
+    fun isInsideDefinition(element: PsiElement): Boolean {
+        val bundle = LatexDefinitionService.getBundleFor(element)
+        return isInsideDefinition(element, bundle)
     }
 
     /**

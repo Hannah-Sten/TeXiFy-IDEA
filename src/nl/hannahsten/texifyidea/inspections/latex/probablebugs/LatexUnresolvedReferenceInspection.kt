@@ -18,7 +18,6 @@ import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexParameter
 import nl.hannahsten.texifyidea.psi.contentText
 import nl.hannahsten.texifyidea.reference.LatexLabelParameterReference
-import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 import java.lang.Integer.max
 import java.util.*
 
@@ -29,7 +28,8 @@ class LatexUnresolvedReferenceInspection : AbstractTexifyContextAwareInspection(
     inspectionId = "UnresolvedReference",
     inspectionGroup = InsightGroup.LATEX,
     applicableContexts = setOf(LatexContexts.LabelReference, LatexContexts.CitationReference),
-    excludedContexts = setOf(LatexContexts.InsideDefinition, LatexContexts.Preamble)
+    excludedContexts = setOf(LatexContexts.InsideDefinition, LatexContexts.Preamble),
+    skipChildrenInContext = setOf(LatexContexts.Comment, LatexContexts.InsideDefinition)
 ) {
 
     override val outerSuppressionScopes = EnumSet.of(MagicCommentScope.COMMAND, MagicCommentScope.GROUP)!!
@@ -49,7 +49,6 @@ class LatexUnresolvedReferenceInspection : AbstractTexifyContextAwareInspection(
         if(!isApplicableInContexts(contexts)) return
         val parts = element.contentText().split(",")
         var offset = 1 // account for {[(
-        var checkedInsideDefinition = false
         for (part in parts) {
             val label = part.trim()
             run {
@@ -61,12 +60,6 @@ class LatexUnresolvedReferenceInspection : AbstractTexifyContextAwareInspection(
                 }
                 if (NewBibtexEntryIndex.existsByNameInFileSet(part, file)) {
                     return@run
-                }
-                if (!checkedInsideDefinition) {
-                    if (LatexPsiUtil.isInsideDefinition(element, bundle)) {
-                        return // skip all if inside definition
-                    }
-                    checkedInsideDefinition = true
                 }
                 descriptors.add(
                     manager.createProblemDescriptor(

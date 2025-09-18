@@ -33,7 +33,10 @@ import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
  */
 abstract class LatexMissingImportInspectionBase(inspectionId: String) : AbstractTexifyContextAwareInspection(
     InsightGroup.LATEX,
-    inspectionId, null, emptySet()
+    inspectionId,
+    applicableContexts = null,
+    excludedContexts = emptySet(),
+    skipChildrenInContext = setOf(LatexContexts.Comment)
 ) {
     override fun isAvailableForFile(file: PsiFile): Boolean {
         if (!TexifySettings.getState().automaticDependencyCheck) {
@@ -44,7 +47,7 @@ abstract class LatexMissingImportInspectionBase(inspectionId: String) : Abstract
     }
 
     override fun inspectElement(element: PsiElement, contexts: LContextSet, bundle: DefinitionBundle, file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {
-        when(element) {
+        when (element) {
             is LatexCommands -> analyzeCommand(element, bundle, descriptors, manager, isOnTheFly)
             is LatexEnvironment -> analyzeEnvironment(element, bundle, descriptors, manager, isOnTheFly)
         }

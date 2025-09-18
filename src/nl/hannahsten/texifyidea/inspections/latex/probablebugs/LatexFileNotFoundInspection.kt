@@ -4,19 +4,21 @@ import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.createSmartPointer
+import nl.hannahsten.texifyidea.index.DefinitionBundle
 import nl.hannahsten.texifyidea.index.LatexProjectStructure
-import nl.hannahsten.texifyidea.inspections.InsightGroup
-import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
+import nl.hannahsten.texifyidea.inspections.AbstractTexifyCommandBasedInspection
+import nl.hannahsten.texifyidea.lang.LContextSet
+import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.traverseCommands
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.ui.CreateFileDialog
 import nl.hannahsten.texifyidea.util.*
@@ -24,48 +26,32 @@ import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.getFileExtension
 import nl.hannahsten.texifyidea.util.files.writeToFileUndoable
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.parser.parentsOfType
 import java.util.*
 
 /**
  * @author Hannah Schellekens
  */
-open class LatexFileNotFoundInspection : TexifyInspectionBase() {
-
-    override val inspectionGroup = InsightGroup.LATEX
-
-    override val inspectionId = "FileNotFound"
+class LatexFileNotFoundInspection : AbstractTexifyCommandBasedInspection(
+    inspectionId = "FileNotFound",
+    skipChildrenInContext = setOf(
+        LatexContexts.Comment, LatexContexts.InsideDefinition
+    )
+) {
 
     override val outerSuppressionScopes = EnumSet.of(MagicCommentScope.GROUP)!!
 
-    override fun getDisplayName() = "File not found"
+    override fun isAvailableForFile(file: PsiFile): Boolean {
+        return LatexProjectStructure.isProjectFilesetsAvailable(file.project)
+    }
 
-    override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        if(!LatexProjectStructure.isProjectFilesetsAvailable(file.project)) {
-            // Let us wait until the project filesets are available.
-            return emptyList()
-        }
-        val descriptors = descriptorList()
-
-        // Get commands of this file.
-        val commands = file.traverseCommands()
-
-        // Loop through commands of file
-        for (command in commands) {
-            // Don't resolve references in command definitions, as in \cite{#1} the #1 is not a reference
-            if (command.parent?.parentsOfType(LatexCommands::class)?.any { it.name in CommandMagic.commandDefinitionsAndRedefinitions } == true) {
-                continue
-            }
-
-            val referencesList = InputFileReference.getFileArgumentsReferences(command)
-            for (reference in referencesList) {
-                if (reference.refText.isNotEmpty() && reference.resolve() == null) {
-                    createQuickFixes(reference, descriptors, manager, isOntheFly)
-                }
+    override fun inspectCommand(command: LatexCommands, contexts: LContextSet, defBundle: DefinitionBundle, file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {
+        val requireRefresh = ApplicationManager.getApplication().isUnitTestMode
+        val referencesList = InputFileReference.getFileArgumentsReferences(command, requireRefresh = requireRefresh)
+        for (reference in referencesList) {
+            if (reference.refText.isNotEmpty() && reference.resolve() == null) {
+                createQuickFixes(reference, descriptors, manager, isOnTheFly)
             }
         }
-
-        return descriptors
     }
 
     private fun createQuickFixes(reference: InputFileReference, descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager, isOntheFly: Boolean) {

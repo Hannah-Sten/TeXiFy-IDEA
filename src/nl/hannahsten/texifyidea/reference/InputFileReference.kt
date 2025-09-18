@@ -98,10 +98,10 @@ class InputFileReference(
         /**
          * Get files included by this command built from the fileset information in the project structure.
          */
-        fun getIncludedFiles(command: LatexCommands, includePackages: Boolean = true): List<PsiFile> {
-            val proj = command.project
-            val refInfo = LatexProjectStructure.commandFileReferenceInfo(command, proj) ?: return emptyList()
-            return findValidPSIFiles(refInfo.second.flatten(), proj)
+        fun getIncludedFiles(command: LatexCommands, includePackages: Boolean = true, requireRefresh: Boolean = false): List<PsiFile> {
+            val refInfo = LatexProjectStructure.commandFileReferenceInfo(command, requireRefresh) ?: return emptyList()
+            if(refInfo.first.isEmpty()) return emptyList()
+            return findValidPSIFiles(refInfo.second.flatten(), command.project)
         }
 
         /**
@@ -110,8 +110,9 @@ class InputFileReference(
          *
          * Use this instead of command.references.filterIsInstance<InputFileReference>(), to avoid resolving references of types that will not be needed.
          */
-        fun getFileArgumentsReferences(commands: LatexCommands): List<InputFileReference> {
-            val rawInfo = LatexProjectStructure.commandFileReferenceInfo(commands)
+        fun getFileArgumentsReferences(commands: LatexCommands, requireRefresh: Boolean = false): List<InputFileReference> {
+            val rawInfo = LatexProjectStructure.commandFileReferenceInfo(commands, requireRefresh) ?: return emptyList()
+            if(rawInfo.first.isEmpty()) return emptyList()
             val refInfoMap = recoverTextRanges(commands, rawInfo)
             return refInfoMap.map { (text, range, files) ->
                 InputFileReference(commands, text, range, files)
