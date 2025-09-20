@@ -253,6 +253,14 @@ inline fun LatexCommandWithParams.forEachParameter(
     forEachDirectChildTyped<LatexParameter>(action)
 }
 
+inline fun LatexCommandWithParams.forEachRequiredParameter(
+    action: (LatexRequiredParam) -> Unit
+) {
+    forEachParameter {
+        it.requiredParam?.let { param -> action(param) }
+    }
+}
+
 private fun PsiElement.getParameterTexts0(): Sequence<LatexParameterText> {
     return this.traversePruneIf { it is LatexCommandWithParams }.filterIsInstance<LatexParameterText>()
 }
@@ -272,6 +280,10 @@ fun LatexParameter.contentText(): String {
         return stripContentText(it.text, '(', ')')
     }
     return text
+}
+
+fun LatexRequiredParam.contentText(): String {
+    return stripContentText(text, '{', '}')
 }
 
 fun stripContentText(text: String, prefix: Char, suffix: Char): String {
