@@ -10,6 +10,7 @@ import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.index.DefinitionBundle
 import nl.hannahsten.texifyidea.inspections.AbstractTexifyCommandBasedInspection
 import nl.hannahsten.texifyidea.lang.LContextSet
+import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.contentText
@@ -26,7 +27,8 @@ import java.util.*
  * See [LatexNoExtensionInspection].
  */
 class LatexRequiredExtensionInspection : AbstractTexifyCommandBasedInspection(
-    inspectionId = "RequiredExtension"
+    inspectionId = "RequiredExtension",
+    skipChildrenInContext = setOf(LatexContexts.Comment, LatexContexts.InsideDefinition)
 ) {
     override val outerSuppressionScopes: Set<MagicCommentScope>
         get() = EnumSet.of(MagicCommentScope.GROUP)
