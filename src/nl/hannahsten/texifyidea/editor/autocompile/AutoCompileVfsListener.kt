@@ -4,6 +4,7 @@ import com.intellij.openapi.application.EDT
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.vfs.AsyncFileListener
 import com.intellij.openapi.vfs.AsyncFileListener.ChangeApplier
+import com.intellij.openapi.vfs.NonPhysicalFileSystem
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent
 import com.intellij.openapi.wm.WindowManager
 import kotlinx.coroutines.Dispatchers
@@ -20,7 +21,7 @@ import nl.hannahsten.texifyidea.util.TexifyCoroutine
 class AutoCompileVfsListener : AsyncFileListener {
 
     override fun prepareChange(events: MutableList<out VFileEvent>): ChangeApplier? {
-        if (TexifySettings.getState().autoCompileOption != TexifySettings.AutoCompile.AFTER_DOCUMENT_SAVE || !events.any { it.file?.fileType == LatexFileType }) return null
+        if (TexifySettings.getState().autoCompileOption != TexifySettings.AutoCompile.AFTER_DOCUMENT_SAVE || !events.any { it.file?.fileType == LatexFileType && it.file?.fileSystem !is NonPhysicalFileSystem }) return null
         return object : ChangeApplier {
             override fun afterVfsChange() {
                 super.afterVfsChange()
