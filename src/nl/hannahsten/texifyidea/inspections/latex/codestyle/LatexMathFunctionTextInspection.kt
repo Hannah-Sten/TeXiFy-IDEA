@@ -7,67 +7,70 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
-import com.intellij.psi.SmartPointerManager
-import com.intellij.psi.SmartPsiElementPointer
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.inspections.InsightGroup
-import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
+import nl.hannahsten.texifyidea.inspections.AbstractTexifyCommandBasedInspection
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
-import nl.hannahsten.texifyidea.util.parser.inMathContext
+import nl.hannahsten.texifyidea.index.DefinitionBundle
+import nl.hannahsten.texifyidea.lang.LContextSet
+import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.psi.nameWithoutSlash
 
 /**
  * @author Hannah Schellekens
  */
-open class LatexMathFunctionTextInspection : TexifyInspectionBase() {
+class LatexMathFunctionTextInspection : AbstractTexifyCommandBasedInspection(
+    inspectionId = "MathFunctionText",
+    applicableContexts = setOf(LatexContexts.Math)
+) {
 
-    override val inspectionGroup = InsightGroup.LATEX
+    private val affectedCommands = CommandMagic.slashlessMathOperators.asSequence()
+        .map { it.command }
+        .toSet()
 
     override fun getDisplayName() = "Use math function instead of \\text"
 
-    override val inspectionId = "MathFunctionText"
-
-    override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
-        val descriptors = descriptorList()
-
-        file.commandsInFile("\\text").asSequence()
-            .filter { it.inMathContext() }
-            .filter { it.requiredParameterText(0)?.trim() in affectedCommands }
-            .forEach { affectedTextCommand ->
-                descriptors.add(
-                    manager.createProblemDescriptor(
-                        affectedTextCommand,
-                        "Use math function instead of \\text",
-                        MathFunctionFix(SmartPointerManager.createPointer(affectedTextCommand)),
-                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                        isOntheFly
-                    )
-                )
-            }
-
-        return descriptors
+    override fun inspectCommand(
+        command: LatexCommands,
+        contexts: LContextSet,
+        defBundle: DefinitionBundle,
+        file: PsiFile,
+        manager: InspectionManager,
+        isOnTheFly: Boolean,
+        descriptors: MutableList<ProblemDescriptor>
+    ) {
+        val name = command.nameWithoutSlash ?: return
+        if (name != "text") return
+        if (!isApplicableInContexts(contexts)) return
+        val param = command.requiredParameterText(0)?.trim() ?: return
+        if (param !in affectedCommands) return
+        descriptors.add(
+            manager.createProblemDescriptor(
+                command,
+                "Use math function instead of \\text",
+                MathFunctionFix(),
+                ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                isOnTheFly
+            )
+        )
     }
 
-    /**
-     * @author Hannah Schellekens
-     */
-    private class MathFunctionFix(val textCommandPointer: SmartPsiElementPointer<LatexCommands>) : LocalQuickFix {
-
+    private class MathFunctionFix : LocalQuickFix {
         override fun getFamilyName() = "Convert to math function"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            val textCommand = textCommandPointer.element ?: return
+            val textCommand = descriptor.psiElement as? LatexCommands ?: return
             val mathFunction = extractFunction(textCommand) ?: return
+            if (textCommand.parameterList.isEmpty()) return
             textCommand.node.removeChild(textCommand.parameterList[0].node)
             val newCmdToken = LatexPsiHelper(project).createFromText(mathFunction).firstChild.findFirstChildTyped<LatexCommands>()?.commandToken ?: return
             textCommand.node.replaceChild(textCommand.commandToken.node, newCmdToken.node)
         }
 
         override fun generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo {
-            val textCommand = textCommandPointer.element ?: return IntentionPreviewInfo.EMPTY
+            val textCommand = previewDescriptor.psiElement as? LatexCommands ?: return IntentionPreviewInfo.EMPTY
             val functionText = extractFunction(textCommand) ?: return IntentionPreviewInfo.EMPTY
             return IntentionPreviewInfo.CustomDiff(LatexFileType, textCommand.text, functionText)
         }
@@ -76,8 +79,4 @@ open class LatexMathFunctionTextInspection : TexifyInspectionBase() {
             return textCommandElement.requiredParameterText(0)?.trim()?.let { "\\$it" }
         }
     }
-
-    private val affectedCommands = CommandMagic.slashlessMathOperators.asSequence()
-        .map { it.command }
-        .toSet()
 }
