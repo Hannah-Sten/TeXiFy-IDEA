@@ -9,7 +9,6 @@ import nl.hannahsten.texifyidea.index.DefinitionBundle
 import nl.hannahsten.texifyidea.inspections.AbstractTexifyEnvironmentBasedInspection
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LatexLib
-import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSMATH
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.getEnvironmentName

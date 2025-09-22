@@ -21,7 +21,6 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.startOffsetInAncestor
 import nl.hannahsten.texifyidea.util.replaceString
 import java.util.*
-import kotlin.collections.get
 
 /**
  * @author Sten Wessel
