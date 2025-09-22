@@ -30,7 +30,6 @@ import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.hasLabel
 import org.jetbrains.annotations.Nls
-import java.util.*
 
 /**
  * Check for commands which should have a label but don't.
