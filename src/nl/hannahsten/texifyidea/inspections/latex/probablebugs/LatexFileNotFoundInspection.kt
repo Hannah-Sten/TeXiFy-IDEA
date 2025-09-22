@@ -104,7 +104,7 @@ class LatexFileNotFoundInspection : AbstractTexifyCommandBasedInspection(
             val cmd = descriptor.psiElement
             val element = elementPointer.element ?: return
             val file = cmd.containingFile ?: return
-            val root = file.findRootFile(useIndexCache = false).containingDirectory?.virtualFile?.canonicalPath ?: return
+            val root = file.findRootFile().containingDirectory?.virtualFile?.canonicalPath ?: return
 
             // Display a dialog to ask for the location and name of the new file.
             // By default, all inclusion paths are relative to the main file

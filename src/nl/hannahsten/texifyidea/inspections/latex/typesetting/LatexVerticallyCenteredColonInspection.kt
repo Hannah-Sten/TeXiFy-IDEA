@@ -68,7 +68,7 @@ class LatexVerticallyCenteredColonInspection : AbstractTexifyRegexBasedInspectio
         file.insertUsepackage(LatexPackage.MATHTOOLS)
     }
 
-    override fun isFileApplicable(file: PsiFile, bundle: DefinitionBundle): Boolean {
+    override fun prepareInspectionForFile(file: PsiFile, bundle: DefinitionBundle): Boolean {
         val hasCenterColon = NewCommandsIndex.getByNameInFileSet("\\mathtoolsset", file)
             .any { it.requiredParameterText(0)?.contains("centercolon") == true }
         return !hasCenterColon

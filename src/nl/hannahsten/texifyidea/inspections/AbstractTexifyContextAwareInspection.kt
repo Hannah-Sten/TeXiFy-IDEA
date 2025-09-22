@@ -152,7 +152,7 @@ abstract class AbstractTexifyContextAwareInspection(
             if (isFileSuppressed(file)) return@track null
 
             val defBundle = LatexDefinitionService.getInstance(file.project).getDefBundlesMerged(file)
-            if (!isFileApplicable(file, defBundle)) return@track null
+            if (!prepareInspectionForFile(file, defBundle)) return@track null
 
             val traverser = InspectionTraverser(
                 manager, isOnTheFly, defBundle, file, LatexContexts.baseContexts
@@ -169,7 +169,7 @@ abstract class AbstractTexifyContextAwareInspection(
      *
      * @see isAvailableForFile
      */
-    protected open fun isFileApplicable(file: PsiFile, bundle: DefinitionBundle): Boolean {
+    protected open fun prepareInspectionForFile(file: PsiFile, bundle: DefinitionBundle): Boolean {
         return true
     }
 

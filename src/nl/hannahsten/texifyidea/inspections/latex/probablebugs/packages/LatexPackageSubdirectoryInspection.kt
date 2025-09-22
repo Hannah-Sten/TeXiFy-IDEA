@@ -31,7 +31,7 @@ class LatexPackageSubdirectoryInspection : TexifyInspectionBase() {
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val dir = file.containingDirectory ?: return emptyList()
-        val rootDir = file.findRootFile(useIndexCache = false).containingDirectory ?: return emptyList()
+        val rootDir = file.findRootFile().containingDirectory ?: return emptyList()
         val subDir = dir.toString().removePrefix(rootDir.toString()).removePrefix(File.separator).replace(File.separatorChar, '/')
 
         val commands = file.collectSubtreeTyped<LatexCommands> { it.name == LatexGenericRegularCommand.PROVIDESPACKAGE.commandWithSlash }
