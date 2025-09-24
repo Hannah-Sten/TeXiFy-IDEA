@@ -43,11 +43,13 @@ object PredefinedCmdFiles : PredefinedCommandSet() {
         )
     )
 
+    val cmdDocumentClass: LSemanticCommand
+
     val basicFileInputCommands: List<LSemanticCommand> = buildCommands {
         // Most file inputs are in preamble, but can be adjusted per command if needed.
         val name = required("name", LatexContexts.Identifier)
         underContext(LatexContexts.Preamble) {
-            "documentclass".cmd(
+            cmdDocumentClass = "documentclass".cmd(
                 "options".optional(LatexContexts.Literal),
                 classArgument
             ) {
@@ -95,7 +97,7 @@ object PredefinedCmdFiles : PredefinedCommandSet() {
 
     // Predefine additional file input contexts if needed, based on common file types.
     // These can be moved to LatexContext.kt if they are reusable across multiple command sets.
-    private val GRAPHICS_EXTENSIONS = setOf("pdf", "jpg", "jpeg", "png", "eps", "bmp", "gif", "tiff")
+    private val GRAPHICS_EXTENSIONS = setOf("pdf", "png", "jpg", "mps", "jpeg", "jbig2", "jb2", "PDF", "PNG", "JPG", "JPEG", "JBIG2", "JB2", "eps", "bmp", "gif", "tiff")
     private val PICTURE_FILE = SimpleFileInputContext(
         "file.picture",
         isCommaSeparated = false,

@@ -3,6 +3,7 @@
 package nl.hannahsten.texifyidea.util.magic
 
 import com.intellij.ui.Gray
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.lang.commands.LatexBiblatexCommand.*
@@ -371,6 +372,7 @@ object CommandMagic {
     val graphicPathsCommandNames = graphicPathsCommands.map { it.name }.toSet()
 
     val graphicPackages = graphicPathsCommands.mapTo(mutableSetOf()) { it.dependency }.also { it.remove(LatexPackage.DEFAULT) }
+    val graphicLibs: Set<LatexLib> = setOf(LatexLib.GRAPHICX, LatexLib.SVG)
 
     /**
      * Commands that should not have the given file extensions.

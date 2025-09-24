@@ -30,13 +30,15 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.file.LatexSourceFileType
 import nl.hannahsten.texifyidea.file.StyleFileType
 import nl.hannahsten.texifyidea.index.file.LatexRegexBasedIndex
+import nl.hannahsten.texifyidea.lang.LatexContextIntro
 import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SUBFILES
-import nl.hannahsten.texifyidea.lang.commands.LatexCommand
+import nl.hannahsten.texifyidea.lang.SimpleFileInputContext
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
-import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
+import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.nameWithSlash
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.AbstractBlockingCacheService
 import nl.hannahsten.texifyidea.util.CacheValueTimed
@@ -52,7 +54,6 @@ import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
 import nl.hannahsten.texifyidea.util.getTexinputsPaths
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
-import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.projectSearchScope
 import nl.hannahsten.texifyidea.util.unionBy
 import java.io.File
@@ -210,12 +211,12 @@ class LatexLibraryStructureService(
     companion object {
         val performanceTracker = SimplePerformanceTracker()
 
-        private val libraryCommandNameToExt: Map<String, String> = buildMap {
-            put("\\usepackage", ".sty")
-            put("\\RequirePackage", ".sty")
-            put("\\documentclass", ".cls")
-            put("\\LoadClass", ".cls")
-        }
+        private val libraryCommandNameToExt: Map<String, String> = mapOf(
+            "\\usepackage" to ".sty",
+            "\\RequirePackage" to ".sty",
+            "\\documentclass" to ".cls",
+            "\\LoadClass" to ".cls"
+        )
 
         // never expire unless invalidated manually
         private val LIBRARY_FILESET_EXPIRATION_TIME = Duration.INFINITE
@@ -347,6 +348,11 @@ object LatexProjectStructure {
             Pair<List<String>, List<Set<VirtualFile>>> // List of pairs of original text and set of files in order
             >
         >("latex.command.reference.files")
+
+    const val CMD_DOCUMENT_CLASS = "\\documentclass"
+    const val CMD_ADD_TO_LUATEX_PATH = "\\addtoluatexpath"
+    const val CMD_EXTERNAL_DOCUMENT = "\\externaldocument"
+    const val CMD_DECLARE_GRAPHICS_EXTENSIONS = "\\DeclareGraphicsExtensions"
 
     fun getPossibleRootFiles(project: Project): Set<VirtualFile> {
         if (DumbService.isDumb(project)) return emptySet()
@@ -532,25 +538,35 @@ object LatexProjectStructure {
             return runCatching { root.parent?.findDirectory(siblingRelativePath) }.getOrNull()
         }
 
+        private fun asFileInputCtx(intro: LatexContextIntro): SimpleFileInputContext? {
+            if (intro !is LatexContextIntro.Assign) return null
+            val contexts = intro.contexts
+            for (ctx in contexts) {
+                if (ctx is SimpleFileInputContext) return ctx
+            }
+            return null
+        }
+
         private fun findReferredFiles(
             command: LatexCommands, file: VirtualFile,
         ) {
             val info = this
             // remark: we should only use stub-based information here for performance reasons
-            val commandName = command.name ?: return
+            val commandName = command.nameWithSlash ?: return
             val reqParamTexts = command.requiredParametersText()
 
-            val cmd = LatexCommand.lookup(commandName)?.firstOrNull() ?: return
-            val dependency = cmd.dependency
+            val semantics = AllPredefined.lookupCommand(commandName.removePrefix("\\")) ?: return
+            // we use predefined commands here because custom commands are not ready yet
+            val dependency = semantics.dependency
 
             // If the command is a graphics command, we can use the declared graphics extensions
-            val configuredExtensions = if (dependency == LatexPackage.GRAPHICX) info.declareGraphicsExtensions else null
+            val configuredExtensions = if (dependency == LatexLib.GRAPHICX) info.declareGraphicsExtensions else null
 
             // let us locate the sub
             val rangesAndTextsWithExt: MutableList<Pair<List<String>, Set<String>>> = mutableListOf()
             // Special case for the subfiles package: the (only) mandatory optional parameter should be a path to the main file
             // We reference it because we include the preamble of that file, so it is in the file set (partially)
-            if (commandName == LatexGenericRegularCommand.DOCUMENTCLASS.cmd && reqParamTexts.any { it.endsWith(SUBFILES.name) }) {
+            if (commandName == CMD_DOCUMENT_CLASS && reqParamTexts.any { it.endsWith(SUBFILES.name) }) {
                 // try to find the main file in the optional parameter map
                 command.optionalParameterTextMap().entries.firstOrNull()?.let { (k, _) ->
                     // the value should be empty, we only care about the key, see Latex.bnf
@@ -559,20 +575,20 @@ object LatexProjectStructure {
                     )
                 }
             }
-            cmd.requiredArguments.zip(reqParamTexts).mapNotNullTo(rangesAndTextsWithExt) { (argument, contentText) ->
-                if (argument !is RequiredFileArgument) return@mapNotNullTo null
-                if (contentText.contains(LatexGenericRegularCommand.SUBFIX.commandWithSlash)) {
+            semantics.arguments.filter { it.isRequired }.zip(reqParamTexts).forEach { (argument, contentText) ->
+                val ctx = asFileInputCtx(argument.contextSignature) ?: return@forEach
+                if (contentText.contains("\\subfix")) {
                     // \input{\subfix{file.tex}}
                     // do not deal with \input, but leave it to the \subfix command
-                    return@mapNotNullTo null
+                    return@forEach
                 }
-                val paramTexts = if (argument.commaSeparatesArguments) {
+                val paramTexts = if (ctx.isCommaSeparated) {
                     contentText.split(PatternMagic.parameterSplit).filter { it.isNotBlank() }
                 }
                 else listOf(contentText)
 
-                val extensions = configuredExtensions ?: argument.supportedExtensions
-                paramTexts to extensions
+                val extensions = configuredExtensions ?: ctx.supportedExtensions
+                rangesAndTextsWithExt.add(paramTexts to extensions)
             }
 
             val extractedRefTexts = rangesAndTextsWithExt.flatMap { it.first }
@@ -600,7 +616,7 @@ object LatexProjectStructure {
             val oldRootDir = this.currentRootDir
 
             when (commandName) {
-                LatexGenericRegularCommand.TIKZFIG.commandWithSlash, LatexGenericRegularCommand.CTIKZFIG.commandWithSlash -> {
+                "\\tikzfig", "\\ctikzfig" -> {
                     searchDirs = searchDirs + searchDirs.mapNotNull { runCatching { it.findDirectory("figures") }.getOrNull() }
                 }
 
@@ -617,7 +633,7 @@ object LatexProjectStructure {
                 }
             }
 
-            if (dependency in CommandMagic.graphicPackages && info.graphicsSuffix.isNotEmpty()) {
+            if (dependency in CommandMagic.graphicLibs && info.graphicsSuffix.isNotEmpty()) {
                 val graphicsSuffix = info.graphicsSuffix.asSequence()
                 pathWithExts = pathWithExts.map { paths ->
                     val allPathWithSuffix = paths.flatMap { path -> graphicsSuffix.map { suffix -> suffix.resolve(path) } }
@@ -634,7 +650,7 @@ object LatexProjectStructure {
                 // For bibliography files, we can search in the bib input paths
                 processFilesUnderRootDirs(pathWithExts, refInfos, info.bibInputPaths)
             }
-            if (commandName == LatexGenericRegularCommand.EXTERNALDOCUMENT.commandWithSlash) {
+            if (commandName == CMD_EXTERNAL_DOCUMENT) {
                 // \externaldocument uses the .aux file in the output directory, we are only interested in the source file,
                 // but it can be anywhere (because no relative path will be given, as in the output directory everything will be on the same level).
                 // This does not count for building the file set, because the external document is not actually in the fileset, only the label definitions are,
@@ -661,7 +677,7 @@ object LatexProjectStructure {
 
         private fun addGraphicsPathsfo(file: VirtualFile) {
             // Declare graphics extensions
-            NewCommandsIndex.getByName(LatexGenericRegularCommand.DECLAREGRAPHICSEXTENSIONS.command, project, file)
+            NewCommandsIndex.getByName(CMD_DECLARE_GRAPHICS_EXTENSIONS, project, file)
                 .lastOrNull()?.requiredParameterText(0)?.split(",")
                 // Graphicx requires the dot to be included
                 ?.map { it.trim(' ', '.') }?.let {
@@ -677,7 +693,7 @@ object LatexProjectStructure {
 
         private fun addLuatexPaths(project: Project, file: VirtualFile) {
             // addtoluatexpath
-            val direct = NewCommandsIndex.getByName(LatexGenericRegularCommand.ADDTOLUATEXPATH.cmd, project, file)
+            val direct = NewCommandsIndex.getByName(CMD_ADD_TO_LUATEX_PATH, project, file)
                 .mapNotNull { it.requiredParameterText(0) }
                 .flatMap { it.split(",") }
             val viaUsepackage = NewSpecialCommandsIndex.getPackageIncludes(project, file)
@@ -710,7 +726,7 @@ object LatexProjectStructure {
             addGraphicsPathsfo(file)
             addLuatexPaths(project, file)
 
-            val docClass = NewCommandsIndex.getByName(LatexGenericRegularCommand.DOCUMENTCLASS.commandWithSlash, project, file)
+            val docClass = NewCommandsIndex.getByName(CMD_DOCUMENT_CLASS, project, file)
                 .lastOrNull()?.requiredParameterText(0)
             val oldRoot = info.currentRootDir
             if (docClass != null && docClass.endsWith(SUBFILES.name)) {
@@ -1023,7 +1039,7 @@ object LatexProjectStructure {
      */
     fun commandFileReferenceInfo(command: LatexCommands, requestRefresh: Boolean = false): Pair<List<String>, List<Set<VirtualFile>>>? {
         val data = command.getUserData(userDataKeyFileReference)
-        if(!requestRefresh && !ApplicationManager.getApplication().isUnitTestMode) {
+        if (!requestRefresh && !ApplicationManager.getApplication().isUnitTestMode) {
             return data?.value
         }
         if (data != null && data.isNotExpired(expirationTime)) {
