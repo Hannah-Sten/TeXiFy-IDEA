@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.lang.commands
 
-import arrow.core.NonEmptySet
 import nl.hannahsten.texifyidea.lang.Dependend
 import nl.hannahsten.texifyidea.lang.Described
 import nl.hannahsten.texifyidea.lang.LatexPackage
@@ -86,23 +85,6 @@ interface LatexCommand : Described, Dependend {
         get() = arguments.filterIsInstance<RequiredArgument>()
 
     companion object {
-
-        /**
-         * Looks up the given command name in all predefined [LatexCommand]s.
-         *
-         * @param commandName
-         *          The command name to look up. Can start with or without `\`
-         * @return The found commands, or `null` when the command doesn't exist.
-         */
-        fun lookup(commandName: String?): NonEmptySet<LatexCommand>? {
-            var result = commandName ?: return null
-            if (!result.startsWith("\\")) {
-                result = "\\" + result
-            }
-            LatexMathCommand.getWithSlash(result)?.let { return it }
-            LatexRegularCommand.getWithSlash(result)?.let { return it }
-            return null
-        }
 
         /**
          * Parse arguments from docs string, assuming they appear at index [counterInit] (only initial sequence of arguments is considered).

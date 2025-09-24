@@ -32,7 +32,7 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
     /**
      * A map of section commands (including `\`) to their levels.
      */
-    private val sectionLevels: Map<String, Int> = CommandMagic.sectioningCommands.mapIndexed { index, command -> "\\${command.command}" to index }.toMap()
+    private val sectionLevels: Map<String, Int> = CommandMagic.sectionNameToLevel
 
     /**
      * Implements custom folding regions.

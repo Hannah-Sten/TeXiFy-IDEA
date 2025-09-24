@@ -14,10 +14,9 @@ import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.inspections.AbstractTexifyCommandBasedInspection
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
-import nl.hannahsten.texifyidea.lang.commands.LatexCommand
-import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.nameWithoutSlash
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.ui.CreateFileDialog
 import nl.hannahsten.texifyidea.util.*
@@ -25,6 +24,7 @@ import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.getFileExtension
 import nl.hannahsten.texifyidea.util.files.writeToFileUndoable
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.parser.lookupCommand
 import java.util.*
 
 /**
@@ -47,16 +47,19 @@ class LatexFileNotFoundInspection : AbstractTexifyCommandBasedInspection(
         val referencesList = InputFileReference.getFileArgumentsReferences(command)
         for (reference in referencesList) {
             if (reference.refText.isNotEmpty() && reference.resolve() == null) {
-                createQuickFixes(reference, descriptors, manager, isOnTheFly)
+                createQuickFixes(reference, defBundle, descriptors, manager, isOnTheFly)
             }
         }
     }
 
-    private fun createQuickFixes(reference: InputFileReference, descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager, isOntheFly: Boolean) {
+    private fun createQuickFixes(
+        reference: InputFileReference, defBundle: DefinitionBundle,
+        descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager, isOntheFly: Boolean
+    ) {
         val fileName = reference.refText
-        val commandName = reference.element.name
-        val extensions = LatexCommand.lookup(commandName)?.firstOrNull()?.arguments?.flatMap {
-            (it as? RequiredFileArgument)?.supportedExtensions ?: emptyList()
+        val commandName = reference.element.nameWithoutSlash
+        val extensions = defBundle.lookupCommand(commandName)?.arguments?.flatMap {
+            LatexContexts.asFileInputCtx(it.contextSignature)?.supportedExtensions ?: emptyList()
         } ?: emptyList()
 
         // CTAN packages are no targets of the InputFileReference, so we check them here and don't show a warning if a CTAN package is included

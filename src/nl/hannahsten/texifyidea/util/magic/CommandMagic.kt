@@ -31,29 +31,18 @@ object CommandMagic {
     )
 
     /**
-     * Level of labeled commands.
-     */
-    val labeledLevels: Map<LatexCommand, Int> = mapOf(
-        // See page 23 of the LaTeX Companion
-        PART to -1, // actually, it is level 0 in classes that do not define \chapter and -1 in book and report
-        CHAPTER to 0,
-        SECTION to 1,
-        SUBSECTION to 2,
-        SUBSUBSECTION to 3,
-        PARAGRAPH to 4,
-        SUBPARAGRAPH to 5
-    )
-
-    /**
-     * Section commands sorted from large to small.
-     */
-    val sectioningCommands = labeledLevels.entries.sortedBy { it.value }.map { it.key }
-
-    /**
      * Map of `\section`-like commands to their level.
      */
-    val sectionNameToLevel: Map<String, Int> =
-        labeledLevels.mapKeys { it.key.commandWithSlash }
+    val sectionNameToLevel: Map<String, Int> = mapOf(
+        // See page 23 of the LaTeX Companion
+        "\\part" to -1, // actually, it is level 0 in classes that do not define \chapter and -1 in book and report
+        "\\chapter" to 0,
+        "\\section" to 1,
+        "\\subsection" to 2,
+        "\\subsubsection" to 3,
+        "\\paragraph" to 4,
+        "\\subparagraph" to 5,
+    )
 
     /**
      * Commands that define a label via an optional parameter

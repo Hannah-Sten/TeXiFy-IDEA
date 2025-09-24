@@ -10,9 +10,9 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.startOffset
 import nl.hannahsten.texifyidea.index.NewDefinitionIndex
-import nl.hannahsten.texifyidea.lang.commands.Argument
-import nl.hannahsten.texifyidea.lang.commands.LatexCommand
-import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
+import nl.hannahsten.texifyidea.lang.LatexContextIntro
+import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
@@ -138,12 +138,12 @@ class LatexTextExtractor : TextExtractor() {
      * Keep the command if the command will probably be replaced by some text in the typeset document, e.g. \texttt{arg} should read just "arg" to Grazie
      */
     private fun hasNonTextArgument(commandName: String, project: Project): Boolean {
-        return LatexCommand.lookup(commandName)
-            ?.firstOrNull()
-            ?.arguments
-            ?.filterIsInstance<RequiredArgument>()
-            // Do not keep if it is not text
-            ?.any { it.type != Argument.Type.TEXT && it.type != Argument.Type.LABEL } == true
+        // temporary fix, an overall improvement for the extractor is needed
+        val semantics = AllPredefined.lookupCommand(commandName) ?: return false
+        return semantics.arguments.any { arg ->
+            val intro = arg.contextSignature
+            intro is LatexContextIntro.Assign && intro.contexts.any { it != LatexContexts.Text && it != LatexContexts.LabelReference }
+        }
     }
 
     /**

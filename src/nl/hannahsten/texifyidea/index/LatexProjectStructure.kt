@@ -30,11 +30,10 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.file.LatexSourceFileType
 import nl.hannahsten.texifyidea.file.StyleFileType
 import nl.hannahsten.texifyidea.index.file.LatexRegexBasedIndex
-import nl.hannahsten.texifyidea.lang.LatexContextIntro
+import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SUBFILES
-import nl.hannahsten.texifyidea.lang.SimpleFileInputContext
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.psi.LatexCommands
@@ -538,15 +537,6 @@ object LatexProjectStructure {
             return runCatching { root.parent?.findDirectory(siblingRelativePath) }.getOrNull()
         }
 
-        private fun asFileInputCtx(intro: LatexContextIntro): SimpleFileInputContext? {
-            if (intro !is LatexContextIntro.Assign) return null
-            val contexts = intro.contexts
-            for (ctx in contexts) {
-                if (ctx is SimpleFileInputContext) return ctx
-            }
-            return null
-        }
-
         private fun findReferredFiles(
             command: LatexCommands, file: VirtualFile,
         ) {
@@ -576,7 +566,7 @@ object LatexProjectStructure {
                 }
             }
             semantics.arguments.filter { it.isRequired }.zip(reqParamTexts).forEach { (argument, contentText) ->
-                val ctx = asFileInputCtx(argument.contextSignature) ?: return@forEach
+                val ctx = LatexContexts.asFileInputCtx(argument.contextSignature) ?: return@forEach
                 if (contentText.contains("\\subfix")) {
                     // \input{\subfix{file.tex}}
                     // do not deal with \input, but leave it to the \subfix command

@@ -9,7 +9,6 @@ import com.intellij.psi.formatter.common.AbstractBlock
 import com.intellij.psi.util.prevLeaf
 import nl.hannahsten.texifyidea.editor.typedhandlers.LatexEnterHandler
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment
-import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.settings.codestyle.LatexCodeStyleSettings
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
@@ -119,8 +118,8 @@ class LatexBlock(
         // We need to do it this way because we cannot create blocks which span a section content: blocks
         // need to correspond to only one psi element.
         // Changing the parser to view section content as one element is problematic because then we need to hardcode the sectioning structure in the parser
-        val command = LatexCommand.lookup(child.psi.findFirstChildOfType(LatexCommands::class)?.name)?.first()
-        val level = CommandMagic.labeledLevels[command]
+        val command = child.psi.findFirstChildOfType(LatexCommands::class)?.nameWithSlash
+        val level = CommandMagic.sectionNameToLevel[command]
         if (level != null && level > sectionLevel) {
             extraSectionIndent += 1
             sectionLevel = level

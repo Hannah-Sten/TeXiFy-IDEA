@@ -180,4 +180,13 @@ object LatexContexts {
     val Alignable = SimpleLatexContext("alignable")
 
     val TikzPicture = SimpleLatexContext("tikz.picture")
+
+    fun asFileInputCtx(intro: LatexContextIntro): SimpleFileInputContext? {
+        if (intro !is LatexContextIntro.Assign) return null
+        val contexts = intro.contexts
+        for (ctx in contexts) {
+            if (ctx is SimpleFileInputContext) return ctx
+        }
+        return null
+    }
 }
