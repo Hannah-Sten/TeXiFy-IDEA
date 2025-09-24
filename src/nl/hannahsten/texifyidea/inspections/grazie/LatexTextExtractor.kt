@@ -10,6 +10,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.startOffset
 import nl.hannahsten.texifyidea.index.NewDefinitionIndex
+import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LatexContextIntro
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
@@ -17,7 +18,6 @@ import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.*
-import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 
 /**
  * Explains to Grazie which psi elements contain text and which don't.
@@ -134,15 +134,24 @@ class LatexTextExtractor : TextExtractor() {
         return ranges.sortedBy { it.first }
     }
 
+    private fun hasNonTextContext(contexts: LContextSet): Boolean {
+        if(LatexContexts.Text in contexts) return false
+        if(LatexContexts.LabelReference in contexts) return false
+        if(LatexContexts.GlossaryLabel in contexts) return false
+        return contexts.isNotEmpty()
+    }
+
     /**
      * Keep the command if the command will probably be replaced by some text in the typeset document, e.g. \texttt{arg} should read just "arg" to Grazie
      */
     private fun hasNonTextArgument(commandName: String, project: Project): Boolean {
         // temporary fix, an overall improvement for the extractor is needed
-        val semantics = AllPredefined.lookupCommand(commandName) ?: return false
+        val semantics = AllPredefined.lookupCommand(commandName.removePrefix("\\")) ?: return false
         return semantics.arguments.any { arg ->
+            if(!arg.isRequired) return@any false
             val intro = arg.contextSignature
-            intro is LatexContextIntro.Assign && intro.contexts.any { it != LatexContexts.Text && it != LatexContexts.LabelReference }
+            (intro is LatexContextIntro.Assign && hasNonTextContext(intro.contexts)) ||
+                intro is LatexContextIntro.Modify
         }
     }
 
