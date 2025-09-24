@@ -34,7 +34,6 @@ import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SUBFILES
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.nameWithSlash
@@ -417,7 +416,7 @@ object LatexProjectStructure {
 
         private fun extractExternalDocumentInfoInFileset(allFilesScope: GlobalSearchScope): List<ExternalDocumentInfo> {
             val externalDocumentCommands = NewCommandsIndex.getByName(
-                LatexGenericRegularCommand.EXTERNALDOCUMENT.commandWithSlash,
+                CMD_EXTERNAL_DOCUMENT,
                 allFilesScope.restrictedByFileTypes(LatexFileType)
             )
             if (externalDocumentCommands.isEmpty()) return emptyList()

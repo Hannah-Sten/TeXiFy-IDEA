@@ -8,6 +8,7 @@ import com.intellij.psi.stubs.StubIndexKey
 import com.intellij.util.Processor
 import com.intellij.util.indexing.IdFilter
 import nl.hannahsten.texifyidea.lang.predefined.PredefinedCmdDefinitions
+import nl.hannahsten.texifyidea.lang.predefined.PredefinedCmdFiles
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
@@ -30,16 +31,15 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexWrapper<LatexCommands>(Late
     }
 
     override fun getVersion(): Int {
-        return 104
+        return 105
     }
 
     val mappingPairs = listOf(
-        CommandMagic.allFileIncludeCommands to SpecialKeys.FILE_INPUTS,
+        PredefinedCmdFiles.namesOfAllFileIncludeCommands to SpecialKeys.FILE_INPUTS,
         PredefinedCmdDefinitions.namesOfAllCommandDef to SpecialKeys.COMMAND_DEFINITIONS,
         PredefinedCmdDefinitions.namesOfAllEnvironmentDef to SpecialKeys.ENV_DEFINITIONS,
         PredefinedCmdDefinitions.namesOfAllDef to SpecialKeys.ALL_DEFINITIONS,
         CommandMagic.packageInclusionCommands to SpecialKeys.PACKAGE_INCLUDES,
-        CommandMagic.regularCommandDefinitionsAndRedefinitions to SpecialKeys.REGULAR_COMMAND_DEFINITION,
         CommandMagic.glossaryEntry to SpecialKeys.GLOSSARY_ENTRY
     )
 

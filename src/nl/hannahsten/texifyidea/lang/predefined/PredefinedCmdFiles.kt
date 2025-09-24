@@ -120,7 +120,7 @@ object PredefinedCmdFiles : PredefinedCommandSet() {
         isAbsolutePathSupported = false,
     )
 
-    val commands = buildCommands {
+    val misc = buildCommands {
 
         underBase {
             "bibliography".cmd("bibliographyfile".required(LatexContexts.MultipleBibFiles)) {
@@ -156,6 +156,9 @@ object PredefinedCmdFiles : PredefinedCommandSet() {
             required("sourcefile", LatexContexts.SingleFile),
         ) {
             "Input a source file with syntax highlighting"
+        }
+        underPackage(LatexLib.LISTINGS) {
+            "lstinputlisting".cmd("options".optional, "filename".required(LatexContexts.SingleFile))
         }
     }
 
@@ -257,4 +260,6 @@ object PredefinedCmdFiles : PredefinedCommandSet() {
         "tikzfig".cmd(relativeSingleTexFileArg)
         "ctikzfig".cmd(relativeSingleTexFileArg)
     }
+
+    val namesOfAllFileIncludeCommands = allCommands.map { it.name }.toSet()
 }

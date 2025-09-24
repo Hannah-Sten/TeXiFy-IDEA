@@ -382,9 +382,8 @@ object CommandMagic {
     /**
      * Commands which can include packages in optional or required arguments.
      */
-    val packageInclusionCommands = setOf(
-        USEPACKAGE, REQUIREPACKAGE, DOCUMENTCLASS, LOADCLASS
-    ).map { it.cmd }.toSet()
+    val packageInclusionCommands =
+        setOf("\\usepackage", "\\RequirePackage", "\\documentclass", "\\LoadClass", "\\LoadClassWithOptions")
 
     val tikzLibraryInclusionCommands = setOf(USETIKZLIBRARY.cmd)
 

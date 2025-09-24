@@ -715,8 +715,6 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
     }
 
     val listings = buildCommands {
-        packageOf("listings")
-        "lstinputlisting".cmd("options".optional, "filename".required(LatexContexts.SingleFile))
         underPackage("luacode") {
             "directlua".cmd("lua code".required)
             "luaexec".cmd("lua code".required)
