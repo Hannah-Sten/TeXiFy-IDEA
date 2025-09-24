@@ -97,7 +97,10 @@ object PredefinedCmdFiles : PredefinedCommandSet() {
 
     // Predefine additional file input contexts if needed, based on common file types.
     // These can be moved to LatexContext.kt if they are reusable across multiple command sets.
-    private val GRAPHICS_EXTENSIONS = setOf("pdf", "png", "jpg", "mps", "jpeg", "jbig2", "jb2", "PDF", "PNG", "JPG", "JPEG", "JBIG2", "JB2", "eps", "bmp", "gif", "tiff")
+    private val GRAPHICS_EXTENSIONS = setOf(
+        "pdf", "png", "jpg", "mps", "jpeg", "jbig2", "jb2",
+        "PDF", "PNG", "JPG", "JPEG", "JBIG2", "JB2", "eps", "bmp", "gif", "tiff"
+    )
     private val PICTURE_FILE = SimpleFileInputContext(
         "file.picture",
         isCommaSeparated = false,
