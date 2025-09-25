@@ -6,7 +6,6 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.util.IntentionFamilyName
 import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
@@ -55,24 +54,12 @@ class LatexLabelBeforeCaptionInspection : AbstractTexifyCommandBasedInspection(
             if (PsiTreeUtil.isAncestor(element1, element2, false) || PsiTreeUtil.isAncestor(element2, element1, false)) {
                 return
             }
-            val project = element1.project
-            val documentManager = PsiDocumentManager.getInstance(project)
-            val document = documentManager.getDocument(element1.containingFile)
-                ?: throw IllegalStateException("Cannot access document")
-
-            val text1 = element1.text
-            val text2 = element2.text
-            val range1 = element1.textRange
-            val range2 = element2.textRange
-
-            if (range1.startOffset < range2.startOffset) {
-                document.replaceString(range2.startOffset, range2.endOffset, text1)
-                document.replaceString(range1.startOffset, range1.endOffset, text2)
-            }
-            else {
-                document.replaceString(range1.startOffset, range1.endOffset, text2)
-                document.replaceString(range2.startOffset, range2.endOffset, text1)
-            }
+            val parent1 = element1.parent ?: return
+            val parent2 = element2.parent ?: return
+            parent1.addBefore(element2, element1)
+            element2.delete()
+            parent2.addAfter(element1, element2)
+            element1.delete()
         }
     }
 }
