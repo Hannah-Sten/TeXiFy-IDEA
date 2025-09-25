@@ -186,7 +186,7 @@ object LatexDtxDefinitionDataIndexer : DataIndexer<String, List<LatexSimpleDefin
         return describeBlocks
     }
 
-    private fun parseArguments(params: String?): List<LArgument> {
+    fun parseArguments(params: String?): List<LArgument> {
         if (params == null) return emptyList()
         var args = emptyList<LArgument>()
         /*
@@ -209,7 +209,7 @@ object LatexDtxDefinitionDataIndexer : DataIndexer<String, List<LatexSimpleDefin
         return args
     }
 
-    private fun extractDefinitionsFromBlocks(describeBlocks: List<String>): List<LatexSimpleDefinition> {
+    fun extractDefinitionsFromBlocks(describeBlocks: List<String>): List<LatexSimpleDefinition> {
         val result = mutableListOf<LatexSimpleDefinition>()
         for (block in describeBlocks) {
             val curSize = result.size
