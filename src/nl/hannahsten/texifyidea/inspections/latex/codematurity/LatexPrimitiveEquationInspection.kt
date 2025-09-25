@@ -12,7 +12,7 @@ import nl.hannahsten.texifyidea.lang.LContextSet
  */
 class LatexPrimitiveEquationInspection : AbstractTexifyWholeFileRegexBasedInspection(
     inspectionId = "PrimitiveEquation",
-    regex = """\$\$[\s\S]*?\$\$""".toRegex() // Matches $$...$$ with minimal content in between
+    regex = """\$\$([\s\S]*?)\$\$""".toRegex() // Matches $$...$$ with minimal content in between
 ) {
 
     override fun errorMessage(matcher: MatchResult, context: LContextSet): String {
