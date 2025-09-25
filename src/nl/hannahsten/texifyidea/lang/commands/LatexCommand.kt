@@ -3,9 +3,6 @@ package nl.hannahsten.texifyidea.lang.commands
 import nl.hannahsten.texifyidea.lang.Dependend
 import nl.hannahsten.texifyidea.lang.Described
 import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
-import nl.hannahsten.texifyidea.util.length
-import nl.hannahsten.texifyidea.util.startsWithAny
 import kotlin.reflect.KClass
 
 /**
@@ -83,78 +80,6 @@ interface LatexCommand : Described, Dependend {
      */
     val requiredArguments: List<RequiredArgument>
         get() = arguments.filterIsInstance<RequiredArgument>()
-
-    companion object {
-
-        /**
-         * Parse arguments from docs string, assuming they appear at index [counterInit] (only initial sequence of arguments is considered).
-         */
-        fun getArgumentsFromStartOfString(docs: String, counterInit: Int = 0): Array<Argument> {
-            val arguments = mutableListOf<Argument>()
-            var counter = counterInit
-            run breaker@{
-                // Only use the ones at the beginning of the string to avoid matching too much
-                // I don't know what the \meta command is intended for, but it's used instead of \marg in pythontex at least
-                """\s*\\(?<command>[omp]arg|meta)\{(?<arg>.+?)}\s*""".toRegex().findAll(docs, counterInit).forEach {
-                    if (it.range.first == counter) {
-                        if (it.groups["command"]?.value == OARG.command) {
-                            arguments.add(OptionalArgument(it.groups["arg"]?.value ?: ""))
-                        }
-                        else {
-                            arguments.add(RequiredArgument(it.groups["arg"]?.value ?: ""))
-                        }
-                        counter += it.range.length
-                    }
-                    else {
-                        return@breaker
-                    }
-                }
-            }
-
-            // Special convention in LaTeX base
-            if (arguments.isEmpty()) {
-                run breaker@{
-                    counter = counterInit
-                    """\s*(?:\{\\meta\{(?<marg>.+?)}}|\[\\meta\{(?<oarg>.+?)}])""".toRegex().findAll(docs, counterInit).forEach { match ->
-                        if (match.range.first == counter) {
-                            match.groups["marg"]?.value?.let {
-                                arguments.add(RequiredArgument(it))
-                            }
-                            match.groups["oarg"]?.value?.let {
-                                arguments.add(OptionalArgument(it))
-                            }
-                            counter += match.range.length
-                        }
-                        else {
-                            return@breaker
-                        }
-                    }
-                }
-            }
-
-            return arguments.toTypedArray()
-        }
-
-        /**
-         * Given the [docs] of the [commandWithSlash], check if the parameters of the [commandWithSlash] are documented in [docs] and if so, return them.
-         */
-        fun extractArgumentsFromDocs(docs: String, commandWithSlash: String): Array<Argument> {
-            // Maybe the arguments are given right at the beginning of the docs
-            val argCommands = arrayOf(OARG, MARG, PARG).map { it.commandWithSlash }.toTypedArray()
-            if (docs.startsWithAny(*argCommands)) {
-                return getArgumentsFromStartOfString(docs)
-            }
-
-            // Maybe the command appears somewhere in the docs with all the arguments after it
-            // Check for each command in the docs,
-            Regex.fromLiteral(commandWithSlash).findAll(docs).forEach { match ->
-                // whether the arguments follow it.
-                getArgumentsFromStartOfString(docs, match.range.last + 1).let { if (it.isNotEmpty()) return it }
-            }
-
-            return emptyArray()
-        }
-    }
 }
 
 data class LatexCommandImpl(
