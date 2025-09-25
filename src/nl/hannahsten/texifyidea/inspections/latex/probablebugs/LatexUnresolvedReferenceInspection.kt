@@ -18,7 +18,6 @@ import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexParameter
 import nl.hannahsten.texifyidea.psi.contentText
 import nl.hannahsten.texifyidea.reference.LatexLabelParameterReference
-import java.lang.Integer.max
 import java.util.*
 
 /**
@@ -45,8 +44,8 @@ class LatexUnresolvedReferenceInspection : AbstractTexifyContextAwareInspection(
     }
 
     override fun inspectElement(element: PsiElement, contexts: LContextSet, bundle: DefinitionBundle, file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {
-        if(element !is LatexParameter) return
-        if(!isApplicableInContexts(contexts)) return
+        if (element !is LatexParameter) return
+        if (!isApplicableInContexts(contexts)) return
         val parts = element.contentText().split(",")
         var offset = 1 // account for {[(
         for (part in parts) {
@@ -58,13 +57,14 @@ class LatexUnresolvedReferenceInspection : AbstractTexifyContextAwareInspection(
                 if (LatexLabelParameterReference.isLabelDefined(label, file)) {
                     return@run
                 }
-                if (NewBibtexEntryIndex.existsByNameInFileSet(part, file)) {
+                if (NewBibtexEntryIndex.existsByNameInFileSet(label, file)) {
                     return@run
                 }
+                val labelOffset = part.indexOfFirst { !it.isWhitespace() }
                 descriptors.add(
                     manager.createProblemDescriptor(
                         element,
-                        TextRange.from(max(offset, 0), label.length),
+                        TextRange.from(offset + labelOffset, label.length),
                         "Unresolved reference '$label'",
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOnTheFly
