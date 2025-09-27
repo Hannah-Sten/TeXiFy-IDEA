@@ -55,10 +55,5 @@ object LatexRegularCommand {
     fun values() = ALL
 
     @JvmStatic
-    operator fun get(command: String) = lookup[command]
-
-    fun getWithSlash(command: String) = lookupWithSlash[command]
-
-    @JvmStatic
     fun findByDisplay(display: String) = lookupDisplay[display]
 }

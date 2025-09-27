@@ -88,5 +88,16 @@ data class LArgument(
         ): LArgument {
             return LArgument(name, LArgumentType.OPTIONAL, LatexContextIntro.Assign(ctx), description)
         }
+
+        fun getRequiredByIdx(arguments: List<LArgument>, idx: Int): LArgument? {
+            var count = 0
+            for (argument in arguments) {
+                if (argument.isRequired) {
+                    if (count == idx) return argument
+                    count++
+                }
+            }
+            return null
+        }
     }
 }

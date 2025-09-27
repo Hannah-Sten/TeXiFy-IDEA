@@ -4,17 +4,14 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.nextLeaf
+import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.lang.alias.CommandManager
-import nl.hannahsten.texifyidea.lang.commands.LatexMathCommand
-import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
-import nl.hannahsten.texifyidea.lang.commands.OptionalArgument
-import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
+import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.lineIndentation
 import nl.hannahsten.texifyidea.util.magic.ColorMagic
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import kotlin.math.min
 
 /**
  * Checks whether the given LaTeX commands is a definition or not.
@@ -93,17 +90,12 @@ fun PsiElement.previousCommand(): LatexCommands? {
 /**
  * Get the value of the named [argument] given in `this` command.
  */
-fun LatexCommands.getRequiredArgumentValueByName(argument: String): String? {
+fun LatexCommands.getRequiredArgumentValueByName(argument: String, lookup: LatexSemanticsLookup = AllPredefined): String? {
     // Find all pre-defined commands that define `this` command.
-    val name = this.name ?: return null
-    val requiredArgIndices = LatexRegularCommand.getWithSlash(name)
-        // Find the index of their required parameter named [argument].
-        ?.map {
-            it.arguments.filterIsInstance<RequiredArgument>()
-                .indexOfFirst { arg -> arg.name == argument }
-        }
-    return if (requiredArgIndices.isNullOrEmpty() || requiredArgIndices.all { it == -1 }) null
-    else requiredParametersText().getOrNull(min(requiredArgIndices.first(), requiredParametersText().size - 1))
+    val semantics = lookup.lookupCommandPsi(this) ?: return null
+    val idx = semantics.arguments.indexOfFirst { it.isRequired && it.name == argument }
+    if (idx == -1) return null
+    return this.requiredParameterText(idx)
 }
 
 /**
@@ -111,19 +103,12 @@ fun LatexCommands.getRequiredArgumentValueByName(argument: String): String? {
  *
  * @return null when the optional argument is not given.
  */
-fun LatexCommands.getOptionalArgumentValueByName(argument: String): String? {
+fun LatexCommands.getOptionalArgumentValueByName(argument: String, lookup: LatexSemanticsLookup = AllPredefined): String? {
     // Find all pre-defined commands that define `this` command.
-    val optionalArgIndices = LatexRegularCommand[
-        name?.substring(1)
-            ?: return null
-    ]
-        // Find the index of their optional argument named [argument].
-        ?.map {
-            it.arguments.filterIsInstance<OptionalArgument>()
-                .indexOfFirst { arg -> arg.name == argument }
-        }
-    return if (optionalArgIndices.isNullOrEmpty() || optionalArgIndices.all { it == -1 }) null
-    else getOptionalParameterMap().keys.toList().getOrNull(min(optionalArgIndices.first(), getOptionalParameterMap().keys.toList().size - 1))?.text
+    val semantics = lookup.lookupCommandPsi(this) ?: return null
+    val idx = semantics.arguments.indexOfFirst { it.isOptional && it.name == argument }
+    if (idx == -1) return null
+    return this.optionalParameterText(idx)
 }
 
 /**
@@ -132,8 +117,7 @@ fun LatexCommands.getOptionalArgumentValueByName(argument: String): String? {
  * @return Whether the command is known (`true`), or unknown (`false`).
  */
 fun LatexCommands.isKnown(): Boolean {
-    val name = name?.substring(1) ?: ""
-    return LatexRegularCommand[name] != null || LatexMathCommand[name] != null
+    return AllPredefined.lookupCommandPsi(this) != null
 }
 
 /**

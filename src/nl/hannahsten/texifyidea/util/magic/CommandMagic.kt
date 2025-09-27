@@ -3,6 +3,8 @@
 package nl.hannahsten.texifyidea.util.magic
 
 import com.intellij.ui.Gray
+import nl.hannahsten.texifyidea.lang.LSemanticCommand
+import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.*
@@ -15,8 +17,9 @@ import nl.hannahsten.texifyidea.lang.commands.LatexMathtoolsRegularCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexNatbibCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexNewDefinitionCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexOperatorCommand.*
-import nl.hannahsten.texifyidea.lang.commands.LatexUncategorizedStmaryrdSymbols.BIG_SQUARE_CAP
 import nl.hannahsten.texifyidea.lang.commands.LatexXparseCommand.*
+import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
+import nl.hannahsten.texifyidea.lang.predefined.PredefinedCmdGeneric
 import nl.hannahsten.texifyidea.util.magic.CommandMagic.stylePrimitives
 
 object CommandMagic {
@@ -25,9 +28,8 @@ object CommandMagic {
      * LaTeX commands that make the text take up more vertical space.
      */
     val high = hashSetOf(
-        FRAC.cmd, DFRAC.cmd, SQUARE_ROOT.cmd, SUM.cmd, INTEGRAL.cmd, DOUBLE_INTEGRAL.cmd, TRIPLE_INTEGRAL.cmd,
-        QUADRUPLE_INTEGRAL.cmd, N_ARY_PRODUCT.cmd, N_ARY_UNION.cmd, N_ARY_INTERSECTION.cmd,
-        N_ARY_SQUARE_UNION.cmd, BIG_SQUARE_CAP.cmd
+        "\\frac", "\\dfrac", "\\sqrt", "\\sum", "\\int", "\\iint", "\\iiint", "\\iiiint",
+        "\\prod", "\\bigcup", "\\bigcap", "\\bigsqcup", "\\bigvee", "\\bigwedge"
     )
 
     /**
@@ -48,34 +50,38 @@ object CommandMagic {
      * Commands that define a label via an optional parameter
      */
     @JvmField
-    val labelAsParameter = hashSetOf(LSTINPUTLISTING.cmd)
+    val labelAsParameter = hashSetOf("lstinputlisting")
 
     /**
      * The colours that each section separator has.
      */
     val sectionSeparatorColors = mapOf(
-        PART.cmd to Gray._152,
-        CHAPTER.cmd to Gray._172,
-        SECTION.cmd to Gray._182,
-        SUBSECTION.cmd to Gray._202,
-        SUBSUBSECTION.cmd to Gray._212,
-        PARAGRAPH.cmd to Gray._222,
-        SUBPARAGRAPH.cmd to Gray._232
+        "\\part" to Gray._132,
+        "\\chapter" to Gray._152,
+        "\\section" to Gray._172,
+        "\\subsection" to Gray._182,
+        "\\subsubsection" to Gray._202,
+        "\\paragraph" to Gray._222,
+        "\\subparagraph" to Gray._232
     )
 
     /**
      * LaTeX commands that increase a counter that can be labeled.
      */
     val increasesCounter =
-        hashSetOf(CAPTION.cmd, CAPTIONOF.cmd, CHAPTER.cmd, SECTION.cmd, SUBSECTION.cmd, ITEM.cmd, LSTINPUTLISTING.cmd)
+        hashSetOf(
+            "\\caption", "\\captionof", "\\chapter", "\\section", "\\subsection",
+            "\\item", "\\listinputlisting"
+        )
 
     /**
      * All commands that represent a reference to some label.
      */
-    val labelReference = LatexRegularCommand.ALL
-        .filter { cmd -> cmd.arguments.any { it.type == Argument.Type.LABEL } }
-        .associate { cmd ->
-            cmd.commandWithSlash to (cmd to cmd.arguments.indexOfFirst { arg -> arg.type == Argument.Type.LABEL })
+    val labelReference: Map<String, Pair<LSemanticCommand, Int>> =
+        AllPredefined.allEntities.filterIsInstance<LSemanticCommand>().filter { cmd ->
+            cmd.arguments.any { it.contextSignature.introduces(LatexContexts.LabelReference) }
+        }.associate {
+            it.nameWithSlash to (it to it.arguments.indexOfFirst { arg -> arg.contextSignature.introduces(LatexContexts.LabelReference) })
         }
 
     /**
@@ -185,7 +191,10 @@ object CommandMagic {
     /**
      * All commands that reference a glossary entry from the glossaries package (e.g. \gls).
      */
-    val glossaryReference = LatexGlossariesCommand.entries.filter { cmd -> cmd.arguments.any { it.name == "label" || it.name == "acronym" } }.map { it.cmd }.toSet()
+    val glossaryReference: Map<String, LSemanticCommand> =
+        PredefinedCmdGeneric.glossaries.filter {
+            it.arguments.any { arg -> arg.contextSignature.introduces(LatexContexts.GlossaryLabel) }
+        }.associateBy { it.nameWithSlash }
 
     /**
      * All commands that represent some kind of reference (think \ref and \cite).
@@ -195,23 +204,23 @@ object CommandMagic {
     /**
      * Commands from the import package which require an absolute path as first parameter.
      */
-    val absoluteImportCommands = setOf(INCLUDEFROM.cmd, INPUTFROM.cmd, IMPORT.cmd)
+    val absoluteImportCommands = setOf("\\includefrom", "\\inputfrom", "\\import")
 
     /**
      * Commands from the import package which require a relative path as first parameter.
      */
-    val relativeImportCommands = setOf(SUBIMPORT.cmd, SUBINPUTFROM.cmd, SUBINCLUDEFROM.cmd)
+    val relativeImportCommands = setOf("\\subimport", "\\subinputfrom", "\\subincludefrom")
 
     /**
      * All commands that define labels and that are present by default.
      * To include user defined commands, use [nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands] (may be significantly slower).
      */
-    val labels = setOf(LABEL.cmd)
+    val labels = setOf("\\label")
 
     /**
      * All commands that define bibliography items.
      */
-    val bibliographyItems = setOf(BIBITEM.cmd)
+    val bibliographyItems = setOf("\\bibitem")
 
     /**
      * All math operators without a leading slash.

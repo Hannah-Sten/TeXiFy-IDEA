@@ -8,12 +8,16 @@ import com.intellij.spellchecker.inspections.SpellCheckingInspection
 import com.intellij.spellchecker.tokenizer.SpellcheckingStrategy
 import com.intellij.spellchecker.tokenizer.Tokenizer
 import nl.hannahsten.texifyidea.grammar.LatexLanguage
+import nl.hannahsten.texifyidea.lang.LArgument
+import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.commands.*
-import nl.hannahsten.texifyidea.lang.commands.Argument.Type
+import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 import nl.hannahsten.texifyidea.util.parser.hasParent
+import nl.hannahsten.texifyidea.util.parser.lookupCommandPsi
+import nl.hannahsten.texifyidea.util.parser.parentOfType
 
 /**
  * @author Hannah Schellekens
@@ -73,7 +77,7 @@ class LatexSpellcheckingStrategy : SpellcheckingStrategy() {
             return hasLiteralsScope
         }
 
-        if (argument?.type == Type.TEXT) {
+        if (argument?.contextSignature?.introduces(LatexContexts.Text) == true) {
             return hasLiteralsScope
         }
 
@@ -98,21 +102,21 @@ class LatexSpellcheckingStrategy : SpellcheckingStrategy() {
     /**
      * Get the argument (with type) from TeXiFy knowledge that corresponds with the current psi element.
      */
-    private fun getArgument(leaf: LeafPsiElement): Argument? {
-        val parent = leaf.parentOfType<LatexCommands>() ?: return null
+    private fun getArgument(leaf: LeafPsiElement): LArgument? {
+        val parameter = leaf.parentOfType<LatexParameter>() ?: return null
+        val parent = parameter.parentOfType<LatexCommands>() ?: return null
+        val arguments = AllPredefined.lookupCommandPsi(parent)?.arguments ?: return null
 
-        val arguments = getArguments(parent.name?.substring(1) ?: return null) ?: return null
-        val requiredArguments = arguments.filterIsInstance<RequiredArgument>()
-        val optionalArguments = arguments.filterIsInstance<OptionalArgument>()
-
-        val requiredParams = parent.requiredParametersText()
-        // Note that a leaf may be only part of a parameter
-        val parameterText = leaf.firstParentOfType(LatexParameterText::class)?.text
-        val parameterIndex = requiredParams.indexOf(parameterText)
-        if (parameterIndex >= 0 && parameterIndex < requiredArguments.size) {
-            return arguments[parameterIndex]
+        parameter.requiredParam?.let { requiredParam ->
+            val idx = parent.indexOfRequiredParameter { it === requiredParam }
+            LArgument.getRequiredByIdx(arguments, idx)?.let {
+                return it
+            }
         }
 
+        // Note that a leaf may be only part of a parameter
+        val parameterText = leaf.firstParentOfType(LatexParameterText::class)?.text
+        val optionalArguments = arguments.filter { it.isOptional }
         // Also check optional arguments, if not key-value pairs it may contain text
         val optionalParamIndex = parent.getOptionalParameterMap().map { it.key.text }.indexOf(parameterText)
         return if (optionalParamIndex >= 0 && optionalParamIndex < optionalArguments.size) {
@@ -121,16 +125,5 @@ class LatexSpellcheckingStrategy : SpellcheckingStrategy() {
         else {
             null
         }
-    }
-
-    private fun getArguments(commandName: String): Array<out Argument>? {
-        val cmdHuh = LatexRegularCommand[commandName]
-        if (cmdHuh != null) {
-            return cmdHuh.first().arguments
-        }
-
-        val mathCmdHuh = LatexMathCommand[commandName] ?: return null
-
-        return mathCmdHuh.first().arguments
     }
 }

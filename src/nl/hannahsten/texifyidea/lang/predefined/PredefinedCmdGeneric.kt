@@ -111,7 +111,7 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         +"indexspace"
         "intex".cmd("entry".required) { "INDEX" }
         +"it"
-        "item".cmd("label".optional) { "ITEM" }
+        "item".cmd("label".optional(LatexContexts.Text)) { "ITEM" }
         +"itshape"
 
         +"large"
@@ -624,7 +624,7 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
 
         packageOf("acronym")
         val linebreakPenalty = "linebreak penalty".optional
-        val acronym = "acronym".required(LatexContexts.Text)
+        val acronym = "acronym".required(setOf(LatexContexts.Text, LatexContexts.GlossaryLabel))
         underContext(LatexContexts.Preamble) {
             "acro".cmd(acronym, "short name".optional, "full name".required)
             "acrodef".cmd(acronym, "short name".optional, "full name".required)
