@@ -18,6 +18,9 @@ import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 class LatexEllipsisInspection : AbstractTexifyRegexBasedInspection(
     inspectionId = "Ellipsis",
     regex = """(?<!\.)(\.\.\.)(?!\.)""".toRegex(),
+    applicableContexts = setOf(LatexContexts.Text, LatexContexts.Math),
+    excludedContexts = setOf(LatexContexts.TikzPicture)
+    // we should have excluded other contexts, but we explicitly exclude this in case
 ) {
     override fun errorMessage(matcher: MatchResult, context: LContextSet): String {
         return "Ellipsis with ... instead of \\ldots or \\dots"
