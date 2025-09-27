@@ -16,7 +16,6 @@ import nl.hannahsten.texifyidea.lang.commands.LatexListingCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexMathtoolsRegularCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexNatbibCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexNewDefinitionCommand.*
-import nl.hannahsten.texifyidea.lang.commands.LatexOperatorCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexXparseCommand.*
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.lang.predefined.PredefinedCmdGeneric

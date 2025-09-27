@@ -10,14 +10,12 @@ import com.intellij.spellchecker.tokenizer.Tokenizer
 import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import nl.hannahsten.texifyidea.lang.LArgument
 import nl.hannahsten.texifyidea.lang.LatexContexts
-import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 import nl.hannahsten.texifyidea.util.parser.hasParent
 import nl.hannahsten.texifyidea.util.parser.lookupCommandPsi
-import nl.hannahsten.texifyidea.util.parser.parentOfType
 
 /**
  * @author Hannah Schellekens
