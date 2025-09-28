@@ -7,7 +7,6 @@ import nl.hannahsten.texifyidea.lang.LSemanticCommand
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.lang.commands.LatexBiblatexCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericMathCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
@@ -492,11 +491,14 @@ object CommandMagic {
      * The names of the footnote commands that should be folded
      */
     val foldableFootnotes = setOf(
-        FOOTNOTE.cmd, FOOTCITE.cmd
+        "\\footnote", "\\footcite",
     )
 
     /**
      * Commands that should be contributed to the to do toolwindow.
      */
-    val todoCommands = setOf(LatexTodoCommand.TODO.cmd, LatexTodoCommand.MISSINGFIGURE.cmd)
+    val todoCommands = setOf(
+        "\\todo",
+        "\\missingfigure"
+    )
 }
