@@ -732,7 +732,7 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         val colorArg = "color".required(LatexContexts.ColorReference)
         underContext(LatexContexts.Preamble) {
             val typeOpt = "type".optional
-            val nameReq = "name".required
+            val nameReq = "name".required(LatexContexts.ColorDefinition)
             val modelListReq = "model-list".required(LatexContexts.Literal)
             val specListReq = "spec-list".required(LatexContexts.Literal)
 
