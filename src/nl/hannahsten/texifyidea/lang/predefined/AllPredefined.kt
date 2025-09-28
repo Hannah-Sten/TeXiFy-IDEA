@@ -28,6 +28,10 @@ object AllPredefined : LatexSemanticsLookup {
         it.allEntities
     }
 
+    val allCommands: List<LSemanticCommand> = allEntities.filterIsInstance<LSemanticCommand>()
+
+    val allEnvironments: List<LSemanticEnv> = allEntities.filterIsInstance<LSemanticEnv>()
+
     private val packageToEntities: Map<LatexLib, List<LSemanticEntity>> =
         allEntities.groupBy { it.dependency }.mapValues { it.value }
 
@@ -56,7 +60,8 @@ object AllPredefined : LatexSemanticsLookup {
     }
 
     init {
-        if (ApplicationManager.getApplication().isInternal) {
+        val app = ApplicationManager.getApplication()
+        if (app == null || app.isInternal) {
             val names = allEntities.groupBy { it }
             for ((item, commands) in names) {
                 if (commands.size > 1) {

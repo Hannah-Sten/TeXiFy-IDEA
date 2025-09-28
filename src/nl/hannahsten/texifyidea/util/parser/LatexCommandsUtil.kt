@@ -10,7 +10,6 @@ import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.lineIndentation
-import nl.hannahsten.texifyidea.util.magic.ColorMagic
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 /**
@@ -22,8 +21,6 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
  *         `null` or otherwise.
  */
 fun LatexCommands?.isDefinition() = this != null && this.name in CommandMagic.definitions
-
-fun LatexCommands?.usesColor() = this != null && this.name in ColorMagic.colorCommands
 
 /**
  * Checks whether the given LaTeX commands is a (re)definition or not.

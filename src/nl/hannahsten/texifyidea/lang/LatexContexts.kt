@@ -163,7 +163,11 @@ object LatexContexts {
      */
     val GlossaryLabel = SimpleLatexContext("glossary")
 
+    /**
+     * A context for color names or literal, such as in `\textcolor{red}{...}` or `\color{blue}`.
+     */
     val ColorReference = SimpleLatexContext("color")
+    val ColorDefinition = SimpleLatexContext("new.color")
 
     val PicturePath = SimpleLatexContext("picture.path")
 

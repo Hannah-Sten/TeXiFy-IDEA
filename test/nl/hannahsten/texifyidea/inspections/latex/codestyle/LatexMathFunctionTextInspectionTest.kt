@@ -71,6 +71,7 @@ class LatexMathFunctionTextInspectionTest : TexifyInspectionTestBase(LatexMathFu
 
     companion object {
 
-        private val MATH_FUNCTIONS = CommandMagic.slashlessMathOperators.map { it.command }
+        private val MATH_FUNCTIONS
+            get() = CommandMagic.slashlessMathOperators.map { it.command }
     }
 }

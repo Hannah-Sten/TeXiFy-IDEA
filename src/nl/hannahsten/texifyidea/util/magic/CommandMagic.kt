@@ -19,7 +19,6 @@ import nl.hannahsten.texifyidea.lang.commands.LatexNewDefinitionCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexXparseCommand.*
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.lang.predefined.PredefinedCmdGeneric
-import nl.hannahsten.texifyidea.util.magic.CommandMagic.stylePrimitives
 
 object CommandMagic {
 
@@ -49,7 +48,7 @@ object CommandMagic {
      * Commands that define a label via an optional parameter
      */
     @JvmField
-    val labelAsParameter = hashSetOf("lstinputlisting")
+    val labelAsParameter = hashSetOf("\\lstinputlisting")
 
     /**
      * The colours that each section separator has.
@@ -70,14 +69,14 @@ object CommandMagic {
     val increasesCounter =
         hashSetOf(
             "\\caption", "\\captionof", "\\chapter", "\\section", "\\subsection",
-            "\\item", "\\listinputlisting"
+            "\\item", "\\lstinputlisting"
         )
 
     /**
      * All commands that represent a reference to some label.
      */
     val labelReference: Map<String, Pair<LSemanticCommand, Int>> =
-        AllPredefined.allEntities.filterIsInstance<LSemanticCommand>().filter { cmd ->
+        AllPredefined.allCommands.filter { cmd ->
             cmd.arguments.any { it.contextSignature.introduces(LatexContexts.LabelReference) }
         }.associate {
             it.nameWithSlash to (it to it.arguments.indexOfFirst { arg -> arg.contextSignature.introduces(LatexContexts.LabelReference) })
