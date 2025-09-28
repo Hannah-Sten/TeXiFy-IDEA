@@ -39,7 +39,7 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         +"baselinestretch"
         +"bf"
         +"bfseries"
-        "bibitem".cmd("label".optional, "citekey".required) { "BIBITEM" }
+        "bibitem".cmd("label".optional, "citekey".required(LatexContexts.BibKey))
 
         +"bigskip"
         +"boldmath"
@@ -309,7 +309,7 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
     val citation = textCommands {
         val before = "before".optional
         val after = "after".optional
-        val keys = "keys".required(LatexContexts.CitationReference)
+        val keys = "keys".required(LatexContexts.BibReference)
 
         "cite".cmd("extratext".optional, keys) { "CITE" }
         "bibliographystyle".cmd("style".required(LatexContexts.BibStyle)) { "BIBLIOGRAPHYSTYLE" }
@@ -330,7 +330,7 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         packageOf("biblatex")
         val prenote = "prenote".optional
         val postnote = "postnote".optional
-        val key = "keys".required(LatexContexts.CitationReference)
+        val key = "keys".required(LatexContexts.BibReference)
         val volume = "volume".required
         val page = "page".optional
         val citeCommands = listOf(

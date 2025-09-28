@@ -68,7 +68,7 @@ object PredefinedEnvBasic : PredefinedEnvironmentSet() {
         "list".env(LatexContextIntro.inherit(), "label".required, "spacing".required)
     }
     val basicIntroMath = buildEnvironments {
-        "math".env(LatexContexts.Math) { "Inline math mode." }
+        "math".env(LatexContextIntro.INLINE_MATH) { "Inline math mode." }
         "displaymath".env(LatexContexts.Math) { "Display math mode." }
 
         val alignableMath = setOf(LatexContexts.Math, Alignable)

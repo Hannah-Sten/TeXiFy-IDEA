@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.inspections.latex.codestyle
 
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
-import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.psi.LatexOptionalKeyValPair
 import nl.hannahsten.texifyidea.settings.conventions.LabelConventionType
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsScheme
@@ -76,8 +75,6 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
             \section{some sec}\mylabel{some-sec}
             """.trimIndent()
         )
-        CommandManager.updateAliases(setOf("\\label"), project)
-
         myFixture.checkHighlighting(false, false, true, false)
     }
 

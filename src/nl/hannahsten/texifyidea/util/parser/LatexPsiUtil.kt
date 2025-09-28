@@ -266,6 +266,12 @@ object LatexPsiUtil {
         processArgumentsWithSemantics(cmd, semantics.arguments, action)
     }
 
+    inline fun processArgumentsWithNonNullSemantics(cmd: LatexCommandWithParams, semantics: LSemanticCommand, action: (LatexParameter, LArgument) -> Unit) {
+        processArgumentsWithSemantics(cmd, semantics.arguments) { param, arg ->
+            if(arg != null) action(param, arg)
+        }
+    }
+
     inline fun processArgumentsWithSemantics(cmd: LatexCommandWithParams, argList: List<LArgument>, action: (LatexParameter, LArgument?) -> Unit) {
         var argIdx = 0
         val argSize = argList.size
@@ -358,6 +364,8 @@ object LatexPsiUtil {
     /**
      * Resolve the context introductions at the given element by traversing the PSI tree upwards and collecting context changes.
      * The list is ordered from innermost to outermost context introduction.
+     *
+     * @see LatexWithContextStateTraverser
      */
     fun resolveContextIntroUpward(e: PsiElement, lookup: LatexSemanticsLookup, shortCircuit: Boolean = false): List<LatexContextIntro> {
         var collectedContextIntro: MutableList<LatexContextIntro>? = null
@@ -370,6 +378,7 @@ object LatexPsiUtil {
             val intro = when (current) {
                 is LatexParameter -> resolveCommandParameterContext(current, lookup) ?: continue
                 is LatexEnvironment -> resolveEnvironmentContext(current, lookup) ?: continue
+                is LatexInlineMath -> LatexContextIntro.INLINE_MATH
                 is LatexMathEnvironment -> LatexContextIntro.MATH
                 else -> continue
             }

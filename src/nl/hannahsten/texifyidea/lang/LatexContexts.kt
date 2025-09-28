@@ -51,6 +51,8 @@ object LatexContexts {
 
     val Math = SimpleLatexContext("math")
 
+    val InlineMath = SimpleLatexContext("math.inline")
+
     /**
      * Describes the context of package names, for example in `\usepackage{...}`.
      *
@@ -145,7 +147,9 @@ object LatexContexts {
     /**
      * The citation reference in `\cite{...}`.
      */
-    val CitationReference = SimpleLatexContext("cite.ref")
+    val BibReference = SimpleLatexContext("bib.ref")
+
+    val BibKey = SimpleLatexContext("bib.key")
 
     /**
      * A context for BibTeX style files, such as `plain` in `\bibliographystyle{plain}`.
