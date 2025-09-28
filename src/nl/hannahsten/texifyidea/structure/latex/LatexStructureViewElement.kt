@@ -19,7 +19,6 @@ import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewElement
 import nl.hannahsten.texifyidea.structure.latex.SectionNumbering.DocumentClass
-import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommandsNoUpdate
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
 import java.util.*
@@ -84,7 +83,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         val commands = element.traverseCommands()
         val treeElements = ArrayList<LatexStructureViewCommandElement>()
 
-        val labelingCommands = getLabelDefinitionCommandsNoUpdate()
+        val labelingCommands = CommandMagic.labels
 
         // Add sectioning.
         val sections = mutableListOf<LatexStructureViewCommandElement>()
@@ -102,7 +101,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
                     addSections(command, sections, treeElements, numbering)
                 }
 
-                in labelingCommands + CommandMagic.commandDefinitionsAndRedefinitions + setOf(LatexGenericRegularCommand.BIBITEM.cmd) -> {
+                in labelingCommands, in CommandMagic.commandDefinitionsAndRedefinitions, "\\bibitem" -> {
                     addAtCurrentSectionLevel(sections, treeElements, newElement)
                 }
 

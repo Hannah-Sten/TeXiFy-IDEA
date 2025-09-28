@@ -4,11 +4,6 @@ import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 /**
- * Get all commands defining labels, including user defined commands. This will not check if the aliases need to be updated.
- */
-fun getLabelDefinitionCommandsNoUpdate() = CommandManager.getAliases(CommandMagic.labels.first())
-
-/**
  * Get all commands defining labels, including user defined commands.
  * If you need to know which parameters of user defined commands define a label, use [CommandManager.labelAliasesInfo].
  *

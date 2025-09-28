@@ -6,6 +6,7 @@ import nl.hannahsten.texifyidea.psi.LatexOptionalKeyValPair
 import nl.hannahsten.texifyidea.settings.conventions.LabelConventionType
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsScheme
 import nl.hannahsten.texifyidea.testutils.updateConvention
+import nl.hannahsten.texifyidea.updateCommandDef
 import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 
 class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLabelInspection()) {
@@ -65,7 +66,7 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
         """.trimIndent()
     )
 
-    fun `test missing section label no warnings (custom label command)`() {
+    fun `test missing section label no warnings for custom label command`() {
         myFixture.configureByText(
             LatexFileType,
             """
@@ -75,6 +76,7 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
             \section{some sec}\mylabel{some-sec}
             """.trimIndent()
         )
+        myFixture.updateCommandDef()
         myFixture.checkHighlighting(false, false, true, false)
     }
 

@@ -1,12 +1,9 @@
 package nl.hannahsten.texifyidea.util.parser
 
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.util.nextLeaf
 import nl.hannahsten.texifyidea.lang.LArgument
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
-import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.files.document
@@ -148,17 +145,4 @@ fun LatexCommands.forcedFirstRequiredParameterAsCommand(): LatexCommands? {
     // This is just a bit of guesswork about the parser structure.
     // Probably, if we're looking at a \def\mycommand, if the sibling isn't it, probably the parent has a sibling.
     return nextSibling?.nextSiblingOfType(LatexCommands::class) ?: parent?.nextSiblingIgnoreWhitespace()?.findFirstChildOfType(LatexCommands::class)
-}
-
-/**
- * Checks if the command is followed by a label.
- */
-fun LatexCommands.hasLabel(): Boolean {
-    if (CommandMagic.labelAsParameter.contains(this.name)) {
-        return getOptionalParameterMapFromParameters(this.parameterList).toStringMap().containsKey("label")
-    }
-
-    // Next leaf is a command token, parent is LatexCommands
-    val labelMaybe = this.nextLeaf { it !is PsiWhiteSpace }?.parent as? LatexCommands ?: return false
-    return CommandManager.labelAliasesInfo.getOrDefault(labelMaybe.commandToken.text, null)?.labelsPreviousCommand == true
 }

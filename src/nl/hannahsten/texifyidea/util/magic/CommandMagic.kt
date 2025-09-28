@@ -211,7 +211,8 @@ object CommandMagic {
 
     /**
      * All commands that define labels and that are present by default.
-     * To include user defined commands, use [nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands] (may be significantly slower).
+     *
+     * Consider migrating to context-aware approach, using [nl.hannahsten.texifyidea.index.LatexDefinitionService].
      */
     val labels = setOf("\\label")
 
