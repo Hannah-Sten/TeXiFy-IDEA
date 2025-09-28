@@ -8,22 +8,22 @@ import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
-import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.elementType
 import com.intellij.psi.util.endOffset
 import com.intellij.psi.util.startOffset
 import nl.hannahsten.texifyidea.index.DefinitionBundle
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
-import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
+import nl.hannahsten.texifyidea.index.SourcedDefinition.DefinitionSource
+import nl.hannahsten.texifyidea.lang.LSemanticCommand
+import nl.hannahsten.texifyidea.lang.LatexContextIntro
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericMathCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommandsNoUpdate
-import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.*
+import nl.hannahsten.texifyidea.util.shrink
 
 /**
  * Provide syntax highlighting for composite elements.
@@ -33,11 +33,6 @@ import nl.hannahsten.texifyidea.util.parser.*
 open class LatexAnnotator : Annotator {
 
     object Cache {
-        /**
-         * All user defined commands, cached because it requires going over all commands, which we don't want to do for every command we need to annotate.
-         */
-        var allUserDefinedCommands = emptyList<String>()
-
         internal val userDataKeyDefBundle = Key.create<DefinitionBundle>("LatexAnnotator.defBundle")
     }
 
@@ -51,54 +46,61 @@ open class LatexAnnotator : Annotator {
     }
 
     override fun annotate(psiElement: PsiElement, annotationHolder: AnnotationHolder) {
-        // TODO: how can we avoid doing this for every element, namely, find a top-down ways of annotating?
         val defBundle = getDefBundle(annotationHolder)
         val context = LatexPsiUtil.resolveContextUpward(psiElement, defBundle)
-        // Math display
-        if (psiElement is LatexInlineMath) {
-            annotateInlineMath(psiElement, annotationHolder)
-        }
-        else if (psiElement is LatexDisplayMath ||
-            (psiElement is LatexEnvironment && LatexPsiUtil.isContextIntroduced(psiElement, defBundle, LatexContexts.Math))
-        ) {
-            annotateDisplayMath(psiElement, annotationHolder)
+        when {
+            psiElement is LatexInlineMath -> {
+                annotateInlineMath(psiElement, annotationHolder)
+            }
 
-            // Begin/End commands
-            if (psiElement is LatexEnvironment) {
-                annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
-                    .range(TextRange.from(psiElement.beginCommand.textOffset, 6))
-                    .textAttributes(LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY)
-                    .create()
+            psiElement is LatexDisplayMath ||
+                (psiElement is LatexEnvironment && LatexPsiUtil.isContextIntroduced(psiElement, defBundle, LatexContexts.Math)) -> {
+                annotateDisplayMath(psiElement, annotationHolder)
+                // Begin/End commands
+                if (psiElement is LatexEnvironment) {
+                    annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
+                        .range(TextRange.from(psiElement.beginCommand.textOffset, 6))
+                        .textAttributes(LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY)
+                        .create()
 
+                    annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
+                        .range(TextRange.from(psiElement.endCommand?.textOffset ?: psiElement.textOffset, 4))
+                        .textAttributes(LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY)
+                        .create()
+                }
+            }
+            // Key value pairs. Match on the common interface so we catch LatexKeyValPair and LatexStrictKeyValPair.
+            psiElement is LatexOptionalKeyValPair -> {
+                annotateKeyValuePair(psiElement, annotationHolder)
+            }
+            // Optional parameters.
+            psiElement is LatexOptionalParam -> {
+                annotateOptionalParameters(psiElement, annotationHolder)
+            }
+            // Commands.
+            psiElement is LatexCommands -> {
+                if (context.contains(LatexContexts.InlineMath)) {
+                    annotateMathCommands(psiElement, annotationHolder, LatexSyntaxHighlighter.COMMAND_MATH_INLINE)
+                }
+                else if (context.contains(LatexContexts.Math)) {
+                    annotateMathCommands(psiElement, annotationHolder, LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY)
+                }
+                annotateCommands(psiElement, annotationHolder, defBundle)
+            }
+
+            psiElement.elementType == LatexTypes.LEFT || psiElement.elementType == LatexTypes.RIGHT -> {
                 annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
-                    .range(TextRange.from(psiElement.endCommand?.textOffset ?: psiElement.textOffset, 4))
+                    .range(psiElement)
                     .textAttributes(LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY)
                     .create()
             }
-        }
-        // Key value pairs. Match on the common interface so we catch LatexKeyValPair and LatexStrictKeyValPair.
-        else if (psiElement is LatexOptionalKeyValPair) {
-            annotateKeyValuePair(psiElement, annotationHolder)
-        }
-        // Optional parameters.
-        else if (psiElement is LatexOptionalParam) {
-            annotateOptionalParameters(psiElement, annotationHolder)
-        }
-        // Commands.
-        else if (psiElement is LatexCommands) {
-            annotateCommands(psiElement, annotationHolder)
-        }
-        else if (psiElement.elementType == LatexTypes.LEFT || psiElement.elementType == LatexTypes.RIGHT) {
-            annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, "")
-                .range(psiElement)
-                .textAttributes(LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY)
-                .create()
-        }
-        else if (psiElement is PsiComment || context.contains(LatexContexts.Comment)) {
-            annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-                .range(psiElement.textRange)
-                .textAttributes(LatexSyntaxHighlighter.COMMENT)
-                .create()
+
+            psiElement is PsiComment || context.contains(LatexContexts.Comment) -> {
+                annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                    .range(psiElement.textRange)
+                    .textAttributes(LatexSyntaxHighlighter.COMMENT)
+                    .create()
+            }
         }
     }
 
@@ -117,11 +119,6 @@ open class LatexAnnotator : Annotator {
             .range(inlineMathElement)
             .textAttributes(LatexSyntaxHighlighter.INLINE_MATH)
             .create()
-
-        annotateMathCommands(
-            inlineMathElement.collectSubtreeTyped<LatexCommands>(), annotationHolder,
-            LatexSyntaxHighlighter.COMMAND_MATH_INLINE
-        )
     }
 
     /**
@@ -140,45 +137,38 @@ open class LatexAnnotator : Annotator {
             .textAttributes(LatexSyntaxHighlighter.DISPLAY_MATH)
             .create()
 
-        annotateMathCommands(
-            displayMathElement.collectSubtreeTyped<LatexCommands>(), annotationHolder,
-            LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY
-        )
+//        annotateMathCommands(
+//            displayMathElement.collectSubtreeTyped<LatexCommands>(), annotationHolder,
+//            LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY
+//        )
     }
 
     /**
      * Annotates all command tokens of the commands that are included in the `elements`.
      *
-     * @param elements
-     *              All elements to handle. Only elements that are [LatexCommands] are considered.
+     * @param element the command
      * @param highlighter
      *              The attributes to apply to all command tokens.
      */
     private fun annotateMathCommands(
-        elements: Collection<PsiElement>,
+        element: LatexCommands,
         annotationHolder: AnnotationHolder,
         highlighter: TextAttributesKey
     ) {
-        for (element in elements) {
-            if (element !is LatexCommands) {
-                continue
-            }
+        val token = element.commandToken
 
-            val token = element.commandToken
+        annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+            .range(token)
+            .textAttributes(highlighter)
+            .create()
 
+        if (element.name == TEXT.cmd || element.name == INTERTEXT.name) {
+            // Avoid creating an Annotation without calling the create() method
+            val range = element.firstRequiredParameter() ?: return
             annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-                .range(token)
-                .textAttributes(highlighter)
+                .range(range)
+                .textAttributes(LatexSyntaxHighlighter.MATH_NESTED_TEXT)
                 .create()
-
-            if (element.name == TEXT.cmd || element.name == INTERTEXT.name) {
-                // Avoid creating an Annotation without calling the create() method
-                val range = element.requiredParameters().firstOrNull() ?: continue
-                annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-                    .range(range)
-                    .textAttributes(LatexSyntaxHighlighter.MATH_NESTED_TEXT)
-                    .create()
-            }
         }
     }
 
@@ -214,48 +204,46 @@ open class LatexAnnotator : Annotator {
         }
     }
 
+    private fun getStyleFromContextSignature(intro: LatexContextIntro): TextAttributesKey? {
+        if (intro is LatexContextIntro.Assign) {
+            for (ctx in intro.contexts) {
+                when (ctx) {
+                    LatexContexts.LabelReference -> return LatexSyntaxHighlighter.LABEL_REFERENCE
+                    LatexContexts.LabelDefinition -> return LatexSyntaxHighlighter.LABEL_DEFINITION
+                    LatexContexts.BibReference -> return LatexSyntaxHighlighter.BIBLIOGRAPHY_REFERENCE
+                    LatexContexts.BibKey -> return LatexSyntaxHighlighter.BIBLIOGRAPHY_DEFINITION
+                }
+            }
+        }
+        return null
+    }
+
     /**
      * Annotates the given required parameters of commands.
      */
-    private fun annotateCommands(command: LatexCommands, annotationHolder: AnnotationHolder) {
+    private fun annotateCommands(command: LatexCommands, annotationHolder: AnnotationHolder, defBundle: DefinitionBundle) {
         annotateStyle(command, annotationHolder)
 
         // Make user-defined commands highlighting customizable
-        if (Cache.allUserDefinedCommands.isEmpty()) {
-            Cache.allUserDefinedCommands = NewSpecialCommandsIndex.getAllCommandDefInFileset(command.containingFile)
-                .filter { it.isCommandDefinition() }
-                .mapNotNull { it.definedCommandName() }
-        }
-        if (command.name in Cache.allUserDefinedCommands) {
+        val name = command.nameWithoutSlash ?: return
+        val def = defBundle.findDefinition(name) ?: return
+        val semantics = def.entity as? LSemanticCommand ?: return
+
+        if (def.source == DefinitionSource.UserDefined) {
             annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
                 .textAttributes(LatexSyntaxHighlighter.USER_DEFINED_COMMAND_KEY)
                 .range(command.commandToken)
                 .create()
         }
 
-        // Label references.
-        val style = when (command.name) {
-            in CommandMagic.labelReference -> {
-                LatexSyntaxHighlighter.LABEL_REFERENCE
+        LatexPsiUtil.processArgumentsWithNonNullSemantics(command, semantics) { param, arg ->
+            val intro = arg.contextSignature
+            getStyleFromContextSignature(intro)?.let { style ->
+                annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                    .range(param.textRange.shrink(1))
+                    .textAttributes(style)
+                    .create()
             }
-            // Label definitions.
-            in getLabelDefinitionCommandsNoUpdate() -> {
-                LatexSyntaxHighlighter.LABEL_DEFINITION
-            }
-            // Bibliography references (citations).
-            in CommandMagic.bibliographyReference -> {
-                LatexSyntaxHighlighter.BIBLIOGRAPHY_REFERENCE
-            }
-            // Label definitions.
-            in CommandMagic.bibliographyItems -> {
-                LatexSyntaxHighlighter.BIBLIOGRAPHY_DEFINITION
-            }
-
-            else -> return
-        }
-
-        command.firstRequiredParameter()?.let {
-            annotationHolder.annotateRequiredParameter(it, style)
         }
     }
 
@@ -275,33 +263,11 @@ open class LatexAnnotator : Annotator {
             else -> return
         }
 
-        command.firstRequiredParameter()?.let {
-            annotationHolder.annotateRequiredParameter(it, style)
-        }
-    }
-
-    /**
-     * Annotates the contents of the given parameter with the given style.
-     */
-    private fun AnnotationHolder.annotateRequiredParameter(parameter: LatexRequiredParam, style: TextAttributesKey) {
-        val firstContentChild = parameter.findFirstChildOfType(LatexContent::class)
-        val firstParamChild = parameter.findFirstChildOfType(LatexRequiredParamContent::class)
-
-        if (firstContentChild != null) {
-            this.newSilentAnnotation(HighlightSeverity.INFORMATION)
-                .range(firstContentChild)
+        command.firstRequiredParameter()?.let { param ->
+            annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                .range(param.textRange.shrink(1))
                 .textAttributes(style)
                 .create()
-        }
-        else if (firstParamChild != null) {
-            parameter.forEachChild {
-                if (it is LeafPsiElement && it.elementType == LatexTypes.NORMAL_TEXT_WORD) {
-                    this.newSilentAnnotation(HighlightSeverity.INFORMATION)
-                        .range(it as PsiElement) // resolve overloading
-                        .textAttributes(style)
-                        .create()
-                }
-            }
         }
     }
 }
