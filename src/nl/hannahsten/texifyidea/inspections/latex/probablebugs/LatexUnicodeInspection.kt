@@ -18,9 +18,9 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.Diacritic
+import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
-import nl.hannahsten.texifyidea.lang.commands.LatexMathCommand
-import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
+import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.psi.LatexContent
 import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
 import nl.hannahsten.texifyidea.psi.LatexNormalText
@@ -238,16 +238,16 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
 
             // Try to find in lookup for special command
             val replacementText: String?
-            val command: LatexCommand? = if (inMathMode) {
-                LatexMathCommand.findByDisplay(c)?.firstOrNull() ?: LatexRegularCommand.findByDisplay(c)?.firstOrNull()
+            val candidates = AllPredefined.findCommandByDisplay(c)
+            val semantic = if (inMathMode) {
+                candidates.firstOrNull {
+                    it.applicableContext?.contains(LatexContexts.Math) == true
+                } ?: candidates.firstOrNull()
             }
-            else {
-                LatexRegularCommand.findByDisplay(c)?.firstOrNull()
-            }
+            else candidates.firstOrNull()
 
             // Replace with found command or with standard substitution
-            replacementText = command?.let { "\\" + it.command }
-                ?: findReplacement(c)
+            replacementText = semantic?.nameWithSlash ?: findReplacement(c)
 
             return replacementText?.let {
                 LatexPsiHelper(element.project).createFromText(element.text.replaceRange(descriptor.textRangeInElement.toIntRange(), it))

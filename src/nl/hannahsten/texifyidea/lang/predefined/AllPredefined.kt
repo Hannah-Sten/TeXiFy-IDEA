@@ -59,6 +59,19 @@ object AllPredefined : LatexSemanticsLookup {
         return findAll(name).filterIsInstance<LSemanticEnv>()
     }
 
+    private val displayToCommand: Map<String, List<LSemanticCommand>> by lazy {
+        buildMap<String, MutableList<LSemanticCommand>> {
+            for (entity in allCommands) {
+                val display = entity.display ?: continue
+                this.getOrPut(display) { mutableListOf() }.add(entity)
+            }
+        }
+    }
+
+    fun findCommandByDisplay(display: String): List<LSemanticCommand> {
+        return displayToCommand[display] ?: emptyList()
+    }
+
     init {
         val app = ApplicationManager.getApplication()
         if (app == null || app.isInternal) {

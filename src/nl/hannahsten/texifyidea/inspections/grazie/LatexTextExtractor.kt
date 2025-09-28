@@ -4,19 +4,16 @@ import com.intellij.grazie.grammar.strategy.StrategyUtils
 import com.intellij.grazie.text.TextContent
 import com.intellij.grazie.text.TextExtractor
 import com.intellij.lang.tree.util.children
-import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.startOffset
-import nl.hannahsten.texifyidea.index.NewDefinitionIndex
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LatexContextIntro
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.*
-import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.*
 
 /**
@@ -160,10 +157,8 @@ class LatexTextExtractor : TextExtractor() {
      * Special case: if the command does not have parameters but the definition contains a text command, we assume the command itself will fit into the sentence (as we can't do a text replacement before sending to Grazie).
      */
     private fun isUserDefinedTextCommand(commandName: String, project: Project): Boolean {
-        if (DumbService.isDumb(project)) return false
-        return NewDefinitionIndex.getByName(commandName, project).any {
-            it.text.containsAny(CommandMagic.allTextCommands)
-        }
+        // TODO: we will re-implement this later
+        return false
     }
 
     private fun PsiElement.isNotInSquareBrackets() = parents().find { it is LatexGroup || it is LatexOptionalParam }
