@@ -15,8 +15,9 @@ object PredefinedCmdTextSymbols : PredefinedCommandSet() {
         symbol("_", "_", "Underscore")
     }
 
-    val textcomp = buildCommands {
+    val textcomp = textCommands {
         packageOf("textcomp")
+
         symbol("textacutedbl", "̋")
         symbol("textasciiacute", "´")
         symbol("textasciibreve", "˘")
@@ -98,6 +99,11 @@ object PredefinedCmdTextSymbols : PredefinedCommandSet() {
         symbol("texttwosuperior", "²")
         symbol("textwon", "₩")
         symbol("textyen", "¥")
+
+        symbol("textdownarrow", "↓")
+        symbol("textleftarrow", "←")
+        symbol("textrightarrow", "→")
+        symbol("textuparrow", "↑")
     }
     val euro = buildCommands {
 
@@ -298,13 +304,6 @@ object PredefinedCmdTextSymbols : PredefinedCommandSet() {
         symbol("textregistered", "®")
         symbol("textsection", "§")
         symbol("textsterling", "£")
-
-        underPackage("textcomp") {
-            symbol("textdownarrow", "↓")
-            symbol("textleftarrow", "←")
-            symbol("textrightarrow", "→")
-            symbol("textuparrow", "↑")
-        }
     }
 
     val siunitx = buildCommands {
