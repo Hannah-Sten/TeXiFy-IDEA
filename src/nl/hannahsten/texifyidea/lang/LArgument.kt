@@ -1,5 +1,8 @@
 package nl.hannahsten.texifyidea.lang
 
+import nl.hannahsten.texifyidea.util.getByIndexWithin
+import nl.hannahsten.texifyidea.util.indexOfFirstWithin
+
 enum class LArgumentType {
     REQUIRED,
     OPTIONAL
@@ -90,14 +93,15 @@ data class LArgument(
         }
 
         fun getRequiredByIdx(arguments: List<LArgument>, idx: Int): LArgument? {
-            var count = 0
-            for (argument in arguments) {
-                if (argument.isRequired) {
-                    if (count == idx) return argument
-                    count++
-                }
-            }
-            return null
+            return arguments.getByIndexWithin({ it.isRequired }, idx)
+        }
+
+        inline fun indexOfFirstRequired(arguments: List<LArgument>, predicate: (LArgument) -> Boolean): Int {
+            return arguments.indexOfFirstWithin({ it.isRequired }, predicate)
+        }
+
+        inline fun indexOfFirstOptional(arguments: List<LArgument>, predicate: (LArgument) -> Boolean): Int {
+            return arguments.indexOfFirstWithin({ it.isOptional }, predicate)
         }
     }
 }

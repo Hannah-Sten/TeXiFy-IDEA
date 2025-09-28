@@ -4,6 +4,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.nextLeaf
+import nl.hannahsten.texifyidea.lang.LArgument
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
@@ -90,7 +91,7 @@ fun PsiElement.previousCommand(): LatexCommands? {
 fun LatexCommands.getRequiredArgumentValueByName(argument: String, lookup: LatexSemanticsLookup = AllPredefined): String? {
     // Find all pre-defined commands that define `this` command.
     val semantics = lookup.lookupCommandPsi(this) ?: return null
-    val idx = semantics.arguments.indexOfFirst { it.isRequired && it.name == argument }
+    val idx = LArgument.indexOfFirstRequired(semantics.arguments) { it.name == argument }
     if (idx == -1) return null
     return this.requiredParameterText(idx)
 }
@@ -103,7 +104,7 @@ fun LatexCommands.getRequiredArgumentValueByName(argument: String, lookup: Latex
 fun LatexCommands.getOptionalArgumentValueByName(argument: String, lookup: LatexSemanticsLookup = AllPredefined): String? {
     // Find all pre-defined commands that define `this` command.
     val semantics = lookup.lookupCommandPsi(this) ?: return null
-    val idx = semantics.arguments.indexOfFirst { it.isOptional && it.name == argument }
+    val idx = LArgument.indexOfFirstOptional(semantics.arguments) { it.name == argument }
     if (idx == -1) return null
     return this.optionalParameterText(idx)
 }

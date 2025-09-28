@@ -70,7 +70,8 @@ fun expandCommandsOnce(inputText: String, project: Project, file: VirtualFile?):
     for (command in commandsInText) {
         // Expand the command once, and replace the command with the expanded text
         val name = command.name ?: continue
-        NewDefinitionIndex.getByName(name, project, file).firstOrNull()?.getRequiredArgumentValueByName("def")
+        val definitionCommand = NewDefinitionIndex.getByName(name, project, file).firstOrNull() ?: continue
+        definitionCommand.getRequiredArgumentValueByName("code")
             ?.let { commandExpansion ->
                 text = text.replace(command.text, commandExpansion)
             }
