@@ -12,8 +12,9 @@ import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.endOffset
 import com.intellij.psi.util.startOffset
+import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment
-import nl.hannahsten.texifyidea.lang.commands.LatexMathCommand
+import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.endOffset
@@ -49,12 +50,12 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
     private val endRegionRegex = """%!\s*(</editor-fold>|endregion)""".toRegex()
 
     override fun buildFoldRegions(root: PsiElement, document: Document, quick: Boolean): Array<FoldingDescriptor> {
-        /*
-        We are guaranteed read access so we must not call any `runReadAction` here.
-         */
-        val visitor = LatexFoldingVisitor()
+        // We are guaranteed read access so we must not call any `runReadAction` here.
+        val lookup = LatexDefinitionService.getBundleFor(root)
+        val visitor = LatexFoldingVisitor(lookup)
         root.accept(visitor)
         visitor.endAll(root.endOffset)
+
         return visitor.descriptors.toTypedArray()
     }
 
@@ -79,18 +80,15 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
     }
 
     /**
-     * A map of math commands (including `\`) to their folded symbols.
-     * The keys are the commands with a backslash, e.g. `\alpha`, and the values are the symbols, e.g. `α`.
+     * Escape special symbols in LaTeX.
      */
-    private val commandToFoldedSymbol: Map<String, String> = buildMap {
-        val escapedSymbols = listOf("%", "#", "&", "_", "$")
-        for (s in escapedSymbols) {
-            put("\\$s", s) // e.g. \% -> %
-        }
-        for (cmd in LatexMathCommand.values()) {
-            val display = cmd.display ?: continue
-            putIfAbsent(cmd.commandWithSlash, display) // e.g. \alpha -> α
-        }
+    val escapedSymbols = setOf("%", "#", "&", "_", "$")
+
+    private fun findCommandFoldedSymbol(nameWithSlash: String, lookup: LatexSemanticsLookup): String? {
+        val nameWithoutSlash = nameWithSlash.removePrefix("\\")
+        if (nameWithoutSlash in escapedSymbols) return nameWithoutSlash
+        val cmd = lookup.lookupCommand(nameWithoutSlash) ?: return null
+        return cmd.display
     }
 
     private fun foldingDescriptorSymbol(cmdToken: PsiElement, display: String): FoldingDescriptor {
@@ -139,7 +137,9 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
     /**
      * We use this visitor to traverse all section commands and magic comments that define regions.
      */
-    private inner class LatexFoldingVisitor : LatexRecursiveVisitor() {
+    private inner class LatexFoldingVisitor(
+        val lookup: LatexSemanticsLookup
+    ) : LatexRecursiveVisitor() {
         /*
         Rules:
 
@@ -282,7 +282,7 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
             /*
             If the command is a math command, we add it to the stack.
              */
-            val display = commandToFoldedSymbol[name] ?: return
+            val display = findCommandFoldedSymbol(name, lookup) ?: return
             val descriptor = foldingDescriptorSymbol(element.commandToken, display)
             descriptors.add(descriptor)
         }

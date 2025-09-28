@@ -13,7 +13,7 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
 
         symbol("LaTeX", "LaTeX")
         symbol("LaTeXe", "LaTeX2ε")
-        "\\".cmd("margin".optional, display = "(linebreak)") { "Linebreak" }
+        "\\".cmd("margin".optional) { "Linebreak" }
         symbol("AA", "Å")
         symbol("AE", "Æ")
         +"Huge"
@@ -26,7 +26,7 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         ":".cmd { "2/9 of \\quad (= 4 mu) " }
         ";".cmd { "5/18 of \\quad (= 5 mu) " }
         "!".cmd { "negative space, equal to -3 mu" }
-        " ".cmd(display = "(space after backslash!)") { "equivalent of space in normal text " }
+        " ".cmd { "equivalent of space in normal text " }
 
         // special characters
 

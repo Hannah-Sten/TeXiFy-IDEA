@@ -18,6 +18,7 @@ import nl.hannahsten.texifyidea.lang.commands.LatexNatbibCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexNewDefinitionCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexXparseCommand.*
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
+import nl.hannahsten.texifyidea.lang.predefined.PredefinedCmdFiles
 import nl.hannahsten.texifyidea.lang.predefined.PredefinedCmdGeneric
 
 object CommandMagic {
@@ -288,10 +289,7 @@ object CommandMagic {
     /**
      * All the commands that may define regular commands, whether it exists or not.
      */
-    val allFileIncludeCommands = LatexRegularCommand.values()
-        .filter { command -> command.arguments.any { it is RequiredFileArgument } }
-        .map { it.commandWithSlash }
-        .toSet()
+    val allFileIncludeCommands: Set<String> = PredefinedCmdFiles.allCommands.map { it.nameWithSlash }.toSet()
 
     /**
      * All commands that can define regular commands.
