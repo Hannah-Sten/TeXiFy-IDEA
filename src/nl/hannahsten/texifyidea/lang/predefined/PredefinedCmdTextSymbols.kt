@@ -121,11 +121,14 @@ object PredefinedCmdTextSymbols : PredefinedCommandSet() {
 
     val generalSymbols = buildCommands {
 
-        symbol("OE", "Œ")
-        symbol("S", "§")
+        underContext(LatexContexts.Text) {
+            // while they can be used in math mode, they are not usually used there
+            symbol("OE", "Œ")
+            symbol("S", "§")
+            symbol("aa", "å")
+            symbol("ae", "æ")
+        }
 
-        symbol("aa", "å")
-        symbol("ae", "æ")
         symbol("dag", "†")
         symbol("ddag", "‡")
 
