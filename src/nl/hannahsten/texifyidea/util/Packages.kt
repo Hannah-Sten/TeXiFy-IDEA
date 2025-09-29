@@ -194,14 +194,15 @@ object PackageUtils {
 
     fun insertUsePackage(file: PsiFile, lib: LatexLib, options: List<String> = emptyList()): Boolean {
         if (lib.isDefault || lib.isCustom) return true
-        val packName = lib.toPackageName() ?: return false
+        val packName = lib.asPackageName() ?: return false
         val filesetData = LatexProjectStructure.getFilesetDataFor(file)
         if (filesetData != null) {
-            if (lib.name in filesetData.libraries) return true
-            conflictingPackageMap[lib.name]?.let { conflicts ->
+            val fileName = lib.toFileName() ?: return true
+            if (fileName in filesetData.libraries) return true
+            conflictingPackageMap[fileName]?.let { conflicts ->
                 // Don't insert when a conflicting package is already present
                 if (conflicts.any {
-                        lib.name != it && filesetData.libraries.contains(it)
+                        fileName != it && filesetData.libraries.contains(it)
                     }
                 ) {
                     return false

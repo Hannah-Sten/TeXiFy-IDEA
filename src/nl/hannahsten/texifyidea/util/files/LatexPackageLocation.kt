@@ -106,7 +106,7 @@ object LatexPackageLocation {
     /**
      * Get all known package names in the LaTeX installation.
      */
-    fun getAllPackageNames(project: Project): Set<String> {
+    fun getAllPackageFileNames(project: Project): Set<String> {
         if(ApplicationManager.getApplication().isUnitTestMode) {
             return emptySet()
         }

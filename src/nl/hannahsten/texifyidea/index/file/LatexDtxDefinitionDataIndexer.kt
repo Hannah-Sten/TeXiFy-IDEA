@@ -294,7 +294,8 @@ object LatexDtxDefinitionDataIndexer : DataIndexer<String, List<LatexSimpleDefin
             if (def.name in names) continue
             definitions.add(def)
         }
-        return mapOf(dtxInfo.lib.name to definitions)
+        val filename = dtxInfo.lib.toFileName() ?: return emptyMap()
+        return mapOf(filename to definitions)
     }
 }
 

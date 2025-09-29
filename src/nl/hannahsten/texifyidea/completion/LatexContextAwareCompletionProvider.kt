@@ -32,14 +32,14 @@ abstract class LatexContextAwareCompletionAdaptor : CompletionProvider<Completio
         return file.name
     }
 
-    protected fun buildCommandSourceStr(sourced: SourcedDefinition): String {
+    protected fun buildDefinitionSourceStr(sourced: SourcedDefinition): String {
         val cmd = sourced.entity
         val dependency = cmd.dependency
         if (dependency.isCustom) {
             // If the command is defined in the current file, we can use the file name.
             return getContainingFileName(sourced) ?: "(unknown)"
         }
-        return dependency.name
+        return dependency.displayString(withParan = false)
     }
 
     abstract override fun addContextAwareCompletions(

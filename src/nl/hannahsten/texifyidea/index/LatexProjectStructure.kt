@@ -200,6 +200,9 @@ class LatexLibraryInfo(
  *
  * Provides methods to build and manage the structure of LaTeX libraries (.sty and .cls files).
  *
+ *
+ * For the cache, the key is the package name with extension, e.g. `amsmath.sty` or `article.cls`.
+ *
  * @author Ezrnest
  */
 @Service(Service.Level.PROJECT)
@@ -307,9 +310,9 @@ class LatexLibraryStructureService(
         return getOrComputeNow(nameWithExt, LIBRARY_FILESET_EXPIRATION_TIME)
     }
 
-    fun getLibraryInfo(name: LatexLib): LatexLibraryInfo? {
-        if (name.isCustom) return null // Custom libraries are not supported
-        return getLibraryInfo(name.name)
+    fun getLibraryInfo(lib: LatexLib): LatexLibraryInfo? {
+        val fileName = lib.toFileName() ?: return null
+        return getLibraryInfo(fileName)
     }
 
     fun getLibraryInfo(path: Path): LatexLibraryInfo? {

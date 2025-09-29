@@ -17,7 +17,7 @@ import nl.hannahsten.texifyidea.intentions.LatexAddLabelToCommandIntention
 import nl.hannahsten.texifyidea.intentions.LatexAddLabelToEnvironmentIntention
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
-import nl.hannahsten.texifyidea.lang.LatexDocumentClass
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
@@ -59,7 +59,7 @@ class LatexMissingLabelInspection : AbstractTexifyContextAwareInspection(
             requireLabel.filter { c -> c.type == LabelConventionType.COMMAND }.map { "\\" + it.name }.toMutableSet()
 
         // Document classes like book and report provide \part as sectioning, but with exam class it's a part in a question
-        if (file.findRootFile().documentClass() == LatexDocumentClass.EXAM.name) {
+        if (file.findRootFile().documentClass() == LatexLib.EXAM.name) {
             labeledCommands.remove("\\part")
         }
         labeledCommandsLocal = labeledCommands
