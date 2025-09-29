@@ -12,4 +12,31 @@ object MorePackages : PredefinedEntitySet() {
             }
         }
     }
+
+    val physics = definedUnder("physics") {
+        val matrixArg = "mat".required(setOf(LatexContexts.Math, LatexContexts.Alignable))
+        underContext(LatexContexts.Math) {
+            arrayOf("mqty", "pmqty", "bmqty", "Bmqty", "vmqty", "Vmqty", "dmqty").forEach {
+                it.cmd(matrixArg)
+            }
+        }
+    }
+
+    val niceMatrix = definedUnder("nicematrix") {
+        val colsArg = "cols".required(LatexContexts.Literal)
+        underContext(LatexContexts.Math) {
+            arrayOf("NiceMatrix", "pNiceMatrix", "bNiceMatrix", "BNiceMatrix", "vNiceMatrix", "VNiceMatrix").forEach {
+                it.env(setOf(LatexContexts.Alignable, LatexContexts.Math))
+            }
+            arrayOf("NiceArray", "pNiceArray", "bNiceArray", "BNiceArray", "vNiceArray", "VNiceArray").forEach {
+                it.env(setOf(LatexContexts.Alignable, LatexContexts.Math), colsArg)
+            }
+        }
+
+        underContext(LatexContexts.Text) {
+            arrayOf("NiceTabular", "NiceTabular*").forEach {
+                it.env(setOf(LatexContexts.Tabular, LatexContexts.Text), colsArg)
+            }
+        }
+    }
 }
