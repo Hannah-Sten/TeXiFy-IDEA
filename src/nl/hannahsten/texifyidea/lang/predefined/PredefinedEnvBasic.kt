@@ -65,9 +65,6 @@ object PredefinedEnvBasic : PredefinedEnvironmentSet() {
         "itemize".env(+LatexContexts.Enumerate) {
             "A bulleted list."
         }
-
-        +"array"
-
         "list".env(LatexContextIntro.inherit(), "label".required, "spacing".required)
     }
     val basicIntroMath = buildEnvironments {
