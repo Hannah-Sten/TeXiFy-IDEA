@@ -104,6 +104,9 @@ object PredefinedCmdTextSymbols : PredefinedCommandSet() {
         symbol("textleftarrow", "←")
         symbol("textrightarrow", "→")
         symbol("textuparrow", "↑")
+        symbol("texttrademark", "™")
+        symbol("textunderscore", "_")
+        symbol("textvisiblespace", "␣")
     }
     val euro = buildCommands {
 

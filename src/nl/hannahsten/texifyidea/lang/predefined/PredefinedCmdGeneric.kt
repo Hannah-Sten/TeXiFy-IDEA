@@ -235,11 +235,11 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
 
         "textsubscript".cmd(textArg) { "TEXTSUBSCRIPT" }
         "textsuperscript".cmd(textArg) { "TEXTSUPERSCRIPT" }
-        symbol("texttrademark", "™")
+
         "texttt".cmd(textArg) { "TEXTTT" }
-        symbol("textunderscore", "_")
+
         "textup".cmd(textArg) { "TEXTUP" }
-        symbol("textvisiblespace", "␣")
+
         +"textwidth"
         "thanks".cmd("to".required) { "THANKS" }
         +"thicklines"
