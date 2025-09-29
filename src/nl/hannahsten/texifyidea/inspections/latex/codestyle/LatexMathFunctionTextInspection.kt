@@ -26,9 +26,7 @@ class LatexMathFunctionTextInspection : AbstractTexifyCommandBasedInspection(
     applicableContexts = setOf(LatexContexts.Math)
 ) {
 
-    private val affectedCommands = CommandMagic.slashlessMathOperators.asSequence()
-        .map { it.command }
-        .toSet()
+    private val affectedCommands = CommandMagic.mathOperators.map { it.name }.toSet()
 
     override fun getDisplayName() = "Use math function instead of \\text"
 
