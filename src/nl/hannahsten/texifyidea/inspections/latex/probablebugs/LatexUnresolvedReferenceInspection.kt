@@ -35,7 +35,7 @@ class LatexUnresolvedReferenceInspection : AbstractTexifyContextAwareInspection(
 
     override fun isAvailableForFile(file: PsiFile): Boolean {
         // If the project filesets are not available, we do not inspect the file.
-        return LatexProjectStructure.isProjectFilesetsAvailable(file.project)
+        return LatexProjectStructure.isProjectFilesetsAvailable(file.project) && super.isAvailableForFile(file)
     }
 
     override fun shouldInspectChildrenOf(element: PsiElement, state: LContextSet, lookup: LatexSemanticsLookup): Boolean {

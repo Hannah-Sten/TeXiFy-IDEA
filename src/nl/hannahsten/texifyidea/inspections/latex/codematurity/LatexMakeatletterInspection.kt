@@ -26,7 +26,7 @@ class LatexMakeatletterInspection : AbstractTexifyCommandBasedInspection(
 
     override fun isAvailableForFile(file: PsiFile): Boolean {
         val type = file.virtualFile?.fileType ?: file.fileType
-        return type == LatexFileType
+        return type == LatexFileType && super.isAvailableForFile(file)
     }
 
     override fun inspectCommand(command: LatexCommands, contexts: LContextSet, defBundle: DefinitionBundle, file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {

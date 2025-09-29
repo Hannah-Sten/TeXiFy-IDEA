@@ -453,13 +453,26 @@ class LatexDefinitionService(
         return getAndComputeLater(fileset, expirationTime, LatexLibraryDefinitionService.predefinedBaseLibBundle)
     }
 
+    fun getDefBundleForFilesetOrNull(fileset: Fileset): DefinitionBundle? {
+        return getAndComputeLater(fileset, expirationTime)
+    }
+
     /**
      * Get the merged definition bundle for the given [psiFile], which may belong to multiple filesets.
+     *
      */
-    fun getDefBundlesMerged(psiFile: PsiFile): DefinitionBundle {
+    fun getDefBundlesMerged(psiFile: PsiFile, default: DefinitionBundle = LatexLibraryDefinitionService.predefinedBaseLibBundle): DefinitionBundle {
         val filesetData = LatexProjectStructure.getFilesetDataFor(psiFile) ?: return LatexLibraryDefinitionService.predefinedBaseLibBundle
         if (filesetData.filesets.size == 1) return getDefBundleForFileset(filesetData.filesets.first())
         return union(filesetData.filesets.map { getDefBundleForFileset(it) })
+    }
+
+    fun getDefBundlesMergedOrNull(psiFile: PsiFile): DefinitionBundle? {
+        val filesetData = LatexProjectStructure.getFilesetDataFor(psiFile) ?: return null
+        if (filesetData.filesets.size == 1) return getDefBundleForFilesetOrNull(filesetData.filesets.first())
+        val bundles = filesetData.filesets.mapNotNull { getDefBundleForFilesetOrNull(it) }
+        if (bundles.isEmpty()) return null
+        return union(bundles)
     }
 
     fun resolveCommandDef(v: VirtualFile, commandName: String): SourcedDefinition? {

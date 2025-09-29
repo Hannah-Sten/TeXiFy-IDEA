@@ -40,7 +40,7 @@ class LatexFileNotFoundInspection : AbstractTexifyCommandBasedInspection(
     override val outerSuppressionScopes = EnumSet.of(MagicCommentScope.GROUP)!!
 
     override fun isAvailableForFile(file: PsiFile): Boolean {
-        return LatexProjectStructure.isProjectFilesetsAvailable(file.project)
+        return LatexProjectStructure.isProjectFilesetsAvailable(file.project) && super.isAvailableForFile(file)
     }
 
     override fun inspectCommand(command: LatexCommands, contexts: LContextSet, defBundle: DefinitionBundle, file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {

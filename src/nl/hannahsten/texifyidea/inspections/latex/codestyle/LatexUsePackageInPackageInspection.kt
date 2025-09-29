@@ -20,7 +20,7 @@ class LatexUsePackageInPackageInspection : AbstractTexifyCommandBasedInspection(
     override fun isAvailableForFile(file: PsiFile): Boolean {
         val fileType = file.virtualFile?.fileType ?: file.fileType
         // don't know why but sometimes file.fileType is not the same as file.virtualFile?.fileType
-        return fileType in applicableFileExtensions
+        return fileType in applicableFileExtensions && super.isAvailableForFile(file)
     }
 
     override fun inspectCommand(command: LatexCommands, contexts: LContextSet, defBundle: DefinitionBundle, file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {

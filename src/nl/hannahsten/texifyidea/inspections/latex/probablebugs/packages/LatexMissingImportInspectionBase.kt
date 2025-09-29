@@ -43,7 +43,7 @@ abstract class LatexMissingImportInspectionBase(inspectionId: String) : Abstract
             return false
         }
         val project = file.project
-        return LatexProjectStructure.isProjectFilesetsAvailable(project)
+        return LatexProjectStructure.isProjectFilesetsAvailable(project) && super.isAvailableForFile(file)
     }
 
     override fun inspectElement(element: PsiElement, contexts: LContextSet, bundle: DefinitionBundle, file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {

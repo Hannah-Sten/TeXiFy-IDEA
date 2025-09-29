@@ -5,6 +5,7 @@ import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalInspectionTool
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.SuppressQuickFix
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
@@ -100,7 +101,7 @@ abstract class AbstractTexifyContextAwareInspection(
         val applicableContexts = this.applicableContexts
         if (applicableContexts != null) {
             // Only inspect if at least one of the applicable contexts is present, namely the intersection is non-empty.
-            if(!applicableContexts.existsIntersection(contexts)) return false
+            if (!applicableContexts.existsIntersection(contexts)) return false
         }
         val excludedContexts = this.excludedContexts
         return excludedContexts.isEmpty() || !contexts.any { it in excludedContexts }
@@ -162,6 +163,16 @@ abstract class AbstractTexifyContextAwareInspection(
         }
     }
 
+    override fun isAvailableForFile(file: PsiFile): Boolean {
+        // we wait until we have a custom definition bundle to avoid false warnings
+        // unless we are in unit test mode, where we just use the base bundle
+        if (ApplicationManager.getApplication().isUnitTestMode) {
+            return true
+        }
+        val defBundle = LatexDefinitionService.getInstance(file.project).getDefBundlesMergedOrNull(file)
+        return defBundle != null
+    }
+
     /**
      * Make a quick check to see if the file is applicable for this inspection.
      *
@@ -207,7 +218,7 @@ abstract class AbstractTexifyContextAwareInspection(
         private var isSuppressedNext: Boolean = false
 
         override fun enterContextIntro(intro: LatexContextIntro): WalkAction {
-            if(intro.introducesAny(skipChildrenInContext)) {
+            if (intro.introducesAny(skipChildrenInContext)) {
                 return WalkAction.SKIP_CHILDREN
             }
             return super.enterContextIntro(intro)
