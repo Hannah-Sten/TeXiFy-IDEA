@@ -37,9 +37,9 @@ class LatexEnterBetweenBracesHandler : EnterHandlerDelegateAdapter() {
 
         if (before.node.elementType === LatexTypes.DISPLAY_MATH_START && after.node.elementType === LatexTypes.DISPLAY_MATH_END) {
             originalHandler!!.execute(editor, editor.caretModel.currentCaret, dataContext)
-            PsiDocumentManager.getInstance(file.getProject()).commitDocument(editor.document)
+            PsiDocumentManager.getInstance(file.project).commitDocument(editor.document)
             try {
-                CodeStyleManager.getInstance(file.getProject()).adjustLineIndent(file, editor.caretModel.offset)
+                CodeStyleManager.getInstance(file.project).adjustLineIndent(file, editor.caretModel.offset)
             }
             catch (e: IncorrectOperationException) {
                 Logger.getInstance(javaClass).error(e)

@@ -200,14 +200,14 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
         /**
          * The name of the environment to suppress, or `null` when there is no environment name available.
          */
-        private val environmentName: String? = parentEnvironment.getEnvironmentName()
+        private val environmentName: String = parentEnvironment.getEnvironmentName()
 
         override val suppressionScope = MagicCommentScope.ENVIRONMENT
 
         override fun getFamilyName() = "Suppress for environment '$environmentName'"
 
         override fun isAvailable(project: Project, context: PsiElement): Boolean {
-            return environmentName != null && super.isAvailable(project, context)
+            return super.isAvailable(project, context)
         }
     }
 

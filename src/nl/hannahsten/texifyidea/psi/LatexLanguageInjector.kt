@@ -78,7 +78,7 @@ class LatexLanguageInjector : LanguageInjector {
         else {
             Language.findLanguageByID(id)?.let { return it }
             // As a fallback, try a case insensitive check
-            return Language.getRegisteredLanguages().firstOrNull { it.id.lowercase() == id.lowercase() }
+            return Language.getRegisteredLanguages().firstOrNull { it.id.equals(id, ignoreCase = true) }
         }
     }
 }

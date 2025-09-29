@@ -47,7 +47,7 @@ class TexifyRegexInspectionTest {
 
         // Remove the ProblemDescriptor part of the applyfix functionality to avoid trying to replace things in a non-existing file
         fun mockApplyFix(replacementRange: IntRange, replacement: String): Int {
-            dummyDocument = dummyDocument.replaceRange(replacementRange.start, replacementRange.endInclusive, replacement)
+            dummyDocument = dummyDocument.replaceRange(replacementRange.first, replacementRange.last, replacement)
             return replacement.length - replacementRange.length + 1
         }
     }

@@ -115,10 +115,10 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
     private fun foldingDescriptorFootnote(o: LatexCommands, range: TextRange): FoldingDescriptor {
         val parsedText = o.text.substring(1).trim()
         val placeHolderText = if (parsedText.length > minFootnoteLength) {
-            parsedText.substring(0, minFootnoteLength) + "..."
+            parsedText.take(minFootnoteLength) + "..."
         }
         else {
-            parsedText.substring(0, parsedText.length - 1)
+            parsedText.dropLast(1)
         }
         return foldingDescriptor(
             o, range,

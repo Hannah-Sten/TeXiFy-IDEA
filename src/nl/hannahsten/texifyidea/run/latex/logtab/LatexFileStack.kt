@@ -62,9 +62,9 @@ class LatexFileStack(
             // Files may end halfway the line, or right at the end of a line
             // Assume there are no spaces in the path (how can we know where the file ends?)
             val endIndex = if (setOf(" ", ")", "(").any { it in line }) line.firstIndexOfAny(' ', ')', '(') else line.length
-            currentCollectingFile += line.substring(0, endIndex).remove("\n")
+            currentCollectingFile += line.take(endIndex).remove("\n")
             // Check if this was the last part of the file
-            if (line.substring(0, endIndex).length < LINE_WIDTH) {
+            if (line.take(endIndex).length < LINE_WIDTH) {
                 // Assume that paths can be quoted, but there are no " in folder/file names
                 pushFile(currentCollectingFile.trim('"'), line)
                 currentCollectingFile = ""
@@ -90,7 +90,7 @@ class LatexFileStack(
             if (linePart[result.range.first] == '(') {
                 // Count all open pars that are before the found opening par.
                 if (linePart.indexOfFirst { it == '(' } in 0..result.range.first) {
-                    notClosedNonFileOpenParentheses += linePart.substring(0, result.range.first).count { it == '(' }
+                    notClosedNonFileOpenParentheses += linePart.take(result.range.first).count { it == '(' }
                 }
                 val file = result.groups["file"]?.value?.trim() ?: break
 
@@ -110,7 +110,7 @@ class LatexFileStack(
             else {
                 // Count all open pars that are before the found closing par.
                 if (linePart.indexOfFirst { it == '(' } in 0..result.range.first) {
-                    notClosedNonFileOpenParentheses += linePart.substring(0, result.range.first).count { it == '(' }
+                    notClosedNonFileOpenParentheses += linePart.take(result.range.first).count { it == '(' }
                 }
                 if (notClosedNonFileOpenParentheses > 0) notClosedNonFileOpenParentheses--
                 else {

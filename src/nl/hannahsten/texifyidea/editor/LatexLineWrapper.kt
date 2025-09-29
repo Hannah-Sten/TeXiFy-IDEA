@@ -66,7 +66,7 @@ object LatexLineWrapper {
                 endOffsetToUse,
                 rightMargin
             )
-            if (preferredWrapPosition < 0 || preferredWrapPosition >= endLineOffset) {
+            if (preferredWrapPosition !in 0..<endLineOffset) {
                 continue
             }
             if (preferredWrapPosition >= endOffsetToUse) {

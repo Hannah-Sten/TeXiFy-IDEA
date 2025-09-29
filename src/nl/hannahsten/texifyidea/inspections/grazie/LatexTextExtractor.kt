@@ -94,7 +94,7 @@ class LatexTextExtractor : TextExtractor() {
                 if (setOf(' ', '\n').contains(rootText.getOrNull(start - 1)) && root.collectSubtreeTyped<LatexNormalText>().firstOrNull() != text
                 ) {
                     //  We have to skip over indents to find the newline though (indents will be ignored later)
-                    start -= rootText.substring(0, start).takeLastWhile { it.isWhitespace() }.length
+                    start -= rootText.take(start).takeLastWhile { it.isWhitespace() }.length
                 }
 
                 // -1 Because endOffset is exclusive, but we are working with inclusive end here

@@ -78,7 +78,7 @@ class LatexBibinputsRelativePathInspection : TexifyInspectionBase() {
                 .forEach { config ->
                     val envs = config.environmentVariables.envs.toMutableMap()
                     val oldPath = envs["BIBINPUTS"] ?: return@forEach
-                    val newPath = oldPath.substring(0, oldPath.lastIndexOf('/'))
+                    val newPath = oldPath.take(oldPath.lastIndexOf('/'))
                     envs["BIBINPUTS"] = newPath
                     config.environmentVariables = EnvironmentVariablesData.create(envs, config.environmentVariables.isPassParentEnvs)
                 }

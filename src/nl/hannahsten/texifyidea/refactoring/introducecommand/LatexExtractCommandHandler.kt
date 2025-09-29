@@ -232,7 +232,7 @@ fun findCandidateExpressionsToExtract(editor: Editor, file: LatexFile): List<Lat
                 // in this text block, if it multiline, find current line
                 if (interruptedText.contains('\n')) {
                     val previousLineBreak =
-                        interruptedText.substring(0, editor.caretModel.offset - interruptedParent.startOffset)
+                        interruptedText.take(editor.caretModel.offset - interruptedParent.startOffset)
                             .lastIndexOf('\n')
                     val startIndex = previousLineBreak + 1 + interruptedText.substring(previousLineBreak + 1)
                         .indexOfFirst { !it.isWhitespace() }
