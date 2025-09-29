@@ -62,20 +62,20 @@ abstract class AbstractTexifyContextAwareInspection(
      * If null, applies to all contexts except those in [excludedContexts].
      * If non-null, applies only to those contexts, except those in [excludedContexts].
      */
-    val applicableContexts: LContextSet?,
+    val applicableContexts: LContextSet? = null,
     /**
      * The contexts in which this inspection should not be applied.
      *
-     * Note that comment is always excluded.
+     * Note that comment is excluded via [skipChildrenInContext], so it does not need to be listed here.
      */
-    val excludedContexts: LContextSet,
+    val excludedContexts: LContextSet = emptySet(),
     /**
      * The contexts in which all the children should not be skipped.
      * By default, children inside comments are skipped.
      *
      * For example, "reference not found" inspection should additionally skip children inside definitions.
      */
-    val skipChildrenInContext: LContextSet
+    val skipChildrenInContext: LContextSet = setOf(LatexContexts.Comment),
 ) : LocalInspectionTool() {
 
     /**

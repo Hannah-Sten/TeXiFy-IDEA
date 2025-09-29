@@ -1,6 +1,8 @@
 package nl.hannahsten.texifyidea.inspections.latex.typesetting.spacing
 
+import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
+import nl.hannahsten.texifyidea.updateCommandDef
 
 class LatexMathOperatorEscapeInspectionTest : TexifyInspectionTestBase(LatexMathOperatorEscapeInspection()) {
 
@@ -26,6 +28,16 @@ class LatexMathOperatorEscapeInspectionTest : TexifyInspectionTestBase(LatexMath
     }
 
     fun `test no trigger inside text in inline math`() {
-        testHighlighting("""Hallo $\text{cos}(x)$""")
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \usepackage{amstext}
+            Hallo $\text{cos}(x)$
+            """.trimIndent()
+        )
+        // technically speaking, \text command is contained in amstext package (contained in amsmath)
+        // so we have to update the command definitions for this test to work
+        myFixture.updateCommandDef()
+        myFixture.checkHighlighting()
     }
 }

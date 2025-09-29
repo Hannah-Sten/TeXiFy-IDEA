@@ -3,6 +3,7 @@
 package nl.hannahsten.texifyidea.util.magic
 
 import com.intellij.ui.Gray
+import nl.hannahsten.texifyidea.lang.LSemanticCommand
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.*
 import nl.hannahsten.texifyidea.lang.commands.LatexBiblatexCommand.*
@@ -16,6 +17,7 @@ import nl.hannahsten.texifyidea.lang.commands.LatexNewDefinitionCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexOperatorCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexUncategorizedStmaryrdSymbols.BIG_SQUARE_CAP
 import nl.hannahsten.texifyidea.lang.commands.LatexXparseCommand.*
+import nl.hannahsten.texifyidea.lang.predefined.PredefinedCmdMathSymbols
 import nl.hannahsten.texifyidea.util.magic.CommandMagic.stylePrimitives
 
 object CommandMagic {
@@ -228,14 +230,8 @@ object CommandMagic {
      *
      * Reference [Unofficial LaTeX2e reference manual](https://latexref.xyz/Math-functions.html)
      */
-    @JvmField
-    val slashlessMathOperators = hashSetOf(
-        INVERSE_COSINE, INVERSE_SINE, INVERSE_TANGENT, ARGUMENT, BMOD, COSINE, HYPERBOLIC_COSINE, COTANGENT,
-        HYPERBOLIC_COTANGENT, COSECANT, DEGREES, DERMINANT, DIMENSION, EXPONENTIAL, GREATEST_COMMON_DIVISOR,
-        HOMOMORPHISM, INFINUM, KERNEL, BASE_2_LOGARITHM, LIMIT, LIMIT_INFERIOR, LIMIT_SUPERIOR,
-        NATURAL_LOGARITHM, LOGARITHM, MAXIMUM, MINIMUM, PMOD, PROBABILITY, SECANT, SINE,
-        HYPERBOLIC_SINE, SUPREMUM, TANGENT, HBOLICTANGENT
-    )
+    val mathOperators: List<LSemanticCommand>
+        get() = PredefinedCmdMathSymbols.mathTextOperators
 
     /**
      * All commands that define regular commands, and that require that the command is not already defined.
