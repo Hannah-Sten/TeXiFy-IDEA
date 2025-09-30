@@ -81,5 +81,20 @@ class LatexLabelParameterReference(element: LatexParameterText) : PsiReferenceBa
                 e.extractLabelElement()?.let { PsiElementResolveResult(it) }
             }
         }
+
+        fun isLabelDefined(label: String, file: PsiFile): Boolean {
+            val project = file.project
+            val basicSearchScope = LatexProjectStructure.getFilesetScopeFor(file, onlyTexFiles = true)
+            if (NewLabelsIndex.existsByName(label, project, basicSearchScope)) return true
+
+            LatexProjectStructure.getFilesetDataFor(file)?.externalDocumentInfo?.forEach { info ->
+                if (label.startsWith(info.labelPrefix)) {
+                    val labelWithoutPrefix = label.removePrefix(info.labelPrefix)
+                    val scopes = info.files.map { LatexProjectStructure.getFilesetScopeFor(it, project, onlyTexFiles = true) }
+                    if (NewLabelsIndex.existsByName(labelWithoutPrefix, project, GlobalSearchScope.union(scopes))) return true
+                }
+            }
+            return false
+        }
     }
 }

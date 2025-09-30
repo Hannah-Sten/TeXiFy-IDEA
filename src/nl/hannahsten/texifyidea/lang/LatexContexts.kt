@@ -114,6 +114,10 @@ object LatexContexts {
      */
     val Text = SimpleLatexContext("text")
 
+    val Comment = SimpleLatexContext("comment")
+
+    val baseContexts = setOf(Preamble, Text)
+
     /**
      * A number is expected, for example in `\setcounter{...}{...}`.
      */
@@ -139,9 +143,9 @@ object LatexContexts {
     val Folder = SimpleLatexContext("folder")
 
     /**
-     * The citation key in `\cite{...}`.
+     * The citation reference in `\cite{...}`.
      */
-    val CitationKey = SimpleLatexContext("bibtex.key")
+    val CitationReference = SimpleLatexContext("cite.ref")
 
     /**
      * A context for BibTeX style files, such as `plain` in `\bibliographystyle{plain}`.
@@ -175,5 +179,5 @@ object LatexContexts {
 
     val Alignable = SimpleLatexContext("alignable")
 
-    val Comment = SimpleLatexContext("comment")
+    val TikzPicture = SimpleLatexContext("tikz.picture")
 }

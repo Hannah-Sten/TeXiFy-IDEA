@@ -121,7 +121,7 @@ interface LatexCommand : Described, Dependend {
                         else {
                             arguments.add(RequiredArgument(it.groups["arg"]?.value ?: ""))
                         }
-                        counter += it.range.length + 1
+                        counter += it.range.length
                     }
                     else {
                         return@breaker
@@ -141,7 +141,7 @@ interface LatexCommand : Described, Dependend {
                             match.groups["oarg"]?.value?.let {
                                 arguments.add(OptionalArgument(it))
                             }
-                            counter += match.range.length + 1
+                            counter += match.range.length
                         }
                         else {
                             return@breaker

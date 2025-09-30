@@ -65,9 +65,6 @@ object PredefinedEnvBasic : PredefinedEnvironmentSet() {
         "itemize".env(+LatexContexts.Enumerate) {
             "A bulleted list."
         }
-
-        +"array"
-
         "list".env(LatexContextIntro.inherit(), "label".required, "spacing".required)
     }
     val basicIntroMath = buildEnvironments {
@@ -260,7 +257,7 @@ object PredefinedEnvBasic : PredefinedEnvironmentSet() {
         "testcolors".env(LatexContexts.Text, "num models".optional) //
 
         packageOf("tikz")
-        +"tikzpicture"
+        "tikzpicture".env(LatexContexts.TikzPicture)
 
         packageOf("widetable")
         +"widetable"

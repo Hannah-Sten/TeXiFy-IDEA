@@ -20,15 +20,34 @@ import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.index.LatexLibraryDefinitionService
 import nl.hannahsten.texifyidea.index.LatexLibraryStructureService
 import nl.hannahsten.texifyidea.index.LatexProjectFilesets
+import nl.hannahsten.texifyidea.inspections.AbstractTexifyContextAwareInspection
 import java.lang.management.ManagementFactory
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicLong
 import javax.swing.JLabel
 import javax.swing.SwingConstants
+import kotlin.time.Duration.Companion.milliseconds
 
-interface SimplePerformanceTracker {
-    val countOfBuilds: AtomicInteger
-    val totalTimeCost: AtomicLong
+class SimplePerformanceTracker {
+    private val myCountOfBuilds: AtomicInteger = AtomicInteger(0)
+    private val myTotalTimeCost: AtomicLong = AtomicLong(0)
+
+    fun recordTimeCost(timeCost: Long) {
+        myTotalTimeCost.addAndGet(timeCost)
+        myCountOfBuilds.incrementAndGet()
+    }
+
+    val countOfBuilds: Int
+        get() = myCountOfBuilds.get()
+    val totalTimeCost: Long
+        get() = myTotalTimeCost.get()
+
+    inline fun <T> track(crossinline action: () -> T): T {
+        val start = System.currentTimeMillis()
+        val result = action()
+        recordTimeCost(System.currentTimeMillis() - start)
+        return result
+    }
 }
 
 class PerformanceDiagnosticAction : AnAction() {
@@ -42,7 +61,7 @@ class PerformanceDiagnosticAction : AnAction() {
 
     private fun performance(name: String, tracker: SimplePerformanceTracker, additionalInfo: String = ""): PerformanceData {
         return PerformanceData(
-            name, tracker.countOfBuilds.get(), tracker.totalTimeCost.get(), additionalInfo
+            name, tracker.countOfBuilds, tracker.totalTimeCost, additionalInfo
         )
     }
 
@@ -69,16 +88,17 @@ class PerformanceDiagnosticAction : AnAction() {
         val projectFilesets = LatexProjectStructure.getFilesets(project)
         val tableData = listOf(
             performance(
-                "Library Structure", LatexLibraryStructureService,
+                "Library Structure", LatexLibraryStructureService.performanceTracker,
                 "Loaded Libraries: ${libService.librarySize()}"
             ),
             PerformanceData(
-                "Fileset", LatexProjectStructure.countOfBuilds.get(), LatexProjectStructure.totalTimeCost.get(),
+                "Fileset", LatexProjectStructure.performanceTracker.countOfBuilds, LatexProjectStructure.performanceTracker.totalTimeCost,
                 buildFilesetInfo(projectFilesets)
             ),
-            performance("Package Definitions", LatexLibraryDefinitionService),
-            performance("Custom Definitions", LatexDefinitionService, buildCustomDefinitionsInfo(project)),
-            performance("Completion Lookup", LatexContextAwareCompletionAdaptor)
+            performance("Package Definitions", LatexLibraryDefinitionService.performanceTracker),
+            performance("Custom Definitions", LatexDefinitionService.performanceTracker, buildCustomDefinitionsInfo(project)),
+            performance("Completion Lookup", LatexContextAwareCompletionAdaptor.performanceTracker),
+            performance("Ctx-aware Inspections", AbstractTexifyContextAwareInspection.performanceTracker)
         )
 
         val totalRunningTime = ManagementFactory.getRuntimeMXBean().uptime + 1 // +1 to avoid division by zero
@@ -90,7 +110,7 @@ class PerformanceDiagnosticAction : AnAction() {
                         td { +"Name" }
                         td { +"CPU Time (ms)" }
                         td { +"% of Total Uptime" }
-                        td { +"Count of Builds" }
+                        td { +"Runs" }
                         td { +"Average Time" }
                         td { +"Additional Info" }
                     }
@@ -122,7 +142,7 @@ class PerformanceDiagnosticAction : AnAction() {
                 }
                 // add a separator line
                 hr { }
-                +"Total Uptime reflects real elapsed time, not CPU time. "
+                +"Total Uptime (${totalRunningTime.milliseconds}) reflects real elapsed time, not CPU time."
                 br
                 +"Total CPU time may significantly exceed uptime due to multi-core processing."
             }

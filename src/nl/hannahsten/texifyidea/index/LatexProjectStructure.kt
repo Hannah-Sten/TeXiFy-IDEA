@@ -59,8 +59,6 @@ import java.io.File
 import java.nio.file.InvalidPathException
 import java.nio.file.Path
 import java.util.SequencedSet
-import java.util.concurrent.atomic.AtomicInteger
-import java.util.concurrent.atomic.AtomicLong
 import kotlin.collections.contains
 import kotlin.io.path.Path
 import kotlin.io.path.extension
@@ -209,9 +207,8 @@ class LatexLibraryInfo(
 class LatexLibraryStructureService(
     private val project: Project
 ) : AbstractBlockingCacheService<String, LatexLibraryInfo?>() {
-    companion object : SimplePerformanceTracker {
-        override val countOfBuilds: AtomicInteger = AtomicInteger(0)
-        override val totalTimeCost: AtomicLong = AtomicLong(0)
+    companion object {
+        val performanceTracker = SimplePerformanceTracker()
 
         private val libraryCommandNameToExt: Map<String, String> = buildMap {
             put("\\usepackage", ".sty")
@@ -229,10 +226,8 @@ class LatexLibraryStructureService(
     }
 
     override fun computeValue(key: String, oldValue: LatexLibraryInfo?): LatexLibraryInfo? {
-        val startTime = System.currentTimeMillis()
-        return computePackageFilesetsRecur(key, mutableSetOf()).also {
-            countOfBuilds.incrementAndGet()
-            totalTimeCost.addAndGet(System.currentTimeMillis() - startTime)
+        return performanceTracker.track {
+            computePackageFilesetsRecur(key, mutableSetOf())
         }
     }
 
@@ -337,12 +332,9 @@ class LatexLibraryStructureService(
  *
  * @author Ezrnest
  */
-object LatexProjectStructure : SimplePerformanceTracker {
-    /**
-     * The count of building operations, used for debugging purposes.
-     */
-    override val countOfBuilds = AtomicInteger(0)
-    override val totalTimeCost = AtomicLong(0)
+object LatexProjectStructure {
+
+    val performanceTracker = SimplePerformanceTracker()
 
     val expirationTime: Duration
         get() = TexifySettings.getState().filesetExpirationTimeMs.milliseconds
@@ -923,10 +915,8 @@ object LatexProjectStructure : SimplePerformanceTracker {
 
     private suspend fun buildFilesetsSuspend(project: Project, previous: LatexProjectFilesets?): LatexProjectFilesets {
         val newFileset = smartReadAction(project) {
-            val startTime = System.currentTimeMillis()
-            buildFilesets(project).also {
-                countOfBuilds.incrementAndGet()
-                totalTimeCost.addAndGet(System.currentTimeMillis() - startTime)
+            performanceTracker.track {
+                buildFilesets(project)
             }
         }
         if (!ApplicationManager.getApplication().isUnitTestMode && newFileset != previous) {
@@ -1031,14 +1021,19 @@ object LatexProjectStructure : SimplePerformanceTracker {
      *
      * @see nl.hannahsten.texifyidea.reference.InputFileReference
      */
-    fun commandFileReferenceInfo(command: LatexCommands, project: Project = command.project): Pair<List<String>, List<Set<VirtualFile>>>? {
+    fun commandFileReferenceInfo(command: LatexCommands, requestRefresh: Boolean = false): Pair<List<String>, List<Set<VirtualFile>>>? {
         val data = command.getUserData(userDataKeyFileReference)
+        if(!requestRefresh && !ApplicationManager.getApplication().isUnitTestMode) {
+            return data?.value
+        }
         if (data != null && data.isNotExpired(expirationTime)) {
             // If the data is already computed and not expired, return it
             return data.value
         }
+        val containingFile = command.containingFile
+        val project = containingFile.project
         val projectFS = getFilesets(project) // call for an update if needed
-        val root = command.containingFile.virtualFile ?: return null
+        val root = containingFile.virtualFile ?: return null
         if (projectFS == null || root in projectFS.mapping || !ProjectFileIndex.getInstance(project).isInProject(root)) {
             // if the file is already in the mapping, we should totally rely on the computed data
             return data?.value

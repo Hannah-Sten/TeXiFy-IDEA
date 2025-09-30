@@ -52,7 +52,7 @@ abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStu
     override fun hasStar(): Boolean {
         forEachDirectChild {
             // check Latex.bnf: commands ::= COMMAND_TOKEN STAR? parameter*
-            if(it.elementType == LatexTypes.STAR) return true
+            if (it.elementType == LatexTypes.STAR) return true
         }
         return false
     }
@@ -66,13 +66,9 @@ abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStu
     }
 
     override fun setName(newName: String): PsiElement {
-        var newText = this.text.replace(name ?: return this, newName)
-        if (!newText.startsWith("\\"))
-            newText = "\\" + newText
-        val newElement = LatexPsiHelper(this.project).createFromText(newText).firstChild
-        val oldNode = this.node
-        val newNode = newElement.node
-        this.parent?.node?.replaceChild(oldNode, newNode)
+        val newNameWithSlash = if (!newName.startsWith("\\")) "\\" + newName else newName
+        val newToken = LatexPsiHelper.createFromText(newNameWithSlash, this.project).findFirstChildTyped<LatexCommands>()?.commandToken ?: return this
+        this.commandToken.replace(newToken)
         return this
     }
 

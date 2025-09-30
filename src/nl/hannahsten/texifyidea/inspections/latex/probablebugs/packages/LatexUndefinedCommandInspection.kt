@@ -4,7 +4,6 @@ import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.util.TextRange
-import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.lang.LSemanticEntity
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
@@ -18,11 +17,7 @@ import nl.hannahsten.texifyidea.psi.LatexEnvironment
  *
  * @author Thomas
  */
-class LatexUndefinedCommandInspection : LatexMissingImportInspectionBase() {
-
-    override val inspectionGroup = InsightGroup.LATEX
-
-    override val inspectionId = "UndefinedCommand"
+class LatexUndefinedCommandInspection : LatexMissingImportInspectionBase(inspectionId = "UndefinedCommand") {
 
     override fun getDisplayName() = "Command is not defined"
 

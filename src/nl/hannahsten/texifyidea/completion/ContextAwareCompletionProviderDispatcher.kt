@@ -27,7 +27,7 @@ object ContextAwareCompletionProviderDispatcher : LatexContextAwareCompletionAda
             Folder to LatexFolderProvider,
             BibStyle to LatexBibliographyStyleProvider,
             LabelReference to LatexLabelReferenceProvider,
-            CitationKey to LatexBibliographyReferenceProvider,
+            CitationReference to LatexBibliographyReferenceProvider,
             PicturePath to LatexGraphicsPathProvider,
             GlossaryLabel to LatexGlossariesCompletionProvider,
             ListType to LatexListTypeProvider,

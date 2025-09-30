@@ -28,6 +28,30 @@ open class TextBasedMagicCommentParser(private val comments: List<String>) : Mag
          * Matches against a key assignment.
          */
         private val KEY_ASSIGNMENT = Regex("""^([a-zA-Z\s]+)\s*=""")
+
+        /**
+         * Checks if a single line contains a specific key-value pair (key = value).
+         * Value can be null (checks only for key existence).
+         *
+         * @param line Single magic comment line.
+         * @param key Key name (case-insensitive comparison).
+         * @param value Optional value (exact match, null to ignore).
+         * @return true if matches.
+         */
+        fun containsMagicCommentPair(line: String, key: String, value: String? = null): Boolean {
+            val match = COMMENT_PREFIX.find(line) ?: return false
+            val cleaned = line.substring(match.range.last + 1)
+            // find the `=` and split the string in two parts
+            val idx = cleaned.indexOf('=')
+            if(value == null) {
+                val foundKey = if (idx == -1) cleaned.trim() else cleaned.take(idx).trim()
+                return foundKey.equals(key, ignoreCase = true)
+            }
+            if (idx == -1) return false
+            val foundKey = cleaned.take(idx).trim()
+            val foundValue = cleaned.drop(idx + 1).trim()
+            return foundKey.equals(key, ignoreCase = true) && foundValue == value
+        }
     }
 
     override fun parse(): MagicComment<String, String> = MutableMagicComment<String, String>().apply {
