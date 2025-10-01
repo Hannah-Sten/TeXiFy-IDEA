@@ -6,4 +6,6 @@ object CommandNames {
     const val ADD_TO_LUATEX_PATH = "\\addtoluatexpath"
     const val EXTERNAL_DOCUMENT = "\\externaldocument"
     const val DECLARE_GRAPHICS_EXTENSIONS = "\\DeclareGraphicsExtensions"
+
+    const val QED_HERE = "\\qedhere"
 }
