@@ -8,7 +8,7 @@ import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.formatter.common.AbstractBlock
 import com.intellij.psi.util.prevLeaf
 import nl.hannahsten.texifyidea.editor.typedhandlers.LatexEnterHandler
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment
+import nl.hannahsten.texifyidea.lang.predefined.EnvironmentNames
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.settings.codestyle.LatexCodeStyleSettings
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
@@ -149,7 +149,7 @@ class LatexBlock(
         val shouldIndentEnvironments = latexSettings.INDENT_ENVIRONMENTS
         val isDocumentEnvironment = myNode.elementType === LatexTypes.ENVIRONMENT_CONTENT &&
             (myNode.psi as LatexEnvironmentContent)
-                .firstParentOfType(LatexEnvironment::class)?.getEnvironmentName() == DefaultEnvironment.DOCUMENT.environmentName
+                .firstParentOfType(LatexEnvironment::class)?.getEnvironmentName() == EnvironmentNames.DOCUMENT
         val shouldIndentEnvironment = when {
             myNode.elementType !== LatexTypes.ENVIRONMENT_CONTENT -> false
             isDocumentEnvironment -> shouldIndentDocumentEnvironment

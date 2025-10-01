@@ -23,6 +23,7 @@ import nl.hannahsten.texifyidea.lang.LatexSemanticsCommandLookup
 import nl.hannahsten.texifyidea.lang.LatexSemanticsEnvLookup
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
+import nl.hannahsten.texifyidea.lang.predefined.EnvironmentNames
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
@@ -40,8 +41,8 @@ fun LatexBeginCommand.endCommand(): LatexEndCommand? = nextSiblingOfType(LatexEn
  * @return `true` if the command marks a valid entry point, `false` if not.
  */
 fun LatexBeginCommand.isEntryPoint(): Boolean {
-    // Currently: only allowing `\begin{document}`.
-    return this.environmentName() == "document"
+    // Currently: only allowing `\\begin{document}`.
+    return this.environmentName() == EnvironmentNames.DOCUMENT
 }
 
 /**

@@ -4,9 +4,9 @@ import com.intellij.openapi.vfs.findPsiFile
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.index.LatexProjectStructure
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SUBFILES
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
+import nl.hannahsten.texifyidea.lang.predefined.EnvironmentNames
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
@@ -49,7 +49,7 @@ fun PsiFile.isRoot(): Boolean {
     // Function to avoid unnecessary evaluation
     fun documentClass() = this.commandsInFile().find { it.name == LatexGenericRegularCommand.DOCUMENTCLASS.cmd }
 
-    fun documentEnvironment() = this.traverseTyped<LatexEnvironment>().any { it.getEnvironmentName() == DefaultEnvironment.DOCUMENT.environmentName }
+    fun documentEnvironment() = this.traverseTyped<LatexEnvironment>().any { it.getEnvironmentName() == EnvironmentNames.DOCUMENT }
 
     // If the file uses the subfiles documentclass, then it is a root file in the sense that all file inclusions
     // will be relative to this file. Note that it may include the preamble of a different file (using optional parameter of \documentclass)

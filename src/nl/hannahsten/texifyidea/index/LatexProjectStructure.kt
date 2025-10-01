@@ -35,6 +35,10 @@ import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SUBFILES
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
+import nl.hannahsten.texifyidea.lang.predefined.CommandNames.ADD_TO_LUATEX_PATH
+import nl.hannahsten.texifyidea.lang.predefined.CommandNames.DECLARE_GRAPHICS_EXTENSIONS
+import nl.hannahsten.texifyidea.lang.predefined.CommandNames.DOCUMENT_CLASS
+import nl.hannahsten.texifyidea.lang.predefined.CommandNames.EXTERNAL_DOCUMENT
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.nameWithSlash
 import nl.hannahsten.texifyidea.settings.TexifySettings
@@ -350,11 +354,6 @@ object LatexProjectStructure {
             >
         >("latex.command.reference.files")
 
-    const val CMD_DOCUMENT_CLASS = "\\documentclass"
-    const val CMD_ADD_TO_LUATEX_PATH = "\\addtoluatexpath"
-    const val CMD_EXTERNAL_DOCUMENT = "\\externaldocument"
-    const val CMD_DECLARE_GRAPHICS_EXTENSIONS = "\\DeclareGraphicsExtensions"
-
     fun getPossibleRootFiles(project: Project): Set<VirtualFile> {
         if (DumbService.isDumb(project)) return emptySet()
         val rootFiles = mutableSetOf<VirtualFile>()
@@ -419,7 +418,7 @@ object LatexProjectStructure {
 
         private fun extractExternalDocumentInfoInFileset(allFilesScope: GlobalSearchScope): List<ExternalDocumentInfo> {
             val externalDocumentCommands = NewCommandsIndex.getByName(
-                CMD_EXTERNAL_DOCUMENT,
+                EXTERNAL_DOCUMENT,
                 allFilesScope.restrictedByFileTypes(LatexFileType)
             )
             if (externalDocumentCommands.isEmpty()) return emptyList()
@@ -558,7 +557,7 @@ object LatexProjectStructure {
             val rangesAndTextsWithExt: MutableList<Pair<List<String>, Set<String>>> = mutableListOf()
             // Special case for the subfiles package: the (only) mandatory optional parameter should be a path to the main file
             // We reference it because we include the preamble of that file, so it is in the file set (partially)
-            if (commandName == CMD_DOCUMENT_CLASS && reqParamTexts.any { it.endsWith(SUBFILES.name) }) {
+            if (commandName == DOCUMENT_CLASS && reqParamTexts.any { it.endsWith(SUBFILES.name) }) {
                 // try to find the main file in the optional parameter map
                 command.optionalParameterTextMap().entries.firstOrNull()?.let { (k, _) ->
                     // the value should be empty, we only care about the key, see Latex.bnf
@@ -642,7 +641,7 @@ object LatexProjectStructure {
                 // For bibliography files, we can search in the bib input paths
                 processFilesUnderRootDirs(pathWithExts, refInfos, info.bibInputPaths)
             }
-            if (commandName == CMD_EXTERNAL_DOCUMENT) {
+            if (commandName == EXTERNAL_DOCUMENT) {
                 // \externaldocument uses the .aux file in the output directory, we are only interested in the source file,
                 // but it can be anywhere (because no relative path will be given, as in the output directory everything will be on the same level).
                 // This does not count for building the file set, because the external document is not actually in the fileset, only the label definitions are,
@@ -669,7 +668,7 @@ object LatexProjectStructure {
 
         private fun addGraphicsPathsfo(file: VirtualFile) {
             // Declare graphics extensions
-            NewCommandsIndex.getByName(CMD_DECLARE_GRAPHICS_EXTENSIONS, project, file)
+            NewCommandsIndex.getByName(DECLARE_GRAPHICS_EXTENSIONS, project, file)
                 .lastOrNull()?.requiredParameterText(0)?.split(",")
                 // Graphicx requires the dot to be included
                 ?.map { it.trim(' ', '.') }?.let {
@@ -685,7 +684,7 @@ object LatexProjectStructure {
 
         private fun addLuatexPaths(project: Project, file: VirtualFile) {
             // addtoluatexpath
-            val direct = NewCommandsIndex.getByName(CMD_ADD_TO_LUATEX_PATH, project, file)
+            val direct = NewCommandsIndex.getByName(ADD_TO_LUATEX_PATH, project, file)
                 .mapNotNull { it.requiredParameterText(0) }
                 .flatMap { it.split(",") }
             val viaUsepackage = NewSpecialCommandsIndex.getPackageIncludes(project, file)
@@ -718,7 +717,7 @@ object LatexProjectStructure {
             addGraphicsPathsfo(file)
             addLuatexPaths(project, file)
 
-            val docClass = NewCommandsIndex.getByName(CMD_DOCUMENT_CLASS, project, file)
+            val docClass = NewCommandsIndex.getByName(DOCUMENT_CLASS, project, file)
                 .lastOrNull()?.requiredParameterText(0)
             val oldRoot = info.currentRootDir
             if (docClass != null && docClass.endsWith(SUBFILES.name)) {

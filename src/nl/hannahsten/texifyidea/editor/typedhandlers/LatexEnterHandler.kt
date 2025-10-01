@@ -6,7 +6,7 @@ import com.intellij.formatting.ChildAttributes
 import com.intellij.formatting.Indent
 import com.intellij.lang.ASTNode
 import nl.hannahsten.texifyidea.formatting.LatexBlock
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment
+import nl.hannahsten.texifyidea.lang.predefined.EnvironmentNames
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
@@ -22,7 +22,7 @@ object LatexEnterHandler {
     fun getChildAttributes(newChildIndex: Int, node: ASTNode, subBlocks: MutableList<Block>): ChildAttributes {
         val shouldIndentDocumentEnvironment = CodeStyle.getCustomSettings(node.psi.containingFile, LatexCodeStyleSettings::class.java).INDENT_DOCUMENT_ENVIRONMENT
         val shouldIndentEnvironments = CodeStyle.getCustomSettings(node.psi.containingFile, LatexCodeStyleSettings::class.java).INDENT_ENVIRONMENTS
-        val isDocumentEnvironment = node.elementType === LatexTypes.ENVIRONMENT && (node.psi as? LatexEnvironment)?.getEnvironmentName() == DefaultEnvironment.DOCUMENT.environmentName
+        val isDocumentEnvironment = node.elementType === LatexTypes.ENVIRONMENT && (node.psi as? LatexEnvironment)?.getEnvironmentName() == EnvironmentNames.DOCUMENT
         val shouldIndentEnvironment = when {
             node.elementType !== LatexTypes.ENVIRONMENT -> false
             isDocumentEnvironment -> shouldIndentDocumentEnvironment

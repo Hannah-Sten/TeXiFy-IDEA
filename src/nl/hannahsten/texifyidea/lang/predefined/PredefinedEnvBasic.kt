@@ -14,7 +14,7 @@ object PredefinedEnvBasic : PredefinedEnvironmentSet() {
             toAdd = setOf(LatexContexts.Text),
             toRemove = setOf(LatexContexts.Preamble)
         )
-        "document".env(mainTextIntro) {
+        EnvironmentNames.DOCUMENT.env(mainTextIntro) {
             "The main document environment."
         }
 

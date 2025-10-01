@@ -13,8 +13,8 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.endOffset
 import com.intellij.psi.util.startOffset
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
+import nl.hannahsten.texifyidea.lang.predefined.EnvironmentNames
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.endOffset
@@ -335,7 +335,7 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
             }
             // We enter a new level with the environment, and we should not end previous commands
             // While this is only for the `document` command now, we reserve it here for possible future change
-            val newLevel = o.getEnvironmentName() == DefaultEnvironment.DOCUMENT.environmentName
+            val newLevel = o.getEnvironmentName() == EnvironmentNames.DOCUMENT
             if (newLevel) {
                 val originalBaseCount = prevLevelSize
                 prevLevelSize = sectionStack.size

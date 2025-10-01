@@ -4,8 +4,9 @@ import com.intellij.openapi.application.runUndoTransparentWriteAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.parser.endOffset
@@ -113,11 +114,7 @@ class MathEnvironmentEditor(
     }
 
     private fun isAmsMathEnvironment(environmentName: String): Boolean {
-        val amsMathEnvironments: Array<String> = DefaultEnvironment.entries
-            .filter { it.dependency == LatexPackage.AMSMATH }
-            .map { it.environmentName }
-            .toTypedArray()
-        return amsMathEnvironments.contains(environmentName)
+        return AllPredefined.lookupEnv(environmentName)?.dependency == LatexLib.AMSMATH
     }
 
     /**

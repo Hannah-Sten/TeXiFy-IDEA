@@ -465,8 +465,8 @@ object CommandMagic {
      * Maps the name of the command to the registered Language id.
      */
     val languageInjections = hashMapOf(
-        DIRECTLUA.cmd to "Lua",
-        LUAEXEC.cmd to "Lua"
+        "\\directlua" to "Lua",
+        "\\luaexec" to "Lua",
     )
 
     /**
