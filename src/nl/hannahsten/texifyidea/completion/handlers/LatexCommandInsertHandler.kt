@@ -57,7 +57,7 @@ data class LatexCommandInsertHandler(
             }
         }
 
-        SemanticRightInsertHandler.handleInsert(context, item, semantics)
+        RightInsertHandler.handleInsert(context, item, semantics)
         LatexAddImportInsertHandler.handleInsert(context, item)
     }
 
