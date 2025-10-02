@@ -24,7 +24,7 @@ import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.getFileExtension
 import nl.hannahsten.texifyidea.util.files.writeToFileUndoable
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.parser.lookupCommand
+import nl.hannahsten.texifyidea.util.parser.lookupCommandN
 import java.util.*
 
 /**
@@ -58,7 +58,7 @@ class LatexFileNotFoundInspection : AbstractTexifyCommandBasedInspection(
     ) {
         val fileName = reference.refText
         val commandName = reference.element.nameWithoutSlash
-        val extensions = defBundle.lookupCommand(commandName)?.arguments?.flatMap {
+        val extensions = defBundle.lookupCommandN(commandName)?.arguments?.flatMap {
             LatexContexts.asFileInputCtx(it.contextSignature)?.supportedExtensions ?: emptyList()
         } ?: emptyList()
 

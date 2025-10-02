@@ -136,11 +136,6 @@ open class LatexAnnotator : Annotator {
             .range(displayMathElement)
             .textAttributes(LatexSyntaxHighlighter.DISPLAY_MATH)
             .create()
-
-//        annotateMathCommands(
-//            displayMathElement.collectSubtreeTyped<LatexCommands>(), annotationHolder,
-//            LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY
-//        )
     }
 
     /**

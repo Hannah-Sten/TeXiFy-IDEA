@@ -162,13 +162,13 @@ fun LatexSemanticsEnvLookup.lookupEnv(name: String?): LSemanticEnv? {
     return lookupEnv(name)
 }
 
-fun LatexSemanticsCommandLookup.lookupCommand(name: String?): LSemanticCommand? {
+fun LatexSemanticsCommandLookup.lookupCommandN(name: String?): LSemanticCommand? {
     if (name == null) return null
     return lookupCommand(name)
 }
 
 fun LatexSemanticsCommandLookup.lookupCommandPsi(cmd: LatexCommands): LSemanticCommand? {
-    return lookupCommand(cmd.nameWithoutSlash)
+    return lookupCommandN(cmd.nameWithoutSlash)
 }
 
 /**

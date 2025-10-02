@@ -9,7 +9,7 @@ import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.nameWithoutSlash
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.parser.lookupCommand
+import nl.hannahsten.texifyidea.util.parser.lookupCommandN
 import kotlin.math.min
 
 /**
@@ -52,7 +52,7 @@ fun findRelativeSearchPathsForImportCommands(command: LatexCommands, givenRelati
         includeCommand.requiredParametersText().any { it.contains(command.containingFile.name.removeFileExtension()) }
     }.filter { includeCommand ->
         // Only consider commands that can include LaTeX files
-        AllPredefined.lookupCommand(includeCommand.nameWithoutSlash)?.arguments?.any {
+        AllPredefined.lookupCommandN(includeCommand.nameWithoutSlash)?.arguments?.any {
             it.isRequired && LatexContexts.asFileInputCtx(it.contextSignature)?.supportedExtensions?.contains("tex") == true
         } == true
     }
