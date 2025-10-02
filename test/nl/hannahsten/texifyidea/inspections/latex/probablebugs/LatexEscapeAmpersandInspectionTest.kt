@@ -3,7 +3,6 @@ package nl.hannahsten.texifyidea.inspections.latex.probablebugs
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import nl.hannahsten.texifyidea.updateCommandDef
-import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 
 internal class LatexEscapeAmpersandInspectionTest : TexifyInspectionTestBase(LatexEscapeAmpersandInspection()) {
 
@@ -82,7 +81,7 @@ internal class LatexEscapeAmpersandInspectionTest : TexifyInspectionTestBase(Lat
     }
 
     fun `test that ampersand in matrix environments does not trigger a warning`() {
-        EnvironmentMagic.matrixEnvironments.forEach { environment ->
+        listOf("matrix", "pmatrix").forEach { environment ->
             myFixture.configureByText(
                 LatexFileType,
                 """

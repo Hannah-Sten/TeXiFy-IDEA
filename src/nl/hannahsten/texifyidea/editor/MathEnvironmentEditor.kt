@@ -7,6 +7,7 @@ import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
+import nl.hannahsten.texifyidea.lang.predefined.EnvironmentNames
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.parser.endOffset
@@ -121,7 +122,7 @@ class MathEnvironmentEditor(
      * Determines if the environment is a one line environment.
      */
     private fun isOneLineEnvironment(environmentName: String): Boolean {
-        return environmentName == "inline" || environmentName == "display" || environmentName == "equation" || environmentName == "equation*"
+        return environmentName == "inline" || environmentName == "display" || environmentName == EnvironmentNames.EQUATION || environmentName == EnvironmentNames.EQUATION_STAR
     }
 
     private fun needsParameter(environmentName: String): Boolean {
