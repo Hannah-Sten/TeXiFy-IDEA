@@ -177,7 +177,9 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
             val endOffset = prev?.endOffset ?: newSection.startOffset
             val lastRegionStart = regionStack.lastOrNull()?.start ?: -1
             while (sectionStack.size > prevLevelSize) {
-                val (lastCommand, lastLevel) = sectionStack.last()
+                val foldingEntry = sectionStack.last()
+                val lastCommand = foldingEntry.command
+                val lastLevel = foldingEntry.level
                 if (lastLevel < endLevel) {
                     break // The last command is at a lower level, stop popping
                 }
