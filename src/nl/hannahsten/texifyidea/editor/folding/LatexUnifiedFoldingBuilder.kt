@@ -10,10 +10,12 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.psi.util.descendants
 import com.intellij.psi.util.endOffset
 import com.intellij.psi.util.startOffset
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.commands.LatexMathCommand
+import nl.hannahsten.texifyidea.lang.predefined.PredefinedCmdPairedDelimiters
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.endOffset
@@ -360,6 +362,39 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
         override fun visitElement(element: PsiElement) {
             ProgressIndicatorProvider.checkCanceled()
             element.acceptChildren(this)
+        }
+
+        override fun visitLeftRight(o: LatexLeftRight) {
+            val descendants = o.descendants(canGoInside = { it == o }).toList()
+
+            var leftDisplay: String
+
+            var rightDisplay: String
+
+            if (descendants[1].text.substring(1) in PredefinedCmdPairedDelimiters.delimiterLeftMap) {
+                leftDisplay = PredefinedCmdPairedDelimiters.delimiterLeftMap[descendants[1].text.substring(1)]?.leftDisplay ?: descendants[1].text
+
+                rightDisplay = PredefinedCmdPairedDelimiters.delimiterLeftMap[descendants[1].text.substring(1)]?.rightDisplay ?: descendants[descendants.size - 1].text
+            } else if ((descendants[1].text + descendants[2].text).substring(1) in PredefinedCmdPairedDelimiters.delimiterLeftMap) {
+                leftDisplay = PredefinedCmdPairedDelimiters.delimiterLeftMap[(descendants[1].text + descendants[2].text).substring(1)]?.leftDisplay ?: descendants[1].text
+
+                rightDisplay = PredefinedCmdPairedDelimiters.delimiterLeftMap[(descendants[1].text + descendants[2].text).substring(1)]?.rightDisplay ?: descendants[descendants.size - 1].text
+            } else {
+                super.visitLeftRight(o)
+
+                return
+            }
+            
+            descriptors.add(
+                foldingDescriptor(
+                    o,
+                    range = o.textRange,
+                    placeholderText = leftDisplay + "..." + rightDisplay,
+                    false
+                )
+            )
+
+            super.visitLeftRight(o)
         }
     }
 }
