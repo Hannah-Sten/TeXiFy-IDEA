@@ -23,21 +23,23 @@ object EnvironmentMagic {
 
     // Note: used in the lexer
     @JvmField
-    val verbatim = hashSetOf(
-        EnvironmentNames.VERBATIM,
-        EnvironmentNames.VERBATIM_CAPITAL,
-        EnvironmentNames.LST_LISTING,
-        EnvironmentNames.PLANTUML,
-        EnvironmentNames.MINTED,
-        EnvironmentNames.SAGESILENT,
-        EnvironmentNames.SAGEBLOCK,
-        EnvironmentNames.SAGECOMMANDLINE,
-        EnvironmentNames.SAGEVERBATIM,
-        EnvironmentNames.SAGEEXAMPLE,
-        EnvironmentNames.LUACODE,
-        EnvironmentNames.LUACODE_STAR,
-        EnvironmentNames.PY_CODE
-    )
+    val verbatim = EnvironmentNames.run {
+        hashSetOf(
+            VERBATIM,
+            VERBATIM_CAPITAL,
+            LST_LISTING,
+            PLANTUML,
+            MINTED,
+            SAGESILENT,
+            SAGEBLOCK,
+            SAGECOMMANDLINE,
+            SAGEVERBATIM,
+            SAGEEXAMPLE,
+            LUACODE,
+            LUACODE_STAR,
+            PY_CODE
+        )
+    }
 
     /**
      * Do a guess whether the environment is a verbatim environment.
@@ -56,15 +58,17 @@ object EnvironmentMagic {
      *
      * Maps the name of the environment to the registered Language id.
      */
-    val languageInjections = hashMapOf(
-        EnvironmentNames.LUACODE to "Lua",
-        EnvironmentNames.LUACODE_STAR to "Lua",
-        EnvironmentNames.PY_CODE to "python",
-        EnvironmentNames.PY_SUB to "python",
-        EnvironmentNames.PY_VERBATIM to "python",
-        EnvironmentNames.PY_BLOCK to "python",
-        EnvironmentNames.PY_CONSOLE to "python",
-    )
+    val languageInjections: Map<String, String> = EnvironmentNames.run {
+        mapOf(
+            LUACODE to "Lua",
+            LUACODE_STAR to "Lua",
+            PY_CODE to "Python",
+            PY_SUB to "Python",
+            PY_VERBATIM to "Python",
+            PY_BLOCK to "Python",
+            PY_CONSOLE to "Python",
+        )
+    }
 
     val algorithmEnvironments = setOf(EnvironmentNames.ALGORITHMIC)
 }

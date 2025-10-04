@@ -1,5 +1,9 @@
 package nl.hannahsten.texifyidea.lang.predefined
 
+/**
+ * Names of common LaTeX commands.
+ * Note that leading backslash is included in the names.
+ */
 object CommandNames {
     // 1. Macro definition related
     const val NEW_COMMAND = "\\newcommand"

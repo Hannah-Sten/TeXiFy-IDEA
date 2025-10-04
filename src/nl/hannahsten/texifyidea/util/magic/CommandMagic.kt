@@ -269,7 +269,7 @@ object CommandMagic {
             INCLUDE, INCLUDE_ONLY, INPUT, LABEL, LET, NEW_COMMAND,
             OVERLINE, PARAGRAPH, PART, RENEW_COMMAND, SECTION, SET_COUNTER,
             SOUT, SUB_PARAGRAPH, SUB_SECTION, SUB_SUB_SECTION, TEXT_BF,
-            TEXT_IT, TEXT_SC, TEXT_SL, TEXT_TT, UNDERLINE, CommandNames.L_BRACKET, CommandNames.R_BRACKET,
+            TEXT_IT, TEXT_SC, TEXT_SL, TEXT_TT, UNDERLINE, L_BRACKET, R_BRACKET,
             NEW_ENVIRONMENT, BIB_ITEM,
             NEW_DOCUMENT_COMMAND,
             PROVIDE_DOCUMENT_COMMAND,
@@ -396,7 +396,7 @@ object CommandMagic {
      *
      * Maps the name of the command to the registered Language id.
      */
-    val languageInjections = hashMapOf(
+    val languageInjections: Map<String, String> = hashMapOf(
         CommandNames.DIRECT_LUA to "Lua",
         CommandNames.LUA_EXEC to "Lua",
     )
@@ -406,7 +406,7 @@ object CommandMagic {
      *
      * Maps a command to a boolean that is true when the required argument can be specified with any pair of characters.
      */
-    val verbatim = hashMapOf(
+    val verbatim: Map<String, Boolean> = hashMapOf(
         "verb" to true,
         "verb*" to true,
         "directlua" to false,
