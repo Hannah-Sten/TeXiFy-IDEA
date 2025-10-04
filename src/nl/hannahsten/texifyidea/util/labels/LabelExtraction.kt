@@ -79,6 +79,7 @@ fun PsiElement.extractLabelName(externalDocumentCommand: LatexCommands? = null):
             if (CommandMagic.labelAsParameter.contains(name)) {
                 return getOptionalParameterMap().toStringMap()["label"] ?: ""
             }
+            // TODO: use command semantics
             // For now just take the first label name (which may be multiple for user defined commands)
 //            val info = CommandManager.labelAliasesInfo.getOrDefault(name, null)
             val position = 0

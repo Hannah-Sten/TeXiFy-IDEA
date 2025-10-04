@@ -353,7 +353,9 @@ object CommandMagic {
     /**
      * All commands that at first glance look like \if-esque commands, but that actually aren't.
      */
-    val ignoredIfs: Set<String> = hashSetOf("\\newif", "\\iff", "\\ifthenelse", "\\iftoggle", "\\ifoot", "\\ifcsvstrcmp")
+    val ignoredIfs: Set<String> = CommandNames.run {
+        hashSetOf(NEW_IF, IFF, IF_THEN_ELSE, IF_TOGGLE, IFOOT, IF_CSVSTRCMP)
+    }
 
     /**
      * List of all TeX style primitives.
@@ -383,6 +385,7 @@ object CommandMagic {
      * All LaTeX commands that contain a url (in their first parameter).
      */
     val urls = CommandNames.run {
+        // TODO: use command semantics
         hashSetOf(URL, HREF)
     }
 

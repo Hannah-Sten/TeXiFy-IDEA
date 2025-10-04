@@ -156,6 +156,13 @@ object CommandNames {
     const val DIRECT_LUA = "\\directlua"
     const val LUA_EXEC = "\\luaexec"
 
+    // 14. If-related commands (ignored in inspections)
+    const val IFF = "\\iff"
+    const val IF_THEN_ELSE = "\\ifthenelse"
+    const val IF_TOGGLE = "\\iftoggle"
+    const val IFOOT = "\\ifoot"
+    const val IF_CSVSTRCMP = "\\ifcsvstrcmp"
+
     // Foldable footnotes
     const val FOOT_NOTE = "\\footnote"
     const val FOOT_CITE = "\\footcite"

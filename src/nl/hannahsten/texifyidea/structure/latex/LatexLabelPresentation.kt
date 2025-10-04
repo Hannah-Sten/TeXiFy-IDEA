@@ -14,6 +14,7 @@ class LatexLabelPresentation(labelCommand: LatexCommands) : ItemPresentation {
     private val presentableText: String
 
     init {
+        // TODO: use command semantics
 //        val position =
 //            CommandManager.labelAliasesInfo.getOrDefault(labelCommand.commandToken.text, null)?.positions?.firstOrNull()
 //                ?: 0

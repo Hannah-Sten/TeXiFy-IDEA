@@ -23,6 +23,7 @@ import nl.hannahsten.texifyidea.util.remove
 class LatexLanguageInjector : LanguageInjector {
 
     override fun getLanguagesToInject(host: PsiLanguageInjectionHost, registrar: InjectedLanguagePlaces) {
+        // TODO: we can use context for language injection
         if (host is LatexEnvironment) {
             val magicComment = host.magicComment()
             val hasMagicCommentKey = magicComment.containsKey(DefaultMagicKeys.INJECT_LANGUAGE)
