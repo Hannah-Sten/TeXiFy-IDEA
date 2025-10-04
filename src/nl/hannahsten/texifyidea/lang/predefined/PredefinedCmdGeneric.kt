@@ -456,75 +456,41 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         packageOf("glossaries")
 
         val options = "options".optional
-        val label = "label".required(setOf(LatexContexts.Text, LatexContexts.GlossaryLabel))
+        val label = "label".required(setOf(LatexContexts.Text, LatexContexts.GlossaryReference))
         val insert = "insert".optional
 
         underContext(LatexContexts.Preamble) {
+            val nameDef = "name".required(setOf(LatexContexts.Text, LatexContexts.GlossaryDefinition))
 //            "loadglsentries".cmd("glossariesfile".required(LatexContexts.SingleFile))
-            "longnewglossaryentry".cmd("name".required, "options".required, "description".required)
-            "newabbreviation".cmd(options, "name".required, "short".required, "long".required)
-            "newacronym".cmd(options, "name".required, "short".required, "long".required)
-            "newglossaryentry".cmd("name".required, "options".required)
+            "longnewglossaryentry".cmd(nameDef, "options".required, "description".required)
+            "newabbreviation".cmd(options, nameDef, "short".required, "long".required)
+            "newacronym".cmd(options, nameDef, "short".required, "long".required)
+            "newglossaryentry".cmd(nameDef, "options".required)
         }
 
         applicableIn(LatexContexts.Text)
-        "GLS".cmd(options, label, insert)
-        "GLSdesc".cmd(options, label, insert)
-        "GLSfirst".cmd(options, label, insert)
-        "GLSfirstplural".cmd(options, label, insert)
-        "GLSname".cmd(options, label, insert)
-        "GLSplural".cmd(options, label, insert)
-        "GLSsymbol".cmd(options, label, insert)
-        "GLStext".cmd(options, label, insert)
-        "GLSuseri".cmd(options, label, insert)
-        "GLSuserii".cmd(options, label, insert)
-        "GLSuseriii".cmd(options, label, insert)
-        "GLSuseriv".cmd(options, label, insert)
-        "GLSuserv".cmd(options, label, insert)
-        "GLSuservi".cmd(options, label, insert)
-        "Gls".cmd(options, label, insert)
-        "Glsdesc".cmd(options, label, insert)
-        "Glsdisp".cmd(options, label, "text".optional)
-        "Glsfirst".cmd(options, label, insert)
-        "Glsfirstplural".cmd(options, label, insert)
-        "Glslink".cmd(options, label, "text".optional)
-        "Glsname".cmd(options, label, insert)
-        "Glspl".cmd(options, label, insert)
-        "Glspl".cmd(options, label, insert)
-        "Glsplural".cmd(options, label, insert)
-        "Glssymbol".cmd(options, label, insert)
-        "Glstext".cmd(options, label, insert)
-        "Glsuseri".cmd(options, label, insert)
-        "Glsuserii".cmd(options, label, insert)
-        "Glsuseriii".cmd(options, label, insert)
-        "Glsuseriv".cmd(options, label, insert)
-        "Glsuserv".cmd(options, label, insert)
-        "Glsuservi".cmd(options, label, insert)
-        "gls".cmd(options, label, insert)
-        "glsdesc".cmd(options, label, insert)
-        "glsdisp".cmd(options, label, "text".optional)
-        "glsfirst".cmd(options, label, insert)
-        "glsfirstplural".cmd(options, label, insert)
-        "glslink".cmd(options, label, "text".optional)
-        "glsname".cmd(options, label, insert)
-        "glspl".cmd(options, label, insert)
-        "glsplural".cmd(options, label, insert)
-        "glssymbol".cmd(options, label, insert)
-        "glstext".cmd(options, label, insert)
-        "glsuseri".cmd(options, label, insert)
-        "glsuserii".cmd(options, label, insert)
-        "glsuseriii".cmd(options, label, insert)
-        "glsuseriv".cmd(options, label, insert)
-        "glsuserv".cmd(options, label, insert)
-        "glsuservi".cmd(options, label, insert)
+        listOf(
+            "GLS", "GLSdesc", "GLSfirst", "GLSfirstplural", "GLSname", "GLSplural", "GLSsymbol", "GLStext",
+            "GLSuseri", "GLSuserii", "GLSuseriii", "GLSuseriv", "GLSuserv", "GLSuservi",
+            "Gls", "Glsdesc", "Glsfirst", "Glsfirstplural", "Glsname", "Glspl",
+            "Glsplural", "Glssymbol", "Glstext", "Glsuseri", "Glsuserii", "Glsuseriii", "Glsuseriv",
+            "Glsuserv", "Glsuservi", "gls", "glsdesc", "glsfirst", "glsfirstplural",
+            "glsname", "glspl", "glsplural", "glssymbol", "glstext", "glsuseri",
+            "glsuserii", "glsuseriii", "glsuseriv", "glsuserv", "glsuservi"
+        ).forEach { it.cmd(options, label, insert) }
+        listOf("Glsdisp", "Glslink", "glsdisp", "glslink").forEach {
+            it.cmd(options, label, "text".optional)
+        }
 
         packageOf("acronym")
         val linebreakPenalty = "linebreak penalty".optional
-        val acronym = "acronym".required(setOf(LatexContexts.Text, LatexContexts.GlossaryLabel))
+
+        val acronymDef = "acronym".required(setOf(LatexContexts.Text, LatexContexts.GlossaryDefinition))
+        val acronymRef = "acronym".required(setOf(LatexContexts.Text, LatexContexts.GlossaryReference))
         underContext(LatexContexts.Preamble) {
-            "acro".cmd(acronym, "short name".optional, "full name".required)
-            "acrodef".cmd(acronym, "short name".optional, "full name".required)
-            "newacro".cmd(acronym, "short name".optional, "full name".required)
+            "acro".cmd(acronymDef, "short name".optional, "full name".required)
+            "acrodef".cmd(acronymDef, "short name".optional, "full name".required)
+            "newacro".cmd(acronymDef, "short name".optional, "full name".required)
         }
 
         applicableIn(LatexContexts.Text)
@@ -534,7 +500,7 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
             "ac", "ac*", "acf", "acf*", "acfi", "acfi*", "acfip", "acfip*", "acfp", "acfp*",
             "acl", "acl*", "aclp", "aclp*", "aclu", "aclu*", "acp", "acp*", "acs", "acs*",
             "acsp", "acsp*", "acsu", "acsu*", "iac", "iac*"
-        ).forEach { it.cmd(linebreakPenalty, acronym) }
+        ).forEach { it.cmd(linebreakPenalty, acronymRef) }
     }
 
     val tcolorboxDefinitionCommands = buildCommands {

@@ -4,20 +4,17 @@ package nl.hannahsten.texifyidea.util.magic
 
 import com.intellij.ui.Gray
 import nl.hannahsten.texifyidea.lang.LSemanticCommand
+import nl.hannahsten.texifyidea.lang.LatexContext
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.lang.commands.LatexBiblatexCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
-import nl.hannahsten.texifyidea.lang.commands.LatexGlossariesCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexMathtoolsRegularCommand.*
-import nl.hannahsten.texifyidea.lang.commands.LatexNatbibCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexNewDefinitionCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexXparseCommand.*
 import nl.hannahsten.texifyidea.lang.predefined.PredefinedCmdMathSymbols
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.lang.predefined.PredefinedCmdFiles
-import nl.hannahsten.texifyidea.lang.predefined.PredefinedCmdGeneric
 
 object CommandMagic {
 
@@ -71,132 +68,40 @@ object CommandMagic {
             "\\item", "\\lstinputlisting"
         )
 
+    private fun allCommandsWithContext(context: LatexContext): Map<String, LSemanticCommand> {
+        return AllPredefined.findCommandsByContext(context).associateBy {
+            it.nameWithSlash
+        }
+    }
+
     /**
      * All commands that represent a reference to some label.
      */
-    val labelReference: Map<String, Pair<LSemanticCommand, Int>> =
-        AllPredefined.allCommands.filter { cmd ->
-            cmd.arguments.any { it.contextSignature.introduces(LatexContexts.LabelReference) }
-        }.associate {
-            it.nameWithSlash to (it to it.arguments.indexOfFirst { arg -> arg.contextSignature.introduces(LatexContexts.LabelReference) })
-        }
+    val labelReference: Map<String, LSemanticCommand> = allCommandsWithContext(LatexContexts.LabelReference)
 
     /**
      * All commands that represent a reference to a bibliography entry/item.
      */
-    val bibliographyReference = hashSetOf(
-        CITE,
-        NOCITE,
-        CITEP,
-        CITEP_STAR,
-        CITET,
-        CITET_STAR,
-        CITEP,
-        CITEP_STAR_CAPITALIZED,
-        CITET_CAPITALIZED,
-        CITET_STAR_CAPITALIZED,
-        CITEALP,
-        CITEALP_STAR,
-        CITEALT,
-        CITEALT_STAR,
-        CITEALP_CAPITALIZED,
-        CITEALP_STAR_CAPITALIZED,
-        CITEALT_CAPITALIZED,
-        CITEALT_STAR_CAPITALIZED,
-        CITEAUTHOR,
-        CITEAUTHOR_STAR,
-        CITEAUTHOR_CAPITALIZED,
-        CITEAUTHOR_STAR_CAPITALIZED,
-        CITEYEAR,
-        CITEYEARPAR,
-        PARENCITE,
-        PARENCITE_CAPITALIZED,
-        FOOTCITE,
-        FOOTCITETEXT,
-        TEXTCITE,
-        TEXTCITE_CAPITALIZED,
-        SMARTCITE,
-        SMARTCITE_CAPITALIZED,
-        CITE_STAR,
-        PARENCITE_STAR,
-        SUPERCITE,
-        CITES,
-        CITES_CAPITALIZED,
-        PARENCITES,
-        PARENCITES_CAPITALIZED,
-        FOOTCITES,
-        FOOTCITETEXTS,
-        SMARTCITES,
-        SMARTCITES_CAPITALIZED,
-        TEXTCITES,
-        TEXTCITES_CAPITALIZED,
-        SUPERCITES,
-        AUTOCITE,
-        AUTOCITE_CAPITALIZED,
-        AUTOCITE_STAR,
-        AUTOCITE_STAR_CAPITALIZED,
-        AUTOCITES,
-        AUTOCITES_CAPITALIZED,
-        CITETITLE,
-        CITETITLE_STAR,
-        CITEYEAR_STAR,
-        CITEDATE,
-        CITEDATE_STAR,
-        CITEURL,
-        VOLCITE,
-        VOLCITE_CAPITALIZED,
-        VOLCITES,
-        VOLCITES_CAPITALIZED,
-        PVOLCITE,
-        PVOLCITE_CAPITALIZED,
-        PVOLCITES,
-        PVOLCITES_CAPITALIZED,
-        FVOLCITE,
-        FVOLCITE_CAPITALIZED,
-        FTVOLCITE,
-        FTVOLCITE_CAPITALIZED,
-        FVOLCITES,
-        FVOLCITES_CAPITALIZED,
-        FTVOLCITES,
-        SVOLCITE,
-        SVOLCITE_CAPITALIZED,
-        SVOLCITES,
-        SVOLCITES_CAPITALIZED,
-        TVOLCITE,
-        TVOLCITE_CAPITALIZED,
-        TVOLCITES,
-        TVOLCITES_CAPITALIZED,
-        AVOLCITE,
-        AVOLCITE_CAPITALIZED,
-        AVOLCITES,
-        AVOLCITES_CAPITALIZED,
-        FULLCITE,
-        FOOTFULLCITE,
-        NOTECITE,
-        NOTECITE_CAPITALIZED,
-        PNOTECITE,
-        FNOTECITE
-    ).map { it.cmd }.toSet()
+    val bibliographyReference: Map<String, LSemanticCommand> =
+        allCommandsWithContext(LatexContexts.BibReference)
 
     /**
      * All commands that define a glossary entry of the glossaries package (e.g. \newacronym).
      * When adding a command, define how to get the glossary name in [LatexGlossariesCommand.extractGlossaryName].
      */
-    val glossaryEntry =
-        hashSetOf(NEWGLOSSARYENTRY, LONGNEWGLOSSARYENTRY, NEWACRONYM, NEWABBREVIATION, NEWACRO, ACRO, ACRODEF).map { it.cmd }.toSet()
+    val glossaryEntry: Map<String, LSemanticCommand> =
+        allCommandsWithContext(LatexContexts.GlossaryDefinition)
 
     /**
      * All commands that reference a glossary entry from the glossaries package (e.g. \gls).
      */
     val glossaryReference: Map<String, LSemanticCommand> =
-        PredefinedCmdGeneric.glossaries.filter {
-            it.arguments.any { arg -> arg.contextSignature.introduces(LatexContexts.GlossaryLabel) }
-        }.associateBy { it.nameWithSlash }
+        allCommandsWithContext(LatexContexts.GlossaryReference)
 
     /**
      * All commands that represent some kind of reference (think \ref and \cite).
      */
-    val reference = labelReference.keys + bibliographyReference
+    val reference: Set<String> = labelReference.keys + bibliographyReference.keys
 
     /**
      * Commands from the import package which require an absolute path as first parameter.

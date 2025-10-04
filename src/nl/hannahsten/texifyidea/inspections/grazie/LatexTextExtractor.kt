@@ -134,7 +134,7 @@ class LatexTextExtractor : TextExtractor() {
     private fun hasNonTextContext(contexts: LContextSet): Boolean {
         if(LatexContexts.Text in contexts) return false
         if(LatexContexts.LabelReference in contexts) return false
-        if(LatexContexts.GlossaryLabel in contexts) return false
+        if(LatexContexts.GlossaryReference in contexts) return false
         return contexts.isNotEmpty()
     }
 

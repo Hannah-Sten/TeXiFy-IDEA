@@ -29,7 +29,7 @@ object ContextAwareCompletionProviderDispatcher : LatexContextAwareCompletionAda
             LabelReference to LatexLabelReferenceProvider,
             BibReference to LatexBibliographyReferenceProvider,
             PicturePath to LatexGraphicsPathProvider,
-            GlossaryLabel to LatexGlossariesCompletionProvider,
+            GlossaryReference to LatexGlossariesCompletionProvider,
             ListType to LatexListTypeProvider,
             ColorReference to LatexXColorProvider,
             MintedFuntimeLand to LatexMintedTypeProvider,

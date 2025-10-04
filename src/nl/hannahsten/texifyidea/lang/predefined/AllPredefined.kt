@@ -4,6 +4,8 @@ import com.intellij.openapi.application.ApplicationManager
 import nl.hannahsten.texifyidea.lang.LSemanticCommand
 import nl.hannahsten.texifyidea.lang.LSemanticEntity
 import nl.hannahsten.texifyidea.lang.LSemanticEnv
+import nl.hannahsten.texifyidea.lang.LatexContext
+import nl.hannahsten.texifyidea.lang.LatexContextIntro
 import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.util.Log
@@ -70,6 +72,27 @@ object AllPredefined : LatexSemanticsLookup {
 
     fun findCommandByDisplay(display: String): List<LSemanticCommand> {
         return displayToCommand[display] ?: emptyList()
+    }
+
+    private val commandContextInverseSearch: Map<LatexContext, List<LSemanticCommand>> by lazy {
+        buildMap<LatexContext, MutableList<LSemanticCommand>> {
+            for(entity in allCommands) {
+                for (arg in entity.arguments) {
+                    val contexts = when (val intro = arg.contextSignature) {
+                        is LatexContextIntro.Assign -> intro.contexts
+                        is LatexContextIntro.Modify -> intro.toAdd
+                        LatexContextIntro.Clear, LatexContextIntro.Inherit -> continue
+                    }
+                    for (context in contexts) {
+                        this.getOrPut(context) { mutableListOf() }.add(entity)
+                    }
+                }
+            }
+        }
+    }
+
+    fun findCommandsByContext(context: LatexContext): List<LSemanticCommand> {
+        return commandContextInverseSearch[context] ?: emptyList()
     }
 
     init {

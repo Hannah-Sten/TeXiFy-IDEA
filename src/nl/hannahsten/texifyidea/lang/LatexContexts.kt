@@ -163,9 +163,14 @@ object LatexContexts {
     val MintedFuntimeLand = SimpleLatexContext("minted.funtime.land")
 
     /**
-     * A context for glossary entries, such as in `\gls{...}` or `\glsadd{...}`.
+     * References to glossary entries, such as in `\gls{...}` or `\Gls{...}`.
      */
-    val GlossaryLabel = SimpleLatexContext("glossary")
+    val GlossaryReference = SimpleLatexContext("glossary")
+
+    /**
+     * Definitions of glossary entries, such as in `\newglossaryentry{...}{...}`.
+     */
+    val GlossaryDefinition = SimpleLatexContext("new.glossary")
 
     /**
      * A context for color names or literal, such as in `\textcolor{red}{...}` or `\color{blue}`.

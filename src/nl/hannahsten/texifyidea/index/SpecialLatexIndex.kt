@@ -40,7 +40,7 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexWrapper<LatexCommands>(Late
         PredefinedCmdDefinitions.namesOfAllEnvironmentDef to SpecialKeys.ENV_DEFINITIONS,
         PredefinedCmdDefinitions.namesOfAllDef to SpecialKeys.ALL_DEFINITIONS,
         CommandMagic.packageInclusionCommands to SpecialKeys.PACKAGE_INCLUDES,
-        CommandMagic.glossaryEntry to SpecialKeys.GLOSSARY_ENTRY
+        CommandMagic.glossaryEntry.keys to SpecialKeys.GLOSSARY_ENTRY
     )
 
     override val specialKeys: Set<String> = mappingPairs.map { it.second }.toSet()
