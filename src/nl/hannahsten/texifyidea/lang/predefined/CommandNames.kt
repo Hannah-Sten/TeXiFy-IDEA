@@ -133,6 +133,8 @@ object CommandNames {
     const val BIGSQCUP = "\\bigsqcup"
     const val BIGVEE = "\\bigvee"
     const val BIGWEDGE = "\\bigwedge"
+    const val TEXT = "\\text"
+    const val INTERTEXT = "\\intertext"
 
     // 9. Listings and captions
     const val LSTINPUTLISTING = "\\lstinputlisting"
@@ -170,4 +172,13 @@ object CommandNames {
     // to-do commands
     const val TODO = "\\todo"
     const val MISSING_FIGURE = "\\missingfigure"
+
+    // 15. Glossaries/glossary-entries related
+    const val NEW_ACRONYM = "\\newacronym"
+    const val NEW_ABBREVIATION = "\\newabbreviation"
+    const val NEW_GLOSSARY_ENTRY = "\\newglossaryentry"
+    const val LONG_NEW_GLOSSARY_ENTRY = "\\longnewglossaryentry"
+    const val ACRO = "\\acro"
+    const val NEW_ACRO = "\\newacro"
+    const val ACRO_DEF = "\\acrodef"
 }

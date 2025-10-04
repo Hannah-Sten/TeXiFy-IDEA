@@ -101,6 +101,11 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexWrapper<LatexCommands>(Late
         val scope = LatexProjectStructure.getFilesetScopeFor(originalFile, onlyTexFiles = true)
         return getByName(SpecialKeys.GLOSSARY_ENTRY, scope)
     }
+
+    fun forEachGlossaryEntry(originalFile: PsiFile, action: (LatexCommands) -> Unit) {
+        val scope = LatexProjectStructure.getFilesetScopeFor(originalFile, onlyTexFiles = true)
+        forEachByName(SpecialKeys.GLOSSARY_ENTRY, originalFile.project, scope, null, action)
+    }
 }
 
 val NewSpecialCommandsIndex = NewSpecialCommandsIndexEx()

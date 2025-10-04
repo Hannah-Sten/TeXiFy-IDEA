@@ -17,13 +17,10 @@ import nl.hannahsten.texifyidea.index.SourcedDefinition.DefinitionSource
 import nl.hannahsten.texifyidea.lang.LSemanticCommand
 import nl.hannahsten.texifyidea.lang.LatexContextIntro
 import nl.hannahsten.texifyidea.lang.LatexContexts
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericMathCommand.*
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.*
 import nl.hannahsten.texifyidea.util.shrink
+import nl.hannahsten.texifyidea.lang.predefined.CommandNames
 
 /**
  * Provide syntax highlighting for composite elements.
@@ -157,7 +154,8 @@ open class LatexAnnotator : Annotator {
             .textAttributes(highlighter)
             .create()
 
-        if (element.name == TEXT.cmd || element.name == INTERTEXT.name) {
+        val name = element.nameWithSlash
+        if (name == CommandNames.TEXT || name == CommandNames.INTERTEXT) {
             // Avoid creating an Annotation without calling the create() method
             val range = element.firstRequiredParameter() ?: return
             annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
@@ -247,14 +245,14 @@ open class LatexAnnotator : Annotator {
      */
     private fun annotateStyle(command: LatexCommands, annotationHolder: AnnotationHolder) {
         val style = when (command.name) {
-            TEXTBF.cmd -> LatexSyntaxHighlighter.STYLE_BOLD
-            TEXTIT.cmd -> LatexSyntaxHighlighter.STYLE_ITALIC
-            LatexGenericRegularCommand.UNDERLINE.cmd -> LatexSyntaxHighlighter.STYLE_UNDERLINE
-            SOUT.cmd -> LatexSyntaxHighlighter.STYLE_STRIKETHROUGH
-            TEXTSC.cmd -> LatexSyntaxHighlighter.STYLE_SMALL_CAPITALS
-            OVERLINE.cmd -> LatexSyntaxHighlighter.STYLE_OVERLINE
-            TEXTTT.cmd -> LatexSyntaxHighlighter.STYLE_TYPEWRITER
-            TEXTSL.cmd -> LatexSyntaxHighlighter.STYLE_SLANTED
+            CommandNames.TEXT_BF -> LatexSyntaxHighlighter.STYLE_BOLD
+            CommandNames.TEXT_IT -> LatexSyntaxHighlighter.STYLE_ITALIC
+            CommandNames.UNDERLINE -> LatexSyntaxHighlighter.STYLE_UNDERLINE
+            CommandNames.SOUT -> LatexSyntaxHighlighter.STYLE_STRIKETHROUGH
+            CommandNames.TEXT_SC -> LatexSyntaxHighlighter.STYLE_SMALL_CAPITALS
+            CommandNames.OVERLINE -> LatexSyntaxHighlighter.STYLE_OVERLINE
+            CommandNames.TEXT_TT -> LatexSyntaxHighlighter.STYLE_TYPEWRITER
+            CommandNames.TEXT_SL -> LatexSyntaxHighlighter.STYLE_SLANTED
             else -> return
         }
 
