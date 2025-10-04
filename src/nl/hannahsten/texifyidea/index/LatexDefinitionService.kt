@@ -358,7 +358,7 @@ class LatexLibraryDefinitionService(
         }
 
         private fun processPredefinedCommandsAndEnvironments(name: LatexLib, defMap: MutableMap<String, SourcedDefinition>) {
-            AllPredefined.packageToEntities(name).forEach { entity ->
+            AllPredefined.findByLib(name).forEach { entity ->
                 defMap[entity.name] = SourcedDefinition(entity, null, DefinitionSource.Predefined)
             }
         }

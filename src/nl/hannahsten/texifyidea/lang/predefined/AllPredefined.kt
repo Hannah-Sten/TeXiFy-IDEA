@@ -37,7 +37,7 @@ object AllPredefined : LatexSemanticsLookup {
     private val packageToEntities: Map<LatexLib, List<LSemanticEntity>> =
         allEntities.groupBy { it.dependency }.mapValues { it.value }
 
-    fun packageToEntities(packageName: LatexLib): List<LSemanticEntity> {
+    fun findByLib(packageName: LatexLib): List<LSemanticEntity> {
         return packageToEntities[packageName] ?: emptyList()
     }
 

@@ -5,7 +5,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.index.NewDefinitionIndex
-import nl.hannahsten.texifyidea.lang.commands.*
+import nl.hannahsten.texifyidea.lang.predefined.CommandNames
 import nl.hannahsten.texifyidea.lang.predefined.EnvironmentNames
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
@@ -14,7 +14,6 @@ import nl.hannahsten.texifyidea.util.PackageUtils.getDefaultInsertAnchor
 import nl.hannahsten.texifyidea.util.files.definitions
 import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
-import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.*
 import nl.hannahsten.texifyidea.util.parser.traverseTyped
 
@@ -28,13 +27,13 @@ fun insertCommandDefinition(file: PsiFile, commandText: String, newCommandName: 
 
     var last: LatexCommands? = null
     for (cmd in commands) {
-        if (cmd.name == LatexNewDefinitionCommand.NEWCOMMAND.cmd) {
+        if (cmd.name == CommandNames.NEW_COMMAND) {
             last = cmd
         }
-        else if (cmd.name == LatexGenericRegularCommand.USEPACKAGE.cmd) {
+        else if (cmd.name == CommandNames.USE_PACKAGE) {
             last = cmd
         }
-        else if (cmd.name == LatexGenericRegularCommand.BEGIN.cmd && cmd.requiredParameterText(0) == EnvironmentNames.DOCUMENT) {
+        else if (cmd.name == CommandNames.BEGIN && cmd.requiredParameterText(0) == EnvironmentNames.DOCUMENT) {
             last = cmd
             break
         }

@@ -12,8 +12,10 @@ import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
+import nl.hannahsten.texifyidea.lang.predefined.CommandNames
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
+import nl.hannahsten.texifyidea.psi.nameWithSlash
 import nl.hannahsten.texifyidea.psi.traverseCommands
 import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
@@ -43,11 +45,10 @@ object PackageUtils {
      * The anchor will be the given preferred anchor if not null.
      */
     fun getDefaultInsertAnchor(commands: Sequence<LatexCommands>, preferredAnchor: LatexCommands?): Pair<PsiElement?, Boolean> {
-        val classHuh = commands
-            .filter { cmd ->
-                cmd.name == LatexGenericRegularCommand.DOCUMENTCLASS.cmd || cmd.name == LatexGenericRegularCommand.LOADCLASS.cmd
-            }
-            .firstOrNull()
+        val classHuh = commands.firstOrNull { cmd ->
+            val name = cmd.nameWithSlash
+            name == CommandNames.DOCUMENT_CLASS || name == CommandNames.LOAD_CLASS
+        }
         val anchorAfter: PsiElement?
         val prependNewLine: Boolean
         if (classHuh != null) {

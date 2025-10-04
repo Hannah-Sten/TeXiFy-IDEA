@@ -7,13 +7,12 @@ import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
+import nl.hannahsten.texifyidea.lang.predefined.CommandNames
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.getParameterTexts
 import nl.hannahsten.texifyidea.psi.traverseCommands
 import nl.hannahsten.texifyidea.util.PackageUtils
-import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 import java.util.*
 
@@ -45,8 +44,8 @@ open class LatexMultipleIncludesInspection : TexifyInspectionBase() {
 
         // Duplicates!
         val descriptors = file.traverseCommands()
-            .filter { it.name == LatexGenericRegularCommand.USEPACKAGE.cmd }
-            .filterNot { it.parent?.firstParentOfType<LatexCommands>(7)?.name == LatexGenericRegularCommand.ONLYIFSTANDALONE.commandWithSlash }
+            .filter { it.name == CommandNames.USE_PACKAGE }
+            .filterNot { it.parent?.firstParentOfType<LatexCommands>(7)?.name == CommandNames.ONLY_IF_STANDALONE }
             .flatMap { it.getParameterTexts() }
             .filter { it.text in duplicates }
             .map {

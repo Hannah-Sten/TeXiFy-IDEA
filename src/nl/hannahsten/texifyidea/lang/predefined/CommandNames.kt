@@ -57,6 +57,7 @@ object CommandNames {
     const val ADD_TO_LUATEX_PATH = "\\addtoluatexpath"
     const val USE_TIKZ_LIBRARY = "\\usetikzlibrary"
     const val USE_PGF_PLOTS_LIBRARY = "\\usepgfplotslibrary"
+    const val ONLY_IF_STANDALONE = "\\onlyifstandalone"
 
     // 4. File/input related
     const val INPUT = "\\input"
