@@ -13,7 +13,7 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
 
         symbol("LaTeX", "LaTeX")
         symbol("LaTeXe", "LaTeX2ε")
-        "\\".cmd("margin".optional, display = "(linebreak)") { "Linebreak" }
+        "\\".cmd("margin".optional) { "Linebreak" }
         symbol("AA", "Å")
         symbol("AE", "Æ")
         +"Huge"
@@ -26,24 +26,20 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         ":".cmd { "2/9 of \\quad (= 4 mu) " }
         ";".cmd { "5/18 of \\quad (= 5 mu) " }
         "!".cmd { "negative space, equal to -3 mu" }
-        " ".cmd(display = "(space after backslash!)") { "equivalent of space in normal text " }
+        " ".cmd { "equivalent of space in normal text " }
 
         // special characters
 
-        symbol("OE", "Œ")
         "Roman".cmd("counter".required) { "CAPITAL_ROMAN" }
-        symbol("S", "§")
-        symbol("aa", "å")
-        "addtocounter".cmd("countername".required, "value".required) { "ADDTOCOUNTER" }
 
-        symbol("ae", "æ")
+        "addtocounter".cmd("countername".required, "value".required) { "ADDTOCOUNTER" }
         +"appendix"
         "author".cmd("name".required) { "AUTHOR" }
         +"baselineskip"
         +"baselinestretch"
         +"bf"
         +"bfseries"
-        "bibitem".cmd("label".optional, "citekey".required) { "BIBITEM" }
+        "bibitem".cmd("label".optional, "citekey".required(LatexContexts.BibKey))
 
         +"bigskip"
         +"boldmath"
@@ -58,9 +54,9 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         +"columnwidth"
         "contentsline".cmd("type".required, textArg, "page".required) { "CONTENTSLINE" }
         "contentsname".cmd("name".required) { "CONTENTSNAME" }
-        symbol("dag", "†")
+
         "date".cmd(textArg) { "DATE" }
-        symbol("ddag", "‡")
+
         +"dotfill"
         +"em"
         "emph".cmd(textArg) { "EMPH" }
@@ -72,8 +68,7 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         +"family"
         "fbox".cmd(textArg) { "FBOX" }
         "figurename".cmd("name".required) { "FIGURENAME" }
-        symbol("flq", "‹")
-        symbol("flqq", "«")
+
         +"flushbottom"
         +"flushleft"
         +"flushright"
@@ -88,14 +83,10 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         "footnotetext".cmd("number".optional, textArg) { "FOOTNOTETEXT" }
         "frame".cmd(textArg) { "FRAME" }
         "framebox".cmd("width".optional, "pos".optional, "text".optional) { "FRAMEBOX" }
-        symbol("frq", "›")
-        symbol("frqq", "»")
+
         "glossary".cmd(textArg) { "GLOSSARY" }
         "glossaryentry".cmd(textArg, "pagenum".required) { "GLOSSARYENTRY" }
-        symbol("glq", ",")
-        symbol("glqq", "„")
-        symbol("grq", "‘")
-        symbol("grqq", "“")
+
         +"hfill"
         +"hrule"
         +"hrulefill"
@@ -104,18 +95,17 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         +"hss"
         +"huge"
         "hyphenation".cmd("words".required) { "HYPHENATION" }
-        symbol("i", "i (dotless)")
+
         "ifthenelse".cmd("test".required, "then clause".required, "else clause".required) { "IFTHENELSE" }
 
         "indexname".cmd("name".required) { "INDEXNAME" }
         +"indexspace"
         "intex".cmd("entry".required) { "INDEX" }
         +"it"
-        "item".cmd("label".optional) { "ITEM" }
+        "item".cmd("label".optional(LatexContexts.Text)) { "ITEM" }
         +"itshape"
 
         +"large"
-        symbol("lbrack", "[")
         +"lefteqn"
         +"lfseries"
         "linebreak".cmd("number".optional) { "LINEBREAK" }
@@ -127,7 +117,7 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         +"listoftables"
         "listtablename".cmd("name".required) { "LISTTABLENAME" }
         "lowercase".cmd(textArg) { "LOWERCASE" }
-        symbol("lq", "‘")
+
         +"makeglossary"
         +"makeindex"
         +"makelabel"
@@ -152,7 +142,7 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         +"normalsize"
         "oarg".cmd("arg".required) { "OARG" }
         +"oddsidemargin"
-        symbol("oe", "œ")
+
         "oldstylenums".cmd("number".required) { "OLDSTYLEENUMS" }
         +"onecolumn"
         "onlyifstandalone".cmd("code".required) { "ONLYIFSTANDALONE" }
@@ -175,11 +165,8 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         "part*".cmd(titleArg) { "PART_STAR" }
         "partname".cmd("name".required) { "PARTNAME" }
         "pdfinfo".cmd("info".required) { "PDFINFO" }
-        symbol("pounds", "£")
-        +"printindex"
 
-        symbol("r", "˚ (accent)")
-        symbol("rbrack", "]")
+        +"printindex"
 
         +"righthyphenmin"
         +"rightmargin"
@@ -187,7 +174,7 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         +"rm"
         +"rmfamily"
         "roman".cmd("counter".required) { "ROMAN" }
-        symbol("rq", "’")
+
         "rule".cmd("line".optional, "width".required, "thickness".required) { "RULE" }
         +"samepage"
         "sbox".cmd("cmd".required, "length".required) { "SBOX" }
@@ -227,52 +214,32 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         +"tabcolsep"
         "tablename".cmd("name".required) { "TABLENAME" }
         +"tableofcontents"
-        symbol("textasciicircum", "^")
-        symbol("textasciitilde", "~")
-        symbol("textasteriskcentered", "⁎")
-        symbol("textbackslash", "\\")
-        symbol("textbar", "|")
+
         "textbf".cmd(textArg) { "TEXTBF" }
-        symbol("textbraceleft", "{")
-        symbol("textbraceright", "}")
-        symbol("textbullet", "•")
+
         "textcircled".cmd("a".required) { "CIRCLED_TEXT" }
-        symbol("textcopyright", "©")
-        symbol("textdagger", "†")
-        symbol("textdaggerdbl", "‡")
-        symbol("textdollar", "$")
-        symbol("textellipsis", "…")
-        symbol("textemdash", "—")
-        symbol("textendash", "–")
-        symbol("textexclamdown", "¡")
-        symbol("textgreater", ">")
+
         +"textheight"
         "textit".cmd(textArg) { "TEXTIT" }
-        symbol("textless", "<")
+
         "textlf".cmd(textArg) { "TEXTLF" }
         "textmd".cmd(textArg) { "TEXTMD" }
         +"textnormal"
         +"textparagraph"
-        symbol("textperiodcentered", "·")
-        symbol("textquestiondown", "¿")
-        symbol("textquotedblleft", "“")
-        symbol("textquotedblright", "”")
-        symbol("textquoteleft", "‘")
-        symbol("textquoteright", "’")
-        symbol("textregistered", "®")
+
         "textrm".cmd(textArg) { "TEXTRM" }
         "textsc".cmd("textsc".required) { "TEXTSC" }
-        symbol("textsection", "§")
+
         "textsf".cmd(textArg) { "TEXTSF" }
         "textsl".cmd(textArg) { "TEXTSL" }
-        symbol("textsterling", "£")
+
         "textsubscript".cmd(textArg) { "TEXTSUBSCRIPT" }
         "textsuperscript".cmd(textArg) { "TEXTSUPERSCRIPT" }
-        symbol("texttrademark", "™")
+
         "texttt".cmd(textArg) { "TEXTTT" }
-        symbol("textunderscore", "_")
+
         "textup".cmd(textArg) { "TEXTUP" }
-        symbol("textvisiblespace", "␣")
+
         +"textwidth"
         "thanks".cmd("to".required) { "THANKS" }
         +"thicklines"
@@ -326,12 +293,6 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         packageOf("ulem")
         "sout".cmd("strikethroughtext".required) { "SOUT" }
 
-        packageOf("textcomp")
-        symbol("textdownarrow", "↓")
-        symbol("textleftarrow", "←")
-        symbol("textrightarrow", "→")
-        symbol("textuparrow", "↑")
-
         packageOf("ntheorem")
         "thref".cmd(labelArg) { "THREF" }
 
@@ -348,123 +309,58 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
     val citation = textCommands {
         val before = "before".optional
         val after = "after".optional
-        val keys = "keys".required(LatexContexts.CitationReference)
+        val keys = "keys".required(LatexContexts.BibReference)
 
         "cite".cmd("extratext".optional, keys) { "CITE" }
         "bibliographystyle".cmd("style".required(LatexContexts.BibStyle)) { "BIBLIOGRAPHYSTYLE" }
 
         packageOf("natbib")
-        "Citealp".cmd(before, after, keys) { "CITEALP_CAPITALIZED" }
-        "Citealp*".cmd(before, after, keys) { "CITEALP_STAR_CAPITALIZED" }
-        "Citealt".cmd(before, after, keys) { "CITEALT_CAPITALIZED" }
-        "Citealt*".cmd(before, after, keys) { "CITEALT_STAR_CAPITALIZED" }
-        "Citeauthor".cmd(keys) { "CITEAUTHOR_CAPITALIZED" }
-        "Citeauthor*".cmd(keys) { "CITEAUTHOR_STAR_CAPITALIZED" }
-        "Citep".cmd(before, after, keys) { "CITEP_CAPITALIZED" }
-        "Citep*".cmd(before, after, keys) { "CITEP_STAR_CAPITALIZED" }
-        "Citet".cmd(before, after, keys) { "CITET_CAPITALIZED" }
-        "Citet*".cmd(before, after, keys) { "CITET_STAR_CAPITALIZED" }
-        "citealp".cmd(before, after, keys) { "CITEALP" }
-        "citealp*".cmd(before, after, keys) { "CITEALP_STAR" }
-        "citealt".cmd(before, after, keys) { "CITEALT" }
-        "citealt*".cmd(before, after, keys) { "CITEALT_STAR" }
-        "citeauthor".cmd(keys) { "CITEAUTHOR" }
-        "citeauthor*".cmd(keys) { "CITEAUTHOR_STAR" }
-        "citenum".cmd(keys) { "CITENUM" }
-        "citep".cmd(before, after, keys) { "CITEP" }
-        "citep*".cmd(before, after, keys) { "CITEP_STAR" }
-        "citet".cmd(before, after, keys) { "CITET" }
-        "citet*".cmd(before, after, keys) { "CITET_STAR" }
-        "citetext".cmd(textArg) { "CITETEXT" }
-        "citetitle".cmd(keys) { "CITETITLE" }
-        "citetitle*".cmd(keys) { "CITETITLE_STAR" }
-        "citeyear".cmd(keys) { "CITEYEAR" }
-        "citeyear*".cmd(keys) { "CITEYEAR_STAR" }
-        "citeyearpar".cmd(keys) { "CITEYEARPAR" }
+        arrayOf(
+            "Citealp", "Citealp*", "Citealt", "Citealt*", "Citep", "Citep*", "Citet", "Citet*",
+            "citealp", "citealp*", "citealt", "citealt*", "citep", "citep*", "citet", "citet*"
+        ).forEach { it.cmd(before, after, keys) }
+
+        arrayOf(
+            "Citeauthor", "Citeauthor*", "citeauthor", "citeauthor*", "citenum",
+            "citetitle", "citetitle*", "citeyear", "citeyear*", "citeyearpar"
+        ).forEach { it.cmd(keys) }
+
+        "citetext".cmd(textArg)
 
         packageOf("biblatex")
         val prenote = "prenote".optional
         val postnote = "postnote".optional
-        val key = "keys".required(LatexContexts.CitationReference)
+        val key = "keys".required(LatexContexts.BibReference)
         val volume = "volume".required
         val page = "page".optional
-        "Autocite".cmd(prenote, postnote, key) { "AUTOCITE_CAPITALIZED" }
-        "Autocite*".cmd(prenote, postnote, key) { "AUTOCITE_STAR_CAPITALIZED" }
-        "Autocites".cmd(prenote, postnote, key) { "AUTOCITES_CAPITALIZED" }
-        "Avolcite".cmd(prenote, volume, page, key) { "AVOLCITE_CAPITALIZED" }
-        "Avolcites".cmd(prenote, volume, page, key) { "AVOLCITES_CAPITALIZED" }
-        "Cite".cmd(prenote, postnote, key) { "CITE_CAPITALIZED" }
-        "Citeauthor".cmd(prenote, postnote, key) { "BIBLATEX_CITEAUTHOR_CAPITALIZED" }
-        "Citeauthor*".cmd(prenote, postnote, key) { "BIBLATEX_CITEAUTHOR_STAR_CAPITALIZED" }
-        "Cites".cmd(prenote, postnote, key) { "CITES_CAPITALIZED" }
-        "Ftvolcite".cmd(prenote, volume, page, key) { "FTVOLCITE_CAPITALIZED" }
-        "Fvolcite".cmd(prenote, volume, page, key) { "FVOLCITE_CAPITALIZED" }
-        "Fvolcites".cmd(prenote, volume, page, key) { "FVOLCITES_CAPITALIZED" }
-        "Notecite".cmd(prenote, postnote, key) { "NOTECITE_CAPITALIZED" }
-        "Parencite".cmd(prenote, postnote, key) { "PARENCITE_CAPITALIZED" }
-        "Parencites".cmd(prenote, postnote, key) { "PARENCITES_CAPITALIZED" }
-        "Pnotecite".cmd(prenote, postnote, key) { "PNOTECITE_CAPITALIZED" }
-        "Pvolcite".cmd(prenote, volume, page, key) { "PVOLCITE_CAPITALIZED" }
-        "Pvolcites".cmd(prenote, volume, page, key) { "PVOLCITES_CAPITALIZED" }
-        "Smartcite".cmd(prenote, postnote, key) { "SMARTCITE_CAPITALIZED" }
-        "Smartcites".cmd(prenote, postnote, key) { "SMARTCITES_CAPITALIZED" }
-        "Svolcite".cmd(prenote, volume, page, key) { "SVOLCITE_CAPITALIZED" }
-        "Svolcites".cmd(prenote, volume, page, key) { "SVOLCITES_CAPITALIZED" }
-        "Textcite".cmd(prenote, postnote, key) { "TEXTCITE_CAPITALIZED" }
-        "Textcites".cmd(prenote, postnote, key) { "TEXTCITES_CAPITALIZED" }
-        "Tvolcite".cmd(prenote, volume, page, key) { "TVOLCITE_CAPITALIZED" }
-        "Tvolcites".cmd(prenote, volume, page, key) { "TVOLCITES_CAPITALIZED" }
-        "Volcite".cmd(prenote, volume, page, key) { "VOLCITE_CAPITALIZED" }
-        "Volcites".cmd(prenote, volume, page, key) { "VOLCITES_CAPITALIZED" }
-        "autocite".cmd(prenote, postnote, key) { "AUTOCITE" }
-        "autocite*".cmd(prenote, postnote, key) { "AUTOCITE_STAR" }
-        "autocites".cmd(prenote, postnote, key) { "AUTOCITES" }
-        "avolcite".cmd(prenote, volume, page, key) { "AVOLCITE" }
-        "avolcites".cmd(prenote, volume, page, key) { "AVOLCITES" }
-        "brackettext".cmd(textArg) { "BRACKETTEXT" }
-        "cite*".cmd(prenote, postnote, key) { "CITE_STAR" }
-        "citeauthor".cmd(prenote, postnote, key) { "BIBLATEX_CITEAUTHOR" }
-        "citeauthor*".cmd(prenote, postnote, key) { "BIBLATEX_CITEAUTHOR_STAR" }
-        "citedate".cmd(prenote, postnote, key) { "CITEDATE" }
-        "citedate*".cmd(prenote, postnote, key) { "CITEDATE_STAR" }
-        "cites".cmd(prenote, postnote, key) { "CITES" }
-        "citetitle".cmd(prenote, postnote, key) { "BIBLATEX_CITETITLE" }
-        "citetitle*".cmd(prenote, postnote, key) { "BIBLATEX_CITETITLE_STAR" }
-        "citeurl".cmd(prenote, postnote, key) { "CITEURL" }
-        "citeyear".cmd(prenote, postnote, key) { "BIBLATEX_CITEYEAR" }
-        "citeyear*".cmd(prenote, postnote, key) { "BIBLATEX_CITEYEAR_STAR" }
-        "fnotecite".cmd(prenote, postnote, key) { "FNOTECITE" }
-        "footcite".cmd(prenote, postnote, key) { "FOOTCITE" }
-        "footcites".cmd(prenote, postnote, key) { "FOOTCITES" }
-        "footcitetext".cmd(prenote, postnote, key) { "FOOTCITETEXT" }
-        "footcitetexts".cmd(prenote, postnote, key) { "FOOTCITETEXTS" }
-        "footfullcite".cmd(prenote, postnote, key) { "FOOTFULLCITE" }
-        "ftvolcite".cmd(prenote, volume, page, key) { "FTVOLCITE" }
-        "ftvolcites".cmd(prenote, volume, page, key) { "FTVOLCITES" }
-        "fullcite".cmd(prenote, postnote, key) { "FULLCITE" }
-        "fvolcite".cmd(prenote, volume, page, key) { "FVOLCITE" }
-        "fvolcites".cmd(prenote, volume, page, key) { "FVOLCITES" }
-        "nocite".cmd(key) { "BIBLATEX_NOCITE" }
-        "notecite".cmd(prenote, postnote, key) { "NOTECITE" }
-        "parencite".cmd(prenote, postnote, key) { "PARENCITE" }
-        "parencite*".cmd(prenote, postnote, key) { "PARENCITE_STAR" }
-        "parencites".cmd(prenote, postnote, key) { "PARENCITES" }
-        "parenttext".cmd(textArg) { "PARENTTEXT" }
-        "pnotecite".cmd(prenote, postnote, key) { "PNOTECITE" }
-        "pvolcite".cmd(prenote, volume, page, key) { "PVOLCITE" }
-        "pvolcites".cmd(prenote, volume, page, key) { "PVOLCITES" }
-        "smartcite".cmd(prenote, postnote, key) { "SMARTCITE" }
-        "smartcites".cmd(prenote, postnote, key) { "SMARTCITES" }
-        "supercite".cmd(prenote, postnote, key) { "SUPERCITE" }
-        "supercites".cmd(prenote, postnote, key) { "SUPERCITES" }
-        "svolcite".cmd(prenote, volume, page, key) { "SVOLCITE" }
-        "svolcites".cmd(prenote, volume, page, key) { "SVOLCITES" }
-        "textcite".cmd(prenote, postnote, key) { "TEXTCITE" }
-        "textcites".cmd(prenote, postnote, key) { "TEXTCITES" }
-        "tvolcite".cmd(prenote, volume, page, key) { "TVOLCITE" }
-        "tvolcites".cmd(prenote, volume, page, key) { "TVOLCITES" }
-        "volcite".cmd(prenote, volume, page, key) { "VOLCITE" }
-        "volcites".cmd(prenote, volume, page, key) { "VOLCITES" }
+        val citeCommands = listOf(
+            "Autocite", "Autocite*", "Autocites", "Avolcite", "Avolcites", "Cite",
+            "Citeauthor", "Citeauthor*", "Cites", "Ftvolcite", "Fvolcite", "Fvolcites",
+            "Notecite", "Parencite", "Parencites", "Pnotecite", "Pvolcite", "Pvolcites",
+            "Smartcite", "Smartcites", "Svolcite", "Svolcites", "Textcite", "Textcites",
+            "Tvolcite", "Tvolcites", "Volcite", "Volcites",
+            "autocite", "autocite*", "autocites", "avolcite", "avolcites",
+            "cite*", "citeauthor", "citeauthor*", "citedate", "citedate*", "cites",
+            "citetitle", "citetitle*", "citeurl", "citeyear", "citeyear*", "fnotecite",
+            "footcite", "footcites", "footcitetext", "footcitetexts", "footfullcite",
+            "fullcite", "notecite", "parencite", "parencite*", "parencites",
+            "pnotecite", "smartcite", "smartcites", "supercite", "supercites",
+            "textcite", "textcites"
+        )
+        citeCommands.forEach { it.cmd(prenote, postnote, key) }
+
+        val citeWithVolume = listOf(
+            "Avolcite", "Avolcites", "Ftvolcite", "Fvolcite", "Fvolcites",
+            "Pvolcite", "Pvolcites", "Svolcite", "Svolcites", "Tvolcite", "Tvolcites", "Volcite", "Volcites",
+            "avolcite", "avolcites",
+            "ftvolcite", "ftvolcites", "fvolcite", "fvolcites", "pvolcite", "pvolcites",
+            "svolcite", "svolcites", "tvolcite", "tvolcites", "volcite", "volcites"
+        )
+        citeWithVolume.forEach { it.cmd(prenote, volume, page, key) }
+
+        val citeWithTextArg = listOf("brackettext", "parenttext")
+        citeWithTextArg.forEach { it.cmd(textArg) }
+        "nocite".cmd(key)
     }
 
     val reference = buildCommands {
@@ -560,124 +456,51 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         packageOf("glossaries")
 
         val options = "options".optional
-        val label = "label".required(setOf(LatexContexts.Text, LatexContexts.GlossaryLabel))
+        val label = "label".required(setOf(LatexContexts.Text, LatexContexts.GlossaryReference))
         val insert = "insert".optional
 
         underContext(LatexContexts.Preamble) {
+            val nameDef = "name".required(setOf(LatexContexts.Text, LatexContexts.GlossaryDefinition))
 //            "loadglsentries".cmd("glossariesfile".required(LatexContexts.SingleFile))
-            "longnewglossaryentry".cmd("name".required, "options".required, "description".required)
-            "newabbreviation".cmd(options, "name".required, "short".required, "long".required)
-            "newacronym".cmd(options, "name".required, "short".required, "long".required)
-            "newglossaryentry".cmd("name".required, "options".required)
+            "longnewglossaryentry".cmd(nameDef, "options".required, "description".required)
+            "newabbreviation".cmd(options, nameDef, "short".required, "long".required)
+            "newacronym".cmd(options, nameDef, "short".required, "long".required)
+            "newglossaryentry".cmd(nameDef, "options".required)
         }
 
         applicableIn(LatexContexts.Text)
-        "GLS".cmd(options, label, insert)
-        "GLSdesc".cmd(options, label, insert)
-        "GLSfirst".cmd(options, label, insert)
-        "GLSfirstplural".cmd(options, label, insert)
-        "GLSname".cmd(options, label, insert)
-        "GLSplural".cmd(options, label, insert)
-        "GLSsymbol".cmd(options, label, insert)
-        "GLStext".cmd(options, label, insert)
-        "GLSuseri".cmd(options, label, insert)
-        "GLSuserii".cmd(options, label, insert)
-        "GLSuseriii".cmd(options, label, insert)
-        "GLSuseriv".cmd(options, label, insert)
-        "GLSuserv".cmd(options, label, insert)
-        "GLSuservi".cmd(options, label, insert)
-        "Gls".cmd(options, label, insert)
-        "Glsdesc".cmd(options, label, insert)
-        "Glsdisp".cmd(options, label, "text".optional)
-        "Glsfirst".cmd(options, label, insert)
-        "Glsfirstplural".cmd(options, label, insert)
-        "Glslink".cmd(options, label, "text".optional)
-        "Glsname".cmd(options, label, insert)
-        "Glspl".cmd(options, label, insert)
-        "Glspl".cmd(options, label, insert)
-        "Glsplural".cmd(options, label, insert)
-        "Glssymbol".cmd(options, label, insert)
-        "Glstext".cmd(options, label, insert)
-        "Glsuseri".cmd(options, label, insert)
-        "Glsuserii".cmd(options, label, insert)
-        "Glsuseriii".cmd(options, label, insert)
-        "Glsuseriv".cmd(options, label, insert)
-        "Glsuserv".cmd(options, label, insert)
-        "Glsuservi".cmd(options, label, insert)
-        "gls".cmd(options, label, insert)
-        "glsdesc".cmd(options, label, insert)
-        "glsdisp".cmd(options, label, "text".optional)
-        "glsfirst".cmd(options, label, insert)
-        "glsfirstplural".cmd(options, label, insert)
-        "glslink".cmd(options, label, "text".optional)
-        "glsname".cmd(options, label, insert)
-        "glspl".cmd(options, label, insert)
-        "glsplural".cmd(options, label, insert)
-        "glssymbol".cmd(options, label, insert)
-        "glstext".cmd(options, label, insert)
-        "glsuseri".cmd(options, label, insert)
-        "glsuserii".cmd(options, label, insert)
-        "glsuseriii".cmd(options, label, insert)
-        "glsuseriv".cmd(options, label, insert)
-        "glsuserv".cmd(options, label, insert)
-        "glsuservi".cmd(options, label, insert)
+        listOf(
+            "GLS", "GLSdesc", "GLSfirst", "GLSfirstplural", "GLSname", "GLSplural", "GLSsymbol", "GLStext",
+            "GLSuseri", "GLSuserii", "GLSuseriii", "GLSuseriv", "GLSuserv", "GLSuservi",
+            "Gls", "Glsdesc", "Glsfirst", "Glsfirstplural", "Glsname", "Glspl",
+            "Glsplural", "Glssymbol", "Glstext", "Glsuseri", "Glsuserii", "Glsuseriii", "Glsuseriv",
+            "Glsuserv", "Glsuservi", "gls", "glsdesc", "glsfirst", "glsfirstplural",
+            "glsname", "glspl", "glsplural", "glssymbol", "glstext", "glsuseri",
+            "glsuserii", "glsuseriii", "glsuseriv", "glsuserv", "glsuservi"
+        ).forEach { it.cmd(options, label, insert) }
+        listOf("Glsdisp", "Glslink", "glsdisp", "glslink").forEach {
+            it.cmd(options, label, "text".optional)
+        }
 
         packageOf("acronym")
         val linebreakPenalty = "linebreak penalty".optional
-        val acronym = "acronym".required(LatexContexts.Text)
+
+        val acronymDef = "acronym".required(setOf(LatexContexts.Text, LatexContexts.GlossaryDefinition))
+        val acronymRef = "acronym".required(setOf(LatexContexts.Text, LatexContexts.GlossaryReference))
         underContext(LatexContexts.Preamble) {
-            "acro".cmd(acronym, "short name".optional, "full name".required)
-            "acrodef".cmd(acronym, "short name".optional, "full name".required)
-            "newacro".cmd(acronym, "short name".optional, "full name".required)
+            "acro".cmd(acronymDef, "short name".optional, "full name".required)
+            "acrodef".cmd(acronymDef, "short name".optional, "full name".required)
+            "newacro".cmd(acronymDef, "short name".optional, "full name".required)
         }
 
         applicableIn(LatexContexts.Text)
-        "Ac".cmd(linebreakPenalty, acronym)
-        "Ac*".cmd(linebreakPenalty, acronym)
-        "Acf".cmd(linebreakPenalty, acronym)
-        "Acf*".cmd(linebreakPenalty, acronym)
-        "Acfi".cmd(linebreakPenalty, acronym)
-        "Acfi*".cmd(linebreakPenalty, acronym)
-        "Acfip".cmd(linebreakPenalty, acronym)
-        "Acfip*".cmd(linebreakPenalty, acronym)
-        "Acfp".cmd(linebreakPenalty, acronym)
-        "Acfp*".cmd(linebreakPenalty, acronym)
-        "Acl".cmd(linebreakPenalty, acronym)
-        "Acl*".cmd(linebreakPenalty, acronym)
-        "Aclp".cmd(linebreakPenalty, acronym)
-        "Aclp*".cmd(linebreakPenalty, acronym)
-        "Aclu".cmd(linebreakPenalty, acronym)
-        "Aclu*".cmd(linebreakPenalty, acronym)
-        "Acp".cmd(linebreakPenalty, acronym)
-        "Acp*".cmd(linebreakPenalty, acronym)
-        "Iac".cmd(linebreakPenalty, acronym)
-        "Iac*".cmd(linebreakPenalty, acronym)
-        "ac".cmd(linebreakPenalty, acronym)
-        "ac*".cmd(linebreakPenalty, acronym)
-        "acf".cmd(linebreakPenalty, acronym)
-        "acf*".cmd(linebreakPenalty, acronym)
-        "acfi".cmd(linebreakPenalty, acronym)
-        "acfi*".cmd(linebreakPenalty, acronym)
-        "acfip".cmd(linebreakPenalty, acronym)
-        "acfip*".cmd(linebreakPenalty, acronym)
-        "acfp".cmd(linebreakPenalty, acronym)
-        "acfp*".cmd(linebreakPenalty, acronym)
-        "acl".cmd(linebreakPenalty, acronym)
-        "acl*".cmd(linebreakPenalty, acronym)
-        "aclp".cmd(linebreakPenalty, acronym)
-        "aclp*".cmd(linebreakPenalty, acronym)
-        "aclu".cmd(linebreakPenalty, acronym)
-        "aclu*".cmd(linebreakPenalty, acronym)
-        "acp".cmd(linebreakPenalty, acronym)
-        "acp*".cmd(linebreakPenalty, acronym)
-        "acs".cmd(linebreakPenalty, acronym)
-        "acs*".cmd(linebreakPenalty, acronym)
-        "acsp".cmd(linebreakPenalty, acronym)
-        "acsp*".cmd(linebreakPenalty, acronym)
-        "acsu".cmd(linebreakPenalty, acronym)
-        "acsu*".cmd(linebreakPenalty, acronym)
-        "iac".cmd(linebreakPenalty, acronym)
-        "iac*".cmd(linebreakPenalty, acronym)
+        arrayOf(
+            "Ac", "Ac*", "Acf", "Acf*", "Acfi", "Acfi*", "Acfip", "Acfip*", "Acfp", "Acfp*",
+            "Acl", "Acl*", "Aclp", "Aclp*", "Aclu", "Aclu*", "Acp", "Acp*", "Iac", "Iac*",
+            "ac", "ac*", "acf", "acf*", "acfi", "acfi*", "acfip", "acfip*", "acfp", "acfp*",
+            "acl", "acl*", "aclp", "aclp*", "aclu", "aclu*", "acp", "acp*", "acs", "acs*",
+            "acsp", "acsp*", "acsu", "acsu*", "iac", "iac*"
+        ).forEach { it.cmd(linebreakPenalty, acronymRef) }
     }
 
     val tcolorboxDefinitionCommands = buildCommands {
@@ -715,8 +538,6 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
     }
 
     val listings = buildCommands {
-        packageOf("listings")
-        "lstinputlisting".cmd("options".optional, "filename".required(LatexContexts.SingleFile))
         underPackage("luacode") {
             "directlua".cmd("lua code".required)
             "luaexec".cmd("lua code".required)
@@ -734,7 +555,7 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         val colorArg = "color".required(LatexContexts.ColorReference)
         underContext(LatexContexts.Preamble) {
             val typeOpt = "type".optional
-            val nameReq = "name".required
+            val nameReq = "name".required(LatexContexts.ColorDefinition)
             val modelListReq = "model-list".required(LatexContexts.Literal)
             val specListReq = "spec-list".required(LatexContexts.Literal)
 

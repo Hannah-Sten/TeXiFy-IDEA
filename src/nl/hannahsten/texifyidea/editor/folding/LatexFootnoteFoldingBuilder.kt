@@ -28,7 +28,7 @@ class LatexFootnoteFoldingBuilder : FoldingBuilderEx(), DumbAware {
 
     override fun getPlaceholderText(node: ASTNode): String {
         val parsedText = node.text.substring(1).trim()
-        return if (parsedText.length > 8) parsedText.substring(0, 8) + "..." else parsedText.substring(0, parsedText.length - 1)
+        return if (parsedText.length > 8) parsedText.take(8) + "..." else parsedText.dropLast(1)
     }
 
     override fun buildFoldRegions(root: PsiElement, document: Document, quick: Boolean): Array<FoldingDescriptor> {

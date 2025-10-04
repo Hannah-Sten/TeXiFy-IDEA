@@ -4,6 +4,8 @@ import com.intellij.openapi.application.ApplicationManager
 import nl.hannahsten.texifyidea.lang.LSemanticCommand
 import nl.hannahsten.texifyidea.lang.LSemanticEntity
 import nl.hannahsten.texifyidea.lang.LSemanticEnv
+import nl.hannahsten.texifyidea.lang.LatexContext
+import nl.hannahsten.texifyidea.lang.LatexContextIntro
 import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.util.Log
@@ -28,10 +30,14 @@ object AllPredefined : LatexSemanticsLookup {
         it.allEntities
     }
 
+    val allCommands: List<LSemanticCommand> = allEntities.filterIsInstance<LSemanticCommand>()
+
+    val allEnvironments: List<LSemanticEnv> = allEntities.filterIsInstance<LSemanticEnv>()
+
     private val packageToEntities: Map<LatexLib, List<LSemanticEntity>> =
         allEntities.groupBy { it.dependency }.mapValues { it.value }
 
-    fun packageToEntities(packageName: LatexLib): List<LSemanticEntity> {
+    fun findByLib(packageName: LatexLib): List<LSemanticEntity> {
         return packageToEntities[packageName] ?: emptyList()
     }
 
@@ -55,8 +61,43 @@ object AllPredefined : LatexSemanticsLookup {
         return findAll(name).filterIsInstance<LSemanticEnv>()
     }
 
+    private val displayToCommand: Map<String, List<LSemanticCommand>> by lazy {
+        buildMap<String, MutableList<LSemanticCommand>> {
+            for (entity in allCommands) {
+                val display = entity.display ?: continue
+                this.getOrPut(display) { mutableListOf() }.add(entity)
+            }
+        }
+    }
+
+    fun findCommandByDisplay(display: String): List<LSemanticCommand> {
+        return displayToCommand[display] ?: emptyList()
+    }
+
+    private val commandContextInverseSearch: Map<LatexContext, List<LSemanticCommand>> by lazy {
+        buildMap<LatexContext, MutableList<LSemanticCommand>> {
+            for(entity in allCommands) {
+                for (arg in entity.arguments) {
+                    val contexts = when (val intro = arg.contextSignature) {
+                        is LatexContextIntro.Assign -> intro.contexts
+                        is LatexContextIntro.Modify -> intro.toAdd
+                        LatexContextIntro.Clear, LatexContextIntro.Inherit -> continue
+                    }
+                    for (context in contexts) {
+                        this.getOrPut(context) { mutableListOf() }.add(entity)
+                    }
+                }
+            }
+        }
+    }
+
+    fun findCommandsByContext(context: LatexContext): List<LSemanticCommand> {
+        return commandContextInverseSearch[context] ?: emptyList()
+    }
+
     init {
-        if (ApplicationManager.getApplication().isInternal) {
+        val app = ApplicationManager.getApplication()
+        if (app == null || app.isInternal) {
             val names = allEntities.groupBy { it }
             for ((item, commands) in names) {
                 if (commands.size > 1) {

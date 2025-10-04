@@ -4,7 +4,7 @@ import com.intellij.formatting.ASTBlock
 import com.intellij.formatting.Spacing
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import nl.hannahsten.texifyidea.formatting.createSpacing
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment.TABULAR
+import nl.hannahsten.texifyidea.lang.predefined.EnvironmentNames
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexEnvironmentContent
 import nl.hannahsten.texifyidea.psi.LatexTypes
@@ -24,7 +24,7 @@ fun checkTableEnvironment(parent: ASTBlock, child: ASTBlock): LatexEnvironmentCo
     // node - no_math_content - environment_content - environment: We have to go two levels up
     val contentElement = parent.node?.psi?.firstParentOfType<LatexEnvironmentContent>(2) ?: return null
     val envNode = contentElement.parent as? LatexEnvironment ?: return null
-    if (envNode.getEnvironmentName() != TABULAR.environmentName) return null
+    if (envNode.getEnvironmentName() != EnvironmentNames.TABULAR) return null
     // Ignore raw texts
     if (child.node?.elementType == LatexTypes.RAW_TEXT_TOKEN || parent.node?.elementType == LatexTypes.RAW_TEXT) return null
     return contentElement

@@ -9,7 +9,6 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.util.startOffset
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
@@ -48,23 +47,24 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
                     is LatexCommands -> {
                         val name = this.name ?: return@getProblemDescriptors null
                         if (CommandMagic.labelAsParameter.contains(this.name)) {
-                            return@getProblemDescriptors getParameterLabelDescriptor(this)
+                            getParameterLabelDescriptor(this)
+                        }
+                        else if (name == "\\label") {
+                            getCommandLabelDescriptor(this, 0)
                         }
                         else {
-                            val position =
-                                CommandManager.labelAliasesInfo.getOrDefault(name, null)?.positions?.firstOrNull()
-                                    ?: return@getProblemDescriptors null
-                            return@getProblemDescriptors getCommandLabelDescriptor(this, position)
+                            null
                         }
                     }
+
                     is LatexEnvironment -> {
                         if (EnvironmentMagic.labelAsParameter.contains(this.getEnvironmentName())) {
                             return@getProblemDescriptors getParameterLabelDescriptor(this)
                         }
-
-                        return@getProblemDescriptors null
+                        null
                     }
-                    else -> return@getProblemDescriptors null
+
+                    else -> null
                 }
             }
 

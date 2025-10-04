@@ -2,14 +2,9 @@ package nl.hannahsten.texifyidea.structure.latex
 
 import com.intellij.navigation.ItemPresentation
 import nl.hannahsten.texifyidea.TexifyIcons
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
-import nl.hannahsten.texifyidea.lang.commands.LatexMathtoolsRegularCommand.*
-import nl.hannahsten.texifyidea.lang.commands.LatexNewDefinitionCommand.NEWCOMMAND
-import nl.hannahsten.texifyidea.lang.commands.LatexNewDefinitionCommand.RENEWCOMMAND
-import nl.hannahsten.texifyidea.lang.commands.LatexXparseCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.magic.cmd
+import nl.hannahsten.texifyidea.lang.predefined.CommandNames
 
 /**
  * @author Hannah Schellekens
@@ -24,22 +19,22 @@ object LatexPresentationFactory {
         if (labelingCommands.contains(commands.name)) {
             return LatexLabelPresentation(commands)
         }
-        return when (commands.name) {
-            PART.cmd -> LatexPartPresentation(commands)
-            CHAPTER.cmd -> LatexChapterPresentation(commands)
-            SECTION.cmd -> LatexSectionPresentation(commands)
-            SUBSECTION.cmd -> LatexSubSectionPresentation(commands)
-            SUBSUBSECTION.cmd -> LatexSubSubSectionPresentation(commands)
-            PARAGRAPH.cmd -> LatexParagraphPresentation(commands)
-            SUBPARAGRAPH.cmd -> LatexSubParagraphPresentation(commands)
-            NEWCOMMAND.cmd, RENEWCOMMAND.cmd, DECLARE_MATH_OPERATOR.cmd, LatexXparseCommand.NEWDOCUMENTCOMMAND.cmd -> LatexNewCommandPresentation(commands)
-            DECLARE_PAIRED_DELIMITER.cmd, DECLARE_PAIRED_DELIMITER_X.cmd, DECLARE_PAIRED_DELIMITER_XPP.cmd -> LatexPairedDelimiterPresentation(
-                commands
-            )
-            LABEL.cmd -> LatexLabelPresentation(commands)
-            BIBITEM.cmd -> BibitemPresentation(commands)
-            in CommandMagic.allFileIncludeCommands -> LatexIncludePresentation(commands)
-            else -> LatexOtherCommandPresentation(commands, TexifyIcons.DOT_COMMAND)
+        return CommandNames.run {
+            when (commands.name) {
+                PART -> LatexPartPresentation(commands)
+                CHAPTER -> LatexChapterPresentation(commands)
+                SECTION -> LatexSectionPresentation(commands)
+                SUB_SECTION -> LatexSubSectionPresentation(commands)
+                SUB_SUB_SECTION -> LatexSubSubSectionPresentation(commands)
+                PARAGRAPH -> LatexParagraphPresentation(commands)
+                SUB_PARAGRAPH -> LatexSubParagraphPresentation(commands)
+                NEW_COMMAND, RENEW_COMMAND, DECLARE_MATH_OPERATOR, NEW_DOCUMENT_COMMAND -> LatexNewCommandPresentation(commands)
+                DECLARE_PAIRED_DELIMITER, DECLARE_PAIRED_DELIMITER_X, DECLARE_PAIRED_DELIMITER_XPP -> LatexPairedDelimiterPresentation(commands)
+                LABEL -> LatexLabelPresentation(commands)
+                BIB_ITEM -> BibitemPresentation(commands)
+                in CommandMagic.allFileIncludeCommands -> LatexIncludePresentation(commands)
+                else -> LatexOtherCommandPresentation(commands, TexifyIcons.DOT_COMMAND)
+            }
         }
     }
 }

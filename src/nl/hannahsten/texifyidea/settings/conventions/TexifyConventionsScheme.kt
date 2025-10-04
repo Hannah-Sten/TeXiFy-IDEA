@@ -1,9 +1,8 @@
 package nl.hannahsten.texifyidea.settings.conventions
 
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment.*
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexListingCommand.LSTINPUTLISTING
-import nl.hannahsten.texifyidea.util.magic.env
+import nl.hannahsten.texifyidea.lang.predefined.EnvironmentNames
 
 /**
  * A scheme instance for storing settings regarding Texify conventions. Default values of this class represent the
@@ -44,12 +43,12 @@ data class TexifyConventionsScheme(
         LabelConvention(false, LabelConventionType.COMMAND, SUBPARAGRAPH.command, "subpar"),
         LabelConvention(false, LabelConventionType.COMMAND, ITEM.command, "itm"),
         LabelConvention(true, LabelConventionType.COMMAND, LSTINPUTLISTING.command, "lst"),
-        LabelConvention(true, LabelConventionType.ENVIRONMENT, FIGURE.env, "fig"),
-        LabelConvention(true, LabelConventionType.ENVIRONMENT, TABLE.env, "tab"),
-        LabelConvention(true, LabelConventionType.ENVIRONMENT, EQUATION.env, "eq"),
-        LabelConvention(true, LabelConventionType.ENVIRONMENT, ALGORITHM.env, "alg"),
-        LabelConvention(true, LabelConventionType.ENVIRONMENT, LISTINGS.env, "lst"),
-        LabelConvention(true, LabelConventionType.ENVIRONMENT, VERBATIM_CAPITAL.env, "verb"),
+        LabelConvention(true, LabelConventionType.ENVIRONMENT, EnvironmentNames.FIGURE, "fig"),
+        LabelConvention(true, LabelConventionType.ENVIRONMENT, EnvironmentNames.TABLE, "tab"),
+        LabelConvention(true, LabelConventionType.ENVIRONMENT, EnvironmentNames.EQUATION, "eq"),
+        LabelConvention(true, LabelConventionType.ENVIRONMENT, EnvironmentNames.ALGORITHM, "alg"),
+        LabelConvention(true, LabelConventionType.ENVIRONMENT, EnvironmentNames.LST_LISTING, "lst"),
+        LabelConvention(true, LabelConventionType.ENVIRONMENT, EnvironmentNames.VERBATIM, "verb"),
     )
 ) : com.intellij.openapi.options.Scheme {
 

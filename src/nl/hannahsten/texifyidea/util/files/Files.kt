@@ -229,11 +229,11 @@ fun getUniqueFileName(fileName: String, directory: String? = null): String {
         ).exists()
     ) {
         val extension = "." + FileUtilRt.getExtension(currentFileName)
-        var stripped = currentFileName.substring(0, currentFileName.length - extension.length)
+        var stripped = currentFileName.dropLast(extension.length)
 
         val countString = count.toString()
         if (stripped.endsWith(countString)) {
-            stripped = stripped.substring(0, stripped.length - countString.length)
+            stripped = stripped.dropLast(countString.length)
         }
 
         currentFileName = stripped + (++count) + extension

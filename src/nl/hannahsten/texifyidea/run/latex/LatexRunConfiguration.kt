@@ -24,9 +24,10 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPsiElementPointer
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.allParentMagicComments
+import nl.hannahsten.texifyidea.lang.predefined.CommandNames
+import nl.hannahsten.texifyidea.psi.nameWithSlash
 import nl.hannahsten.texifyidea.psi.traverseCommands
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
@@ -43,7 +44,6 @@ import nl.hannahsten.texifyidea.util.files.findFile
 import nl.hannahsten.texifyidea.util.files.findVirtualFileByAbsoluteOrRelativePath
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.includedPackagesInFileset
-import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.hasBibliography
 import nl.hannahsten.texifyidea.util.parser.usesBiber
 import nl.hannahsten.texifyidea.util.runInBackgroundNonBlocking
@@ -483,13 +483,13 @@ class LatexRunConfiguration(
         }
         else {
             val allBibliographyCommands =
-                NewCommandsIndex.getByNameInFileSet(LatexGenericRegularCommand.BIBLIOGRAPHY.cmd, psiFile)
+                NewCommandsIndex.getByNameInFileSet(CommandNames.BIBLIOGRAPHY, psiFile)
 
             // We know that there can only be one bibliography per top-level \include,
             // however not all of them may contain a bibliography, and the ones
             // that do have one can have it in any included file
             psiFile.traverseCommands()
-                .filter { it.name == LatexGenericRegularCommand.INCLUDE.cmd }
+                .filter { it.nameWithSlash == CommandNames.INCLUDE }
                 .flatMap { command -> command.requiredParametersText() }
                 .forEach { filename ->
                     // Find all the files of this chapter, then check if any of the bibliography commands appears in a file in this chapter

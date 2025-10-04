@@ -1,5 +1,9 @@
 package nl.hannahsten.texifyidea.lang
 
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
+
 open class DSLLatexBuilderScope {
     /**
      * The package name of the current scope.
@@ -29,35 +33,47 @@ open class DSLLatexBuilderScope {
         applicableContexts = context.toSet()
     }
 
+    @OptIn(ExperimentalContracts::class)
     inline fun underPackage(name: String, action: () -> Unit) {
+        contract { callsInPlace(action, InvocationKind.EXACTLY_ONCE) }
         val oldDependency = namespace
         packageOf(name)
         action()
         namespace = oldDependency
     }
 
+    @OptIn(ExperimentalContracts::class)
     inline fun underPackage(lib: LatexLib, action: () -> Unit) {
+        contract { callsInPlace(action, InvocationKind.EXACTLY_ONCE) }
         val oldDependency = namespace
         packageOf(lib)
         action()
         namespace = oldDependency
     }
 
+    @OptIn(ExperimentalContracts::class)
     inline fun underBase(action: () -> Unit) {
+        contract { callsInPlace(action, InvocationKind.EXACTLY_ONCE) }
         val oldDependency = namespace
         packageOf(LatexLib.BASE)
         action()
         namespace = oldDependency
     }
 
+    @OptIn(ExperimentalContracts::class)
     inline fun underAnyContext(action: () -> Unit) {
+        contract { callsInPlace(action, InvocationKind.EXACTLY_ONCE) }
         val oldContext = applicableContexts
         applicableContexts = null
         action()
         applicableContexts = oldContext
     }
 
+    @OptIn(ExperimentalContracts::class)
     inline fun underContext(context: LatexContext, action: () -> Unit) {
+        contract {
+            callsInPlace(action, InvocationKind.EXACTLY_ONCE)
+        }
         val oldContext = applicableContexts
         applicableContexts = setOf(context)
         action()
@@ -67,7 +83,9 @@ open class DSLLatexBuilderScope {
     /**
      * Under any of the given contexts, the commands/environments will be applicable.
      */
+    @OptIn(ExperimentalContracts::class)
     inline fun underContexts(vararg context: LatexContext, action: () -> Unit) {
+        contract { callsInPlace(action, InvocationKind.EXACTLY_ONCE) }
         val oldContext = applicableContexts
         applicableContexts = context.toSet()
         action()
@@ -134,9 +152,11 @@ open class DSLLatexBuilderScope {
 //        )
 //    }
 
+    @OptIn(ExperimentalContracts::class)
     inline fun String.cmd(
         vararg arguments: LArgument, display: String? = null, desc: () -> String = { "" }
     ): LSemanticCommand {
+        contract { callsInPlace(desc, InvocationKind.EXACTLY_ONCE) }
         return command(this, arguments.toList(), description = desc(), display = display)
     }
 
@@ -160,27 +180,33 @@ open class DSLLatexBuilderScope {
         return environment
     }
 
+    @OptIn(ExperimentalContracts::class)
     inline fun String.env(
         context: LatexContextIntro,
         vararg arguments: LArgument,
         desc: () -> String = { "" }
     ): LSemanticEnv {
+        contract { callsInPlace(desc, InvocationKind.EXACTLY_ONCE) }
         return environment(this, context, arguments.toList(), description = desc())
     }
 
+    @OptIn(ExperimentalContracts::class)
     inline fun String.env(
         context: LatexContext,
         vararg arguments: LArgument,
         desc: () -> String = { "" }
     ): LSemanticEnv {
+        contract { callsInPlace(desc, InvocationKind.EXACTLY_ONCE) }
         return env(LatexContextIntro.Assign(context), *arguments, desc = desc)
     }
 
+    @OptIn(ExperimentalContracts::class)
     inline fun String.env(
         context: LContextSet,
         vararg arguments: LArgument,
         desc: () -> String = { "" }
     ): LSemanticEnv {
+        contract { callsInPlace(desc, InvocationKind.EXACTLY_ONCE) }
         return env(LatexContextIntro.Assign(context), *arguments, desc = desc)
     }
 
@@ -249,7 +275,12 @@ abstract class PredefinedCommandSet : PredefinedEntitySet() {
     val allCommands: List<LSemanticCommand>
         get() = allEntities.filterIsInstance<LSemanticCommand>()
 
+    @OptIn(ExperimentalContracts::class)
     protected inline fun buildCommands(action: DSLLatexCommandBuilderScope.() -> Unit): List<LSemanticCommand> {
+        contract {
+            callsInPlace(action, InvocationKind.EXACTLY_ONCE)
+        }
+
         val scope = DSLLatexCommandBuilderScope()
         scope.action()
         val built = scope.buildCommands()

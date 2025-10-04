@@ -191,7 +191,7 @@ class IntroduceVariableTest : BasePlatformTestCase() {
                 println("saw")
                 exprs.forEach { println("'" + it.text.substring(it.extractableIntRange) + "'") }
                 println("xpect")
-                expressions.map { println("'" + it + "'") }
+                expressions.map { println("'$it'") }
                 assertEquals(
                     exprs.map { it.text.substring(it.extractableIntRange).trimIndent() },
                     expressions.map { it.trimIndent() }

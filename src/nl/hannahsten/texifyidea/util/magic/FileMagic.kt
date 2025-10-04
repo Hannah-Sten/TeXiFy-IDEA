@@ -1,8 +1,7 @@
 package nl.hannahsten.texifyidea.util.magic
 
 import nl.hannahsten.texifyidea.file.*
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.BIBLIOGRAPHY
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.INCLUDE
+import nl.hannahsten.texifyidea.lang.predefined.CommandNames
 
 object FileMagic {
 
@@ -14,8 +13,8 @@ object FileMagic {
 
     val automaticExtensions by lazy {
         mapOf(
-            INCLUDE.cmd to LatexFileType.defaultExtension,
-            BIBLIOGRAPHY.cmd to BibtexFileType.defaultExtension
+            CommandNames.INCLUDE to LatexFileType.defaultExtension,
+            CommandNames.BIBLIOGRAPHY to BibtexFileType.defaultExtension
         )
     }
 

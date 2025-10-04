@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.inspections.latex.redundancy
 
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
-import nl.hannahsten.texifyidea.lang.alias.CommandManager
 
 class LatexDuplicateLabelInspectionTest : TexifyInspectionTestBase(LatexDuplicateLabelInspection()) {
 
@@ -37,7 +36,6 @@ class LatexDuplicateLabelInspectionTest : TexifyInspectionTestBase(LatexDuplicat
             some text~\ref{fig:test2.png} more text.
             """.trimIndent()
         )
-        CommandManager.updateAliases(setOf("\\label"), project)
         myFixture.checkHighlighting()
     }
 

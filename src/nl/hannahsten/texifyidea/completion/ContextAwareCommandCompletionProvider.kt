@@ -58,12 +58,12 @@ object ContextAwareCommandCompletionProvider : LatexContextAwareCompletionAdapto
     ) {
         val project = parameters.originalFile.project
         val addedLibs = mutableSetOf<LatexLib>()
-        val allNames = LatexPackageLocation.getAllPackageNames(project)
+        val allFileNames = LatexPackageLocation.getAllPackageFileNames(project)
         val defService = LatexLibraryDefinitionService.getInstance(project)
-        for (name in allNames) {
-            val lib = LatexLib(name)
+        for (fileName in allFileNames) {
+            val lib = LatexLib.fromFileName(fileName)
             if (!addedLibs.add(lib)) continue // skip already added libs
-            val libBundle = defService.getLibBundle(name)
+            val libBundle = defService.getLibBundle(fileName)
             addBundleCommands(parameters, result, libBundle, isClassOrStyleFile, checkCtx = false)
             addedLibs.addAll(libBundle.allLibraries)
         }
@@ -97,7 +97,7 @@ object ContextAwareCommandCompletionProvider : LatexContextAwareCompletionAdapto
         \alpha α                          amsmath.sty
         \mycommand[optional]{required}    main.tex
          */
-        val typeText = buildCommandSourceStr(sourced) // type text is at the right
+        val typeText = buildDefinitionSourceStr(sourced) // type text is at the right
         val presentableText = buildCommandDisplay(cmd)
         val applicableCtxText = buildApplicableContextStr(cmd)
         cmd.arguments.optionalPowerSet().forEachIndexed { index, subArgs ->

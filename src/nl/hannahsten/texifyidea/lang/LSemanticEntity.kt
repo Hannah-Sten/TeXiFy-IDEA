@@ -48,6 +48,10 @@ sealed class LSemanticEntity(
         return applicableContext == null || applicableContext.any { it in context }
     }
 
+    fun isApplicableIn(context: LatexContext): Boolean {
+        return applicableContext == null || context in applicableContext
+    }
+
     fun applicableContextDisplay(): String {
         return if (applicableContext == null) "*"
         else "<${applicableContext.joinToString("|") { it.display }}>" // they are union

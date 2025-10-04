@@ -143,8 +143,9 @@ object LatexRegexBasedIndex {
     fun processDtxDefinitions(lib: LatexLib, project: Project, callback: (LatexSimpleDefinition) -> Unit) {
         if (DumbService.isDumb(project)) return
         val fIndex = FileBasedIndex.getInstance()
+        val libFileName = lib.toFileName() ?: return
         fIndex.processValues(
-            LatexFileBasedIndexKeys.DTX_DEFINITIONS, lib.name, null,
+            LatexFileBasedIndexKeys.DTX_DEFINITIONS, libFileName, null,
             FileBasedIndex.ValueProcessor { file, definitions ->
                 if (file.isValid) {
                     definitions.forEach { definition ->
@@ -160,7 +161,8 @@ object LatexRegexBasedIndex {
     fun getDtxDefinitions(lib: LatexLib, project: Project): List<LatexSimpleDefinition> {
         if (DumbService.isDumb(project)) return emptyList()
         val fIndex = FileBasedIndex.getInstance()
-        val result = fIndex.getValues(LatexFileBasedIndexKeys.DTX_DEFINITIONS, lib.name, GlobalSearchScope.everythingScope(project)).flatten()
+        val libFileName = lib.toFileName() ?: return emptyList()
+        val result = fIndex.getValues(LatexFileBasedIndexKeys.DTX_DEFINITIONS, libFileName, GlobalSearchScope.everythingScope(project)).flatten()
         return result
     }
 }

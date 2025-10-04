@@ -118,6 +118,10 @@ abstract class LatexWithContextStateTraverser<S>(
         return true
     }
 
+    /**
+     *
+     * @see LatexPsiUtil.resolveContextIntroUpward
+     */
     protected fun traverseRecur(e: PsiElement): Boolean {
         val action = elementStart(e)
         when (action) {
@@ -143,6 +147,10 @@ abstract class LatexWithContextStateTraverser<S>(
                 if (semantic != null) {
                     return traverseEnvironmentRecur(e, semantic)
                 }
+            }
+
+            is LatexInlineMath -> {
+                currentIntro = LatexContextIntro.INLINE_MATH
             }
 
             is LatexMathContent -> {

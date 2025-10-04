@@ -1,15 +1,12 @@
 package nl.hannahsten.texifyidea.inspections.latex.probablebugs
 
 import com.intellij.lang.annotation.HighlightSeverity
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import io.mockk.every
 import io.mockk.mockkStatic
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.gutter.LatexNavigationGutter
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
-import nl.hannahsten.texifyidea.lang.alias.CommandManager
-import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import java.io.File
 import java.nio.file.Path
@@ -216,10 +213,4 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
 //        updateIncludeCommandsBlocking(myFixture.project)
 //        myFixture.checkHighlighting()
 //    }
-
-    fun updateIncludeCommandsBlocking(project: Project) {
-        for (command in CommandMagic.allFileIncludeCommands) {
-            CommandManager.updateAliases(setOf(command), project)
-        }
-    }
 }

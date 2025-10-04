@@ -3,11 +3,11 @@ package nl.hannahsten.texifyidea.gutter
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzerSettings
 import com.intellij.codeInsight.daemon.LineMarkerInfo
 import com.intellij.codeInsight.daemon.impl.DaemonCodeAnalyzerImpl
+import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import io.mockk.every
 import io.mockk.mockkStatic
-import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.updateFilesets
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
@@ -52,11 +52,26 @@ class LatexGutterTest : BasePlatformTestCase() {
     }
 
     fun testGraphicsExtensions() {
-        val testName = getTestName(false)
         myFixture.copyDirectoryToProject("figures", "figures")
-        val gutters = myFixture.findAllGutters("$testName.tex")
-        // The last one is \includegraphics{figures/duck}, which is a pdf file.
-        assertEquals(TexifyIcons.PDF_FILE, gutters.last().icon)
+        myFixture.configureByText(
+            "main.tex",
+            """
+                \documentclass{article}
+                \usepackage{graphicx}
+                \DeclareGraphicsExtensions{.png, .pdf}
+
+                \begin{document}
+                    \includegraphics{figures/duck}
+                \end{document}
+            """.trimIndent()
+        )
+        myFixture.updateFilesets()
+        val gutters = myFixture.findAllGutters()
+        // we actually have both duck.pdf and duck.png
+        // according to the default preference order, the .pdf should be chosen
+        // but we override the order with \DeclareGraphicsExtensions{.png, .pdf},
+        // so the .png should be chosen
+        assertEquals(FileTypeManager.getInstance().getFileTypeByExtension(".png").icon, gutters.last().icon)
     }
 
     fun testShowMethodSeparators() {
@@ -73,10 +88,18 @@ class LatexGutterTest : BasePlatformTestCase() {
     }
 
     fun testShowNavigationGutter() {
-        val testName = getTestName(false)
-        myFixture.configureByFile("$testName.tex")
-        myFixture.doHighlighting()
-        val gutters = myFixture.findAllGutters()
+        myFixture.configureByText(
+            "main.tex",
+            """
+                \usepackage{inputenc}
+                \documentclass{article}
+                \RequirePackage{amsmath}
+                \LoadClass{article}
+                \LoadClassWithOptions{article}
+            """.trimIndent()
+        )
+        myFixture.updateFilesets()
+        val gutters = myFixture.findAllGutters("main.tex")
         assertEquals(5, gutters.size)
         assertTrue(gutters.all { g -> g.tooltipText == "Go to referenced file" })
     }

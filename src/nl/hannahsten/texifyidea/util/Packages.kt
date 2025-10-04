@@ -12,13 +12,14 @@ import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
+import nl.hannahsten.texifyidea.lang.predefined.CommandNames
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
+import nl.hannahsten.texifyidea.psi.nameWithSlash
 import nl.hannahsten.texifyidea.psi.traverseCommands
 import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
-import nl.hannahsten.texifyidea.util.magic.cmd
 import kotlin.collections.forEach
 
 /**
@@ -43,11 +44,10 @@ object PackageUtils {
      * The anchor will be the given preferred anchor if not null.
      */
     fun getDefaultInsertAnchor(commands: Sequence<LatexCommands>, preferredAnchor: LatexCommands?): Pair<PsiElement?, Boolean> {
-        val classHuh = commands
-            .filter { cmd ->
-                cmd.name == LatexGenericRegularCommand.DOCUMENTCLASS.cmd || cmd.name == LatexGenericRegularCommand.LOADCLASS.cmd
-            }
-            .firstOrNull()
+        val classHuh = commands.firstOrNull { cmd ->
+            val name = cmd.nameWithSlash
+            name == CommandNames.DOCUMENT_CLASS || name == CommandNames.LOAD_CLASS
+        }
         val anchorAfter: PsiElement?
         val prependNewLine: Boolean
         if (classHuh != null) {
@@ -194,14 +194,15 @@ object PackageUtils {
 
     fun insertUsePackage(file: PsiFile, lib: LatexLib, options: List<String> = emptyList()): Boolean {
         if (lib.isDefault || lib.isCustom) return true
-        val packName = lib.toPackageName() ?: return false
+        val packName = lib.asPackageName() ?: return false
         val filesetData = LatexProjectStructure.getFilesetDataFor(file)
         if (filesetData != null) {
-            if (lib.name in filesetData.libraries) return true
-            conflictingPackageMap[lib.name]?.let { conflicts ->
+            val fileName = lib.toFileName() ?: return true
+            if (fileName in filesetData.libraries) return true
+            conflictingPackageMap[fileName]?.let { conflicts ->
                 // Don't insert when a conflicting package is already present
                 if (conflicts.any {
-                        lib.name != it && filesetData.libraries.contains(it)
+                        fileName != it && filesetData.libraries.contains(it)
                     }
                 ) {
                     return false

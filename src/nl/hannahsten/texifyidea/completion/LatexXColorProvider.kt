@@ -29,7 +29,7 @@ object LatexXColorProvider : LatexContextAgnosticCompletionProvider() {
 
     private fun addCustomColors(parameters: CompletionParameters, result: CompletionResultSet) {
         val file = parameters.originalFile
-        val colorDefinitions = NewCommandsIndex.getByNames(ColorMagic.colorDefinitions, file.project)
+        val colorDefinitions = NewCommandsIndex.getByNames(ColorMagic.colorDefinitions.keys, file.project)
         for (cmd in colorDefinitions) {
             val colorName = cmd.getRequiredArgumentValueByName("name") ?: continue
             val color = LatexElementColorProvider().findColor(colorName, file)

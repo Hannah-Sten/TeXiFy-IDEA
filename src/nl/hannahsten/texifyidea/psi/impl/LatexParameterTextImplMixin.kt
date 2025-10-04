@@ -33,6 +33,7 @@ abstract class LatexParameterTextImplMixin(node: ASTNode) : LatexParameterText, 
             // we cannot resolve references, so return empty array
             return null
         }
+        // TODO: use command semantics
         val command = this.firstParentOfType<LatexCommands>() ?: return null
         val name = command.name ?: return null
         if (name in CommandMagic.bibliographyReference) {

@@ -34,7 +34,7 @@ class GotoDefinitionSymbolContributor : AbsIndexBasedChooseByNameContributor<Lat
 class GotoLabelSymbolContributor : AbsIndexBasedChooseByNameContributor<LatexComposite>() {
     override val index: StringStubIndexWrapper<LatexComposite> = NewLabelsIndex
 
-    override fun createNavigationItem(item: LatexComposite, name: String): NavigationItem? {
+    override fun createNavigationItem(item: LatexComposite, name: String): NavigationItem {
         return GoToSymbolProvider.BaseNavigationItem(item, name, TexifyIcons.DOT_LABEL)
     }
 }
@@ -42,7 +42,7 @@ class GotoLabelSymbolContributor : AbsIndexBasedChooseByNameContributor<LatexCom
 class GotoBibtexLabelSymbolContributor : AbsIndexBasedChooseByNameContributor<BibtexEntry>() {
     override val index: StringStubIndexWrapper<BibtexEntry> = NewBibtexEntryIndex
 
-    override fun createNavigationItem(item: BibtexEntry, name: String): NavigationItem? {
+    override fun createNavigationItem(item: BibtexEntry, name: String): NavigationItem {
         return GoToSymbolProvider.BaseNavigationItem(item, name, TexifyIcons.DOT_BIB)
     }
 }

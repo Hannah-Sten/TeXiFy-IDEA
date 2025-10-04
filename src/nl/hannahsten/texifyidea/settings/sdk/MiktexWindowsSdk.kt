@@ -40,7 +40,7 @@ class MiktexWindowsSdk : LatexSdk("MiKTeX Windows SDK") {
                 if (path.isBlank()) return@forEach
                 val index = path.findLastAnyOf(setOf("miktex\\bin"))?.first ?: (path.length - 1)
                 if (index > 0) {
-                    results.add(path.substring(0, index))
+                    results.add(path.take(index))
                 }
             }
         }

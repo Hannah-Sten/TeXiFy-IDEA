@@ -130,7 +130,7 @@ class LatexDocumentationProvider : DocumentationProvider {
      * Generate the content that should be shown in the documentation popup.
      * Works for commands and environments
      */
-    private fun generateDocForLatexCommandsAndEnvironments(element: PsiElement, originalElement: PsiElement?): String? {
+    private fun generateDocForLatexCommandsAndEnvironments(element: PsiElement, originalElement: PsiElement?): String {
         // Indexed documentation
         // Apparently the lookup item is not yet initialised, so let's do that first
         // Can happen when requesting documentation for an item for which the user didn't request documentation during autocompletion

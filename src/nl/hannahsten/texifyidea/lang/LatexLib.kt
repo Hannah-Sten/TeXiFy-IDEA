@@ -1,55 +1,101 @@
 package nl.hannahsten.texifyidea.lang
 
 /**
- * Represents a LaTeX library, which can be a package or class file.
- *
- *
+ * Represents a LaTeX library, which can be a package, a class, the base LaTeX installation or nothing but custom code.
  */
-@JvmInline
-value class LatexLib(val name: String) {
+data class LatexLib(
+    /**
+     * The name without the suffix.
+     */
+    val name: String,
+    val type: LibType
+) {
     val isPackageFile: Boolean
-        get() = name.endsWith(".sty")
+        get() = type == LibType.PACKAGE
 
     val isClassFile: Boolean
-        get() = name.endsWith(".cls")
+        get() = type == LibType.CLASS
 
     val requiresImport: Boolean
         get() = isPackageFile || isClassFile
 
     val isDefault: Boolean
-        get() = this == BASE
+        get() = type == LibType.BASE
 
     val isCustom: Boolean
-        get() = this == CUSTOM
+        get() = type == LibType.CUSTOM
 
-    fun toPackageName(): String? {
-        return if (isPackageFile) name.substringBefore('.') else null
+    fun asPackageName(): String? {
+        return if (isPackageFile) name else null
     }
 
-    val displayString: String
-        get() = if (isDefault) "(base)" else if (isCustom) "" else name
+    fun asClassName(): String? {
+        return if (isClassFile) name else null
+    }
+
+    /**
+     * Gets the file name with suffix, or null if this is not a package or class.
+     */
+    fun toFileName(): String? = when (type) {
+        LibType.PACKAGE -> "$name.sty"
+        LibType.CLASS -> "$name.cls"
+        LibType.BASE -> null
+        LibType.CUSTOM -> null
+    }
+
+    /**
+     * Returns a display string for this library.
+     *
+     * @param withParan Whether to include parentheses and suffix in the display string (but not for base or custom).
+     */
+    fun displayString(withParan: Boolean = false): String {
+        return when(type) {
+            LibType.PACKAGE -> if(withParan) "($name.sty)" else "$name.sty"
+            LibType.CLASS -> if(withParan) "($name.cls)" else "$name.cls"
+            LibType.BASE -> "(base)"
+            LibType.CUSTOM -> ""
+        }
+    }
 
     override fun toString(): String {
-        return name
+        return displayString(false)
+    }
+
+    enum class LibType {
+        PACKAGE,
+        CLASS,
+        BASE,
+        CUSTOM
     }
 
     companion object {
-        val CUSTOM = LatexLib("")
+        /**
+         * Represents custom code, no package or class.
+         */
+        val CUSTOM = LatexLib("", LibType.CUSTOM)
 
-        val BASE = LatexLib("(base)") // Represents the base package
+        /**
+         * Represents the base LaTeX installation, no package or class.
+         */
+        val BASE = LatexLib("(base)", LibType.BASE) // Represents the base package
 
         @Suppress("FunctionName") // package is a keyword in Kotlin
         fun Package(name: String): LatexLib {
-            return if (name.isEmpty()) BASE else LatexLib("$name.sty")
+            return if (name.isEmpty()) BASE else LatexLib(name, LibType.PACKAGE)
         }
 
         @Suppress("FunctionName")
         fun Class(name: String): LatexLib {
-            return if (name.isEmpty()) BASE else LatexLib("$name.cls")
+            return if (name.isEmpty()) BASE else LatexLib(name, LibType.CLASS)
         }
 
         fun fromFileName(fileName: String): LatexLib {
-            return if (fileName.isEmpty()) BASE else LatexLib(fileName)
+            if (fileName.isEmpty()) return BASE
+            when {
+                fileName.endsWith(".sty") -> return LatexLib(fileName.removeSuffix(".sty"), LibType.PACKAGE)
+                fileName.endsWith(".cls") -> return LatexLib(fileName.removeSuffix(".cls"), LibType.CLASS)
+            }
+            return CUSTOM
         }
 
         val ACRONYM = Package("acronym")
@@ -128,10 +174,11 @@ value class LatexLib(val name: String) {
         val XARGS = Package("xargs")
         val XCOLOR = Package("xcolor")
         val XPARSE = Package("xparse")
+
+        val EXAM = Class("exam")
     }
 }
 
 fun LatexLib.toLatexPackage(): LatexPackage? {
-    if (!isPackageFile) return null
-    return LatexPackage(name.substringBefore('.'))
+    return if (isPackageFile) LatexPackage(name) else null
 }

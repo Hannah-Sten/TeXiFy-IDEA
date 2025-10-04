@@ -10,12 +10,11 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.endOffset
 import com.intellij.psi.util.startOffset
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
+import nl.hannahsten.texifyidea.lang.predefined.CommandNames
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexNoMathContent
 import nl.hannahsten.texifyidea.psi.traverseCommands
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
-import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 import nl.hannahsten.texifyidea.util.parser.parentOfType
 
@@ -27,7 +26,7 @@ import nl.hannahsten.texifyidea.util.parser.parentOfType
  */
 open class LatexImportFoldingBuilder : FoldingBuilderEx() {
 
-    private val includesSet = setOf(LatexGenericRegularCommand.USEPACKAGE.cmd, LatexGenericRegularCommand.REQUIREPACKAGE.cmd)
+    private val includesSet = setOf(CommandNames.USE_PACKAGE, CommandNames.REQUIRE_PACKAGE)
 
     override fun isCollapsedByDefault(node: ASTNode) = LatexCodeFoldingSettings.getInstance().collapseImports
 

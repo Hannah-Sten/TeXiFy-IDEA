@@ -30,7 +30,7 @@ object ContextAwareEnvironmentCompletionProvider : LatexContextAwareCompletionAd
             sourced, env.name,
             bold = true,
             tailText = tailText, tailTextGrayed = true,
-            typeText = buildCommandSourceStr(sourced),
+            typeText = buildDefinitionSourceStr(sourced),
             icon = TexifyIcons.DOT_ENVIRONMENT,
             insertHandler = LatexAddImportInsertHandler
         )
@@ -65,10 +65,10 @@ object ContextAwareEnvironmentCompletionProvider : LatexContextAwareCompletionAd
     ) {
         val project = parameters.originalFile.project
         val addedLibs = mutableSetOf<LatexLib>()
-        val allNames = LatexPackageLocation.getAllPackageNames(project)
+        val allNames = LatexPackageLocation.getAllPackageFileNames(project)
         val defService = LatexLibraryDefinitionService.getInstance(project)
         for (name in allNames) {
-            val lib = LatexLib(name)
+            val lib = LatexLib.fromFileName(name)
             if (!addedLibs.add(lib)) continue // skip already added libs
             val libBundle = defService.getLibBundle(name)
             addBundleEnvironments(result, libBundle, checkCtx = false)

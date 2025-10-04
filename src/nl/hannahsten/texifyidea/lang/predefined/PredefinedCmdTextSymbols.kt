@@ -15,8 +15,9 @@ object PredefinedCmdTextSymbols : PredefinedCommandSet() {
         symbol("_", "_", "Underscore")
     }
 
-    val textcomp = buildCommands {
+    val textcomp = textCommands {
         packageOf("textcomp")
+
         symbol("textacutedbl", "̋")
         symbol("textasciiacute", "´")
         symbol("textasciibreve", "˘")
@@ -98,6 +99,14 @@ object PredefinedCmdTextSymbols : PredefinedCommandSet() {
         symbol("texttwosuperior", "²")
         symbol("textwon", "₩")
         symbol("textyen", "¥")
+
+        symbol("textdownarrow", "↓")
+        symbol("textleftarrow", "←")
+        symbol("textrightarrow", "→")
+        symbol("textuparrow", "↑")
+        symbol("texttrademark", "™")
+        symbol("textunderscore", "_")
+        symbol("textvisiblespace", "␣")
     }
     val euro = buildCommands {
 
@@ -110,7 +119,38 @@ object PredefinedCmdTextSymbols : PredefinedCommandSet() {
         symbol("officialeuro", "€")
     }
 
-    val textSymbols = buildCommands {
+    val generalSymbols = buildCommands {
+
+        underContext(LatexContexts.Text) {
+            // while they can be used in math mode, they are not usually used there
+            symbol("OE", "Œ")
+            symbol("S", "§")
+            symbol("aa", "å")
+            symbol("ae", "æ")
+        }
+
+        symbol("dag", "†")
+        symbol("ddag", "‡")
+
+        symbol("flq", "‹")
+        symbol("flqq", "«")
+        symbol("frq", "›")
+        symbol("frqq", "»")
+
+        symbol("glq", ",")
+        symbol("glqq", "„")
+        symbol("grq", "‘")
+        symbol("grqq", "“")
+
+        symbol("i", "ı")
+        symbol("lbrack", "[")
+        symbol("lq", "‘")
+        symbol("oe", "œ")
+        symbol("pounds", "£")
+        symbol("r", "˚")
+        symbol("rbrack", "]")
+        symbol("rq", "’")
+
         packageOf("marvosym")
         symbol("Cutleft", null)
         symbol("Cutline", null)
@@ -239,6 +279,37 @@ object PredefinedCmdTextSymbols : PredefinedCommandSet() {
         symbol("wasycmd", "⌘")
         symbol("wasylozenge", "⯏")
         symbol("wasytherefore", "∴")
+    }
+
+    val textSymbols = textCommands {
+
+        symbol("textasciicircum", "^")
+        symbol("textasciitilde", "~")
+        symbol("textasteriskcentered", "⁎")
+        symbol("textbackslash", "\\")
+        symbol("textbar", "|")
+        symbol("textbraceleft", "{")
+        symbol("textbraceright", "}")
+        symbol("textbullet", "•")
+        symbol("textcopyright", "©")
+        symbol("textdagger", "†")
+        symbol("textdaggerdbl", "‡")
+        symbol("textdollar", "$")
+        symbol("textellipsis", "…")
+        symbol("textemdash", "—")
+        symbol("textendash", "–")
+        symbol("textexclamdown", "¡")
+        symbol("textgreater", ">")
+        symbol("textless", "<")
+        symbol("textperiodcentered", "·")
+        symbol("textquestiondown", "¿")
+        symbol("textquotedblleft", "“")
+        symbol("textquotedblright", "”")
+        symbol("textquoteleft", "‘")
+        symbol("textquoteright", "’")
+        symbol("textregistered", "®")
+        symbol("textsection", "§")
+        symbol("textsterling", "£")
     }
 
     val siunitx = buildCommands {
