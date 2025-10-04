@@ -6,7 +6,6 @@ import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.RoamingType
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
-import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.SumatraViewer
 
 /**
@@ -108,7 +107,7 @@ class TexifySettings : PersistentStateComponent<TexifySettingsState> {
         htmlPasteTranslator = state.htmlPasteTranslator
         // Backwards compatibility
         autoCompileOption = state.autoCompileOption ?: if (state.autoCompileOnSaveOnly) AutoCompile.AFTER_DOCUMENT_SAVE else if (state.autoCompile) AutoCompile.ALWAYS else AutoCompile.OFF
-        pdfViewer = state.pdfViewer
+//        pdfViewer = state.pdfViewer
         hasApprovedDetexify = state.hasApprovedDetexify
         pathToSumatra = state.pathToSumatra
     }

@@ -1,10 +1,9 @@
 package nl.hannahsten.texifyidea.run.pdfviewer
 
 import com.intellij.openapi.extensions.ExtensionPointName
-import nl.hannahsten.texifyidea.run.executable.Executable
-import java.io.File
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
+import nl.hannahsten.texifyidea.run.executable.Executable
 import nl.hannahsten.texifyidea.util.runCommand
 
 /**
@@ -117,24 +116,24 @@ interface PdfViewer : Executable {
  */
 interface ExternalPdfViewer : PdfViewer
 
-class Converter : com.intellij.util.xmlb.Converter<PdfViewer>() {
+class PdfViewerConverter : com.intellij.util.xmlb.Converter<PdfViewer>() {
 
-        override fun toString(value: PdfViewer) = if (value is CustomPdfViewer) value.executablePath else value.name
+        override fun toString(value: PdfViewer) = value.name
 
-        override fun fromString(value: String): PdfViewer =
-            ExternalPdfViewers.getExternalPdfViewers().firstOrNull { it.name == value }
-                ?: InternalPdfViewer.valueOf(value)
-                ?: if (File(value).exists()) CustomPdfViewer(value) else null
-                ?: availablePdfViewers().firstOrNull()
-                ?: Evince()
+        override fun fromString(value: String): PdfViewer = PdfViewer.availableViewers.first() // todo
+//            ExternalPdfViewers.getExternalPdfViewers().firstOrNull { it.name == value }
+//                ?: InternalPdfViewer.valueOf(value)
+//                ?: if (File(value).exists()) CustomPdfViewer(value) else null
+//                ?: availablePdfViewers().firstOrNull()
+//                ?: Evince()
     }
-}
+//}
 
-/**
- * Define functions that handle all external pdf viewers one by one.
- */
-object ExternalPdfViewers {
-
-    fun getExternalPdfViewers(): List<ExternalPdfViewer> = EP_NAME.extensionList
-}
+///**
+// * Define functions that handle all external pdf viewers one by one.
+// */
+//object ExternalPdfViewers {
+//
+//    fun getExternalPdfViewers(): List<ExternalPdfViewer> = EP_NAME.extensionList
+//}
 

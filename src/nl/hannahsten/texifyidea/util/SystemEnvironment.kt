@@ -10,8 +10,6 @@ import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.util.SystemEnvironment.Companion.isAvailable
 import com.jetbrains.rd.util.ConcurrentHashMap
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.util.SystemEnvironment.Companion.isAvailable
 import nl.hannahsten.texifyidea.util.files.allChildDirectories
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import java.io.File

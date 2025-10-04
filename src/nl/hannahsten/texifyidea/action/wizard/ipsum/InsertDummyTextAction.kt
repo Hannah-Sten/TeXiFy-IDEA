@@ -6,6 +6,8 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.fileEditor.FileEditorManager
+import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.util.*
@@ -23,7 +25,8 @@ open class InsertDummyTextAction : AnAction() {
      */
     private fun executeAction(file: PsiFile) {
         val project = file.project
-        val editor = project.currentTextEditor()?.editor ?: return
+        // When we select this action from the menu, the editor will not be focused
+        val editor = (FileEditorManager.getInstance(project).selectedEditor as? TextEditor)?.editor ?: return
 
         // Get the indentation from the current line.
         val indent = editor.document.lineIndentationByOffset(editor.caretOffset())

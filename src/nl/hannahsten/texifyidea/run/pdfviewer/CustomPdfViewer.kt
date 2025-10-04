@@ -10,7 +10,7 @@ import java.io.File
  */
 class CustomPdfViewer(
     override val executablePath: String,
-    override val name: String = File(executablePath).name,
+    override val name: String = File(executablePath).name, override val displayName: String? = "Custom PDF Viewer",
 ) : PdfViewer, CustomExecutable {
     override fun isAvailable() = File(executablePath).isFile
 

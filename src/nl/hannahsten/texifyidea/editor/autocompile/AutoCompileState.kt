@@ -8,7 +8,6 @@ import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -81,7 +80,7 @@ object AutoCompileState {
 
         recentRequest = false
         // Remember that it is auto compiling so we won't interrupt the user during typing
-        runConfig.isAutoCompiling = true
+//        runConfig.isAutoCompiling = true // todo
 
         // If the run config is already running, this may trigger a dialog asking the user whether to stop and rerun
         ExecutionManager.getInstance(proj).restartRunProfile(

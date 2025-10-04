@@ -11,9 +11,8 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.SeparatorComponent
 import nl.hannahsten.texifyidea.run.compiler.bibtex.SupportedBibliographyCompiler
+import nl.hannahsten.texifyidea.run.ui.LatexDistributionType
 import nl.hannahsten.texifyidea.util.magic.CompilerMagic
-import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
-import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import java.awt.event.ItemEvent
 import javax.swing.JCheckBox
 import javax.swing.JComponent

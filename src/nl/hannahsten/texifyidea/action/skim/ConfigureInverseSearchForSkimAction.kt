@@ -3,8 +3,6 @@ package nl.hannahsten.texifyidea.action.skim
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import nl.hannahsten.texifyidea.run.pdfviewer.InternalPdfViewer
-import nl.hannahsten.texifyidea.run.pdfviewer.Skim
 import nl.hannahsten.texifyidea.run.pdfviewer.SkimViewer
 import nl.hannahsten.texifyidea.ui.SkimConfigureInverseSearchDialog
 

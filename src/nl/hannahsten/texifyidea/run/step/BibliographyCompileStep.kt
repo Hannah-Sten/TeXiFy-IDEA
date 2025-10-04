@@ -129,9 +129,11 @@ class BibliographyCompileStep internal constructor(
     }
 
     override fun getCommand(): List<String> {
+        // todo support WSL https://github.com/Hannah-Sten/TeXiFy-IDEA/pull/3912/files#diff-80087f53d6ca2679361a05ff35e7c45c137388d8904d262af0bee8ad866e2ea8
         return state.compiler?.getCommand(this) ?: throw TeXception("Unknown bibliography compiler")
     }
 
+    // todo WSL paths https://github.com/Hannah-Sten/TeXiFy-IDEA/pull/3912/files#diff-3f8ede64c3b0656a49b0a714ad747dc48f322de3470b7fc03617aaceaab12671
     override fun getWorkingDirectory() =
         state.workingDirectory ?: configuration.getAuxilDirectory()?.path ?: configuration.options.mainFile.resolve()?.parent?.path
 

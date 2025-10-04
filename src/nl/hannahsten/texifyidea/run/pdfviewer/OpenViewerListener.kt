@@ -7,7 +7,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.action.ForwardSearchAction
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 
 /**
  * Execute a forward search with the selected viewer after the compilation is done.

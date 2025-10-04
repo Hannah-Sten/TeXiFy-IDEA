@@ -2,8 +2,6 @@ package nl.hannahsten.texifyidea.settings
 
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
-import nl.hannahsten.texifyidea.run.pdfviewer.InternalPdfViewer
-import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 
 data class TexifySettingsState(
     var automaticSecondInlineMathSymbol: Boolean = true,

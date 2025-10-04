@@ -13,9 +13,7 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.compiler.bibtex.SupportedBibliographyCompiler
 import nl.hannahsten.texifyidea.run.legacy.bibtex.logtab.BibtexLogTabComponent
-import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexLogTabComponent
-import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
-import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
+import nl.hannahsten.texifyidea.run.ui.LatexDistributionType
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import org.jdom.Element
 import java.util.*

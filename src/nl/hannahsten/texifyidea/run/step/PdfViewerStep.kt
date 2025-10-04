@@ -28,8 +28,8 @@ import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationAbstractPathOpt
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationPathOption
 import nl.hannahsten.texifyidea.run.pdfviewer.CustomPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
+import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewerConverter
 import nl.hannahsten.texifyidea.run.pdfviewer.SupportedPdfViewer
-import nl.hannahsten.texifyidea.run.pdfviewer.availablePdfViewers
 import nl.hannahsten.texifyidea.run.ui.LatexCompileSequenceComponent
 import nl.hannahsten.texifyidea.run.ui.compiler.ExecutableEditor
 import nl.hannahsten.texifyidea.run.ui.console.LatexExecutionConsole
@@ -55,7 +55,7 @@ class PdfViewerStep internal constructor(
 
     class State : BaseState() {
 
-        @get:Attribute("pdfViewer", converter = PdfViewer.Converter::class)
+        @get:Attribute("pdfViewer", converter = PdfViewerConverter::class) // todo
         var pdfViewer: PdfViewer? by property(defaultPdfViewer) { it == defaultPdfViewer }
 
         @get:Attribute("pdfFilePath", converter = LatexRunConfigurationAbstractPathOption.Converter::class)
@@ -91,7 +91,7 @@ class PdfViewerStep internal constructor(
     }
 
     companion object {
-        val defaultPdfViewer = availablePdfViewers().firstOrNull()
+        val defaultPdfViewer = PdfViewer.availableViewers.firstOrNull()
     }
 
     override fun isValid(): Boolean {
@@ -99,7 +99,7 @@ class PdfViewerStep internal constructor(
     }
 
     override fun configure(context: DataContext, button: LatexCompileSequenceComponent.StepButton) {
-        val viewerEditor = ExecutableEditor<SupportedPdfViewer, PdfViewer>("PDF Viewer", availablePdfViewers()) { CustomPdfViewer(it) }
+        val viewerEditor = ExecutableEditor<SupportedPdfViewer, PdfViewer>("PDF Viewer", PdfViewer.availableViewers.filter { it is SupportedPdfViewer } as Iterable<SupportedPdfViewer>) { CustomPdfViewer(it) }
         setDefaultLayout(viewerEditor, state.pdfViewer)
 
         // todo whether this makes sense depends on the pdf viewer

@@ -8,9 +8,9 @@ import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.util.execution.ParametersListUtil
-import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Companion.toWslPathIfNeeded
-import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
+import nl.hannahsten.texifyidea.run.ui.LatexDistributionType
 import nl.hannahsten.texifyidea.util.SystemEnvironment
+import nl.hannahsten.texifyidea.util.runCommand
 import kotlin.io.path.Path
 
 /**
@@ -21,13 +21,22 @@ open class BibtexCommandLineState(
     private val runConfig: BibtexRunConfiguration
 ) : CommandLineState(environment) {
 
+    /**
+     * Convert Windows paths to WSL paths.
+     */
+    fun String.toWslPathIfNeeded(distributionType: LatexDistributionType): String =
+        if (distributionType == LatexDistributionType.WSL_TEXLIVE) {
+            runCommand("wsl", "wslpath", "-a", this) ?: this
+        }
+        else this
+
     @Throws(ExecutionException::class)
     override fun startProcess(): ProcessHandler {
         val compiler = runConfig.compiler ?: throw ExecutionException("No valid compiler specified.")
-        val compilerCommand = compiler.getCommand(runConfig, environment.project)?.toMutableList() ?: throw ExecutionException("Compile command could not be created.")
+        val compilerCommand = "todo" // compiler.getCommand(runConfig, environment.project)?.toMutableList() ?: throw ExecutionException("Compile command could not be created.")
 
         // See LatexCompiler#getCommand
-        val command = if (runConfig.getLatexDistributionType() == LatexDistributionType.WSL_TEXLIVE) {
+        val command: String = (if (runConfig.getLatexDistributionType() == LatexDistributionType.WSL_TEXLIVE) {
             var wslCommand = GeneralCommandLine(compilerCommand).commandLineString
 
             // Custom compiler arguments specified by the user
@@ -42,7 +51,7 @@ open class BibtexCommandLineState(
         }
         else {
             compilerCommand
-        }
+        }) as String
 
         // The working directory is as specified by the user in the working directory.
         // The fallback (if null or empty) directory is the directory of the main file.
