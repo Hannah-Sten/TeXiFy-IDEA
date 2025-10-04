@@ -75,7 +75,7 @@ open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
             .mapNotNull { it as LatexRunConfiguration }
             .filter { it.options.mainFile.resolve()?.psiFile(project) in fileSet }
 
-        return mainFileCandidates.firstOrNull()?.outputFilePath
+        return mainFileCandidates.sortedBy { it.options.lastRun }.firstOrNull()?.outputFilePath
     }
 
     /**

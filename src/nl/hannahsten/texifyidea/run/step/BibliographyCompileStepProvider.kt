@@ -48,7 +48,7 @@ object BibliographyCompileStepProvider : StepProvider {
 
     override fun createIfRequired(runConfiguration: LatexRunConfiguration): List<Step> {
         // This check is expensive, only check if we need to add steps if this is the first time running the run config
-        if (runConfiguration.options.hasBeenRun) return emptyList()
+        if (runConfiguration.options.lastRun != null) return emptyList()
 
         // If the user has already added bib steps, we don't second-guess her
         if (runConfiguration.compileSteps.filterIsInstance<BibliographyCompileStep>().isNotEmpty()) return emptyList()

@@ -12,7 +12,6 @@ import nl.hannahsten.texifyidea.lang.magic.allParentMagicComments
 import nl.hannahsten.texifyidea.run.compiler.latex.PdflatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.latex.SupportedLatexCompiler
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationAbstractOutputPathOption
-import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationAbstractPathOption
 import nl.hannahsten.texifyidea.run.options.LatexRunConfigurationPathOption
 import nl.hannahsten.texifyidea.run.step.LatexCompileStepProvider
 import nl.hannahsten.texifyidea.run.step.PdfViewerStep
@@ -47,7 +46,7 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
 
         // Change the main file as given by the template run configuration to the current file
         runConfiguration.options.mainFile = LatexRunConfigurationPathOption(mainFile.path)
-        runConfiguration.options.workingDirectory = LatexRunConfigurationPathOption(mainFile.parent.path, LatexRunConfigurationAbstractPathOption.defaultWorkingDirectoryWithMacro)
+        runConfiguration.options.workingDirectory = LatexRunConfigurationPathOption.createDefaultWorkingDirectory(mainFile)
         runConfiguration.options.outputPath = LatexRunConfigurationAbstractOutputPathOption.getDefault("out", runConfiguration.project)
         runConfiguration.options.auxilPath = LatexRunConfigurationAbstractOutputPathOption.getDefault("auxil", runConfiguration.project)
         runConfiguration.options.compilerArguments = runConfiguration.options.compiler?.defaultArguments
