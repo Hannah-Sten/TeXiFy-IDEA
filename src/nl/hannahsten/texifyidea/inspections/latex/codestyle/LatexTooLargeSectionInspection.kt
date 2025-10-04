@@ -28,7 +28,6 @@ import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.writeToFileUndoable
 import nl.hannahsten.texifyidea.util.parser.*
-import java.util.*
 
 /**
  * @author Hannah Schellekens
