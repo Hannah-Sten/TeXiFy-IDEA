@@ -103,11 +103,6 @@ fun Project.hasLatexRunConfigurations(): Boolean {
     return RunManager.getInstance(this).allConfigurationsList.any { it is LatexRunConfiguration }
 }
 
-fun Project.getBibtexRunConfigurations(): Collection<BibtexRunConfiguration> {
-    if (isDisposed) return emptyList()
-    return RunManager.getInstance(this).allConfigurationsList.filterIsInstance<BibtexRunConfiguration>()
-}
-
 /**
  * Get the run configuration that is currently selected.
  */
@@ -160,7 +155,7 @@ fun Project.isLatexProject(): Boolean {
 /**
  * True if we are in a unit test.
  */
-fun Project.isTestProject() = ApplicationManager.getApplication().isUnitTestMode
+fun isTestProject() = ApplicationManager.getApplication().isUnitTestMode
 
 /**
  * Finds all section marker commands (as defined in [CommandMagic.sectionNameToLevel]) in the project.

@@ -1,7 +1,5 @@
 package nl.hannahsten.texifyidea.index.file
 
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.runReadAction
 import arrow.atomic.AtomicBoolean
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
@@ -14,7 +12,9 @@ import com.intellij.util.indexing.IndexableSetContributor
 import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.Log
+import nl.hannahsten.texifyidea.util.TexifyCoroutine
+import nl.hannahsten.texifyidea.util.getTexinputsPaths
 import org.codehaus.plexus.archiver.ArchiverException
 import org.codehaus.plexus.archiver.tar.TarBZip2UnArchiver
 import org.codehaus.plexus.archiver.tar.TarXZUnArchiver

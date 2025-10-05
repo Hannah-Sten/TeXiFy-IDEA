@@ -38,8 +38,8 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
         runConfig.psiFile = mainFile
         runBlocking {
-        runConfig.options.mainFile = LatexRunConfigurationPathOption("main.tex", "main.tex").createSmartPointer()
-            }
+            runConfig.options.mainFile = LatexRunConfigurationPathOption("main.tex", "main.tex").createSmartPointer()
+        }
         runConfig.generateBibRunConfig()
 //        assertTrue(runConfig.bibRunConfigs.isNotEmpty()) // todo
 //        assertEquals(mainFile.virtualFile, (runConfig.bibRunConfigs.first().configuration as BibtexRunConfiguration).mainFile)

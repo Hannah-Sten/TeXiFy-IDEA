@@ -22,10 +22,10 @@ class LatexOutputPathTest : BasePlatformTestCase() {
         runConfig.psiFile = mainFile.createSmartPointer()
         runBlocking {
 
-        runConfig.options.mainFile = LatexRunConfigurationPathOption("main.tex", "main.tex")
-        val outPath = LatexOutputPath("out", runConfig.getMainFileContentRoot(), runConfig.options.mainFile.resolve(), project)
-        // Cannot mkdirs in test, so will default to src
-        assertEquals("/src", outPath.getOrCreateOutputPath()?.path)
-            }
+            runConfig.options.mainFile = LatexRunConfigurationPathOption("main.tex", "main.tex")
+            val outPath = LatexOutputPath("out", runConfig.getMainFileContentRoot(), runConfig.options.mainFile.resolve(), project)
+            // Cannot mkdirs in test, so will default to src
+            assertEquals("/src", outPath.getOrCreateOutputPath()?.path)
+        }
     }
 }

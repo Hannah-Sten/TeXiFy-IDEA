@@ -17,8 +17,8 @@ import nl.hannahsten.texifyidea.run.latexRunConfigurationType
 import nl.hannahsten.texifyidea.run.pdfviewer.ExternalPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.step.PdfViewerStep
-import nl.hannahsten.texifyidea.util.files.ReferencedFileSetCache
 import nl.hannahsten.texifyidea.util.files.psiFile
+import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.latexTemplateRunConfig
 import nl.hannahsten.texifyidea.util.selectedRunConfig
 
@@ -63,7 +63,7 @@ open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
      */
     private fun guessPdfFile(file: VirtualFile, project: Project): String? {
         val psiFile = file.psiFile(project) ?: return null
-        val fileSet = ReferencedFileSetCache().fileSetFor(psiFile)
+        val fileSet = psiFile.referencedFileSet()
 
         val mainFileCandidates = RunManager.getInstance(project)
             .getConfigurationsList(latexRunConfigurationType())

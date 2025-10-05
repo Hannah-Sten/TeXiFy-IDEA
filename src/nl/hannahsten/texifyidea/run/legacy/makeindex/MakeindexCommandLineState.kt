@@ -10,8 +10,9 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import nl.hannahsten.texifyidea.run.legacy.MakeindexProgram
 import com.intellij.util.execution.ParametersListUtil
+import nl.hannahsten.texifyidea.run.legacy.MakeindexProgram
+import nl.hannahsten.texifyidea.run.step.getMakeindexOptions
 import nl.hannahsten.texifyidea.util.appendExtension
 import kotlin.io.path.Path
 

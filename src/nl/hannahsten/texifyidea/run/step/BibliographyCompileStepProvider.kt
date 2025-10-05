@@ -4,25 +4,24 @@ import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.rd.framework.base.deepClonePolymorphic
 import nl.hannahsten.texifyidea.TexifyIcons
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.allParentMagicComments
+import nl.hannahsten.texifyidea.psi.traverseCommands
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.compiler.bibtex.BiberCompiler
 import nl.hannahsten.texifyidea.run.compiler.bibtex.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.bibtex.BibtexCompiler
 import nl.hannahsten.texifyidea.run.compiler.bibtex.SupportedBibliographyCompiler
-import nl.hannahsten.texifyidea.util.files.commandsInFileSet
 import nl.hannahsten.texifyidea.util.files.findFile
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
-import nl.hannahsten.texifyidea.util.includedPackages
+import nl.hannahsten.texifyidea.util.includedPackagesInFileset
 import nl.hannahsten.texifyidea.util.magic.CompilerMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
-import nl.hannahsten.texifyidea.util.parser.allCommands
 import nl.hannahsten.texifyidea.util.parser.hasBibliography
-import nl.hannahsten.texifyidea.util.parser.requiredParameters
 import nl.hannahsten.texifyidea.util.parser.usesBiber
 import java.io.File
 import java.util.*
@@ -100,19 +99,18 @@ object BibliographyCompileStepProvider : StepProvider {
         val psiFile = runConfig.options.mainFile.resolve()?.psiFile(runConfig.project) ?: return emptyList()
 
         // When chapterbib is used, every chapter has its own bibliography and needs its own run config
-        val usesChapterbib = psiFile.includedPackages().contains(LatexPackage.CHAPTERBIB)
+        val usesChapterbib = psiFile.includedPackagesInFileset().contains(LatexPackage.CHAPTERBIB)
 
         if (!usesChapterbib) return emptyList()
 
         val steps = mutableListOf<BibliographyCompileStep>()
 
-        val allBibliographyCommands =
-            psiFile.commandsInFileSet().filter { it.name == LatexGenericRegularCommand.BIBLIOGRAPHY.cmd }
+        val allBibliographyCommands = NewCommandsIndex.getByNameInFileSet(LatexGenericRegularCommand.BIBLIOGRAPHY.cmd, psiFile)
 
         // We know that there can only be one bibliography per top-level \include,
         // however not all of them may contain a bibliography, and the ones
         // that do have one can have it in any included file
-        psiFile.allCommands()
+        psiFile.traverseCommands()
             .filter { it.name == LatexGenericRegularCommand.INCLUDE.cmd }
             .flatMap { command -> command.requiredParameters() }
             .forEach { filename ->

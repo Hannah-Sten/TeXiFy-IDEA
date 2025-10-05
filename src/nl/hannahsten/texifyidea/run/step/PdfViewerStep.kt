@@ -21,6 +21,7 @@ import com.intellij.util.xmlb.annotations.Attribute
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.action.ForwardSearchAction
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
+import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler
 import nl.hannahsten.texifyidea.run.macro.OutputDirMacro
@@ -35,10 +36,9 @@ import nl.hannahsten.texifyidea.run.ui.compiler.ExecutableEditor
 import nl.hannahsten.texifyidea.run.ui.console.LatexExecutionConsole
 import nl.hannahsten.texifyidea.util.caretOffset
 import nl.hannahsten.texifyidea.util.currentTextEditor
-import nl.hannahsten.texifyidea.util.files.ReferencedFileSetCache
 import nl.hannahsten.texifyidea.util.files.isRoot
 import nl.hannahsten.texifyidea.util.files.psiFile
-import nl.hannahsten.texifyidea.util.parser.name
+import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.parser.parentsOfType
 import java.io.File
 import java.io.OutputStream
@@ -235,7 +235,7 @@ class PdfViewerStep internal constructor(
             ?.psiFile(configuration.project)!!
 
         // Shouldn't run on EDT because it is slow
-        val fileSet = ReferencedFileSetCache().fileSetFor(mainFile)
+        val fileSet = mainFile.referencedFileSet()
 
         val belongsToFileset = psiFile in fileSet
 
@@ -245,7 +245,7 @@ class PdfViewerStep internal constructor(
             if (!isRoot()) return@run false
             val offset = currentEditor?.editor?.caretOffset() ?: return@run false
             // Check if cursor is not in document environment
-            findElementAt(offset)?.parentsOfType<LatexEnvironment>()?.any { it.name()?.text == "document" } == false
+            findElementAt(offset)?.parentsOfType<LatexEnvironment>()?.any { it.getEnvironmentName() == "document" } == false
         }
 
         // Forward search if the file currently open in the editor belongs to the file set of the main file that we are compiling.

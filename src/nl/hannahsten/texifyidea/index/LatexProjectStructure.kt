@@ -47,7 +47,6 @@ import nl.hannahsten.texifyidea.util.contentSearchScope
 import nl.hannahsten.texifyidea.util.expandCommandsOnce
 import nl.hannahsten.texifyidea.util.files.LatexPackageLocation
 import nl.hannahsten.texifyidea.util.files.allChildDirectories
-import nl.hannahsten.texifyidea.util.getBibtexRunConfigurations
 import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
 import nl.hannahsten.texifyidea.util.getTexinputsPaths
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
@@ -357,7 +356,7 @@ object LatexProjectStructure {
             .mapNotNullTo(rootFiles) { it.containingFile.virtualFile }
 
         project.getLatexRunConfigurations().forEach {
-            it.mainFile?.let { mainFile -> rootFiles.add(mainFile) }
+            it.options.mainFile.resolve()?.let { mainFile -> rootFiles.add(mainFile) }
         }
         FilenameIndex.getVirtualFilesByName("main.tex", true, project.contentSearchScope)
             .filter { it.isValid }
@@ -768,11 +767,14 @@ object LatexProjectStructure {
 
     private fun makePreparation(project: Project): ProjectInfo {
         // Get all bibtex input paths from the run configurations
-        val bibInputPaths = project.getBibtexRunConfigurations().mapNotNull { config ->
-            (config.environmentVariables.envs["BIBINPUTS"])?.let {
-                LocalFileSystem.getInstance().findFileByPath(it)
-            }
-        }.toMutableSet()
+        val bibInputPaths = emptySet<VirtualFile>()
+        // todo get from bibtex steps
+
+//            project.getBibtexRunConfigurations().mapNotNull { config ->
+//            (config.environmentVariables.envs["BIBINPUTS"])?.let {
+//                LocalFileSystem.getInstance().findFileByPath(it)
+//            }
+//        }.toMutableSet()
         val texInputPaths = getTexinputsPaths(project, emptySet()).mapNotNull { LocalFileSystem.getInstance().findFileByPath(it) }.toMutableSet()
 
         /*
