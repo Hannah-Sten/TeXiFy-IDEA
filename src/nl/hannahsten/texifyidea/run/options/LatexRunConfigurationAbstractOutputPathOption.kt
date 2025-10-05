@@ -112,7 +112,7 @@ abstract class LatexRunConfigurationAbstractOutputPathOption(override val pathWi
             // Ignore all output directories to avoid exponential recursion
             .filter { !it.virtualFile.path.contains(outPath) }
             .mapNotNull { FileUtil.pathRelativeTo(includeRoot?.path ?: return@mapNotNull null, it.virtualFile.parent.path) }
-            .forEach { File(outPath + it).mkdirs() }
+            .forEach { File(outPath, it).mkdirs() }
     }
 
     class Converter : com.intellij.util.xmlb.Converter<LatexRunConfigurationAbstractOutputPathOption>() {

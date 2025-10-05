@@ -97,6 +97,7 @@ class LatexRunConfiguration(
         return LatexRunState(this, environment)
     }
 
+    // NOTE: do not use runReadAction here as it may cause deadlock when other threads try to get run configurations from a write lock
     @Throws(InvalidDataException::class)
     override fun readExternal(element: Element) {
         super<RunConfigurationBase>.readExternal(element)

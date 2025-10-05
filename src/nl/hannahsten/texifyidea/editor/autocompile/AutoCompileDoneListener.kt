@@ -6,6 +6,7 @@ import com.intellij.openapi.util.Key
 
 /**
  * When autocompile is enabled, update autocompile state when compilation is done.
+ * todo only use when autoCompileOption != TexifySettings.AutoCompile.OFF
  */
 class AutoCompileDoneListener : ProcessListener {
 

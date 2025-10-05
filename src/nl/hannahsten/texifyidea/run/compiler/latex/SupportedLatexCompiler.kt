@@ -1,6 +1,8 @@
 package nl.hannahsten.texifyidea.run.compiler.latex
 
 import com.intellij.execution.configurations.GeneralCommandLine
+import com.intellij.openapi.module.ModuleUtil
+import com.intellij.openapi.project.rootManager
 import com.intellij.openapi.projectRoots.ProjectJdkTable
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
@@ -48,7 +50,17 @@ abstract class SupportedLatexCompiler(
         // For now we disable module roots with Docker
         // Could be improved by mounting them to the right directory
         val moduleRoots = if (runConfig.options.getLatexDistribution(runConfig.project) != LatexDistributionType.DOCKER_MIKTEX) {
-            rootManager.contentSourceRoots
+            // Limit the number of roots, in case the user has hundreds of roots it can exceed the maximum command line length on Windows
+            val allRoots = ModuleUtil.findModuleForFile(mainFile, runConfig.project)?.rootManager?.sourceRoots ?: emptyArray()
+            var totalLength = 0
+            val roots = mutableListOf<VirtualFile>()
+            for (root in allRoots) {
+                totalLength += root.toString().length + " -include-directory=".length
+                // See LatexCommandLineState
+                if (totalLength > 10_000) break
+                roots.add(root)
+            }
+            roots.toTypedArray()
         }
         else {
             emptyArray()
@@ -58,19 +70,19 @@ abstract class SupportedLatexCompiler(
         val dockerOutputDir = "/miktex/out"
         val dockerAuxilDir = "/miktex/auxil"
         val outputPath = if (runConfig.options.getLatexDistribution(runConfig.project) != LatexDistributionType.DOCKER_MIKTEX) {
-            runConfig.options.outputPath.getOrCreateOutputPath(runConfig.options.mainFile.resolve(), project)?.path?.toPath(runConfig)
+            runConfig.options.outputPath.getOrCreateOutputPath(mainFile, project)?.path?.toPath(runConfig)
         }
         else {
             dockerOutputDir
         }
 
-        // Make sure the output path is valid
+        // Make sure the output path is valid todo make sure it always exists
         if (!runConfig.options.getLatexDistribution(runConfig.project).isMiktex(runConfig.project)) {
             runConfig.options.outputPath.updateOutputSubDirs(mainFile, project)
         }
 
         val auxilPath = if (runConfig.options.getLatexDistribution(runConfig.project) != LatexDistributionType.DOCKER_MIKTEX) {
-            runConfig.options.auxilPath.getOrCreateOutputPath(runConfig.options.mainFile.resolve(), project)?.path?.toPath(runConfig)
+            runConfig.options.auxilPath.getOrCreateOutputPath(mainFile, project)?.path?.toPath(runConfig)
         }
         else {
             dockerAuxilDir

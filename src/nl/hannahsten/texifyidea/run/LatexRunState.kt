@@ -11,8 +11,8 @@ import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.openapi.fileEditor.FileDocumentManager
+import com.intellij.platform.ide.progress.runWithModalProgressBlocking
 import kotlinx.datetime.Clock
-import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import nl.hannahsten.texifyidea.TeXception
@@ -45,7 +45,7 @@ class LatexRunState(private val runConfig: LatexRunConfiguration, private val en
             throw TeXception("Run config ${runConfig.name} has no steps")
         }
 
-        val overallProcessHandler = SequentialProcessHandler(handlers)
+        val overallProcessHandler = runWithModalProgressBlocking(env.project, "Creating command line process...") { SequentialProcessHandler(handlers) }
 
         overallProcessHandler.addProcessListener(object : ProcessAdapter() {
             override fun startNotified(event: ProcessEvent) {

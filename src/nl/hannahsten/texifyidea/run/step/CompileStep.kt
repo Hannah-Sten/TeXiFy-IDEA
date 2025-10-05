@@ -4,18 +4,25 @@ import com.intellij.build.FilePosition
 import com.intellij.build.events.MessageEvent
 import com.intellij.build.events.impl.FileMessageEventImpl
 import com.intellij.build.events.impl.MessageEventImpl
+import com.intellij.execution.ExecutionException
 import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.KillableProcessHandler
 import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.ide.impl.ProjectUtil
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.util.Key
+import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.LocalFileSystem
 import nl.hannahsten.texifyidea.run.ui.console.LatexExecutionConsole
 import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexLogMessageType
 import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexOutputListener
+import nl.hannahsten.texifyidea.util.Log
 import java.io.File
+import kotlin.io.path.Path
+import kotlin.io.path.exists
 
 /**
  * A step in the compilation process of compiling a LaTeX document.
@@ -27,12 +34,34 @@ abstract class CompileStep : Step {
 
     override fun execute(id: String, console: LatexExecutionConsole): KillableProcessHandler {
         val command = getCommand()
-        val workingDirectory = getWorkingDirectory() ?: ProjectUtil.getBaseDir()
+        val workingDirectoryPath = getWorkingDirectory() ?: ProjectUtil.getBaseDir()
 
+        val workingDirectory = Path(workingDirectoryPath)
+
+
+        if (workingDirectory.exists().not()) {
+            Notification("LaTeX", "Could not find working directory", "The directory containing the main file could not be found: $workingDirectoryPath", NotificationType.ERROR).notify(configuration.project)
+            throw ExecutionException("Could not find working directory $workingDirectoryPath")
+        }
+
+        // Windows has a maximum length of a command, possibly 32k characters (#3956), so we log this info in the exception
+        if (SystemInfo.isWindows && command.sumOf { it.length } > 10_000) {
+            throw ExecutionException("The following command was too long to run: ${command.joinToString(" ")}")
+        }
         val commandLine = GeneralCommandLine(command)
-            .withWorkDirectory(workingDirectory)
-        getEnvironmentVariables().configureCommandLine(commandLine, true)
+            .withWorkingDirectory(workingDirectory)
+        val envVariablesWithMacro = getEnvironmentVariables()
 
+        // todo expand macros
+        @Suppress("UnstableApiUsage")
+        val envVariables = envVariablesWithMacro//.applyIf(runConfig.expandMacrosEnvVariables) {
+//            ExecutionManagerImpl.withEnvironmentDataContext(SimpleDataContext.getSimpleContext(CommonDataKeys.VIRTUAL_FILE, mainFile, environment.dataContext)).use {
+//                mapValues { programParamsConfigurator.expandPathAndMacros(it.value, null, runConfig.project) }
+//            }
+//        }
+        envVariables.configureCommandLine(commandLine, true)
+
+        Log.debug("Executing ${commandLine.commandLineString} in $workingDirectory")
         val handler = KillableProcessHandler(commandLine)
         handler.addProcessListener(object : ProcessAdapter() {
             override fun startNotified(event: ProcessEvent) {
