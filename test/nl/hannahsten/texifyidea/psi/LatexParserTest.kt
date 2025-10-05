@@ -21,7 +21,7 @@ class LatexParserTest : BasePlatformTestCase() {
             \mycommand{[test]}
             \c{[}
             
-            ${'$'}\test{\cmd{a}[b]}${'$'}
+            $\test{\cmd{a}[b]}$
             
             \newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
             
@@ -37,7 +37,7 @@ class LatexParserTest : BasePlatformTestCase() {
         myFixture.configureByText(
             LatexFileType,
             """
-            ${'$'}[0,1)${'$'}
+            $[0,1)$
             \[ ] \]
             \begin{equation}
                 ]
@@ -52,6 +52,8 @@ class LatexParserTest : BasePlatformTestCase() {
             LatexFileType,
             """
             $ math \text{ text $\xi$ text } math$
+            \def\bracefill{$\hbox{$#4$}$} % MnSymbol.sty
+            
             
             $\begin{cases*}
                  1 & if $ p \equiv 1 \pmod 4$ \\
@@ -105,7 +107,7 @@ class LatexParserTest : BasePlatformTestCase() {
             """
             <info descr="null">% Not a preamble option, so treat like usual</info>
             \begin{frame}
-                \only<1>{<info descr="null">${'$'}<info textAttributesKey=LATEX_INLINE_MATH>a_1${'$'}</info></info>}
+                \only<1>{<info descr="null">$<info textAttributesKey=LATEX_INLINE_MATH>a_1$</info></info>}
             \end{frame}
             
             \tikzset{<->/.style=->}
@@ -270,7 +272,8 @@ class LatexParserTest : BasePlatformTestCase() {
                 \insertedObject
                 \begin{multicols}{2}
             }
-            \newcommand{\cmd}{${'$'}x${'$'}}
+            \newcommand{\cmd}{${'$'}x$}
+            \newcommand\MnMissing{$\times$} % MnSymbol package
             
             \AfterEndEnvironment{minted}{
                 \end{tcolorbox}

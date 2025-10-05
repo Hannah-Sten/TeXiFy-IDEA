@@ -12,11 +12,14 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
+import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEndCommand
 import nl.hannahsten.texifyidea.psi.LatexNoMathContent
+import nl.hannahsten.texifyidea.psi.environmentName
+import nl.hannahsten.texifyidea.psi.traverseCommands
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettingsManager
 import nl.hannahsten.texifyidea.ui.CreateFileDialog
 import nl.hannahsten.texifyidea.util.*
@@ -67,8 +70,9 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
             }
 
             // If no command was found, find the end of the document.
-            return command.containingFile.childrenOfType(LatexEndCommand::class)
-                .lastOrNull { it.environmentName() == "document" }
+            return command.containingFile.traverseReversed().filterIsInstance<LatexEndCommand>().firstOrNull {
+                it.environmentName() == DefaultEnvironment.DOCUMENT.environmentName
+            }
         }
     }
 
@@ -83,8 +87,8 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        val commands = file.commandsInFile()
-            .filter { cmd -> Util.SECTION_NAMES.contains(cmd.name) }
+        val commands = file.traverseCommands()
+            .filter { cmd -> Util.SECTION_NAMES.contains(cmd.name) }.toList()
 
         for (i in commands.indices) {
             if (!isTooLong(commands[i], Util.findNextSection(commands[i]))) {
@@ -153,7 +157,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
             fun findLabel(cmd: LatexCommands): LatexCommands? {
                 val nextSibling = cmd.firstParentOfType(LatexNoMathContent::class)
                     ?.nextSiblingIgnoreWhitespace()
-                    ?.firstChildOfType(LatexCommands::class) ?: return null
+                    ?.findFirstChildOfType(LatexCommands::class) ?: return null
                 return if (nextSibling.name == LatexGenericRegularCommand.LABEL.commandWithSlash) nextSibling else null
             }
         }
@@ -180,7 +184,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
             // Remove the braces of the LaTeX command before creating a filename of it
             val fileName = fileNameBraces.removeAll("{", "}")
                 .formatAsFileName()
-            val root = file.findRootFile(useIndexCache = false).containingDirectory?.virtualFile?.canonicalPath ?: return
+            val root = file.findRootFile().containingDirectory?.virtualFile?.canonicalPath ?: return
 
             // Display a dialog to ask for the location and name of the new file.
             val filePath =

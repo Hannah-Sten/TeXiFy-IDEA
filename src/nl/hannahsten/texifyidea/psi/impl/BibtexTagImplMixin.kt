@@ -10,14 +10,14 @@ import nl.hannahsten.texifyidea.psi.BibtexKey
 import nl.hannahsten.texifyidea.psi.BibtexTag
 import nl.hannahsten.texifyidea.reference.SimpleFileReference
 import nl.hannahsten.texifyidea.util.magic.FileMagic
-import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 
 abstract class BibtexTagImplMixin(node: ASTNode) : BibtexTag, ASTWrapperPsiElement(node) {
 
     override fun getReferences(): Array<PsiReference> {
-        val key = this.firstChildOfType(BibtexKey::class)?.text ?: return emptyArray()
+        val key = this.findFirstChildOfType(BibtexKey::class)?.text ?: return emptyArray()
         if (key !in FileMagic.bibtexFileKeys) return emptyArray()
-        val content = this.firstChildOfType(BibtexContent::class)?.text ?: return emptyArray()
+        val content = this.findFirstChildOfType(BibtexContent::class)?.text ?: return emptyArray()
 
         // Mendeley contents are of the form {:full/path/to/file1.pdf:pdf;:file2.pdf:pdf}
         val contentParts = content.trimStart('{').trimEnd('}').split(";")

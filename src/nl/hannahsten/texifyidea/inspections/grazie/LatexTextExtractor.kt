@@ -4,18 +4,20 @@ import com.intellij.grazie.grammar.strategy.StrategyUtils
 import com.intellij.grazie.text.TextContent
 import com.intellij.grazie.text.TextExtractor
 import com.intellij.lang.tree.util.children
+import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.startOffset
-import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
+import nl.hannahsten.texifyidea.index.NewDefinitionIndex
 import nl.hannahsten.texifyidea.lang.commands.Argument
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
-import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
 import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.*
+import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 
 /**
  * Explains to Grazie which psi elements contain text and which don't.
@@ -62,7 +64,8 @@ class LatexTextExtractor : TextExtractor() {
         val rootText = root.text
 
         // Only keep normaltext, assuming other things (like inline math) need to be ignored.
-        val ranges = (root.childrenOfType(LatexNormalText::class) + root.childrenOfType<LatexParameterText>() + root.childrenOfType<PsiWhiteSpace>() + root.childrenOfType<LatexCommands>())
+        val relatedElements = root.collectSubtree { it is LatexNormalText || it is LatexParameterText || it is PsiWhiteSpace || it is LatexCommands }
+        val ranges = relatedElements
             .asSequence()
             .filter { !it.inMathContext() && it.isNotInSquareBrackets() }
             // Ordering is relevant for whitespace
@@ -91,7 +94,7 @@ class LatexTextExtractor : TextExtractor() {
                 var start = text.textRange.startOffset - root.startOffset
                 // If LatexNormalText starts after a newline following a command, the newline is not part of the LatexNormalText so we include it manually to make sure that it is seen as a space between sentences
                 // NOTE: it is not allowed to start the text we send to Grazie with a newline! If we do, then Grazie will just not do anything. So we exclude the newline for the first normal text in the file.
-                if (setOf(' ', '\n').contains(rootText.getOrNull(start - 1)) && root.childrenOfType(LatexNormalText::class).firstOrNull() != text
+                if (setOf(' ', '\n').contains(rootText.getOrNull(start - 1)) && root.collectSubtreeTyped<LatexNormalText>().firstOrNull() != text
                 ) {
                     //  We have to skip over indents to find the newline though (indents will be ignored later)
                     start -= rootText.substring(0, start).takeLastWhile { it.isWhitespace() }.length
@@ -138,7 +141,7 @@ class LatexTextExtractor : TextExtractor() {
         return LatexCommand.lookup(commandName)
             ?.firstOrNull()
             ?.arguments
-            ?.filter { it is RequiredArgument }
+            ?.filterIsInstance<RequiredArgument>()
             // Do not keep if it is not text
             ?.any { it.type != Argument.Type.TEXT && it.type != Argument.Type.LABEL } == true
     }
@@ -148,9 +151,10 @@ class LatexTextExtractor : TextExtractor() {
      * Special case: if the command does not have parameters but the definition contains a text command, we assume the command itself will fit into the sentence (as we can't do a text replacement before sending to Grazie).
      */
     private fun isUserDefinedTextCommand(commandName: String, project: Project): Boolean {
-        // todo cache
-        val allTextCommands = LatexRegularCommand.ALL.filter { command -> command.arguments.any { it.type != Argument.Type.TEXT && it.type != Argument.Type.LABEL } }.map { it.commandWithSlash }.toSet()
-        return LatexDefinitionIndex.Util.getItems(project).filter { it.definedCommandName() == commandName }.any { it.text.containsAny(allTextCommands) }
+        if (DumbService.isDumb(project)) return false
+        return NewDefinitionIndex.getByName(commandName, project).any {
+            it.text.containsAny(CommandMagic.allTextCommands)
+        }
     }
 
     private fun PsiElement.isNotInSquareBrackets() = parents().find { it is LatexGroup || it is LatexOptionalParam }

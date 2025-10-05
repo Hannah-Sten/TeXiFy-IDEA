@@ -8,9 +8,6 @@ import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MATHTOOLS
 import nl.hannahsten.texifyidea.lang.commands.Argument
 import nl.hannahsten.texifyidea.lang.commands.OptionalArgument
 import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
-import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.util.parser.name
-import java.util.*
 
 /**
  * @author Hannah Schellekens, Sten Wessel
@@ -152,6 +149,7 @@ enum class DefaultEnvironment(
     LUACODE(environmentName = "luacode", dependency = LatexPackage.LUACODE),
     LUACODE_STAR(environmentName = "luacode*", dependency = LatexPackage.LUACODE),
     MINTED(environmentName = "minted", dependency = LatexPackage.MINTED),
+    PROOF(environmentName = "proof", dependency = LatexPackage.AMSTHM),
     PYCODE(environmentName = "pycode", dependency = LatexPackage.PYTHONTEX),
     PYSUB(environmentName = "pysub", dependency = LatexPackage.PYTHONTEX),
     PYVERBATIM(environmentName = "pyverbatim", dependency = LatexPackage.PYTHONTEX),
@@ -163,34 +161,4 @@ enum class DefaultEnvironment(
     TIKZPICTURE(environmentName = "tikzpicture", dependency = LatexPackage.TIKZ),
     WIDETABULAR(environmentName = "widetabular", dependency = LatexPackage.WIDETABLE),
     WIDETABLE(environmentName = "widetable", dependency = LatexPackage.WIDETABLE),
-    ;
-
-    companion object {
-
-        /**
-         * Caches all the enum instances to increase performance.
-         */
-        private val lookup = HashMap<String, DefaultEnvironment>()
-
-        init {
-            for (environment in entries) {
-                lookup[environment.environmentName] = environment
-            }
-        }
-
-        /**
-         * Gets the [DefaultEnvironment] object that corresponds to the given Psi environment.
-         */
-        @JvmStatic
-        fun fromPsi(latexEnvironment: LatexEnvironment): DefaultEnvironment? {
-            val text: String = latexEnvironment.name()?.text ?: return null
-            return get(text.lowercase(Locale.getDefault()))
-        }
-
-        /**
-         * Finds the [DefaultEnvironment] object with the given name.
-         */
-        @JvmStatic
-        operator fun get(name: String): DefaultEnvironment? = lookup[name]
-    }
 }

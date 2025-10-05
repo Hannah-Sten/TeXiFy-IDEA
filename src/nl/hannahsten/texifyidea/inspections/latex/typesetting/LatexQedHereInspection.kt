@@ -10,11 +10,13 @@ import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
+import nl.hannahsten.texifyidea.lang.DefaultEnvironment
+import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexDisplayMath
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
-import nl.hannahsten.texifyidea.util.parser.name
+import nl.hannahsten.texifyidea.psi.getEnvironmentName
+import nl.hannahsten.texifyidea.util.parser.traverseTyped
 
 /**
  * @author Sten Wessel
@@ -31,10 +33,10 @@ open class LatexQedHereInspection : TexifyInspectionBase() {
         val descriptors = descriptorList()
 
         // Only proof environments
-        val displayMaths = file.childrenOfType(LatexEnvironment::class).asSequence()
-            .filter { it.name()?.text == "proof" }
+        val displayMaths = file.traverseTyped<LatexEnvironment>()
+            .filter { it.getEnvironmentName() == DefaultEnvironment.PROOF.environmentName }
             // With no \qedhere command already present
-            .filterNot { it.childrenOfType(LatexCommands::class).any { cmd -> cmd.name == "\\qedhere" } }
+            .filterNot { it.traverseTyped<LatexCommands>().any { cmd -> cmd.name == LatexGenericRegularCommand.QEDHERE.commandWithSlash } }
             // Ending in a displaymath environment
             .mapNotNull { it.environmentContent?.lastChild?.firstChild?.firstChild as? LatexDisplayMath }
 

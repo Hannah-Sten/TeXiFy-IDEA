@@ -9,79 +9,72 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.createSmartPointer
-import nl.hannahsten.texifyidea.inspections.InsightGroup
-import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
+import nl.hannahsten.texifyidea.index.DefinitionBundle
+import nl.hannahsten.texifyidea.index.LatexProjectStructure
+import nl.hannahsten.texifyidea.inspections.AbstractTexifyCommandBasedInspection
+import nl.hannahsten.texifyidea.lang.LContextSet
+import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.lang.commands.LatexCommand
+import nl.hannahsten.texifyidea.lang.commands.RequiredFileArgument
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.ui.CreateFileDialog
 import nl.hannahsten.texifyidea.util.*
-import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.getFileExtension
 import nl.hannahsten.texifyidea.util.files.writeToFileUndoable
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.parser.getFileArgumentsReferences
-import nl.hannahsten.texifyidea.util.parser.parentsOfType
 import java.util.*
 
 /**
  * @author Hannah Schellekens
  */
-open class LatexFileNotFoundInspection : TexifyInspectionBase() {
-
-    override val inspectionGroup = InsightGroup.LATEX
-
-    override val inspectionId = "FileNotFound"
+class LatexFileNotFoundInspection : AbstractTexifyCommandBasedInspection(
+    inspectionId = "FileNotFound",
+    skipChildrenInContext = setOf(
+        LatexContexts.Comment, LatexContexts.InsideDefinition
+    )
+) {
 
     override val outerSuppressionScopes = EnumSet.of(MagicCommentScope.GROUP)!!
 
-    override fun getDisplayName() = "File not found"
+    override fun isAvailableForFile(file: PsiFile): Boolean {
+        return LatexProjectStructure.isProjectFilesetsAvailable(file.project) && super.isAvailableForFile(file)
+    }
 
-    override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
-        val descriptors = descriptorList()
-
-        // Get commands of this file.
-        val commands = file.commandsInFile()
-
-        // Loop through commands of file
-        for (command in commands) {
-            // Don't resolve references in command definitions, as in \cite{#1} the #1 is not a reference
-            if (command.parent?.parentsOfType(LatexCommands::class)?.any { it.name in CommandMagic.commandDefinitionsAndRedefinitions } == true) {
-                continue
-            }
-
-            val referencesList = command.getFileArgumentsReferences()
-            for (reference in referencesList) {
-                if (reference.resolve() == null) {
-                    createQuickFixes(reference, descriptors, manager, isOntheFly)
-                }
+    override fun inspectCommand(command: LatexCommands, contexts: LContextSet, defBundle: DefinitionBundle, file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {
+        val referencesList = InputFileReference.getFileArgumentsReferences(command)
+        for (reference in referencesList) {
+            if (reference.refText.isNotEmpty() && reference.resolve() == null) {
+                createQuickFixes(reference, descriptors, manager, isOnTheFly)
             }
         }
-
-        return descriptors
     }
 
     private fun createQuickFixes(reference: InputFileReference, descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager, isOntheFly: Boolean) {
-        val fileName = reference.key
-        val extensions = reference.extensions
+        val fileName = reference.refText
+        val commandName = reference.element.name
+        val extensions = LatexCommand.lookup(commandName)?.firstOrNull()?.arguments?.flatMap {
+            (it as? RequiredFileArgument)?.supportedExtensions ?: emptyList()
+        } ?: emptyList()
 
         // CTAN packages are no targets of the InputFileReference, so we check them here and don't show a warning if a CTAN package is included
         if (extensions.contains("sty")) {
             val ctanPackages = PackageUtils.CTAN_PACKAGE_NAMES.map { it.lowercase(Locale.getDefault()) }
-            if (reference.key.lowercase(Locale.getDefault()) in ctanPackages) return
+            if (reference.refText.lowercase(Locale.getDefault()) in ctanPackages) return
         }
 
         val fixes = mutableListOf<LocalQuickFix>()
 
         // Create quick fixes for all extensions
         extensions.forEach {
-            fixes.add(CreateNewFileWithDialogQuickFix(fileName, it, reference.element.createSmartPointer(), reference.key, reference.range))
+            fixes.add(CreateNewFileWithDialogQuickFix(fileName, it, reference.element.createSmartPointer(), reference.refText, reference.range))
         }
 
         // Find expected extension
         val extension = fileName.getFileExtension().ifEmpty {
-            reference.extensions.firstOrNull()
+            extensions.firstOrNull()
         } ?: "tex"
 
         descriptors.add(
@@ -111,7 +104,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
             val cmd = descriptor.psiElement
             val element = elementPointer.element ?: return
             val file = cmd.containingFile ?: return
-            val root = file.findRootFile(useIndexCache = false).containingDirectory?.virtualFile?.canonicalPath ?: return
+            val root = file.findRootFile().containingDirectory?.virtualFile?.canonicalPath ?: return
 
             // Display a dialog to ask for the location and name of the new file.
             // By default, all inclusion paths are relative to the main file
@@ -119,7 +112,7 @@ open class LatexFileNotFoundInspection : TexifyInspectionBase() {
                 .newFileFullPath ?: return
 
             runWriteAction {
-                val expandedFilePath = expandCommandsOnce(newFilePath, file.project, file) ?: newFilePath
+                val expandedFilePath = expandCommandsOnce(newFilePath, file.project, file.virtualFile)
                 var fileNameRelativeToRoot = writeToFileUndoable(project, expandedFilePath, "", root, extension)
 
                 val command = (cmd as? LatexCommands)?.name

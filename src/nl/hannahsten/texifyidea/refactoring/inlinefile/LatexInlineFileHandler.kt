@@ -84,7 +84,7 @@ class LatexInlineFileHandler : LatexInlineHandler() {
             is LatexFile -> element
             // If the caret was on the `input` command
             is LatexCommands -> {
-                element.references.filterIsInstance<InputFileReference>()[0].resolve(false) as? LatexFile
+                InputFileReference.getIncludedFiles(element).firstOrNull() as? LatexFile
             }
 
             else -> null
@@ -97,9 +97,7 @@ class LatexInlineFileHandler : LatexInlineHandler() {
             element: PsiElement,
             editor: Editor?
         ): PsiElement? {
-            return if (element is LatexCommands)
-                element
-            else if (editor != null) {
+            return element as? LatexCommands ?: if (editor != null) {
                 val ref: LatexCommands? = getElementAtCaret(editor)?.firstParentOfType(LatexCommands::class)
                 if (ref != null)
                     ref

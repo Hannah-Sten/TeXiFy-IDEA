@@ -7,8 +7,8 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
+import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.util.PackageUtils
-import nl.hannahsten.texifyidea.util.parser.environmentName
 import nl.hannahsten.texifyidea.util.parser.hasParent
 import nl.hannahsten.texifyidea.util.parser.parentOfType
 import java.util.*
@@ -75,6 +75,5 @@ class ShowTikzPreview : PreviewAction("Tikz Picture Preview", TexifyIcons.TIKZ_P
         return if (currElement.isTikz()) currElement else null
     }
 
-    private fun LatexEnvironment.isTikz() = beginCommand.environmentName()
-        ?.lowercase(Locale.getDefault()) == "tikzpicture"
+    private fun LatexEnvironment.isTikz() = getEnvironmentName().lowercase(Locale.getDefault()) == "tikzpicture"
 }

@@ -1,6 +1,6 @@
 <idea-plugin>
     <extensions defaultExtensionNs="com.intellij">
         <postStartupActivity implementation="nl.hannahsten.texifyidea.startup.StartEvinceInverseSearchListener"/>
-        <postStartupActivity implementation="nl.hannahsten.texifyidea.startup.LatexPackageLocationCacheInitializer"/>
+        <postStartupActivity implementation="nl.hannahsten.texifyidea.startup.LatexProjectCacheInitializer"/>
     </extensions>
 </idea-plugin>

@@ -5,10 +5,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.util.files.getAllRequiredArguments
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.parser.parentOfType
-import nl.hannahsten.texifyidea.util.parser.requiredParameters
 
 class LatexFlipArgumentsIntention : TexifyIntentionBase("Swap the two arguments of a command") {
     override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?): Boolean {
@@ -18,7 +16,8 @@ class LatexFlipArgumentsIntention : TexifyIntentionBase("Swap the two arguments 
 
         val parent = getToken(file, editor) ?: return false
 
-        val argCount = parent.getAllRequiredArguments()?.size ?: return false
+        // Make sure this check matches the one in invoke()
+        val argCount = parent.requiredParameters().size
 
         return argCount == 2
     }

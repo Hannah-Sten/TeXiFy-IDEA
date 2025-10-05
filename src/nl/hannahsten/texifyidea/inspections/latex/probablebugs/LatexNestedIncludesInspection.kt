@@ -7,16 +7,15 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.index.LatexIncludesIndex
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.files.findFile
 import nl.hannahsten.texifyidea.util.files.findRootFile
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
+import nl.hannahsten.texifyidea.util.parser.traverseTyped
 import nl.hannahsten.texifyidea.util.replaceString
 import java.util.*
 
@@ -33,20 +32,19 @@ open class LatexNestedIncludesInspection : TexifyInspectionBase() {
 
     override fun getDisplayName() = "Nested includes"
 
-    override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
-        val descriptors = descriptorList()
-        val root = file.findRootFile(useIndexCache = false)
+    override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
+        val root = file.findRootFile()
 
-        val isInclude = LatexIncludesIndex.Util.getItemsInFileSet(file).any {
-            it.name == "\\include" && it.requiredParameter(0)?.let { f -> root.findFile(f, supportsAnyExtension = true) } == file
+        val isInclude = NewCommandsIndex.getByNameInFileSet("\\include", file).any {
+            it.requiredParameterText(0)?.let { f -> root.findFile(f, supportsAnyExtension = true) } == file
         }
 
         if (!isInclude) {
-            return descriptors
+            return emptyList()
         }
 
-        file.commandsInFile().asSequence()
-            .filter { it.name == "\\include" }
+        val descriptors = descriptorList()
+        file.traverseTyped<LatexCommands>().filter { it.name == "\\include" }
             .forEach {
                 descriptors.add(
                     manager.createProblemDescriptor(
@@ -59,7 +57,6 @@ open class LatexNestedIncludesInspection : TexifyInspectionBase() {
                     )
                 )
             }
-
         return descriptors
     }
 
@@ -74,7 +71,7 @@ open class LatexNestedIncludesInspection : TexifyInspectionBase() {
             val command = descriptor.psiElement as LatexCommands
             val document = command.containingFile.document() ?: return
 
-            val fileName = command.requiredParameter(0) ?: return
+            val fileName = command.requiredParameterText(0) ?: return
 
             document.replaceString(command.textRange, "\\input{$fileName}")
         }

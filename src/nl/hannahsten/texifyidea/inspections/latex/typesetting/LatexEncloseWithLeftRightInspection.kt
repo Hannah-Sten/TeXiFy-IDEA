@@ -19,9 +19,9 @@ import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.get
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
 import nl.hannahsten.texifyidea.util.parser.endOffset
 import nl.hannahsten.texifyidea.util.parser.inMathContext
+import nl.hannahsten.texifyidea.util.parser.traverse
 import java.util.*
 
 /**
@@ -49,7 +49,7 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
         val descriptors = descriptorList()
         val document = file.document() ?: return descriptors
 
-        val mathModes = file.childrenOfType(LatexInlineMath::class) + file.childrenOfType(LatexDisplayMath::class)
+        val mathModes = file.traverse().filter { it is LatexInlineMath || it is LatexDisplayMath }
         for (mathMode in mathModes) {
             // Scan all characters in math mode. (+2/-2 to ignore \[ and \]).
             for (openOffset in mathMode.textOffset + 2 until mathMode.endOffset() - 2) {

@@ -50,8 +50,8 @@ class LatexLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider
         LatexCodeStyleSettings.blankLinesOptions.forEach {
             consumer.showCustomOption(
                 LatexCodeStyleSettings::class.java,
-                it.key.name,
-                it.value,
+                it.value.name,
+                it.key,
                 ApplicationBundle.message("title.minimum.blank.lines")
             )
         }

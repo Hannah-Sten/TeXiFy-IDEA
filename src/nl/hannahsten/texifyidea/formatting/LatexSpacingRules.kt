@@ -1,19 +1,21 @@
 package nl.hannahsten.texifyidea.formatting
 
+import com.intellij.formatting.ASTBlock
 import com.intellij.formatting.Spacing
 import com.intellij.psi.codeStyle.CodeStyleSettings
+import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import nl.hannahsten.texifyidea.formatting.spacingrules.leftTableSpaceAlign
 import nl.hannahsten.texifyidea.formatting.spacingrules.rightTableSpaceAlign
 import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexNoMathContent
 import nl.hannahsten.texifyidea.psi.LatexTypes.*
 import nl.hannahsten.texifyidea.settings.codestyle.LatexCodeStyleSettings
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
-import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.psi.asCommandName
 import nl.hannahsten.texifyidea.util.parser.inDirectEnvironment
 import nl.hannahsten.texifyidea.util.parser.parentOfType
-import java.util.*
 
 fun createSpacing(minSpaces: Int, maxSpaces: Int, minLineFeeds: Int, keepLineBreaks: Boolean, keepBlankLines: Int): Spacing =
     Spacing.createSpacing(minSpaces, maxSpaces, minLineFeeds, keepLineBreaks, keepBlankLines)
@@ -56,15 +58,7 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
         custom {
             customRule { parent, _, right ->
                 // Lowercase to also catch \STATE from algorithmic
-                if (right.node?.psi?.firstChildOfType(LatexCommands::class)?.name?.lowercase(Locale.getDefault()) in setOf(
-                        "\\state",
-                        "\\statex"
-                    ) && parent.node?.psi?.inDirectEnvironment(EnvironmentMagic.algorithmEnvironments) == true
-                ) {
-                    return@customRule Spacing.createSpacing(0, 1, 1, latexCommonSettings.KEEP_LINE_BREAKS, latexCommonSettings.KEEP_BLANK_LINES_IN_CODE)
-                }
-
-                return@customRule null
+                newLineBeforeState(latexCommonSettings, parent, right)
             }
         }
 
@@ -96,25 +90,7 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
             // Make sure the number of new lines before a sectioning command is as much as the user specified in the settings.
             // BUG OR FEATURE? Does not work for a command that immediately follows \begin{document}.
             customRule { _, _, right ->
-                // Because getting the full text from a node is relatively expensive, we first use a condition which is necessary (but not sufficient) as an early exit.
-                val commandName = right.node?.psi?.firstChildOfType(LatexCommands::class)?.name
-                if (commandName !in LatexCodeStyleSettings.blankLinesOptions.values) return@customRule null
-
-                val rightText = right.node?.text
-                LatexCodeStyleSettings.blankLinesOptions.forEach {
-                    if (rightText?.matches(Regex("\\\\${it.value.trimStart('\\')}\\{.*}")) == true &&
-                        !CommandMagic.definitions.contains(right.node?.psi?.parentOfType(LatexCommands::class)?.name)
-                    ) {
-                        return@customRule createSpacing(
-                            minSpaces = 0,
-                            maxSpaces = Int.MAX_VALUE,
-                            minLineFeeds = it.key.get(latexSettings) + 1,
-                            keepLineBreaks = false,
-                            keepBlankLines = 0
-                        )
-                    }
-                }
-                return@customRule null
+                sectionSpacing(latexSettings, right)
             }
         }
 
@@ -123,11 +99,47 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
         // non-whitespace in a line of code
         custom {
             customRule { parent, _, right ->
-                return@customRule leftTableSpaceAlign(latexCommonSettings, parent, right)
+                leftTableSpaceAlign(latexCommonSettings, parent, right)
             }
             customRule { parent, left, _ ->
-                return@customRule rightTableSpaceAlign(latexCommonSettings, parent, left)
+                rightTableSpaceAlign(latexCommonSettings, parent, left)
             }
         }
     }
+}
+
+fun sectionSpacing(
+    latexSettings: LatexCodeStyleSettings,
+    right: ASTBlock
+): Spacing? {
+    // Because getting the full text from a node is relatively expensive, we first use a condition which is necessary (but not sufficient) as an early exit.
+    // psi should be a no_math_content containing the sectioning command.
+    val psi = right.node?.psi as? LatexNoMathContent ?: return null
+    val commandPSI = psi.commands ?: return null
+    val commandName = commandPSI.name ?: return null
+    val spacingVar = LatexCodeStyleSettings.blankLinesOptions[commandName] ?: return null
+    if (psi.parentOfType(LatexCommands::class)?.name in CommandMagic.definitions || commandPSI.requiredParameters().isEmpty()) {
+        // if it is contained in a definition or has no parameters, we should not treat it as a sectioning command
+        return null
+    }
+    return createSpacing(
+        minSpaces = 0,
+        maxSpaces = Int.MAX_VALUE,
+        minLineFeeds = spacingVar.get(latexSettings) + 1,
+        keepLineBreaks = false,
+        keepBlankLines = 0
+    )
+}
+
+fun newLineBeforeState(latexCommonSettings: CommonCodeStyleSettings, parent: ASTBlock, right: ASTBlock): Spacing? {
+    val parentPsi = parent.node?.psi ?: return null
+    if(!parentPsi.inDirectEnvironment(EnvironmentMagic.algorithmEnvironments)) {
+        return null
+    }
+    val rightPsi = right.node?.psi ?: return null
+    val commandName = rightPsi.asCommandName()?.lowercase() ?: return null
+    if(commandName != "\\state" && commandName != "\\statex") {
+        return null
+    }
+    return Spacing.createSpacing(0, 1, 1, latexCommonSettings.KEEP_LINE_BREAKS, latexCommonSettings.KEEP_BLANK_LINES_IN_CODE)
 }

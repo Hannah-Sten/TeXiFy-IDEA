@@ -2,15 +2,20 @@ package nl.hannahsten.texifyidea.inspections.latex.typesetting
 
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.openapi.project.Project
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.inspections.TexifyRegexInspection
+import nl.hannahsten.texifyidea.index.DefinitionBundle
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
+import nl.hannahsten.texifyidea.inspections.AbstractTexifyRegexBasedInspection
+import nl.hannahsten.texifyidea.lang.LContextSet
+import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.util.files.commandsInFileSet
-import nl.hannahsten.texifyidea.util.files.document
-import nl.hannahsten.texifyidea.util.get
+import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
+import nl.hannahsten.texifyidea.psi.LatexEnvironment
+import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
 import nl.hannahsten.texifyidea.util.insertUsepackage
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
-import java.util.regex.Matcher
+import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 
 /**
  * Highlights uses of mathematical symbols composed of a colon with a equality-like relational symbol, where the colon
@@ -20,29 +25,57 @@ import java.util.regex.Matcher
  *
  * @author Sten Wessel
  */
-open class LatexVerticallyCenteredColonInspection : TexifyRegexInspection(
-    inspectionDisplayName = "Vertically uncentered colon",
-    inspectionId = "VerticallyCenteredColon",
-    errorMessage = { "Colon is vertically uncentered" },
-    highlight = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-    pattern = Util.REGEX,
-    mathMode = true,
-    replacement = Util::replacement,
-    replacementRange = { it.groupRange(0) },
-    quickFixName = { "Change to ${Util.PATTERNS[it.group(0).replace(Util.WHITESPACE, "")]!!.command} (mathtools)" },
-    cancelIf = { _, file ->
-        // Per mathtools documentation, colons are automatically centered when this option is set.
-        // It is impossible to determine whether this option is actually set (think scoping, but this option can also be
-        // turned of with \mathtoolsset{centercolon=false})
-        // Thus, whenever someone fiddles with this, we turn off the inspection to prevent false positives.
-        file.commandsInFileSet(useIndexCache = false).any { it.name == "\\mathtoolsset" && it.requiredParameter(0)?.contains("centercolon") == true }
-    }
-) {
 
-    internal data class Pattern(val regex: String, val command: String)
+class LatexVerticallyCenteredColonInspection : AbstractTexifyRegexBasedInspection(
+    inspectionId = "VerticallyCenteredColon",
+    regex = Util.REGEX,
+    highlight = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+) {
+    override fun errorMessage(matcher: MatchResult, context: LContextSet): String {
+        return "Colon is vertically uncentered"
+    }
+
+    override fun quickFixName(matcher: MatchResult, contexts: LContextSet): String {
+        val key = Util.PATTERNS.keys.firstOrNull { matcher.value.replace(Util.WHITESPACE, "") == it }
+        val command = key?.let { Util.PATTERNS[it]?.command } ?: ""
+        return "Change to $command (mathtools)"
+    }
+
+    override fun getHighlightRange(matcher: MatchResult): IntRange {
+        return matcher.range
+    }
+
+    override fun shouldInspectElement(element: PsiElement, lookup: LatexSemanticsLookup): Boolean {
+        return element is LatexMathEnvironment ||
+            (element is LatexEnvironment && LatexPsiUtil.isContextIntroduced(element, lookup, LatexContexts.Math))
+    }
+
+    override fun shouldInspectChildrenOf(element: PsiElement, state: LContextSet, lookup: LatexSemanticsLookup): Boolean {
+        return !shouldInspectElement(element, lookup)
+    }
+
+    override fun getReplacement(match: MatchResult, fullElementText: String, project: Project, problemDescriptor: ProblemDescriptor): String {
+        val key = Util.PATTERNS.keys.firstOrNull { match.value.replace(Util.WHITESPACE, "") == it }
+        val replacement = key?.let { Util.PATTERNS[it]?.command } ?: match.value
+        val end = match.range.last + 1
+        val nextChar = fullElementText.getOrNull(end)
+        return if (nextChar?.isLetter() == true) "$replacement " else replacement
+    }
+
+    override fun doApplyFix(project: Project, descriptor: ProblemDescriptor, match: MatchResult, fullElementText: String) {
+        super.doApplyFix(project, descriptor, match, fullElementText)
+        val file = descriptor.psiElement.containingFile ?: return
+        file.insertUsepackage(LatexPackage.MATHTOOLS)
+    }
+
+    override fun prepareInspectionForFile(file: PsiFile, bundle: DefinitionBundle): Boolean {
+        val hasCenterColon = NewCommandsIndex.getByNameInFileSet("\\mathtoolsset", file)
+            .any { it.requiredParameterText(0)?.contains("centercolon") == true }
+        return !hasCenterColon
+    }
 
     object Util {
-        // Whitespace in between is matched, except for newlines (we have to draw the line somewhere...)
+        internal data class Pattern(val regex: String, val command: String)
         internal val PATTERNS = mapOf(
             ":=" to Pattern(""":[^\S\r\n]*=""", "\\coloneqq"),
             "::=" to Pattern(""":[^\S\r\n]*:[^\S\r\n]*=""", "\\Coloneqq"),
@@ -59,29 +92,6 @@ open class LatexVerticallyCenteredColonInspection : TexifyRegexInspection(
             "::" to Pattern(""":[^\S\r\n]*:""", "\\dblcolon"),
         )
         internal val WHITESPACE = """[^\S\r\n]+""".toRegex()
-        internal val REGEX = PATTERNS.values.joinToString(prefix = "(", separator = "|", postfix = ")") { it.regex }.toPattern()
-        fun replacement(matcher: Matcher, file: PsiFile): String {
-            val replacement = PATTERNS[matcher.group(0).replace(WHITESPACE, "")]!!.command
-
-            // If the next character would be a letter, it would mess up the command that is inserted: append a space as well
-            if (file.document()?.get(matcher.end())?.getOrNull(0)?.isLetter() == true) {
-                return "$replacement "
-            }
-
-            return replacement
-        }
-    }
-
-    override fun applyFixes(
-        descriptor: ProblemDescriptor,
-        replacementRanges: List<IntRange>,
-        replacements: List<String>,
-        groups: List<List<String>>
-    ) {
-        super.applyFixes(descriptor, replacementRanges, replacements, groups)
-
-        // We override applyFixes instead of applyFix because all fixes need to be applied together, and only after that we insert any required package.
-        val file = descriptor.psiElement.containingFile ?: return
-        file.insertUsepackage(LatexPackage.MATHTOOLS)
+        internal val REGEX = PATTERNS.values.joinToString(prefix = "(", separator = "|", postfix = ")") { it.regex }.toRegex()
     }
 }

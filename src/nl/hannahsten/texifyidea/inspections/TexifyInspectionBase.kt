@@ -17,8 +17,8 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexGroup
 import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
+import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.util.parser.isComment
-import nl.hannahsten.texifyidea.util.parser.name
 import nl.hannahsten.texifyidea.util.parser.parentOfType
 
 /**
@@ -84,39 +84,9 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
     }
 
     override fun getBatchSuppressActions(element: PsiElement?): Array<SuppressQuickFix> {
-        val result = ArrayList<SuppressionFixBase>()
-
-        element?.let { elt ->
-            elt.containingFile?.let { result.add(FileSuppressionFix(it.createSmartPointer())) }
-
-            elt.suppressionElement<LatexEnvironment>(MagicCommentScope.ENVIRONMENT)?.let {
-                result.add(EnvironmentSuppressionFix(it))
-            }
-            elt.suppressionElement<LatexMathEnvironment>(MagicCommentScope.MATH_ENVIRONMENT)?.let {
-                result.add(MathEnvironmentSuppressionFix(it))
-            }
-            elt.suppressionElement<LatexCommands>(MagicCommentScope.COMMAND)?.let {
-                result.add(CommandSuppressionFix(it))
-            }
-            elt.suppressionElement<LatexGroup>(MagicCommentScope.GROUP)?.let {
-                result.add(GroupSuppressionFix(it))
-            }
-        }
+        val result = createSuppression(element, inspectionId, outerSuppressionScopes)
 
         return result.filter { it.suppressionScope !in ignoredSuppressionScopes }.toTypedArray()
-    }
-
-    /**
-     * Get the element relative to `this` element that must be targeted by the suppression quick fix given the
-     * magic comment scope.
-     */
-    private inline fun <reified Psi : PsiElement> PsiElement.suppressionElement(scope: MagicCommentScope): Psi? {
-        val parent = parentOfType(Psi::class)
-
-        return if (scope in outerSuppressionScopes) {
-            parent?.parentOfType(Psi::class)
-        }
-        else parent
     }
 
     override fun getShortName() = inspectionGroup.prefix + inspectionId
@@ -134,16 +104,57 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
         if (file.isSuppressed()) {
             return null
         }
-        // TODO: performance, used 4 GB memory (IDE total: 12 GB)
+        // TODO: improvement can be done for inspections
         return inspectFile(file, manager, isOnTheFly)
             .filter { checkContext(it.psiElement) }
             .toTypedArray()
     }
 
+    companion object {
+
+        /**
+         * Get the element relative to `this` element that must be targeted by the suppression quick fix given the
+         * magic comment scope.
+         */
+        inline fun <reified Psi : PsiElement> PsiElement.suppressionElement(scope: MagicCommentScope, outerSuppressionScopes: Set<MagicCommentScope>): Psi? {
+            val parent = parentOfType(Psi::class)
+
+            return if (scope in outerSuppressionScopes) {
+                parent?.parentOfType(Psi::class)
+            }
+            else parent
+        }
+
+        fun createSuppression(element: PsiElement?, inspectionId: String, outerSuppressionScopes: Set<MagicCommentScope>): List<SuppressionFixBase> {
+            element ?: return emptyList()
+            val result = mutableListOf<SuppressionFixBase>()
+
+            element.let { elt ->
+                elt.containingFile?.let { result.add(FileSuppressionFix(it.createSmartPointer(), inspectionId)) }
+
+                elt.suppressionElement<LatexEnvironment>(MagicCommentScope.ENVIRONMENT, outerSuppressionScopes)?.let {
+                    result.add(EnvironmentSuppressionFix(it, inspectionId))
+                }
+                elt.suppressionElement<LatexMathEnvironment>(MagicCommentScope.MATH_ENVIRONMENT, outerSuppressionScopes)?.let {
+                    result.add(MathEnvironmentSuppressionFix(it, inspectionId))
+                }
+                elt.suppressionElement<LatexCommands>(MagicCommentScope.COMMAND, outerSuppressionScopes)?.let {
+                    result.add(CommandSuppressionFix(it, inspectionId))
+                }
+                elt.suppressionElement<LatexGroup>(MagicCommentScope.GROUP, outerSuppressionScopes)?.let {
+                    result.add(GroupSuppressionFix(it, inspectionId))
+                }
+            }
+            return result
+        }
+    }
+
     /**
      * @author Hannah Schellekens
      */
-    private abstract inner class SuppressionFixBase(val targetElement: SmartPsiElementPointer<out PsiElement>) : SuppressQuickFix {
+    abstract class SuppressionFixBase(
+        val targetElement: SmartPsiElementPointer<out PsiElement>, val inspectionId: String
+    ) : SuppressQuickFix {
 
         /**
          * The scope to which to apply the suppression.
@@ -172,7 +183,9 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
     /**
      * @author Hannah Schellekens
      */
-    private inner class FileSuppressionFix(val file: SmartPsiElementPointer<PsiFile>) : SuppressionFixBase(file) {
+    private class FileSuppressionFix(
+        val file: SmartPsiElementPointer<PsiFile>, inspectionId: String
+    ) : SuppressionFixBase(file, inspectionId) {
 
         override val suppressionScope = MagicCommentScope.FILE
 
@@ -182,12 +195,12 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
     /**
      * @author Hannah Schellekens
      */
-    private inner class EnvironmentSuppressionFix(parentEnvironment: LatexEnvironment) : SuppressionFixBase(parentEnvironment.createSmartPointer()) {
+    private class EnvironmentSuppressionFix(parentEnvironment: LatexEnvironment, inspectionId: String) : SuppressionFixBase(parentEnvironment.createSmartPointer(), inspectionId) {
 
         /**
          * The name of the environment to suppress, or `null` when there is no environment name available.
          */
-        private val environmentName: String? = parentEnvironment.name()?.text
+        private val environmentName: String? = parentEnvironment.getEnvironmentName()
 
         override val suppressionScope = MagicCommentScope.ENVIRONMENT
 
@@ -201,7 +214,7 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
     /**
      * @author Hannah Schellekens
      */
-    private inner class MathEnvironmentSuppressionFix(parentMathEnvironment: LatexMathEnvironment) : SuppressionFixBase(parentMathEnvironment.createSmartPointer()) {
+    private class MathEnvironmentSuppressionFix(parentMathEnvironment: LatexMathEnvironment, inspectionId: String) : SuppressionFixBase(parentMathEnvironment.createSmartPointer(), inspectionId) {
 
         override val suppressionScope = MagicCommentScope.MATH_ENVIRONMENT
 
@@ -211,7 +224,7 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
     /**
      * @author Hannah Schellekens
      */
-    private inner class CommandSuppressionFix(parentCommand: LatexCommands) : SuppressionFixBase(parentCommand.createSmartPointer()) {
+    private class CommandSuppressionFix(parentCommand: LatexCommands, inspectionId: String) : SuppressionFixBase(parentCommand.createSmartPointer(), inspectionId) {
 
         /**
          * The name of the command to suppress, or `null` when there is no command name available.
@@ -230,7 +243,7 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
     /**
      * @author Hannah Schellekens
      */
-    private inner class GroupSuppressionFix(parentGroup: LatexGroup) : SuppressionFixBase(parentGroup.createSmartPointer()) {
+    private class GroupSuppressionFix(parentGroup: LatexGroup, inspectionId: String) : SuppressionFixBase(parentGroup.createSmartPointer(), inspectionId) {
 
         override val suppressionScope = MagicCommentScope.GROUP
 

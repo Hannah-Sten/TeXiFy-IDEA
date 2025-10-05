@@ -8,7 +8,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSMATH
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.psi.LatexNoMathContent
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.document
@@ -28,7 +28,7 @@ open class LatexGatherEquationsInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        file.childrenOfType(LatexNoMathContent::class).asSequence()
+        file.traverseTyped<LatexNoMathContent>()
             .filter { it.isDisplayMath() }
             .map { Pair(it, it.nextSiblingIgnoreWhitespace()) }
             .filter { (_, next) -> next != null && next is LatexNoMathContent && next.isDisplayMath() }
@@ -85,7 +85,7 @@ open class LatexGatherEquationsInspection : TexifyInspectionBase() {
             document.replaceString(startOffset, endOffset, gather)
 
             // Add import.
-            PackageUtils.insertUsepackage(file, AMSMATH)
+            PackageUtils.insertUsePackage(file, LatexLib.AMSMATH)
         }
 
         /**

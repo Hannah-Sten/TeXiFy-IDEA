@@ -64,7 +64,7 @@ class MiktexWindowsSdk : LatexSdk("MiKTeX Windows SDK") {
     }
 
     override fun getDefaultStyleFilesPath(homePath: String): VirtualFile? {
-        val path = Paths.get(homePath, "tex", "latex").toString()
+        val path = Paths.get(homePath, "tex").toString()
         if (path.isBlank()) return null
         return try {
             LocalFileSystem.getInstance().findFileByPath(path)

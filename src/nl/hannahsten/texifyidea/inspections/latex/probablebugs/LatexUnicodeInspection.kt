@@ -34,7 +34,7 @@ import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.parser.findDependencies
-import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import org.jetbrains.annotations.Nls
 import java.text.Normalizer
@@ -81,7 +81,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
             }
 
             // If we can't figure it out by compiler, check included packages
-            val included = file.includedPackages()
+            val included = file.includedPackagesInFileset()
             return PackageMagic.unicode.stream().allMatch { p -> included.contains(p) }
         }
     }
@@ -204,10 +204,12 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
 
             runWriteCommandAction(project) {
                 replacement.findDependencies().forEach { pkg ->
-                    document?.psiFile(project)?.insertUsepackage(pkg)
+                    document?.psiFile(project)?.let { file ->
+                        PackageUtils.insertUsePackage(file, pkg)
+                    }
                 }
 
-                val command = replacement.firstChildOfType(LatexContent::class) ?: return@runWriteCommandAction
+                val command = replacement.findFirstChildOfType(LatexContent::class) ?: return@runWriteCommandAction
                 element.parent?.node?.replaceChild(element.node, command.node)
             }
         }

@@ -1,8 +1,8 @@
 <idea-plugin>
     <extensions defaultExtensionNs="com.intellij">
         <gotoSymbolContributor implementation="nl.hannahsten.texifyidea.navigation.GotoLabelSymbolContributor"/>
-        <gotoSymbolContributor implementation="nl.hannahsten.texifyidea.navigation.GotoCommandDefinitionSymbolContributor"/>
-        <gotoSymbolContributor implementation="nl.hannahsten.texifyidea.navigation.GotoEnvironmentDefinitionSymbolContributor"/>
+        <gotoSymbolContributor implementation="nl.hannahsten.texifyidea.navigation.GotoDefinitionSymbolContributor"/>
+        <gotoSymbolContributor implementation="nl.hannahsten.texifyidea.navigation.GotoBibtexLabelSymbolContributor"/>
         <gotoSymbolContributor implementation="nl.hannahsten.texifyidea.navigation.GotoSectionDefinitionSymbolContributor"/>
     </extensions>
 </idea-plugin>

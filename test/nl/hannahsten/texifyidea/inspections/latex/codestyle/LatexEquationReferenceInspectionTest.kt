@@ -13,7 +13,7 @@ class LatexEquationReferenceInspectionTest : TexifyInspectionTestBase(LatexEquat
             \begin{equation}
             \label{eq:time3}
             \end{equation}
-            test constraints <weak_warning descr="Use \eqref">(\ref{eq:time3})</weak_warning> enforce node
+            test constraints (<weak_warning descr="Use \eqref for equation references">\ref</weak_warning>{eq:time3}) enforce node
             """.trimIndent()
         )
         myFixture.checkHighlighting()
@@ -29,7 +29,6 @@ class LatexEquationReferenceInspectionTest : TexifyInspectionTestBase(LatexEquat
             test constraints (\ref{eq:time3}) enforce node
             """.trimIndent()
         )
-
         val quickFixes = myFixture.getAllQuickFixes()
         assertEquals(1, quickFixes.size)
         writeCommand(myFixture.project) {

@@ -14,10 +14,8 @@
 
         <projectViewNodeDecorator implementation="nl.hannahsten.texifyidea.ui.TeXiFyProjectViewNodeDecorator"/>
 
-        <applicationService serviceInterface="nl.hannahsten.texifyidea.util.files.ReferencedFileSetService"
-                            serviceImplementation="nl.hannahsten.texifyidea.util.files.impl.ReferencedFileSetServiceImpl"/>
         <indexPatternBuilder implementation="nl.hannahsten.texifyidea.index.LatexIndexPatternBuilder"/>
 
-        <renamePsiElementProcessor implementation="nl.hannahsten.texifyidea.LatexRenameProcessor"/>
+
     </extensions>
 </idea-plugin>

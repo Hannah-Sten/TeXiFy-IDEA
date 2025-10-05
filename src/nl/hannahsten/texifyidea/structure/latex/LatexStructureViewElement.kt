@@ -5,28 +5,23 @@ import com.intellij.ide.util.treeView.smartTree.SortableTreeElement
 import com.intellij.ide.util.treeView.smartTree.TreeElement
 import com.intellij.navigation.ItemPresentation
 import com.intellij.navigation.NavigationItem
-import com.intellij.openapi.application.runReadAction
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
-import com.intellij.psi.PsiNameIdentifierOwner
+import com.intellij.openapi.roots.ProjectFileIndex
+import com.intellij.psi.*
 import com.intellij.psi.impl.source.tree.LeafPsiElement
-import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.file.*
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexTypes
+import nl.hannahsten.texifyidea.psi.traverseCommands
+import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewElement
 import nl.hannahsten.texifyidea.structure.latex.SectionNumbering.DocumentClass
 import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommandsNoUpdate
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
-import nl.hannahsten.texifyidea.util.parser.allCommands
-import nl.hannahsten.texifyidea.util.parser.getIncludedFiles
-import nl.hannahsten.texifyidea.util.runInBackgroundWithoutProgress
-import nl.hannahsten.texifyidea.util.updateAndGetIncludeCommands
 import java.util.*
 
 /**
@@ -34,13 +29,17 @@ import java.util.*
  */
 class LatexStructureViewElement(private val element: PsiElement) : StructureViewTreeElement, SortableTreeElement {
 
-    // Get document class, this can take over one second but does not change frequently, and is only used for the correct sectioning levels, so cache it
-    val docClass by lazy {
-        LatexCommandsIndex.Util.getItems(element.project, GlobalSearchScope.fileScope(element as PsiFile)).asSequence()
-            .filter { cmd -> cmd.name == LatexGenericRegularCommand.DOCUMENTCLASS.commandWithSlash && cmd.getRequiredParameters().isNotEmpty() }
-            .mapNotNull { cmd -> cmd.getRequiredParameters().firstOrNull() }
-            .firstOrNull() ?: "article"
+    object Cache {
+        val includedFiles = mutableMapOf<SmartPsiElementPointer<LatexCommands>, List<SmartPsiElementPointer<PsiFile>>>()
     }
+
+    // Get document class, this can take over one second but does not change frequently, and is only used for the correct sectioning levels, so cache it
+    val docClass: String
+        get() {
+            return NewCommandsIndex.getByName(LatexGenericRegularCommand.DOCUMENTCLASS.commandWithSlash, element.containingFile).firstNotNullOfOrNull {
+                it.requiredParameterText(0)
+            } ?: "article"
+        }
 
     override fun getValue() = element
 
@@ -82,10 +81,9 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
 
         // Fetch all commands in the active file.
         val numbering = SectionNumbering(DocumentClass.getClassByName(docClass))
-        val commands = element.allCommands()
+        val commands = element.traverseCommands()
         val treeElements = ArrayList<LatexStructureViewCommandElement>()
 
-        val includeCommands = updateAndGetIncludeCommands(element.project)
         val labelingCommands = getLabelDefinitionCommandsNoUpdate()
 
         // Add sectioning.
@@ -103,26 +101,41 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
                 in CommandMagic.sectionNameToLevel -> {
                     addSections(command, sections, treeElements, numbering)
                 }
+
                 in labelingCommands + CommandMagic.commandDefinitionsAndRedefinitions + setOf(LatexGenericRegularCommand.BIBITEM.cmd) -> {
                     addAtCurrentSectionLevel(sections, treeElements, newElement)
                 }
-                in includeCommands -> {
-                    runInBackgroundWithoutProgress {
-                        val includedFiles = runReadAction { command.getIncludedFiles(includeInstalledPackages = TexifySettings.getInstance().showPackagesInStructureView) }
-                        for (psiFile in includedFiles) {
-                            if (BibtexFileType == psiFile.fileType) {
-                                newElement.addChild(BibtexStructureViewElement(psiFile))
-                            }
-                            else if (LatexFileType == psiFile.fileType || StyleFileType == psiFile.fileType) {
-                                newElement.addChild(LatexStructureViewElement(psiFile))
-                            }
+
+                else -> {
+                    var includedFiles = InputFileReference.getIncludedFiles(command)
+                    if (!TexifySettings.getState().showPackagesInStructureView) {
+                        includedFiles = includedFiles.filter {
+                            it.virtualFile?.fileType == LatexFileType || it.virtualFile?.fileType == BibtexFileType
                         }
                     }
+                    if (includedFiles.isNotEmpty()) {
+                        for (psiFile in includedFiles) {
+                            when (psiFile.virtualFile?.fileType) {
+                                LatexFileType ->
+                                    newElement.addChild(LatexStructureViewElement(psiFile))
+                                BibtexFileType ->
+                                    newElement.addChild(BibtexStructureViewElement(psiFile))
 
-                    addAtCurrentSectionLevel(sections, treeElements, newElement)
+                                StyleFileType, ClassFileType -> {
+                                    val inProject = runCatching { ProjectFileIndex.getInstance(element.project).isInProject(psiFile.virtualFile) }
+                                        .getOrDefault(false)
+                                    if (inProject) // let us do not show the style/class files that are not in the project, or the view will be cluttered
+                                        newElement.addChild(LatexStructureViewElement(psiFile))
+                                }
+                            }
+                        }
+                        newElement.isFileInclude = true
+                        addAtCurrentSectionLevel(sections, treeElements, newElement)
+                    }
                 }
             }
         }
+
         return treeElements.sortedBy { it.value.textOffset }.toTypedArray()
     }
 
@@ -148,7 +161,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         treeElements: ArrayList<LatexStructureViewCommandElement>,
         numbering: SectionNumbering
     ) {
-        if (command.getRequiredParameters().isEmpty()) {
+        if (command.requiredParametersText().isEmpty()) {
             return
         }
 
@@ -230,6 +243,9 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         }
     }
 
+    /**
+     * Sometimes, we show the actual number a section would be in the structure view after the section (as 'hint').
+     */
     private fun setLevelHint(child: LatexStructureViewCommandElement, numbering: SectionNumbering) {
         if (hasStar(child.value)) {
             return
@@ -242,7 +258,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
 
     private fun updateNumbering(cmd: LatexCommands, numbering: SectionNumbering) {
         val token = cmd.commandToken.text
-        val required = cmd.getRequiredParameters()
+        val required = cmd.requiredParametersText()
         if (required.size < 2) {
             return
         }

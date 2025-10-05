@@ -35,7 +35,7 @@ class LatexLanguageInjector : LanguageInjector {
                     host.beginCommand.getOptionalParameterMap().toStringMap().getOrDefault("language", null)
                 }
                 host.getEnvironmentName() == DefaultEnvironment.MINTED.environmentName -> {
-                    host.beginCommand.getRequiredParameters().getOrNull(1)
+                    host.beginCommand.requiredParametersText().getOrNull(0)
                 }
                 host.getEnvironmentName() in EnvironmentMagic.languageInjections.keys -> {
                     EnvironmentMagic.languageInjections[host.getEnvironmentName()]

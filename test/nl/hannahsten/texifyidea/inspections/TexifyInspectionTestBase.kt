@@ -2,15 +2,22 @@ package nl.hannahsten.texifyidea.inspections
 
 import com.intellij.codeInspection.InspectionsBundle
 import com.intellij.codeInspection.LocalInspectionTool
+import com.intellij.psi.PsiFile
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import nl.hannahsten.texifyidea.configureByFilesAndBuildFilesets
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.testutils.writeCommand
+import nl.hannahsten.texifyidea.updateCommandDef
 
 abstract class TexifyInspectionTestBase(vararg val inspections: LocalInspectionTool) : BasePlatformTestCase() {
 
     override fun setUp() {
         super.setUp()
         myFixture.enableInspections(*inspections)
+    }
+
+    protected fun configureByFilesAndBuildFilesets(vararg files: String): Array<out PsiFile> {
+        return myFixture.configureByFilesAndBuildFilesets(*files)
     }
 
     protected fun testHighlighting(text: String) {
@@ -23,9 +30,13 @@ abstract class TexifyInspectionTestBase(vararg val inspections: LocalInspectionT
         after: String,
         numberOfFixes: Int = 1,
         selectedFix: Int = 1,
-        fileName: String = "test.tex"
+        fileName: String = "test.tex",
+        updateCommand: Boolean = false
     ) {
         myFixture.configureByText(fileName, before)
+        if (updateCommand) {
+            myFixture.updateCommandDef()
+        }
         // Collect the quick fixed before going into write action, to avoid AssertionError: Must not start highlighting from within write action.
         val quickFixes = myFixture.getAllQuickFixes()
         assertEquals("Expected number of quick fixes:", numberOfFixes, quickFixes.size)

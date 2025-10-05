@@ -1,19 +1,19 @@
 package nl.hannahsten.texifyidea.formatting
 
-import com.intellij.application.options.CodeStyle
 import com.intellij.formatting.*
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.TokenType
+import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.formatter.common.AbstractBlock
 import com.intellij.psi.util.prevLeaf
 import nl.hannahsten.texifyidea.editor.typedhandlers.LatexEnterHandler
+import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.commands.LatexCommand
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.settings.codestyle.LatexCodeStyleSettings
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.magic.cmd
-import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 import java.lang.Integer.max
 
@@ -27,7 +27,7 @@ class LatexBlock(
     wrap: Wrap?,
     alignment: Alignment?,
     private val spacingBuilder: TexSpacingBuilder,
-    private val wrappingStrategy: LatexWrappingStrategy,
+    val settings: CodeStyleSettings,
     val sectionIndent: Int = 0,
     /** Extra section indent that's not real but is used in case blocks do not start on a new line, so that it is ignored for the enter handler. */
     private val fakeSectionIndent: Int = 0,
@@ -57,10 +57,10 @@ class LatexBlock(
         if (child == null && (sectionIndent > 0 || fakeSectionIndent > 0)) {
             val block = LatexBlock(
                 myNode,
-                wrappingStrategy.getNormalWrap(myNode),
+                LatexWrappingStrategy.getNormalWrap(settings, myNode),
                 null,
                 spacingBuilder,
-                wrappingStrategy,
+                settings,
                 extraSectionIndent,
                 newFakeSectionIndent
             )
@@ -70,8 +70,8 @@ class LatexBlock(
         var isPreviousWhiteSpace = child != null && child.elementType !== TokenType.WHITE_SPACE && child !is PsiWhiteSpace
         // Create child blocks
         while (child != null) {
-            val isSectionCommand =
-                child.psi is LatexNoMathContent && child.psi.firstChildOfType(LatexCommands::class)?.name in CommandMagic.sectioningCommands.map { it.cmd }
+            val psi = child.psi
+            val isSectionCommand = psi is LatexNoMathContent && psi.commands?.name in CommandMagic.sectionNameToLevel
 
             var targetIndent = extraSectionIndent
 
@@ -88,10 +88,10 @@ class LatexBlock(
                 val block = LatexBlock(
                     child,
                     // Only allow wrapping if the previous element is a white space.
-                    if (isPreviousWhiteSpace) wrappingStrategy.getNormalWrap(myNode) else wrappingStrategy.getNoneWrap(),
+                    if (isPreviousWhiteSpace) LatexWrappingStrategy.getNormalWrap(settings, myNode) else LatexWrappingStrategy.getNoneWrap(),
                     null,
                     spacingBuilder,
-                    wrappingStrategy,
+                    settings,
                     targetIndent,
                     newFakeSectionIndent
                 )
@@ -119,7 +119,7 @@ class LatexBlock(
         // We need to do it this way because we cannot create blocks which span a section content: blocks
         // need to correspond to only one psi element.
         // Changing the parser to view section content as one element is problematic because then we need to hardcode the sectioning structure in the parser
-        val command = LatexCommand.lookup(child.psi.firstChildOfType(LatexCommands::class)?.name)?.first()
+        val command = LatexCommand.lookup(child.psi.findFirstChildOfType(LatexCommands::class)?.name)?.first()
         val level = CommandMagic.labeledLevels[command]
         if (level != null && level > sectionLevel) {
             extraSectionIndent += 1
@@ -145,13 +145,12 @@ class LatexBlock(
     }
 
     override fun getIndent(): Indent? {
-        val shouldIndentDocumentEnvironment = CodeStyle.getCustomSettings(node.psi.containingFile, LatexCodeStyleSettings::class.java).INDENT_DOCUMENT_ENVIRONMENT
-        val shouldIndentEnvironments = CodeStyle.getCustomSettings(node.psi.containingFile, LatexCodeStyleSettings::class.java).INDENT_ENVIRONMENTS
+        val latexSettings = settings.getCustomSettings(LatexCodeStyleSettings::class.java)
+        val shouldIndentDocumentEnvironment = latexSettings.INDENT_DOCUMENT_ENVIRONMENT
+        val shouldIndentEnvironments = latexSettings.INDENT_ENVIRONMENTS
         val isDocumentEnvironment = myNode.elementType === LatexTypes.ENVIRONMENT_CONTENT &&
             (myNode.psi as LatexEnvironmentContent)
-                .firstParentOfType(LatexEnvironment::class)
-                ?.firstChildOfType(LatexBeginCommand::class)
-                ?.firstChildOfType(LatexParameterText::class)?.text == "document"
+                .firstParentOfType(LatexEnvironment::class)?.getEnvironmentName() == DefaultEnvironment.DOCUMENT.environmentName
         val shouldIndentEnvironment = when {
             myNode.elementType !== LatexTypes.ENVIRONMENT_CONTENT -> false
             isDocumentEnvironment -> shouldIndentDocumentEnvironment
@@ -171,7 +170,8 @@ class LatexBlock(
         }
 
         // Indentation of sections
-        val indentSections = CodeStyle.getCustomSettings(node.psi.containingFile, LatexCodeStyleSettings::class.java).INDENT_SECTIONS
+        // TODO improve
+        val indentSections = latexSettings.INDENT_SECTIONS
         if (indentSections) {
             if (sectionIndent > 0 || fakeSectionIndent > 0) {
                 return Indent.getNormalIndent(false)

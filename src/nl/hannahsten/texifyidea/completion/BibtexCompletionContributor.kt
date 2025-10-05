@@ -43,7 +43,7 @@ open class BibtexCompletionContributor : CompletionContributor() {
             .inside(BibtexEntry::class.java)
             .withPattern { psiElement, _ ->
                 val entry = psiElement.parentOfType(BibtexEntry::class)
-                val type = entry?.firstChildOfType(BibtexType::class)
+                val type = entry?.findFirstChildOfType(BibtexType::class)
                 if (type?.text?.lowercase(Locale.getDefault()) == "@string") return@withPattern false
 
                 psiElement.hasParent(BibtexEndtry::class) || psiElement.hasParent(BibtexKey::class)
@@ -69,11 +69,11 @@ open class BibtexCompletionContributor : CompletionContributor() {
         PlatformPatterns.psiElement()
             .inside(BibtexContent::class.java)
             .withPattern("File completion pattern") { psiElement, _ ->
-                val key = psiElement.firstParentOfType(BibtexTag::class)?.firstChildOfType(BibtexKey::class) ?: return@withPattern false
+                val key = psiElement.firstParentOfType(BibtexTag::class)?.findFirstChildOfType(BibtexKey::class) ?: return@withPattern false
                 // Currently, the bibsource field is used for file sources, but this is apparently not 'official'
                 key.text in FileMagic.bibtexFileKeys
             }
             .withLanguage(BibtexLanguage),
-        LatexFileProvider()
+        LatexFileProvider
     )
 }

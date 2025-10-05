@@ -30,10 +30,14 @@ object PackageMagic {
         MAKEIDX, MULTIND, INDEX, SPLITIDX, SPLITINDEX, IMAKEIDX, HVINDEX, IDXLAYOUT, REPEATINDEX, INDEXTOOLS, NOMENCL
     )
 
+    val indexNames = index.map { it.name }.toSet()
+
     /**
      * Packages which provide a glossary.
      */
     val glossary = hashSetOf(LatexPackage.GLOSSARIES, LatexPackage.GLOSSARIESEXTRA)
+
+    val glossaryNames = glossary.map { it.name }.toSet()
 
     /**
      * Known conflicting packages.
@@ -44,7 +48,6 @@ object PackageMagic {
 
     /**
      * Maps packages to the packages it loads.
-     * Note that when a LaTeX SDK is available, then the relative inclusions are handled for all installed packages by [nl.hannahsten.texifyidea.index.file.LatexExternalPackageInclusionCache].
      * This list is just there as a sort of default for those users who do not have LaTeX packages installed for example.
      */
     val packagesLoadingOtherPackages: Map<LatexPackage, Set<LatexPackage>> = mapOf(

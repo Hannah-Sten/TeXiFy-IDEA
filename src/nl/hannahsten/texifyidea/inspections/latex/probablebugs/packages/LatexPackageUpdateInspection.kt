@@ -21,8 +21,7 @@ import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
 import nl.hannahsten.texifyidea.util.files.rerunInspections
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
+import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 import nl.hannahsten.texifyidea.util.runCommand
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 
@@ -59,25 +58,23 @@ class LatexPackageUpdateInspection : TexifyInspectionBase() {
                 .mapNotNull { Pair(it.groups["package"]?.value ?: return@mapNotNull null, Pair(it.groups["local"]?.value, it.groups["source"]?.value)) }
                 .associate { it }
         }
-
-        return file.childrenOfType<LatexCommands>()
-            .filter { it.name in CommandMagic.packageInclusionCommands }
-            .filter { it.requiredParameter(0) in Cache.availablePackageUpdates!!.keys }
-            .mapNotNull {
-                val packageName = it.requiredParameter(0) ?: return@mapNotNull null
-                val packageVersions = Cache.availablePackageUpdates!![packageName] ?: return@mapNotNull null
-                manager.createProblemDescriptor(
-                    it,
-                    "Update available for package $packageName",
-                    arrayOf(
-                        UpdatePackage(SmartPointerManager.getInstance(file.project).createSmartPsiElementPointer(file), packageName, packageVersions.first, packageVersions.second),
-                        UpdatePackage(SmartPointerManager.getInstance(file.project).createSmartPsiElementPointer(file), "--all", null, null),
-                    ),
-                    ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                    isOntheFly,
-                    false,
-                )
-            }
+        return file.collectSubtreeTyped<LatexCommands> {
+            it.name in CommandMagic.packageInclusionCommands && it.requiredParameterText(0) in Cache.availablePackageUpdates!!.keys
+        }.mapNotNull {
+            val packageName = it.requiredParameterText(0) ?: return@mapNotNull null
+            val packageVersions = Cache.availablePackageUpdates!![packageName] ?: return@mapNotNull null
+            manager.createProblemDescriptor(
+                it,
+                "Update available for package $packageName",
+                arrayOf(
+                    UpdatePackage(SmartPointerManager.getInstance(file.project).createSmartPsiElementPointer(file), packageName, packageVersions.first, packageVersions.second),
+                    UpdatePackage(SmartPointerManager.getInstance(file.project).createSmartPsiElementPointer(file), "--all", null, null),
+                ),
+                ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                isOntheFly,
+                false,
+            )
+        }
     }
 
     private class UpdatePackage(val filePointer: SmartPsiElementPointer<PsiFile>, val packageName: String, val old: String?, val new: String?) : LocalQuickFix {

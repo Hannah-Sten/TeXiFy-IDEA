@@ -7,93 +7,94 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.inspections.InsightGroup
-import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
+import nl.hannahsten.texifyidea.index.DefinitionBundle
+import nl.hannahsten.texifyidea.inspections.AbstractTexifyCommandBasedInspection
+import nl.hannahsten.texifyidea.lang.LContextSet
+import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.contentText
+import nl.hannahsten.texifyidea.psi.forEachRequiredParameter
+import nl.hannahsten.texifyidea.psi.nameWithSlash
 import nl.hannahsten.texifyidea.util.appendExtension
-import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.replaceString
+import nl.hannahsten.texifyidea.util.parser.startOffsetInAncestor
 import java.util.*
 
 /**
  * See [LatexNoExtensionInspection].
  */
-open class LatexRequiredExtensionInspection : TexifyInspectionBase() {
+class LatexRequiredExtensionInspection : AbstractTexifyCommandBasedInspection(
+    inspectionId = "RequiredExtension",
+    skipChildrenInContext = setOf(LatexContexts.Comment, LatexContexts.InsideDefinition)
+) {
+    override val outerSuppressionScopes: Set<MagicCommentScope>
+        get() = EnumSet.of(MagicCommentScope.GROUP)
 
-    override val inspectionGroup = InsightGroup.LATEX
-
-    override val inspectionId = "RequiredExtension"
-
-    override val outerSuppressionScopes = EnumSet.of(MagicCommentScope.GROUP)!!
-
-    override fun getDisplayName() = "File argument should include the extension"
-
-    override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
-        val descriptors = descriptorList()
-
-        file.commandsInFile().asSequence()
-            .filter { it.name in CommandMagic.requiredExtensions }
-            .filter { command ->
-                CommandMagic.requiredExtensions[command.name]!!.any {
-                        extension ->
-                    command.getRequiredParameters().any { !it.split(",").any { parameter -> parameter.endsWith(extension) } }
+    override fun inspectCommand(
+        command: LatexCommands,
+        contexts: LContextSet,
+        defBundle: DefinitionBundle,
+        file: PsiFile,
+        manager: InspectionManager,
+        isOnTheFly: Boolean,
+        descriptors: MutableList<ProblemDescriptor>
+    ) {
+        val nameWithSlash = command.nameWithSlash
+        val requiredExtensions = CommandMagic.requiredExtensions[nameWithSlash] ?: return
+        command.forEachRequiredParameter {
+            val params = it.contentText().split(",")
+            var offset = it.startOffsetInAncestor(command)
+            for (parameter in params) {
+                offset += 1 // account for opening brace or comma
+                val missingExtension = requiredExtensions.any { ext ->
+                    !parameter.endsWith(ext) && !parameter.endsWith('}')
                 }
-            }
-            .forEach { command ->
-                val parameterList = command.getRequiredParameters().map { it.split(",") }.flatten()
-                var offset = 0
-                for (parameter in parameterList) {
-                    if (CommandMagic.requiredExtensions[command.name]!!.any { !parameter.endsWith(it) }) {
-                        descriptors.add(
-                            manager.createProblemDescriptor(
-                                command,
-                                TextRange(offset, offset + parameter.length).shiftRight(command.commandToken.textLength + 1),
-                                "File argument should include the extension",
-                                ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                                isOntheFly,
-                                AddExtensionFix
-                            )
+                if (missingExtension) {
+                    descriptors.add(
+                        manager.createProblemDescriptor(
+                            command,
+                            TextRange(offset, offset + parameter.length),
+                            "File argument should include the extension",
+                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                            isOnTheFly,
+                            AddExtensionFix
                         )
-                    }
-
-                    // Assume all parameter are comma separated
-                    offset += parameter.length + ",".length
+                    )
                 }
+                offset += parameter.length
             }
-
-        return descriptors
+        }
     }
 
-    /**
-     * See [LatexNoExtensionInspection.RemoveExtensionFix].
-     */
     object AddExtensionFix : LocalQuickFix {
-
         override fun getFamilyName() = "Add file extension for parameters"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands
             val document = command.containingFile.document() ?: return
 
-            val parameterList = command.getRequiredParameters().map { it.split(",") }.flatten()
-            var offset = 0
-            for (parameter in parameterList) {
-                if (CommandMagic.requiredExtensions[command.name]!!.any { !parameter.endsWith(it) }) {
-                    val range = TextRange(offset, offset + parameter.length).shiftRight(command.parameterList.first { it.requiredParam != null }.textOffset + 1)
-                    val replacement = CommandMagic.requiredExtensions[command.name]
-                        ?.find { !parameter.endsWith(it) }
-                        ?.run { parameter.appendExtension(this) } ?: break
-                    document.replaceString(range, replacement)
+            val nameWithSlash = command.nameWithSlash
+            val requiredExtensions = CommandMagic.requiredExtensions[nameWithSlash] ?: return
 
-                    // Maintain offset for any added part
-                    offset -= (range.length - replacement.length)
+            command.forEachRequiredParameter {
+                val params = it.contentText().split(",")
+                var offset = it.startOffsetInAncestor(command)
+                for (parameter in params) {
+                    offset += 1 // account for opening brace或逗号
+                    if (requiredExtensions.any { ext -> !parameter.endsWith(ext) && !parameter.endsWith('}') }) {
+                        val replacement = requiredExtensions
+                            .find { ext -> !parameter.endsWith(ext) }
+                            ?.let { ext -> parameter.appendExtension(ext) }
+                            ?: parameter
+                        val range = TextRange(offset, offset + parameter.length)
+                        document.replaceString(range, replacement)
+                        offset -= (range.length - replacement.length)
+                    }
+                    offset += parameter.length
                 }
-
-                // Assume all parameter are comma separated
-                offset += parameter.length + ",".length
             }
         }
     }

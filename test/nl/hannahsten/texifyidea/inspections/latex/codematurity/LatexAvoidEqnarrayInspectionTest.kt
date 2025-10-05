@@ -1,6 +1,9 @@
 package nl.hannahsten.texifyidea.inspections.latex.codematurity
 
+import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
+import nl.hannahsten.texifyidea.testutils.writeCommand
+import nl.hannahsten.texifyidea.updateCommandDef
 
 class LatexAvoidEqnarrayInspectionTest : TexifyInspectionTestBase(LatexAvoidEqnarrayInspection()) {
 
@@ -28,18 +31,29 @@ class LatexAvoidEqnarrayInspectionTest : TexifyInspectionTestBase(LatexAvoidEqna
         """.trimIndent()
     )
 
-    fun `test quick fix`() = testQuickFix(
-        before = """
+    fun `test quick fix`() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
                 \usepackage{amsmath}
                 \begin{eqnarray*}
                     x
                 \end{eqnarray*}
-        """.trimIndent(),
-        after = """
+            """.trimIndent()
+        )
+        myFixture.updateCommandDef()
+        val quickFixes = myFixture.getAllQuickFixes()
+        assertEquals("Expected number of quick fixes:", 1, quickFixes.size)
+        writeCommand(myFixture.project) {
+            quickFixes.first().invoke(myFixture.project, myFixture.editor, myFixture.file)
+        }
+        myFixture.checkResult(
+            """
                 \usepackage{amsmath}
                 \begin{align*}
                     x
                 \end{align*}
-        """.trimIndent()
-    )
+            """.trimIndent()
+        )
+    }
 }

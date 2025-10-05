@@ -11,6 +11,7 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexBeginCommand
 import nl.hannahsten.texifyidea.psi.LatexEndCommand
+import nl.hannahsten.texifyidea.psi.environmentName
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.parser.*
 import java.util.*
@@ -31,13 +32,12 @@ open class LatexNonMatchingEnvironmentInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        val begins = file.childrenOfType(LatexBeginCommand::class)
-        for (begin in begins) {
-            val end = begin.endCommand() ?: continue
+        file.forEachChildTyped<LatexBeginCommand> { begin ->
+            val end = begin.endCommand() ?: return@forEachChildTyped
             val beginEnvironment = begin.environmentName() ?: ""
             val endEnvironment = end.environmentName() ?: ""
             if (beginEnvironment == endEnvironment) {
-                continue
+                return@forEachChildTyped
             }
 
             // Add descriptor to begin.

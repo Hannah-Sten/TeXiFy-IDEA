@@ -1,12 +1,10 @@
 package nl.hannahsten.texifyidea.reference
 
 import com.intellij.psi.*
-import com.intellij.util.containers.toArray
-import nl.hannahsten.texifyidea.index.BibtexEntryIndex
+import nl.hannahsten.texifyidea.index.NewBibtexEntryIndex
 import nl.hannahsten.texifyidea.psi.BibtexId
 import nl.hannahsten.texifyidea.psi.LatexParameterText
-import nl.hannahsten.texifyidea.util.parser.firstChildOfType
-import nl.hannahsten.texifyidea.util.labels.extractLabelName
+import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 
 /**
  * Reference to a bibtex id.
@@ -24,15 +22,13 @@ class BibtexIdReference(element: LatexParameterText) : PsiReferenceBase<LatexPar
     }
 
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
-        return BibtexEntryIndex().getIndexedEntriesInFileSet(myElement.containingFile)
-            .filter { it.extractLabelName() == myElement.name }
-            .mapNotNull {
-                // Resolve to the id, similarly as why we resolve to the label text for latex labels
-                val id = it.firstChildOfType(BibtexId::class) ?: return@mapNotNull null
-                PsiElementResolveResult(id)
-            }
-            .toList()
-            .toArray(emptyArray())
+        val name = myElement.name ?: return emptyArray()
+        val entries = NewBibtexEntryIndex.getByNameInFileSet(name, myElement.containingFile)
+        if (entries.isEmpty()) return ResolveResult.EMPTY_ARRAY
+        return entries.mapNotNull { entry ->
+            // Resolve to the id, similarly as why we resolve to the label text for latex labels
+            entry.findFirstChildOfType(BibtexId::class)?.let { id -> PsiElementResolveResult(id) }
+        }.toTypedArray()
     }
 
     override fun isReferenceTo(element: PsiElement): Boolean {

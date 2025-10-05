@@ -121,7 +121,7 @@ fun PsiElement.magicCommentLookup(
     next: PsiElement.() -> PsiElement?,
     reversed: Boolean = false
 ): MagicComment<String, String> {
-    val commentLines = LinkedList<String>()
+    val commentLines = mutableListOf<String>()
 
     // Scan (backward) through all the magic comments preceding the element.
     var current: PsiElement? = initial() ?: return MagicComment.empty()
@@ -174,7 +174,7 @@ fun PsiElement.backwardMagicCommentLookup(initial: PsiElement.() -> PsiElement?)
  */
 fun PsiFile.magicComment(): MagicComment<String, String> {
     // Find first real element (so the one under LatexContent), which, if it is a magic comment, will be under a LatexNoMathContent
-    return forwardMagicCommentLookup { firstChildOfType(LatexNoMathContent::class)?.firstChildIgnoringWhitespaceOrNull() }
+    return forwardMagicCommentLookup { findFirstChildOfType(LatexNoMathContent::class)?.firstChildIgnoringWhitespaceOrNull() }
 }
 
 /**

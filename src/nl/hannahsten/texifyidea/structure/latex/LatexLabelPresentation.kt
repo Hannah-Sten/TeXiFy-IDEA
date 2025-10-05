@@ -5,7 +5,6 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
 
 /**
  * @author Hannah Schellekens
@@ -19,7 +18,7 @@ class LatexLabelPresentation(labelCommand: LatexCommands) : ItemPresentation {
         val position =
             CommandManager.labelAliasesInfo.getOrDefault(labelCommand.commandToken.text, null)?.positions?.firstOrNull()
                 ?: 0
-        presentableText = labelCommand.requiredParameter(position) ?: "no label found"
+        presentableText = labelCommand.requiredParameterText(position) ?: "no label found"
 
         // Location string.
         val manager = FileDocumentManager.getInstance()

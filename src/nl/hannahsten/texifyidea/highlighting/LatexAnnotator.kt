@@ -4,14 +4,18 @@ import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.editor.colors.TextAttributesKey
+import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.TextRange
+import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.elementType
 import com.intellij.psi.util.endOffset
 import com.intellij.psi.util.startOffset
-import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
-import nl.hannahsten.texifyidea.lang.Environment
+import nl.hannahsten.texifyidea.index.DefinitionBundle
+import nl.hannahsten.texifyidea.index.LatexDefinitionService
+import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
+import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericMathCommand.*
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
@@ -33,15 +37,29 @@ open class LatexAnnotator : Annotator {
          * All user defined commands, cached because it requires going over all commands, which we don't want to do for every command we need to annotate.
          */
         var allUserDefinedCommands = emptyList<String>()
+
+        internal val userDataKeyDefBundle = Key.create<DefinitionBundle>("LatexAnnotator.defBundle")
+    }
+
+    private fun getDefBundle(annotationHolder: AnnotationHolder): DefinitionBundle {
+        val session = annotationHolder.currentAnnotationSession
+        session.getUserData(Cache.userDataKeyDefBundle)?.let { return it }
+        val file = session.file
+        val defBundle = LatexDefinitionService.getInstance(file.project).getDefBundlesMerged(file)
+        session.putUserData(Cache.userDataKeyDefBundle, defBundle)
+        return defBundle
     }
 
     override fun annotate(psiElement: PsiElement, annotationHolder: AnnotationHolder) {
+        // TODO: how can we avoid doing this for every element, namely, find a top-down ways of annotating?
+        val defBundle = getDefBundle(annotationHolder)
+        val context = LatexPsiUtil.resolveContextUpward(psiElement, defBundle)
         // Math display
         if (psiElement is LatexInlineMath) {
             annotateInlineMath(psiElement, annotationHolder)
         }
         else if (psiElement is LatexDisplayMath ||
-            (psiElement is LatexEnvironment && psiElement.isContext(Environment.Context.MATH))
+            (psiElement is LatexEnvironment && LatexPsiUtil.isContextIntroduced(psiElement, defBundle, LatexContexts.Math))
         ) {
             annotateDisplayMath(psiElement, annotationHolder)
 
@@ -76,7 +94,7 @@ open class LatexAnnotator : Annotator {
                 .textAttributes(LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY)
                 .create()
         }
-        else if (psiElement.isComment()) {
+        else if (psiElement is PsiComment || context.contains(LatexContexts.Comment)) {
             annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
                 .range(psiElement.textRange)
                 .textAttributes(LatexSyntaxHighlighter.COMMENT)
@@ -101,7 +119,7 @@ open class LatexAnnotator : Annotator {
             .create()
 
         annotateMathCommands(
-            inlineMathElement.childrenOfType(LatexCommands::class), annotationHolder,
+            inlineMathElement.collectSubtreeTyped<LatexCommands>(), annotationHolder,
             LatexSyntaxHighlighter.COMMAND_MATH_INLINE
         )
     }
@@ -123,7 +141,7 @@ open class LatexAnnotator : Annotator {
             .create()
 
         annotateMathCommands(
-            displayMathElement.childrenOfType(LatexCommands::class), annotationHolder,
+            displayMathElement.collectSubtreeTyped<LatexCommands>(), annotationHolder,
             LatexSyntaxHighlighter.COMMAND_MATH_DISPLAY
         )
     }
@@ -204,7 +222,7 @@ open class LatexAnnotator : Annotator {
 
         // Make user-defined commands highlighting customizable
         if (Cache.allUserDefinedCommands.isEmpty()) {
-            Cache.allUserDefinedCommands = LatexDefinitionIndex.Util.getItems(command.project)
+            Cache.allUserDefinedCommands = NewSpecialCommandsIndex.getAllCommandDefInFileset(command.containingFile)
                 .filter { it.isCommandDefinition() }
                 .mapNotNull { it.definedCommandName() }
         }
@@ -217,7 +235,7 @@ open class LatexAnnotator : Annotator {
 
         // Label references.
         val style = when (command.name) {
-            in CommandMagic.labelReferenceWithoutCustomCommands -> {
+            in CommandMagic.labelReference -> {
                 LatexSyntaxHighlighter.LABEL_REFERENCE
             }
             // Label definitions.
@@ -236,7 +254,7 @@ open class LatexAnnotator : Annotator {
             else -> return
         }
 
-        command.requiredParameters().firstOrNull()?.let {
+        command.firstRequiredParameter()?.let {
             annotationHolder.annotateRequiredParameter(it, style)
         }
     }
@@ -257,7 +275,7 @@ open class LatexAnnotator : Annotator {
             else -> return
         }
 
-        command.requiredParameters().firstOrNull()?.let {
+        command.firstRequiredParameter()?.let {
             annotationHolder.annotateRequiredParameter(it, style)
         }
     }
@@ -266,8 +284,8 @@ open class LatexAnnotator : Annotator {
      * Annotates the contents of the given parameter with the given style.
      */
     private fun AnnotationHolder.annotateRequiredParameter(parameter: LatexRequiredParam, style: TextAttributesKey) {
-        val firstContentChild = parameter.firstChildOfType(LatexContent::class)
-        val firstParamChild = parameter.firstChildOfType(LatexRequiredParamContent::class)
+        val firstContentChild = parameter.findFirstChildOfType(LatexContent::class)
+        val firstParamChild = parameter.findFirstChildOfType(LatexRequiredParamContent::class)
 
         if (firstContentChild != null) {
             this.newSilentAnnotation(HighlightSeverity.INFORMATION)
@@ -276,19 +294,14 @@ open class LatexAnnotator : Annotator {
                 .create()
         }
         else if (firstParamChild != null) {
-            parameter.childrenOfType(LeafPsiElement::class)
-                .filter {
-                    it.elementType == LatexTypes.NORMAL_TEXT_WORD
-                }
-                .map {
-                    it as PsiElement
-                }
-                .forEach {
+            parameter.forEachChild {
+                if (it is LeafPsiElement && it.elementType == LatexTypes.NORMAL_TEXT_WORD) {
                     this.newSilentAnnotation(HighlightSeverity.INFORMATION)
-                        .range(it)
+                        .range(it as PsiElement) // resolve overloading
                         .textAttributes(style)
                         .create()
                 }
+            }
         }
     }
 }

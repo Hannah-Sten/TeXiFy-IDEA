@@ -11,7 +11,7 @@ class LatexPairedDelimiterPresentation(newCommand: LatexCommands) : ItemPresenta
 
     init {
         // Get command name.
-        val required = newCommand.getRequiredParameters()
+        val required = newCommand.requiredParametersText()
         newCommandName = if (required.isNotEmpty()) {
             required.first()
         }

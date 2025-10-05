@@ -1,22 +1,17 @@
 package nl.hannahsten.texifyidea.util.magic
 
-import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.lang.DefaultEnvironment.*
-import nl.hannahsten.texifyidea.lang.alias.EnvironmentManager
 
 object EnvironmentMagic {
 
-    val listingEnvironments = hashSetOf(ITEMIZE, ENUMERATE, DESCRIPTION).map { it.env }
+    val listingEnvironments: Set<String> = listOf(ITEMIZE, ENUMERATE, DESCRIPTION).map { it.env }.toSet()
 
-    private val tableEnvironmentsWithoutCustomEnvironments = hashSetOf(TABULAR, TABULAR_STAR, TABULARX, TABULARY, ARRAY, LONGTABLE, TABU, MATRIX, MATRIX_STAR, BMATRIX, BMATRIX_STAR, PMATRIX, PMATRIX_STAR, VMATRIX, VMATRIX_STAR, VMATRIX_CAPITAL, VMATRIX_CAPITAL_STAR, WIDETABULAR, BLOCKARRAY, BLOCK, TBLR, LONGTBLR, TALLTBLR).map { it.env }
-
-    /**
-     * Get all table environments in the project, including any user defined aliases.
-     */
-    fun getAllTableEnvironments(project: Project): Set<String> {
-        EnvironmentManager.updateAliases(tableEnvironmentsWithoutCustomEnvironments, project)
-        return EnvironmentManager.getAliases(tableEnvironmentsWithoutCustomEnvironments.first())
-    }
+    private val tableEnvironmentsWithoutCustomEnvironments: Set<String> =
+        hashSetOf(
+            TABULAR, TABULAR_STAR, TABULARX, TABULARY, ARRAY, LONGTABLE, TABU, MATRIX, MATRIX_STAR, BMATRIX, BMATRIX_STAR, PMATRIX,
+            PMATRIX_STAR, VMATRIX, VMATRIX_STAR, VMATRIX_CAPITAL, VMATRIX_CAPITAL_STAR, WIDETABULAR, BLOCKARRAY, BLOCK, TBLR, LONGTBLR, TALLTBLR
+        ).map { it.env }
+            .toSet()
 
     /**
      * Environments that define their label via an optional parameter
@@ -72,7 +67,7 @@ object EnvironmentMagic {
         "matrix*", "pmatrix*", "bmatrix*", "vmatrix*", "Bmatrix*", "Vmatrix*",
         "smallmatrix", "psmallmatrix", "bsmallmatrix", "vsmallmatrix", "Bsmallmatrix", "Vsmallmatrix",
         "smallmatrix*", "psmallmatrix*", "bsmallmatrix*", "vsmallmatrix*", "Bsmallmatrix*", "Vsmallmatrix*",
-        "gmatrix", "tikz-cd"
+        "gmatrix", "tikzcd"
     )
 
     val alignableEnvironments = setOf(

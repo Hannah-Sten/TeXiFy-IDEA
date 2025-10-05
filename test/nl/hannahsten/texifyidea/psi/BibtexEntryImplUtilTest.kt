@@ -2,11 +2,10 @@ package nl.hannahsten.texifyidea.psi
 
 import com.intellij.openapi.paths.WebReference
 import com.intellij.psi.PsiDocumentManager
-import com.intellij.testFramework.UsefulTestCase
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import junit.framework.TestCase
 import nl.hannahsten.texifyidea.file.BibtexFileType
-import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 import nl.hannahsten.texifyidea.util.parser.getIdentifier
 import nl.hannahsten.texifyidea.util.parser.getTagContent
 import org.intellij.lang.annotations.Language
@@ -29,7 +28,7 @@ class BibtexEntryImplUtilTest : BasePlatformTestCase() {
     private val entryElement by lazy {
         PsiDocumentManager.getInstance(myFixture.project)
             .getPsiFile(myFixture.editor.document)!!
-            .firstChildOfType(BibtexEntry::class)!!
+            .findFirstChildOfType(BibtexEntry::class)!!
     }
 
     override fun setUp() {
@@ -39,7 +38,7 @@ class BibtexEntryImplUtilTest : BasePlatformTestCase() {
 
     fun testEntryGetReferences() {
         listOf(WebReference(entryElement, url)).map { it.url }.forEach {
-            UsefulTestCase.assertContainsElements(entryElement.references.map { reference -> (reference as WebReference).url }, it)
+            assertContainsElements(entryElement.references.map { reference -> (reference as WebReference).url }, it)
         }
     }
 

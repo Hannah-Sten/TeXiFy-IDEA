@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.psi.LatexBeginCommand
 import nl.hannahsten.texifyidea.psi.LatexDisplayMath
 import nl.hannahsten.texifyidea.psi.LatexInlineMath
+import nl.hannahsten.texifyidea.psi.environmentName
 import nl.hannahsten.texifyidea.ui.PopupChooserCellRenderer
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.parser.*
@@ -51,7 +52,7 @@ open class LatexMathToggleIntention : TexifyIntentionBase("Convert to other math
             }
             else -> {
                 element = element.findOuterMathEnvironment() ?: return
-                element.childrenOfType<LatexBeginCommand>().first().environmentName()
+                element.findFirstChildTyped<LatexBeginCommand>()?.environmentName()
             }
         } ?: return
 

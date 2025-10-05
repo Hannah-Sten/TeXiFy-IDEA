@@ -85,7 +85,7 @@ class LatexSpellcheckingStrategy : SpellcheckingStrategy() {
         // Code
         if (scope.contains(SpellCheckingInspection.SpellCheckingScope.Code)) {
             // Override the default to disable spellchecking for code unless enabled in TeXiFy settings
-            return TexifySettings.getInstance().enableSpellcheckEverywhere
+            return TexifySettings.getState().enableSpellcheckEverywhere
         }
 
         return false
@@ -105,7 +105,7 @@ class LatexSpellcheckingStrategy : SpellcheckingStrategy() {
         val requiredArguments = arguments.filterIsInstance<RequiredArgument>()
         val optionalArguments = arguments.filterIsInstance<OptionalArgument>()
 
-        val requiredParams = parent.getRequiredParameters()
+        val requiredParams = parent.requiredParametersText()
         // Note that a leaf may be only part of a parameter
         val parameterText = leaf.firstParentOfType(LatexParameterText::class)?.text
         val parameterIndex = requiredParams.indexOf(parameterText)

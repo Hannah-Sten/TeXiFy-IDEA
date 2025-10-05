@@ -2,7 +2,9 @@ package nl.hannahsten.texifyidea.startup
 
 import com.intellij.ide.plugins.DynamicPluginListener
 import com.intellij.ide.plugins.IdeaPluginDescriptor
+import kotlinx.coroutines.runBlocking
 import nl.hannahsten.texifyidea.completion.LatexExternalCommandsIndexCache
+import nl.hannahsten.texifyidea.run.pdfviewer.EvinceInverseSearchListener
 
 class LoadUnloadListener : DynamicPluginListener {
 

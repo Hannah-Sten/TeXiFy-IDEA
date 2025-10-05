@@ -6,6 +6,8 @@ import kotlin.math.max
 
 /**
  * @author Hannah Schellekens
+ *
+ * Keeps track of the current section number for each level.
  */
 class SectionNumbering(private val documentClass: DocumentClass) {
 
@@ -17,6 +19,8 @@ class SectionNumbering(private val documentClass: DocumentClass) {
      * 4: Subsubsection
      * 5: Paragraph
      * 6: Subparagraph
+     *
+     * The number at index i indicates the current number the section would get in the pdf at that level
      */
     private val counters = IntArray(7)
 
@@ -45,7 +49,7 @@ class SectionNumbering(private val documentClass: DocumentClass) {
     fun getTitle(level: Int): String {
         // Parts
         if (level == 0) {
-            return max(0, counters[0]).toRoman()
+            return max(1, counters[0]).toRoman()
         }
 
         val sb = StringBuilder()

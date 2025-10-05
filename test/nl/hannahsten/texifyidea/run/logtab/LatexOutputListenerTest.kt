@@ -133,9 +133,9 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
                                                           
         l.9     \begin{align}
                              
-        ./main.tex:10: Missing ${'$'} inserted.
+        ./main.tex:10: Missing $ inserted.
         <inserted text> 
-                        ${'$'}
+                        $
         l.10         \pi
                         
 
@@ -147,9 +147,9 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
                                                           
         l.11     \end{align}
                             
-        ./main.tex:11: Missing ${'$'} inserted.
+        ./main.tex:11: Missing $ inserted.
         <inserted text> 
-                        ${'$'}
+                        $
         l.11     \end{align}
                             
         (./lipsum.tex
@@ -790,7 +790,7 @@ ive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></home/thomas/texl
         (/home/user/texlive/2020/texmf-dist/tex/latex/stmaryrd/Ustmry.fd)
         ./hw5.tex:79: Undefined control sequence.
         l.79 ...ut uncovering any other vertex in ${'$'}S \cupt
-                                                           T${'$'}).
+                                                           T$).
         [1{/home/user/texlive/2020/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
             """.trimIndent()
 

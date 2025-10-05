@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.util
 
 import com.intellij.execution.RunManager
 import com.intellij.execution.impl.RunManagerImpl
+import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.util.SystemInfo
@@ -21,7 +22,15 @@ class SystemEnvironment {
 
     companion object {
 
-        val wslCommand = arrayOf("wsl", "--exec", "bash", "-ic")
+        val wslCommand by lazy {
+            // PyCharm 2025.1+ does not support wsl --exec, see #4115
+            if (ApplicationInfo.getInstance().fullApplicationName.contains("IntelliJ")) {
+                arrayOf("wsl", "--exec", "bash", "-ic")
+            }
+            else {
+                arrayOf("bash", "-ic")
+            }
+        }
 
         val inkscapeMajorVersion: Int by lazy {
             "inkscape --version".runCommand()
@@ -86,8 +95,8 @@ fun getTexinputsPaths(
     rootFiles: Collection<VirtualFile>,
     expandPaths: Boolean = true,
     latexmkSearchDirectory: VirtualFile? = null
-): List<String> {
-    val searchPaths = mutableListOf<String>()
+): Set<String> {
+    val searchPaths = mutableSetOf<String>()
     val runManager = RunManagerImpl.getInstanceImpl(project) as RunManager
     val allConfigurations = runManager.allConfigurationsList
         .filterIsInstance<LatexRunConfiguration>()
@@ -129,7 +138,9 @@ fun getTexinputsPaths(
 
     // Most files are searched for in subdirectories of tex/generic or tex/latex, see kpsewhich -help-format | grep -1 sty
     (configurationTexmfhomeVariables + systemTexmfhome)
-        .mapNotNull { it?.trim('\'', '/')?.replaceFirst("~", System.getProperty("user.home")) }
+        .filterNotNull()
+        .flatMap { it.split(",") }
+        .map { it.trim('\'', '/').replaceFirst("~", System.getProperty("user.home")) }
         .mapNotNull { LocalFileSystem.getInstance().findFileByPath("$it/tex") }
         .forEach { parent ->
             searchPaths.addAll(

@@ -13,10 +13,10 @@ import com.intellij.psi.util.startOffset
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexNoMathContent
+import nl.hannahsten.texifyidea.psi.traverseCommands
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.magic.cmd
-import nl.hannahsten.texifyidea.util.parser.allCommands
-import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 import nl.hannahsten.texifyidea.util.parser.parentOfType
 
 /**
@@ -36,7 +36,7 @@ open class LatexImportFoldingBuilder : FoldingBuilderEx() {
     override fun buildFoldRegions(root: PsiElement, document: Document, quick: Boolean): Array<FoldingDescriptor> {
         val descriptors = ArrayList<FoldingDescriptor>()
         val covered = HashSet<LatexCommands>()
-        val commands = root.allCommands().filter { it.name in includesSet }
+        val commands = root.traverseCommands().filter { it.name in includesSet }
 
         for (command in commands) {
             // Do not cover commands twice.
@@ -83,6 +83,6 @@ open class LatexImportFoldingBuilder : FoldingBuilderEx() {
             return next.nextCommand()
         }
 
-        return next.firstChildOfType(LatexCommands::class)
+        return next.findFirstChildOfType(LatexCommands::class)
     }
 }

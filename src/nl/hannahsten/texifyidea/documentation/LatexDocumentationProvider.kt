@@ -6,12 +6,17 @@ import com.intellij.lang.documentation.DocumentationProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
 import nl.hannahsten.texifyidea.CommandFailure
-import nl.hannahsten.texifyidea.lang.Dependend
-import nl.hannahsten.texifyidea.lang.Described
-import nl.hannahsten.texifyidea.lang.Environment
+import nl.hannahsten.texifyidea.index.DefinitionBundle
+import nl.hannahsten.texifyidea.index.LatexDefinitionService
+import nl.hannahsten.texifyidea.index.SourcedDefinition
+import nl.hannahsten.texifyidea.lang.LSemanticEntity
 import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.lang.commands.LatexCommand
-import nl.hannahsten.texifyidea.psi.*
+import nl.hannahsten.texifyidea.lang.toLatexPackage
+import nl.hannahsten.texifyidea.psi.BibtexEntry
+import nl.hannahsten.texifyidea.psi.BibtexId
+import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexEnvIdentifier
+import nl.hannahsten.texifyidea.psi.nameWithSlash
 import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.containsAny
@@ -27,7 +32,7 @@ class LatexDocumentationProvider : DocumentationProvider {
     /**
      * The currently active lookup item.
      */
-    private var lookup: Described? = null
+    private var lookup: LSemanticEntity? = null
 
     override fun getQuickNavigateInfo(psiElement: PsiElement, originalElement: PsiElement) = when (psiElement) {
         is LatexCommands -> LabelDeclarationLabel(psiElement).makeLabel()
@@ -42,32 +47,29 @@ class LatexDocumentationProvider : DocumentationProvider {
         if (element !is LatexCommands) {
             return false
         }
-
-        val command = LatexCommand.lookup(element)
-        if (command.isNullOrEmpty()) return false
-        return command.first().commandWithSlash in CommandMagic.packageInclusionCommands
+        return element.nameWithSlash in CommandMagic.packageInclusionCommands
     }
 
     override fun getUrlFor(element: PsiElement?, originalElement: PsiElement?): List<String>? {
-        return getUrlForElement(element).getOrNull()
+        val bundle = originalElement?.containingFile?.let {
+            LatexDefinitionService.getInstance(it.project).getDefBundlesMerged(it)
+        }
+        return getUrlForElement(element, bundle).getOrNull()
     }
 
-    private fun getUrlForElement(element: PsiElement?): Either<CommandFailure, List<String>?> = either {
+    private fun getUrlForElement(element: PsiElement?, bundle: DefinitionBundle?): Either<CommandFailure, List<String>?> = either {
         if (element !is LatexCommands) {
             return@either null
         }
 
-        val command = LatexCommand.lookup(element)
-
-        if (command.isNullOrEmpty()) return@either null
-
+        val command = bundle?.lookupCommandPsi(element) ?: return@either null
         // Special case for package inclusion commands
-        if (isPackageInclusionCommand(element)) {
-            val pkg = element.getRequiredParameters().getOrNull(0) ?: return@either null
+        if (command.nameWithSlash in CommandMagic.packageInclusionCommands) {
+            val pkg = element.requiredParametersText().getOrNull(0) ?: return@either null
             return runTexdoc(LatexPackage(pkg))
         }
 
-        return runTexdoc(command.first().dependency)
+        return runTexdoc(command.dependency.toLatexPackage())
     }
 
     /**
@@ -91,48 +93,88 @@ class LatexDocumentationProvider : DocumentationProvider {
     }
 
     /**
+     * Regexes and replacements which clean up the documentation.
+     *
+     * **test**
+     * Arguments \[mop\]arg should be left in, because they are needed when adding to the autocomplete
+     */
+    private val dtxFormattingReplacers = listOf(
+        // Commands to remove entirely,, making sure to capture in the argument nested braces
+        Pair("""\\(cite|footnote)\{(\{[^}]*}|[^}])+?}\s*""".toRegex()) { "" },
+        // \cs command from the doctools package
+        Pair("""(?<pre>[^|]|^)\\c[sn]\{(?<command>[^}]+?)}""".toRegex()) { result -> result.groups["pre"]?.value + "<tt>\\" + result.groups["command"]?.value + "</tt>" },
+        // Other commands, except when in short verbatim
+        Pair("""(?<pre>[^|]|^)\\(?:textsf|textsc|cmd|pkg|env)\{(?<argument>(\{[^}]*}|[^}])+?)}""".toRegex()) { result -> result.groups["pre"]?.value + "<tt>" + result.groups["argument"]?.value + "</tt>" },
+        // Replace \textbf with <b> tags
+        Pair("""\\textbf\{(?<argument>(\{[^}]*}|[^}])+?)}""".toRegex()) { result -> "<b>${result.groups["argument"]?.value}</b>" },
+        // Replace \emph and \textit with <i> tags
+        Pair<Regex, (MatchResult) -> String>("""\\(textit|emph)\{(?<argument>(\{[^}]*}|[^}])+?)}""".toRegex()) { result -> "<i>${result.groups["argument"]?.value}</i>" },
+        // Short verbatim, provided by ltxdoc
+        Pair("""\|""".toRegex()) { "" },
+        // While it is true that text reflows in the documentation popup, so we don't need linebreaks, often package authors include an environment or something else
+        // which does depend on linebreaks to be readable, and therefore we keep linebreaks by default.
+        Pair("""\n""".toRegex()) { "<br>" },
+    )
+
+    /**
+     * Should format to valid HTML as used in the docs popup.
+     * Only done when indexing, but it should still be fast because it can be done up to 28714 times for full TeX Live.
+     */
+    fun formatDtxSource(docs: String): String {
+        var formatted = docs.trim()
+        dtxFormattingReplacers.forEach { formatted = it.first.replace(formatted, it.second).trim() }
+        return formatted.trim()
+    }
+
+    /**
      * Generate the content that should be shown in the documentation popup.
      * Works for commands and environments
      */
     private fun generateDocForLatexCommandsAndEnvironments(element: PsiElement, originalElement: PsiElement?): String? {
         // Indexed documentation
-        if (lookup == null) {
-            // Apparently the lookup item is not yet initialised, so let's do that first
-            // Can happen when requesting documentation for an item for which the user didn't request documentation during autocompletion
-            if (element is LatexCommands) {
-                lookup = LatexCommand.lookup(element)?.firstOrNull()
+        // Apparently the lookup item is not yet initialised, so let's do that first
+        // Can happen when requesting documentation for an item for which the user didn't request documentation during autocompletion
+        // In that case we shouldn't reassign lookup because then we would show documentation for the wrong item next time
+        val file = element.containingFile
+        val defBundle = file?.let { LatexDefinitionService.getInstance(it.project).getDefBundlesMerged(it) }
+        val lookupItem = lookup ?: when (element) {
+            is LatexCommands -> {
+                defBundle?.lookupCommandPsi(element)
             }
-            // If the cursor is on the parameter text inside a begin/end command, we show docs for the environment
-            else if (element is LatexParameterText && (element.parentOfType(LatexBeginCommand::class) != null || element.parentOfType(LatexEndCommand::class) != null)) {
-                val envName = element.text
-                lookup = Environment[envName] ?: Environment.lookupInIndex(envName, element.project).firstOrNull()
+
+            is LatexEnvIdentifier -> {
+                defBundle?.lookupEnv(element.name)
+            }
+
+            else -> null
+        }
+        return buildString {
+            lookupItem?.description?.let { append(formatDtxSource(it)) }
+            // Link to package docs
+            originalElement ?: return@buildString
+            val urlsMaybe = if (!isPackageInclusionCommand(element)) {
+                runTexdoc(lookupItem?.dependency?.toLatexPackage())
+            }
+            else getUrlForElement(element, defBundle)
+            val urlsText = urlsMaybe.fold(
+                { it.output },
+                { urls -> urls?.joinToString(separator = "<br>") { "<a href=\"file:///$it\">$it</a>" } }
+            )
+
+            // Add a line break if necessary
+            if (isNotBlank() && urlsText?.isNotBlank() == true) {
+                append("<br>")
+            }
+
+            append(urlsText)
+            if (element.previousSiblingIgnoreWhitespace() == null) {
+                lookup = null
+            }
+            // If we return a blank string, the popup will just say "Fetching documentation..."
+            if (isBlank()) {
+                append("<i>No documentation found.</i>")
             }
         }
-        var docString = if (lookup != null) lookup?.description else ""
-
-        // Link to package docs
-        originalElement ?: return null
-        val urlsMaybe = if (lookup is Dependend && !isPackageInclusionCommand(element)) runTexdoc((lookup as? Dependend)?.dependency) else getUrlForElement(
-            element
-        )
-        val urlsText = urlsMaybe.fold(
-            { it.output },
-            { urls -> urls?.joinToString(separator = "<br>") { "<a href=\"file:///$it\">$it</a>" } }
-        )
-
-        // Add a line break if necessary
-        if (docString?.isNotBlank() == true && urlsText?.isNotBlank() == true) {
-            docString += "<br>"
-        }
-
-        docString += urlsText
-
-        if (element.previousSiblingIgnoreWhitespace() == null) {
-            lookup = null
-        }
-
-        // If we return a blank string, the popup will just say "Fetching documentation..."
-        return if (docString.isNullOrBlank()) "<br>" else docString
     }
 
     // originalElement: element under the mouse cursor
@@ -150,13 +192,12 @@ class LatexDocumentationProvider : DocumentationProvider {
         obj: Any?,
         psiElement: PsiElement?
     ): PsiElement? {
-        if (obj == null || obj !is Described) {
+        if(obj !is SourcedDefinition) {
             // Cancel documentation popup
             lookup = null
             return null
         }
-
-        lookup = obj
+        lookup = obj.entity
         return psiElement
     }
 
@@ -187,7 +228,8 @@ class LatexDocumentationProvider : DocumentationProvider {
             else if (SystemEnvironment.isAvailable("mthelp")) {
                 // In some cases, texdoc may not be available but mthelp is
                 listOf("mthelp", "-l", name)
-            } else
+            }
+            else
                 raise(CommandFailure("Could not find mthelp or texdoc", 0))
         }
         val (output, exitCode) = runCommandWithExitCode(*command.toTypedArray(), returnExceptionMessage = true)

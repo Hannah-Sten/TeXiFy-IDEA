@@ -18,7 +18,6 @@ import nl.hannahsten.texifyidea.util.files.writeToFileUndoable
 import nl.hannahsten.texifyidea.util.parser.endOffset
 import nl.hannahsten.texifyidea.util.parser.findIndentation
 import nl.hannahsten.texifyidea.util.parser.parentOfType
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
 import java.io.File
 
 /**
@@ -60,14 +59,14 @@ open class LatexMoveSectionToFileIntention : TexifyIntentionBase("Move section c
         val text = document.getText(TextRange(start, end)).trimEnd().removeIndents()
 
         // Create new file.
-        val fileNameBraces = sectionCommand.requiredParameter(0) ?: return
+        val fileNameBraces = sectionCommand.requiredParameterText(0) ?: return
         // Remove the braces of the LaTeX command before creating a filename of it.
         val fileName = fileNameBraces.removeAll("{", "}")
             .formatAsFileName()
         val root = file.findRootFile().containingDirectory?.virtualFile?.canonicalPath ?: return
 
         // Display a dialog to ask for the location and name of the new file.
-        val filePath = if (project.isTestProject().not()) {
+        val filePath = if (isTestProject().not()) {
             CreateFileDialog(file.containingDirectory?.virtualFile?.canonicalPath, fileName.formatAsFileName())
                 .newFileFullPath ?: return
         }

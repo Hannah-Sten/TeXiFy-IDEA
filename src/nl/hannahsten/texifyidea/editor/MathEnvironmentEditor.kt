@@ -106,7 +106,7 @@ class MathEnvironmentEditor(
             )
             val file = environment.containingFile
                 ?: return@runUndoTransparentWriteAction
-            if (isAmsMathEnvironment(newEnvironmentName) && LatexPackage.AMSMATH !in file.includedPackages()) {
+            if (isAmsMathEnvironment(newEnvironmentName) && LatexPackage.AMSMATH !in file.includedPackagesInFileset()) {
                 file.insertUsepackage(LatexPackage.AMSMATH)
             }
         }

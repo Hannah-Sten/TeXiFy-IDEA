@@ -138,7 +138,7 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
      * Check if [LatexNoMathContent] is a non breaking space.
      */
     private fun LatexNoMathContent.isNonBreakingSpace(): Boolean {
-        val normalText = firstChildOfType(LatexNormalText::class) ?: return false
+        val normalText = findFirstChildOfType(LatexNormalText::class) ?: return false
         return normalText.text == "~"
     }
 
@@ -189,7 +189,7 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
 
             // Create the content of the required parameter of the new cite command.
             val bundle = sortedBundle.value
-                .flatMap { it.getRequiredParameters() }
+                .flatMap { it.requiredParametersText() }
                 .joinToString(",")
 
             // Find the cite command that has to be replaced. When the bundle contains a gap, this is the command

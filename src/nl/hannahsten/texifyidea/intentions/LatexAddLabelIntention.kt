@@ -1,6 +1,8 @@
 package nl.hannahsten.texifyidea.intentions
 
 import com.intellij.codeInsight.intention.preview.IntentionPreviewInfo
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.RangeMarker
 import com.intellij.openapi.project.Project
@@ -14,7 +16,7 @@ import com.intellij.refactoring.rename.RenameProcessor
 import com.intellij.refactoring.rename.inplace.MemberInplaceRenamer
 import nl.hannahsten.texifyidea.psi.LatexCommandWithParams
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.util.labels.findLatexAndBibtexLabelStringsInFileSet
+import nl.hannahsten.texifyidea.util.labels.Labels
 import kotlin.math.max
 
 abstract class LatexAddLabelIntention(name: String) : TexifyIntentionBase(name) {
@@ -63,25 +65,10 @@ abstract class LatexAddLabelIntention(name: String) : TexifyIntentionBase(name) 
             ?: file.findElementAt(max(0, offset - 1))?.parentOfType()
     }
 
-    protected fun getUniqueLabelName(base: String, prefix: String, file: PsiFile): LabelWithPrefix {
+    protected fun getUniqueLabelWithPrefix(base: String, prefix: String, file: PsiFile): LabelWithPrefix {
         val labelBase = "$prefix:$base"
-        val allLabels = file.findLatexAndBibtexLabelStringsInFileSet()
-        val fullLabel = appendCounter(labelBase, allLabels)
+        val fullLabel = Labels.getUniqueLabelName(labelBase, file)
         return LabelWithPrefix(prefix, fullLabel.substring(prefix.length + 1))
-    }
-
-    /**
-     * Keeps adding a counter behind the label until there is no other label with that name.
-     */
-    private fun appendCounter(label: String, allLabels: Set<String>): String {
-        var counter = 2
-        var candidate = label
-
-        while (allLabels.contains(candidate)) {
-            candidate = label + (counter++)
-        }
-
-        return candidate
     }
 
     data class LabelWithPrefix(val prefix: String, val base: String) {
@@ -99,12 +86,18 @@ abstract class LatexAddLabelIntention(name: String) : TexifyIntentionBase(name) 
     ) {
         val helper = LatexPsiHelper(project)
         val parameter = helper.setOptionalParameter(command, "label", "{${label.labelText}}")
+
+        if (parameter == null) {
+            Notification("LaTeX", "Could not add label", "Something went wrong while trying to add the label ${label.labelText} to command ${command.getName()}. Please try again", NotificationType.WARNING).notify(project)
+            return
+        }
+
         PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.document)
 
         // setOptionalParameter should create an appropriate optionalArgument node with label={text} in it
         val parameterText =
-            parameter?.keyValValue?.keyValContentList?.firstOrNull()?.parameterGroup?.parameterGroupText?.parameterTextList?.firstOrNull()
-                ?: throw AssertionError("parameter created by setOptionalParameter for $command with text ${label.labelText} does not have the right structure: ${parameter?.text}")
+            parameter.keyValValue?.keyValContentList?.firstOrNull()?.parameterGroup?.parameterGroupText?.parameterTextList?.firstOrNull()
+                ?: throw AssertionError("parameter created by setOptionalParameter for $command with text ${label.labelText} does not have the right structure: ${parameter.text}")
         // Move the caret onto the label
         editor.caretModel.moveToOffset(parameterText.textOffset + label.prefix.length + 1)
         val renamer = LabelInplaceRenamer(parameterText, editor, label.prefixText, label.base, moveCaretTo)

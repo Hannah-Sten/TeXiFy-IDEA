@@ -6,10 +6,9 @@ import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexComposite
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
+import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.parser.traverseContextualSiblingsPrev
-import nl.hannahsten.texifyidea.util.parser.name
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
+import nl.hannahsten.texifyidea.psi.traverseContextualSiblingsPrev
 
 /**
  *
@@ -21,10 +20,10 @@ class LatexBreadcrumbsInfo : BreadcrumbsProvider {
     override fun getLanguages() = arrayOf(LatexLanguage)
 
     override fun getElementInfo(element: PsiElement) = when (element) {
-        is LatexEnvironment -> element.name()?.text
+        is LatexEnvironment -> element.getEnvironmentName()
         is LatexCommands ->
             if (element.name in CommandMagic.sectionNameToLevel) {
-                element.requiredParameter(0) ?: element.name
+                element.requiredParameterText(0) ?: element.name
             }
             else {
                 element.name

@@ -1,19 +1,20 @@
 package nl.hannahsten.texifyidea.formatting
 
-import com.intellij.application.options.CodeStyle
 import com.intellij.formatting.Wrap
 import com.intellij.formatting.WrapType
 import com.intellij.lang.ASTNode
+import com.intellij.psi.codeStyle.CodeStyleSettings
+import nl.hannahsten.texifyidea.grammar.LatexLanguage
 
 /**
  *
  * @author Sten Wessel
  */
-class LatexWrappingStrategy {
+object LatexWrappingStrategy {
 
-    fun getNormalWrap(node: ASTNode): Wrap? {
-        val settings = CodeStyle.getLanguageSettings(node.psi.containingFile)
-        return if (settings.WRAP_LONG_LINES) {
+    fun getNormalWrap(settings: CodeStyleSettings, node: ASTNode): Wrap? {
+        val latexSettings = settings.getCommonSettings(LatexLanguage)
+        return if (latexSettings.WRAP_LONG_LINES) {
             Wrap.createWrap(WrapType.NORMAL, false)
         }
         else getNoneWrap()

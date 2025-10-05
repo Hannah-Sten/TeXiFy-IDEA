@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.psi
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.util.parser.firstChildOfType
+import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 import nl.hannahsten.texifyidea.util.parser.getOptionalParameterMapFromParameters
 import nl.hannahsten.texifyidea.util.parser.toStringMap
 import org.junit.Test
@@ -27,7 +27,7 @@ class LatexCommandsImplUtilTest : BasePlatformTestCase() {
             .getPsiFile(myFixture.editor.document)!!
             .children
             .first()
-            .firstChildOfType(LatexCommands::class)!!
+            .findFirstChildOfType(LatexCommands::class)!!
             .parameterList
 
         val map = getOptionalParameterMapFromParameters(parameters).toStringMap()
@@ -54,7 +54,7 @@ class LatexCommandsImplUtilTest : BasePlatformTestCase() {
             .getPsiFile(myFixture.editor.document)!!
             .children
             .first()
-            .firstChildOfType(LatexCommands::class)!!
+            .findFirstChildOfType(LatexCommands::class)!!
             .parameterList
 
         val map = getOptionalParameterMapFromParameters(parameters).toStringMap()
@@ -80,7 +80,7 @@ class LatexCommandsImplUtilTest : BasePlatformTestCase() {
             .getPsiFile(myFixture.editor.document)!!
             .children
             .first()
-            .firstChildOfType(LatexCommands::class)!!
+            .findFirstChildOfType(LatexCommands::class)!!
             .parameterList
 
         val map = getOptionalParameterMapFromParameters(parameters).toStringMap()
@@ -107,7 +107,7 @@ class LatexCommandsImplUtilTest : BasePlatformTestCase() {
             .getPsiFile(myFixture.editor.document)!!
             .children
             .first()
-            .firstChildOfType(LatexCommands::class)!!
+            .findFirstChildOfType(LatexCommands::class)!!
             .parameterList
 
         val map = getOptionalParameterMapFromParameters(parameters).toStringMap()
@@ -137,7 +137,7 @@ class LatexCommandsImplUtilTest : BasePlatformTestCase() {
             .getPsiFile(myFixture.editor.document)!!
             .children
             .first()
-            .firstChildOfType(LatexCommands::class)!!
+            .findFirstChildOfType(LatexCommands::class)!!
             .parameterList
 
         val map = getOptionalParameterMapFromParameters(parameters).toStringMap()
@@ -163,7 +163,7 @@ class LatexCommandsImplUtilTest : BasePlatformTestCase() {
             .getPsiFile(myFixture.editor.document)!!
             .children
             .first()
-            .firstChildOfType(LatexCommands::class)!!
+            .findFirstChildOfType(LatexCommands::class)!!
             .parameterList
 
         val map = getOptionalParameterMapFromParameters(parameters).toStringMap()
@@ -188,7 +188,7 @@ class LatexCommandsImplUtilTest : BasePlatformTestCase() {
             .getPsiFile(myFixture.editor.document)!!
             .children
             .first()
-            .firstChildOfType(LatexCommands::class)!!
+            .findFirstChildOfType(LatexCommands::class)!!
             .parameterList
 
         val map = getOptionalParameterMapFromParameters(parameters).toStringMap()
@@ -215,7 +215,7 @@ class LatexCommandsImplUtilTest : BasePlatformTestCase() {
             .getPsiFile(myFixture.editor.document)!!
             .children
             .first()
-            .firstChildOfType(LatexCommands::class)!!
+            .findFirstChildOfType(LatexCommands::class)!!
             .parameterList
 
         val map = getOptionalParameterMapFromParameters(parameters).toStringMap()

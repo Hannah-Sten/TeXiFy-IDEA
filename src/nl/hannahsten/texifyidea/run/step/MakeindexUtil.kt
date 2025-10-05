@@ -6,7 +6,7 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import nl.hannahsten.texifyidea.index.LatexCommandsIndex
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.run.legacy.MakeindexProgram
 import nl.hannahsten.texifyidea.util.SystemEnvironment
@@ -61,13 +61,17 @@ fun getDefaultMakeindexPrograms(mainFile: VirtualFile?, project: Project, usedPa
  * Get package options for included index packages.
  */
 private fun getIndexPackageOptions(mainFile: VirtualFile?, project: Project): List<String> {
+    // Find index package options
+    val mainPsiFile = runReadAction { mainFile?.psiFile(project) } ?: throw ExecutionException("Main file not found")
+//    return LatexCommandsIndex.Util.getItemsInFileSet(mainPsiFile)
+//        .filter { it.commandToken.text in CommandMagic.packageInclusionCommands }
+//        .filter { command -> command.getRequiredParameters().any { it in PackageMagic.index.map { pkg -> pkg.name } || it in PackageMagic.glossary.map { pkg -> pkg.name } } }
+//        .flatMap { it.getOptionalParameterMap().toStringMap().keys }
     return runReadAction {
-        // Find index package options
-        val mainPsiFile = mainFile?.psiFile(project) ?: throw ExecutionException("Main file not found")
-        LatexCommandsIndex.Util.getItemsInFileSet(mainPsiFile)
-            .filter { it.commandToken.text in CommandMagic.packageInclusionCommands }
-            .filter { command -> command.getRequiredParameters().any { it in PackageMagic.index.map { pkg -> pkg.name } || it in PackageMagic.glossary.map { pkg -> pkg.name } } }
+        NewCommandsIndex.getByNames(CommandMagic.packageInclusionCommands, mainPsiFile).asSequence()
+            .filter { command -> command.requiredParametersText().any { it in PackageMagic.indexNames || it in PackageMagic.glossaryNames } }
             .flatMap { it.getOptionalParameterMap().toStringMap().keys }
+            .toList()
     }
 }
 
@@ -75,19 +79,18 @@ private fun getIndexPackageOptions(mainFile: VirtualFile?, project: Project): Li
  * Get optional parameters of the \makeindex command. If an option key does not have a value it will map to the empty string.
  */
 fun getMakeindexOptions(mainFile: VirtualFile?, project: Project): Map<String, String> {
-    return runReadAction {
-        val mainPsiFile = mainFile?.psiFile(project)
-        if (mainPsiFile == null) {
-            Notification("LaTeX", "Could not find main file ${mainFile?.path}", "Please make sure the main file exists.", NotificationType.ERROR).notify(project)
-            return@runReadAction mapOf<String, String>()
-        }
+    val mainPsiFile = runReadAction { mainFile?.psiFile(project) }
+    if (mainPsiFile == null) {
+        Notification("LaTeX", "Could not find main file ${mainFile?.path}", "Please make sure the main file exists.", NotificationType.ERROR).notify(project)
+        return mapOf()
+    }
 
-        val makeindexOptions = HashMap<String, String>()
-        LatexCommandsIndex.Util.getItemsInFileSet(mainPsiFile)
-            .filter { it.commandToken.text == "\\makeindex" }
+    val makeindexOptions = HashMap<String, String>()
+    runReadAction {
+        NewCommandsIndex.getByName("\\makeindex", mainPsiFile)
             .forEach {
                 makeindexOptions.putAll(it.getOptionalParameterMap().toStringMap())
             }
-        makeindexOptions
     }
+    return makeindexOptions
 }

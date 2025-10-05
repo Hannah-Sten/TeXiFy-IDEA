@@ -2,83 +2,125 @@ package nl.hannahsten.texifyidea.psi.impl
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
+import com.intellij.openapi.project.DumbService
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference
 import nl.hannahsten.texifyidea.lang.commands.LatexGlossariesCommand
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.reference.BibtexIdReference
-import nl.hannahsten.texifyidea.reference.LatexEnvironmentReference
 import nl.hannahsten.texifyidea.reference.LatexGlossaryReference
 import nl.hannahsten.texifyidea.reference.LatexLabelParameterReference
 import nl.hannahsten.texifyidea.util.isFigureLabel
-import nl.hannahsten.texifyidea.util.labels.extractLabelName
-import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
-import nl.hannahsten.texifyidea.util.labels.getLabelReferenceCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
+import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 import nl.hannahsten.texifyidea.util.parser.parentOfType
 import nl.hannahsten.texifyidea.util.parser.remove
 
 abstract class LatexParameterTextImplMixin(node: ASTNode) : LatexParameterText, ASTWrapperPsiElement(node) {
 
-    /**
-     * If the normal text is the parameter of a \ref-like command, get the references to the label declaration.
-     */
-    override fun getReferences(): Array<PsiReference> {
-        // If the command is a label reference
-        // NOTE When adding options here, also update getNameIdentifier below
-        return when {
-            this.project.getLabelReferenceCommands().contains(this.firstParentOfType(LatexCommands::class)?.name) -> {
-                arrayOf(LatexLabelParameterReference(this))
-            }
-            // If the command is a bibliography reference
-            CommandMagic.bibliographyReference.contains(this.firstParentOfType(LatexCommands::class)?.name) -> {
-                arrayOf(BibtexIdReference(this))
-            }
-            // If the command is an \end command (references to \begin)
-            this.firstParentOfType(LatexEndCommand::class) != null -> {
-                arrayOf(LatexEnvironmentReference(this))
-            }
-            // If the command is a glossary reference
-            CommandMagic.glossaryReference.contains(this.firstParentOfType(LatexCommands::class)?.name) -> {
-                arrayOf(LatexGlossaryReference(this))
-            }
-
-            else -> {
-                emptyArray<PsiReference>()
-            }
-        }
+    override fun toString(): String {
+        return "ParameterText(${this.text})"
     }
 
     /**
-     * If [getReferences] returns one reference return that one, null otherwise.
+     * If the normal text is the parameter of a \ref-like command, get the references to the label declaration.
      */
     override fun getReference(): PsiReference? {
-        return references.firstOrNull()
+        val project = this.project
+        if (DumbService.isDumb(project)) {
+            // we cannot resolve references, so return empty array
+            return null
+        }
+        val command = this.firstParentOfType<LatexCommands>() ?: return null
+        val name = command.name ?: return null
+        if (name in CommandMagic.bibliographyReference) {
+            // First check if the command is a bibliography reference, then we return a reference to the bibtex id
+            return BibtexIdReference(this)
+        }
+        if (name in CommandMagic.glossaryReference) {
+            // If the command is a glossary reference, we return a reference to the glossary label
+            return LatexGlossaryReference(this)
+        }
+        if (name in CommandMagic.reference) {
+            // If the command is a reference, we return a reference to the label parameter
+            // TODO: allow custom reference commands
+            return LatexLabelParameterReference(this)
+        }
+
+        return null
     }
 
     override fun getNameIdentifier(): PsiElement? {
         // Because we do not want to trigger the NonAsciiCharactersInspection when the LatexParameterText is not an identifier
         // (think non-ASCII characters in a \section command), we return null here when the this is not an identifier
         // It is important not to return null for any identifier, otherwise exceptions like "Throwable: null byMemberInplaceRenamer" may occur
+
         val name = this.firstParentOfType(LatexCommands::class)?.name
-        val environmentName = this.firstParentOfType(LatexEnvironment::class)?.getEnvironmentName()
-        if (!CommandMagic.labelReferenceWithoutCustomCommands.contains(name) &&
-            !CommandMagic.labelDefinitionsWithoutCustomCommands.contains(name) &&
-            !CommandMagic.bibliographyReference.contains(name) &&
-            !CommandMagic.labelAsParameter.contains(name) &&
-            !CommandMagic.glossaryEntry.contains(name) &&
-            !EnvironmentMagic.labelAsParameter.contains(environmentName) &&
-            this.firstParentOfType(LatexEndCommand::class) == null &&
-            this.firstParentOfType(LatexBeginCommand::class) == null
+
+        // reference
+        if (name in CommandMagic.labels || name in CommandMagic.reference || name in CommandMagic.labelAsParameter ||
+            name in CommandMagic.bibliographyReference || name in CommandMagic.glossaryEntry
         ) {
-            return null
+            return this
         }
-        return this
+        // definition
+        if(name in CommandMagic.definitions) {
+            return this
+        }
+        // environment labels
+        val environmentName = this.firstParentOfType(LatexEnvironment::class)?.getEnvironmentName()
+        if (EnvironmentMagic.labelAsParameter.contains(environmentName)
+        ) {
+            return this
+        }
+        // begin/end
+        if (this.firstParentOfType(LatexEndCommand::class) != null ||
+            this.firstParentOfType(LatexBeginCommand::class) != null
+        ) {
+            return this
+        }
+
+        return null
+    }
+
+    private fun setPlainTextName(name: String) {
+        val newElement = LatexPsiHelper(this.project).createFromText(name)
+        val normalText = newElement.findFirstChildTyped<LatexNormalText>()?.node
+        require(normalText != null) {
+            "Expected NORMAL_TEXT, but got null."
+        }
+//        require(normalText.text == name){
+//            "Expected NORMAL_TEXT to have text '$name', but got '${normalText.text}' instead."
+//        }
+        this.node.replaceAllChildrenToChildrenOf(normalText)
+        return
+    }
+
+    private fun setBracedName(name: String): PsiElement {
+        if(this.parent is LatexParameterGroupText) {
+            // already inside a group, so we can just set the name
+            setPlainTextName(name)
+            return this
+        }
+        val originalContent = firstParentOfType(LatexKeyValContent::class) ?: return this
+        val content = LatexPsiHelper(this.project).createFromText("\\cmd[label=$name]")
+            .firstChild // The first child is the command with parameters
+            .findFirstChildTyped<LatexKeyValContent>() ?: return this
+//        originalContent.node.replaceAllChildrenToChildrenOf(content.node)
+        val newNode = content.firstChild ?: return this
+        return originalContent.firstChild.replace(newNode)
     }
 
     override fun setName(name: String): PsiElement {
+        val command = this.firstParentOfType(LatexCommands::class)
+        val environment = this.firstParentOfType(LatexEnvironment::class)
+
+        if(command?.name in CommandMagic.labelAsParameter || environment?.getEnvironmentName() in EnvironmentMagic.labelAsParameter) {
+            // we need to keep the pair of braces around the label name
+            return setBracedName(name)
+        }
         /**
          * Build a new PSI this where [old] is replaced with [new] and replace the old PSI this
          */
@@ -96,35 +138,9 @@ abstract class LatexParameterTextImplMixin(node: ASTNode) : LatexParameterText, 
             }
         }
 
-        val command = this.firstParentOfType(LatexCommands::class)
-        val environment = this.firstParentOfType(LatexEnvironment::class)
+        // If the label name is inside a group, keep the group
         // If we want to rename a label
-        if (
-            CommandMagic.reference.contains(command?.name) ||
-            this.project.getLabelDefinitionCommands().contains(command?.name)
-        ) {
-            // Get a new psi this for the complete label command (\label included),
-            // because if we replace the complete command instead of just the normal text
-            // then the indices will be updated, which is necessary for the reference resolve to work
-            val oldLabel = this.extractLabelName()
-            replaceInCommand(command, oldLabel, name)
-        }
-        else if (CommandMagic.labelAsParameter.contains(command?.name) || EnvironmentMagic.labelAsParameter.contains(
-                environment?.getEnvironmentName()
-            )
-        ) {
-            val helper = LatexPsiHelper(this.project)
-
-            // If the label name is inside a group, keep the group
-            val value = if (this.parentOfType(LatexParameterGroupText::class) != null) {
-                "{$name}"
-            }
-            else {
-                name
-            }
-            helper.setOptionalParameter(command ?: environment!!.beginCommand, "label", value)
-        }
-        else if (CommandMagic.glossaryReference.contains(command?.name) || CommandMagic.glossaryEntry.contains(command?.name)) {
+        if (CommandMagic.glossaryReference.contains(command?.name) || CommandMagic.glossaryEntry.contains(command?.name)) {
             // This assumes that glossary entry commands (e.g. \newglossaryentry) as well as glossary references (e.g. \gls)
             // have the glossary label as their first required parameter. This is true for all currently supported glossary
             // commands, but might change in the future.
@@ -132,16 +148,10 @@ abstract class LatexParameterTextImplMixin(node: ASTNode) : LatexParameterText, 
                 val glossaryLabel = LatexGlossariesCommand.extractGlossaryLabel(command) ?: ""
                 replaceInCommand(command, glossaryLabel, name)
             }
+            return this
         }
-        else if (this.firstParentOfType(LatexEndCommand::class) != null || this.firstParentOfType(LatexBeginCommand::class) != null) {
-            // We are renaming an environment, text in \begin or \end
-            val newElement = LatexPsiHelper(this.project).createFromText(name).firstChild
-            val oldNode = this.node
-            val newNode = newElement.node
-            this.parent.node.replaceChild(oldNode, newNode)
-        }
-        // Else, this is not renamable
-
+        // Else, we just replace the label name in the command
+        setPlainTextName(name)
         return this
     }
 

@@ -10,7 +10,7 @@ import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.files.commandsInFile
+import nl.hannahsten.texifyidea.psi.traverseCommands
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.parser.forcedFirstRequiredParameterAsCommand
 import nl.hannahsten.texifyidea.util.parser.isKnown
@@ -40,7 +40,7 @@ class LatexCommandAlreadyDefinedInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        val commands = file.commandsInFile()
+        val commands = file.traverseCommands()
 
         for (command in commands) {
             // Error when \newcommand is used on existing command

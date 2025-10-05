@@ -3,19 +3,18 @@
         <stubElementTypeHolder externalIdPrefix="texify.latex." class="nl.hannahsten.texifyidea.psi.LatexStubElementTypes"/>
         <stubElementTypeHolder externalIdPrefix="texify.bibtex." class="nl.hannahsten.texifyidea.psi.BibtexStubElementTypes"/>
 
-        <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexCommandsIndex"/>
-        <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexEnvironmentsIndex"/>
-        <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexParameterLabeledEnvironmentsIndex"/>
-        <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexParameterLabeledCommandsIndex"/>
-        <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexIncludesIndex"/>
-        <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexDefinitionIndex"/>
-        <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexMagicCommentIndex"/>
-        <stubIndex implementation="nl.hannahsten.texifyidea.index.BibtexEntryIndex"/>
-        <stubIndex implementation="nl.hannahsten.texifyidea.index.LatexGlossaryEntryIndex"/>
+        <stubIndex implementation="nl.hannahsten.texifyidea.index.NewCommandsIndexEx"/>
+        <stubIndex implementation="nl.hannahsten.texifyidea.index.NewSpecialCommandsIndexEx"/>
+        <stubIndex implementation="nl.hannahsten.texifyidea.index.NewDefinitionIndexEx"/>
+        <stubIndex implementation="nl.hannahsten.texifyidea.index.NewLabelsIndexEx"/>
+        <stubIndex implementation="nl.hannahsten.texifyidea.index.NewBibtexEntryIndexEx"/>
+        <stubIndex implementation="nl.hannahsten.texifyidea.index.NewMagicCommentIndexEx"/>
 
-        <fileBasedIndex implementation="nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex" />
-        <fileBasedIndex implementation="nl.hannahsten.texifyidea.index.file.LatexExternalEnvironmentIndex" />
-        <fileBasedIndex implementation="nl.hannahsten.texifyidea.index.file.LatexExternalPackageInclusionIndex" />
+        <fileBasedIndex implementation="nl.hannahsten.texifyidea.index.file.LatexRegexBasedCommandDefIndex" />
+        <fileBasedIndex implementation="nl.hannahsten.texifyidea.index.file.LatexRegexBasedEnvironmentDefIndex" />
+        <fileBasedIndex implementation="nl.hannahsten.texifyidea.index.file.LatexRegexBasedPackageInclusionIndex" />
+        <fileBasedIndex implementation="nl.hannahsten.texifyidea.index.file.LatexDtxDefinitionIndexEx" />
+
         <indexedRootsProvider implementation="nl.hannahsten.texifyidea.index.file.LatexIndexableSetContributor" />
         <indexPatternSearch implementation="nl.hannahsten.texifyidea.index.LatexTodoSearcher"/>
         <indexPatternProvider implementation="nl.hannahsten.texifyidea.index.LatexTodoIndexPatternProvider"/>

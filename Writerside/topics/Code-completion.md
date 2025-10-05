@@ -31,7 +31,9 @@ It can give larger suggestions than TeXiFy will do, but in some cases the comple
 
 ![Copilot](copilot2.png)
 
-## Autocompletion of required parameters
+## Autocompletion of commands and environments
+
+### Autocompletion of required parameters
 _Since b0.6.9_
 
 When invoking autocomplete on a command or environment that takes required parameters, TeXiFy will insert a brace pair for each parameter.
@@ -43,7 +45,8 @@ If you always select the version with optional parameters, after a couple of tim
 
 ![required-parameters-environments](required-parameters-environments.gif)
 
-## Autocompletion of commands from installed LaTeX packages. {#autocomplete-installed-commands}
+
+### Autocompletion of commands from installed LaTeX packages. {#autocomplete-installed-commands}
 _Since b0.7.4_
 
 TeXiFy will look in your LaTeX installation for installed LaTeX packages, and then figures out what commands those packages provide to put those in the autocompletion.
@@ -54,15 +57,15 @@ Often, the extracted information includes the command parameters and some docume
 However, this relies on package authors respecting the LaTeX conventions (using the doc package).
 If you find something incorrect, please let us know and then we can determine whether something needs to be improved in the LaTeX package or in TeXiFy.
 
-In the case of TeX Live, TeXiFy will currently not suggest commands from _all_ packages you have installed, because a lot of users have TeX Live full installed, so you would get completion for _all_ commands in _any_ LaTeX package ever written!
-This would flood the completion with many commands that are very rarely used.
-Therefore, TeXiFy will only suggest commands from packages that you have already included somewhere in your project, directly or indirectly via other packages.
+By default, TeXiFy will not suggest all the commands from all installed packages, but only from packages that you have included in your project,
+otherwise the list would be flooded with too many commands that are rarely used.
+Nevertheless, you can change this behavior in [autocompletion modes](#autocompletion-modes).
 
 ![command-autocomplete1](command-autocomplete1.png)
 
 ![command-autocomplete2](command-autocomplete2.png)
 
-### MiKTeX admin install
+#### MiKTeX admin install
 
 With MiKTeX, TeXiFy needs to extract zipped files in order to obtain source files of LaTeX packages.
 If you installed MiKTeX as admin, this will not be possible.
@@ -73,6 +76,73 @@ The MiKTeX installer clearly warns about this:
 On Linux the warning is less clear though:
 
 ![miktex-linux](miktex-linux.png)
+
+
+### Context-aware autocompletion
+_Since b0.11.3_
+
+TeXiFy will try to be context-aware when suggesting commands and environments in the autocompletion.
+For example, it will not suggest math-mode commands when you are in text mode, and vice versa.
+For user-defined commands and environments, TeXiFy will try to determine their applicable context based on their definition.
+This feature is still experimental, so if you find something that does not work as expected, please let us know.
+See also [Autocompletion modes](#autocompletion-modes).
+
+![ctx-autocompletion1.png](ctx-autocompletion1.png)
+
+![ctx-autocompletion2.png](ctx-autocompletion2.png)
+
+The hint `in <math>` indicates that the command is only available in math mode.
+
+### User-defined commands and environments
+_Since b0.11.3_
+
+TeXiFy will also recognize custom commands and environments defined via `\newcommand`, `\NewDocumentCommand` (from the `xparse` package), and similar commands.
+Moreover, TeXiFy will try to determine the context of the command or environment and its parameters.
+
+In the following example, `\ep` is defined as `\varepsilon`, so it is only available in math mode.
+Moreover, the first optional parameter of `\mmycmd` is determined to be math mode, because of the `\( #1 \)` in the definition,
+so `\ep` is also suggested as a possible completion inside the first parameter of `\mmycmd`.
+
+![custom-command-autocompletion1](custom-command-autocompletion1.png)
+
+![custom-command-autocompletion2](custom-command-autocompletion2.png)
+
+To be more detailed, several context-resolving rules are applied:
+* Command alias copies the original semantics (if any).
+    * `\newcommand{\ep}{\varepsilon}`
+* The applicable context of the user-defined command is guessed from the required context(s) of its definition.
+    *  `\newcommand{\R}{\mathbb{R}}`: requires math context because of `\mathbb`.
+* The context of the arguments are computed from the code:
+    * `\newcommand{\mymath}[1]{\( #1 \)}` makes the first argument of `\mymath` introduce math context.
+* The context of environment block is guessed from the end of the begin block definition:
+    * `\NewDocumentEnvironment{table3}{}{\begin{tabular}{c c}}{\end{tabular}}`: gives the context of tabular inside the block.
+
+### Autocompletion modes
+_Since b0.11.3_
+
+You can choose between three autocompletion modes in <ui-path>File | Settings | Languages & Frameworks | TeXiFy</ui-path>:
+* **Smart**(default): context-aware autocompletion as described above, showing only commands and environments that are included in the document and applicable in the current context.
+* **Included only**: shows all commands and environments from packages that are included in the document, but without context-awareness.
+* **All**: shows all commands and environments from all installed packages (can be very slow), without context-awareness.
+
+
+## Autocompletion of labels, references, citations and more
+
+TeXiFy can autocomplete labels, references and citations.
+When you type `\ref{}` or `\cite{}`, TeXiFy will suggest labels and citation keys that are defined in your project.
+
+![label-autocompletion.png](label-autocompletion.png)
+
+### Custom commands
+_Since b0.11.3_
+
+For custom commands that take labels, references or citations as parameters, TeXiFy will also suggest the appropriate keys.
+
+![label-autocompletion-ctx1](label-autocompletion-ctx1.png)
+
+![label-autocompletion-ctx2](label-autocompletion-ctx2.png)
+
+![label-autocompletion-ctx3](label-autocompletion-ctx3.png)
 
 
 ## Inserting \item in itemize environments

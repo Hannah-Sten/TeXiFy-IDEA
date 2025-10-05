@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.lang.commands
 
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSMATH
+import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSTHM
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.BIBLATEX
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.CLEVEREF
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.COLOR
@@ -29,7 +30,8 @@ enum class LatexGenericRegularCommand(
     override val dependency: LatexPackage = LatexPackage.DEFAULT,
     override val display: String? = null,
     override val isMathMode: Boolean = false,
-    val collapse: Boolean = false
+    val collapse: Boolean = false,
+    override val commandWithSlash: String = "\\$command",
 ) : LatexCommand {
 
     ADDTOCOUNTER("addtocounter", "countername".asRequired(), "value".asRequired()),
@@ -248,6 +250,7 @@ enum class LatexGenericRegularCommand(
     PRINTNOIDXGLOSSARIES("printnoidxglossaries", dependency = GLOSSARIES),
     PROVIDESCLASS("ProvidesClass"),
     PROVIDESPACKAGE("ProvidesPackage"),
+    QEDHERE("qedhere", dependency = AMSTHM),
     R("r", display = "˚ (accent)"),
     RBRACK("rbrack", display = "]"),
     RPAREN("rparen", display = ")", dependency = MATHTOOLS),

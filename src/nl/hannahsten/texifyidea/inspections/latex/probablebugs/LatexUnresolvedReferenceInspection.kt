@@ -4,85 +4,74 @@ import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.util.TextRange
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.index.DefinitionBundle
+import nl.hannahsten.texifyidea.index.LatexProjectStructure
+import nl.hannahsten.texifyidea.index.NewBibtexEntryIndex
+import nl.hannahsten.texifyidea.inspections.AbstractTexifyContextAwareInspection
 import nl.hannahsten.texifyidea.inspections.InsightGroup
-import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
+import nl.hannahsten.texifyidea.lang.LContextSet
+import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
-import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.files.commandsInFile
-import nl.hannahsten.texifyidea.util.labels.findLatexAndBibtexLabelStringsInFileSet
-import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.magic.cmd
-import nl.hannahsten.texifyidea.util.parser.firstParentOfType
-import java.lang.Integer.max
+import nl.hannahsten.texifyidea.psi.LatexParameter
+import nl.hannahsten.texifyidea.psi.contentText
+import nl.hannahsten.texifyidea.reference.LatexLabelParameterReference
 import java.util.*
 
 /**
  * @author Hannah Schellekens
  */
-open class LatexUnresolvedReferenceInspection : TexifyInspectionBase() {
-
-    override val inspectionGroup = InsightGroup.LATEX
-
-    override val inspectionId = "UnresolvedReference"
+class LatexUnresolvedReferenceInspection : AbstractTexifyContextAwareInspection(
+    inspectionId = "UnresolvedReference",
+    inspectionGroup = InsightGroup.LATEX,
+    applicableContexts = setOf(LatexContexts.LabelReference, LatexContexts.CitationReference),
+    excludedContexts = setOf(LatexContexts.InsideDefinition, LatexContexts.Preamble),
+    skipChildrenInContext = setOf(LatexContexts.Comment, LatexContexts.InsideDefinition)
+) {
 
     override val outerSuppressionScopes = EnumSet.of(MagicCommentScope.COMMAND, MagicCommentScope.GROUP)!!
 
-    override fun getDisplayName() = "Unresolved reference"
+    override fun isAvailableForFile(file: PsiFile): Boolean {
+        // If the project filesets are not available, we do not inspect the file.
+        return LatexProjectStructure.isProjectFilesetsAvailable(file.project) && super.isAvailableForFile(file)
+    }
 
-    override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        val descriptors = descriptorList()
+    override fun shouldInspectChildrenOf(element: PsiElement, state: LContextSet, lookup: LatexSemanticsLookup): Boolean {
+        // inspect only the commands that can be references
+        return LatexContexts.LabelReference !in state
+    }
 
-        val labels = file.findLatexAndBibtexLabelStringsInFileSet()
-        val commands = file.commandsInFile()
-
-        for (command in commands) {
-            if (!CommandMagic.reference.contains(command.name)) {
-                continue
-            }
-
-            // Don't resolve references in command definitions, as in \cite{#1} the #1 is not a reference
-            if (command.parent?.firstParentOfType(LatexCommands::class)?.name in CommandMagic.commandDefinitionsAndRedefinitions) {
-                continue
-            }
-
-            val required = command.getRequiredParameters()
-            if (required.isEmpty()) {
-                continue
-            }
-
-            val parts = required[0].split(",")
-            for (i in parts.indices) {
-                val part = parts[i]
-                if (part == "*") continue
-
-                // The cleveref package allows empty items to customize enumerations
-                if (part.isEmpty() && (command.name == LatexGenericRegularCommand.CREF.cmd || command.name == LatexGenericRegularCommand.CREF_CAPITAL.cmd)) continue
-
-                // If there is no label with this required label parameter value
-                if (!labels.contains(part.trim())) {
-                    // We have to subtract from the total length, because we do not know whether optional
-                    // parameters were included with [a][b][c] or [a,b,c] in which case the
-                    // indices of the parts are different with respect to the start of the command
-                    var offset = command.textLength - parts.sumOf { it.length + 1 }
-                    for (j in 0 until i) {
-                        offset += parts[j].length + 1
-                    }
-
-                    descriptors.add(
-                        manager.createProblemDescriptor(
-                            command,
-                            TextRange.from(max(offset, 0), part.length),
-                            "Unresolved reference '$part'",
-                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                            isOntheFly
-                        )
-                    )
+    override fun inspectElement(element: PsiElement, contexts: LContextSet, bundle: DefinitionBundle, file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {
+        if (element !is LatexParameter) return
+        if (!isApplicableInContexts(contexts)) return
+        val parts = element.contentText().split(",")
+        var offset = 1 // account for {[(
+        for (part in parts) {
+            val label = part.trim()
+            run {
+                if (label.isEmpty() || label == "*") {
+                    return@run
                 }
+                if (LatexLabelParameterReference.isLabelDefined(label, file)) {
+                    return@run
+                }
+                if (NewBibtexEntryIndex.existsByNameInFileSet(label, file)) {
+                    return@run
+                }
+                val labelOffset = part.indexOfFirst { !it.isWhitespace() }
+                descriptors.add(
+                    manager.createProblemDescriptor(
+                        element,
+                        TextRange.from(offset + labelOffset, label.length),
+                        "Unresolved reference '$label'",
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                        isOnTheFly
+                    )
+                )
             }
+            offset += part.length + 1
         }
-
-        return descriptors
     }
 }

@@ -6,7 +6,7 @@ import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockkObject
 import io.mockk.unmockkAll
-import nl.hannahsten.texifyidea.configureByFilesWithMockCache
+import nl.hannahsten.texifyidea.configureByFilesAndBuildFilesets
 import nl.hannahsten.texifyidea.remotelibraries.RemoteLibraryManager
 import nl.hannahsten.texifyidea.remotelibraries.state.BibtexEntryListConverter
 import nl.hannahsten.texifyidea.remotelibraries.state.LibraryState
@@ -106,12 +106,12 @@ class BibtexIdRemoteLibraryCompletionTest : BasePlatformTestCase() {
             mockkObject(RemoteLibraryManager)
             every { RemoteLibraryManager.getInstance().getLibraries() } returns mutableMapOf("aaa" to LibraryState("mocked", ZoteroLibrary::class.java, BibtexEntryListConverter().fromString(remoteBib), "test url"))
 
-            myFixture.configureByFilesWithMockCache("$path/before.tex", "$path/bibtex_before.bib")
+            myFixture.configureByFilesAndBuildFilesets("$path/before.tex", "$path/bibtex_before.bib")
 
             myFixture.complete(CompletionType.BASIC)
             // TODO(TEX-213) Fix tests using file set cache
-//            myFixture.checkResultByFile("$path/before.tex", "$path/after.tex", true)
-//            myFixture.checkResultByFile("$path/bibtex_before.bib", "$path/bibtex_after.bib", true)
+            myFixture.checkResultByFile("$path/before.tex", "$path/after.tex", true)
+            myFixture.checkResultByFile("$path/bibtex_before.bib", "$path/bibtex_after.bib", true)
         }
         finally {
             clearAllMocks()

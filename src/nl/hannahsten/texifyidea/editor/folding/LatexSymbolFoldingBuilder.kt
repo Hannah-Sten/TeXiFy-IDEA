@@ -10,15 +10,17 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.TokenSet
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.psi.LatexTypes.NORMAL_TEXT_WORD
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.forEachChildTyped
 import nl.hannahsten.texifyidea.util.shiftRight
 import nl.hannahsten.texifyidea.util.toTextRange
 
 /**
  * Folding symbols that are not escaped, like en dashes.
- * Similar to [LatexEscapedSymbolFoldingBuilder].
  */
 class LatexSymbolFoldingBuilder : FoldingBuilderEx(), DumbAware {
+
+    val dashRegex = "-{2,}".toRegex()
+    val tokenFilter = TokenSet.create(NORMAL_TEXT_WORD)
 
     override fun isCollapsedByDefault(node: ASTNode) = LatexCodeFoldingSettings.getInstance().foldSymbols
 
@@ -27,18 +29,17 @@ class LatexSymbolFoldingBuilder : FoldingBuilderEx(), DumbAware {
     override fun buildFoldRegions(root: PsiElement, document: Document, quick: Boolean): Array<FoldingDescriptor> {
         val group = FoldingGroup.newGroup("SymbolFoldingGroup")
         val file = root.containingFile
-
         // Fold all hyphens in the document
-        return file.childrenOfType<LatexNormalText>().flatMap { it.node.getChildren(TokenSet.create(NORMAL_TEXT_WORD)).toSet() }
-            .filter { "--" in it.text }
-            .flatMap { node ->
-                val text = node.text
-                "-{2,}".toRegex().findAll(text).map {
-                    val range = it.range.shiftRight(node.startOffset).toTextRange()
-                    FoldingDescriptor(node, range, group, getPlaceholderText(it.value))
+        val descriptors = mutableListOf<FoldingDescriptor>()
+        file.forEachChildTyped<LatexNormalText> {
+            for (child in it.node.getChildren(tokenFilter)) {
+                dashRegex.findAll(child.text).forEach { matchResult ->
+                    val range = matchResult.range.shiftRight(child.startOffset).toTextRange()
+                    descriptors.add(FoldingDescriptor(child, range, group, getPlaceholderText(matchResult.value)))
                 }
             }
-            .toTypedArray()
+        }
+        return descriptors.toTypedArray()
     }
 
     private fun getPlaceholderText(string: String): String {

@@ -3,12 +3,10 @@ package nl.hannahsten.texifyidea.refactoring.inlinecommand
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiUtilBase.getElementAtCaret
+import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.Log
-import nl.hannahsten.texifyidea.util.files.referencedFileSet
-import nl.hannahsten.texifyidea.util.getCommandsInFiles
 import nl.hannahsten.texifyidea.util.parser.*
 
 /**
@@ -33,7 +31,7 @@ class LatexInlineCommandHandler : LatexInlineHandler() {
             project,
             inlineCommand,
             myReference,
-            editor != null && inlineCommand.firstChildOfType(LatexCommands::class)?.textOffset != myReference?.textOffset
+            editor != null && inlineCommand.findFirstChildOfType(LatexCommands::class)?.textOffset != myReference?.textOffset
         )
 
         showDialog(dialog, inlineCommand.name ?: "", project)
@@ -53,9 +51,7 @@ class LatexInlineCommandHandler : LatexInlineHandler() {
                 return false
 
             val file = element.containingFile
-            val files: MutableSet<PsiFile> = HashSet(file.referencedFileSet())
-
-            val cmds = getCommandsInFiles(files, file)
+            val cmds = NewSpecialCommandsIndex.getAllCommandDefInFileset(file)
 
             val candiateUserCommands = cmds.filter { it.isDefinition() && !it.isEnvironmentDefinition() }
 
@@ -68,9 +64,8 @@ class LatexInlineCommandHandler : LatexInlineHandler() {
 
         fun resolveInlineCommandDefinition(element: PsiElement): LatexCommands? {
             val file = element.containingFile
-            val files: MutableSet<PsiFile> = HashSet(file.referencedFileSet())
 
-            val cmds = getCommandsInFiles(files, file)
+            val cmds = NewSpecialCommandsIndex.getAllCommandDefInFileset(file)
 
             val candiateUserCommands = cmds.filter { it.isDefinition() && !it.isEnvironmentDefinition() }
 

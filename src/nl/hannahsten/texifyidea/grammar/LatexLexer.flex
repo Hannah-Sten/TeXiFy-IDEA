@@ -73,7 +73,7 @@ CLOSE_BRACE="}"
 OPEN_PAREN="("
 CLOSE_PAREN=")"
 
-SINGLE_WHITE_SPACE=[ \t\n\x0B\f\r]
+SINGLE_WHITE_SPACE=[ \t\n\x0B\f\r ]
 WHITE_SPACE={SINGLE_WHITE_SPACE}+
 
 // Commands
@@ -92,6 +92,8 @@ NEWDOCUMENTENVIRONMENT=\\(New|Renew|Provide|Declare)DocumentEnvironment
 // These are separate to support formatting
 LEFT=\\left
 RIGHT=\\right
+// These commands can ocur in math but switch to text mode
+TEXT_IN_MATH_COMMAND=\\text | \\hbox
 
 // Verbatim commands which will be delimited by the same character
 // \path from the 'path' package
@@ -138,7 +140,7 @@ ELSE=\\else
 END_IFS=\\fi
 
 %states INLINE_MATH INLINE_MATH_LATEX DISPLAY_MATH TEXT_INSIDE_INLINE_MATH NESTED_INLINE_MATH PARTIAL_DEFINITION ENVIRONMENT_INSIDE_INLINE_MATH
-%states NEW_ENVIRONMENT_DEFINITION_NAME NEW_ENVIRONMENT_DEFINITION NEW_ENVIRONMENT_SKIP_BRACE NEW_ENVIRONMENT_DEFINITION_END NEW_DOCUMENT_ENV_DEFINITION_NAME NEW_DOCUMENT_ENV_DEFINITION_ARGS_SPEC NEW_COMMAND_DEFINITION_PARAM1 NEW_COMMAND_DEFINITION_PARAM2
+%states NEW_ENVIRONMENT_DEFINITION_NAME NEW_ENVIRONMENT_DEFINITION NEW_ENVIRONMENT_DEFINITION_END NEW_DOCUMENT_ENV_DEFINITION_NAME NEW_DOCUMENT_ENV_DEFINITION_ARGS_SPEC NEW_COMMAND_DEFINITION_PARAM1 NEW_COMMAND_DEFINITION_PARAM2
 
 // latex3 has some special syntax
 %states LATEX3
@@ -383,6 +385,7 @@ END_IFS=\\fi
 }
 
 // We are visiting a second parameter of a \newenvironment definition, so we need to keep track of braces
+// TODO: the original hack is counter-intuitive and make it hard for parsing definitions,
 // The idea is that we will skip the }{ separating the second and third parameter, so that the \begin and \end of the
 // environment to be defined will not appear in a separate group
 // Include possible verbatim begin state, because after a \begin we are in that state (and we cannot leave it because we might be needing to start a verbatim environment)
@@ -392,23 +395,25 @@ END_IFS=\\fi
     {CLOSE_BRACE}      {
         newEnvironmentBracesNesting--;
         if(newEnvironmentBracesNesting == 0) {
-            yypopState(); yypushState(NEW_ENVIRONMENT_SKIP_BRACE);
+            yypopState(); yypushState(NEW_ENVIRONMENT_DEFINITION_END);
             // We could have returned normal text, but in this way the braces still match
-            return OPEN_BRACE;
+            return CLOSE_BRACE;
         } else {
             return CLOSE_BRACE;
         }
     }
+    {BEGIN_TOKEN}       { return COMMAND_TOKEN; }
+    {END_TOKEN}         { return COMMAND_TOKEN; }
     // To avoid changing state and thus tripping over the not matching group }{ in the middle, catch characters here which would otherwise change state
-    "\\["               { return DISPLAY_MATH_START; }
-    "\\]"               { return DISPLAY_MATH_END; }
+    "\\["               { return NORMAL_TEXT_WORD; }
+    "\\]"               { return NORMAL_TEXT_WORD; }
     "$"                 { return NORMAL_TEXT_WORD; }
 }
 
-// Skip the next open brace of the third parameter, just as we skipped the close brace of the second
-<NEW_ENVIRONMENT_SKIP_BRACE> {
-    {OPEN_BRACE}        { yypopState(); newEnvironmentBracesNesting = 1; yypushState(NEW_ENVIRONMENT_DEFINITION_END); return CLOSE_BRACE; }
-}
+//// Skip the next open brace of the third parameter, just as we skipped the close brace of the second
+//<NEW_ENVIRONMENT_SKIP_BRACE> {
+//    {OPEN_BRACE}        { yypopState(); newEnvironmentBracesNesting = 1; yypushState(NEW_ENVIRONMENT_DEFINITION_END); return CLOSE_BRACE; }
+//}
 
 // In the third parameter, still skip the state-changing characters
 <NEW_ENVIRONMENT_DEFINITION_END> {
@@ -420,8 +425,10 @@ END_IFS=\\fi
         }
         return CLOSE_BRACE;
     }
-    "\\["               { return DISPLAY_MATH_START; }
-    "\\]"               { return DISPLAY_MATH_END; }
+    {BEGIN_TOKEN}       { return COMMAND_TOKEN; }
+    {END_TOKEN}         { return COMMAND_TOKEN; }
+    "\\["               { return NORMAL_TEXT_WORD; }
+    "\\]"               { return NORMAL_TEXT_WORD; }
     "$"                 { return NORMAL_TEXT_WORD; }
 }
 
@@ -439,6 +446,14 @@ END_IFS=\\fi
     // It is common to have an unmatches \begin or \end in a \newcommand, so ignore them
     {BEGIN_TOKEN}       { return COMMAND_TOKEN; }
     {END_TOKEN}         { return COMMAND_TOKEN; }
+    // Command may be defined without braces
+    {COMMAND_TOKEN}     {
+        if(newCommandBracesNesting == 0) {
+          yypopState();
+          yypushState(NEW_COMMAND_DEFINITION_PARAM2);
+        }
+        return COMMAND_TOKEN;
+    }
 }
 
 <NEW_COMMAND_DEFINITION_PARAM2> {
@@ -476,7 +491,7 @@ END_IFS=\\fi
     "$"                 { yypopState(); return INLINE_MATH_END; }
     // When already in inline math, when encountering a \text command we need to switch out of the math state
     // because if we encounter another $, then it will be an inline_math_start, not an inline_math_end
-    \\text              { yypushState(TEXT_INSIDE_INLINE_MATH); return COMMAND_TOKEN; }
+    {TEXT_IN_MATH_COMMAND} { yypushState(TEXT_INSIDE_INLINE_MATH); return COMMAND_TOKEN; }
     // Similarly, environments like cases* from mathtools have text as their second column, which can have inline math
     // We cannot use a single token for inline math start and end because the parser will try to parse the one that should be an 'end' as a 'start'
     // Therefore, to make sure that we cannot have a START \begin{cases*} END ... START \end{cases*} END, we use a separate state

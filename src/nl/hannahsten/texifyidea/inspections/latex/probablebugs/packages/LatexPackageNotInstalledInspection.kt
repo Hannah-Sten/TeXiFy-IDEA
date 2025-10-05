@@ -14,7 +14,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPointerManager
 import com.intellij.psi.SmartPsiElementPointer
-import nl.hannahsten.texifyidea.index.LatexDefinitionIndex
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
@@ -25,9 +25,7 @@ import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
 import nl.hannahsten.texifyidea.util.TexLivePackages
 import nl.hannahsten.texifyidea.util.files.rerunInspections
 import nl.hannahsten.texifyidea.util.magic.cmd
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
-import nl.hannahsten.texifyidea.util.projectSearchScope
+import nl.hannahsten.texifyidea.util.parser.traverseTyped
 import nl.hannahsten.texifyidea.util.runCommand
 import java.util.*
 
@@ -65,45 +63,37 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
         }
 
         val installedPackages = TexLivePackages.packageList ?: return descriptors
-        val customPackages = LatexDefinitionIndex.Util.getCommandsByName(
-            LatexGenericRegularCommand.PROVIDESPACKAGE.cmd, file.project,
-            file.project
-                .projectSearchScope
-        )
-            .map { it.requiredParameter(0) }
+        val customPackages = NewCommandsIndex.getByName(LatexGenericRegularCommand.PROVIDESPACKAGE.cmd, file.project)
+            .map { it.requiredParameterText(0) }
             .mapNotNull { it?.lowercase(Locale.getDefault()) }
         val packages = installedPackages + customPackages
 
-        val commands = file.childrenOfType(LatexCommands::class)
+        val commands = file.traverseTyped<LatexCommands>()
             .filter { it.name == LatexGenericRegularCommand.USEPACKAGE.cmd || it.name == LatexGenericRegularCommand.REQUIREPACKAGE.cmd }
 
         for (command in commands) {
-            @Suppress("ktlint:standard:property-naming")
-            val `package` = command.getRequiredParameters().firstOrNull()?.lowercase(Locale.getDefault()) ?: continue
-            if (`package` !in packages) {
-                // Use the cache or check if the file reference resolves (in the same way we resolve for the gutter icon).
-                if (
-                    knownNotInstalledPackages.contains(`package`) ||
-                    command.references.filterIsInstance<InputFileReference>().mapNotNull { it.resolve() }.isEmpty()
-                ) {
+            val references = InputFileReference.getFileArgumentsReferences(command)
+            for (ref in references) {
+                val pack = ref.refText
+                if(pack in packages) continue
+                if(knownNotInstalledPackages.contains(pack) && ref.resolve() == null) {
                     descriptors.add(
                         manager.createProblemDescriptor(
                             command,
                             "Package is not installed or \\ProvidesPackage is missing",
                             InstallPackage(
                                 SmartPointerManager.getInstance(file.project).createSmartPsiElementPointer(file),
-                                `package`,
+                                pack,
                                 knownNotInstalledPackages
                             ),
                             ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                             isOntheFly
                         )
                     )
-                    knownNotInstalledPackages.add(`package`)
-                }
-                else {
+                    knownNotInstalledPackages.add(pack)
+                } else {
                     // Apparently the package is installed, but was not found initially by the TexLivePackageListInitializer (for example stackrel, contained in the oberdiek bundle)
-                    installedPackages.add(`package`)
+                    installedPackages.add(pack)
                 }
             }
         }

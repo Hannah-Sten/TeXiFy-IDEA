@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.util.parser
 
-import com.intellij.openapi.application.runReadAction
 import com.intellij.patterns.PatternCondition
 import com.intellij.patterns.PsiElementPattern
 import com.intellij.psi.PsiComment
@@ -12,8 +11,6 @@ import com.intellij.psi.util.nextLeaf
 import com.intellij.util.ProcessingContext
 import nl.hannahsten.texifyidea.grammar.BibtexLanguage
 import nl.hannahsten.texifyidea.grammar.LatexLanguage
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment
-import nl.hannahsten.texifyidea.lang.Environment
 import nl.hannahsten.texifyidea.lang.magic.TextBasedMagicCommentParser
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.files.document
@@ -28,72 +25,6 @@ fun PsiElement.endOffset(): Int = textOffset + textLength
 fun PsiElement.lineNumber(): Int? = containingFile.document()?.getLineNumber(textOffset)
 
 /**
- *
- * Do not use this method due to performance issues.
- *
- * Think of better ways to get the children of a certain type, or at least filter the children before collecting them.
- *
- * @see [PsiTreeUtil.getChildrenOfType]
- */
-@Deprecated("Poor performance, consider add more filtering. ", replaceWith = ReplaceWith("collectSubtree { it -> it is T }"))
-fun <T : PsiElement> PsiElement.childrenOfType(clazz: KClass<T>): Collection<T> {
-    // TODO: Performance, as it traverses the whole tree and also run read action.
-    return runReadAction {
-        if (!this.isValid || project.isDisposed) {
-            emptyList()
-        }
-        else {
-            PsiTreeUtil.findChildrenOfType(this, clazz.java)
-        }
-    }
-}
-
-/**
- * @see [PsiTreeUtil.getChildrenOfType]
- */
-inline fun <reified T : PsiElement> PsiElement.childrenOfType(): Collection<T> = childrenOfType(T::class)
-
-/**
- * Finds the first element that matches a given predicate.
- */
-@Suppress("UNCHECKED_CAST")
-fun <T : PsiElement> PsiElement.findFirstChild(predicate: (PsiElement) -> Boolean): T? {
-    for (child in children) {
-        if (predicate(this)) {
-            return this as? T
-        }
-
-        val first = child.findFirstChild<T>(predicate)
-        if (first != null) {
-            return first
-        }
-    }
-
-    return null
-}
-
-/**
- * Finds the first child of a certain type.
- */
-@Suppress("UNCHECKED_CAST")
-fun <T : PsiElement> PsiElement.firstChildOfType(clazz: KClass<T>): T? {
-    // we should not runReadAction
-    val children = runReadAction { this.children }
-    for (child in children) {
-        if (clazz.java.isAssignableFrom(child.javaClass)) {
-            return child as? T
-        }
-
-        val first = child.firstChildOfType(clazz)
-        if (first != null) {
-            return first
-        }
-    }
-
-    return null
-}
-
-/**
  * Finds the first parent of a certain type.
  */
 @Suppress("UNCHECKED_CAST")
@@ -102,18 +33,6 @@ fun <T : PsiElement> PsiElement.firstParentOfType(clazz: KClass<T>): T? {
     while (current != null) {
         if (clazz.java.isAssignableFrom(current.javaClass)) {
             return current as? T
-        }
-        current = current.parent?.let { if (it.isValid) it else null }
-    }
-    return null
-}
-
-// Kotlin version of the above
-inline fun <reified T : PsiElement> PsiElement.firstParentOfType(): T? {
-    var current: PsiElement? = this
-    while (current != null) {
-        if (current is T) {
-            return current
         }
         current = current.parent?.let { if (it.isValid) it else null }
     }
@@ -148,17 +67,6 @@ fun <T : PsiElement> PsiElement.parentOfType(clazz: KClass<T>): T? = PsiTreeUtil
  * Checks if the psi element has a parent of a given class.
  */
 fun <T : PsiElement> PsiElement.hasParent(clazz: KClass<T>): Boolean = parentOfType(clazz) != null
-
-/**
- * Checks if the psi element is in a direct math context or not.
- */
-fun PsiElement.inDirectMathContext(): Boolean =
-    hasParent(LatexMathContent::class)
-        || hasParent(LatexDisplayMath::class)
-        || hasParent(LatexMathEnvironment::class)
-        || hasParent(LatexInlineMath::class)
-        || inDirectEnvironmentContext(Environment.Context.MATH)
-// TODO: performance
 
 /**
  * Returns the outer math environment.
@@ -316,7 +224,7 @@ val commandTokens = setOf(LatexTypes.COMMAND_TOKEN, LatexTypes.LEFT, LatexTypes.
  * Checks whether the psi element is part of a comment or not.
  */
 fun PsiElement.isComment(): Boolean {
-    return this is PsiComment || inDirectEnvironmentContext(Environment.Context.COMMENT)
+    return this is PsiComment // TODO: use new context aware functionalities but reuse the resolved context, don't resolve here
 }
 
 fun PsiElement.isLatexOrBibtex() = language == LatexLanguage || language == BibtexLanguage
@@ -326,17 +234,19 @@ fun PsiElement.isLatexOrBibtex() = language == LatexLanguage || language == Bibt
  *
  * This method does not take nested environments into account. Meaning that only the first parent environment counts.
  */
-fun PsiElement.inDirectEnvironment(environmentName: String): Boolean = inDirectEnvironment(listOf(environmentName))
+fun PsiElement.inDirectEnvironment(environmentName: String): Boolean {
+    val environment = parentOfType(LatexEnvironment::class) ?: return false
+    return environment.getEnvironmentName() == environmentName
+}
 
 /**
  * Checks if the element is one of certain direct environments.
  *
  * This method does not take nested environments into account. Meaning that only the first parent environment counts.
  */
-fun PsiElement.inDirectEnvironment(validNames: Collection<String>): Boolean {
+fun PsiElement.inDirectEnvironment(validNames: Set<String>): Boolean {
     val environment = parentOfType(LatexEnvironment::class) ?: return false
-    val nameText = environment.name() ?: return false
-    return nameText.text in validNames
+    return environment.getEnvironmentName() in validNames
 }
 
 /**
@@ -362,46 +272,6 @@ fun PsiElement.isChildOf(parent: PsiElement?): Boolean {
     }
 
     return hasParentMatching(1000) { it == parent }
-}
-
-/**
- * Checks if the psi element has a direct environment with the given context.
- */
-fun PsiElement.inDirectEnvironmentContext(context: Environment.Context): Boolean {
-    val environment = parentOfType(LatexEnvironment::class) ?: return context == Environment.Context.NORMAL
-    return inDirectEnvironmentMatching {
-        DefaultEnvironment.fromPsi(environment)?.context == context
-    }
-}
-
-/**
- * Performs the given [action] on each child, in order.
- */
-inline fun PsiElement.forEachChild(action: (PsiElement) -> Unit) {
-    for (child in children) action(child)
-}
-
-/**
- * Performs the given [action] on each child of the given type `Psi`, in order.
- */
-inline fun <reified Psi : PsiElement> PsiElement.forEachChildOfType(action: (PsiElement) -> Unit) = forEachChild {
-    if (it is Psi) {
-        action(it)
-    }
-}
-
-/**
- * Finds the `n`th (index) child of the given type.
- */
-inline fun <reified ChildPsi : PsiElement> PsiElement.nthChildOfType(index: Int): ChildPsi? {
-    var pointer = 0
-    forEachChildOfType<ChildPsi> {
-        if (pointer == index) {
-            return it as ChildPsi
-        }
-        pointer++
-    }
-    return null
 }
 
 /**
@@ -495,7 +365,7 @@ inline fun <reified PsiChild : PsiElement, reified PsiParent : PsiElement> PsiCh
 
     // Loop over all children to find this parameter.
     var currentIndex = 0
-    parentElement.forEachChildOfType<PsiChild> {
+    parentElement.forEachDirectChildTyped<PsiChild> {
         if (it == this) {
             return currentIndex
         }

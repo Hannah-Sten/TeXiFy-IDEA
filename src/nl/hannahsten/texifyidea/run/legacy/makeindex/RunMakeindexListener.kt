@@ -7,6 +7,7 @@ import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.io.FileUtil
 import nl.hannahsten.texifyidea.lang.LatexPackage
@@ -17,7 +18,7 @@ import nl.hannahsten.texifyidea.run.step.getDefaultMakeindexPrograms
 import nl.hannahsten.texifyidea.run.step.getMakeindexOptions
 import nl.hannahsten.texifyidea.util.appendExtension
 import nl.hannahsten.texifyidea.util.files.psiFile
-import nl.hannahsten.texifyidea.util.includedPackages
+import nl.hannahsten.texifyidea.util.includedPackagesInFileset
 import nl.hannahsten.texifyidea.util.magic.FileMagic
 import java.io.File
 import java.io.FileNotFoundException
@@ -111,7 +112,7 @@ class RunMakeindexListener(
         val runManager = RunManagerImpl.getInstanceImpl(environment.project)
 
         val usedPackages = runReadAction {
-            latexRunConfig.options.mainFile.resolve()?.psiFile(environment.project)?.includedPackages() ?: emptySet()
+            latexRunConfig.options.mainFile.resolve()?.psiFile(environment.project)?.includedPackagesInFileset() ?: emptySet()
         }
         val mainFile = latexRunConfig.options.mainFile.resolve()
         val indexPrograms = getDefaultMakeindexPrograms(mainFile, environment.project, usedPackages)

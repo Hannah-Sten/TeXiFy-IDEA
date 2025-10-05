@@ -32,7 +32,7 @@ object LatexMagicCommentKeyProvider : CompletionProvider<CompletionParameters>()
     /**
      * @author Hannah Schellekens
      */
-    object InsertHandler : com.intellij.codeInsight.completion.InsertHandler<LookupElement> {
+    private object InsertHandler : com.intellij.codeInsight.completion.InsertHandler<LookupElement> {
 
         override fun handleInsert(context: InsertionContext, item: LookupElement) {
             val editor = context.editor

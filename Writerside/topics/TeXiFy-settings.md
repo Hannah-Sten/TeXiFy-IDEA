@@ -166,6 +166,18 @@ _Since b0.6.8_
 
 See [Support for automatic compilation](Running-a-LaTeX-file.md#automatic-compilation).
 
+## Fileset refresh period
+_Since b0.11.0_
+
+TeXiFy IDEA builds and maintains a fileset of all files that are input to a main file so that the commands and references can be resolved correctly.
+This setting allows you to configure how often this fileset is refreshed automatically.
+The default is 2 seconds.
+
+If you find that TeXiFy is slow in responding to commands such as `\usepackage` or `\input`,
+you can reduce the refresh period, but it may increase the load.
+
+You can also manually refresh the fileset using the action <ui-path>Tools | LaTeX | Refresh Fileset</ui-path>.
+
 ## Conventions
 These settings can be found in <ui-path>File | Settings | Languages & Frameworks | TeXiFy | Conventions</ui-path> and allow you to configure Latex code conventions that apply either globally or for the current project.
 

@@ -8,7 +8,9 @@ import com.intellij.psi.PsiFileFactory
 import com.intellij.refactoring.BaseRefactoringProcessor.ConflictsInTestsException
 import com.intellij.refactoring.inline.InlineOptions
 import com.intellij.testFramework.LightPlatformCodeInsightTestCase
+import com.intellij.testFramework.common.timeoutRunBlocking
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.refactoring.inlinecommand.LatexInlineCommandHandler.Util.getReference
 import nl.hannahsten.texifyidea.refactoring.inlinefile.LatexInlineFileHandler.Util.canInlineLatexElement
 import nl.hannahsten.texifyidea.refactoring.inlinefile.LatexInlineFileHandler.Util.resolveInlineFile
@@ -16,6 +18,7 @@ import nl.hannahsten.texifyidea.refactoring.inlinefile.LatexInlineFileProcessor
 import nl.hannahsten.texifyidea.util.runWriteAction
 import org.jetbrains.annotations.NonNls
 import java.io.File
+import kotlin.time.Duration.Companion.seconds
 
 class InlineFileTest : LightPlatformCodeInsightTestCase() {
 
@@ -139,6 +142,9 @@ class InlineFileTest : LightPlatformCodeInsightTestCase() {
                     )
                 )
             }
+        }
+        timeoutRunBlocking(1.seconds) {
+            LatexProjectStructure.updateFilesetsSuspend(project)
         }
         return fileName
     }

@@ -36,7 +36,7 @@ class LatexSectionIndentTest : BasePlatformTestCase() {
         CodeStyle.getCustomSettings(file, LatexCodeStyleSettings::class.java).INDENT_SECTIONS = true
         val expected = """
             \section{test}
-                This ${'$'}\xi${'$'} block does not
+                This $\xi$ block does not
                 start on a newline.
         """.trimIndent()
         writeCommand(project) { CodeStyleManager.getInstance(project).reformat(myFixture.file) }

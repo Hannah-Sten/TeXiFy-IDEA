@@ -6,6 +6,74 @@ This beta release contains a completely new LaTeX run configuration. However, cu
 
 ### Added
 
+### Fixed
+
+## [0.11.3] - 2025-09-14
+
+Welcome to TeXiFy IDEA 0.11.3! For this release, @Ezrnest has (re-)added a much improved support for custom command definitions (using \newcommand etc), including showing the parameter context in autocompletion.
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
+
+### Added
+
+* The context of commands and environments (math, reference, etc) is now also supported for custom defined commands, by @Ezrnest
+* Seperate arguments can even have different contexts, by @Ezrnest
+* This context is now also shown in the autocompletion, by @Ezrnest
+* Fix many issues related to custom command definitions, by @Ezrnest
+* Improvements to predefined command and environment definitions, by @Ezrnest
+* Add support for acronym package to missing aronym references inspection
+* Automatically reload pdf when using latexmk continuous update
+* Support no-break space character in parser
+* Add support for multiple paths (comma-separated) in TEXMFHOME environment variables
+
+## [0.11.2] - 2025-08-10
+
+Welcome to TeXiFy IDEA 0.11.2! This release fixes a few exceptions introduced in the previous release.
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
+
+### Fixed
+
+* Fix exception #4160 when using a tool window in non-IntelliJ IDEs
+* Fix exceptions when using a makeindex run configuration
+* Fix an issue with relative paths in graphic insertion wizard
+* Fix exception #4144
+
+## [0.11.1] - 2025-08-04
+
+Welcome to TeXiFy IDEA 0.11.1! This release is a major rewrite of all index-related functionality by @Ezrnest, which massively improves performance. This may have introduced new bugs, so please report any new issue to GitHub.
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
+
+### Added
+
+* Rewrite all index-related functionality to improve performance, by @Ezrnest
+
+### Fixed
+
+* Fix a parser issue when using inline math inside a \hbox inside inline math 
+* Fix a parser issue when using \newcommand without braces
+* Fix a possible UI freeze when an output directory is used with more than 10000 subdirectories
+* Fix a few cases which could freeze the UI.
+* Fix exception when running LaTeX on WSL with PyCharm 2025.1+ 
+* Fix a caching issue when building the file set
+* Fix a rare case where an autocompile rerun would try to start before the previous run finished
+* Fix incorrect slashes in path on Windows after pasting image
+* Fix exceptions #4116, #4129
+
+## [0.10.4] - 2025-07-01
+
+Welcome to TeXiFy IDEA 0.10.4! This release contains a lot of improvements to the performance and to pdf viewers support, contributed by @Ezrnest.
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
+
+### Added
+
+* Improve memory usage, by @Ezrnest
 * Performance improvements for folding, breadcrumbs and more, by @Ezrnest
 * Improve Sumatra installation detection, by @Ezrnest
 * Move Sumatra custom path from run configuration to global settings, by @Ezrnest
@@ -20,11 +88,14 @@ This beta release contains a completely new LaTeX run configuration. However, cu
 
 ### Fixed
 
+* Avoid a possible UI freeze when finding files to index for native TeX Live installations
+* Fix a bug where the documentation popup would not update correctly
+* Fix a few bugs related to the root files cache
 * Fix an issue with the file set cache when opening multiple projects
 * Fix auto compilation not rerunning correctly, by @Ezrnest
 * Fix SumatraPDF forward search not using the correct file, by @Ezrnest
 * Fix extra whitespace when inserting commands in math mode, by @Ezrnest
-* Fix exceptions #4035, #4044, #4058, #4072
+* Fix exceptions #4035, #4044, #4058, #4072, #4074, #4079, #4085, #4086, #4092, #4098 
 * Create run configuration process in background
 
 ## [0.10.3] - 2025-05-16
@@ -596,7 +667,12 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.3...HEAD
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.3...HEAD
+[0.11.3]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.2...v0.11.3
+[0.11.2]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.1...v0.11.2
+[0.11.1]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.4...v0.11.1
+[0.11.0]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.4...v0.11.0
+[0.10.4]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.3...v0.10.4
 [0.10.3]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.2...v0.10.3
 [0.10.2]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.1...v0.10.2
 [0.10.1]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.0...v0.10.1

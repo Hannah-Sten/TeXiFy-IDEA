@@ -1,9 +1,7 @@
 package nl.hannahsten.texifyidea.util.parser
 
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
-import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.nextLeaf
 import nl.hannahsten.texifyidea.lang.alias.CommandManager
@@ -12,7 +10,6 @@ import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
 import nl.hannahsten.texifyidea.lang.commands.OptionalArgument
 import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.lineIndentation
 import nl.hannahsten.texifyidea.util.magic.ColorMagic
@@ -29,15 +26,7 @@ import kotlin.math.min
  */
 fun LatexCommands?.isDefinition() = this != null && this.name in CommandMagic.definitions
 
-/**
- * Checks whether the given LaTeX commands is a color definition or not.
- *
- * @return `true` if the command defines a color, `false` when the command command
- *          is `null` or otherwise.
- */
-fun LatexCommands?.isColorDefinition() = this != null && this.name?.substring(1) in ColorMagic.colorDefinitions.map { it.command }
-
-fun LatexCommands?.usesColor() = this != null && this.name?.substring(1) in ColorMagic.colorCommands
+fun LatexCommands?.usesColor() = this != null && this.name in ColorMagic.colorCommands
 
 /**
  * Checks whether the given LaTeX commands is a (re)definition or not.
@@ -78,13 +67,6 @@ fun LatexCommands.definitionCommand(): LatexCommands? = forcedFirstRequiredParam
 fun LatexCommands.definedCommandName() = definitionCommand()?.name
 
 /**
- * Checks whether the command has a star or not.
- */
-fun LatexCommands.hasStar() = childrenOfType(LeafPsiElement::class).any {
-    it.elementType == LatexTypes.STAR
-}
-
-/**
  * Looks for the next command relative to the given command.
  *
  * @return The next command in the file, or `null` when there is no such command.
@@ -93,7 +75,7 @@ fun LatexCommands.nextCommand(): LatexCommands? {
     val content = parentOfType(LatexNoMathContent::class) ?: return null
     val next = content.nextSiblingIgnoreWhitespace() as? LatexNoMathContent
         ?: return null
-    return next.firstChildOfType(LatexCommands::class)
+    return next.findFirstChildOfType(LatexCommands::class)
 }
 
 /**
@@ -105,7 +87,7 @@ fun PsiElement.previousCommand(): LatexCommands? {
     val content = parentOfType(LatexNoMathContent::class) ?: return null
     val previous = content.previousSiblingIgnoreWhitespace() as? LatexNoMathContent
         ?: return null
-    return previous.firstChildOfType(LatexCommands::class)
+    return previous.findFirstChildOfType(LatexCommands::class)
 }
 
 /**
@@ -113,17 +95,15 @@ fun PsiElement.previousCommand(): LatexCommands? {
  */
 fun LatexCommands.getRequiredArgumentValueByName(argument: String): String? {
     // Find all pre-defined commands that define `this` command.
-    val requiredArgIndices = LatexRegularCommand[
-        name?.substring(1)
-            ?: return null
-    ]
+    val name = this.name ?: return null
+    val requiredArgIndices = LatexRegularCommand.getWithSlash(name)
         // Find the index of their required parameter named [argument].
         ?.map {
             it.arguments.filterIsInstance<RequiredArgument>()
                 .indexOfFirst { arg -> arg.name == argument }
         }
     return if (requiredArgIndices.isNullOrEmpty() || requiredArgIndices.all { it == -1 }) null
-    else getRequiredParameters().getOrNull(min(requiredArgIndices.first(), getRequiredParameters().size - 1))
+    else requiredParametersText().getOrNull(min(requiredArgIndices.first(), requiredParametersText().size - 1))
 }
 
 /**
@@ -157,23 +137,6 @@ fun LatexCommands.isKnown(): Boolean {
 }
 
 /**
- * Get the text contents of the `index+1`th required parameter of the command.
- *
- * @throws IllegalArgumentException When the index is negative.
- */
-@Throws(IllegalArgumentException::class)
-fun LatexCommands.requiredParameter(index: Int): String? {
-    require(index >= 0) { "Index must not be negative" }
-
-    val parameters = getRequiredParameters()
-    if (parameters.isEmpty() || index >= parameters.size) {
-        return null
-    }
-
-    return parameters[index]
-}
-
-/**
  * Finds the indentation of the line where the section command starts.
  */
 fun LatexCommands.findIndentation(): String {
@@ -182,25 +145,6 @@ fun LatexCommands.findIndentation(): String {
     val lineNumber = document.getLineNumber(textOffset)
     return document.lineIndentation(lineNumber)
 }
-
-/**
- * Get files included by this command.
- * @param includeInstalledPackages Whether to include a search for LaTeX packages installed on the system, if applicable for this command.
- */
-fun LatexCommands.getIncludedFiles(includeInstalledPackages: Boolean): List<PsiFile> {
-    return references.filterIsInstance<InputFileReference>()
-        .mapNotNull { it.resolve(includeInstalledPackages) }
-}
-
-/**
- * Looks up all the required parameters of this command.
- *
- * @return A list of all required parameters.
- */
-fun LatexCommands.requiredParameters(): List<LatexRequiredParam> = parameterList.asSequence()
-    .filter { it.requiredParam != null }
-    .mapNotNull(LatexParameter::getRequiredParam)
-    .toList()
 
 /**
  * Returns the forced first required parameter of a command as a command.
@@ -221,7 +165,7 @@ fun LatexCommands.forcedFirstRequiredParameterAsCommand(): LatexCommands? {
 
     // This is just a bit of guesswork about the parser structure.
     // Probably, if we're looking at a \def\mycommand, if the sibling isn't it, probably the parent has a sibling.
-    return nextSibling?.nextSiblingOfType(LatexCommands::class) ?: parent?.nextSiblingIgnoreWhitespace()?.firstChildOfType(LatexCommands::class)
+    return nextSibling?.nextSiblingOfType(LatexCommands::class) ?: parent?.nextSiblingIgnoreWhitespace()?.findFirstChildOfType(LatexCommands::class)
 }
 
 /**
@@ -236,8 +180,3 @@ fun LatexCommands.hasLabel(): Boolean {
     val labelMaybe = this.nextLeaf { it !is PsiWhiteSpace }?.parent as? LatexCommands ?: return false
     return CommandManager.labelAliasesInfo.getOrDefault(labelMaybe.commandToken.text, null)?.labelsPreviousCommand == true
 }
-
-/**
- * Get all [LatexCommands] that are children (direct or indirect) of the given element.
- */
-fun PsiElement.allCommands() = childrenOfType(LatexCommands::class).toList()

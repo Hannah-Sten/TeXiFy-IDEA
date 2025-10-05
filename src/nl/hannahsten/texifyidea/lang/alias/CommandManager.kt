@@ -5,9 +5,7 @@ import nl.hannahsten.texifyidea.lang.LabelingCommandInformation
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.containsAny
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
-import nl.hannahsten.texifyidea.util.parser.requiredParameter
-import nl.hannahsten.texifyidea.util.parser.requiredParameters
+import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 import java.io.Serializable
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -76,7 +74,7 @@ object CommandManager : Iterable<String?>, Serializable, AliasManager() {
      * parameter position mappings between general alias sets is too much overhead for now.
      */
     val labelAliasesInfo: MutableMap<String, LabelingCommandInformation> =
-        CommandMagic.labelDefinitionsWithoutCustomCommands.associateWith {
+        CommandMagic.labels.associateWith {
             LabelingCommandInformation(
                 listOf(0),
                 true
@@ -149,31 +147,31 @@ object CommandManager : Iterable<String?>, Serializable, AliasManager() {
         indexedDefinitions.filter {
             // Assume the parameter definition has the command being defined in the first required parameter,
             // and the command definition itself in the second
-            runReadAction { it.requiredParameter(1)?.containsAny(aliasSet) == true }
+            runReadAction { it.requiredParameterText(1)?.containsAny(aliasSet) == true }
         }
-            .mapNotNull { runReadAction { it.requiredParameter(0) } }
+            .mapNotNull { runReadAction { it.requiredParameterText(0) } }
             .forEach { registerAlias(firstAlias, it) }
 
         // Extract label parameter positions
         // Assumes the predefined label definitions all have the label parameter in the same position
         // For example, in \newcommand{\mylabel}[2]{\section{#1}\label{sec:#2}} we want to parse out the 2 in #2
-        if (aliasSet.intersect(CommandMagic.labelDefinitionsWithoutCustomCommands).isNotEmpty()) {
+        if (aliasSet.intersect(CommandMagic.labels).isNotEmpty()) {
             indexedDefinitions.forEach { commandDefinition ->
                 runReadAction {
-                    val definedCommand = commandDefinition.requiredParameter(0) ?: return@runReadAction
+                    val definedCommand = commandDefinition.requiredParameterText(0) ?: return@runReadAction
                     if (definedCommand.isBlank()) return@runReadAction
 
                     val isFirstParameterOptional = commandDefinition.parameterList.filter { it.optionalParam != null }.size > 1
 
                     val parameterCommands = commandDefinition.requiredParameters().getOrNull(1)
                         ?.requiredParamContentList
-                        ?.flatMap { it.childrenOfType(LatexCommands::class) }
+                        ?.flatMap { it.collectSubtreeTyped<LatexCommands>() }
                         ?.asSequence()
 
                     // Positions of label parameters in the custom commands (starting from 0)
                     val positions = parameterCommands
-                        ?.filter { it.name in CommandMagic.labelDefinitionsWithoutCustomCommands }
-                        ?.mapNotNull { it.requiredParameter(0) }
+                        ?.filter { it.name in CommandMagic.labels }
+                        ?.mapNotNull { it.requiredParameterText(0) }
                         ?.mapNotNull {
                             if (it.indexOf('#') != -1) {
                                 it.getOrNull(it.indexOf('#') + 1)
@@ -192,11 +190,11 @@ object CommandManager : Iterable<String?>, Serializable, AliasManager() {
                     // Check if there is a command which increases a counter before the \label
                     // If so, the \label just labels the counter increasing command, and not whatever will appear before usages of the custom labeling command
                     val definitionContainsIncreaseCounterCommand =
-                        parameterCommands.takeWhile { it.name !in CommandMagic.labelDefinitionsWithoutCustomCommands }
+                        parameterCommands.takeWhile { it.name !in CommandMagic.labels }
                             .any { it.name in CommandMagic.increasesCounter }
 
-                    val prefix = parameterCommands.filter { it.name in CommandMagic.labelDefinitionsWithoutCustomCommands }
-                        .mapNotNull { it.requiredParameter(0) }
+                    val prefix = parameterCommands.filter { it.name in CommandMagic.labels }
+                        .mapNotNull { it.requiredParameterText(0) }
                         .map {
                             if (it.indexOf('#') != -1) {
                                 val prefix = it.substring(0, it.indexOf('#'))

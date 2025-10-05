@@ -10,7 +10,7 @@ fun getOpenAndCloseQuotes(char: Char): Pair<String, String> {
     var closingQuotes = char.toString()
 
     // Get the saved value to find the correct replacement
-    val quoteSetting = TexifySettings.getInstance().automaticQuoteReplacement
+    val quoteSetting = TexifySettings.getState().automaticQuoteReplacement
 
     if (quoteSetting == TexifySettings.QuoteReplacement.LIGATURES && char == '"') {
         openingQuotes = "``"

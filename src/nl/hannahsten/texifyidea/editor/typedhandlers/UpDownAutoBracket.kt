@@ -33,7 +33,7 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
         """^[a-zA-Z0-9]$""".toRegex()
 
     override fun charTyped(c: Char, project: Project, editor: Editor, file: PsiFile): Result {
-        if (!TexifySettings.getInstance().automaticUpDownBracket) {
+        if (!TexifySettings.getState().automaticUpDownBracket) {
             return Result.CONTINUE
         }
 
@@ -79,13 +79,13 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
                 return when (sibling) {
                     is LatexMathContent, is LatexEnvironmentContent -> {
                         sibling.lastChildOfType(LatexNoMathContent::class)
-                            ?.firstChildOfType(LatexNormalText::class)
+                            ?.findFirstChildOfType(LatexNormalText::class)
                     }
                     is LeafPsiElement -> {
                         sibling.parentOfType(LatexNormalText::class)
                     }
                     else -> {
-                        sibling.firstChildOfType(LatexNormalText::class)
+                        sibling.findFirstChildOfType(LatexNormalText::class)
                     }
                 }
             }
@@ -100,18 +100,18 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
                         // When it is followed by a LatexCommands or comment tokens.
                         val noMathContent = element.firstParentOfType(LatexNoMathContent::class) ?: return null
                         val sibling = noMathContent.previousSiblingIgnoreWhitespace() ?: return null
-                        return sibling.firstChildOfType(LatexNormalText::class)
+                        return sibling.findFirstChildOfType(LatexNormalText::class)
                     }
                     INLINE_MATH_END -> {
                         // At the end of inline math.
                         val mathContent = element.previousSiblingIgnoreWhitespace() as? LatexMathContent ?: return null
                         val noMathContent = mathContent.lastChildOfType(LatexNoMathContent::class) ?: return null
-                        return noMathContent.firstChildOfType(LatexNormalText::class)
+                        return noMathContent.findFirstChildOfType(LatexNormalText::class)
                     }
                     else -> {
                         // When a character is inserted just before the close brace of a group/inline math end.
                         val content = element.prevSibling ?: return null
-                        return content.firstChildOfType(LatexNormalText::class)
+                        return content.findFirstChildOfType(LatexNormalText::class)
                     }
                 }
             }

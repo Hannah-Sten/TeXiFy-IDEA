@@ -8,7 +8,7 @@ import com.intellij.psi.PsiFileFactory
 import com.intellij.util.xmlb.Converter
 import nl.hannahsten.texifyidea.file.BibtexFileType
 import nl.hannahsten.texifyidea.psi.BibtexEntry
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 
 /**
  * Convert from String to [BibtexEntry], and the other way around, using PSI and the parser.
@@ -33,6 +33,6 @@ class BibtexEntryListConverter : Converter<List<BibtexEntry>>() {
             ).notify(project)
         }
 
-        return file.childrenOfType<BibtexEntry>().toList()
+        return file.collectSubtreeTyped<BibtexEntry>().toList()
     }
 }

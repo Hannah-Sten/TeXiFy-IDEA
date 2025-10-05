@@ -53,10 +53,10 @@ open class LatexAddLabelToCommandIntention(val command: SmartPsiElementPointer<L
 
         // For sections we can infer a reasonable label name from the required parameter
         if (CommandMagic.sectionNameToLevel.contains(command.name)) {
-            val required = command.getRequiredParameters()
+            val required = command.requiredParametersText()
             // Section commands should all have a required parameter
             val labelString: String = required.getOrNull(0) ?: return
-            val createdLabel = getUniqueLabelName(
+            val createdLabel = getUniqueLabelWithPrefix(
                 labelString.formatAsLabel(),
                 prefix, command.containingFile
             )
@@ -73,7 +73,7 @@ open class LatexAddLabelToCommandIntention(val command: SmartPsiElementPointer<L
         else {
             if (CommandMagic.labelAsParameter.contains(command.name)) {
                 // Create a label parameter and initiate the rename process
-                val createdLabel = getUniqueLabelName(
+                val createdLabel = getUniqueLabelWithPrefix(
                     command.name!!.replace("\\", ""),
                     prefix, command.containingFile
                 )
@@ -84,7 +84,7 @@ open class LatexAddLabelToCommandIntention(val command: SmartPsiElementPointer<L
             else {
                 // Insert and start the \label live template
                 editor.caretModel.moveToOffset(command.endOffset())
-                val template = TemplateImpl("", "\\label{$prefix:\$__Variable0\$}", "")
+                val template = TemplateImpl("", "\\label{$prefix:\$__Variable0$}", "")
                 template.addVariable(TextExpression(""), true)
                 TemplateManager.getInstance(editor.project).startTemplate(editor, template)
             }

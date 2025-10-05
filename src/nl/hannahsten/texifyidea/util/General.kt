@@ -2,9 +2,6 @@ package nl.hannahsten.texifyidea.util
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.command.WriteCommandAction
-import com.intellij.openapi.progress.ProgressIndicator
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.progress.Task.Backgroundable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.platform.ide.progress.withBackgroundProgress
@@ -55,10 +52,14 @@ fun <T> runWriteCommandAction(
 fun IntRange.toTextRange() = TextRange(this.first, this.last + 1)
 
 /**
- * Get the length of an [IntRange].
+ * The length of an [IntRange], `length = endInclusive - start + 1`.
  */
 val IntRange.length: Int
-    get() = endInclusive - start
+    get() = endInclusive - start + 1
+
+fun IntRange.contains(other: IntRange): Boolean {
+    return this.first <= other.first && this.last >= other.last
+}
 
 /**
  * Converts the range to a range representation with the given seperator.
@@ -84,22 +85,13 @@ fun TextRange.toIntRange() = startOffset until endOffset
  */
 fun Pattern.matches(sequence: CharSequence?) = if (sequence != null) matcher(sequence).matches() else false
 
-/**
- * Use [runInBackgroundNonBlocking] instead, this is also not a blocking call.
- */
-@Deprecated("Use runInBackground, and convert all runReadAction to smartReadAction")
-fun runInBackgroundBlocking(project: Project?, description: String, function: (indicator: ProgressIndicator) -> Unit) {
-    ProgressManager.getInstance().run(object : Backgroundable(project, description) {
-        override fun run(indicator: ProgressIndicator) {
-            function(indicator)
-        }
-    })
-}
-
 const val PROGRESS_SIZE = 1000
 
 /**
  * Runs the given function in a background thread, with a fake progress indicator, using [TexifyCoroutine.coroutineScope].
+ *
+ * IMPORTANT: Do not use runReadAction in the function, this may block the UI.
+ * Use smartReadAction instead.
  *
  * See [coroutine-read-actions-api](https://plugins.jetbrains.com/docs/intellij/coroutine-read-actions.html#coroutine-read-actions-api).
  *
@@ -115,16 +107,9 @@ fun runInBackgroundNonBlocking(project: Project, description: String, function: 
     }
 }
 
-/*
- *
- *
- * IMPORTANT: Do not use runReadAction in the function, this may block the UI.
- * Use smartReadAction instead.
- */
-
 // https://plugins.jetbrains.com/docs/intellij/background-processes.html
-fun runInBackgroundWithoutProgress(function: () -> Unit) {
-    ApplicationManager.getApplication().executeOnPooledThread {
-        function()
+fun runInBackgroundWithoutProgress(function: suspend () -> Unit) {
+    TexifyCoroutine.runInBackground {
+        function.invoke()
     }
 }

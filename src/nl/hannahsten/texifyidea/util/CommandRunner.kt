@@ -40,7 +40,7 @@ suspend fun runCommandNonBlocking(
         Log.debug("isEDT=${SwingUtilities.isEventDispatchThread()} Executing in ${workingDirectory ?: "current working directory"} ${GeneralCommandLine(*commands).commandLineString}")
 
         // where/which commands occur often but do not change since the output depends on PATH, so can be cached
-        val isExecutableLocationCommand = commands.size == 2 && listOf("where", "which").contains(commands[0])
+        val isExecutableLocationCommand = commands.size == 2 && listOf("where", "which").contains(commands[0]) && commands.getOrNull(1).isNullOrBlank().not()
         val cachedExecutableLocation = SystemEnvironment.executableLocationCache[commands[1]]
         if (isExecutableLocationCommand && cachedExecutableLocation != null) {
             Log.debug("Retrieved output of $commands from cache: $cachedExecutableLocation")
@@ -82,7 +82,7 @@ suspend fun runCommandNonBlocking(
 
             // Update cache of where/which output
             if (isExecutableLocationCommand) {
-                SystemEnvironment.executableLocationCache[commands[1]] = result.standardOutput
+                SystemEnvironment.executableLocationCache[commands[1]] = result.standardOutput ?: ""
             }
 
             return@withContext result

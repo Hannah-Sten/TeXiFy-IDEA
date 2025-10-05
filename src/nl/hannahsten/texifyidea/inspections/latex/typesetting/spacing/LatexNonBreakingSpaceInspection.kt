@@ -9,20 +9,16 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.endOffset
 import com.intellij.psi.util.startOffset
-import nl.hannahsten.texifyidea.inspections.InsightGroup
-import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
+import nl.hannahsten.texifyidea.index.DefinitionBundle
+import nl.hannahsten.texifyidea.inspections.AbstractTexifyCommandBasedInspection
+import nl.hannahsten.texifyidea.inspections.createDescriptor
+import nl.hannahsten.texifyidea.lang.LContextSet
+import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
-import nl.hannahsten.texifyidea.psi.LatexNoMathContent
-import nl.hannahsten.texifyidea.psi.LatexNormalText
-import nl.hannahsten.texifyidea.psi.LatexParameterText
-import nl.hannahsten.texifyidea.util.files.commandsInFile
+import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.files.document
-import nl.hannahsten.texifyidea.util.includedPackages
-import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
-import nl.hannahsten.texifyidea.util.parser.childrenOfType
+import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 import nl.hannahsten.texifyidea.util.parser.lastChildOfType
 import nl.hannahsten.texifyidea.util.parser.parentOfType
 import java.util.*
@@ -32,84 +28,44 @@ import java.util.*
  *
  * @author Hannah Schellekens
  */
-open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
-
-    /**
-     * All commands that should not have a forced breaking space.
-     */
-    private val ignoredCommands = setOf(
-        "\\citet",
-        "\\citet*",
-        "\\Citet",
-        "\\Citet*",
-        "\\cref",
-        "\\Cref",
-        "\\cpageref",
-        "\\autoref",
-        "\\nameref",
-        "\\citeauthor",
-        "\\textcite",
-        "\\Textcite"
+class LatexNonBreakingSpaceInspection : AbstractTexifyCommandBasedInspection(
+    inspectionId = "NonBreakingSpace",
+    applicableContexts = setOf(LatexContexts.Text)
+) {
+    val inspectCommandNames = setOf(
+        "\\ref",
+        "\\cite"
     )
-
-    /**
-     * Commands redefined by cleveref, such that no non-breaking space is needed anymore.
-     */
-    private val cleverefRedefinitions = listOf(THREF.commandWithSlash) + setOf(VREF, VREFRANGE, FULLREF).map { it.command }.flatMap { c -> listOf(c, "$c*", c.replaceFirstChar { it.uppercase() }) }.map { "\\" + it }
-
-    override val inspectionGroup = InsightGroup.LATEX
-
-    override val inspectionId = "NonBreakingSpace"
 
     override val outerSuppressionScopes = EnumSet.of(MagicCommentScope.COMMAND)!!
 
-    override fun getDisplayName() = "Non-breaking spaces before references"
-
-    override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        val descriptors = descriptorList()
-        val isCleverefLoaded = file.includedPackages().contains(LatexPackage.CLEVEREF)
-
-        val commands = file.commandsInFile()
-        for (command in commands) {
-            // Only target references.
-            if (!CommandMagic.reference.contains(command.name)) continue
-
-            // Don't consider certain commands.
-            if (command.name in ignoredCommands) continue
-
-            // Don't out-clever cleveref
-            if (isCleverefLoaded && command.name in cleverefRedefinitions) continue
-
-            // Get the NORMAL_TEXT in front of the command.
-            val sibling = command.prevSibling
-                ?: command.parent?.prevSibling
-                ?: command.parentOfType(LatexNoMathContent::class)?.prevSibling
-                ?: continue
-
-            val previousSentence = sibling.prevSibling
-                ?: sibling.parent?.prevSibling
-                ?: sibling.parentOfType(LatexNoMathContent::class)?.prevSibling
-                ?: continue
-
-            // When sibling is whitespace, it's obviously bad news. Must not have a newline
-            if (sibling is PsiWhiteSpace) {
-                val lastBitOfText = previousSentence.lastChildOfType(LatexNormalText::class) ?: previousSentence.lastChildOfType(LatexParameterText::class) ?: continue
-                if (!PatternMagic.sentenceSeparatorAtLineEnd.matcher(file.text.subSequence(lastBitOfText.startOffset, lastBitOfText.endOffset)).find()) {
-                    descriptors.add(
-                        manager.createProblemDescriptor(
-                            sibling,
-                            "Reference without a non-breaking space",
-                            WhitespaceReplacementFix(),
-                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                            isOntheFly
-                        )
-                    )
-                }
-                continue
-            }
+    override fun inspectCommand(command: LatexCommands, contexts: LContextSet, defBundle: DefinitionBundle, file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {
+        val name = command.nameWithSlash ?: return
+        if (name !in inspectCommandNames) return
+        if (!isApplicableInContexts(contexts)) return
+        // Get the NORMAL_TEXT in front of the command.
+        val sibling = command.prevSibling
+            ?: command.parent?.prevSibling
+            ?: command.parentOfType(LatexNoMathContent::class)?.prevSibling
+            ?: return
+        if (sibling !is PsiWhiteSpace) return
+        // When sibling is whitespace, it's obviously bad news. Must not have a newline
+        val previousSentence = sibling.prevSibling
+            ?: sibling.parent?.prevSibling
+            ?: sibling.parentOfType(LatexNoMathContent::class)?.prevSibling
+            ?: return
+        val lastBitOfText = previousSentence.lastChildOfType(LatexNormalText::class) ?: previousSentence.lastChildOfType(LatexParameterText::class) ?: return
+        if (!PatternMagic.sentenceSeparatorAtLineEnd.matcher(file.text.subSequence(lastBitOfText.startOffset, lastBitOfText.endOffset)).find()) {
+            descriptors.add(
+                manager.createDescriptor(
+                    sibling,
+                    "Reference without a non-breaking space",
+                    isOnTheFly = isOnTheFly,
+                    highlightType = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                    fix = WhitespaceReplacementFix(),
+                )
+            )
         }
-
-        return descriptors
     }
 
     /**
@@ -129,7 +85,7 @@ open class LatexNonBreakingSpaceInspection : TexifyInspectionBase() {
             var replacement = "~"
 
             // First check if there already is a tilde in the normal text before.
-            val texts = whitespace.prevSibling.childrenOfType(LatexNormalText::class)
+            val texts = whitespace.prevSibling.collectSubtreeTyped<LatexNormalText>()
             if (!texts.isEmpty()) {
                 val text = texts.reversed().iterator().next()
 

@@ -6,46 +6,49 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.Project
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.createSmartPointer
+import com.jetbrains.rd.util.reflection.threadLocal
+import nl.hannahsten.texifyidea.index.DefinitionBundle
+import nl.hannahsten.texifyidea.inspections.AbstractTexifyContextAwareInspection
 import nl.hannahsten.texifyidea.inspections.InsightGroup
-import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.intentions.LatexAddLabelToCommandIntention
 import nl.hannahsten.texifyidea.intentions.LatexAddLabelToEnvironmentIntention
+import nl.hannahsten.texifyidea.lang.LContextSet
+import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.LatexDocumentClass
-import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.psi.getLabel
+import nl.hannahsten.texifyidea.psi.nameWithSlash
 import nl.hannahsten.texifyidea.settings.conventions.LabelConventionType
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsConfigurable
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettingsManager
 import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.hasLabel
-import nl.hannahsten.texifyidea.util.parser.hasStar
 import org.jetbrains.annotations.Nls
-import java.util.*
 
 /**
  * Check for commands which should have a label but don't.
  *
  * @author Hannah Schellekens
  */
-open class LatexMissingLabelInspection : TexifyInspectionBase() {
+class LatexMissingLabelInspection : AbstractTexifyContextAwareInspection(
+    inspectionId = "MissingLabel",
+    inspectionGroup = InsightGroup.LATEX,
+    applicableContexts = null,
+    excludedContexts = setOf(),
+    skipChildrenInContext = setOf(LatexContexts.Comment, LatexContexts.InsideDefinition)
+) {
 
-    override val inspectionGroup = InsightGroup.LATEX
+    private var labeledCommandsLocal: Set<String>? by threadLocal { null }
 
-    override val inspectionId = "MissingLabel"
+    private var labeledEnvironmentsLocal: Set<String>? by threadLocal { null }
 
-    override val ignoredSuppressionScopes = EnumSet.of(MagicCommentScope.GROUP)!!
-
-    override fun getDisplayName() = "Missing labels"
-
-    override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        val descriptors = descriptorList()
-
+    override fun prepareInspectionForFile(file: PsiFile, bundle: DefinitionBundle): Boolean {
         val settings = TexifyConventionsSettingsManager.getInstance(file.project).getSettings()
 
         val requireLabel = settings.currentScheme.labelConventions.filter { it.enabled }
@@ -53,34 +56,35 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
             requireLabel.filter { c -> c.type == LabelConventionType.COMMAND }.map { "\\" + it.name }.toMutableSet()
 
         // Document classes like book and report provide \part as sectioning, but with exam class it's a part in a question
-        if (file.findRootFile(useIndexCache = false).documentClass() == LatexDocumentClass.EXAM.name) {
+        if (file.findRootFile().documentClass() == LatexDocumentClass.EXAM.name) {
             labeledCommands.remove("\\part")
         }
+        labeledCommandsLocal = labeledCommands
 
-        file.commandsInFile().filter {
-            labeledCommands.contains(it.name) && it.name != "\\item" && !it.hasStar()
-        }.forEach { addCommandDescriptor(it, descriptors, manager, isOntheFly) }
-
-        val labeledEnvironments =
+        labeledEnvironmentsLocal =
             requireLabel.filter { c -> c.type == LabelConventionType.ENVIRONMENT }.map { it.name }.toSet()
-        file.environmentsInFile().filter { env -> labeledEnvironments.contains(env.getEnvironmentName()) }
-            .forEach { addEnvironmentDescriptor(it, descriptors, manager, isOntheFly) }
 
-        return descriptors
+        return true
+    }
+
+    override fun inspectElement(element: PsiElement, contexts: LContextSet, bundle: DefinitionBundle, file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {
+        when(element) {
+            is LatexCommands -> inspectCommand(element, contexts, bundle, file, manager, isOnTheFly, descriptors)
+            is LatexEnvironment -> inspectEnvironment(element, contexts, bundle, file, manager, isOnTheFly, descriptors)
+        }
     }
 
     /**
      * Adds a command descriptor to the given command if there is a label missing.
-     *
-     * @return `true` when a descriptor was added, or `false` when no descriptor was added.
      */
-    private fun addCommandDescriptor(
-        command: LatexCommands, descriptors: MutableList<ProblemDescriptor>,
-        manager: InspectionManager, isOntheFly: Boolean
-    ): Boolean {
-        if (command.hasLabel()) {
-            return false
-        }
+    private fun inspectCommand(
+        command: LatexCommands, contexts: LContextSet,
+        defBundle: DefinitionBundle, file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>
+    ) {
+        val nameWithSlash = command.nameWithSlash
+        if (labeledCommandsLocal?.contains(nameWithSlash) != true) return
+        if (command.hasStar()) return
+        if (command.hasLabel()) return
 
         val fixes = mutableListOf<LocalQuickFix>()
         fixes.add(InsertLabelForCommandFix())
@@ -95,21 +99,19 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
                 "Missing label",
                 fixes.toTypedArray(),
                 ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                isOntheFly,
+                isOnTheFly,
                 false
             )
         )
-
-        return true
     }
 
-    private fun addEnvironmentDescriptor(
-        environment: LatexEnvironment, descriptors: MutableList<ProblemDescriptor>,
-        manager: InspectionManager, isOntheFly: Boolean
-    ): Boolean {
-        if (environment.getLabel() != null) {
-            return false
-        }
+    private fun inspectEnvironment(
+        environment: LatexEnvironment, contexts: LContextSet,
+        defBundle: DefinitionBundle, file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>
+    ) {
+        val name = environment.getEnvironmentName()
+        if (labeledEnvironmentsLocal?.contains(name) != true) return
+        if (environment.getLabel() != null) return
 
         descriptors.add(
             manager.createProblemDescriptor(
@@ -117,12 +119,10 @@ open class LatexMissingLabelInspection : TexifyInspectionBase() {
                 "Missing label",
                 arrayOf(InsertLabelInEnvironmentFix()),
                 ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                isOntheFly,
+                isOnTheFly,
                 false
             )
         )
-
-        return true
     }
 
     /**

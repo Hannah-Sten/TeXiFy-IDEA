@@ -8,7 +8,7 @@ import com.intellij.psi.search.IndexPatternOccurrence
 import com.intellij.psi.search.searches.IndexPatternSearch
 import com.intellij.util.Processor
 import nl.hannahsten.texifyidea.file.LatexFile
-import nl.hannahsten.texifyidea.util.files.commandsInFile
+import nl.hannahsten.texifyidea.psi.traverseCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.matches
 
@@ -21,7 +21,7 @@ class LatexTodoSearcher : QueryExecutorBase<IndexPatternOccurrence, IndexPattern
         val file = queryParameters.file as? LatexFile ?: return
 
         queryParameters.patternProvider.indexPatterns.forEach { pattern ->
-            file.commandsInFile().filter { it.name in CommandMagic.todoCommands }.filter { pattern.pattern?.matches(it.name) == true }
+            file.traverseCommands().filter { it.name in CommandMagic.todoCommands }.filter { pattern.pattern?.matches(it.name) == true }
                 .forEach {
                     consumer.process(LatexTodoOccurrence(file, it.textRange, pattern))
                 }
