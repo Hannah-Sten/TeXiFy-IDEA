@@ -12,7 +12,6 @@ import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.lineIndentationByOffset
 import nl.hannahsten.texifyidea.util.parser.*
-import java.util.*
 
 /**
  * Adds the given magic comment as an actual comment to the file.

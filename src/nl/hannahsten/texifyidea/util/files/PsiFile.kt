@@ -132,11 +132,8 @@ fun PsiFile.document(): Document? = PsiDocumentManager.getInstance(project).getD
  *          The name of the command including a backslash, or `null` for all commands.
  */
 fun PsiFile.commandsInFile(commandName: String? = null): Collection<LatexCommands> {
-    if(commandName != null) return traverseCommands().toList()
+    if(commandName != null) return traverseCommands().filter { it.nameWithSlash == commandName }.toList()
     return collectSubtreeTyped<LatexCommands>()
-//    return commandName?.let {
-//        this.allCommands().filter { it.name == commandName }
-//    } ?: this.allCommands()
 }
 
 /**

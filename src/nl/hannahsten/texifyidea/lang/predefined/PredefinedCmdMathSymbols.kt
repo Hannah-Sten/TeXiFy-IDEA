@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.lang.predefined
 
 import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.PredefinedCommandSet
 
 object PredefinedCmdMathSymbols : PredefinedCommandSet() {
@@ -145,6 +146,11 @@ object PredefinedCmdMathSymbols : PredefinedCommandSet() {
         symbol("nRightarrow", "⇏", "Not right double arrow")
         symbol("nleftrightarrow", "↮", "Not left and right arrow")
         symbol("nLeftrightarrow", "⇎", "Not left and right double arrow")
+
+        underPackage(LatexLib.AMSMATH) {
+            symbol("implies", "⇒", "Implies (alias)")
+            symbol("impliedby", "⇐", "Implied by (alias)")
+        }
 
         // latexsymb arrows
         packageOf("latexsymb")
@@ -337,7 +343,6 @@ object PredefinedCmdMathSymbols : PredefinedCommandSet() {
     }
 
     val defaultOperatorSymbols = mathCommands {
-
         symbol("forall", "∀", "Universal quantifier")
         symbol("partial", "∂", "Partial derivative")
         symbol("exists", "∃", "Existential quantifier")

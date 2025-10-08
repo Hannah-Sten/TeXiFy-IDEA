@@ -24,7 +24,7 @@ class LatexCommentFoldingBuilder : FoldingBuilderEx(), DumbAware {
 
     override fun getPlaceholderText(node: ASTNode): String {
         val parsedText = node.text.trim()
-        return if (parsedText.length > 9) parsedText.substring(0, 8) + "..."
+        return if (parsedText.length > 9) parsedText.take(8) + "..."
         else parsedText
     }
 
@@ -77,8 +77,6 @@ class LatexCommentFoldingBuilder : FoldingBuilderEx(), DumbAware {
                 parentCollapse.let {
                     descriptors.add(buildDescriptor(parentCollapse, collectedTextRange))
                 }
-            parentCollapse = null
-            collectedTextRange = null
         }
 
         return descriptors.toTypedArray()

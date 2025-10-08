@@ -32,7 +32,7 @@ class LatexMissingImportInspection : LatexMissingImportInspectionBase("MissingIm
         command: LatexCommands, candidates: List<LSemanticEntity>,
         descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager, isOntheFly: Boolean
     ) {
-        val packageNames = candidates.mapNotNull { it.dependency.toPackageName() }
+        val packageNames = candidates.mapNotNull { it.dependency.asPackageName() }
         if (packageNames.isEmpty()) return
         val fixes = packageNames.map { ImportPackageFix(it) }.toTypedArray()
         val range = TextRange(0, command.commandToken.textLength)
@@ -52,7 +52,7 @@ class LatexMissingImportInspection : LatexMissingImportInspectionBase("MissingIm
         environment: LatexEnvironment, candidates: List<LSemanticEntity>,
         descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager, isOntheFly: Boolean
     ) {
-        val packageNames = candidates.mapNotNull { it.dependency.toPackageName() }
+        val packageNames = candidates.mapNotNull { it.dependency.asPackageName() }
         if (packageNames.isEmpty()) return
         val fixes = packageNames.map { ImportPackageFix(it) }.toTypedArray()
         val range = TextRange(7, 7 + environment.getEnvironmentName().length)

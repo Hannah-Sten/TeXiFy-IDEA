@@ -6,9 +6,9 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.InjectedLanguagePlaces
 import com.intellij.psi.LanguageInjector
 import com.intellij.psi.PsiLanguageInjectionHost
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.magicComment
+import nl.hannahsten.texifyidea.lang.predefined.EnvironmentNames
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.parser.parentOfType
@@ -23,26 +23,28 @@ import nl.hannahsten.texifyidea.util.remove
 class LatexLanguageInjector : LanguageInjector {
 
     override fun getLanguagesToInject(host: PsiLanguageInjectionHost, registrar: InjectedLanguagePlaces) {
+        // TODO: we can use context for language injection
         if (host is LatexEnvironment) {
             val magicComment = host.magicComment()
             val hasMagicCommentKey = magicComment.containsKey(DefaultMagicKeys.INJECT_LANGUAGE)
+            val envName = host.getEnvironmentName()
 
             val languageId = when {
                 hasMagicCommentKey -> {
                     magicComment.value(DefaultMagicKeys.INJECT_LANGUAGE)
                 }
-                host.getEnvironmentName() == DefaultEnvironment.LISTINGS.environmentName -> {
+                envName == EnvironmentNames.LST_LISTING -> {
                     host.beginCommand.getOptionalParameterMap().toStringMap().getOrDefault("language", null)
                 }
-                host.getEnvironmentName() == DefaultEnvironment.MINTED.environmentName -> {
+                envName == EnvironmentNames.MINTED -> {
                     host.beginCommand.requiredParametersText().getOrNull(0)
                 }
-                host.getEnvironmentName() in EnvironmentMagic.languageInjections.keys -> {
-                    EnvironmentMagic.languageInjections[host.getEnvironmentName()]
+                envName in EnvironmentMagic.languageInjections.keys -> {
+                    EnvironmentMagic.languageInjections[envName]
                 }
-                host.getEnvironmentName().endsWith("code", ignoreCase = false) -> {
+                envName.endsWith("code", ignoreCase = false) -> {
                     // Environment may have been defined with the \newminted shortcut (see minted documentation)
-                    host.getEnvironmentName().remove("code")
+                    envName.remove("code")
                 }
                 else -> {
                     null
@@ -78,7 +80,7 @@ class LatexLanguageInjector : LanguageInjector {
         else {
             Language.findLanguageByID(id)?.let { return it }
             // As a fallback, try a case insensitive check
-            return Language.getRegisteredLanguages().firstOrNull { it.id.lowercase() == id.lowercase() }
+            return Language.getRegisteredLanguages().firstOrNull { it.id.equals(id, ignoreCase = true) }
         }
     }
 }

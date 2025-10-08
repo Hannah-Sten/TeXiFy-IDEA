@@ -291,5 +291,7 @@ sealed interface LatexContextIntro {
          * Introduces the math context.
          */
         val MATH = Assign(LatexContexts.Math)
+
+        val INLINE_MATH = Assign(setOf(LatexContexts.Math, LatexContexts.InlineMath))
     }
 }

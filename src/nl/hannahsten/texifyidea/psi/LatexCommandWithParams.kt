@@ -80,9 +80,19 @@ interface LatexCommandWithParams : LatexComposite {
      * Gets the required parameters of this command at the specified index, or null if the index is out of bounds.
      */
     fun requiredParameterText(idx: Int): String? {
-        return requiredParametersText().getOrNull(idx)
+        var pos = 0
+        forEachDirectChildTyped<LatexParameter> { param ->
+            if (param.requiredParam != null) {
+                if (pos == idx) return param.contentText()
+                pos++
+            }
+        }
+        return null
     }
 
+    /**
+     * Gets the optional parameters of this command at the specified index, or null if the index is out of bounds.
+     */
     fun optionalParameterText(idx: Int): String? {
         var pos = 0
         forEachDirectChildTyped<LatexParameter> { param ->

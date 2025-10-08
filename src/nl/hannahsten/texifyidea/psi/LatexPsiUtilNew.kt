@@ -261,6 +261,19 @@ inline fun LatexCommandWithParams.forEachRequiredParameter(
     }
 }
 
+inline fun LatexCommandWithParams.indexOfRequiredParameter(
+    predicate: (LatexRequiredParam) -> Boolean
+): Int {
+    var index = 0
+    forEachRequiredParameter {
+        if (predicate(it)) {
+            return index
+        }
+        index++
+    }
+    return -1
+}
+
 private fun PsiElement.getParameterTexts0(): Sequence<LatexParameterText> {
     return this.traversePruneIf { it is LatexCommandWithParams }.filterIsInstance<LatexParameterText>()
 }

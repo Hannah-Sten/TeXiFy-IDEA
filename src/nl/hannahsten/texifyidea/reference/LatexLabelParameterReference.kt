@@ -20,7 +20,7 @@ class LatexLabelParameterReference(element: LatexParameterText) : PsiReferenceBa
 
     private val labelName = element.text
 
-    override fun calculateDefaultRangeInElement(): TextRange? {
+    override fun calculateDefaultRangeInElement(): TextRange {
         val fullRange = ElementManipulators.getValueTextRange(element)
         val prefix = determinePrefix() ?: return fullRange
         val prefixLength = prefix.length

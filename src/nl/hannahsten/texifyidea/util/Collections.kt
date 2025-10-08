@@ -168,3 +168,28 @@ fun <T> Set<T>.existsIntersection(other: Set<T>): Boolean {
     val (small, large) = if(this.size < other.size) this to other else other to this
     return small.any { it in large }
 }
+
+inline fun <T> List<T>.indexOfFirstWithin(
+    filter: (T) -> Boolean,
+    predicate: (T) -> Boolean
+): Int {
+    var count = 0
+    for(element in this) {
+        if(filter(element)) {
+            if(predicate(element)) return count
+            count++
+        }
+    }
+    return -1
+}
+
+inline fun <T> List<T>.getByIndexWithin(filter: (T) -> Boolean, idx: Int): T? {
+    var count = 0
+    for(element in this) {
+        if(filter(element)) {
+            if(count == idx) return element
+            count++
+        }
+    }
+    return null
+}

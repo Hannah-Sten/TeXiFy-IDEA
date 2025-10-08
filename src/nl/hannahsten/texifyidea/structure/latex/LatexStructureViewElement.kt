@@ -12,6 +12,7 @@ import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.file.*
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
+import nl.hannahsten.texifyidea.lang.predefined.CommandNames
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.psi.traverseCommands
@@ -19,9 +20,7 @@ import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewElement
 import nl.hannahsten.texifyidea.structure.latex.SectionNumbering.DocumentClass
-import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommandsNoUpdate
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.magic.cmd
 import java.util.*
 
 /**
@@ -84,13 +83,13 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         val commands = element.traverseCommands()
         val treeElements = ArrayList<LatexStructureViewCommandElement>()
 
-        val labelingCommands = getLabelDefinitionCommandsNoUpdate()
+        val labelingCommands = CommandMagic.labels
 
         // Add sectioning.
         val sections = mutableListOf<LatexStructureViewCommandElement>()
         for (command in commands) {
             // Update counter.
-            if (command.name == LatexGenericRegularCommand.ADDTOCOUNTER.cmd || command.name == LatexGenericRegularCommand.SETCOUNTER.cmd) {
+            if (command.name == CommandNames.ADD_TO_COUNTER || command.name == CommandNames.SET_COUNTER) {
                 updateNumbering(command, numbering)
                 continue
             }
@@ -102,7 +101,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
                     addSections(command, sections, treeElements, numbering)
                 }
 
-                in labelingCommands + CommandMagic.commandDefinitionsAndRedefinitions + setOf(LatexGenericRegularCommand.BIBITEM.cmd) -> {
+                in labelingCommands, in CommandMagic.commandDefinitionsAndRedefinitions, "\\bibitem" -> {
                     addAtCurrentSectionLevel(sections, treeElements, newElement)
                 }
 
@@ -273,7 +272,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         // Get the amount to modify with.
         val amount = required[1].toIntOrNull() ?: return
 
-        if (token == LatexGenericRegularCommand.SETCOUNTER.cmd) {
+        if (token == CommandNames.SET_COUNTER) {
             numbering.setCounter(level, amount)
         }
         else {

@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.inspections
 
+import com.intellij.codeInsight.intention.FileModifier
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
@@ -56,6 +57,7 @@ abstract class AbstractTexifyEnvironmentBasedInspection(
     protected class ReplaceEnvironmentQuickFix(
         val fixName: String,
         private val newName: String,
+        @FileModifier.SafeFieldForPreview
         private val requiredPkg: LatexLib = LatexLib.BASE
     ) : LocalQuickFix {
         override fun getFamilyName(): @IntentionFamilyName String {

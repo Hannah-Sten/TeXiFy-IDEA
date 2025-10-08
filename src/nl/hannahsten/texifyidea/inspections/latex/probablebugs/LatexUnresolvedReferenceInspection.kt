@@ -26,7 +26,7 @@ import java.util.*
 class LatexUnresolvedReferenceInspection : AbstractTexifyContextAwareInspection(
     inspectionId = "UnresolvedReference",
     inspectionGroup = InsightGroup.LATEX,
-    applicableContexts = setOf(LatexContexts.LabelReference, LatexContexts.CitationReference),
+    applicableContexts = setOf(LatexContexts.LabelReference, LatexContexts.BibReference),
     excludedContexts = setOf(LatexContexts.InsideDefinition, LatexContexts.Preamble),
     skipChildrenInContext = setOf(LatexContexts.Comment, LatexContexts.InsideDefinition)
 ) {

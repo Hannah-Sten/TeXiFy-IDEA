@@ -243,8 +243,8 @@ class LatexLibraryDefinitionService(
                       -> B2 -> C,D
              */
             directDependencies = mutableListOf()
-            for (name in directDependencyNames) {
-                val dependency = LatexLib(name)
+            for (fileName in directDependencyNames) {
+                val dependency = LatexLib.fromFileName(fileName)
                 if (!includedPackages.add(dependency)) {
                     continue
                 }
@@ -312,8 +312,8 @@ class LatexLibraryDefinitionService(
         return getOrComputeNow(libName, libExpiration)
     }
 
-    fun getLibBundle(libName: String): LibDefinitionBundle {
-        return getLibBundle(LatexLib(libName))
+    fun getLibBundle(fileName: String): LibDefinitionBundle {
+        return getLibBundle(LatexLib.fromFileName(fileName))
     }
 
     fun getBaseBundle(): LibDefinitionBundle {
@@ -326,9 +326,9 @@ class LatexLibraryDefinitionService(
      * This can take a relatively long time.
      */
     fun buildAllLibBundles(): Map<LatexLib, LibDefinitionBundle> {
-        val allNames = LatexPackageLocation.getAllPackageNames(project)
+        val allNames = LatexPackageLocation.getAllPackageFileNames(project)
         return allNames.associate {
-            val lib = LatexLib(it)
+            val lib = LatexLib.fromFileName(it)
             lib to getLibBundle(lib)
         }
     }
@@ -358,7 +358,7 @@ class LatexLibraryDefinitionService(
         }
 
         private fun processPredefinedCommandsAndEnvironments(name: LatexLib, defMap: MutableMap<String, SourcedDefinition>) {
-            AllPredefined.packageToEntities(name).forEach { entity ->
+            AllPredefined.findByLib(name).forEach { entity ->
                 defMap[entity.name] = SourcedDefinition(entity, null, DefinitionSource.Predefined)
             }
         }

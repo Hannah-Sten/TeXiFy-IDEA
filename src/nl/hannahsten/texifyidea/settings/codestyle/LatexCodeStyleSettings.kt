@@ -3,8 +3,7 @@ package nl.hannahsten.texifyidea.settings.codestyle
 import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.codeStyle.CustomCodeStyleSettings
 import nl.hannahsten.texifyidea.grammar.LatexLanguage
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
-import nl.hannahsten.texifyidea.util.magic.cmd
+import nl.hannahsten.texifyidea.lang.predefined.CommandNames
 
 /**
  * Defines all the custom code style settings.
@@ -60,13 +59,13 @@ class LatexCodeStyleSettings(container: CodeStyleSettings) : CustomCodeStyleSett
     companion object {
 
         val blankLinesOptions = mapOf(
-            LatexGenericRegularCommand.PART.cmd to LatexCodeStyleSettings::BLANK_LINES_BEFORE_PART,
-            LatexGenericRegularCommand.CHAPTER.cmd to LatexCodeStyleSettings::BLANK_LINES_BEFORE_CHAPTER,
-            LatexGenericRegularCommand.SECTION.cmd to LatexCodeStyleSettings::BLANK_LINES_BEFORE_SECTION,
-            LatexGenericRegularCommand.SUBSECTION.cmd to LatexCodeStyleSettings::BLANK_LINES_BEFORE_SUBSECTION,
-            LatexGenericRegularCommand.SUBSUBSECTION.cmd to LatexCodeStyleSettings::BLANK_LINES_BEFORE_SUBSUBSECTION,
-            LatexGenericRegularCommand.PARAGRAPH.cmd to LatexCodeStyleSettings::BLANK_LINES_BEFORE_PARAGRAPH,
-            LatexGenericRegularCommand.SUBPARAGRAPH.cmd to LatexCodeStyleSettings::BLANK_LINES_BEFORE_SUBPARAGRAPH
+            CommandNames.PART to LatexCodeStyleSettings::BLANK_LINES_BEFORE_PART,
+            CommandNames.CHAPTER to LatexCodeStyleSettings::BLANK_LINES_BEFORE_CHAPTER,
+            CommandNames.SECTION to LatexCodeStyleSettings::BLANK_LINES_BEFORE_SECTION,
+            CommandNames.SUB_SECTION to LatexCodeStyleSettings::BLANK_LINES_BEFORE_SUBSECTION,
+            CommandNames.SUB_SUB_SECTION to LatexCodeStyleSettings::BLANK_LINES_BEFORE_SUBSUBSECTION,
+            CommandNames.PARAGRAPH to LatexCodeStyleSettings::BLANK_LINES_BEFORE_PARAGRAPH,
+            CommandNames.SUB_PARAGRAPH to LatexCodeStyleSettings::BLANK_LINES_BEFORE_SUBPARAGRAPH
         )
     }
 }

@@ -23,6 +23,7 @@ import nl.hannahsten.texifyidea.lang.LatexSemanticsCommandLookup
 import nl.hannahsten.texifyidea.lang.LatexSemanticsEnvLookup
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
+import nl.hannahsten.texifyidea.lang.predefined.EnvironmentNames
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
@@ -40,8 +41,8 @@ fun LatexBeginCommand.endCommand(): LatexEndCommand? = nextSiblingOfType(LatexEn
  * @return `true` if the command marks a valid entry point, `false` if not.
  */
 fun LatexBeginCommand.isEntryPoint(): Boolean {
-    // Currently: only allowing `\begin{document}`.
-    return this.environmentName() == "document"
+    // Currently: only allowing `\\begin{document}`.
+    return this.environmentName() == EnvironmentNames.DOCUMENT
 }
 
 /**
@@ -161,13 +162,13 @@ fun LatexSemanticsEnvLookup.lookupEnv(name: String?): LSemanticEnv? {
     return lookupEnv(name)
 }
 
-fun LatexSemanticsCommandLookup.lookupCommand(name: String?): LSemanticCommand? {
+fun LatexSemanticsCommandLookup.lookupCommandN(name: String?): LSemanticCommand? {
     if (name == null) return null
     return lookupCommand(name)
 }
 
 fun LatexSemanticsCommandLookup.lookupCommandPsi(cmd: LatexCommands): LSemanticCommand? {
-    return lookupCommand(cmd.nameWithoutSlash)
+    return lookupCommandN(cmd.nameWithoutSlash)
 }
 
 /**
@@ -266,6 +267,12 @@ object LatexPsiUtil {
         processArgumentsWithSemantics(cmd, semantics.arguments, action)
     }
 
+    inline fun processArgumentsWithNonNullSemantics(cmd: LatexCommandWithParams, semantics: LSemanticCommand, action: (LatexParameter, LArgument) -> Unit) {
+        processArgumentsWithSemantics(cmd, semantics.arguments) { param, arg ->
+            if(arg != null) action(param, arg)
+        }
+    }
+
     inline fun processArgumentsWithSemantics(cmd: LatexCommandWithParams, argList: List<LArgument>, action: (LatexParameter, LArgument?) -> Unit) {
         var argIdx = 0
         val argSize = argList.size
@@ -358,6 +365,8 @@ object LatexPsiUtil {
     /**
      * Resolve the context introductions at the given element by traversing the PSI tree upwards and collecting context changes.
      * The list is ordered from innermost to outermost context introduction.
+     *
+     * @see LatexWithContextStateTraverser
      */
     fun resolveContextIntroUpward(e: PsiElement, lookup: LatexSemanticsLookup, shortCircuit: Boolean = false): List<LatexContextIntro> {
         var collectedContextIntro: MutableList<LatexContextIntro>? = null
@@ -370,6 +379,7 @@ object LatexPsiUtil {
             val intro = when (current) {
                 is LatexParameter -> resolveCommandParameterContext(current, lookup) ?: continue
                 is LatexEnvironment -> resolveEnvironmentContext(current, lookup) ?: continue
+                is LatexInlineMath -> LatexContextIntro.INLINE_MATH
                 is LatexMathEnvironment -> LatexContextIntro.MATH
                 else -> continue
             }

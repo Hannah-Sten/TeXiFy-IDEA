@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea
 
+import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.util.IconLoader
 import com.intellij.util.PlatformIcons
 import java.util.*
@@ -281,10 +282,8 @@ object TexifyIcons {
      * When `extension` is null.
      */
     fun getIconFromExtension(extension: String?, default: Icon? = null): Icon? {
-        return if (extension == null) {
-            default
-        }
-        else when (extension.lowercase(Locale.getDefault())) {
+        if (extension == null) return default
+        return when (extension.lowercase(Locale.getDefault())) {
             "tex" -> LATEX_FILE
             "bib" -> BIBLIOGRAPHY_FILE
             "cls" -> CLASS_FILE
@@ -295,7 +294,7 @@ object TexifyIcons {
             "pdf" -> PDF_FILE
             "synctex.gz" -> SYNCTEX_FILE
             "dvi" -> DVI_FILE
-            else -> default
+            else -> FileTypeManager.getInstance().getFileTypeByExtension(extension).icon ?: default
         }
     }
 

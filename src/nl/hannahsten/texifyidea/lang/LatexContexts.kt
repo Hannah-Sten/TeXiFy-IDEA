@@ -51,6 +51,8 @@ object LatexContexts {
 
     val Math = SimpleLatexContext("math")
 
+    val InlineMath = SimpleLatexContext("math.inline")
+
     /**
      * Describes the context of package names, for example in `\usepackage{...}`.
      *
@@ -145,7 +147,9 @@ object LatexContexts {
     /**
      * The citation reference in `\cite{...}`.
      */
-    val CitationReference = SimpleLatexContext("cite.ref")
+    val BibReference = SimpleLatexContext("bib.ref")
+
+    val BibKey = SimpleLatexContext("bib.key")
 
     /**
      * A context for BibTeX style files, such as `plain` in `\bibliographystyle{plain}`.
@@ -159,11 +163,20 @@ object LatexContexts {
     val MintedFuntimeLand = SimpleLatexContext("minted.funtime.land")
 
     /**
-     * A context for glossary entries, such as in `\gls{...}` or `\glsadd{...}`.
+     * References to glossary entries, such as in `\gls{...}` or `\Gls{...}`.
      */
-    val GlossaryLabel = SimpleLatexContext("glossary")
+    val GlossaryReference = SimpleLatexContext("glossary")
 
+    /**
+     * Definitions of glossary entries, such as in `\newglossaryentry{...}{...}`.
+     */
+    val GlossaryDefinition = SimpleLatexContext("new.glossary")
+
+    /**
+     * A context for color names or literal, such as in `\textcolor{red}{...}` or `\color{blue}`.
+     */
     val ColorReference = SimpleLatexContext("color")
+    val ColorDefinition = SimpleLatexContext("new.color")
 
     val PicturePath = SimpleLatexContext("picture.path")
 
@@ -180,4 +193,13 @@ object LatexContexts {
     val Alignable = SimpleLatexContext("alignable")
 
     val TikzPicture = SimpleLatexContext("tikz.picture")
+
+    fun asFileInputCtx(intro: LatexContextIntro): SimpleFileInputContext? {
+        if (intro !is LatexContextIntro.Assign) return null
+        val contexts = intro.contexts
+        for (ctx in contexts) {
+            if (ctx is SimpleFileInputContext) return ctx
+        }
+        return null
+    }
 }
