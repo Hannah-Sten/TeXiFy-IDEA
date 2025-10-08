@@ -5,6 +5,7 @@
 ### Added
 
 ### Fixed
+* Do not override build project action if there are no run configurations
 
 ## [0.11.3] - 2025-09-14
 
