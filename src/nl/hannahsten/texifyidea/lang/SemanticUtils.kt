@@ -11,3 +11,17 @@ fun LSemanticCommand.introducesAny(candidates: LContextSet): Boolean {
         it.contextSignature.introducesAny(candidates)
     }
 }
+
+fun LSemanticEnv.introduces(candidate: LatexContext): Boolean {
+    return contextSignature.introduces(candidate) ||
+        arguments.any {
+            it.contextSignature.introduces(candidate)
+        }
+}
+
+fun LSemanticEntity.introduces(candidate: LatexContext): Boolean {
+    return when (this) {
+        is LSemanticCommand -> introduces(candidate)
+        is LSemanticEnv -> introduces(candidate)
+    }
+}

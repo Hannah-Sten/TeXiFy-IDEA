@@ -6,7 +6,7 @@ import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.index.NewLabelsIndex
 import nl.hannahsten.texifyidea.psi.LatexParameterText
-import nl.hannahsten.texifyidea.util.labels.extractLabelElement
+import nl.hannahsten.texifyidea.util.labels.LatexLabelUtil
 
 /**
  * This reference works on parameter text, i.e. the actual label parameters.
@@ -78,7 +78,7 @@ class LatexLabelParameterReference(element: LatexParameterText) : PsiReferenceBa
                 // We cannot just resolve to the label command itself, because for Find Usages IJ will get the name of the element
                 // under the cursor and use the words scanner to look for it (and then check if the elements found are references to the element under the cursor)
                 // but only the label text itself will have the correct name for that.
-                e.extractLabelElement()?.let { PsiElementResolveResult(it) }
+                LatexLabelUtil.extractLabelElementIn(e)?.let { PsiElementResolveResult(it) }
             }
         }
 

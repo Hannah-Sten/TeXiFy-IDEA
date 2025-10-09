@@ -17,8 +17,7 @@ import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.settings.conventions.LabelConventionType
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettingsManager
 import nl.hannahsten.texifyidea.util.formatAsLabel
-import nl.hannahsten.texifyidea.util.labels.Labels
-import nl.hannahsten.texifyidea.util.labels.extractLabelName
+import nl.hannahsten.texifyidea.util.labels.LatexLabelUtil
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
@@ -129,7 +128,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
          *
          *
          */
-        fun LatexComposite.extractLabelParameterText(): LatexParameterText? {
+        private fun LatexComposite.extractLabelParameterText(): LatexParameterText? {
             return when (this) {
                 is LatexCommands -> getLabelParameterTextCommand()
                 is LatexEnvironment -> getLabelParameterTextEnv()
@@ -196,7 +195,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
             val parameterText = descriptor.psiElement
 
             val baseFile = parameterText.containingFile
-            val oldLabel = parameterText.extractLabelName()
+            val oldLabel = LatexLabelUtil.extractLabelTextIn(parameterText) ?: ""
             // Determine label name.
             val prefix: String = expectedPrefix
             val labelName = oldLabel.formatAsLabel()
@@ -206,7 +205,7 @@ open class LatexLabelConventionInspection : TexifyInspectionBase() {
             else {
                 "$prefix:$labelName"
             }
-            var newLabel = Labels.getUniqueLabelName(createdLabelBase, baseFile)
+            var newLabel = LatexLabelUtil.getUniqueLabelName(createdLabelBase, baseFile)
 
             // let us add a braced label if it is not already braced
             if (shouldBeBraced) {
