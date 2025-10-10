@@ -124,5 +124,11 @@ object LatexLabelUtil {
         NewLabelsIndex.getAllLabels(fileset).forEach {
             processor(it)
         }
+        TODO()
+    }
+
+    fun processElementsByLabel(label: String, file: PsiFile, processor: (PsiElement) -> Unit): Sequence<PsiElement> {
+        val project = file.project
+        val fileset = LatexProjectStructure.getFilesetScopeFor(file)
     }
 }
