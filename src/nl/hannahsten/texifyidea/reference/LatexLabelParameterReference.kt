@@ -61,25 +61,11 @@ class LatexLabelParameterReference(element: LatexParameterText) : PsiReferenceBa
     companion object {
 
         fun multiResolve(label: String, file: PsiFile): List<PsiElementResolveResult> {
-            val project = file.project
-            val basicSearchScope = LatexProjectStructure.getFilesetScopeFor(file, onlyTexFiles = true)
-            var elements = NewLabelsIndex.getByName(label, basicSearchScope)
-
-            LatexProjectStructure.getFilesetDataFor(file)?.externalDocumentInfo?.forEach { info ->
-                if (label.startsWith(info.labelPrefix)) {
-                    val labelWithoutPrefix = label.removePrefix(info.labelPrefix)
-                    val scopes = info.files.map { LatexProjectStructure.getFilesetScopeFor(it, project, onlyTexFiles = true) }
-                    elements += NewLabelsIndex.getByName(labelWithoutPrefix, GlobalSearchScope.union(scopes))
-                }
+            val result = mutableListOf<PsiElementResolveResult>()
+            LatexLabelUtil.forEachLabelParamByName(label, file) {
+                result.add(PsiElementResolveResult(it))
             }
-
-            return elements.mapNotNull { e ->
-                // Find the normal text in the label command.
-                // We cannot just resolve to the label command itself, because for Find Usages IJ will get the name of the element
-                // under the cursor and use the words scanner to look for it (and then check if the elements found are references to the element under the cursor)
-                // but only the label text itself will have the correct name for that.
-                LatexLabelUtil.extractLabelElementIn(e)?.let { PsiElementResolveResult(it) }
-            }
+            return result
         }
 
         fun isLabelDefined(label: String, file: PsiFile): Boolean {

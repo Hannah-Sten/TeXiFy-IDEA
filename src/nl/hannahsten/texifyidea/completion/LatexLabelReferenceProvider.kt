@@ -15,15 +15,15 @@ object LatexLabelReferenceProvider : LatexContextAgnosticCompletionProvider() {
         val rs = result.withPrefixMatcher(PlainPrefixMatcher(result.prefixMatcher.prefix, false))
         // the label names are not necessarily camel case, so we use a plain prefix matcher
 
-        LatexLabelUtil.processAllLabelsInFileSet(file, withExternal = true) { label, element ->
-            val containingFile = element.containingFile
+        LatexLabelUtil.processAllLabelsInFileSet(file, withExternal = true) { label, container, param ->
+            val containingFile = container.containingFile
             val lookup = LookupElementBuilder
                 .create(label)
                 .bold()
                 .withInsertHandler(LatexReferenceInsertHandler())
                 .withTypeText(
                     containingFile.name + ":" +
-                        (1 + containingFile.fileDocument.getLineNumber(element.textOffset)),
+                        (1 + containingFile.fileDocument.getLineNumber(container.textOffset)),
                     true
                 )
                 .withIcon(TexifyIcons.DOT_LABEL)

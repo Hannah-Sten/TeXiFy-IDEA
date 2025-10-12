@@ -6,6 +6,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.index.FilesetData
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.index.NewBibtexEntryIndex
@@ -88,7 +89,7 @@ object LatexLabelUtil {
         return firstRequiredParameter()?.findFirstChildTyped<LatexParameterText>()
     }
 
-    fun extractLabelFromCommand(element: LatexCommands): PsiElement? {
+    fun extractLabelFromCommand(element: LatexCommands, customDef: Boolean = false): PsiElement? {
         val nameWithSlash = element.nameWithSlash
         if (nameWithSlash in CommandMagic.labels) {
             return element.firstRequiredParameterText()
@@ -96,6 +97,7 @@ object LatexLabelUtil {
         if (nameWithSlash in CommandMagic.labelAsParameter) {
             return getLabelFromOptionalParam(element)
         }
+        if (!customDef) return null
         val semantics = LatexDefinitionService.resolveCommand(element) ?: return element.firstRequiredParameterText()
         return extractLabelWithSemantics(element, semantics.arguments)
     }
@@ -103,31 +105,39 @@ object LatexLabelUtil {
     /**
      * Extracts the label from the environment if it is defined as a parameter.
      */
-    fun extractLabelFromEnvironment(element: LatexEnvironment): PsiElement? {
+    fun extractLabelFromEnvironment(element: LatexEnvironment, customDef: Boolean = false): PsiElement? {
         val name = element.getEnvironmentName()
         if (name in EnvironmentMagic.labelAsParameter) {
             return getLabelFromOptionalParam(element.beginCommand)
         }
+        if (!customDef) return null
         val semantics = LatexDefinitionService.resolveEnv(element) ?: return null
         return extractLabelWithSemantics(element.beginCommand, semantics.arguments)
     }
 
-    fun extractLabelElementIn(element: PsiElement): PsiElement? {
+    fun extractLabelParamIn(element: PsiElement, withCustomized: Boolean = false): PsiElement? {
         return when (element) {
             is BibtexEntry -> element.findFirstChildTyped<BibtexId>()
-            is LatexCommands -> extractLabelFromCommand(element)
-            is LatexEnvironment -> extractLabelFromEnvironment(element)
+            is LatexCommands -> extractLabelFromCommand(element, withCustomized)
+            is LatexEnvironment -> extractLabelFromEnvironment(element, withCustomized)
             is LatexParameterText -> element
             else -> null
         }
     }
 
-    fun extractLabelTextIn(element: PsiElement): String? {
-        return extractLabelElementIn(element)?.text
+    fun extractLabelTextIn(element: PsiElement, customDef: Boolean = false): String? {
+        return extractLabelParamIn(element, customDef)?.text
     }
 
     fun interface LabelProcessor {
-        fun process(label: String, element: PsiElement)
+        /**
+         * Processes a label and the element it was found in.
+         *
+         * @param container The element containing the label, e.g. a \label command or a \bibitem command.
+         * @param label The label text, e.g. "sec:introduction", including any prefix from external documents.
+         * @param param The element containing the label text, e.g. the parameter text of a \label command or the id of a \bibitem command.
+         */
+        fun process(label: String, container: PsiElement, param: PsiElement)
     }
 
     private fun processCustomCommand(
@@ -138,9 +148,9 @@ object LatexLabelUtil {
         if (nameWithSlash in CommandMagic.labels) return
         if (nameWithSlash in CommandMagic.labelAsParameter) return
         NewCommandsIndex.forEachByName(nameWithSlash, project, scope) { command ->
-            val labelElement = extractLabelFromCommand(command) ?: return@forEachByName
-            val label = prefix + labelElement.text
-            processor.process(label, labelElement)
+            val paramText = extractLabelWithSemantics(command, semantics.arguments) ?: return@forEachByName
+            val label = prefix + paramText.text
+            processor.process(label, command, paramText)
         }
     }
 
@@ -149,29 +159,35 @@ object LatexLabelUtil {
         project: Project, scope: GlobalSearchScope, processor: LabelProcessor
     ) {
         if (semantics.name in EnvironmentMagic.labelAsParameter) return
-        NewLatexEnvironmentIndex.forEachByName(
-            semantics.name, project, scope
-        ) { env ->
-            val labelElement = extractLabelFromEnvironment(env) ?: return@forEachByName
-            val label = prefix + labelElement.text
-            processor.process(label, labelElement)
+        NewLatexEnvironmentIndex.forEachByName(semantics.name, project, scope) { env ->
+            val paramText = extractLabelWithSemantics(env.beginCommand, semantics.arguments) ?: return@forEachByName
+            val label = prefix + paramText.text
+            processor.process(label, env, paramText)
         }
     }
 
     private fun processInFileset(
         project: Project, file: VirtualFile, prefix: String = "", withCustomCmd: Boolean, processor: LabelProcessor
     ) {
-        val filesetData = LatexProjectStructure.getFilesetDataFor(file, project) ?: return
-        val scope = filesetData.filesetScope.restrictedByFileTypes(LatexFileType)
+        val filesetData = LatexProjectStructure.getFilesetDataFor(file, project)
+        val scope = filesetData?.filesetScope?.restrictedByFileTypes(LatexFileType) ?: GlobalSearchScope.fileScope(project, file)
         NewLabelsIndex.forEachKey(project, scope) { extractedLabel ->
             if (extractedLabel.isBlank()) return@forEachKey
             NewLabelsIndex.forEachByName(extractedLabel, project, scope) { labelingElement ->
                 val label = prefix + extractedLabel
-                processor.process(label, labelingElement)
+                val param = extractLabelParamIn(labelingElement, withCustomized = false) ?: return@forEachByName
+                processor.process(label, labelingElement, param)
             }
         }
-        if (!withCustomCmd) return
+
         // Custom commands
+        if (!withCustomCmd || filesetData == null) return
+        processCustomizedInFileset(project, filesetData, prefix, processor)
+    }
+
+    private fun processCustomizedInFileset(
+        project: Project, filesetData: FilesetData, prefix: String, processor: LabelProcessor
+    ) {
         val defService = LatexDefinitionService.getInstance(project)
         for (fileset in filesetData.filesets) {
             val defBundle = defService.getDefBundleForFileset(fileset)
@@ -187,25 +203,65 @@ object LatexLabelUtil {
         }
     }
 
+    /**
+     * Processes all labels in the fileset of the given file, including external documents and custom commands or environments if specified.
+     */
     fun processAllLabelsInFileSet(
-        file: PsiFile, withExternal: Boolean = true, withCustomCmd: Boolean = true, processor: LabelProcessor
+        file: PsiFile, withExternal: Boolean = true, withCustomized: Boolean = true, processor: LabelProcessor
     ) {
-        val filesetData = LatexProjectStructure.getFilesetDataFor(file) ?: return
         val project = file.project
         val virtualFile = file.virtualFile ?: return
-        processInFileset(project, virtualFile, prefix = "", withCustomCmd, processor)
+        processInFileset(project, virtualFile, prefix = "", withCustomized, processor)
 
         if (!withExternal) return
-
+        val filesetData = LatexProjectStructure.getFilesetDataFor(file) ?: return
         filesetData.externalDocumentInfo.forEach { info ->
             val prefix = info.labelPrefix
             for (file in info.files) {
-                processInFileset(project, file, prefix, withCustomCmd, processor)
+                processInFileset(project, file, prefix, withCustomized, processor)
             }
         }
     }
 
-    fun findAllLabelTextByName(fqLabel: String, file: PsiFile, processor: (PsiElement) -> Unit): Sequence<PsiElement> {
-        TODO()
+    private fun forEachLabelParamInFilesetByName(
+        label: String, project: Project, file: VirtualFile, withCustomized: Boolean, processor: (PsiElement) -> Unit
+    ) {
+        val filesetData = LatexProjectStructure.getFilesetDataFor(file, project)
+        val scope = filesetData?.filesetScope?.restrictedByFileTypes(LatexFileType) ?: GlobalSearchScope.fileScope(project, file)
+        NewLabelsIndex.forEachByName(label, project, scope) { container ->
+            val param = extractLabelParamIn(container, withCustomized = false) ?: return@forEachByName
+            processor(param)
+        }
+
+        // Custom commands
+        if (!withCustomized) return
+        if(filesetData == null) return
+        processCustomizedInFileset(project, filesetData, "") { customLabel, container, param ->
+            if (label == customLabel) {
+                processor(param)
+            }
+        }
+    }
+
+    /**
+     * Finds all the labels by name in the fileset of the given file, including external documents if specified.
+     *
+     *
+     * @param processor Processes the parameter element containing the label text.
+     */
+    fun forEachLabelParamByName(label: String, file: PsiFile, withExternal: Boolean = true, withCustomized: Boolean = true, processor: (PsiElement) -> Unit) {
+        val project = file.project
+        val virtualFile = file.virtualFile ?: return
+        forEachLabelParamInFilesetByName(label, project, virtualFile, withCustomized, processor)
+
+        if (!withExternal) return
+        val filesetData = LatexProjectStructure.getFilesetDataFor(file) ?: return
+        filesetData.externalDocumentInfo.forEach { info ->
+            if (!label.startsWith(info.labelPrefix)) return@forEach
+            val labelWithoutPrefix = label.removePrefix(info.labelPrefix)
+            for (file in info.files) {
+                forEachLabelParamInFilesetByName(labelWithoutPrefix, project, file, withCustomized, processor)
+            }
+        }
     }
 }
