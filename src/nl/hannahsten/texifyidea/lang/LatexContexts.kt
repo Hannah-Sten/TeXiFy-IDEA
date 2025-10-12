@@ -202,4 +202,21 @@ object LatexContexts {
         }
         return null
     }
+
+    /**
+     * Contexts in which an identifier is expected.
+     *
+     * @see nl.hannahsten.texifyidea.psi.impl.LatexParameterTextImplMixin.getNameIdentifier
+     */
+    val contextsAsIdentifier = setOf(
+        LabelDefinition,
+        LabelReference,
+        BibKey,
+        BibReference,
+        GlossaryReference,
+        GlossaryDefinition,
+        CommandDeclaration,
+        EnvironmentDeclaration,
+        Identifier
+    )
 }
