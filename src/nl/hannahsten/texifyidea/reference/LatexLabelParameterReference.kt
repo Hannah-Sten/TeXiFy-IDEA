@@ -61,14 +61,13 @@ class LatexLabelParameterReference(element: LatexParameterText) : PsiReferenceBa
     companion object {
 
         fun multiResolve(label: String, file: PsiFile): List<PsiElementResolveResult> {
-            val result = mutableListOf<PsiElementResolveResult>()
-            LatexLabelUtil.forEachLabelParamByName(label, file) {
-                result.add(PsiElementResolveResult(it))
-            }
-            return result
+            val paramList = LatexLabelUtil.getLabelParamsByName(label, file)
+            if (paramList.isEmpty()) return emptyList()
+            return paramList.map { PsiElementResolveResult(it) }
         }
 
         fun isLabelDefined(label: String, file: PsiFile): Boolean {
+            // Fast check first
             val project = file.project
             val basicSearchScope = LatexProjectStructure.getFilesetScopeFor(file, onlyTexFiles = true)
             if (NewLabelsIndex.existsByName(label, project, basicSearchScope)) return true
@@ -80,7 +79,9 @@ class LatexLabelParameterReference(element: LatexParameterText) : PsiReferenceBa
                     if (NewLabelsIndex.existsByName(labelWithoutPrefix, project, GlobalSearchScope.union(scopes))) return true
                 }
             }
-            return false
+
+            // Exact check in the fileset (including external documents)
+            return LatexLabelUtil.getLabelParamsByName(label, file).isNotEmpty()
         }
     }
 }

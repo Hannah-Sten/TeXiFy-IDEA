@@ -244,7 +244,7 @@ object LatexLabelUtil {
     }
 
     /**
-     * Finds all the labels by name in the fileset of the given file, including external documents if specified.
+     * Finds all the labels by name in the fileset of the given file, including external documents and custom commands or environments if specified.
      *
      *
      * @param processor Processes the parameter element containing the label text.
@@ -263,5 +263,16 @@ object LatexLabelUtil {
                 forEachLabelParamInFilesetByName(labelWithoutPrefix, project, file, withCustomized, processor)
             }
         }
+    }
+
+    /**
+     * Finds all the labels by name in the fileset of the given file, including external documents and custom commands or environments if specified.
+     */
+    fun getLabelParamsByName(label: String, file: PsiFile, withExternal: Boolean = true, withCustomized: Boolean = true): List<PsiElement> {
+        val result = mutableListOf<PsiElement>()
+        forEachLabelParamByName(label, file, withExternal, withCustomized) {
+            result.add(it)
+        }
+        return result
     }
 }
