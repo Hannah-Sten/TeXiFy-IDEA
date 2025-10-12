@@ -1,15 +1,23 @@
 package nl.hannahsten.texifyidea.util.labels
 
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
+import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.index.NewBibtexEntryIndex
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.index.NewLabelsIndex
+import nl.hannahsten.texifyidea.index.NewLatexEnvironmentIndex
+import nl.hannahsten.texifyidea.index.restrictedByFileTypes
 import nl.hannahsten.texifyidea.lang.LArgument
+import nl.hannahsten.texifyidea.lang.LSemanticCommand
+import nl.hannahsten.texifyidea.lang.LSemanticEnv
 import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
@@ -118,17 +126,86 @@ object LatexLabelUtil {
         return extractLabelElementIn(element)?.text
     }
 
-    fun processAllLabelsInFileSet(file: PsiFile, processor: (String) -> Unit) {
-        val project = file.project
-        val fileset = LatexProjectStructure.getFilesetScopeFor(file)
-        NewLabelsIndex.getAllLabels(fileset).forEach {
-            processor(it)
-        }
-        TODO()
+    fun interface LabelProcessor {
+        fun process(label: String, element: PsiElement)
     }
 
-    fun processElementsByLabel(label: String, file: PsiFile, processor: (PsiElement) -> Unit): Sequence<PsiElement> {
+    private fun processCustomCommand(
+        semantics: LSemanticCommand, prefix: String = "",
+        project: Project, scope: GlobalSearchScope, processor: LabelProcessor
+    ) {
+        val nameWithSlash = semantics.nameWithSlash
+        if (nameWithSlash in CommandMagic.labels) return
+        if (nameWithSlash in CommandMagic.labelAsParameter) return
+        NewCommandsIndex.forEachByName(nameWithSlash, project, scope) { command ->
+            val labelElement = extractLabelFromCommand(command) ?: return@forEachByName
+            val label = prefix + labelElement.text
+            processor.process(label, labelElement)
+        }
+    }
+
+    private fun processCustomEnv(
+        semantics: LSemanticEnv, prefix: String = "",
+        project: Project, scope: GlobalSearchScope, processor: LabelProcessor
+    ) {
+        if (semantics.name in EnvironmentMagic.labelAsParameter) return
+        NewLatexEnvironmentIndex.forEachByName(
+            semantics.name, project, scope
+        ) { env ->
+            val labelElement = extractLabelFromEnvironment(env) ?: return@forEachByName
+            val label = prefix + labelElement.text
+            processor.process(label, labelElement)
+        }
+    }
+
+    private fun processInFileset(
+        project: Project, file: VirtualFile, prefix: String = "", withCustomCmd: Boolean, processor: LabelProcessor
+    ) {
+        val filesetData = LatexProjectStructure.getFilesetDataFor(file, project) ?: return
+        val scope = filesetData.filesetScope.restrictedByFileTypes(LatexFileType)
+        NewLabelsIndex.forEachKey(project, scope) { extractedLabel ->
+            if (extractedLabel.isBlank()) return@forEachKey
+            NewLabelsIndex.forEachByName(extractedLabel, project, scope) { labelingElement ->
+                val label = prefix + extractedLabel
+                processor.process(label, labelingElement)
+            }
+        }
+        if (!withCustomCmd) return
+        // Custom commands
+        val defService = LatexDefinitionService.getInstance(project)
+        for (fileset in filesetData.filesets) {
+            val defBundle = defService.getDefBundleForFileset(fileset)
+            val entities = defBundle.findByRelatedContext(LatexContexts.LabelDefinition)
+            val scope = fileset.texFileScope(project)
+            for (entity in entities) {
+                if (entity.dependency != LatexLib.CUSTOM) continue
+                when (entity) {
+                    is LSemanticCommand -> processCustomCommand(entity, prefix, project, scope, processor)
+                    is LSemanticEnv -> processCustomEnv(entity, prefix, project, scope, processor)
+                }
+            }
+        }
+    }
+
+    fun processAllLabelsInFileSet(
+        file: PsiFile, withExternal: Boolean = true, withCustomCmd: Boolean = true, processor: LabelProcessor
+    ) {
+        val filesetData = LatexProjectStructure.getFilesetDataFor(file) ?: return
         val project = file.project
-        val fileset = LatexProjectStructure.getFilesetScopeFor(file)
+        val virtualFile = file.virtualFile ?: return
+        processInFileset(project, virtualFile, prefix = "", withCustomCmd, processor)
+
+        if (!withExternal) return
+
+        filesetData.externalDocumentInfo.forEach { info ->
+            val prefix = info.labelPrefix
+            for (file in info.files) {
+                processInFileset(project, file, prefix, withCustomCmd, processor)
+            }
+        }
+    }
+
+    fun findAllLabelTextByName(fqLabel: String, file: PsiFile, processor: (PsiElement) -> Unit): Sequence<PsiElement> {
+        TODO()
     }
 }
