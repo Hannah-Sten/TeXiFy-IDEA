@@ -10,9 +10,8 @@ import nl.hannahsten.texifyidea.lang.introduces
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.lang.predefined.CommandNames
-import nl.hannahsten.texifyidea.psi.contentText
 import nl.hannahsten.texifyidea.psi.nameWithSlash
-import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
+import nl.hannahsten.texifyidea.util.labels.LatexLabelUtil
 
 /**
  * @author Hannah Schellekens
@@ -46,20 +45,7 @@ object LatexPresentationFactory {
     }
 
     private fun buildLabelPresentation(cmd: LatexCommands, semantics: LSemanticCommand?): ItemPresentation {
-        fun getPresentableText(): String {
-            if (semantics == null) {
-                return cmd.requiredParameterText(0) ?: "no label found"
-            }
-            LatexPsiUtil.processArgumentsWithSemantics(cmd, semantics) { param, arg ->
-                if (arg != null && arg.contextSignature.introduces(LatexContexts.LabelDefinition)) {
-                    return param.contentText()
-                }
-            }
-            return "no label found"
-        }
-
-        val presentableText: String = getPresentableText()
-
+        val presentableText: String = LatexLabelUtil.extractLabelParamInCommand(cmd, true, semantics)?.text ?: "<no label>"
         // Location string.
         val manager = FileDocumentManager.getInstance()
         val document = manager.getDocument(cmd.containingFile.virtualFile)

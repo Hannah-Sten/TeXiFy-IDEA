@@ -89,7 +89,14 @@ object LatexLabelUtil {
         return firstRequiredParameter()?.findFirstChildTyped<LatexParameterText>()
     }
 
-    fun extractLabelFromCommand(element: LatexCommands, customDef: Boolean = false): PsiElement? {
+    /**
+     * Extracts the label parameter from the command if it is a known labeling command or if it is defined as a parameter.
+     *
+     * @param providedSemantics If provided, this semantics will be used instead of resolving it again. Useful for performance when the semantics is already known.
+     * @param customDef If true, will also check for custom commands defined in the project.
+     * @return The parameter text containing the label, or null if not found.
+     */
+    fun extractLabelParamInCommand(element: LatexCommands, customDef: Boolean, providedSemantics: LSemanticCommand? = null): PsiElement? {
         val nameWithSlash = element.nameWithSlash
         if (nameWithSlash in CommandMagic.labels) {
             return element.firstRequiredParameterText()
@@ -98,14 +105,14 @@ object LatexLabelUtil {
             return getLabelFromOptionalParam(element)
         }
         if (!customDef) return null
-        val semantics = LatexDefinitionService.resolveCommand(element) ?: return element.firstRequiredParameterText()
+        val semantics = providedSemantics ?: LatexDefinitionService.resolveCommand(element) ?: return element.firstRequiredParameterText()
         return extractLabelWithSemantics(element, semantics.arguments)
     }
 
     /**
      * Extracts the label from the environment if it is defined as a parameter.
      */
-    fun extractLabelFromEnvironment(element: LatexEnvironment, customDef: Boolean = false): PsiElement? {
+    fun extractLabelFromEnvironment(element: LatexEnvironment, customDef: Boolean): PsiElement? {
         val name = element.getEnvironmentName()
         if (name in EnvironmentMagic.labelAsParameter) {
             return getLabelFromOptionalParam(element.beginCommand)
@@ -118,7 +125,7 @@ object LatexLabelUtil {
     fun extractLabelParamIn(element: PsiElement, withCustomized: Boolean = false): PsiElement? {
         return when (element) {
             is BibtexEntry -> element.findFirstChildTyped<BibtexId>()
-            is LatexCommands -> extractLabelFromCommand(element, withCustomized)
+            is LatexCommands -> extractLabelParamInCommand(element, withCustomized)
             is LatexEnvironment -> extractLabelFromEnvironment(element, withCustomized)
             is LatexParameterText -> element
             else -> null
@@ -235,7 +242,7 @@ object LatexLabelUtil {
 
         // Custom commands
         if (!withCustomized) return
-        if(filesetData == null) return
+        if (filesetData == null) return
         processCustomizedInFileset(project, filesetData, "") { customLabel, container, param ->
             if (label == customLabel) {
                 processor(param)
