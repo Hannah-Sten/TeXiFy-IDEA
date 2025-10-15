@@ -1,8 +1,9 @@
 version: "1.0"
-linter: jetbrains/qodana-jvm-community:2025.1
+linter: jetbrains/qodana-jvm-community:2025.2
 profile:
   path: .idea/inspectionProfiles/Project_Default.xml
 failThreshold: 0
+bootstrap: ./gradlew buildPlugin
 exclude: # Some of these are valid inspections but not important or accurate enough to fail the build
   - name: EditorConfigUnusedDeclaration
   - name: HtmlDeprecatedTag

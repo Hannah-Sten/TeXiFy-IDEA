@@ -18,6 +18,8 @@ import nl.hannahsten.texifyidea.grammar.LatexLanguage
  */
 class LatexCodeStyleSettingsProvider : CodeStyleSettingsProvider() {
 
+    override fun getLanguage() = LatexLanguage
+
     override fun createCustomSettings(settings: CodeStyleSettings) = LatexCodeStyleSettings(settings)
 
     override fun getConfigurableDisplayName() = LatexLanguage.displayName
