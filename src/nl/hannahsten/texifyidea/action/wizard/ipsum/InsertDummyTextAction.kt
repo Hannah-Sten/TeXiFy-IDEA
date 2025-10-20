@@ -23,7 +23,7 @@ open class InsertDummyTextAction : AnAction() {
      */
     private fun executeAction(file: PsiFile) {
         val project = file.project
-        val editor = project.currentTextEditor()?.editor ?: return
+        val editor = project.selectedTextEditorOrWarning()?.editor ?: return
 
         // Get the indentation from the current line.
         val indent = editor.document.lineIndentationByOffset(editor.caretOffset())

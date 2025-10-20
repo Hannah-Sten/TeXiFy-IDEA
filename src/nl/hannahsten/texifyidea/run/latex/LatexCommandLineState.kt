@@ -34,13 +34,10 @@ import nl.hannahsten.texifyidea.run.latex.externaltool.RunExternalToolListener
 import nl.hannahsten.texifyidea.run.makeindex.RunMakeindexListener
 import nl.hannahsten.texifyidea.run.pdfviewer.OpenViewerListener
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
-import nl.hannahsten.texifyidea.util.Log
-import nl.hannahsten.texifyidea.util.caretOffset
-import nl.hannahsten.texifyidea.util.currentTextEditor
+import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.findTectonicTomlFile
 import nl.hannahsten.texifyidea.util.files.hasTectonicTomlFile
 import nl.hannahsten.texifyidea.util.files.psiFile
-import nl.hannahsten.texifyidea.util.includedPackagesInFileset
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
 import java.io.File
 import kotlin.io.path.Path
@@ -322,7 +319,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
      */
     fun scheduleForwardSearchAfterCompile(viewer: PdfViewer, handler: ProcessHandler, runConfig: LatexRunConfiguration, environment: ExecutionEnvironment, focusAllowed: Boolean = true) {
         // We have to find the file and line number before scheduling the forward search.
-        val editor = environment.project.currentTextEditor()?.editor
+        val editor = environment.project.focusedTextEditor()?.editor ?: environment.project.selectedTextEditor()?.editor
 
         // Get the line number in the currently open file
         val line = editor?.document?.getLineNumber(editor.caretOffset())?.plus(1) ?: 0

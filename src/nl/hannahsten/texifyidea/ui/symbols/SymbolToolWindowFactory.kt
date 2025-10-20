@@ -158,7 +158,7 @@ open class SymbolToolWindowFactory : ToolWindowFactory, DumbAware {
          * Inserts the symbol into the currently active document.
          */
         private fun insertSymbol(symbol: SymbolUiEntry) {
-            val editor = project.currentTextEditor()?.editor ?: return
+            val editor = project.selectedTextEditorOrWarning()?.editor ?: return
             val originalCaret = editor.caretOffset()
             val selection = editor.selectionModel
 

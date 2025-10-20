@@ -10,8 +10,8 @@ import com.intellij.openapi.editor.actions.PasteAction
 import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.Clipboard
-import nl.hannahsten.texifyidea.util.currentTextEditor
 import nl.hannahsten.texifyidea.util.files.isLatexFile
+import nl.hannahsten.texifyidea.util.focusedTextEditor
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Node
 import java.awt.datatransfer.DataFlavor
@@ -35,7 +35,7 @@ class HtmlPasteProvider : PasteProvider {
     override fun performPaste(dataContext: DataContext) {
         val project = dataContext.getData(PlatformDataKeys.PROJECT) ?: return
         val clipboardHtml = dataContext.transferableHtml() ?: return
-        val editor = project.currentTextEditor()?.editor ?: return
+        val editor = project.focusedTextEditor()?.editor ?: return
         val latexFile = dataContext.getData(PlatformDataKeys.PSI_FILE) as? LatexFile ?: return
 
         val html = Clipboard.extractHtmlFromClipboard(clipboardHtml)
