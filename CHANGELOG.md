@@ -5,6 +5,7 @@
 ### Added
 
 ### Fixed
+* Fix 'file not found' error for input commands without extension specified
 * Fix symbol tool window insertion
 * Do not override build project action if there are no run configurations
 
