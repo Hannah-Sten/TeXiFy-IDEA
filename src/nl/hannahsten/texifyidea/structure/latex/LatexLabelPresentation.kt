@@ -8,19 +8,12 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 /**
  * @author Hannah Schellekens
  */
-class LatexLabelPresentation(labelCommand: LatexCommands) : ItemPresentation {
+class LatexLabelPresentation(labelCommand: LatexCommands, labelPosition: Int) : ItemPresentation {
 
     private val locationString: String
-    private val presentableText: String
+    private val presentableText: String = labelCommand.requiredParameterText(labelPosition) ?: "no label found"
 
     init {
-        // TODO: use command semantics
-//        val position =
-//            CommandManager.labelAliasesInfo.getOrDefault(labelCommand.commandToken.text, null)?.positions?.firstOrNull()
-//                ?: 0
-        val position = 0
-        presentableText = labelCommand.requiredParameterText(position) ?: "no label found"
-
         // Location string.
         val manager = FileDocumentManager.getInstance()
         val document = manager.getDocument(labelCommand.containingFile.virtualFile)

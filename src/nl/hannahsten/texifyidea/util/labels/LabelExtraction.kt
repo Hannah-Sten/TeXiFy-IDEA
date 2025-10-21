@@ -107,3 +107,13 @@ fun PsiElement.extractLabelName(externalDocumentCommand: LatexCommands? = null):
     }
     return text
 }
+
+/**
+ * Returns -1 if the command does not define labels
+ */
+fun LatexCommands.getLabelPosition(): Int {
+    // todo exclude in command definitions
+    return LatexDefinitionService.resolveCommand(this)?.arguments?.indexOfFirst { it.contextSignature.introduces(LatexContexts.LabelDefinition) } ?: -1
+}
+
+fun LatexCommands.isLabelCommand() = getLabelPosition() >= 0
