@@ -10,17 +10,14 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.util.descendants
 import com.intellij.psi.util.endOffset
 import com.intellij.psi.util.startOffset
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.lang.predefined.EnvironmentNames
-import nl.hannahsten.texifyidea.lang.predefined.PredefinedCmdPairedDelimiters
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.endOffset
-import nl.hannahsten.texifyidea.psi.prevContextualSiblingIgnoreWhitespace
 import nl.hannahsten.texifyidea.util.parser.traverseRequiredParams
 
 /**
@@ -367,31 +364,14 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
         }
 
         override fun visitLeftRight(o: LatexLeftRight) {
-            val descendants = o.descendants(canGoInside = { it == o }).toList()
-
-            var leftDisplay: String
-
-            var rightDisplay: String
-
-            if (descendants[1].text.substring(1) in PredefinedCmdPairedDelimiters.delimiterLeftMap) {
-                leftDisplay = PredefinedCmdPairedDelimiters.delimiterLeftMap[descendants[1].text.substring(1)]?.leftDisplay ?: descendants[1].text
-
-                rightDisplay = PredefinedCmdPairedDelimiters.delimiterLeftMap[descendants[1].text.substring(1)]?.rightDisplay ?: descendants[descendants.size - 1].text
-            } else if ((descendants[1].text + descendants[2].text).substring(1) in PredefinedCmdPairedDelimiters.delimiterLeftMap) {
-                leftDisplay = PredefinedCmdPairedDelimiters.delimiterLeftMap[(descendants[1].text + descendants[2].text).substring(1)]?.leftDisplay ?: descendants[1].text
-
-                rightDisplay = PredefinedCmdPairedDelimiters.delimiterLeftMap[(descendants[1].text + descendants[2].text).substring(1)]?.rightDisplay ?: descendants[descendants.size - 1].text
-            } else {
-                super.visitLeftRight(o)
-
-                return
-            }
+            val leftDisplay = o.leftRightOpen?.text?.replace("\\", "") ?: "\\left"
+            val rightDisplay = o.leftRightClose?.text?.replace("\\", "") ?: "\\right"
 
             descriptors.add(
                 foldingDescriptor(
                     o,
                     range = o.textRange,
-                    placeholderText = leftDisplay + "..." + rightDisplay,
+                    placeholderText = "$leftDisplay...$rightDisplay",
                     false
                 )
             )

@@ -96,7 +96,9 @@ commands ::= COMMAND_TOKEN STAR? parameter* {
 // This is no_math_content without the loose left and right, we need this to make sure a complete left_right situation is parsed as a left_right and not as two separate left and right
 left_right_content ::= raw_text | magic_comment | comment | environment | pseudocode_block | if_block | math_environment | COMMAND_IFNEXTCHAR | commands | left_right | group | normal_text | END_IF | ELSE
 // Allow unmatched left and right
-left_right ::= LEFT (OPEN_PAREN | OPEN_ANGLE_BRACKET | OPEN_BRACE | OPEN_BRACKET | PIPE)? left_right_content* RIGHT (CLOSE_PAREN | CLOSE_ANGLE_BRACKET | CLOSE_BRACE | CLOSE_BRACKET | PIPE)?
+left_right_open ::= OPEN_PAREN | OPEN_ANGLE_BRACKET | OPEN_BRACKET | PIPE | OPEN_ESCAPED_BRACE
+left_right_close ::= CLOSE_PAREN | CLOSE_ANGLE_BRACKET | CLOSE_BRACKET | PIPE | CLOSE_ESCAPED_BRACE
+left_right ::= LEFT left_right_open? left_right_content* RIGHT left_right_close?
 
 begin_command ::= BEGIN_TOKEN OPEN_BRACE env_identifier CLOSE_BRACE parameter*{
     pin=1
