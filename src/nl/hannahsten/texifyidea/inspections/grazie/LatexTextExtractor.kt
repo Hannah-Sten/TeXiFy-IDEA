@@ -4,20 +4,17 @@ import com.intellij.grazie.grammar.strategy.StrategyUtils
 import com.intellij.grazie.text.TextContent
 import com.intellij.grazie.text.TextExtractor
 import com.intellij.lang.tree.util.children
-import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.startOffset
-import nl.hannahsten.texifyidea.index.NewDefinitionIndex
-import nl.hannahsten.texifyidea.lang.commands.Argument
-import nl.hannahsten.texifyidea.lang.commands.LatexCommand
-import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
+import nl.hannahsten.texifyidea.lang.LContextSet
+import nl.hannahsten.texifyidea.lang.LatexContextIntro
+import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.*
-import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.*
-import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 
 /**
  * Explains to Grazie which psi elements contain text and which don't.
@@ -97,7 +94,7 @@ class LatexTextExtractor : TextExtractor() {
                 if (setOf(' ', '\n').contains(rootText.getOrNull(start - 1)) && root.collectSubtreeTyped<LatexNormalText>().firstOrNull() != text
                 ) {
                     //  We have to skip over indents to find the newline though (indents will be ignored later)
-                    start -= rootText.substring(0, start).takeLastWhile { it.isWhitespace() }.length
+                    start -= rootText.take(start).takeLastWhile { it.isWhitespace() }.length
                 }
 
                 // -1 Because endOffset is exclusive, but we are working with inclusive end here
@@ -134,16 +131,25 @@ class LatexTextExtractor : TextExtractor() {
         return ranges.sortedBy { it.first }
     }
 
+    private fun hasNonTextContext(contexts: LContextSet): Boolean {
+        if(LatexContexts.Text in contexts) return false
+        if(LatexContexts.LabelReference in contexts) return false
+        if(LatexContexts.GlossaryReference in contexts) return false
+        return contexts.isNotEmpty()
+    }
+
     /**
      * Keep the command if the command will probably be replaced by some text in the typeset document, e.g. \texttt{arg} should read just "arg" to Grazie
      */
     private fun hasNonTextArgument(commandName: String, project: Project): Boolean {
-        return LatexCommand.lookup(commandName)
-            ?.firstOrNull()
-            ?.arguments
-            ?.filterIsInstance<RequiredArgument>()
-            // Do not keep if it is not text
-            ?.any { it.type != Argument.Type.TEXT && it.type != Argument.Type.LABEL } == true
+        // temporary fix, an overall improvement for the extractor is needed
+        val semantics = AllPredefined.lookupCommand(commandName.removePrefix("\\")) ?: return false
+        return semantics.arguments.any { arg ->
+            if(!arg.isRequired) return@any false
+            val intro = arg.contextSignature
+            (intro is LatexContextIntro.Assign && hasNonTextContext(intro.contexts)) ||
+                intro is LatexContextIntro.Modify
+        }
     }
 
     /**
@@ -151,10 +157,8 @@ class LatexTextExtractor : TextExtractor() {
      * Special case: if the command does not have parameters but the definition contains a text command, we assume the command itself will fit into the sentence (as we can't do a text replacement before sending to Grazie).
      */
     private fun isUserDefinedTextCommand(commandName: String, project: Project): Boolean {
-        if (DumbService.isDumb(project)) return false
-        return NewDefinitionIndex.getByName(commandName, project).any {
-            it.text.containsAny(CommandMagic.allTextCommands)
-        }
+        // TODO: we will re-implement this later
+        return false
     }
 
     private fun PsiElement.isNotInSquareBrackets() = parents().find { it is LatexGroup || it is LatexOptionalParam }

@@ -43,11 +43,13 @@ object PredefinedCmdFiles : PredefinedCommandSet() {
         )
     )
 
+    val cmdDocumentClass: LSemanticCommand
+
     val basicFileInputCommands: List<LSemanticCommand> = buildCommands {
         // Most file inputs are in preamble, but can be adjusted per command if needed.
         val name = required("name", LatexContexts.Identifier)
         underContext(LatexContexts.Preamble) {
-            "documentclass".cmd(
+            cmdDocumentClass = "documentclass".cmd(
                 "options".optional(LatexContexts.Literal),
                 classArgument
             ) {
@@ -95,7 +97,10 @@ object PredefinedCmdFiles : PredefinedCommandSet() {
 
     // Predefine additional file input contexts if needed, based on common file types.
     // These can be moved to LatexContext.kt if they are reusable across multiple command sets.
-    private val GRAPHICS_EXTENSIONS = setOf("pdf", "jpg", "jpeg", "png", "eps", "bmp", "gif", "tiff")
+    private val GRAPHICS_EXTENSIONS = setOf(
+        "pdf", "png", "jpg", "mps", "jpeg", "jbig2", "jb2",
+        "PDF", "PNG", "JPG", "JPEG", "JBIG2", "JB2", "eps", "bmp", "gif", "tiff"
+    )
     private val PICTURE_FILE = SimpleFileInputContext(
         "file.picture",
         isCommaSeparated = false,
@@ -115,7 +120,7 @@ object PredefinedCmdFiles : PredefinedCommandSet() {
         isAbsolutePathSupported = false,
     )
 
-    val commands = buildCommands {
+    val misc = buildCommands {
 
         underBase {
             "bibliography".cmd("bibliographyfile".required(LatexContexts.MultipleBibFiles)) {
@@ -151,6 +156,9 @@ object PredefinedCmdFiles : PredefinedCommandSet() {
             required("sourcefile", LatexContexts.SingleFile),
         ) {
             "Input a source file with syntax highlighting"
+        }
+        underPackage(LatexLib.LISTINGS) {
+            "lstinputlisting".cmd("options".optional, "filename".required(LatexContexts.SingleFile))
         }
     }
 
@@ -252,4 +260,6 @@ object PredefinedCmdFiles : PredefinedCommandSet() {
         "tikzfig".cmd(relativeSingleTexFileArg)
         "ctikzfig".cmd(relativeSingleTexFileArg)
     }
+
+    val namesOfAllFileIncludeCommands = allCommands.map { it.name }.toSet()
 }

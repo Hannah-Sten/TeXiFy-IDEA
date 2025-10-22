@@ -1,18 +1,39 @@
 package nl.hannahsten.texifyidea.inspections.latex.typesetting
 
-import nl.hannahsten.texifyidea.inspections.TexifyRegexInspection
-import java.util.regex.Pattern
+import com.intellij.codeInspection.ProblemDescriptor
+import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.openapi.project.Project
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.index.DefinitionBundle
+import nl.hannahsten.texifyidea.inspections.AbstractTexifyRegexBasedInspection
+import nl.hannahsten.texifyidea.lang.LContextSet
+import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.util.parser.findNextAdjacentWhiteSpace
+import nl.hannahsten.texifyidea.util.parser.findPrevAdjacentWhiteSpace
 
 /**
  * @author Hannah Schellekens
  */
-open class LatexCdotInspection : TexifyRegexInspection(
-    inspectionDisplayName = "Use of . instead of \\cdot",
+class LatexCdotInspection : AbstractTexifyRegexBasedInspection(
     inspectionId = "Cdot",
-    errorMessage = { "\\cdot expected" },
-    pattern = Pattern.compile("\\s+(\\.)\\s+"),
-    mathMode = true,
-    replacement = { _, _ -> "\\cdot" },
-    replacementRange = { it.groupRange(1) },
-    quickFixName = { "Change to \\cdot" }
-)
+    regex = Regex("^\\.$"),
+    highlight = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+    applicableContexts = setOf(LatexContexts.Math),
+) {
+    override fun errorMessage(matcher: MatchResult, context: LContextSet): String {
+        return "\\cdot expected"
+    }
+
+    override fun getReplacement(match: MatchResult, fullElementText: String, project: Project, problemDescriptor: ProblemDescriptor): String {
+        return "\\cdot"
+    }
+
+    override fun quickFixName(matcher: MatchResult, contexts: LContextSet): String {
+        return "Change to \\cdot"
+    }
+
+    override fun additionalChecks(element: PsiElement, match: MatchResult, bundle: DefinitionBundle, file: PsiFile): Boolean {
+        return element.findPrevAdjacentWhiteSpace() != null && element.findNextAdjacentWhiteSpace() != null
+    }
+}

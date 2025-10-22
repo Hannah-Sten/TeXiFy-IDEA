@@ -155,7 +155,6 @@ fun <T : Any> PsiElement.contextualSiblings(): List<LatexComposite> {
                 }
             }
         }
-        true // continue iterating
     }
     return result
 }
@@ -187,7 +186,7 @@ inline fun PsiElement.traverseContextualSiblingsPrev(action: (PsiElement) -> Uni
     return traverseContextualSiblingsTemplate(action) { it.prevSibling }
 }
 
-inline fun PsiElement.prevContextualSibling(predicate: (PsiElement) -> Boolean): PsiElement? {
+inline fun PsiElement.prevContextualSibling(predicate: (PsiElement) -> Boolean = { true }): PsiElement? {
     traverseContextualSiblingsPrev { sibling ->
         if (predicate(sibling)) {
             return sibling
@@ -199,7 +198,7 @@ inline fun PsiElement.prevContextualSibling(predicate: (PsiElement) -> Boolean):
 fun PsiElement.prevContextualSiblingIgnoreWhitespace(): PsiElement? =
     prevContextualSibling { it !is PsiWhiteSpace }
 
-fun PsiElement.nextContextualSibling(predicate: (PsiElement) -> Boolean): PsiElement? {
+fun PsiElement.nextContextualSibling(predicate: (PsiElement) -> Boolean = { true }): PsiElement? {
     traverseContextualSiblingsNext { sibling ->
         if (predicate(sibling)) {
             return sibling
@@ -207,6 +206,9 @@ fun PsiElement.nextContextualSibling(predicate: (PsiElement) -> Boolean): PsiEle
     }
     return null
 }
+
+fun PsiElement.nextContextualSiblingIgnoreWhitespace(): PsiElement? =
+    nextContextualSibling { it !is PsiWhiteSpace }
 
 /**
  * Gets the name of the command from the [PsiElement] if it is a command or is a content containing a command.
@@ -251,6 +253,27 @@ inline fun LatexCommandWithParams.forEachParameter(
     forEachDirectChildTyped<LatexParameter>(action)
 }
 
+inline fun LatexCommandWithParams.forEachRequiredParameter(
+    action: (LatexRequiredParam) -> Unit
+) {
+    forEachParameter {
+        it.requiredParam?.let { param -> action(param) }
+    }
+}
+
+inline fun LatexCommandWithParams.indexOfRequiredParameter(
+    predicate: (LatexRequiredParam) -> Boolean
+): Int {
+    var index = 0
+    forEachRequiredParameter {
+        if (predicate(it)) {
+            return index
+        }
+        index++
+    }
+    return -1
+}
+
 private fun PsiElement.getParameterTexts0(): Sequence<LatexParameterText> {
     return this.traversePruneIf { it is LatexCommandWithParams }.filterIsInstance<LatexParameterText>()
 }
@@ -272,7 +295,11 @@ fun LatexParameter.contentText(): String {
     return text
 }
 
-private fun stripContentText(text: String, prefix: Char, suffix: Char): String {
+fun LatexRequiredParam.contentText(): String {
+    return stripContentText(text, '{', '}')
+}
+
+fun stripContentText(text: String, prefix: Char, suffix: Char): String {
     var result = text
     if (result.length >= 2 && result.first() == prefix && result.last() == suffix) {
         result = result.substring(1, result.length - 1)

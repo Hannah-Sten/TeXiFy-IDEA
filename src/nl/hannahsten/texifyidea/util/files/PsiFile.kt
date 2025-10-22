@@ -49,13 +49,10 @@ fun PsiFile.isClassFile() = virtualFile?.extension == "cls"
 fun PsiFile.documentClassFileInProject() = findFile("${documentClass()}.cls", supportsAnyExtension = true)
 
 /**
- * If the file has a \documentclass command, return the class name, null otherwise.
+ * If the file has a top-level \documentclass command, return the class name, null otherwise.
  */
 fun PsiFile.documentClass(): String? {
-    return commandsInFile().asSequence()
-        .filter { it.name == "\\documentclass" }
-        .firstOrNull()
-        ?.requiredParameterText(0)
+    return traverseCommands(4).firstOrNull { it.nameWithSlash == "\\documentclass" }?.requiredParameterText(0)
 }
 
 /**
@@ -135,11 +132,8 @@ fun PsiFile.document(): Document? = PsiDocumentManager.getInstance(project).getD
  *          The name of the command including a backslash, or `null` for all commands.
  */
 fun PsiFile.commandsInFile(commandName: String? = null): Collection<LatexCommands> {
-    if(commandName != null) return traverseCommands().toList()
+    if(commandName != null) return traverseCommands().filter { it.nameWithSlash == commandName }.toList()
     return collectSubtreeTyped<LatexCommands>()
-//    return commandName?.let {
-//        this.allCommands().filter { it.name == commandName }
-//    } ?: this.allCommands()
 }
 
 /**

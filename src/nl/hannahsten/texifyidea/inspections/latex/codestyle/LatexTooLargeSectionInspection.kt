@@ -10,11 +10,12 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.jetbrains.rd.util.EnumSet
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
+import nl.hannahsten.texifyidea.lang.predefined.CommandNames
+import nl.hannahsten.texifyidea.lang.predefined.EnvironmentNames
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEndCommand
 import nl.hannahsten.texifyidea.psi.LatexNoMathContent
@@ -26,9 +27,7 @@ import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.writeToFileUndoable
-import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.*
-import java.util.*
 
 /**
  * @author Hannah Schellekens
@@ -40,7 +39,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
         /**
          * All commands that count as inspected sections in order of hierarchy.
          */
-        val SECTION_NAMES = listOf(LatexGenericRegularCommand.CHAPTER.cmd, LatexGenericRegularCommand.SECTION.cmd)
+        val SECTION_NAMES = listOf(CommandNames.CHAPTER, CommandNames.SECTION)
 
         /**
          * Looks up the section command that comes after the given command.
@@ -71,7 +70,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
 
             // If no command was found, find the end of the document.
             return command.containingFile.traverseReversed().filterIsInstance<LatexEndCommand>().firstOrNull {
-                it.environmentName() == DefaultEnvironment.DOCUMENT.environmentName
+                it.environmentName() == EnvironmentNames.DOCUMENT
             }
         }
     }
@@ -80,7 +79,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
 
     override val inspectionId = "TooLargeSection"
 
-    override val ignoredSuppressionScopes = EnumSet.of(MagicCommentScope.GROUP)!!
+    override val ignoredSuppressionScopes: Set<MagicCommentScope> = EnumSet.of(MagicCommentScope.GROUP)
 
     override fun getDisplayName() = "Too large sections"
 
@@ -158,7 +157,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
                 val nextSibling = cmd.firstParentOfType(LatexNoMathContent::class)
                     ?.nextSiblingIgnoreWhitespace()
                     ?.findFirstChildOfType(LatexCommands::class) ?: return null
-                return if (nextSibling.name == LatexGenericRegularCommand.LABEL.commandWithSlash) nextSibling else null
+                return if (nextSibling.name == CommandNames.LABEL) nextSibling else null
             }
         }
 
@@ -184,7 +183,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
             // Remove the braces of the LaTeX command before creating a filename of it
             val fileName = fileNameBraces.removeAll("{", "}")
                 .formatAsFileName()
-            val root = file.findRootFile(useIndexCache = false).containingDirectory?.virtualFile?.canonicalPath ?: return
+            val root = file.findRootFile().containingDirectory?.virtualFile?.canonicalPath ?: return
 
             // Display a dialog to ask for the location and name of the new file.
             val filePath =

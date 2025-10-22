@@ -46,9 +46,9 @@ fun Document.lineIndentationByOffset(offset: Int) = lineIndentation(getLineNumbe
 fun Document.replaceString(range: TextRange, string: String) = replaceString(range.startOffset, range.endOffset, string)
 
 /**
- * Get the text in the document at range `offset..1`.
+ * Get the text in the document at the given offset, or an empty string if the offset is out of bounds.
  */
-operator fun Document.get(offset: Int) = if (offset < textLength) getText(TextRange.from(offset, 1)) else ""
+operator fun Document.get(offset: Int) = if (offset in 0..<textLength) getText(TextRange.from(offset, 1)) else ""
 
 /**
  * Get the text in the given range.

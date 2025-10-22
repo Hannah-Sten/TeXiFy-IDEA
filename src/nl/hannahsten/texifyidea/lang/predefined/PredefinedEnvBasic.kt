@@ -14,7 +14,7 @@ object PredefinedEnvBasic : PredefinedEnvironmentSet() {
             toAdd = setOf(LatexContexts.Text),
             toRemove = setOf(LatexContexts.Preamble)
         )
-        "document".env(mainTextIntro) {
+        EnvironmentNames.DOCUMENT.env(mainTextIntro) {
             "The main document environment."
         }
 
@@ -65,13 +65,10 @@ object PredefinedEnvBasic : PredefinedEnvironmentSet() {
         "itemize".env(+LatexContexts.Enumerate) {
             "A bulleted list."
         }
-
-        +"array"
-
         "list".env(LatexContextIntro.inherit(), "label".required, "spacing".required)
     }
     val basicIntroMath = buildEnvironments {
-        "math".env(LatexContexts.Math) { "Inline math mode." }
+        "math".env(LatexContextIntro.INLINE_MATH) { "Inline math mode." }
         "displaymath".env(LatexContexts.Math) { "Display math mode." }
 
         val alignableMath = setOf(LatexContexts.Math, Alignable)
@@ -94,24 +91,26 @@ object PredefinedEnvBasic : PredefinedEnvironmentSet() {
 
     val someMathEnv = buildEnvironments {
 
+        val alignableMath = setOf(LatexContexts.Math, Alignable)
+        val math = setOf(LatexContexts.Math)
+
         underContext(LatexContexts.Text) {
             // equation is basic
-            "equation".env(LatexContexts.Math) { "A numbered equation." }
+            "equation".env(math) { "A numbered equation." }
         }
 
         packageOf("amsmath")
 
-        val alignableMath = setOf(LatexContexts.Math, Alignable)
         underContext(LatexContexts.Text) {
-            "equation*".env(LatexContexts.Math) { "An unnumbered equation." }
+            "equation*".env(math) { "An unnumbered equation." }
             "align".env(alignableMath) { "A set of aligned equations." }
             "align*".env(alignableMath) { "A set of aligned equations without numbering." }
-            "gather".env(LatexContexts.Math) { "A set of equations, centered." }
-            "gather*".env(LatexContexts.Math) { "A set of equations, centered, without numbering." }
-            "multline".env(LatexContexts.Math) { "A long equation that spans multiple lines." }
-            "multline*".env(LatexContexts.Math) { "A long equation that spans multiple lines, without numbering." }
-            "flalign".env(LatexContexts.Math) { "A set of equations, left and right aligned." }
-            "flalign*".env(LatexContexts.Math) { "A set of equations, left and right aligned, without numbering." }
+            "gather".env(math) { "A set of equations, centered." }
+            "gather*".env(math) { "A set of equations, centered, without numbering." }
+            "multline".env(math) { "A long equation that spans multiple lines." }
+            "multline*".env(math) { "A long equation that spans multiple lines, without numbering." }
+            "flalign".env(math) { "A set of equations, left and right aligned." }
+            "flalign*".env(math) { "A set of equations, left and right aligned, without numbering." }
         }
 
         underContext(LatexContexts.Math) {
@@ -121,22 +120,17 @@ object PredefinedEnvBasic : PredefinedEnvironmentSet() {
                 "Bmatrix", "Vmatrix", "bmatrix", "matrix", "pmatrix", "smallmatrix", "vmatrix",
                 "split", "subarray", "subequations",
             )
+            val introAlignable = +Alignable
             alignableEnvList.forEach { envName ->
-                envName.env(alignableMath)
+                envName.env(introAlignable)
             }
             +"gathered"
-        }
-
-        underPackage("blkarray") {
-            "blockarray".env(alignableMath, "cols".required(Literal)) {
-                "A block array environment."
-            }
         }
     }
 
     val mathtoolsUnderMath = buildEnvironments {
         packageOf("mathtools")
-        val alignableMath = setOf(LatexContexts.Math, Alignable)
+        val introAlignable = +Alignable
         underContext(LatexContexts.Math) {
             val moreMatrices = listOf(
                 "Bmatrix*", "Bsmallmatrix", "Bsmallmatrix*", "Vmatrix*", "Vsmallmatrix", "Vsmallmatrix*",
@@ -144,7 +138,7 @@ object PredefinedEnvBasic : PredefinedEnvironmentSet() {
                 "psmallmatrix*", "smallmatrix*", "vmatrix*", "vsmallmatrix", "vsmallmatrix*"
             )
             moreMatrices.forEach { envName ->
-                envName.env(alignableMath)
+                envName.env(introAlignable)
             }
         }
     }
@@ -152,7 +146,7 @@ object PredefinedEnvBasic : PredefinedEnvironmentSet() {
     val additionalUnderMath = buildEnvironments {
         applicableIn(LatexContexts.Math)
         underPackage("gauss") {
-            "gmatrix".env(setOf(LatexContexts.Math, Alignable))
+            "gmatrix".env(+Alignable)
         }
     }
 
@@ -213,6 +207,12 @@ object PredefinedEnvBasic : PredefinedEnvironmentSet() {
             "talltblr".env(+LatexContexts.Table, "outer".optional, "inner".required)
             "tblr".env(+LatexContexts.Table, "outer".optional, "inner".required)
         }
+
+        underPackage("blkarray") {
+            "blockarray".env(+Alignable, "cols".required(Literal)) {
+                "A block array environment."
+            }
+        }
     }
 
     val formatting = buildEnvironments {
@@ -260,7 +260,7 @@ object PredefinedEnvBasic : PredefinedEnvironmentSet() {
         "testcolors".env(LatexContexts.Text, "num models".optional) //
 
         packageOf("tikz")
-        +"tikzpicture"
+        "tikzpicture".env(LatexContexts.TikzPicture)
 
         packageOf("widetable")
         +"widetable"

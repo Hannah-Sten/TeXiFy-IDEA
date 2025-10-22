@@ -1,6 +1,8 @@
 package nl.hannahsten.texifyidea.util
 
 import com.intellij.execution.RunManager
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.fileEditor.FileEditorManager
@@ -124,10 +126,23 @@ fun Project?.latexTemplateRunConfig(): LatexRunConfiguration? = this?.let {
 }
 
 /**
- * Gets the currently focused text editor.
+ * Gets the currently focused text editor (returns null for example if the user has clicked on some button)
  */
-fun Project.currentTextEditor(): TextEditor? {
+fun Project.focusedTextEditor(): TextEditor? {
     return FileEditorManager.getInstance(this).focusedEditor as? TextEditor?
+}
+
+/**
+ * Gets the text editor which was last selected (may not be focused anymore)
+ */
+fun Project.selectedTextEditor(): TextEditor? {
+    return FileEditorManager.getInstance(this).selectedEditor as? TextEditor?
+}
+
+fun Project.selectedTextEditorOrWarning(): TextEditor? {
+    selectedTextEditor()?.let { return it }
+    Notification("LaTeX", "Could not find an open editor to insert text", "Put your caret in a LaTeX file first. Please report an issue on GitHub if you believe this is incorrect", NotificationType.ERROR).notify(this)
+    return null
 }
 
 /**

@@ -1,88 +1,66 @@
 package nl.hannahsten.texifyidea.inspections.latex.typesetting.spacing
 
-import com.intellij.codeInspection.InspectionManager
-import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
-import com.intellij.codeInspection.ProblemHighlightType
-import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
 import com.intellij.psi.util.startOffset
-import nl.hannahsten.texifyidea.inspections.InsightGroup
-import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment
+import nl.hannahsten.texifyidea.index.LatexDefinitionService
+import nl.hannahsten.texifyidea.inspections.AbstractTexifyRegexBasedInspection
+import nl.hannahsten.texifyidea.lang.LContextSet
+import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSMATH
+import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.util.*
-import nl.hannahsten.texifyidea.util.magic.PatternMagic
-import nl.hannahsten.texifyidea.util.parser.inDirectEnvironment
-import nl.hannahsten.texifyidea.util.parser.inMathContext
-import nl.hannahsten.texifyidea.util.parser.isComment
-import nl.hannahsten.texifyidea.util.parser.forEachChildTyped
+import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 
-/**
- * @author Sten Wessel
- */
-open class LatexEllipsisInspection : TexifyInspectionBase() {
-
-    override val inspectionGroup = InsightGroup.LATEX
-
-    override fun getDisplayName() = "Ellipsis with ... instead of \\ldots or \\dots"
-
-    override val inspectionId = "Ellipsis"
-
-    private fun shouldIgnore(elementAtCaret: PsiElement?): Boolean {
-        if (elementAtCaret == null) return false
-        return elementAtCaret.isComment() || elementAtCaret.inDirectEnvironment(DefaultEnvironment.TIKZPICTURE.environmentName)
+class LatexEllipsisInspection : AbstractTexifyRegexBasedInspection(
+    inspectionId = "Ellipsis",
+    regex = """(?<!\.)(\.\.\.)(?!\.)""".toRegex(),
+    applicableContexts = setOf(LatexContexts.Text, LatexContexts.Math),
+    excludedContexts = setOf(LatexContexts.TikzPicture)
+    // we should have excluded other contexts, but we explicitly exclude this in case
+) {
+    override fun errorMessage(matcher: MatchResult, context: LContextSet): String {
+        return "Ellipsis with ... instead of \\ldots or \\dots"
     }
 
-    override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
-        val descriptors = descriptorList()
-
-        file.forEachChildTyped<LatexNormalText> { text ->
-            ProgressManager.checkCanceled()
-
-            for (match in PatternMagic.ellipsis.findAll(text.text)) {
-                if (shouldIgnore(file.findElementAt(match.range.first + text.startOffset))) {
-                    continue
-                }
-
-                descriptors.add(
-                    manager.createProblemDescriptor(
-                        text,
-                        match.range.toTextRange(),
-                        "Ellipsis with ... instead of command",
-                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                        isOntheFly,
-                        InsertEllipsisCommandFix(text.inMathContext())
-                    )
-                )
-            }
+    override fun quickFixName(matcher: MatchResult, contexts: LContextSet): String {
+        return if (LatexContexts.Math in contexts) {
+            "Convert to \\dots (amsmath package)"
         }
-
-        return descriptors
+        else {
+            "Convert to \\ldots"
+        }
     }
 
-    /**
-     * @author Sten Wessel
-     */
-    private class InsertEllipsisCommandFix(val inMathMode: Boolean) : LocalQuickFix {
-
-        override fun getFamilyName() = "Convert to ${if (inMathMode) "\\dots (amsmath package)" else "\\ldots"}"
-
-        override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            val element = descriptor.psiElement
-            val file = element.containingFile
-            val document = PsiDocumentManager.getInstance(project).getDocument(file) ?: return
-            val range = descriptor.textRangeInElement.shiftRight(element.textOffset)
-
-            document.replaceString(range.startOffset, range.endOffset, if (inMathMode) "\\dots" else "\\ldots")
-
-            if (inMathMode && AMSMATH !in file.includedPackagesInFileset()) {
-                file.insertUsepackage(AMSMATH)
-            }
+    override fun getReplacement(match: MatchResult, fullElementText: String, project: Project, problemDescriptor: ProblemDescriptor): String {
+        val lookup = LatexDefinitionService.getInstance(project).getDefBundlesMerged(problemDescriptor.psiElement.containingFile)
+        return if (LatexPsiUtil.isInsideContext(problemDescriptor.psiElement, LatexContexts.Math, lookup)) {
+            "\\dots"
         }
+        else {
+            "\\ldots"
+        }
+    }
+
+    override fun doApplyFix(project: Project, descriptor: ProblemDescriptor, match: MatchResult, fullElementText: String) {
+        val element = descriptor.psiElement
+        val document = element.containingFile.document() ?: return
+        val repRange = match.range.toTextRange().shiftRight(element.startOffset)
+        val rep = getReplacement(match, fullElementText, project, descriptor)
+        document.replaceString(repRange, rep)
+        if (rep == "\\dots") {
+            element.containingFile.insertUsepackage(AMSMATH)
+        }
+    }
+
+    override fun shouldInspectElement(element: PsiElement, lookup: LatexSemanticsLookup): Boolean {
+        return element is LatexNormalText
+    }
+
+    override fun shouldInspectChildrenOf(element: PsiElement, state: LContextSet, lookup: LatexSemanticsLookup): Boolean {
+        return !shouldInspectElement(element, lookup)
     }
 }

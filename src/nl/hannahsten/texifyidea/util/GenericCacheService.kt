@@ -106,6 +106,9 @@ abstract class AbstractBackgroundCacheService<K : Any, V : Any>(protected val co
         }
     }
 
+    /**
+     * Gets a cached value (possibly expired) by its key or `null` if no cache exists.
+     */
     protected fun getAndComputeLater(key: K, expiration: Duration = 1.seconds): V? {
         val cachedValue = caches[key]
         if (cachedValue != null && cachedValue.isNotExpired(expiration)) {

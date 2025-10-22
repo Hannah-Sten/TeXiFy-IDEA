@@ -11,8 +11,6 @@ import nl.hannahsten.texifyidea.index.SourcedDefinition
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LSemanticEntity
 import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
-import java.util.concurrent.atomic.AtomicInteger
-import java.util.concurrent.atomic.AtomicLong
 
 interface LatexContextAwareCompletionProvider {
 
@@ -34,14 +32,14 @@ abstract class LatexContextAwareCompletionAdaptor : CompletionProvider<Completio
         return file.name
     }
 
-    protected fun buildCommandSourceStr(sourced: SourcedDefinition): String {
+    protected fun buildDefinitionSourceStr(sourced: SourcedDefinition): String {
         val cmd = sourced.entity
         val dependency = cmd.dependency
         if (dependency.isCustom) {
             // If the command is defined in the current file, we can use the file name.
             return getContainingFileName(sourced) ?: "(unknown)"
         }
-        return dependency.name
+        return dependency.displayString(withParan = false)
     }
 
     abstract override fun addContextAwareCompletions(
@@ -50,21 +48,18 @@ abstract class LatexContextAwareCompletionAdaptor : CompletionProvider<Completio
 
     final override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
         val project = parameters.editor.project ?: return
-        countOfBuilds.incrementAndGet()
-        val startTime = System.currentTimeMillis()
 
-        val file = parameters.originalFile
-        val defBundle = LatexDefinitionService.getInstance(project).getDefBundlesMerged(file)
-        val latexContexts = LatexPsiUtil.resolveContextUpward(parameters.position, defBundle)
-        addContextAwareCompletions(parameters, latexContexts, defBundle, result)
-        // Add a message to the user that this is an experimental feature.
-        result.addLookupAdvertisement("Experimental feature: context-aware completion. ")
-
-        totalTimeCost.addAndGet(System.currentTimeMillis() - startTime)
+        performanceTracker.track {
+            val file = parameters.originalFile
+            val defBundle = LatexDefinitionService.getInstance(project).getDefBundlesMerged(file)
+            val latexContexts = LatexPsiUtil.resolveContextUpward(parameters.position, defBundle)
+            addContextAwareCompletions(parameters, latexContexts, defBundle, result)
+            // Add a message to the user that this is an experimental feature.
+            result.addLookupAdvertisement("Experimental feature: context-aware completion. ")
+        }
     }
 
-    companion object : SimplePerformanceTracker {
-        override val countOfBuilds = AtomicInteger(0)
-        override val totalTimeCost = AtomicLong(0)
+    companion object {
+        val performanceTracker = SimplePerformanceTracker()
     }
 }

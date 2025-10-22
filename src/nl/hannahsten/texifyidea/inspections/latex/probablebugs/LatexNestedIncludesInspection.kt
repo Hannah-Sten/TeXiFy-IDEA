@@ -33,7 +33,7 @@ open class LatexNestedIncludesInspection : TexifyInspectionBase() {
     override fun getDisplayName() = "Nested includes"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        val root = file.findRootFile(useIndexCache = false)
+        val root = file.findRootFile()
 
         val isInclude = NewCommandsIndex.getByNameInFileSet("\\include", file).any {
             it.requiredParameterText(0)?.let { f -> root.findFile(f, supportsAnyExtension = true) } == file

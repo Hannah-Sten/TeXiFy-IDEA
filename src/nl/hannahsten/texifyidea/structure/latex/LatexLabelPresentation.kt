@@ -3,7 +3,6 @@ package nl.hannahsten.texifyidea.structure.latex
 import com.intellij.navigation.ItemPresentation
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import nl.hannahsten.texifyidea.TexifyIcons
-import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.psi.LatexCommands
 
 /**
@@ -15,9 +14,11 @@ class LatexLabelPresentation(labelCommand: LatexCommands) : ItemPresentation {
     private val presentableText: String
 
     init {
-        val position =
-            CommandManager.labelAliasesInfo.getOrDefault(labelCommand.commandToken.text, null)?.positions?.firstOrNull()
-                ?: 0
+        // TODO: use command semantics
+//        val position =
+//            CommandManager.labelAliasesInfo.getOrDefault(labelCommand.commandToken.text, null)?.positions?.firstOrNull()
+//                ?: 0
+        val position = 0
         presentableText = labelCommand.requiredParameterText(position) ?: "no label found"
 
         // Location string.

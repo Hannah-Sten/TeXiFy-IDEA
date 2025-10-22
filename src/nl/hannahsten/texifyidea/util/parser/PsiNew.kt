@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.util.parser
 
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.psi.*
@@ -402,4 +403,37 @@ inline fun <reified T : PsiElement> PsiElement.findFirstChildTyped(depth: Int = 
         }
     }
     return result
+}
+
+/**
+ * Find the first adjacent [PsiElement] (sibling or parent's sibling).
+ *
+ */
+fun PsiElement.findNextAdjacentElement(): PsiElement? {
+    var node = this
+    while (true) {
+        val next = node.nextSibling
+        if (next != null) return next
+        node = node.parent ?: return null
+    }
+}
+
+fun PsiElement.findPrevAdjacentElement(): PsiElement? {
+    var node = this
+    while (true) {
+        val prev = node.prevSibling
+        if (prev != null) return prev
+        node = node.parent ?: return null
+    }
+}
+
+/**
+ * Find the adjacent [PsiWhiteSpace],
+ */
+fun PsiElement.findNextAdjacentWhiteSpace(): PsiWhiteSpace? {
+    return findNextAdjacentElement() as? PsiWhiteSpace
+}
+
+fun PsiElement.findPrevAdjacentWhiteSpace(): PsiWhiteSpace? {
+    return findPrevAdjacentElement() as? PsiWhiteSpace
 }

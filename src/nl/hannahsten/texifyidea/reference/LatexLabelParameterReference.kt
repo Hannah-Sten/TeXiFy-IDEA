@@ -20,7 +20,7 @@ class LatexLabelParameterReference(element: LatexParameterText) : PsiReferenceBa
 
     private val labelName = element.text
 
-    override fun calculateDefaultRangeInElement(): TextRange? {
+    override fun calculateDefaultRangeInElement(): TextRange {
         val fullRange = ElementManipulators.getValueTextRange(element)
         val prefix = determinePrefix() ?: return fullRange
         val prefixLength = prefix.length
@@ -80,6 +80,21 @@ class LatexLabelParameterReference(element: LatexParameterText) : PsiReferenceBa
                 // but only the label text itself will have the correct name for that.
                 e.extractLabelElement()?.let { PsiElementResolveResult(it) }
             }
+        }
+
+        fun isLabelDefined(label: String, file: PsiFile): Boolean {
+            val project = file.project
+            val basicSearchScope = LatexProjectStructure.getFilesetScopeFor(file, onlyTexFiles = true)
+            if (NewLabelsIndex.existsByName(label, project, basicSearchScope)) return true
+
+            LatexProjectStructure.getFilesetDataFor(file)?.externalDocumentInfo?.forEach { info ->
+                if (label.startsWith(info.labelPrefix)) {
+                    val labelWithoutPrefix = label.removePrefix(info.labelPrefix)
+                    val scopes = info.files.map { LatexProjectStructure.getFilesetScopeFor(it, project, onlyTexFiles = true) }
+                    if (NewLabelsIndex.existsByName(labelWithoutPrefix, project, GlobalSearchScope.union(scopes))) return true
+                }
+            }
+            return false
         }
     }
 }

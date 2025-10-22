@@ -52,10 +52,14 @@ fun <T> runWriteCommandAction(
 fun IntRange.toTextRange() = TextRange(this.first, this.last + 1)
 
 /**
- * Get the length of an [IntRange].
+ * The length of an [IntRange], `length = endInclusive - start + 1`.
  */
 val IntRange.length: Int
-    get() = endInclusive - start
+    get() = endInclusive - start + 1
+
+fun IntRange.contains(other: IntRange): Boolean {
+    return this.first <= other.first && this.last >= other.last
+}
 
 /**
  * Converts the range to a range representation with the given seperator.

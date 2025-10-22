@@ -1,5 +1,7 @@
 package nl.hannahsten.texifyidea.lang
 
+import nl.hannahsten.texifyidea.util.existsIntersection
+
 /**
  * The base interface for a context so that we can provide context-specific sematic features such as autocompletion or validation.
  *
@@ -35,7 +37,11 @@ sealed interface LatexContextIntro {
      */
     fun revoke(innerCtx: LContextSet): LContextSet?
 
-    fun introduces(context: LatexContext): Boolean
+    fun introduces(candidate: LatexContext): Boolean
+
+    fun introducesAny(candidates: LContextSet): Boolean {
+        return candidates.any { introduces(it) }
+    }
 
     fun displayString(): String {
         return when (val intro = this) {
@@ -73,7 +79,11 @@ sealed interface LatexContextIntro {
             return ""
         }
 
-        override fun introduces(context: LatexContext): Boolean {
+        override fun introduces(candidate: LatexContext): Boolean {
+            return false
+        }
+
+        override fun introducesAny(candidates: LContextSet): Boolean {
             return false
         }
     }
@@ -87,7 +97,11 @@ sealed interface LatexContextIntro {
             return if (innerCtx.isEmpty()) emptySet() else null
         }
 
-        override fun introduces(context: LatexContext): Boolean {
+        override fun introduces(candidate: LatexContext): Boolean {
+            return false
+        }
+
+        override fun introducesAny(candidates: LContextSet): Boolean {
             return false
         }
     }
@@ -109,8 +123,13 @@ sealed interface LatexContextIntro {
             return null
         }
 
-        override fun introduces(context: LatexContext): Boolean {
-            return contexts.contains(context)
+        override fun introduces(candidate: LatexContext): Boolean {
+            return contexts.contains(candidate)
+        }
+
+        override fun introducesAny(candidates: LContextSet): Boolean {
+            //
+            return contexts.existsIntersection(candidates)
         }
 
         override fun toString(): String {
@@ -138,8 +157,12 @@ sealed interface LatexContextIntro {
             return innerCtx - toAdd
         }
 
-        override fun introduces(context: LatexContext): Boolean {
-            return context in toAdd
+        override fun introduces(candidate: LatexContext): Boolean {
+            return candidate in toAdd
+        }
+
+        override fun introducesAny(candidates: LContextSet): Boolean {
+            return candidates.existsIntersection(toAdd)
         }
 
         override fun toString(): String {
@@ -268,5 +291,7 @@ sealed interface LatexContextIntro {
          * Introduces the math context.
          */
         val MATH = Assign(LatexContexts.Math)
+
+        val INLINE_MATH = Assign(setOf(LatexContexts.Math, LatexContexts.InlineMath))
     }
 }

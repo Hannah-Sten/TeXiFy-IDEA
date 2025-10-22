@@ -46,7 +46,7 @@ class LatexCommandDefinitionReference(element: LatexCommands) : PsiReferenceBase
         // Don't resolve to a definition when you are in a \newcommand,
         // and if this element is the element that is being defined
         val name = element.name ?: return ResolveResult.EMPTY_ARRAY
-        if (LatexPsiUtil.isInsideDefinition(element)) return ResolveResult.EMPTY_ARRAY
+        if (LatexPsiUtil.isCommandBeingDefined(element)) return ResolveResult.EMPTY_ARRAY
 
         resolveWithDefinitionService(name)?.let { return arrayOf(PsiElementResolveResult(it)) }
         return resolveWithDefIndex(name)
@@ -54,7 +54,7 @@ class LatexCommandDefinitionReference(element: LatexCommands) : PsiReferenceBase
 
     override fun resolve(): PsiElement? {
         val name = element.name ?: return null
-        if (LatexPsiUtil.isInsideDefinition(element)) return null
+        if (LatexPsiUtil.isCommandBeingDefined(element)) return null
         // First try to resolve with the new definition index
         resolveWithDefinitionService(name)?.let { return it }
         // If that didn't work, try the new definition index

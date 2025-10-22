@@ -34,7 +34,7 @@ class LatexEnvironmentDefinitionReference(
         }.toTypedArray()
     }
 
-    override fun handleElementRename(newElementName: String): PsiElement? {
+    override fun handleElementRename(newElementName: String): PsiElement {
         val beginElement = environment.beginCommand
         beginElement.envIdentifier?.setName(newElementName)
         val endElement = environment.endCommand

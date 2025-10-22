@@ -16,10 +16,11 @@ fun LatexMagicComment.key(): MagicKey<String> {
     return DefaultMagicKeys.entries.firstOrNull { it.key == key } ?: CustomMagicKey(key)
 }
 
+fun LatexMagicComment.containsKeyValuePair(key: String, value: String? = null): Boolean {
+    return TextBasedMagicCommentParser.containsMagicCommentPair(magicCommentToken.text, key, value)
+}
+
 /**
  * Get the value from a [LatexMagicComment] psi element.
  */
 fun LatexMagicComment.value(): String? = getMagicComment().value(key())
-
-val LatexMagicComment.name: String?
-    get() = value()?.trim()?.split(" ")?.firstOrNull()

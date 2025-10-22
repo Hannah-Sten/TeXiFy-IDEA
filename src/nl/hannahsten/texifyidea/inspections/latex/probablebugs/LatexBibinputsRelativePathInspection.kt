@@ -10,14 +10,13 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
+import nl.hannahsten.texifyidea.lang.predefined.CommandNames
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.getBibtexRunConfigurations
 import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
-import nl.hannahsten.texifyidea.util.magic.cmd
 
 /**
  * BIBINPUTS cannot handle paths which start with ../  in the \bibliography command, e.g. \bibliography{../mybib}.
@@ -33,7 +32,7 @@ class LatexBibinputsRelativePathInspection : TexifyInspectionBase() {
     override val inspectionId = "BibinputsRelativePath"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        val commandsWithRelativePath = file.commandsInFile(LatexGenericRegularCommand.BIBLIOGRAPHY.cmd).filter { it.requiredParameterText(0)?.startsWith("../") == true }
+        val commandsWithRelativePath = file.commandsInFile(CommandNames.BIBLIOGRAPHY).filter { it.requiredParameterText(0)?.startsWith("../") == true }
         if (commandsWithRelativePath.isEmpty()) return emptyList()
 
         // If not using BIBINPUTS, all is fine and it will work.
@@ -71,14 +70,14 @@ class LatexBibinputsRelativePathInspection : TexifyInspectionBase() {
             // Fix BIBINPUTS
             project
                 .getLatexRunConfigurations()
-                .filter { it.mainFile == descriptor.psiElement.containingFile.findRootFile(useIndexCache = false).virtualFile }
+                .filter { it.mainFile == descriptor.psiElement.containingFile.findRootFile().virtualFile }
                 .flatMap { it.bibRunConfigs }
                 .map { it.configuration }
                 .filterIsInstance<BibtexRunConfiguration>()
                 .forEach { config ->
                     val envs = config.environmentVariables.envs.toMutableMap()
                     val oldPath = envs["BIBINPUTS"] ?: return@forEach
-                    val newPath = oldPath.substring(0, oldPath.lastIndexOf('/'))
+                    val newPath = oldPath.take(oldPath.lastIndexOf('/'))
                     envs["BIBINPUTS"] = newPath
                     config.environmentVariables = EnvironmentVariablesData.create(envs, config.environmentVariables.isPassParentEnvs)
                 }

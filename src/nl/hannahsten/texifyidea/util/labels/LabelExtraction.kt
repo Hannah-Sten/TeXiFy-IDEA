@@ -4,7 +4,6 @@ import com.intellij.psi.PsiElement
 import com.jetbrains.rd.util.first
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.lang.LatexContexts
-import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
@@ -33,11 +32,10 @@ fun PsiElement.extractLabelElement(): PsiElement? {
             }
             else {
                 // For now just take the first label name (may be multiple for user defined commands)
-                val info = CommandManager.labelAliasesInfo.getOrDefault(name, null)
-                val position = info?.positions?.firstOrNull() ?: 0
-
+//                val info = CommandManager.labelAliasesInfo.getOrDefault(name, null)
+//                val position = info?.positions?.firstOrNull() ?: 0
                 // Skip optional parameters for now
-                this.parameterList.mapNotNull { it.requiredParam }.getOrNull(position)
+                this.parameterList.mapNotNull { it.requiredParam }.getOrNull(0)
                     ?.findFirstChildOfType(LatexParameterText::class)
             }
         }
@@ -81,10 +79,11 @@ fun PsiElement.extractLabelName(externalDocumentCommand: LatexCommands? = null):
             if (CommandMagic.labelAsParameter.contains(name)) {
                 return getOptionalParameterMap().toStringMap()["label"] ?: ""
             }
+            // TODO: use command semantics
             // For now just take the first label name (which may be multiple for user defined commands)
-            val info = CommandManager.labelAliasesInfo.getOrDefault(name, null)
-            val position = info?.positions?.firstOrNull() ?: 0
-            var prefix = info?.prefix ?: ""
+//            val info = CommandManager.labelAliasesInfo.getOrDefault(name, null)
+            val position = 0
+            var prefix = ""
 
             // Check if there is any prefix given by the xr package
             externalDocumentCommand?.parameterList?.firstNotNullOfOrNull { it.optionalParam }

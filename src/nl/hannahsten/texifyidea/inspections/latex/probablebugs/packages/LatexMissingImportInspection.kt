@@ -8,7 +8,6 @@ import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
-import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.lang.LSemanticEntity
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
@@ -23,11 +22,7 @@ import java.util.*
  *
  * @author Hannah Schellekens
  */
-class LatexMissingImportInspection : LatexMissingImportInspectionBase() {
-
-    override val inspectionGroup = InsightGroup.LATEX
-
-    override val inspectionId = "MissingImport"
+class LatexMissingImportInspection : LatexMissingImportInspectionBase("MissingImport") {
 
     override val ignoredSuppressionScopes = EnumSet.of(MagicCommentScope.GROUP)!!
 
@@ -37,7 +32,7 @@ class LatexMissingImportInspection : LatexMissingImportInspectionBase() {
         command: LatexCommands, candidates: List<LSemanticEntity>,
         descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager, isOntheFly: Boolean
     ) {
-        val packageNames = candidates.mapNotNull { it.dependency.toPackageName() }
+        val packageNames = candidates.mapNotNull { it.dependency.asPackageName() }
         if (packageNames.isEmpty()) return
         val fixes = packageNames.map { ImportPackageFix(it) }.toTypedArray()
         val range = TextRange(0, command.commandToken.textLength)
@@ -57,7 +52,7 @@ class LatexMissingImportInspection : LatexMissingImportInspectionBase() {
         environment: LatexEnvironment, candidates: List<LSemanticEntity>,
         descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager, isOntheFly: Boolean
     ) {
-        val packageNames = candidates.mapNotNull { it.dependency.toPackageName() }
+        val packageNames = candidates.mapNotNull { it.dependency.asPackageName() }
         if (packageNames.isEmpty()) return
         val fixes = packageNames.map { ImportPackageFix(it) }.toTypedArray()
         val range = TextRange(7, 7 + environment.getEnvironmentName().length)

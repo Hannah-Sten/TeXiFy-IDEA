@@ -23,6 +23,7 @@ import nl.hannahsten.texifyidea.lang.LatexSemanticsCommandLookup
 import nl.hannahsten.texifyidea.lang.LatexSemanticsEnvLookup
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
+import nl.hannahsten.texifyidea.lang.predefined.EnvironmentNames
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
@@ -40,8 +41,8 @@ fun LatexBeginCommand.endCommand(): LatexEndCommand? = nextSiblingOfType(LatexEn
  * @return `true` if the command marks a valid entry point, `false` if not.
  */
 fun LatexBeginCommand.isEntryPoint(): Boolean {
-    // Currently: only allowing `\begin{document}`.
-    return this.environmentName() == "document"
+    // Currently: only allowing `\\begin{document}`.
+    return this.environmentName() == EnvironmentNames.DOCUMENT
 }
 
 /**
@@ -161,13 +162,13 @@ fun LatexSemanticsEnvLookup.lookupEnv(name: String?): LSemanticEnv? {
     return lookupEnv(name)
 }
 
-fun LatexSemanticsCommandLookup.lookupCommand(name: String?): LSemanticCommand? {
+fun LatexSemanticsCommandLookup.lookupCommandN(name: String?): LSemanticCommand? {
     if (name == null) return null
     return lookupCommand(name)
 }
 
 fun LatexSemanticsCommandLookup.lookupCommandPsi(cmd: LatexCommands): LSemanticCommand? {
-    return lookupCommand(cmd.nameWithoutSlash)
+    return lookupCommandN(cmd.nameWithoutSlash)
 }
 
 /**
@@ -217,10 +218,6 @@ object LatexPsiUtil {
         return cmd.nextContextualSibling { true } as? LatexCommands
     }
 
-    fun isInsideDefinition(cmd: LatexComposite): Boolean {
-        return isInsideNewCommandDef(cmd) || isInsidePlainDef(cmd)
-    }
-
     /**
      * Check if the command is inside a definition command as a parameter, like `\newcommand{\cmd}{}`.
      */
@@ -235,7 +232,7 @@ object LatexPsiUtil {
         return defCommand.firstParameter() === parentParameter // they should be exactly the same object
     }
 
-    private fun isInsidePlainDef(cmd: LatexComposite): Boolean {
+    private fun isInsidePlainDef(cmd: PsiElement): Boolean {
         // \def\cmd\something
         val prevCmd = cmd.prevContextualSibling { it is LatexCommands } as? LatexCommands ?: return false
         if (prevCmd.name !in CommandMagic.definitions) return false
@@ -268,6 +265,12 @@ object LatexPsiUtil {
 
     inline fun processArgumentsWithSemantics(cmd: LatexCommandWithParams, semantics: LSemanticCommand, action: (LatexParameter, LArgument?) -> Unit) {
         processArgumentsWithSemantics(cmd, semantics.arguments, action)
+    }
+
+    inline fun processArgumentsWithNonNullSemantics(cmd: LatexCommandWithParams, semantics: LSemanticCommand, action: (LatexParameter, LArgument) -> Unit) {
+        processArgumentsWithSemantics(cmd, semantics.arguments) { param, arg ->
+            if(arg != null) action(param, arg)
+        }
     }
 
     inline fun processArgumentsWithSemantics(cmd: LatexCommandWithParams, argList: List<LArgument>, action: (LatexParameter, LArgument?) -> Unit) {
@@ -353,8 +356,6 @@ object LatexPsiUtil {
         return semantics.contextSignature
     }
 
-    val baseContext = setOf(LatexContexts.Preamble, LatexContexts.Text)
-
     fun resolveContextUpward(e: PsiElement): LContextSet {
         val file = e.containingFile ?: return emptySet()
         val lookup = LatexDefinitionService.getInstance(file.project).getDefBundlesMerged(file)
@@ -364,6 +365,8 @@ object LatexPsiUtil {
     /**
      * Resolve the context introductions at the given element by traversing the PSI tree upwards and collecting context changes.
      * The list is ordered from innermost to outermost context introduction.
+     *
+     * @see LatexWithContextStateTraverser
      */
     fun resolveContextIntroUpward(e: PsiElement, lookup: LatexSemanticsLookup, shortCircuit: Boolean = false): List<LatexContextIntro> {
         var collectedContextIntro: MutableList<LatexContextIntro>? = null
@@ -376,6 +379,7 @@ object LatexPsiUtil {
             val intro = when (current) {
                 is LatexParameter -> resolveCommandParameterContext(current, lookup) ?: continue
                 is LatexEnvironment -> resolveEnvironmentContext(current, lookup) ?: continue
+                is LatexInlineMath -> LatexContextIntro.INLINE_MATH
                 is LatexMathEnvironment -> LatexContextIntro.MATH
                 else -> continue
             }
@@ -397,10 +401,46 @@ object LatexPsiUtil {
      * Resolve the context at the given element by traversing the PSI tree upwards and collecting context changes.
      * If no context changes are found, the [baseContext] is returned.
      */
-    fun resolveContextUpward(e: PsiElement, lookup: LatexSemanticsLookup, baseContext: LContextSet = LatexPsiUtil.baseContext): LContextSet {
+    fun resolveContextUpward(e: PsiElement, lookup: LatexSemanticsLookup, baseContext: LContextSet = LatexContexts.baseContexts): LContextSet {
         val list = resolveContextIntroUpward(e, lookup, shortCircuit = true)
         if (list.isEmpty()) return baseContext
         return LatexContextIntro.buildContextReversedList(list, baseContext)
+    }
+
+    fun isInsideContext(e: PsiElement, context: LatexContext, lookup: LatexSemanticsLookup, baseContext: LContextSet = LatexContexts.baseContexts): Boolean {
+        val currentContext = resolveContextUpward(e, lookup, baseContext)
+        return context in currentContext
+    }
+
+    /**
+     * Check if the given element is nested inside a command definition (maybe deeply).
+     */
+    fun isInsideDefinition(e: PsiElement, lookup: LatexSemanticsLookup): Boolean {
+        // unfortunately, the context does not contain enough information to determine whether we are inside a command definition as they can be overridden
+        // For example, in `\newcommand{\myref}[1]{$ \text{\ref{#1}} $}`,  `#1` only has the context, while `\ref` has context `<text>`.
+        // To improve it, we have to introduce penetrating context or conflicting context, making our context system more complex.
+        // When we find more use cases requiring advanced context system later, we can upgrade it to fit the needs
+        if(isInsidePlainDef(e)) {
+            return true
+        }
+        val introList = resolveContextIntroUpward(e, lookup, shortCircuit = false)
+        return introList.any { it.introduces(LatexContexts.InsideDefinition) }
+    }
+
+    /**
+     * Check if the given element is nested inside a command definition (maybe deeply).
+     */
+    fun isInsideDefinition(element: PsiElement): Boolean {
+        val bundle = LatexDefinitionService.getBundleFor(element)
+        return isInsideDefinition(element, bundle)
+    }
+
+    /**
+     * Check if the given element is the command being defined, e.g. `\hi` in case of `\newcommand{\hi}{}`.
+     */
+    fun isCommandBeingDefined(element: LatexCommands): Boolean {
+        val bundle = LatexDefinitionService.getBundleFor(element)
+        return isInsideContext(element, LatexContexts.CommandDeclaration, bundle)
     }
 
     /**
@@ -417,51 +457,19 @@ object LatexPsiUtil {
         lookup: LatexSemanticsLookup,
         action: (PsiElement, List<LatexContextIntro>) -> Unit
     ): List<LatexContextIntro> {
-        val visitor = RecordingContextIntroTraverser(lookup, action)
+        val visitor = RecordingContextIntroTraverserWithAction(lookup, action)
         visitor.traverse(e)
         return visitor.exitState
     }
 
-    private class RecordingContextIntroTraverser(
+    private class RecordingContextIntroTraverserWithAction(
         lookup: LatexSemanticsLookup,
         private val action: (PsiElement, List<LatexContextIntro>) -> Unit
-    ) : LatexWithContextStateTraverser<MutableList<LatexContextIntro>>(mutableListOf(), lookup) {
-        override fun enterContextIntro(intro: LatexContextIntro) {
-            state.add(intro)
-        }
-
-        override fun exitContextIntro(old: MutableList<LatexContextIntro>, intro: LatexContextIntro) {
-            val lastIntro = state.lastOrNull()
-            if (lastIntro === intro) state.removeLast() // they should be exactly the same object
-        }
-
-        private fun enterBeginEnv(envName: String) {
-            val semantics = lookup.lookupEnv(envName) ?: return
-            enterContextIntro(semantics.contextSignature)
-        }
-
-        private fun exitEndEnv(envName: String) {
-            val semantics = lookup.lookupEnv(envName) ?: return
-            exitContextIntro(state, semantics.contextSignature)
-        }
-
+    ) : RecordingContextIntroTraverser(lookup) {
         override fun elementStart(e: PsiElement): WalkAction {
             action(e, state)
-            if (e is LatexCommands) {
-                // special handling for begin/end commands that are not parsed as environments
-                val name = e.nameWithSlash
-                if (name == "\\begin") e.requiredParameterText(0)?.let { enterBeginEnv(it) }
-                else if (name == "\\end") e.requiredParameterText(0)?.let { exitEndEnv(it) }
-            }
-            return WalkAction.CONTINUE
+            return super.elementStart(e)
         }
-
-        fun traverse(e: PsiElement): Boolean {
-            return traverseRecur(e)
-        }
-
-        val exitState: List<LatexContextIntro>
-            get() = state
     }
 
     /**

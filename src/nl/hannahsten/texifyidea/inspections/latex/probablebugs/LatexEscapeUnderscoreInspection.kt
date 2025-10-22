@@ -1,41 +1,39 @@
 package nl.hannahsten.texifyidea.inspections.latex.probablebugs
 
+import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
-import com.intellij.psi.PsiElement
-import nl.hannahsten.texifyidea.inspections.TexifyRegexInspection
-import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexNormalText
-import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.parser.firstParentOfType
-import nl.hannahsten.texifyidea.util.parser.inMathContext
-import java.util.regex.Matcher
-import java.util.regex.Pattern
+import com.intellij.openapi.project.Project
+import nl.hannahsten.texifyidea.inspections.AbstractTexifyRegexBasedInspection
+import nl.hannahsten.texifyidea.lang.LContextSet
+import nl.hannahsten.texifyidea.lang.LatexContexts
 
 /**
- * @author Johannes Berger
+ * @author Johannes Berger, Li Ernest
  */
-class LatexEscapeUnderscoreInspection : TexifyRegexInspection(
-    inspectionDisplayName = "Unescaped _ character",
+class LatexEscapeUnderscoreInspection : AbstractTexifyRegexBasedInspection(
     inspectionId = "EscapeUnderscore",
-    errorMessage = { """Escape character \ expected""" },
+    regex = Regex.fromLiteral("_"),
     highlight = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-    pattern = Pattern.compile("""(?<!\\)_"""),
-    replacement = { _, _ -> """\_""" },
-    quickFixName = { """Change to \_""" }
+    applicableContexts = setOf(
+        LatexContexts.Text
+    ),
+    excludedContexts = setOf(
+        LatexContexts.InsideDefinition,
+        LatexContexts.Math, // Math mode handles _ correctly.
+        LatexContexts.Comment, LatexContexts.MintedFuntimeLand, // Comments and verbatim-like environments do not need escaping.
+        LatexContexts.Literal, // just ignore literal blocks
+        LatexContexts.LabelDefinition, LatexContexts.LabelReference, LatexContexts.URL, // Label names and URLs may contain _.
+    ),
 ) {
-
-    override fun checkContext(matcher: Matcher, element: PsiElement): Boolean {
-        if (element.isUnderscoreAllowed()) return false
-        return super.checkContext(matcher, element)
+    override fun errorMessage(matcher: MatchResult, context: LContextSet): String {
+        return """Escape character \ expected"""
     }
 
-    private fun PsiElement.isUnderscoreAllowed(): Boolean {
-        if (this.inMathContext()) return true
-        if (this.firstParentOfType(LatexNormalText::class) != null) return false
-        if (this.firstParentOfType(LatexCommands::class)?.name in commandsDisallowingUnderscore) return false
-        return true
+    override fun getReplacement(match: MatchResult, fullElementText: String, project: Project, problemDescriptor: ProblemDescriptor): String {
+        return """\_"""
     }
 
-    private val commandsDisallowingUnderscore =
-        CommandMagic.sectionNameToLevel.keys + CommandMagic.textStyles + setOf("""\caption""")
+    override fun quickFixName(matcher: MatchResult, contexts: LContextSet): String {
+        return """Change to \_"""
+    }
 }

@@ -12,7 +12,6 @@ import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.lineIndentationByOffset
 import nl.hannahsten.texifyidea.util.parser.*
-import java.util.*
 
 /**
  * Adds the given magic comment as an actual comment to the file.
@@ -121,7 +120,7 @@ fun PsiElement.magicCommentLookup(
     next: PsiElement.() -> PsiElement?,
     reversed: Boolean = false
 ): MagicComment<String, String> {
-    val commentLines = LinkedList<String>()
+    val commentLines = mutableListOf<String>()
 
     // Scan (backward) through all the magic comments preceding the element.
     var current: PsiElement? = initial() ?: return MagicComment.empty()

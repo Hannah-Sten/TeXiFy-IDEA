@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.index
 
-import arrow.atomic.AtomicLong
 import com.intellij.openapi.application.smartReadAction
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
@@ -32,7 +31,6 @@ import nl.hannahsten.texifyidea.util.AbstractBlockingCacheService
 import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.files.LatexPackageLocation
 import nl.hannahsten.texifyidea.util.isTestProject
-import java.util.concurrent.atomic.AtomicInteger
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.milliseconds
@@ -245,8 +243,8 @@ class LatexLibraryDefinitionService(
                       -> B2 -> C,D
              */
             directDependencies = mutableListOf()
-            for (name in directDependencyNames) {
-                val dependency = LatexLib(name)
+            for (fileName in directDependencyNames) {
+                val dependency = LatexLib.fromFileName(fileName)
                 if (!includedPackages.add(dependency)) {
                     continue
                 }
@@ -275,17 +273,14 @@ class LatexLibraryDefinitionService(
      * @param key the name of the package (with the file extension)
      */
     override fun computeValue(key: LatexLib, oldValue: LibDefinitionBundle?): LibDefinitionBundle {
-        val start = System.currentTimeMillis()
-        val result = if (key == LatexLib.BASE) {
-            computeBaseBundle()
+        return performanceTracker.track {
+            if (key == LatexLib.BASE) {
+                computeBaseBundle()
+            }
+            else {
+                computeDefinitionsRecur(key, mutableSetOf())
+            }
         }
-        else {
-            computeDefinitionsRecur(key, mutableSetOf())
-        }
-        val buildTime = System.currentTimeMillis() - start
-        countOfBuilds.incrementAndGet()
-        totalTimeCost.addAndGet(buildTime)
-        return result
     }
 
     private fun computeBaseBundle(): LibDefinitionBundle {
@@ -317,8 +312,8 @@ class LatexLibraryDefinitionService(
         return getOrComputeNow(libName, libExpiration)
     }
 
-    fun getLibBundle(libName: String): LibDefinitionBundle {
-        return getLibBundle(LatexLib(libName))
+    fun getLibBundle(fileName: String): LibDefinitionBundle {
+        return getLibBundle(LatexLib.fromFileName(fileName))
     }
 
     fun getBaseBundle(): LibDefinitionBundle {
@@ -331,14 +326,14 @@ class LatexLibraryDefinitionService(
      * This can take a relatively long time.
      */
     fun buildAllLibBundles(): Map<LatexLib, LibDefinitionBundle> {
-        val allNames = LatexPackageLocation.getAllPackageNames(project)
+        val allNames = LatexPackageLocation.getAllPackageFileNames(project)
         return allNames.associate {
-            val lib = LatexLib(it)
+            val lib = LatexLib.fromFileName(it)
             lib to getLibBundle(lib)
         }
     }
 
-    companion object : SimplePerformanceTracker {
+    companion object {
 
         val libExpiration: Duration = 1.hours
 
@@ -346,8 +341,7 @@ class LatexLibraryDefinitionService(
             return project.service()
         }
 
-        override val countOfBuilds = AtomicInteger(0)
-        override val totalTimeCost = AtomicLong(0)
+        val performanceTracker = SimplePerformanceTracker()
 
         val predefinedBaseLibBundle: LibDefinitionBundle by lazy {
             // return the hard-coded basic commands
@@ -364,7 +358,7 @@ class LatexLibraryDefinitionService(
         }
 
         private fun processPredefinedCommandsAndEnvironments(name: LatexLib, defMap: MutableMap<String, SourcedDefinition>) {
-            AllPredefined.packageToEntities(name).forEach { entity ->
+            AllPredefined.findByLib(name).forEach { entity ->
                 defMap[entity.name] = SourcedDefinition(entity, null, DefinitionSource.Predefined)
             }
         }
@@ -430,25 +424,23 @@ class LatexDefinitionService(
 ) : AbstractBackgroundCacheService<Fileset, DefinitionBundle>(scope) {
 
     private fun computeValue(key: Fileset, oldValue: DefinitionBundle?): DefinitionBundle {
-        val startTime = System.currentTimeMillis()
+        return performanceTracker.track {
+            // packages first
+            val packageService = LatexLibraryDefinitionService.getInstance(project)
+            val libraries = ArrayList<LibDefinitionBundle>(key.libraries.size + 1)
+            libraries.add(packageService.getBaseBundle()) // add the default commands
+            key.libraries.mapTo(libraries) { packageService.getLibBundle(it) }
 
-        // packages first
-        val packageService = LatexLibraryDefinitionService.getInstance(project)
-        val libraries = ArrayList<LibDefinitionBundle>(key.libraries.size + 1)
-        libraries.add(packageService.getBaseBundle()) // add the default commands
-        key.libraries.mapTo(libraries) { packageService.getLibBundle(it) }
+            val bundle = WorkingFilesetDefinitionBundle(libraries)
 
-        val bundle = WorkingFilesetDefinitionBundle(libraries)
-
-        val projectFileIndex = ProjectFileIndex.getInstance(project)
-        // a building placeholder for the bundle to make lookups work
-        for (file in key.files) {
-            if (!projectFileIndex.isInProject(file)) continue
-            LatexDefinitionUtil.collectCustomDefinitions(file, project, bundle)
+            val projectFileIndex = ProjectFileIndex.getInstance(project)
+            // a building placeholder for the bundle to make lookups work
+            for (file in key.files) {
+                if (!projectFileIndex.isInProject(file)) continue
+                LatexDefinitionUtil.collectCustomDefinitions(file, project, bundle)
+            }
+            bundle
         }
-        countOfBuilds.incrementAndGet()
-        totalTimeCost.addAndGet(System.currentTimeMillis() - startTime)
-        return bundle
     }
 
     override suspend fun computeValueSuspend(key: Fileset, oldValue: DefinitionBundle?): DefinitionBundle {
@@ -461,13 +453,26 @@ class LatexDefinitionService(
         return getAndComputeLater(fileset, expirationTime, LatexLibraryDefinitionService.predefinedBaseLibBundle)
     }
 
+    fun getDefBundleForFilesetOrNull(fileset: Fileset): DefinitionBundle? {
+        return getAndComputeLater(fileset, expirationTime)
+    }
+
     /**
      * Get the merged definition bundle for the given [psiFile], which may belong to multiple filesets.
+     *
      */
-    fun getDefBundlesMerged(psiFile: PsiFile): DefinitionBundle {
+    fun getDefBundlesMerged(psiFile: PsiFile, default: DefinitionBundle = LatexLibraryDefinitionService.predefinedBaseLibBundle): DefinitionBundle {
         val filesetData = LatexProjectStructure.getFilesetDataFor(psiFile) ?: return LatexLibraryDefinitionService.predefinedBaseLibBundle
         if (filesetData.filesets.size == 1) return getDefBundleForFileset(filesetData.filesets.first())
         return union(filesetData.filesets.map { getDefBundleForFileset(it) })
+    }
+
+    fun getDefBundlesMergedOrNull(psiFile: PsiFile): DefinitionBundle? {
+        val filesetData = LatexProjectStructure.getFilesetDataFor(psiFile) ?: return null
+        if (filesetData.filesets.size == 1) return getDefBundleForFilesetOrNull(filesetData.filesets.first())
+        val bundles = filesetData.filesets.mapNotNull { getDefBundleForFilesetOrNull(it) }
+        if (bundles.isEmpty()) return null
+        return union(bundles)
     }
 
     fun resolveCommandDef(v: VirtualFile, commandName: String): SourcedDefinition? {
@@ -531,7 +536,7 @@ class LatexDefinitionService(
         }
     }
 
-    companion object : SimplePerformanceTracker {
+    companion object {
 
         val expirationTime: Duration
             get() = TexifySettings.getState().filesetExpirationTimeMs.milliseconds
@@ -540,8 +545,7 @@ class LatexDefinitionService(
             return project.service()
         }
 
-        override val countOfBuilds = AtomicInteger(0)
-        override val totalTimeCost = AtomicLong(0)
+        val performanceTracker = SimplePerformanceTracker()
 
         fun resolvePredefined(name: String): SourcedDefinition? {
             return AllPredefined.lookup(name)?.let {
@@ -558,7 +562,7 @@ class LatexDefinitionService(
             return CompositeOverridingDefinitionBundle(list)
         }
 
-        private fun getBundleFor(element: PsiElement): DefinitionBundle {
+        fun getBundleFor(element: PsiElement): DefinitionBundle {
             val file = element.containingFile ?: return LatexLibraryDefinitionService.predefinedBaseLibBundle
             return getInstance(file.project).getDefBundlesMerged(file)
         }

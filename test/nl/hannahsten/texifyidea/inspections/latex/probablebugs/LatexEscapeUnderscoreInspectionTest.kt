@@ -183,7 +183,7 @@ internal class LatexEscapeUnderscoreInspectionTest : TexifyInspectionTestBase(La
             \end{block}
             
             The block inside the equation (and thus the contents sf the equation) are in math context.
-            \begin{equation*}
+            \begin{equation}
                 \B{A} =
                 \begin{blockarray}{ccccc}
                     & 1 & 2 & & m \\
@@ -194,7 +194,7 @@ internal class LatexEscapeUnderscoreInspectionTest : TexifyInspectionTestBase(La
                     n & a_{n,1} & a_{n,2} & \cdots & a_{n,m} \\
                   \end{block}
                 \end{blockarray}
-            \end{equation*}
+            \end{equation}
             """.trimIndent()
         )
         myFixture.updateCommandDef()

@@ -10,9 +10,9 @@ class LatexCiteBeforePeriodInspectionTest : TexifyInspectionTestBase(LatexCiteBe
         myFixture.configureByText(
             LatexFileType,
             """
-            I cite.~<weak_warning descr="\cite is placed after interpunction">\cite{</weak_warning>knuth1990}
+            I cite.~<weak_warning descr="\cite is placed after interpunction">\cite</weak_warning>{knuth1990}
             However, e.g.~\cite{knuth1990} does not end a sentence, neither does Goossens et al.~\cite{goossens}.
-            This e.g. is.~<weak_warning descr="\cite is placed after interpunction">\cite{</weak_warning>knuth1990}
+            This e.g. is.~<weak_warning descr="\cite is placed after interpunction">\cite</weak_warning>{knuth1990}
             """.trimIndent()
         )
         myFixture.checkHighlighting()
