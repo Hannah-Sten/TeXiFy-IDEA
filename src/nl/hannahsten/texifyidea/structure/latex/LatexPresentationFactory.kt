@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.structure.latex
 
 import com.intellij.navigation.ItemPresentation
 import nl.hannahsten.texifyidea.TexifyIcons
+import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.lang.predefined.CommandNames
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.labels.getLabelPosition
@@ -16,7 +17,8 @@ object LatexPresentationFactory {
     fun getPresentation(commands: LatexCommands): ItemPresentation {
         // Any delay here will be a delay before the contents of the structure popup are shown
 
-        val labelPosition = commands.getLabelPosition()
+        val bundle = LatexDefinitionService.getInstance(commands.project).getDefBundlesMerged(commands.containingFile)
+        val labelPosition = commands.getLabelPosition(bundle)
         if (labelPosition >= 0) {
             return LatexLabelPresentation(commands, labelPosition)
         }

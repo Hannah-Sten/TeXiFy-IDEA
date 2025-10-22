@@ -2,11 +2,13 @@ package nl.hannahsten.texifyidea.util.labels
 
 import com.intellij.psi.PsiElement
 import com.jetbrains.rd.util.first
+import nl.hannahsten.texifyidea.index.DefinitionBundle
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
+import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 import nl.hannahsten.texifyidea.util.parser.getIdentifier
 import nl.hannahsten.texifyidea.util.parser.toStringMap
@@ -111,9 +113,12 @@ fun PsiElement.extractLabelName(externalDocumentCommand: LatexCommands? = null):
 /**
  * Returns -1 if the command does not define labels
  */
-fun LatexCommands.getLabelPosition(): Int {
-    // todo exclude in command definitions
+fun LatexCommands.getLabelPosition(bundle: DefinitionBundle): Int {
+    // Skip labels in command definitions
+    val contexts = LatexPsiUtil.resolveContextUpward(this, bundle)
+    if (LatexContexts.InsideDefinition in contexts || LatexContexts.CommandDeclaration in contexts) return -1
+
     return LatexDefinitionService.resolveCommand(this)?.arguments?.indexOfFirst { it.contextSignature.introduces(LatexContexts.LabelDefinition) } ?: -1
 }
 
-fun LatexCommands.isLabelCommand() = getLabelPosition() >= 0
+fun LatexCommands.isLabelCommand(bundle: DefinitionBundle) = getLabelPosition(bundle) >= 0

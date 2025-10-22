@@ -13,6 +13,7 @@ import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.file.*
+import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.predefined.CommandNames
@@ -87,6 +88,8 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         val commands = element.traverseCommands()
         val treeElements = ArrayList<LatexStructureViewCommandElement>()
 
+        val bundle = LatexDefinitionService.getInstance(element.project).getDefBundlesMerged(element.containingFile)
+
         // Add sectioning.
         val sections = mutableListOf<LatexStructureViewCommandElement>()
         for (command in commands) {
@@ -101,7 +104,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
             if (command.name in CommandMagic.sectionNameToLevel) {
                 addSections(command, sections, treeElements, numbering)
             }
-            else if (command.isLabelCommand() || command.name in CommandMagic.commandDefinitionsAndRedefinitions + listOf("\\bibitem")) {
+            else if (command.isLabelCommand(bundle) || command.name in CommandMagic.commandDefinitionsAndRedefinitions + listOf("\\bibitem")) {
                 addAtCurrentSectionLevel(sections, treeElements, newElement)
             }
             else {
