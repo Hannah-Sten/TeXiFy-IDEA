@@ -14,10 +14,12 @@ import com.intellij.psi.util.endOffset
 import com.intellij.psi.util.startOffset
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
+import nl.hannahsten.texifyidea.lang.predefined.CommandNames
 import nl.hannahsten.texifyidea.lang.predefined.EnvironmentNames
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.endOffset
+import nl.hannahsten.texifyidea.util.parser.previousSiblingIgnoreWhitespace
 import nl.hannahsten.texifyidea.util.parser.traverseRequiredParams
 
 /**
@@ -364,17 +366,53 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
         }
 
         override fun visitLeftRight(o: LatexLeftRight) {
-            val leftDisplay = o.leftRightOpen?.text?.replace("\\", "") ?: "\\left"
-            val rightDisplay = o.leftRightClose?.text?.replace("\\", "") ?: "\\right"
+            val leftDisplay = o.leftRightOpen?.text?.replace("\\", "") ?: CommandNames.LEFT
+            val rightDisplay = o.leftRightClose?.text?.replace("\\", "") ?: CommandNames.RIGHT
 
-            descriptors.add(
-                foldingDescriptor(
-                    o,
-                    range = o.textRange,
-                    placeholderText = "$leftDisplay...$rightDisplay",
-                    false
+            // Don't overlap with the \\left\{ folding region
+            val foldStart = o.leftRightOpen?.endOffset ?: o.startOffset
+            val foldEnd = o.leftRightClose?.startOffset ?: o.endOffset
+
+            // This folding region may 'overlay' the \\left and \\right folding regions defined below making them hard to fold, so allow disabling this region completely
+            if (LatexCodeFoldingSettings.getInstance().foldLeftRightExpression) {
+                descriptors.add(
+                    foldingDescriptor(
+                        o,
+                        range = o.textRange,
+                        placeholderText = "$leftDisplay...$rightDisplay",
+                        false
+                    )
                 )
-            )
+            }
+
+            // todo use folding group for left right
+
+            // Fold \left\{ to {
+            val leftRightOpen = o.leftRightOpen
+            val left = leftRightOpen?.previousSiblingIgnoreWhitespace()
+            if (leftRightOpen != null && left?.text == CommandNames.LEFT) {
+                descriptors.add(
+                    foldingDescriptor(
+                        leftRightOpen,
+                        TextRange(left.startOffset, leftRightOpen.endOffset),
+                        placeholderText = leftDisplay,
+                        isCollapsedByDefault = true,
+                    )
+                )
+            }
+
+            val leftRightClose = o.leftRightClose
+            val right = leftRightClose?.previousSiblingIgnoreWhitespace()
+            if (leftRightClose != null && right?.text == CommandNames.RIGHT) {
+                descriptors.add(
+                    foldingDescriptor(
+                        leftRightClose,
+                        TextRange(right.startOffset, leftRightClose.endOffset),
+                        placeholderText = rightDisplay,
+                        isCollapsedByDefault = true,
+                    )
+                )
+            }
 
             super.visitLeftRight(o)
         }
