@@ -15,14 +15,13 @@ import org.apache.maven.artifact.versioning.DefaultArtifactVersion
  */
 class ReformatWithBibtexTidy : ExternalReformatAction({ it.fileType == BibtexFileType }) {
 
-    companion object {
-
+    object Util {
         val bibtexTidyVersion by lazy { DefaultArtifactVersion(runCommand("bibtex-tidy", "-v") ?: "0.0.0") }
     }
 
     override fun getCommand(file: PsiFile): List<String> {
         // Outputting to stdout was introduced in 1.7.2
-        return if (bibtexTidyVersion < DefaultArtifactVersion("v1.7.2")) {
+        return if (Util.bibtexTidyVersion < DefaultArtifactVersion("v1.7.2")) {
             listOf("bibtex-tidy", file.name, "--no-backup")
         }
         else {
@@ -33,7 +32,7 @@ class ReformatWithBibtexTidy : ExternalReformatAction({ it.fileType == BibtexFil
     }
 
     override fun processOutput(output: String, file: PsiFile, project: Project) {
-        if (bibtexTidyVersion < DefaultArtifactVersion("v1.7.2")) return
+        if (Util.bibtexTidyVersion < DefaultArtifactVersion("v1.7.2")) return
         // Otherwise, we can use the stdout output
         replaceBibtexFileContent(output, file, project)
     }

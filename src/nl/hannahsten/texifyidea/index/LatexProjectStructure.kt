@@ -42,29 +42,16 @@ import nl.hannahsten.texifyidea.lang.predefined.CommandNames.EXTERNAL_DOCUMENT
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.nameWithSlash
 import nl.hannahsten.texifyidea.settings.TexifySettings
-import nl.hannahsten.texifyidea.util.AbstractBlockingCacheService
-import nl.hannahsten.texifyidea.util.CacheValueTimed
-import nl.hannahsten.texifyidea.util.GenericCacheService
-import nl.hannahsten.texifyidea.util.Log
-import nl.hannahsten.texifyidea.util.TexifyProjectCacheService
-import nl.hannahsten.texifyidea.util.contentSearchScope
-import nl.hannahsten.texifyidea.util.expandCommandsOnce
+import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.LatexPackageLocation
 import nl.hannahsten.texifyidea.util.files.allChildDirectories
-import nl.hannahsten.texifyidea.util.getBibtexRunConfigurations
-import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
-import nl.hannahsten.texifyidea.util.getTexinputsPaths
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
-import nl.hannahsten.texifyidea.util.projectSearchScope
-import nl.hannahsten.texifyidea.util.unionBy
 import java.io.File
 import java.nio.file.InvalidPathException
 import java.nio.file.Path
-import java.util.SequencedSet
-import kotlin.collections.contains
+import java.util.*
 import kotlin.io.path.Path
-import kotlin.io.path.extension
 import kotlin.io.path.invariantSeparatorsPathString
 import kotlin.io.path.name
 import kotlin.io.path.pathString
@@ -594,12 +581,14 @@ object LatexProjectStructure {
                 paramTexts.asSequence().map { text ->
                     val text = pathTextExtraProcessing(text, command, file)
                     pathOrNull(text)?.let { path ->
-                        if (path.extension.isNotEmpty() || noExtensionProvided) {
+                        // If a file a.b.tex exists, \input{a.b} prefers a.b.tex over a.b
+                        if (noExtensionProvided) {
                             sequenceOf(path)
                         }
                         else {
                             path.name.let { fileName ->
-                                extensionSeq.map { ext -> path.resolveSibling("$fileName.$ext") }
+                                // For some commands, like \input, the extension is optional, for now we always try it
+                                extensionSeq.map { ext -> path.resolveSibling("$fileName.$ext") } + listOf(path.resolveSibling(fileName))
                             }
                         }
                     } ?: emptySequence()

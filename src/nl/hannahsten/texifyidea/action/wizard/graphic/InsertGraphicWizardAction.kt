@@ -33,7 +33,7 @@ class InsertGraphicWizardAction(private val initialFile: File? = null) : AnActio
      * Opens and handles the graphic insertion wizard.
      */
     fun executeAction(file: VirtualFile, project: Project, editor: TextEditor? = null, caretPosition: Int? = null) {
-        val editor = project.currentTextEditor() ?: editor ?: return
+        val editor = project.selectedTextEditorOrWarning() ?: editor ?: return
         runInEdt {
             val text = showDialogAndGetText(editor, file, project) ?: return@runInEdt
             if (caretPosition != null) {

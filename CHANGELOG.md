@@ -3,8 +3,13 @@
 ## [Unreleased]
 
 ### Added
+* Improve many inspections, by @Ezrnest
 
 ### Fixed
+* Fix support for custom label commands in structure view
+* Fix 'file not found' error for input commands without extension specified
+* Fix symbol tool window insertion
+* Do not override build project action if there are no run configurations
 
 ## [0.11.3] - 2025-09-14
 

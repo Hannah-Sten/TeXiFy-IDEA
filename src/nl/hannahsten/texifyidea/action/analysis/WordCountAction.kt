@@ -29,12 +29,11 @@ import kotlin.io.path.Path
  */
 open class WordCountAction : AnAction() {
 
-    companion object {
-
+    object Util {
         /**
          * Commands that should be ignored by the word counter.
          */
-        private val IGNORE_COMMANDS = setOf(
+        val IGNORE_COMMANDS = setOf(
             "\\usepackage", "\\documentclass", "\\label", "\\linespread", "\\ref", "\\cite", "\\eqref", "\\nameref",
             "\\autoref", "\\fullref", "\\pageref", "\\newcounter", "\\newcommand", "\\renewcommand",
             "\\setcounter", "\\resizebox", "\\includegraphics", "\\include", "\\input", "\\refstepcounter",
@@ -44,26 +43,26 @@ open class WordCountAction : AnAction() {
         /**
          * List of all environments that must be ignored.
          */
-        private val IGNORE_ENVIRONMENTS = setOf(
+        val IGNORE_ENVIRONMENTS = setOf(
             "tikzpicture", "thebibliography"
         )
 
         /**
          * Words that are contractions when `'s` is appended.
          */
-        private val CONTRACTION_S = listOf(
+        val CONTRACTION_S = listOf(
             "that", "it", "there", "she", "he"
         )
 
         /**
          * Characters that serve as delimiters for contractions.
          */
-        private val CONTRACTION_CHARACTERS = Pattern.compile("['’]")
+        val CONTRACTION_CHARACTERS: Pattern = Pattern.compile("['’]")
 
         /**
          * Words containing solely of punctuation must be ignored.
          */
-        private val PUNCTUATION = Pattern.compile("[.,\\-_–:;?!'\"~=+*/\\\\&|]+")
+        val PUNCTUATION: Pattern = Pattern.compile("[.,\\-_–:;?!'\"~=+*/\\\\&|]+")
     }
 
     override fun actionPerformed(event: AnActionEvent) {
@@ -169,7 +168,7 @@ open class WordCountAction : AnAction() {
                         allNormalText.add(e)
                     }
                     is LatexParameterText -> {
-                        if (e.command?.text !in IGNORE_COMMANDS) {
+                        if (e.command?.text !in Util.IGNORE_COMMANDS) {
                             parameterText.add(e)
                         }
                     }
@@ -257,14 +256,14 @@ open class WordCountAction : AnAction() {
      * Checks if the given word is in an environment that must be ignored.
      */
     private fun isInWrongEnvironment(word: PsiElement): Boolean {
-        return word.inDirectEnvironment(IGNORE_ENVIRONMENTS)
+        return word.inDirectEnvironment(Util.IGNORE_ENVIRONMENTS)
     }
 
     /**
      * `I've` counts for two words: `I` and `have`. This function gives you the number of original words.
      */
     private fun contractionCount(word: String): Int {
-        val split = CONTRACTION_CHARACTERS.split(word)
+        val split = Util.CONTRACTION_CHARACTERS.split(word)
         var count = 0
         for (i in split.indices) {
             val string = split[i]
@@ -275,7 +274,7 @@ open class WordCountAction : AnAction() {
             if (string.lowercase(Locale.getDefault()) == "s") {
                 if (split.size == 1) return 1
 
-                if (i > 0 && CONTRACTION_S.contains(split[i - 1].lowercase(Locale.getDefault()))) {
+                if (i > 0 && Util.CONTRACTION_S.contains(split[i - 1].lowercase(Locale.getDefault()))) {
                     count++
                 }
             }
@@ -286,7 +285,7 @@ open class WordCountAction : AnAction() {
     }
 
     private fun isPunctuation(word: PsiElement): Boolean {
-        return PUNCTUATION.matcher(word.text).matches()
+        return Util.PUNCTUATION.matcher(word.text).matches()
     }
 
     private fun isEnvironmentMarker(word: PsiElement): Boolean {
@@ -301,6 +300,6 @@ open class WordCountAction : AnAction() {
     private fun isWrongCommand(word: PsiElement): Boolean {
         val command = word.grandparent(7) as? LatexCommands ?: return false
 
-        return IGNORE_COMMANDS.contains(command.name)
+        return Util.IGNORE_COMMANDS.contains(command.name)
     }
 }

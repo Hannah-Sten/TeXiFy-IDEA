@@ -7,6 +7,7 @@ import io.mockk.mockkStatic
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.gutter.LatexNavigationGutter
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
+import nl.hannahsten.texifyidea.updateFilesets
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import java.io.File
 import java.nio.file.Path
@@ -196,6 +197,30 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
         // Contrary to \includegraphics, \input will accept a file with any extension if specified
         myFixture.addFileToProject("included.txt", "\\LaTeX content")
         myFixture.configureByText(LatexFileType, "\\input{included.txt}")
+        myFixture.checkHighlighting()
+    }
+
+    fun testPlainInclude() {
+        // \input prefers .tex files if they exist
+        myFixture.addFileToProject("no-ext", "text content")
+        myFixture.configureByText(LatexFileType, "\\input{no-ext}")
+        myFixture.updateFilesets()
+        myFixture.checkHighlighting()
+    }
+
+    fun testMultipleDots() {
+        // \input prefers .tex files if they exist
+        myFixture.addFileToProject("included.v1.0", "text content")
+        myFixture.configureByText(LatexFileType, "\\input{included.v1.0}")
+        myFixture.updateFilesets()
+        myFixture.checkHighlighting()
+    }
+
+    fun testMultipleDotsTex() {
+        // \input prefers .tex files if they exist
+        myFixture.addFileToProject("included.v1.0.tex", "\\LaTeX content")
+        myFixture.configureByText(LatexFileType, "\\input{included.v1.0}")
+        myFixture.updateFilesets()
         myFixture.checkHighlighting()
     }
 

@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.action.wizard.graphic.InsertGraphicWizardAction
 import nl.hannahsten.texifyidea.file.SaveImageDialog
 import nl.hannahsten.texifyidea.util.Clipboard
 import nl.hannahsten.texifyidea.util.caretOffset
-import nl.hannahsten.texifyidea.util.currentTextEditor
+import nl.hannahsten.texifyidea.util.focusedTextEditor
 import nl.hannahsten.texifyidea.util.files.extractFile
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import org.apache.commons.io.FilenameUtils
@@ -50,7 +50,7 @@ open class ImagePasteProvider : PasteProvider {
         val (imageName, extension) = extractMetaData(clipboard)
 
         // The caret will not be in the editor after the first dialog, so remember the caret
-        val editor = project.currentTextEditor()
+        val editor = project.focusedTextEditor()
         val caretPosition = editor?.editor?.caretOffset() ?: return
         SaveImageDialog(project, image, imageName, extension) { imageFile -> InsertGraphicWizardAction(imageFile).executeAction(file, project, editor, caretPosition) }
     }
