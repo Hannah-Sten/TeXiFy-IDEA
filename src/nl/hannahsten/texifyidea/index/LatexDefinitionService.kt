@@ -575,6 +575,11 @@ class LatexDefinitionService(
             return CompositeOverridingDefinitionBundle(list)
         }
 
+        /**
+         * Gets the definition bundle for the given element, a shortcut for first getting the service and then `getDefBundlesMerged`.
+         *
+         * @see getDefBundlesMerged
+         */
         fun getBundleFor(element: PsiElement): DefinitionBundle {
             val file = element.containingFile ?: return LatexLibraryDefinitionService.predefinedBaseLibBundle
             return getInstance(file.project).getDefBundlesMerged(file)

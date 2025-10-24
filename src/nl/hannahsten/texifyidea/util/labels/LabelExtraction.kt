@@ -1,3 +1,10 @@
+package nl.hannahsten.texifyidea.util.labels
+
+import nl.hannahsten.texifyidea.index.DefinitionBundle
+import nl.hannahsten.texifyidea.index.LatexDefinitionService
+import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 
 /**
  * Returns -1 if the command does not define labels
