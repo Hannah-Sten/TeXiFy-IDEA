@@ -3,9 +3,12 @@
 ## [Unreleased]
 
 ### Added
+* Improve many inspections, by @Ezrnest
 * Fold \left...\right expressions, by @jojo2357
 
 ### Fixed
+* Fix support for custom label commands in structure view
+* Fix 'file not found' error for input commands without extension specified
 * Fix symbol tool window insertion
 * Do not override build project action if there are no run configurations
 

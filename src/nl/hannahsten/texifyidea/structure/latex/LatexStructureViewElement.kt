@@ -6,10 +6,14 @@ import com.intellij.ide.util.treeView.smartTree.TreeElement
 import com.intellij.navigation.ItemPresentation
 import com.intellij.navigation.NavigationItem
 import com.intellij.openapi.roots.ProjectFileIndex
-import com.intellij.psi.*
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiNameIdentifierOwner
+import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.file.*
+import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.predefined.CommandNames
@@ -20,6 +24,7 @@ import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewElement
 import nl.hannahsten.texifyidea.structure.latex.SectionNumbering.DocumentClass
+import nl.hannahsten.texifyidea.util.labels.isLabelCommand
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import java.util.*
 
@@ -83,7 +88,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         val commands = element.traverseCommands()
         val treeElements = ArrayList<LatexStructureViewCommandElement>()
 
-        val labelingCommands = CommandMagic.labels
+        val bundle = LatexDefinitionService.getInstance(element.project).getDefBundlesMerged(element.containingFile)
 
         // Add sectioning.
         val sections = mutableListOf<LatexStructureViewCommandElement>()
@@ -96,41 +101,38 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
 
             val newElement = LatexStructureViewCommandElement.newCommand(command) ?: continue
 
-            when (command.name) {
-                in CommandMagic.sectionNameToLevel -> {
-                    addSections(command, sections, treeElements, numbering)
-                }
-
-                in labelingCommands, in CommandMagic.commandDefinitionsAndRedefinitions, "\\bibitem" -> {
-                    addAtCurrentSectionLevel(sections, treeElements, newElement)
-                }
-
-                else -> {
-                    var includedFiles = InputFileReference.getIncludedFiles(command)
-                    if (!TexifySettings.getState().showPackagesInStructureView) {
-                        includedFiles = includedFiles.filter {
-                            it.virtualFile?.fileType == LatexFileType || it.virtualFile?.fileType == BibtexFileType
-                        }
+            if (command.name in CommandMagic.sectionNameToLevel) {
+                addSections(command, sections, treeElements, numbering)
+            }
+            else if (command.isLabelCommand(bundle) || command.name in CommandMagic.commandDefinitionsAndRedefinitions + listOf("\\bibitem")) {
+                addAtCurrentSectionLevel(sections, treeElements, newElement)
+            }
+            else {
+                var includedFiles = InputFileReference.getIncludedFiles(command)
+                if (!TexifySettings.getState().showPackagesInStructureView) {
+                    includedFiles = includedFiles.filter {
+                        it.virtualFile?.fileType == LatexFileType || it.virtualFile?.fileType == BibtexFileType
                     }
-                    if (includedFiles.isNotEmpty()) {
-                        for (psiFile in includedFiles) {
-                            when (psiFile.virtualFile?.fileType) {
-                                LatexFileType ->
-                                    newElement.addChild(LatexStructureViewElement(psiFile))
-                                BibtexFileType ->
-                                    newElement.addChild(BibtexStructureViewElement(psiFile))
+                }
+                if (includedFiles.isNotEmpty()) {
+                    for (psiFile in includedFiles) {
+                        when (psiFile.virtualFile?.fileType) {
+                            LatexFileType ->
+                                newElement.addChild(LatexStructureViewElement(psiFile))
 
-                                StyleFileType, ClassFileType -> {
-                                    val inProject = runCatching { ProjectFileIndex.getInstance(element.project).isInProject(psiFile.virtualFile) }
-                                        .getOrDefault(false)
-                                    if (inProject) // let us do not show the style/class files that are not in the project, or the view will be cluttered
-                                        newElement.addChild(LatexStructureViewElement(psiFile))
-                                }
+                            BibtexFileType ->
+                                newElement.addChild(BibtexStructureViewElement(psiFile))
+
+                            StyleFileType, ClassFileType -> {
+                                val inProject = runCatching { ProjectFileIndex.getInstance(element.project).isInProject(psiFile.virtualFile) }
+                                    .getOrDefault(false)
+                                if (inProject) // let us do not show the style/class files that are not in the project, or the view will be cluttered
+                                    newElement.addChild(LatexStructureViewElement(psiFile))
                             }
                         }
-                        newElement.isFileInclude = true
-                        addAtCurrentSectionLevel(sections, treeElements, newElement)
                     }
+                    newElement.isFileInclude = true
+                    addAtCurrentSectionLevel(sections, treeElements, newElement)
                 }
             }
         }
