@@ -4,6 +4,7 @@ import com.intellij.lang.ASTNode
 import com.intellij.lang.folding.FoldingBuilderEx
 import com.intellij.lang.folding.FoldingDescriptor
 import com.intellij.openapi.editor.Document
+import com.intellij.openapi.editor.FoldingGroup
 import com.intellij.openapi.progress.ProgressIndicatorProvider
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.util.TextRange
@@ -369,23 +370,16 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
             val leftDisplay = o.leftRightOpen?.text?.replace("\\", "") ?: CommandNames.LEFT
             val rightDisplay = o.leftRightClose?.text?.replace("\\", "") ?: CommandNames.RIGHT
 
-            // Don't overlap with the \\left\{ folding region
-            val foldStart = o.leftRightOpen?.endOffset ?: o.startOffset
-            val foldEnd = o.leftRightClose?.startOffset ?: o.endOffset
-
-            // This folding region may 'overlay' the \\left and \\right folding regions defined below making them hard to fold, so allow disabling this region completely
-            if (LatexCodeFoldingSettings.getInstance().foldLeftRightExpression) {
-                descriptors.add(
-                    foldingDescriptor(
-                        o,
-                        range = o.textRange,
-                        placeholderText = "$leftDisplay...$rightDisplay",
-                        false
-                    )
+            descriptors.add(
+                foldingDescriptor(
+                    o,
+                    range = o.textRange,
+                    placeholderText = "$leftDisplay...$rightDisplay",
+                    LatexCodeFoldingSettings.getInstance().foldLeftRightExpression
                 )
-            }
+            )
 
-            // todo use folding group for left right
+            val foldingGroup = FoldingGroup.newGroup("LeftRightFoldingGroup")
 
             // Fold \left\{ to {
             val leftRightOpen = o.leftRightOpen
@@ -396,7 +390,8 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
                         leftRightOpen,
                         TextRange(left.startOffset, leftRightOpen.endOffset),
                         placeholderText = leftDisplay,
-                        isCollapsedByDefault = true,
+                        isCollapsedByDefault = LatexCodeFoldingSettings.getInstance().foldLeftRightCommands,
+                        group = foldingGroup,
                     )
                 )
             }
@@ -409,7 +404,8 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
                         leftRightClose,
                         TextRange(right.startOffset, leftRightClose.endOffset),
                         placeholderText = rightDisplay,
-                        isCollapsedByDefault = true,
+                        isCollapsedByDefault = LatexCodeFoldingSettings.getInstance().foldLeftRightCommands,
+                        group = foldingGroup,
                     )
                 )
             }

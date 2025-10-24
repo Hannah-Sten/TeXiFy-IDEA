@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Fold \left...\right expressions, by @jojo2357
 
 ### Fixed
 * Fix symbol tool window insertion
