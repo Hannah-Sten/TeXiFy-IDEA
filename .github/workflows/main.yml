@@ -41,6 +41,7 @@ jobs:
           cache-default-branch-only: true
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
+      - run: df -h
       # https://www.jetbrains.com/help/qodana/github.html#GitHub+code+scanning
       - name: Upload SARIF report to GitHub
         # Also upload report if quality gate fails
