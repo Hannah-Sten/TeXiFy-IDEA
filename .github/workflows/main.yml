@@ -26,6 +26,8 @@ jobs:
         with:
           java-version: '21'
           distribution: 'zulu'
+      # Help debug disk space issues
+      - run: df -h
       - uses: JetBrains/qodana-action@main
         name: Qodana
         with:
