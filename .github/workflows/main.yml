@@ -26,8 +26,8 @@ jobs:
         with:
           java-version: '21'
           distribution: 'zulu'
-      - name: Generate lexer/parser
-        run: ./gradlew initializeIntellijPlatformPlugin
+      # Help debug disk space issues
+      - run: df -h
       - uses: JetBrains/qodana-action@main
         name: Qodana
         with:
@@ -41,6 +41,7 @@ jobs:
           cache-default-branch-only: true
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
+      - run: df -h
       # https://www.jetbrains.com/help/qodana/github.html#GitHub+code+scanning
       - name: Upload SARIF report to GitHub
         # Also upload report if quality gate fails
