@@ -26,8 +26,6 @@ jobs:
         with:
           java-version: '21'
           distribution: 'zulu'
-      - name: Generate lexer/parser
-        run: ./gradlew initializeIntellijPlatformPlugin
       - uses: JetBrains/qodana-action@main
         name: Qodana
         with:
