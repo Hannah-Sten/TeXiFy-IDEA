@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 import nl.hannahsten.texifyidea.action.debug.SimplePerformanceTracker
 import nl.hannahsten.texifyidea.index.SourcedDefinition.DefinitionSource
 import nl.hannahsten.texifyidea.index.file.LatexRegexBasedIndex
+import nl.hannahsten.texifyidea.lang.CachedLatexSemanticsLookup
 import nl.hannahsten.texifyidea.lang.LSemanticCommand
 import nl.hannahsten.texifyidea.lang.LSemanticEntity
 import nl.hannahsten.texifyidea.lang.LSemanticEnv
@@ -79,12 +80,12 @@ interface DefinitionBundle : LatexSemanticsLookup {
         return findDefinition(name)?.entity
     }
 
-    fun appendDefinitions(nameMap: MutableMap<String, SourcedDefinition>, includedPackages: MutableSet<LatexLib>)
+    fun appendDefinitionsTo(nameMap: MutableMap<String, SourcedDefinition>, includedPackages: MutableSet<LatexLib>)
 
     fun sourcedDefinitions(): Collection<SourcedDefinition> {
         val nameMap = mutableMapOf<String, SourcedDefinition>()
         val includedPackages = mutableSetOf<LatexLib>()
-        appendDefinitions(nameMap, includedPackages)
+        appendDefinitionsTo(nameMap, includedPackages)
         return nameMap.values
     }
 
@@ -94,10 +95,10 @@ interface DefinitionBundle : LatexSemanticsLookup {
 abstract class MergedDefinitionBundle(
     val introducedDefinitions: Map<String, SourcedDefinition> = emptyMap(),
     val directDependencies: List<DefinitionBundle> = emptyList(),
-) : DefinitionBundle {
-    override fun appendDefinitions(nameMap: MutableMap<String, SourcedDefinition>, includedPackages: MutableSet<LatexLib>) {
+) : CachedLatexSemanticsLookup(), DefinitionBundle {
+    override fun appendDefinitionsTo(nameMap: MutableMap<String, SourcedDefinition>, includedPackages: MutableSet<LatexLib>) {
         for (dep in directDependencies) {
-            dep.appendDefinitions(nameMap, includedPackages)
+            dep.appendDefinitionsTo(nameMap, includedPackages)
         }
         for (sourcedDef in introducedDefinitions.values) {
             nameMap.merge(sourcedDef.entity.name, sourcedDef, LatexDefinitionUtil::mergeDefinition)
@@ -116,13 +117,17 @@ open class CachedMergedDefinitionBundle(
     private val simpleNameLookup: Map<String, SourcedDefinition> by lazy {
         buildMap {
             // let us cache the full lookup map since a package can be used frequently
-            appendDefinitions(this, mutableSetOf())
+            appendDefinitionsTo(this, mutableSetOf())
         }
     }
     private val allEntities: Set<LSemanticEntity> by lazy {
         buildSet {
             simpleNameLookup.values.mapTo(this) { it.entity }
         }
+    }
+
+    override fun allEntitiesSeq(): Sequence<LSemanticEntity> {
+        return allEntities.asSequence()
     }
 
     final override fun sourcedDefinitions(): Collection<SourcedDefinition> {
@@ -150,9 +155,9 @@ class LibDefinitionBundle(
         return "Lib($libName, #defs=${introducedDefinitions.size})"
     }
 
-    override fun appendDefinitions(nameMap: MutableMap<String, SourcedDefinition>, includedPackages: MutableSet<LatexLib>) {
+    override fun appendDefinitionsTo(nameMap: MutableMap<String, SourcedDefinition>, includedPackages: MutableSet<LatexLib>) {
         if (!includedPackages.add(libName)) return // do not process the same package twice
-        super.appendDefinitions(nameMap, includedPackages)
+        super.appendDefinitionsTo(nameMap, includedPackages)
     }
 }
 
@@ -367,22 +372,26 @@ class LatexLibraryDefinitionService(
 
 class WorkingFilesetDefinitionBundle(
     private val libraryBundles: List<LibDefinitionBundle> = emptyList(),
-) : DefinitionBundle {
+) : CachedLatexSemanticsLookup(), DefinitionBundle {
     private val allNameLookup: MutableMap<String, SourcedDefinition> = mutableMapOf()
 
     init {
         val includedPackages = mutableSetOf<LatexLib>()
         for (dep in libraryBundles) {
-            dep.appendDefinitions(allNameLookup, includedPackages)
+            dep.appendDefinitionsTo(allNameLookup, includedPackages)
         }
     }
 
-    override fun appendDefinitions(nameMap: MutableMap<String, SourcedDefinition>, includedPackages: MutableSet<LatexLib>) {
+    override fun appendDefinitionsTo(nameMap: MutableMap<String, SourcedDefinition>, includedPackages: MutableSet<LatexLib>) {
         nameMap.putAll(allNameLookup)
     }
 
     override fun findDefinition(name: String): SourcedDefinition? {
         return allNameLookup[name]
+    }
+
+    override fun allEntitiesSeq(): Sequence<LSemanticEntity> {
+        return allNameLookup.values.asSequence().map { it.entity }
     }
 
     /**
@@ -518,12 +527,12 @@ class LatexDefinitionService(
 
     class CompositeOverridingDefinitionBundle(
         val bundles: List<DefinitionBundle>
-    ) : DefinitionBundle {
+    ) : CachedLatexSemanticsLookup(), DefinitionBundle {
         override fun findDefinition(name: String): SourcedDefinition? {
             return bundles.firstNotNullOfOrNull { it.findDefinition(name) }
         }
 
-        override fun appendDefinitions(nameMap: MutableMap<String, SourcedDefinition>, includedPackages: MutableSet<LatexLib>) {
+        override fun appendDefinitionsTo(nameMap: MutableMap<String, SourcedDefinition>, includedPackages: MutableSet<LatexLib>) {
             for (bundle in bundles) {
                 bundle.sourcedDefinitions().forEach {
                     nameMap[it.entity.name] = it
@@ -533,6 +542,10 @@ class LatexDefinitionService(
 
         override fun containsLibrary(lib: LatexLib): Boolean {
             return bundles.any { it.containsLibrary(lib) }
+        }
+
+        override fun allEntitiesSeq(): Sequence<LSemanticEntity> {
+            return bundles.asSequence().flatMap { it.allEntitiesSeq() }
         }
     }
 
@@ -562,6 +575,11 @@ class LatexDefinitionService(
             return CompositeOverridingDefinitionBundle(list)
         }
 
+        /**
+         * Gets the definition bundle for the given element, a shortcut for first getting the service and then `getDefBundlesMerged`.
+         *
+         * @see getDefBundlesMerged
+         */
         fun getBundleFor(element: PsiElement): DefinitionBundle {
             val file = element.containingFile ?: return LatexLibraryDefinitionService.predefinedBaseLibBundle
             return getInstance(file.project).getDefBundlesMerged(file)

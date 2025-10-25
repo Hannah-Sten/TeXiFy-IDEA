@@ -1,19 +1,19 @@
 package nl.hannahsten.texifyidea.lang.predefined
 
 import com.intellij.openapi.application.ApplicationManager
+import nl.hannahsten.texifyidea.lang.CachedLatexSemanticsLookup
 import nl.hannahsten.texifyidea.lang.LSemanticCommand
 import nl.hannahsten.texifyidea.lang.LSemanticEntity
 import nl.hannahsten.texifyidea.lang.LSemanticEnv
 import nl.hannahsten.texifyidea.lang.LatexContext
 import nl.hannahsten.texifyidea.lang.LatexContextIntro
 import nl.hannahsten.texifyidea.lang.LatexLib
-import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.util.Log
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.iterator
 
-object AllPredefined : LatexSemanticsLookup {
+object AllPredefined : CachedLatexSemanticsLookup() {
 
     val allEntities = listOf(
         PredefinedPrimitives,
@@ -28,6 +28,10 @@ object AllPredefined : LatexSemanticsLookup {
         MorePackages
     ).flatMap {
         it.allEntities
+    }
+
+    override fun allEntitiesSeq(): Sequence<LSemanticEntity> {
+        return allEntities.asSequence()
     }
 
     val allCommands: List<LSemanticCommand> = allEntities.filterIsInstance<LSemanticCommand>()

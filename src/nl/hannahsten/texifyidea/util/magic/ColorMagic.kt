@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.util.magic
 
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.LatexLib
+import nl.hannahsten.texifyidea.lang.introduces
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 
 object ColorMagic {
@@ -21,7 +22,7 @@ object ColorMagic {
      */
     val colorDefinitions = AllPredefined.allCommands
         .filter { it.dependency == LatexLib.XCOLOR }
-        .filter { cmd -> cmd.arguments.any { it.contextSignature.introduces(LatexContexts.ColorDefinition) } }
+        .filter { it.introduces(LatexContexts.ColorDefinition) }
         .associateBy { it.nameWithSlash }
 
     val defaultXcolors = mapOf(

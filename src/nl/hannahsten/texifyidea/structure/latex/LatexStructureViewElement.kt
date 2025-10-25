@@ -88,7 +88,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         val commands = element.traverseCommands()
         val treeElements = ArrayList<LatexStructureViewCommandElement>()
 
-        val bundle = LatexDefinitionService.getInstance(element.project).getDefBundlesMerged(element.containingFile)
+        val bundle = LatexDefinitionService.getBundleFor(element)
 
         // Add sectioning.
         val sections = mutableListOf<LatexStructureViewCommandElement>()

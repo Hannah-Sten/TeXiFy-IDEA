@@ -43,6 +43,8 @@ sealed interface LatexContextIntro {
         return candidates.any { introduces(it) }
     }
 
+    val introducedContexts: LContextSet
+
     fun displayString(): String {
         return when (val intro = this) {
             Inherit -> ""
@@ -86,6 +88,9 @@ sealed interface LatexContextIntro {
         override fun introducesAny(candidates: LContextSet): Boolean {
             return false
         }
+
+        override val introducedContexts: LContextSet
+            get() = emptySet()
     }
 
     data object Clear : LatexContextIntro {
@@ -104,6 +109,9 @@ sealed interface LatexContextIntro {
         override fun introducesAny(candidates: LContextSet): Boolean {
             return false
         }
+
+        override val introducedContexts: LContextSet
+            get() = emptySet()
     }
 
     /**
@@ -135,6 +143,9 @@ sealed interface LatexContextIntro {
         override fun toString(): String {
             return "Assign(${contexts.joinToString(",") { it.display }})"
         }
+
+        override val introducedContexts: LContextSet
+            get() = contexts
     }
 
     /**
@@ -175,6 +186,9 @@ sealed interface LatexContextIntro {
             }
             return parts.joinToString("", prefix = "Modify(", postfix = ")")
         }
+
+        override val introducedContexts: LContextSet
+            get() = toAdd
     }
 
     companion object {

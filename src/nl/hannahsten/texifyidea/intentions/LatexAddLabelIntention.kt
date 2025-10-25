@@ -16,7 +16,7 @@ import com.intellij.refactoring.rename.RenameProcessor
 import com.intellij.refactoring.rename.inplace.MemberInplaceRenamer
 import nl.hannahsten.texifyidea.psi.LatexCommandWithParams
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.util.labels.Labels
+import nl.hannahsten.texifyidea.util.labels.LatexLabelUtil
 import kotlin.math.max
 
 abstract class LatexAddLabelIntention(name: String) : TexifyIntentionBase(name) {
@@ -67,7 +67,7 @@ abstract class LatexAddLabelIntention(name: String) : TexifyIntentionBase(name) 
 
     protected fun getUniqueLabelWithPrefix(base: String, prefix: String, file: PsiFile): LabelWithPrefix {
         val labelBase = "$prefix:$base"
-        val fullLabel = Labels.getUniqueLabelName(labelBase, file)
+        val fullLabel = LatexLabelUtil.getUniqueLabelName(labelBase, file)
         return LabelWithPrefix(prefix, fullLabel.substring(prefix.length + 1))
     }
 

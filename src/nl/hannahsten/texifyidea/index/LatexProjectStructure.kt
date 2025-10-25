@@ -96,6 +96,10 @@ data class Fileset(
     fun projectFileScope(project: Project): GlobalSearchScope {
         return allFileScope.intersectWith(project.contentSearchScope)
     }
+
+    fun texFileScope(project: Project): GlobalSearchScope {
+        return allFileScope.restrictedByFileTypes(LatexFileType).intersectWith(project.contentSearchScope)
+    }
 }
 
 data class ExternalDocumentInfo(
