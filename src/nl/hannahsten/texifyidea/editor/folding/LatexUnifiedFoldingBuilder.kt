@@ -4,6 +4,7 @@ import com.intellij.lang.ASTNode
 import com.intellij.lang.folding.FoldingBuilderEx
 import com.intellij.lang.folding.FoldingDescriptor
 import com.intellij.openapi.editor.Document
+import com.intellij.openapi.editor.FoldingGroup
 import com.intellij.openapi.progress.ProgressIndicatorProvider
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.util.TextRange
@@ -14,11 +15,12 @@ import com.intellij.psi.util.endOffset
 import com.intellij.psi.util.startOffset
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
+import nl.hannahsten.texifyidea.lang.predefined.CommandNames
 import nl.hannahsten.texifyidea.lang.predefined.EnvironmentNames
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.endOffset
-import nl.hannahsten.texifyidea.psi.prevContextualSiblingIgnoreWhitespace
+import nl.hannahsten.texifyidea.util.parser.previousSiblingIgnoreWhitespace
 import nl.hannahsten.texifyidea.util.parser.traverseRequiredParams
 
 /**
@@ -362,6 +364,53 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
         override fun visitElement(element: PsiElement) {
             ProgressIndicatorProvider.checkCanceled()
             element.acceptChildren(this)
+        }
+
+        override fun visitLeftRight(o: LatexLeftRight) {
+            val leftDisplay = o.leftRightOpen?.text?.replace("\\", "") ?: CommandNames.LEFT
+            val rightDisplay = o.leftRightClose?.text?.replace("\\", "") ?: CommandNames.RIGHT
+
+            descriptors.add(
+                foldingDescriptor(
+                    o,
+                    range = o.textRange,
+                    placeholderText = "$leftDisplay...$rightDisplay",
+                    LatexCodeFoldingSettings.getInstance().foldLeftRightExpression
+                )
+            )
+
+            val foldingGroup = FoldingGroup.newGroup("LeftRightFoldingGroup")
+
+            // Fold \left\{ to {
+            val leftRightOpen = o.leftRightOpen
+            val left = leftRightOpen?.previousSiblingIgnoreWhitespace()
+            if (leftRightOpen != null && left?.text == CommandNames.LEFT) {
+                descriptors.add(
+                    foldingDescriptor(
+                        leftRightOpen,
+                        TextRange(left.startOffset, leftRightOpen.endOffset),
+                        placeholderText = leftDisplay,
+                        isCollapsedByDefault = LatexCodeFoldingSettings.getInstance().foldLeftRightCommands,
+                        group = foldingGroup,
+                    )
+                )
+            }
+
+            val leftRightClose = o.leftRightClose
+            val right = leftRightClose?.previousSiblingIgnoreWhitespace()
+            if (leftRightClose != null && right?.text == CommandNames.RIGHT) {
+                descriptors.add(
+                    foldingDescriptor(
+                        leftRightClose,
+                        TextRange(right.startOffset, leftRightClose.endOffset),
+                        placeholderText = rightDisplay,
+                        isCollapsedByDefault = LatexCodeFoldingSettings.getInstance().foldLeftRightCommands,
+                        group = foldingGroup,
+                    )
+                )
+            }
+
+            super.visitLeftRight(o)
         }
     }
 }

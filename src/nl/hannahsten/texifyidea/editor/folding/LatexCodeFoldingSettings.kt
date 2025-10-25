@@ -21,6 +21,8 @@ class LatexCodeFoldingSettings : PersistentStateComponent<LatexCodeFoldingSettin
     var foldMathSymbols = true
     var foldSections = false
     var foldSymbols = true
+    var foldLeftRightExpression = true
+    var foldLeftRightCommands = true
 
     override fun getState() = this
 

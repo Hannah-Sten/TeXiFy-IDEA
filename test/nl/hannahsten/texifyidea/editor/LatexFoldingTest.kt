@@ -56,4 +56,8 @@ class LatexFoldingTest : BasePlatformTestCase() {
     fun testCommentFolding() {
         myFixture.testFolding("$testDataPath/comments.tex")
     }
+
+    fun testLeftRightFolding() {
+        myFixture.testFolding("$testDataPath/left-right.tex")
+    }
 }

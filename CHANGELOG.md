@@ -4,6 +4,7 @@
 
 ### Added
 * Improve many inspections, by @Ezrnest
+* Fold \left...\right expressions, by @jojo2357
 
 ### Fixed
 * Fix support for custom label commands in structure view

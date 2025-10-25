@@ -136,6 +136,8 @@ object CommandNames {
     const val BIGWEDGE = "\\bigwedge"
     const val TEXT = "\\text"
     const val INTERTEXT = "\\intertext"
+    const val LEFT = "\\left"
+    const val RIGHT = "\\right"
 
     // 9. Listings and captions
     const val LSTINPUTLISTING = "\\lstinputlisting"

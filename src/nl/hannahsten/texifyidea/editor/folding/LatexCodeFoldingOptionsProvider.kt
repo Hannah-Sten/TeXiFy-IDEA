@@ -17,5 +17,7 @@ class LatexCodeFoldingOptionsProvider : CodeFoldingOptionsProvider, BeanConfigur
         checkBox("Math symbols", settings::foldMathSymbols)
         checkBox("Sections", settings::foldSections)
         checkBox("Symbols", settings::foldSymbols)
+        checkBox("\\left ... \\right expressions", settings::foldLeftRightExpression)
+        checkBox("\\left( or \\right) commands", settings::foldLeftRightCommands)
     }
 }
