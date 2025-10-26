@@ -326,7 +326,11 @@ object LatexPsiUtil {
         }
     }
 
-    fun alignCommandArgument(command: LatexCommandWithParams, parameter: LatexParameter, arguments: List<LArgument>): LArgument? {
+    /**
+     * Get the semantic argument corresponding to the given parameter in the command, based on the semantics' argument list.
+     *
+     */
+    fun getCorrespondingArgument(command: LatexCommandWithParams, parameter: LatexParameter, arguments: List<LArgument>): LArgument? {
         val command = parameter.firstParentOfType<LatexCommands>() ?: return null
         processArgumentsWithSemantics(command, arguments) { p, arg ->
             if (p == parameter) return arg
@@ -338,7 +342,7 @@ object LatexPsiUtil {
         val beginCommand = parameter.firstParentOfType<LatexBeginCommand>(3) ?: return null
         val name = beginCommand.environmentName() ?: return null
         val semantics = lookup.lookupEnv(name) ?: return null
-        val arg = alignCommandArgument(beginCommand, parameter, semantics.arguments) ?: return null
+        val arg = getCorrespondingArgument(beginCommand, parameter, semantics.arguments) ?: return null
         return arg.contextSignature
     }
 
@@ -346,7 +350,7 @@ object LatexPsiUtil {
         val command = parameter.firstParentOfType<LatexCommands>(3) ?: return resolveBeginCommandContext(parameter, lookup)
         val name = command.name?.removePrefix("\\") ?: return null
         val semantics = lookup.lookupCommand(name) ?: return null
-        val arg = alignCommandArgument(command, parameter, semantics.arguments) ?: return null
+        val arg = getCorrespondingArgument(command, parameter, semantics.arguments) ?: return null
         return arg.contextSignature
     }
 
