@@ -4,6 +4,7 @@
 
 ### Added
 * Improve many inspections, by @Ezrnest
+* Improve support for custom label commands, by @Ezrnest
 
 ### Fixed
 * Fix support for custom label commands in structure view
