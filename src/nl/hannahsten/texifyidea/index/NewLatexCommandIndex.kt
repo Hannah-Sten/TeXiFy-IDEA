@@ -5,6 +5,7 @@ import com.intellij.psi.stubs.PsiFileStub
 import com.intellij.psi.stubs.StubIndexKey
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
@@ -23,6 +24,22 @@ class NewCommandsIndexEx : LatexCompositeStubIndex<LatexCommands>(LatexCommands:
  * The index for all commands.
  */
 val NewCommandsIndex = NewCommandsIndexEx()
+
+class NewLatexEnvironmentIndexEx : LatexCompositeStubIndex<LatexEnvironment>(LatexEnvironment::class.java) {
+
+    override fun getKey(): StubIndexKey<String, LatexEnvironment> {
+        return LatexStubIndexKeys.ENVIRONMENTS
+    }
+
+    override fun getVersion(): Int {
+        return 2
+    }
+}
+
+/**
+ * The index for all environments.
+ */
+val NewLatexEnvironmentIndex = NewLatexEnvironmentIndexEx()
 
 /**
  * Definitions of both commands and theorems
