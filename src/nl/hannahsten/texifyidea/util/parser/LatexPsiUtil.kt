@@ -331,9 +331,8 @@ object LatexPsiUtil {
      *
      */
     fun getCorrespondingArgument(command: LatexCommandWithParams, parameter: LatexParameter, arguments: List<LArgument>): LArgument? {
-        val command = parameter.firstParentOfType<LatexCommands>() ?: return null
         processArgumentsWithSemantics(command, arguments) { p, arg ->
-            if (p == parameter) return arg
+            if (p === parameter) return arg
         }
         return null
     }
