@@ -3,11 +3,24 @@
 ## [Unreleased]
 
 ### Added
+
+### Fixed
+
+## [0.11.4] - 2025-11-01
+
+Welcome to TeXiFy IDEA 0.11.4! This release mainly improves on the refactoring done in the previous release, and fixes some bugs.
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
+
+### Added
+
 * Improve many inspections, by @Ezrnest
 * Improve support for custom label commands, by @Ezrnest
 * Fold \left...\right expressions, by @jojo2357
 
 ### Fixed
+
 * Fix support for custom label commands in structure view
 * Fix 'file not found' error for input commands without extension specified
 * Fix symbol tool window insertion
@@ -672,7 +685,8 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.3...HEAD
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.4...HEAD
+[0.11.4]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.3...v0.11.4
 [0.11.3]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.2...v0.11.3
 [0.11.2]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.1...v0.11.2
 [0.11.1]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.4...v0.11.1
