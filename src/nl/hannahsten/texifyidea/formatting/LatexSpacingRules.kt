@@ -7,13 +7,17 @@ import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import nl.hannahsten.texifyidea.formatting.spacingrules.leftTableSpaceAlign
 import nl.hannahsten.texifyidea.formatting.spacingrules.rightTableSpaceAlign
 import nl.hannahsten.texifyidea.grammar.LatexLanguage
+import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexNoMathContent
+import nl.hannahsten.texifyidea.psi.LatexParameter
 import nl.hannahsten.texifyidea.psi.LatexTypes.*
 import nl.hannahsten.texifyidea.settings.codestyle.LatexCodeStyleSettings
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.psi.asCommandName
+import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 import nl.hannahsten.texifyidea.util.parser.inDirectEnvironment
 import nl.hannahsten.texifyidea.util.parser.parentOfType
 
@@ -30,7 +34,7 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
 
     return rules(latexCommonSettings) {
         custom {
-            customRule { parent, _, right ->
+            customRule { parent, left, right ->
                 // Don't insert or remove spaces inside the text in a verbatim environment.
                 if (parent.node?.elementType === NORMAL_TEXT) {
                     if (parent.node?.psi?.inDirectEnvironment(EnvironmentMagic.verbatim) == true) {
@@ -41,6 +45,19 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
                 else if (right.node?.elementType === ENVIRONMENT_CONTENT) {
                     if (right.node?.psi?.inDirectEnvironment(EnvironmentMagic.verbatim) == true) {
                         return@customRule Spacing.getReadOnlySpacing()
+                    }
+                    left.node?.let { leftNode ->
+                        if (leftNode.elementType == BEGIN_COMMAND && leftNode.lastChildNode?.elementType === PARAMETER) {
+                            // let us check whether it is a mistakenly parsed parameter such as \begin{equation} [x+y]^2 \end{equation}
+                            val envElement = parent.node?.psi as? LatexEnvironment
+                            val parameterElement = leftNode.lastChildNode?.psi as? LatexParameter
+                            val semantics = envElement?.let { LatexDefinitionService.resolveEnv(it) }
+                            if (semantics != null && parameterElement != null) {
+                                if (LatexPsiUtil.getCorrespondingArgument(envElement.beginCommand, parameterElement, semantics.arguments) == null) {
+                                    return@customRule Spacing.getReadOnlySpacing()
+                                }
+                            }
+                        }
                     }
                 }
                 return@customRule null
@@ -133,12 +150,12 @@ fun sectionSpacing(
 
 fun newLineBeforeState(latexCommonSettings: CommonCodeStyleSettings, parent: ASTBlock, right: ASTBlock): Spacing? {
     val parentPsi = parent.node?.psi ?: return null
-    if(!parentPsi.inDirectEnvironment(EnvironmentMagic.algorithmEnvironments)) {
+    if (!parentPsi.inDirectEnvironment(EnvironmentMagic.algorithmEnvironments)) {
         return null
     }
     val rightPsi = right.node?.psi ?: return null
     val commandName = rightPsi.asCommandName()?.lowercase() ?: return null
-    if(commandName != "\\state" && commandName != "\\statex") {
+    if (commandName != "\\state" && commandName != "\\statex") {
         return null
     }
     return Spacing.createSpacing(0, 1, 1, latexCommonSettings.KEEP_LINE_BREAKS, latexCommonSettings.KEEP_BLANK_LINES_IN_CODE)
