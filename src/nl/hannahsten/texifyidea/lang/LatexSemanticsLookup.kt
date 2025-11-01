@@ -33,4 +33,51 @@ interface LatexSemanticsLookup : LatexSemanticsCommandLookup, LatexSemanticsEnvL
     override fun lookupEnv(name: String): LSemanticEnv? {
         return lookup(name) as? LSemanticEnv
     }
+
+    fun allEntitiesSeq(): Sequence<LSemanticEntity>
+
+    /**
+     * Find all entities that introduce the given context.
+     */
+    fun findByRelatedContext(context: LatexContext): List<LSemanticEntity>
+}
+
+abstract class CachedLatexSemanticsLookup : LatexSemanticsLookup {
+
+    protected val contextInverseSearch: MutableMap<LatexContext, MutableList<LSemanticEntity>> by lazy {
+        buildContextInverseSearch(allEntitiesSeq())
+    }
+
+    final override fun findByRelatedContext(context: LatexContext): List<LSemanticEntity> {
+        return contextInverseSearch[context] ?: emptyList()
+    }
+
+    companion object {
+        fun buildContextInverseSearch(entities: Sequence<LSemanticEntity>): MutableMap<LatexContext, MutableList<LSemanticEntity>> {
+            val contextInverseSearch = mutableMapOf<LatexContext, MutableList<LSemanticEntity>>()
+            fun append(contexts: LContextSet, entity: LSemanticEntity) {
+                for (context in contexts) {
+                    contextInverseSearch.getOrPut(context) { mutableListOf() }.add(entity)
+                }
+            }
+
+            for (entity in entities) {
+                when (entity) {
+                    is LSemanticCommand -> {
+                        for (arg in entity.arguments) {
+                            append(arg.contextSignature.introducedContexts, entity)
+                        }
+                    }
+
+                    is LSemanticEnv -> {
+                        append(entity.contextSignature.introducedContexts, entity)
+                        for (arg in entity.arguments) {
+                            append(arg.contextSignature.introducedContexts, entity)
+                        }
+                    }
+                }
+            }
+            return contextInverseSearch
+        }
+    }
 }

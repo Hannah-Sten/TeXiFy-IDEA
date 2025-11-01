@@ -157,8 +157,8 @@ class LabelDefinitionReferenceTest : BasePlatformTestCase() {
         myFixture.updateFilesets()
         val ref = myFixture.getReferenceAtCaretPosition("main.tex").requireIs<LatexLabelParameterReference>()
         val labelText = ref.resolve()!!
-        assertEquals(labelText.containingFile.name, "presentation.tex")
-        assertEquals(labelText.text, "slide:first")
+        assertEquals("presentation.tex", labelText.containingFile.name)
+        assertEquals("slide:first", labelText.text)
 
         myFixture.openFileInEditor(mainFile)
         myFixture.renameElementAtCaret("slide:renamed")
