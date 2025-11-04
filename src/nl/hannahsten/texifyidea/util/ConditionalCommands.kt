@@ -14,15 +14,25 @@ import nl.hannahsten.texifyidea.util.parser.previousSiblingOfType
 
 /**
  * If the element is in an if/else construct
+ *
+ * @return `true` if the element is in a conditional branch, `false` otherwise.
+ * Returns `false` if PSI tree traversal fails (e.g., due to outdated stub indices).
  */
 fun isInConditionalBranch(element: PsiElement): Boolean {
-    // \ifthenelse{condition}{true}{false}
-    if (element.firstParentOfType<LatexParameter>()?.firstParentOfType<LatexCommands>()?.name == LatexGenericRegularCommand.IFTHENELSE.commandWithSlash) {
-        return true
-    }
+    return try {
+        // \ifthenelse{condition}{true}{false}
+        if (element.firstParentOfType<LatexParameter>()?.firstParentOfType<LatexCommands>()?.name == LatexGenericRegularCommand.IFTHENELSE.commandWithSlash) {
+            return true
+        }
 
-    // Check for an \if...\fi combination
-    return isPreviousConditionalStart(element) && isNextConditionalEnd(element)
+        // Check for an \if...\fi combination
+        isPreviousConditionalStart(element) && isNextConditionalEnd(element)
+    } catch (e: Exception) {
+        // When stub indices are outdated, PSI tree traversal can fail.
+        // In this case, assume the element is not in a conditional branch.
+        // The inspection will be re-run once indices are updated.
+        false
+    }
 }
 
 /**
