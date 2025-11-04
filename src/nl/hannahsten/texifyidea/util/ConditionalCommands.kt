@@ -24,13 +24,8 @@ fun isInConditionalBranch(element: PsiElement): Boolean {
     return try {
         // \ifthenelse{condition}{true}{false}
         val inIfthenelse = element.firstParentOfType<LatexParameter>()?.firstParentOfType<LatexCommands>()?.name == LatexGenericRegularCommand.IFTHENELSE.commandWithSlash
-        if (inIfthenelse) {
-            true
-        }
-        else {
-            // Check for an \if...\fi combination
-            isPreviousConditionalStart(element) && isNextConditionalEnd(element)
-        }
+        // Check for an \if...\fi combination
+        inIfthenelse || (isPreviousConditionalStart(element) && isNextConditionalEnd(element))
     }
     catch (e: IndexNotReadyException) {
         // Index is not ready yet, assume not in conditional branch
