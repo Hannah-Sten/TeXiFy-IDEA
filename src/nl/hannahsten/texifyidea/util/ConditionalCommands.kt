@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.util
 
+import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.project.IndexNotReadyException
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiInvalidElementAccessException
@@ -27,6 +28,10 @@ fun isInConditionalBranch(element: PsiElement): Boolean {
         // Check for an \if...\fi combination
         inIfthenelse || (isPreviousConditionalStart(element) && isNextConditionalEnd(element))
     }
+    catch (e: ProcessCanceledException) {
+        // Re-throw ProcessCanceledException as it's used for flow control in IntelliJ
+        throw e
+    }
     catch (e: IndexNotReadyException) {
         // Index is not ready yet, assume not in conditional branch
         false
@@ -36,7 +41,10 @@ fun isInConditionalBranch(element: PsiElement): Boolean {
         false
     }
     catch (e: Exception) {
-        // Catch other PSI-related exceptions (e.g., "Outdated stub in index")
+        // Catch other PSI-related exceptions, particularly the generic Exception
+        // thrown by StubTreeLoader with message "Outdated stub in index" (see issue stacktrace).
+        // We deliberately catch Exception here rather than a more specific type because
+        // the IntelliJ platform throws a generic Exception for stub index issues.
         // In this case, assume the element is not in a conditional branch.
         // The inspection will be re-run once indices are updated.
         false
