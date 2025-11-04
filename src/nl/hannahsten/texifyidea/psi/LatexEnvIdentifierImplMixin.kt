@@ -4,7 +4,6 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference
-import com.intellij.psi.util.elementType
 import com.intellij.util.IncorrectOperationException
 import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.reference.LatexEnvironmentBeginEndReference
@@ -24,19 +23,18 @@ abstract class LatexEnvIdentifierImplMixin(node: ASTNode) : LatexEnvIdentifier, 
         // file - content - no_math_content - normal_text - normal_text_word
         val rootFile = LatexPsiHelper(this.project).createFromText(name)
         val newNormalText = (rootFile as LatexFile).findFirstChildTyped<LatexNormalText>()
-        val newNormalTextWord = newNormalText?.firstChild
-        require(newNormalTextWord != null && newNormalTextWord.elementType == LatexTypes.NORMAL_TEXT_WORD) {
-            "Expected NORMAL_TEXT_WORD, but got ${newNormalTextWord.elementType}."
+        require(newNormalText != null) {
+            "Expected NORMAL_TEXT_WORD, but got null for $name."
         }
-        val oldNode = normalTextWord!!.node
-        val newNode = newNormalTextWord.node
+        val oldNode = envIdentifierText!!.node
+        val newNode = newNormalText.node
         this.node.replaceChild(oldNode, newNode)
 
         return this
     }
 
     override fun getName(): String? {
-        return this.normalTextWord?.text
+        return this.envIdentifierText?.text
     }
 
     override fun getReference(): PsiReference? {
@@ -53,6 +51,7 @@ abstract class LatexEnvIdentifierImplMixin(node: ASTNode) : LatexEnvIdentifier, 
     }
 
     companion object {
-        val VALID_IDENTIFIERS_REGEX = Regex("[a-zA-Z]+\\*?")
+        // See env_identifier_text in parser
+        val VALID_IDENTIFIERS_REGEX = Regex("[a-zA-Z!&|(),=<>]+\\*?")
     }
 }

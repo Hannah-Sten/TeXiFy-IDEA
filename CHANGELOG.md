@@ -5,6 +5,7 @@
 ### Added
 
 ### Fixed
+* Allow more characters in environment names
 
 ## [0.11.4] - 2025-11-01
 
