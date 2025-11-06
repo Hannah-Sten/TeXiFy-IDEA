@@ -52,7 +52,7 @@ object LatexStubFileElementType : IStubFileElementType<LatexFileStub>(
     // debugName is required to let IntelliJ distinguish between this FILE and BibtexParserDefinition.FILE
     "LatexStubFileElementType", Language.findInstance(LatexLanguage::class.java)
 ) {
-    override fun getStubVersion(): Int = 90
+    override fun getStubVersion(): Int = 91
 
     override fun getExternalId(): @NonNls String {
         return "texify.latex.LatexStubFileElementType"
