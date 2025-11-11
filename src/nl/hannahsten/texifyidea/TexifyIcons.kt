@@ -293,6 +293,7 @@ object TexifyIcons {
             "pdf" -> PDF_FILE
             "synctex.gz" -> SYNCTEX_FILE
             "dvi" -> DVI_FILE
+            // Make sure to not override non-LaTeX extensions with the default icon (from FileTypeManager#getFileTypeByExtension), but allow plugin-provided icons
             else -> default
         }
     }

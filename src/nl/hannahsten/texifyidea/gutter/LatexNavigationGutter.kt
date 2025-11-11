@@ -4,6 +4,7 @@ import com.intellij.codeInsight.daemon.RelatedItemLineMarkerInfo
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerProvider
 import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder
 import com.intellij.codeInsight.navigation.impl.PsiTargetPresentationRenderer
+import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.elementType
 import nl.hannahsten.texifyidea.TexifyIcons
@@ -35,9 +36,9 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
         val virtualFiles = filesList.flatten().filter { it.isValid }
         val extension = virtualFiles.firstOrNull()?.let {
             if (it.name.endsWith("synctex.gz")) "synctex.gz" else it.extension
-        }
+        } ?: return
         // Gutter requires a smaller icon per IJ SDK docs.
-        val icon = TexifyIcons.getIconFromExtension(extension, default = FILE) ?: return
+        val icon = TexifyIcons.getIconFromExtension(extension, default = FileTypeManager.getInstance().getFileTypeByExtension(extension).icon ?: FILE) ?: return
         val psiFiles = InputFileReference.findValidPSIFiles(virtualFiles, element.project)
 
         val builder = NavigationGutterIconBuilder
