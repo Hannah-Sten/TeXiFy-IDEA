@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.completion.pathcompletion
 import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.lookup.LookupElementBuilder
+import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
@@ -162,15 +163,17 @@ abstract class LatexContextAwarePathProviderBase : LatexContextAwareCompletionAd
      */
     private fun addFileCompletion(baseDir: String, foundFile: VirtualFile, validExtensions: Set<String>?, resultSet: CompletionResultSet) {
         // Some commands like \input accept any file extension (supportsExtension), but showing only .tex files is probably a better user experience.
+        val extension = foundFile.extension
         if (!validExtensions.isNullOrEmpty() && validExtensions.first().isNotEmpty()) {
-            if (validExtensions.contains(foundFile.extension).not()) return
+            if (validExtensions.contains(extension).not()) return
         }
 
-        val icon = TexifyIcons.getIconFromExtension(foundFile.extension, default = FILE)
+        val default = if (extension != null) FileTypeManager.getInstance().getFileTypeByExtension(extension).icon ?: FILE else FILE
+        val icon = TexifyIcons.getIconFromExtension(extension, default = default)
         resultSet.addElement(
             LookupElementBuilder.create(baseDir + foundFile.name)
                 .withPresentableText(foundFile.nameWithoutExtension)
-                .withTailText(".${foundFile.extension}", true)
+                .withTailText(".$extension", true)
                 .withInsertHandler(
                     CompositeHandler(
                         LatexReferenceInsertHandler(),

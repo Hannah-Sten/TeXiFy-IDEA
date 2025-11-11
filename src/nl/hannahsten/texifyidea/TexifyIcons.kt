@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea
 
-import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.util.IconLoader
 import com.intellij.util.PlatformIcons
 import java.util.*
@@ -294,7 +293,8 @@ object TexifyIcons {
             "pdf" -> PDF_FILE
             "synctex.gz" -> SYNCTEX_FILE
             "dvi" -> DVI_FILE
-            else -> FileTypeManager.getInstance().getFileTypeByExtension(extension).icon ?: default
+            // Make sure to not override non-LaTeX extensions with the default icon (from FileTypeManager#getFileTypeByExtension), but allow plugin-provided icons
+            else -> default
         }
     }
 
