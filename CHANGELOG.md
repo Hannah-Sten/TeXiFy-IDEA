@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Add support for zref-clever package
 * Add mathpar environment
 
 ### Fixed
