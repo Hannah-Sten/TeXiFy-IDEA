@@ -97,6 +97,10 @@ object PredefinedEnvBasic : PredefinedEnvironmentSet() {
         underContext(LatexContexts.Text) {
             // equation is basic
             "equation".env(math) { "A numbered equation." }
+
+            underPackage("mathpartir") {
+                "mathpar".env(math)
+            }
         }
 
         packageOf("amsmath")

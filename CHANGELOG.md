@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Add mathpar environment
 
 ### Fixed
 * Allow more characters in environment names
