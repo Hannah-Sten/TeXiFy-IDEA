@@ -36,9 +36,9 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
         val virtualFiles = filesList.flatten().filter { it.isValid }
         val extension = virtualFiles.firstOrNull()?.let {
             if (it.name.endsWith("synctex.gz")) "synctex.gz" else it.extension
-        } ?: return
+        }
         // Gutter requires a smaller icon per IJ SDK docs.
-        val icon = TexifyIcons.getIconFromExtension(extension, default = FileTypeManager.getInstance().getFileTypeByExtension(extension).icon ?: FILE) ?: return
+        val icon = if (extension != null) TexifyIcons.getIconFromExtension(extension, default = FileTypeManager.getInstance().getFileTypeByExtension(extension).icon ?: FILE) ?: FILE else FILE
         val psiFiles = InputFileReference.findValidPSIFiles(virtualFiles, element.project)
 
         val builder = NavigationGutterIconBuilder
