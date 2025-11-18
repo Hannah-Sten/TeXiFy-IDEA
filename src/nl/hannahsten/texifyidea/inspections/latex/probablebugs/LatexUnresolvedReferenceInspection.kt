@@ -6,6 +6,7 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.util.endOffset
 import nl.hannahsten.texifyidea.index.DefinitionBundle
 import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.index.NewBibtexEntryIndex
@@ -61,10 +62,15 @@ class LatexUnresolvedReferenceInspection : AbstractTexifyContextAwareInspection(
                     return@run
                 }
                 val labelOffset = part.indexOfFirst { !it.isWhitespace() }
+                val range = TextRange.from(offset + labelOffset, label.length)
+                // #4299
+                if (range.endOffset > element.endOffset) {
+                    return@run
+                }
                 descriptors.add(
                     manager.createProblemDescriptor(
                         element,
-                        TextRange.from(offset + labelOffset, label.length),
+                        range,
                         "Unresolved reference '$label'",
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOnTheFly
