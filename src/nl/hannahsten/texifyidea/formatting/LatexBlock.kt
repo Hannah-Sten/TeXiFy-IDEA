@@ -35,7 +35,6 @@ class LatexBlock(
 ) : AbstractBlock(node, wrap, alignment) {
 
     override fun buildChildren(): List<Block> {
-        val blocks = mutableListOf<LatexBlock>()
         var child = myNode.firstChildNode
 
         // Only applicable for section indenting:
@@ -65,8 +64,10 @@ class LatexBlock(
                 extraSectionIndent,
                 newFakeSectionIndent
             )
-            blocks.add(block)
+            return listOf(block)
         }
+
+        val blocks = mutableListOf<Block>()
 
         var isPreviousWhiteSpace = child != null && child.elementType !== TokenType.WHITE_SPACE && child !is PsiWhiteSpace
         // Create child blocks
@@ -96,7 +97,11 @@ class LatexBlock(
                     targetIndent,
                     newFakeSectionIndent
                 )
-                blocks.add(block)
+                if(child.elementType == LatexTypes.BEGIN_COMMAND) {
+                    blocks.addAll(block.subBlocks)
+                } else {
+                    blocks.add(block)
+                }
                 isPreviousWhiteSpace = false
             }
             else isPreviousWhiteSpace = true
@@ -171,21 +176,21 @@ class LatexBlock(
             return Indent.getNormalIndent(true)
         }
         // for mistakenly parsed parameters, such as \begin{equation} [x+y]^2 \end{equation}, we use semantics to decide whether to indent or not
-        if(shouldIndentEnvironments && elementType == LatexTypes.PARAMETER) {
+        if (shouldIndentEnvironments && elementType === LatexTypes.PARAMETER) {
             val parameter = myNode.psi as? LatexParameter
             val beginElement = parameter?.parent as? LatexBeginCommand
             val envElement = beginElement?.parent as? LatexEnvironment
             if (envElement != null) {
                 if (envElement.getEnvironmentName() == EnvironmentNames.DOCUMENT) {
                     // document environment do not have parameters, so always indent according to settings
-                    return if(shouldIndentDocumentEnvironment) Indent.getNormalIndent(true) else Indent.getNoneIndent()
+                    return if (shouldIndentDocumentEnvironment) Indent.getNormalIndent(true) else Indent.getNoneIndent()
                 }
 
                 val semantics = LatexDefinitionService.resolveEnv(envElement)
-                if(semantics != null) {
+                if (semantics != null) {
                     val arg = LatexPsiUtil.getCorrespondingArgument(beginElement, parameter, semantics.arguments)
                     // if the argument is null, it means it's a mistakenly parsed parameter, so we indent according to settings
-                    return if(arg == null) Indent.getNormalIndent(true) else Indent.getNoneIndent()
+                    return if (arg == null) Indent.getNormalIndent(true) else Indent.getNoneIndent()
                 }
             }
         }

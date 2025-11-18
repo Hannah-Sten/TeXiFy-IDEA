@@ -47,10 +47,10 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
                         return@customRule Spacing.getReadOnlySpacing()
                     }
                     left.node?.let { leftNode ->
-                        if (leftNode.elementType == BEGIN_COMMAND && leftNode.lastChildNode?.elementType === PARAMETER) {
+                        if (leftNode.elementType === PARAMETER) {
                             // let us check whether it is a mistakenly parsed parameter such as \begin{equation} [x+y]^2 \end{equation}
                             val envElement = parent.node?.psi as? LatexEnvironment
-                            val parameterElement = leftNode.lastChildNode?.psi as? LatexParameter
+                            val parameterElement = leftNode.psi as? LatexParameter
                             val semantics = envElement?.let { LatexDefinitionService.resolveEnv(it) }
                             if (semantics != null && parameterElement != null) {
                                 if (LatexPsiUtil.getCorrespondingArgument(envElement.beginCommand, parameterElement, semantics.arguments) == null) {
