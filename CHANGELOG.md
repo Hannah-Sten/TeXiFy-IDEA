@@ -3,10 +3,23 @@
 ## [Unreleased]
 
 ### Added
+
+### Fixed
+
+## [0.11.5] - 2025-12-01
+
+Welcome to TeXiFy IDEA 0.11.5! This release fixes a bug which caused file icons of other plugins to be overridden.
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
+
+### Added
+
 * Add support for zref-clever package
 * Add mathpar environment
 
 ### Fixed
+
 * Do not override file icons from other plugins
 * Allow more characters in environment names
 
@@ -689,7 +702,8 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.4...HEAD
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.5...HEAD
+[0.11.5]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.4...v0.11.5
 [0.11.4]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.3...v0.11.4
 [0.11.3]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.2...v0.11.3
 [0.11.2]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.1...v0.11.2
