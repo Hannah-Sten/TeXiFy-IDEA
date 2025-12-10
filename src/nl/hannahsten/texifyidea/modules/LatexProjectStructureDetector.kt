@@ -8,6 +8,7 @@ import com.intellij.ide.util.projectWizard.SdkSettingsStep
 import com.intellij.ide.util.projectWizard.importSources.DetectedProjectRoot
 import com.intellij.ide.util.projectWizard.importSources.ProjectFromSourcesBuilder
 import com.intellij.ide.util.projectWizard.importSources.ProjectStructureDetector
+import com.intellij.openapi.module.ModuleTypeManager
 import com.intellij.openapi.projectRoots.SdkTypeId
 import com.intellij.openapi.util.Condition
 import nl.hannahsten.texifyidea.file.LatexFileType
@@ -63,8 +64,9 @@ class LatexProjectStructureDetector : ProjectStructureDetector() {
         builder: ProjectFromSourcesBuilder
     ) {
         if (projectDescriptor.modules.isEmpty() && !builder.hasRootsFromOtherDetectors(this)) {
+            val moduleType = ModuleTypeManager.getInstance().findByID(LatexModuleType.ID)
             val modules = roots.map {
-                ModuleDescriptor(it.directory, LatexModuleType.INSTANCE, emptyList())
+                ModuleDescriptor(it.directory, moduleType, emptyList())
             }
             projectDescriptor.modules = modules
         }

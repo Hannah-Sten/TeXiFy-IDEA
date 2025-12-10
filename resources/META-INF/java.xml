@@ -1,5 +1,11 @@
 <idea-plugin>
     <extensions defaultExtensionNs="com.intellij">
         <projectStructureDetector implementation="nl.hannahsten.texifyidea.modules.LatexProjectStructureDetector" />
+
+        <!-- Module type registration for LaTeX modules -->
+        <moduleType id="LATEX_MODULE_TYPE" implementationClass="nl.hannahsten.texifyidea.modules.LatexModuleType" />
+
+        <!-- Provides module configuration editors (including SDK selection) for LaTeX modules in Project Structure -->
+        <moduleConfigurationEditorProvider implementation="nl.hannahsten.texifyidea.modules.LatexModuleConfigurationEditorProvider" />
     </extensions>
 </idea-plugin>

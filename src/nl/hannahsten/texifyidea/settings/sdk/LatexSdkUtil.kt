@@ -1,12 +1,16 @@
 package nl.hannahsten.texifyidea.settings.sdk
 
+import com.intellij.openapi.module.Module
+import com.intellij.openapi.module.ModuleUtilCore
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.ProjectJdkTable
 import com.intellij.openapi.projectRoots.Sdk
+import com.intellij.openapi.roots.ModuleRootManager
 import com.intellij.openapi.roots.OrderRootType
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
@@ -16,6 +20,9 @@ import java.io.File
 
 /**
  * Utility functions which are not specific to a [LatexSdk] or a [nl.hannahsten.texifyidea.run.compiler.LatexCompiler].
+ *
+ * This utility class supports both project-level and module-level SDK configuration.
+ * Module-level SDKs take precedence over project-level SDKs when using the file-based lookup methods.
  */
 object LatexSdkUtil {
 
@@ -162,11 +169,19 @@ object LatexSdkUtil {
     }
 
     /**
+     * Get all configured LaTeX SDKs from the application-level SDK table.
+     * This returns all SDKs whose type extends [LatexSdk].
+     */
+    fun getAllLatexSdks(): List<Sdk> {
+        return ProjectJdkTable.getInstance().allJdks.filter { it.sdkType is LatexSdk }
+    }
+
+    /**
      * Assuming the goal is to be able to execute e.g. pdflatex, try to find a suitable LaTeX distribution to find a command to use pdflatex.
      * Check all available Project SDKs and return a good one (arbitrary order of preference).
      */
     private fun getPreferredSdkType(): Sdk? {
-        val allSdks = ProjectJdkTable.getInstance().allJdks.filter { it.sdkType is LatexSdk }
+        val allSdks = getAllLatexSdks()
         allSdks.firstOrNull { it.sdkType is TexliveSdk }?.let { return it }
         allSdks.firstOrNull { it.sdkType is MiktexWindowsSdk }?.let { return it }
         allSdks.firstOrNull { it.sdkType is DockerSdk }?.let { return it }
@@ -185,14 +200,71 @@ object LatexSdkUtil {
     }
 
     /**
+     * Get the LaTeX SDK for a specific module.
+     * Returns null if the module has no SDK or the SDK is not a LaTeX SDK.
+     */
+    fun getLatexModuleSdk(module: Module): Sdk? {
+        val sdk = ModuleRootManager.getInstance(module).sdk
+        if (sdk?.sdkType is LatexSdk) {
+            return sdk
+        }
+        return null
+    }
+
+    /**
+     * Get the LaTeX SDK for the given file, checking module SDK first, then falling back to project SDK.
+     * This supports per-module SDK configuration for multi-module projects.
+     *
+     * @param file The file to get the SDK for
+     * @param project The project containing the file
+     * @return The LaTeX SDK for the file's module, or the project SDK, or null if neither is a LaTeX SDK
+     */
+    fun getLatexSdkForFile(file: VirtualFile, project: Project): Sdk? {
+        // First try to get module-specific SDK
+        val module = ModuleUtilCore.findModuleForFile(file, project)
+        if (module != null) {
+            getLatexModuleSdk(module)?.let { return it }
+        }
+        // Fall back to project SDK
+        return getLatexProjectSdk(project)
+    }
+
+    /**
+     * Get the LaTeX SDK for the given PsiFile, checking module SDK first, then falling back to project SDK.
+     * This supports per-module SDK configuration for multi-module projects.
+     *
+     * @param psiFile The PsiFile to get the SDK for
+     * @return The LaTeX SDK for the file's module, or the project SDK, or null if neither is a LaTeX SDK
+     */
+    fun getLatexSdkForFile(psiFile: PsiFile): Sdk? {
+        val virtualFile = psiFile.virtualFile ?: return getLatexProjectSdk(psiFile.project)
+        return getLatexSdkForFile(virtualFile, psiFile.project)
+    }
+
+    /**
      * Get type of project SDK. If null or not a LaTeX sdk, return null.
      */
     fun getLatexProjectSdkType(project: Project): LatexSdk? {
         return getLatexProjectSdk(project)?.sdkType as? LatexSdk
     }
 
+    /**
+     * Get the LaTeX SDK type for the given file, checking module SDK first, then falling back to project SDK.
+     */
+    fun getLatexSdkTypeForFile(file: VirtualFile, project: Project): LatexSdk? {
+        return getLatexSdkForFile(file, project)?.sdkType as? LatexSdk
+    }
+
     fun getLatexDistributionType(project: Project): LatexDistributionType? {
         val sdk = getLatexProjectSdk(project) ?: return null
+        return (sdk.sdkType as? LatexSdk)?.getLatexDistributionType(sdk)
+    }
+
+    /**
+     * Get the LaTeX distribution type for the given file, checking module SDK first, then falling back to project SDK.
+     */
+    fun getLatexDistributionTypeForFile(file: VirtualFile, project: Project): LatexDistributionType? {
+        val sdk = getLatexSdkForFile(file, project) ?: return null
         return (sdk.sdkType as? LatexSdk)?.getLatexDistributionType(sdk)
     }
 
