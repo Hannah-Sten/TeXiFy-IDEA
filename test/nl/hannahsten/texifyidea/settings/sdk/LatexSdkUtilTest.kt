@@ -236,8 +236,10 @@ class LatexSdkUtilTest : BasePlatformTestCase() {
         val result = LatexSdkUtil.getLatexDistributionTypeForFile(file.virtualFile, project)
 
         assertNotNull("Expected distribution type to be returned", result)
-        assertEquals("Expected TEXLIVE distribution type",
-            nl.hannahsten.texifyidea.run.latex.LatexDistributionType.TEXLIVE, result)
+        assertEquals(
+            "Expected TEXLIVE distribution type",
+            nl.hannahsten.texifyidea.run.latex.LatexDistributionType.TEXLIVE, result
+        )
     }
 
     fun testGetLatexSdkForPsiFileReturnsModuleSdk() {
