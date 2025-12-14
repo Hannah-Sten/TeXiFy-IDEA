@@ -39,6 +39,7 @@ import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.SumatraViewer
 import nl.hannahsten.texifyidea.settings.TexifySettings
+import nl.hannahsten.texifyidea.settings.sdk.LatexSdk
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.files.findFile
 import nl.hannahsten.texifyidea.util.files.findVirtualFileByAbsoluteOrRelativePath
@@ -128,9 +129,19 @@ class LatexRunConfiguration(
     var outputFormat: Format = Format.PDF
 
     /**
-     * Use [getLatexDistributionType] to take the Project SDK into account.
+     * The LaTeX distribution to use for this run configuration.
+     *
+     * SDKs are used as an optional way to provide explicit paths for a distribution type.
+     * When no SDK is configured for a distribution type, the plugin falls back to finding
+     * executables in PATH. This way, we can support also IDE's without explicit SDK configuration
+     * (e.g. PyCharm).
+     *
+     * Note: This approach means you cannot select between multiple SDKs of the same type
+     * (e.g., TeX Live 2023 vs TeX Live 2024) directly in the run configuration. To use a
+     * specific SDK version, configure it as the project SDK or module SDK and select
+     * PROJECT_SDK or SDK_FROM_MAIN_FILE.
      */
-    internal var latexDistribution = LatexDistributionType.PROJECT_SDK
+    var latexDistribution: LatexDistributionType = LatexDistributionType.SDK_FROM_MAIN_FILE
 
     /** Whether this run configuration is the last one in the chain of run configurations (e.g. latex, bibtex, latex, latex). */
     var isLastRunConfig = false
@@ -431,10 +442,10 @@ class LatexRunConfiguration(
         if (compilerArguments != null) bibtexRunConfiguration.compilerArguments = compilerArguments
         bibtexRunConfiguration.mainFile = mainFile
         bibtexRunConfiguration.setSuggestedName()
-        bibtexRunConfiguration.setDefaultDistribution(latexDistribution)
+        bibtexRunConfiguration.setDefaultDistribution(getLatexDistributionType())
 
         // On non-MiKTeX systems, add bibinputs for bibtex to work
-        if (!latexDistribution.isMiktex(project)) {
+        if (!getLatexDistributionType().isMiktex(project, mainFile)) {
             // Only if default, because the user could have changed it after creating the run config but before running
             if (mainFile != null && outputPath.virtualFile != mainFile.parent) {
                 // As seen in issue 2165, appending a colon (like with TEXINPUTS) may not work on Windows,
@@ -562,19 +573,34 @@ class LatexRunConfiguration(
         outputFormat = Format.PDF
     }
 
-    fun setDefaultDistribution(project: Project) {
-        latexDistribution = LatexSdkUtil.getDefaultLatexDistributionType(project)
+    fun setDefaultLatexDistribution() {
+        // Default to SDK_FROM_MAIN_FILE which provides the best experience for multi-module projects
+        latexDistribution = LatexDistributionType.SDK_FROM_MAIN_FILE
     }
 
     /**
-     * Get LaTeX distribution type, when 'Use project SDK' is selected map it to a [LatexDistributionType].
+     * Get the effective LaTeX distribution type for this run configuration.
+     *
+     * For SDK_FROM_MAIN_FILE and PROJECT_SDK: resolves to the actual distribution type of the SDK.
+     * For concrete distribution types: returns the type directly.
+     * Returns TEXLIVE as fallback when no SDK is configured.
      */
     fun getLatexDistributionType(): LatexDistributionType {
-        return if (latexDistribution != LatexDistributionType.PROJECT_SDK) {
-            latexDistribution
-        }
-        else {
-            LatexSdkUtil.getLatexDistributionType(project) ?: LatexDistributionType.TEXLIVE
+        return when (latexDistribution) {
+            LatexDistributionType.SDK_FROM_MAIN_FILE -> {
+                val sdk = mainFile?.let { LatexSdkUtil.getLatexSdkForFile(it, project) }
+                    ?: LatexSdkUtil.getLatexProjectSdk(project)
+                sdk?.let { (it.sdkType as? LatexSdk)?.getLatexDistributionType(it) }
+                    ?: LatexDistributionType.TEXLIVE
+            }
+
+            LatexDistributionType.PROJECT_SDK -> {
+                val sdk = LatexSdkUtil.getLatexProjectSdk(project)
+                sdk?.let { (it.sdkType as? LatexSdk)?.getLatexDistributionType(it) }
+                    ?: LatexDistributionType.TEXLIVE
+            }
+
+            else -> latexDistribution
         }
     }
 
@@ -584,7 +610,7 @@ class LatexRunConfiguration(
      * @return The auxil folder when MiKTeX used, or else the out folder when used.
      */
     fun getAuxilDirectory(): VirtualFile? {
-        return if (latexDistribution.isMiktex(project)) {
+        return if (getLatexDistributionType().isMiktex(project, mainFile)) {
             // If we are using MiKTeX it might still be we are not using an auxil directory, so then fall back to the out directory
             auxilPath.getAndCreatePath() ?: outputPath.getAndCreatePath()
         }

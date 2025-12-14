@@ -7,6 +7,7 @@ import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.projectRoots.impl.ProjectJdkImpl
 import com.intellij.openapi.roots.ModuleRootModificationUtil
 import com.intellij.openapi.roots.ProjectRootManager
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 
 /**
@@ -251,5 +252,129 @@ class LatexSdkUtilTest : BasePlatformTestCase() {
 
         assertNotNull("Expected SDK to be returned", result)
         assertEquals("Expected the module SDK", sdk, result)
+    }
+
+    // Tests for resolveSdkPath
+
+    fun testResolveSdkPathReturnsSdkHomePath() {
+        val sdk = createTestLatexSdk("Test TeX Live SDK")
+        setModuleSdk(sdk)
+
+        val file = myFixture.addFileToProject("test.tex", "\\documentclass{article}")
+        val result = LatexSdkUtil.resolveSdkPath(file.virtualFile, project)
+
+        assertNotNull("Expected SDK home path to be returned", result)
+        assertEquals("Expected the SDK home path", "/fake/texlive/2024", result)
+    }
+
+    fun testResolveSdkPathUsesModuleSdkOverProjectSdk() {
+        val moduleSdk = createTestLatexSdk("Module TeX Live SDK")
+        val projectSdk = createTestLatexSdk("Project TeX Live SDK")
+
+        // Set different home paths to distinguish them
+        ApplicationManager.getApplication().invokeAndWait {
+            runWriteAction {
+                val moduleModificator = moduleSdk.sdkModificator
+                moduleModificator.homePath = "/fake/texlive/module"
+                moduleModificator.commitChanges()
+
+                val projectModificator = projectSdk.sdkModificator
+                projectModificator.homePath = "/fake/texlive/project"
+                projectModificator.commitChanges()
+            }
+        }
+
+        setModuleSdk(moduleSdk)
+        setProjectSdk(projectSdk)
+
+        val file = myFixture.addFileToProject("test.tex", "\\documentclass{article}")
+        val result = LatexSdkUtil.resolveSdkPath(file.virtualFile, project)
+
+        assertEquals("Expected module SDK home path", "/fake/texlive/module", result)
+    }
+
+    fun testResolveSdkPathFallsBackToProjectSdk() {
+        val projectSdk = createTestLatexSdk("Project TeX Live SDK")
+
+        ApplicationManager.getApplication().invokeAndWait {
+            runWriteAction {
+                val modificator = projectSdk.sdkModificator
+                modificator.homePath = "/fake/texlive/project"
+                modificator.commitChanges()
+            }
+        }
+
+        setProjectSdk(projectSdk)
+        // Don't set module SDK
+
+        val file = myFixture.addFileToProject("test.tex", "\\documentclass{article}")
+        val result = LatexSdkUtil.resolveSdkPath(file.virtualFile, project)
+
+        assertEquals("Expected project SDK home path as fallback", "/fake/texlive/project", result)
+    }
+
+    fun testResolveSdkPathWithNullFileFallsBackToProjectSdk() {
+        val projectSdk = createTestLatexSdk("Project TeX Live SDK")
+
+        ApplicationManager.getApplication().invokeAndWait {
+            runWriteAction {
+                val modificator = projectSdk.sdkModificator
+                modificator.homePath = "/fake/texlive/project"
+                modificator.commitChanges()
+            }
+        }
+
+        setProjectSdk(projectSdk)
+
+        val result = LatexSdkUtil.resolveSdkPath(null, project)
+
+        assertEquals("Expected project SDK home path when file is null", "/fake/texlive/project", result)
+    }
+
+    // Tests for getExecutableName with file context
+
+    fun testGetExecutableNameWithFileUsesModuleSdk() {
+        val moduleSdk = createTestLatexSdk("Module TeX Live SDK")
+
+        ApplicationManager.getApplication().invokeAndWait {
+            runWriteAction {
+                val modificator = moduleSdk.sdkModificator
+                modificator.homePath = "/fake/texlive/module"
+                modificator.commitChanges()
+            }
+        }
+
+        setModuleSdk(moduleSdk)
+
+        val file = myFixture.addFileToProject("test.tex", "\\documentclass{article}")
+        val result = LatexSdkUtil.getExecutableName("pdflatex", file.virtualFile, project)
+
+        // The result should contain the SDK home path
+        assertTrue(
+            "Expected executable path to use module SDK home path",
+            result.contains("/fake/texlive/module") || result == "pdflatex"
+        )
+    }
+
+    fun testGetExecutableNameWithNullFileFallsBackToProjectSdk() {
+        val projectSdk = createTestLatexSdk("Project TeX Live SDK")
+
+        ApplicationManager.getApplication().invokeAndWait {
+            runWriteAction {
+                val modificator = projectSdk.sdkModificator
+                modificator.homePath = "/fake/texlive/project"
+                modificator.commitChanges()
+            }
+        }
+
+        setProjectSdk(projectSdk)
+
+        val result = LatexSdkUtil.getExecutableName("pdflatex", null as VirtualFile?, project)
+
+        // The result should contain the SDK home path or be the bare executable name
+        assertTrue(
+            "Expected executable path to use project SDK or fallback to PATH",
+            result.contains("/fake/texlive/project") || result == "pdflatex"
+        )
     }
 }

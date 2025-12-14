@@ -27,6 +27,8 @@ import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.psi.nameWithoutSlash
 import nl.hannahsten.texifyidea.settings.TexifySettings
+import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
+import nl.hannahsten.texifyidea.settings.sdk.SdkPath
 import nl.hannahsten.texifyidea.util.AbstractBackgroundCacheService
 import nl.hannahsten.texifyidea.util.AbstractBlockingCacheService
 import nl.hannahsten.texifyidea.util.Log
@@ -162,14 +164,26 @@ class LibDefinitionBundle(
 }
 
 /**
+ * Cache key for library definitions, combining SDK path and library name.
+ * This ensures different LaTeX distributions in different modules get separate caches.
+ *
+ * @property sdkPath The SDK home path or resolved kpsewhich path (see [SdkPath])
+ * @property libName The library name (e.g., amsmath, hyperref)
+ */
+data class LibDefinitionCacheKey(val sdkPath: SdkPath, val libName: LatexLib)
+
+/**
  * Command definition service for a single LaTeX package (`.cls` or `.sty` file).
+ *
+ * The cache is keyed by [LibDefinitionCacheKey] to support different LaTeX distributions
+ * in different modules.
  *
  * @author Ezrnest
  */
 @Service(Service.Level.PROJECT)
 class LatexLibraryDefinitionService(
     val project: Project
-) : AbstractBlockingCacheService<LatexLib, LibDefinitionBundle>() {
+) : AbstractBlockingCacheService<LibDefinitionCacheKey, LibDefinitionBundle>() {
 
     fun invalidateCache() {
         clearAllCache()
@@ -226,14 +240,15 @@ class LatexLibraryDefinitionService(
     }
 
     private fun computeDefinitionsRecur(
-        pkgName: LatexLib, processedPackages: MutableSet<LatexLib> // to prevent loops
+        sdkPath: String, pkgName: LatexLib, processedPackages: MutableSet<LatexLib>, contextFile: VirtualFile?
     ): LibDefinitionBundle {
-        getTimedValue(pkgName)?.takeIf { it.isNotExpired(libExpiration) }?.let { return it.value }
+        val cacheKey = LibDefinitionCacheKey(sdkPath, pkgName)
+        getTimedValue(cacheKey)?.takeIf { it.isNotExpired(libExpiration) }?.let { return it.value }
         if (!processedPackages.add(pkgName)) {
             Log.debug("Recursive package dependency detected for package [$pkgName] !")
             return LibDefinitionBundle(pkgName)
         }
-        val libInfo = LatexLibraryStructureService.getInstance(project).getLibraryInfo(pkgName)
+        val libInfo = LatexLibraryStructureService.getInstance(project).getLibraryInfo(pkgName, contextFile)
         val currentSourcedDefinitions = mutableMapOf<String, SourcedDefinition>()
         processPredefinedCommandsAndEnvironments(pkgName, currentSourcedDefinitions)
 
@@ -254,7 +269,8 @@ class LatexLibraryDefinitionService(
                     continue
                 }
                 // recursively compute the command definitions for the dependency
-                val depBundle = getValueOrNull(dependency) ?: computeDefinitionsRecur(dependency, processedPackages)
+                val depCacheKey = LibDefinitionCacheKey(sdkPath, dependency)
+                val depBundle = getValueOrNull(depCacheKey) ?: computeDefinitionsRecur(sdkPath, dependency, processedPackages, contextFile)
                 directDependencies.add(depBundle)
                 includedPackages.addAll(depBundle.allLibraries)
             }
@@ -268,22 +284,21 @@ class LatexLibraryDefinitionService(
         }
 
         val result = LibDefinitionBundle(pkgName, currentSourcedDefinitions, directDependencies, includedPackages)
-        putValue(pkgName, result)
+        putValue(cacheKey, result)
         return result
     }
 
     /**
      * Computes the command definitions for a given package (`.cls` or `.sty` file).
-     *
-     * @param key the name of the package (with the file extension)
      */
-    override fun computeValue(key: LatexLib, oldValue: LibDefinitionBundle?): LibDefinitionBundle {
+    override fun computeValue(key: LibDefinitionCacheKey, oldValue: LibDefinitionBundle?): LibDefinitionBundle {
+        val (sdkPath, libName) = key
         return performanceTracker.track {
-            if (key == LatexLib.BASE) {
+            if (libName == LatexLib.BASE) {
                 computeBaseBundle()
             }
             else {
-                computeDefinitionsRecur(key, mutableSetOf())
+                computeDefinitionsRecur(sdkPath, libName, mutableSetOf(), null)
             }
         }
     }
@@ -310,15 +325,33 @@ class LatexLibraryDefinitionService(
     }
 
     /**
-     * Should be long, since packages do not change much
+     * Get the definition bundle for a library, using the SDK resolved from the given file context.
+     *
+     * @param libName The library name
+     * @param contextFile The file context to determine which SDK to use
      */
-
-    fun getLibBundle(libName: LatexLib): LibDefinitionBundle {
-        return getOrComputeNow(libName, libExpiration)
+    fun getLibBundle(libName: LatexLib, contextFile: VirtualFile?): LibDefinitionBundle {
+        val sdkPath = LatexSdkUtil.resolveSdkPath(contextFile, project)
+            ?: return LibDefinitionBundle(libName) // Return empty bundle if no SDK found
+        return getOrComputeNow(LibDefinitionCacheKey(sdkPath, libName), libExpiration)
     }
 
-    fun getLibBundle(fileName: String): LibDefinitionBundle {
-        return getLibBundle(LatexLib.fromFileName(fileName))
+    /**
+     * Get the definition bundle for a library, using the SDK resolved from the given file context.
+     */
+    fun getLibBundle(libName: LatexLib, contextFile: PsiFile): LibDefinitionBundle {
+        return getLibBundle(libName, contextFile.virtualFile)
+    }
+
+    /**
+     * Get the definition bundle for a library, using project SDK only (no file context).
+     */
+    fun getLibBundle(libName: LatexLib): LibDefinitionBundle {
+        return getLibBundle(libName, null as VirtualFile?)
+    }
+
+    fun getLibBundle(fileName: String, contextFile: VirtualFile? = null): LibDefinitionBundle {
+        return getLibBundle(LatexLib.fromFileName(fileName), contextFile)
     }
 
     fun getBaseBundle(): LibDefinitionBundle {
@@ -329,12 +362,14 @@ class LatexLibraryDefinitionService(
      * Build definition bundles for all packages found in the project.
      *
      * This can take a relatively long time.
+     *
+     * @param contextFile The file context to determine which SDK to use
      */
-    fun buildAllLibBundles(): Map<LatexLib, LibDefinitionBundle> {
-        val allNames = LatexPackageLocation.getAllPackageFileNames(project)
+    fun buildAllLibBundles(contextFile: VirtualFile? = null): Map<LatexLib, LibDefinitionBundle> {
+        val allNames = LatexPackageLocation.getAllPackageFileNames(contextFile, project)
         return allNames.associate {
             val lib = LatexLib.fromFileName(it)
-            lib to getLibBundle(lib)
+            lib to getLibBundle(lib, contextFile)
         }
     }
 
@@ -436,9 +471,10 @@ class LatexDefinitionService(
         return performanceTracker.track {
             // packages first
             val packageService = LatexLibraryDefinitionService.getInstance(project)
+            val contextFile = key.root
             val libraries = ArrayList<LibDefinitionBundle>(key.libraries.size + 1)
             libraries.add(packageService.getBaseBundle()) // add the default commands
-            key.libraries.mapTo(libraries) { packageService.getLibBundle(it) }
+            key.libraries.mapTo(libraries) { packageService.getLibBundle(it, contextFile) }
 
             val bundle = WorkingFilesetDefinitionBundle(libraries)
 

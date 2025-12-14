@@ -1,14 +1,13 @@
 package nl.hannahsten.texifyidea.run.latex
 
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdk
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 
 /**
  * Options for the run configuration.
  * See [LatexSdk].
- * This enum is still required, for example to support non-IntelliJ IDEs, but also to allow overriding the distribution type
- * when for example a different project SDK needs to be selected for a different language to work.
  */
 enum class LatexDistributionType(val displayName: String) {
 
@@ -17,10 +16,30 @@ enum class LatexDistributionType(val displayName: String) {
     WSL_TEXLIVE("TeX Live using WSL"),
     DOCKER_MIKTEX("Dockerized MiKTeX"),
     DOCKER_TEXLIVE("Dockerized TeX Live"),
-    PROJECT_SDK("Use project SDK");
+    PROJECT_SDK("Use project SDK"),
+    SDK_FROM_MAIN_FILE("Use SDK of main file");
 
     private fun isMiktex() = this == MIKTEX || this == DOCKER_MIKTEX
-    fun isMiktex(project: Project) = this == MIKTEX || this == DOCKER_MIKTEX || (this == PROJECT_SDK && LatexSdkUtil.getLatexDistributionType(project)?.isMiktex() == true)
+
+    /**
+     * Check if this distribution type represents MiKTeX.
+     * For SDK-based types, resolves the actual SDK to determine the distribution.
+     */
+    fun isMiktex(project: Project, mainFile: VirtualFile? = null): Boolean {
+        return when (this) {
+            MIKTEX, DOCKER_MIKTEX -> true
+            PROJECT_SDK -> LatexSdkUtil.getLatexDistributionType(project)?.isMiktex() == true
+            SDK_FROM_MAIN_FILE -> {
+                if (mainFile != null) {
+                    LatexSdkUtil.getLatexDistributionTypeForFile(mainFile, project)?.isMiktex() == true
+                }
+                else {
+                    LatexSdkUtil.getLatexDistributionType(project)?.isMiktex() == true
+                }
+            }
+            else -> false
+        }
+    }
 
     fun isDocker() = this == DOCKER_MIKTEX || this == DOCKER_TEXLIVE
 
