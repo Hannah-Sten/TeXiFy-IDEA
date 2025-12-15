@@ -290,6 +290,8 @@ class LatexLibraryDefinitionService(
 
     /**
      * Computes the command definitions for a given package (`.cls` or `.sty` file).
+     *
+     * @param key The cache key containing the SDK path and library name (with file extension).
      */
     override fun computeValue(key: LibDefinitionCacheKey, oldValue: LibDefinitionBundle?): LibDefinitionBundle {
         val (sdkPath, libName) = key

@@ -45,6 +45,9 @@ object LatexPackageLocation : AbstractBlockingCacheService<SdkPath, Map<String, 
 
     /**
      * Computes the package location map for the given SDK path.
+     * Fills the cache with all paths of all files in the LaTeX installation.
+     * Note: this can take a long time.
+     *
      * Uses the stored context if available.
      */
     override fun computeValue(key: SdkPath, oldValue: Map<String, Path>?): Map<String, Path> {
@@ -66,6 +69,8 @@ object LatexPackageLocation : AbstractBlockingCacheService<SdkPath, Map<String, 
         // Source: https://www.tug.org/texinfohtml/kpathsea.html#Casefolding-search
         // We cannot just fill the cache on the fly, because then we will also run kpsewhich when the user is still typing a package name, so we will run it once for every letter typed and this is already too expensive.
         // We cannot rely on ls-R databases because they are not always populated, and running mktexlsr may run into permission issues.
+        // See NativeTexliveSdk.getDefaultStyleFilesPath which does the same thing, but for a specific file.
+        // This ensures that the library root folders are consistent.
         val texPaths = runCommand(executableName, "article.cls", "plain.bst", timeout = 10)
 
         if (retryCount.getAndIncrement() <= 5 && texPaths.isNullOrBlank()) {
@@ -85,6 +90,7 @@ object LatexPackageLocation : AbstractBlockingCacheService<SdkPath, Map<String, 
             root.toFile().walk().map { it.toPath() }.filter { it.isRegularFile() }
                 .forEach {
                     val fileName = it.fileName.toString()
+                    // If the file is already in the map, we keep the first one we found
                     result.putIfAbsent(fileName, it)
                 }
         }
