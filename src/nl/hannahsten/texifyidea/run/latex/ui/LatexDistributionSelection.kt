@@ -9,7 +9,7 @@ import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
  * UI helper for the LaTeX distribution dropdown in run configurations.
  *
  * This wraps [LatexDistributionType] to provide display information for the dropdown,
- * including resolving SDK names for SDK_FROM_MAIN_FILE and PROJECT_SDK options.
+ * including resolving SDK names for MODULE_SDK and PROJECT_SDK options.
  *
  * @see nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration.latexDistribution for design documentation
  */
@@ -17,11 +17,11 @@ data class LatexDistributionSelection(val distributionType: LatexDistributionTyp
 
     /**
      * Returns the display name for this selection.
-     * For SDK_FROM_MAIN_FILE and PROJECT_SDK, shows the resolved SDK name if available.
+     * For MODULE_SDK and PROJECT_SDK, shows the resolved SDK name if available.
      */
     fun getDisplayName(mainFile: VirtualFile?, project: Project): String {
         return when (distributionType) {
-            LatexDistributionType.SDK_FROM_MAIN_FILE -> {
+            LatexDistributionType.MODULE_SDK -> {
                 val sdk = if (mainFile != null) {
                     LatexSdkUtil.getLatexSdkForFile(mainFile, project)
                 }
@@ -39,11 +39,11 @@ data class LatexDistributionSelection(val distributionType: LatexDistributionTyp
 
     /**
      * Returns a secondary label shown in gray, or null if none.
-     * Used for SDK_FROM_MAIN_FILE and PROJECT_SDK to distinguish them from concrete distributions.
+     * Used for MODULE_SDK and PROJECT_SDK to distinguish them from concrete distributions.
      */
     val secondaryLabel: String?
         get() = when (distributionType) {
-            LatexDistributionType.SDK_FROM_MAIN_FILE -> "SDK of main file"
+            LatexDistributionType.MODULE_SDK -> "Module SDK"
             LatexDistributionType.PROJECT_SDK -> "Project SDK"
             else -> null
         }
@@ -60,7 +60,7 @@ data class LatexDistributionSelection(val distributionType: LatexDistributionTyp
 
             // Add SDK-based options if any SDKs are configured
             if (hasSdks) {
-                selections.add(LatexDistributionSelection(LatexDistributionType.SDK_FROM_MAIN_FILE))
+                selections.add(LatexDistributionSelection(LatexDistributionType.MODULE_SDK))
 
                 if (LatexSdkUtil.getLatexProjectSdk(project) != null) {
                     selections.add(LatexDistributionSelection(LatexDistributionType.PROJECT_SDK))

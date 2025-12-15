@@ -86,7 +86,7 @@ class LatexRunConfigurationSdkTest : BasePlatformTestCase() {
         val file = myFixture.addFileToProject("test.tex", "\\documentclass{article}")
         val runConfig = createRunConfiguration()
         runConfig.mainFile = file.virtualFile
-        runConfig.latexDistribution = LatexDistributionType.SDK_FROM_MAIN_FILE
+        runConfig.latexDistribution = LatexDistributionType.MODULE_SDK
 
         assertEquals(
             "Expected TEXLIVE distribution type from module SDK",
@@ -103,7 +103,7 @@ class LatexRunConfigurationSdkTest : BasePlatformTestCase() {
         val file = myFixture.addFileToProject("test.tex", "\\documentclass{article}")
         val runConfig = createRunConfiguration()
         runConfig.mainFile = file.virtualFile
-        runConfig.latexDistribution = LatexDistributionType.SDK_FROM_MAIN_FILE
+        runConfig.latexDistribution = LatexDistributionType.MODULE_SDK
 
         assertEquals(
             "Expected TEXLIVE distribution type from project SDK fallback",
@@ -132,7 +132,7 @@ class LatexRunConfigurationSdkTest : BasePlatformTestCase() {
 
     fun testGetLatexDistributionTypeFallsBackToTexliveWhenNoSdk() {
         val runConfig = createRunConfiguration()
-        runConfig.latexDistribution = LatexDistributionType.SDK_FROM_MAIN_FILE
+        runConfig.latexDistribution = LatexDistributionType.MODULE_SDK
 
         assertEquals(
             "Expected TEXLIVE fallback when no SDK found",
@@ -166,7 +166,7 @@ class LatexRunConfigurationSdkTest : BasePlatformTestCase() {
 
     fun testPersistSdkFromMainFile() {
         val runConfig = createRunConfiguration()
-        runConfig.latexDistribution = LatexDistributionType.SDK_FROM_MAIN_FILE
+        runConfig.latexDistribution = LatexDistributionType.MODULE_SDK
 
         val element = Element("configuration")
         runConfig.writeExternal(element)
@@ -175,8 +175,8 @@ class LatexRunConfigurationSdkTest : BasePlatformTestCase() {
         newRunConfig.readExternal(element)
 
         assertEquals(
-            "Expected SDK_FROM_MAIN_FILE to be persisted",
-            LatexDistributionType.SDK_FROM_MAIN_FILE,
+            "Expected MODULE_SDK to be persisted",
+            LatexDistributionType.MODULE_SDK,
             newRunConfig.latexDistribution
         )
     }
@@ -277,21 +277,21 @@ class LatexRunConfigurationSdkTest : BasePlatformTestCase() {
     // Tests for LatexDistributionSelection UI helper
 
     fun testDistributionSelectionFromDistributionType() {
-        val selection = LatexDistributionSelection.fromDistributionType(LatexDistributionType.SDK_FROM_MAIN_FILE)
+        val selection = LatexDistributionSelection.fromDistributionType(LatexDistributionType.MODULE_SDK)
 
         assertEquals(
             "Expected distribution type to be preserved",
-            LatexDistributionType.SDK_FROM_MAIN_FILE,
+            LatexDistributionType.MODULE_SDK,
             selection.distributionType
         )
     }
 
-    fun testDistributionSelectionSecondaryLabelForSdkFromMainFile() {
-        val selection = LatexDistributionSelection(LatexDistributionType.SDK_FROM_MAIN_FILE)
+    fun testDistributionSelectionSecondaryLabelForModuleSdk() {
+        val selection = LatexDistributionSelection(LatexDistributionType.MODULE_SDK)
 
         assertEquals(
-            "Expected secondary label for SDK_FROM_MAIN_FILE",
-            "SDK of main file",
+            "Expected secondary label for MODULE_SDK",
+            "Module SDK",
             selection.secondaryLabel
         )
     }
@@ -322,8 +322,8 @@ class LatexRunConfigurationSdkTest : BasePlatformTestCase() {
         val selections = LatexDistributionSelection.getAvailableSelections(project)
 
         assertTrue(
-            "Expected SDK_FROM_MAIN_FILE option when SDKs exist",
-            selections.any { it.distributionType == LatexDistributionType.SDK_FROM_MAIN_FILE }
+            "Expected MODULE_SDK option when SDKs exist",
+            selections.any { it.distributionType == LatexDistributionType.MODULE_SDK }
         )
         assertTrue(
             "Expected PROJECT_SDK option when project SDK is configured",
@@ -337,8 +337,8 @@ class LatexRunConfigurationSdkTest : BasePlatformTestCase() {
         val selections = LatexDistributionSelection.getAvailableSelections(project)
 
         assertFalse(
-            "Expected no SDK_FROM_MAIN_FILE option when no SDKs exist",
-            selections.any { it.distributionType == LatexDistributionType.SDK_FROM_MAIN_FILE }
+            "Expected no MODULE_SDK option when no SDKs exist",
+            selections.any { it.distributionType == LatexDistributionType.MODULE_SDK }
         )
         assertFalse(
             "Expected no PROJECT_SDK option when no SDKs exist",
@@ -352,7 +352,7 @@ class LatexRunConfigurationSdkTest : BasePlatformTestCase() {
         val sdk = createTestLatexSdk("My TeX Live SDK")
         setProjectSdk(sdk)
 
-        val selection = LatexDistributionSelection(LatexDistributionType.SDK_FROM_MAIN_FILE)
+        val selection = LatexDistributionSelection(LatexDistributionType.MODULE_SDK)
         val displayName = selection.getDisplayName(null, project)
 
         assertEquals(

@@ -17,7 +17,7 @@ enum class LatexDistributionType(val displayName: String) {
     DOCKER_MIKTEX("Dockerized MiKTeX"),
     DOCKER_TEXLIVE("Dockerized TeX Live"),
     PROJECT_SDK("Use project SDK"),
-    SDK_FROM_MAIN_FILE("Use SDK of main file");
+    MODULE_SDK("Use module SDK");
 
     private fun isMiktex() = this == MIKTEX || this == DOCKER_MIKTEX
 
@@ -29,7 +29,7 @@ enum class LatexDistributionType(val displayName: String) {
         return when (this) {
             MIKTEX, DOCKER_MIKTEX -> true
             PROJECT_SDK -> LatexSdkUtil.getLatexDistributionType(project)?.isMiktex() == true
-            SDK_FROM_MAIN_FILE -> {
+            MODULE_SDK -> {
                 if (mainFile != null) {
                     LatexSdkUtil.getLatexDistributionTypeForFile(mainFile, project)?.isMiktex() == true
                 }

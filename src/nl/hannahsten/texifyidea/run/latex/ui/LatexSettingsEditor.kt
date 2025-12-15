@@ -250,7 +250,7 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
         // Apply LaTeX distribution selection
         val selectedDistribution = latexDistribution.component.selectedItem as? LatexDistributionSelection
         runConfiguration.latexDistribution = selectedDistribution?.distributionType
-            ?: LatexDistributionType.SDK_FROM_MAIN_FILE
+            ?: LatexDistributionType.MODULE_SDK
 
         if (chosenCompiler == LatexCompiler.ARARA) {
             outputPath.isVisible = false

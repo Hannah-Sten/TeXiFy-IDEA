@@ -102,7 +102,7 @@ object LatexSdkUtil {
 
     fun isAvailable(type: LatexDistributionType, project: Project): Boolean {
         if (type == LatexDistributionType.PROJECT_SDK && getLatexProjectSdk(project) != null) return true
-        if (type == LatexDistributionType.SDK_FROM_MAIN_FILE && getAllLatexSdks().isNotEmpty()) return true
+        if (type == LatexDistributionType.MODULE_SDK && getAllLatexSdks().isNotEmpty()) return true
         if (type == LatexDistributionType.MIKTEX && isMiktexAvailable) return true
         if (type == LatexDistributionType.TEXLIVE && TexliveSdk.Cache.isAvailable) return true
         if (type == LatexDistributionType.DOCKER_MIKTEX && DockerSdk.Availability.isAvailable) return true
@@ -220,7 +220,7 @@ object LatexSdkUtil {
      * @param project The current project (used for project SDK fallback)
      * @param latexDistributionType The resolved distribution type. When null, falls back to the project SDK's
      *        distribution type. Callers from run configurations should pass a concrete type (TEXLIVE, MIKTEX, etc.),
-     *        not SDK_FROM_MAIN_FILE or PROJECT_SDK - those should be resolved by the caller first.
+     *        not MODULE_SDK or PROJECT_SDK - those should be resolved by the caller first.
      *        When no distribution type can be determined, the function falls back to checking PATH.
      */
     fun getExecutableName(executableName: String, project: Project, latexDistributionType: LatexDistributionType? = null): String {

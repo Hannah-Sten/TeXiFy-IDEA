@@ -139,9 +139,9 @@ class LatexRunConfiguration(
      * Note: This approach means you cannot select between multiple SDKs of the same type
      * (e.g., TeX Live 2023 vs TeX Live 2024) directly in the run configuration. To use a
      * specific SDK version, configure it as the project SDK or module SDK and select
-     * PROJECT_SDK or SDK_FROM_MAIN_FILE.
+     * PROJECT_SDK or MODULE_SDK.
      */
-    var latexDistribution: LatexDistributionType = LatexDistributionType.SDK_FROM_MAIN_FILE
+    var latexDistribution: LatexDistributionType = LatexDistributionType.MODULE_SDK
 
     /** Whether this run configuration is the last one in the chain of run configurations (e.g. latex, bibtex, latex, latex). */
     var isLastRunConfig = false
@@ -574,20 +574,20 @@ class LatexRunConfiguration(
     }
 
     fun setDefaultLatexDistribution() {
-        // Default to SDK_FROM_MAIN_FILE which provides the best experience for multi-module projects
-        latexDistribution = LatexDistributionType.SDK_FROM_MAIN_FILE
+        // Default to MODULE_SDK which provides the best experience for multi-module projects
+        latexDistribution = LatexDistributionType.MODULE_SDK
     }
 
     /**
      * Get the effective LaTeX distribution type for this run configuration.
      *
-     * For SDK_FROM_MAIN_FILE and PROJECT_SDK: resolves to the actual distribution type of the SDK.
+     * For MODULE_SDK and PROJECT_SDK: resolves to the actual distribution type of the SDK.
      * For concrete distribution types: returns the type directly.
      * Returns TEXLIVE as fallback when no SDK is configured.
      */
     fun getLatexDistributionType(): LatexDistributionType {
         return when (latexDistribution) {
-            LatexDistributionType.SDK_FROM_MAIN_FILE -> {
+            LatexDistributionType.MODULE_SDK -> {
                 val sdk = mainFile?.let { LatexSdkUtil.getLatexSdkForFile(it, project) }
                     ?: LatexSdkUtil.getLatexProjectSdk(project)
                 sdk?.let { (it.sdkType as? LatexSdk)?.getLatexDistributionType(it) }

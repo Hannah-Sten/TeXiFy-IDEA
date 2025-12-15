@@ -30,7 +30,7 @@ class LatexDistributionComboBoxRenderer(
         val secondaryLabel = value.secondaryLabel
 
         if (secondaryLabel != null) {
-            // SDK_FROM_MAIN_FILE or PROJECT_SDK - show resolved name and secondary label
+            // MODULE_SDK or PROJECT_SDK - show resolved name and secondary label
             if (displayName.startsWith("<")) {
                 // No SDK configured
                 append(displayName, SimpleTextAttributes.ERROR_ATTRIBUTES)
