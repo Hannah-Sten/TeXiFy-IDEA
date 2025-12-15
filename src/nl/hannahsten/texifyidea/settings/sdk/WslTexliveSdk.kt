@@ -10,9 +10,17 @@ import nl.hannahsten.texifyidea.util.runCommand
 import java.util.Calendar
 
 /**
- * Utility functions for WSL path conversion.
+ * Utility functions for WSL path conversion and availability checking.
  */
 object WslPathUtil {
+
+    /**
+     * Check if WSL is available and has TeX Live installed.
+     */
+    val isWslTexliveAvailable: Boolean by lazy {
+        if (!SystemInfo.isWindows) return@lazy false
+        runCommand(*SystemEnvironment.wslCommand, "pdflatex --version")?.contains("pdfTeX") == true
+    }
 
     /**
      * Convert a WSL path to a Windows path using wslpath.
@@ -39,17 +47,6 @@ object WslPathUtil {
  * e.g., `\\wsl$\Ubuntu\usr\local\texlive\2025` or `\\wsl.localhost\Ubuntu\usr\local\texlive\2025`
  */
 class WslTexliveSdk : LatexSdk("WSL TeX Live SDK") {
-
-    companion object {
-
-        /**
-         * Check if WSL is available and has TeX Live installed.
-         */
-        val isAvailable: Boolean by lazy {
-            if (!SystemInfo.isWindows) return@lazy false
-            runCommand(*SystemEnvironment.wslCommand, "pdflatex --version")?.contains("pdfTeX") == true
-        }
-    }
 
     override fun suggestHomePath(): String {
         if (!SystemInfo.isWindows) return ""

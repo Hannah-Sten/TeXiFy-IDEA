@@ -67,7 +67,7 @@ object LatexSdkUtil {
     }
 
     private val isWslTexliveAvailable: Boolean by lazy {
-        WslTexliveSdk.isAvailable
+        WslPathUtil.isWslTexliveAvailable
     }
 
     val isTlmgrInstalled: Boolean by lazy {
