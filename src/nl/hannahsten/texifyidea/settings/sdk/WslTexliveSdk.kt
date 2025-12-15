@@ -10,6 +10,28 @@ import nl.hannahsten.texifyidea.util.runCommand
 import java.util.Calendar
 
 /**
+ * Utility functions for WSL path conversion.
+ */
+object WslPathUtil {
+
+    /**
+     * Convert a WSL path to a Windows path using wslpath.
+     * e.g., /usr/local/texlive/2025 -> \\wsl.localhost\Ubuntu\usr\local\texlive\2025
+     */
+    fun wslPathToWindows(wslPath: String): String? {
+        return runCommand(*SystemEnvironment.wslCommand, "wslpath -w '$wslPath'")?.trim()
+    }
+
+    /**
+     * Convert a Windows path to a WSL path using wslpath.
+     * e.g., \\wsl$\Ubuntu\usr\local\texlive\2025 -> /usr/local/texlive/2025
+     */
+    fun windowsPathToWsl(windowsPath: String): String? {
+        return runCommand(*SystemEnvironment.wslCommand, "wslpath -a '$windowsPath'")?.trim()
+    }
+}
+
+/**
  * TeX Live installation inside WSL (Windows Subsystem for Linux).
  * This SDK allows using a Linux TeX Live installation from Windows.
  *
@@ -27,29 +49,13 @@ class WslTexliveSdk : LatexSdk("WSL TeX Live SDK") {
             if (!SystemInfo.isWindows) return@lazy false
             runCommand(*SystemEnvironment.wslCommand, "pdflatex --version")?.contains("pdfTeX") == true
         }
-
-        /**
-         * Convert a WSL path to a Windows path using wslpath.
-         * e.g., /usr/local/texlive/2025 -> \\wsl.localhost\Ubuntu\usr\local\texlive\2025
-         */
-        fun wslPathToWindows(wslPath: String): String? {
-            return runCommand(*SystemEnvironment.wslCommand, "wslpath -w '$wslPath'")?.trim()
-        }
-
-        /**
-         * Convert a Windows path to a WSL path using wslpath.
-         * e.g., \\wsl$\Ubuntu\usr\local\texlive\2025 -> /usr/local/texlive/2025
-         */
-        fun windowsPathToWsl(windowsPath: String): String? {
-            return runCommand(*SystemEnvironment.wslCommand, "wslpath -a '$windowsPath'")?.trim()
-        }
     }
 
     override fun suggestHomePath(): String {
         if (!SystemInfo.isWindows) return ""
 
         val year = Calendar.getInstance().weekYear
-        return wslPathToWindows("/usr/local/texlive/$year") ?: ""
+        return WslPathUtil.wslPathToWindows("/usr/local/texlive/$year") ?: ""
     }
 
     override fun suggestHomePaths(): MutableCollection<String> {
@@ -68,7 +74,7 @@ class WslTexliveSdk : LatexSdk("WSL TeX Live SDK") {
             val index = resolvedPath.indexOf("/bin/")
             if (index > 0) {
                 val wslHome = resolvedPath.take(index)
-                wslPathToWindows(wslHome)?.let { results.add(it) }
+                WslPathUtil.wslPathToWindows(wslHome)?.let { results.add(it) }
             }
         }
 
@@ -85,7 +91,7 @@ class WslTexliveSdk : LatexSdk("WSL TeX Live SDK") {
         if (!SystemInfo.isWindows) return false
 
         // Convert Windows path to WSL path and check if pdflatex exists
-        val wslPath = windowsPathToWsl(path) ?: return false
+        val wslPath = WslPathUtil.windowsPathToWsl(path) ?: return false
         val pdflatexCheck = runCommand(
             *SystemEnvironment.wslCommand,
             "test -x '$wslPath/bin/'*/pdflatex && echo 'found'"
@@ -94,14 +100,14 @@ class WslTexliveSdk : LatexSdk("WSL TeX Live SDK") {
     }
 
     override fun getInvalidHomeMessage(path: String): String {
-        val wslPath = windowsPathToWsl(path) ?: path
+        val wslPath = WslPathUtil.windowsPathToWsl(path) ?: path
         return "Could not find $wslPath/bin/*/pdflatex in WSL"
     }
 
     override fun getLatexDistributionType(sdk: Sdk) = LatexDistributionType.WSL_TEXLIVE
 
     override fun getVersionString(sdkHome: String): String {
-        val wslPath = windowsPathToWsl(sdkHome) ?: sdkHome
+        val wslPath = WslPathUtil.windowsPathToWsl(sdkHome) ?: sdkHome
         val year = wslPath.split("/").lastOrNull { it.matches(Regex("\\d{4}")) } ?: "unknown"
         return "WSL TeX Live $year"
     }
@@ -121,7 +127,7 @@ class WslTexliveSdk : LatexSdk("WSL TeX Live SDK") {
     override fun getExecutableName(executable: String, homePath: String): String {
         // For WSL, we need to return the WSL path to the executable
         // The actual WSL command wrapping is done in LatexCompiler
-        val wslPath = windowsPathToWsl(homePath) ?: return executable
+        val wslPath = WslPathUtil.windowsPathToWsl(homePath) ?: return executable
 
         // Find the bin subdirectory (e.g., bin/x86_64-linux)
         val binSubdir = runCommand(

@@ -333,8 +333,10 @@ class LatexLibraryDefinitionService(
      * @param contextFile The file context to determine which SDK to use
      */
     fun getLibBundle(libName: LatexLib, contextFile: VirtualFile?): LibDefinitionBundle {
-        val sdkPath = LatexSdkUtil.resolveSdkPath(contextFile, project)
-            ?: return LibDefinitionBundle(libName) // Return empty bundle if no SDK found
+        // Use empty string as fallback SDK path when no SDK is configured.
+        // This ensures predefined definitions are still loaded in test environments
+        // or when no LaTeX distribution is installed.
+        val sdkPath = LatexSdkUtil.resolveSdkPath(contextFile, project) ?: ""
         return getOrComputeNow(LibDefinitionCacheKey(sdkPath, libName), libExpiration)
     }
 

@@ -362,6 +362,7 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
                 null
             }
         }
+        @Suppress("DialogTitleCapitalization") // "LaTeX Distribution" is correctly capitalized (LaTeX is a proper noun)
         latexDistribution = LabeledComponent.create(distributionComboBox, "LaTeX Distribution")
         panel.add(latexDistribution)
 
