@@ -384,8 +384,11 @@ object LatexSdkUtil {
 
         // Otherwise, try to resolve kpsewhich from PATH and use its location as a key
         if (isPdflatexInPath) {
-            val kpsewhichPath = runCommand("which", "kpsewhich", timeout = 5)
-                ?: runCommand("where", "kpsewhich", timeout = 5) // Windows
+            val kpsewhichPath = if (SystemInfo.isWindows) {
+                runCommand("where", "kpsewhich", timeout = 5)
+            } else {
+                runCommand("which", "kpsewhich", timeout = 5)
+            }
             kpsewhichPath?.trim()?.takeIf { it.isNotEmpty() }?.let { return it }
         }
 
