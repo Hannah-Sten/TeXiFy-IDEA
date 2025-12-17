@@ -12,6 +12,9 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
+import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil.getExecutableName
+import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil.getLatexSdkForFile
+import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil.resolveSdkPath
 import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
 import nl.hannahsten.texifyidea.util.runCommand
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
@@ -179,7 +182,7 @@ object LatexSdkUtil {
 
         // Fall back to distribution-type-based resolution (for PATH fallback, run config paths, etc.)
         val distributionType = sdk?.let { (it.sdkType as? LatexSdk)?.getLatexDistributionType(it) }
-        return getExecutableName(executableName, project, distributionType)
+        return getExecutableName(executableName, project, latexDistributionType = distributionType)
     }
 
     /**
@@ -218,12 +221,18 @@ object LatexSdkUtil {
      *
      * @param executableName The base executable name (e.g., "pdflatex")
      * @param project The current project (used for project SDK fallback)
-     * @param latexDistributionType The resolved distribution type. When null, falls back to the project SDK's
+     * @param latexSdk If available, its homepath will be used to find the path to the executable 
+     * @param latexDistributionType The resolved distribution type, used in case the latexSdk is not available. When null, falls back to the project SDK's
      *        distribution type. Callers from run configurations should pass a concrete type (TEXLIVE, MIKTEX, etc.),
      *        not MODULE_SDK or PROJECT_SDK - those should be resolved by the caller first.
      *        When no distribution type can be determined, the function falls back to checking PATH.
      */
-    fun getExecutableName(executableName: String, project: Project, latexDistributionType: LatexDistributionType? = null): String {
+    fun getExecutableName(executableName: String, project: Project, latexSdk: Sdk? = null, latexDistributionType: LatexDistributionType? = null): String {
+        
+        if (latexSdk != null && latexSdk.homePath != null) {
+            (latexSdk.sdkType as? LatexSdk)?.getExecutableName(executableName, latexSdk.homePath!!)?.let { return it }
+        }
+        
         // Resolve the effective distribution type from project SDK only.
         // We don't fall back to arbitrary module SDKs here since different modules may have
         // different SDK types configured - use the file-aware overloads when a file context is available.

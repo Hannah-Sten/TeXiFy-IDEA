@@ -15,6 +15,7 @@ import com.intellij.openapi.application.readAction
 import com.intellij.openapi.application.writeAction
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.InvalidDataException
 import com.intellij.openapi.util.WriteExternalException
@@ -579,6 +580,26 @@ class LatexRunConfiguration(
     }
 
     /**
+     * Resolve module and project SDK to a LaTeX SDK if possible, otherwise return null.
+     */
+    fun getLatexSdk(): Sdk? {
+        return when (latexDistribution) {
+            LatexDistributionType.MODULE_SDK -> {
+                val sdk = mainFile?.let { LatexSdkUtil.getLatexSdkForFile(it, project) }
+                    ?: LatexSdkUtil.getLatexProjectSdk(project)
+                if (sdk?.sdkType is LatexSdk) sdk else null
+            }
+
+            LatexDistributionType.PROJECT_SDK -> {
+                val sdk = LatexSdkUtil.getLatexProjectSdk(this.project)
+                if (sdk?.sdkType is LatexSdk) sdk else null
+            }
+
+            else -> null
+        }
+    }
+
+    /**
      * Get the effective LaTeX distribution type for this run configuration.
      *
      * For MODULE_SDK and PROJECT_SDK: resolves to the actual distribution type of the SDK.
@@ -586,21 +607,14 @@ class LatexRunConfiguration(
      * Returns TEXLIVE as fallback when no SDK is configured.
      */
     fun getLatexDistributionType(): LatexDistributionType {
-        return when (latexDistribution) {
-            LatexDistributionType.MODULE_SDK -> {
-                val sdk = mainFile?.let { LatexSdkUtil.getLatexSdkForFile(it, project) }
-                    ?: LatexSdkUtil.getLatexProjectSdk(project)
-                sdk?.let { (it.sdkType as? LatexSdk)?.getLatexDistributionType(it) }
-                    ?: LatexDistributionType.TEXLIVE
-            }
-
-            LatexDistributionType.PROJECT_SDK -> {
-                val sdk = LatexSdkUtil.getLatexProjectSdk(project)
-                sdk?.let { (it.sdkType as? LatexSdk)?.getLatexDistributionType(it) }
-                    ?: LatexDistributionType.TEXLIVE
-            }
-
-            else -> latexDistribution
+        val sdk = getLatexSdk()
+        val type = (sdk?.sdkType as? LatexSdk?)?.getLatexDistributionType(sdk) ?: latexDistribution
+        // It could be, user has selected module/project SDK but it's not valid, in that case use default
+        return if (type == LatexDistributionType.MODULE_SDK || type == LatexDistributionType.PROJECT_SDK) {
+            LatexDistributionType.TEXLIVE
+        }
+        else {
+            type
         }
     }
 
