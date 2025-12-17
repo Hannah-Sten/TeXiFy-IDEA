@@ -345,7 +345,9 @@ object LatexDefinitionUtil {
         codeElement: PsiElement, argCount: Int, lookup: LatexSemanticsLookup, contextIntroArr: Array<LatexContextIntro?> = arrayOfNulls(argCount)
     ): Pair<Array<LatexContextIntro?>, List<LatexContextIntro>> {
         val exitState = LatexPsiUtil.traverseRecordingContextIntro(codeElement, lookup) traverse@{ e, introList ->
-            if (e.elementType != LatexTypes.NORMAL_TEXT_WORD) return@traverse
+            // In definitions, arguments may appear in raw/verbatim-like areas (RAW_TEXT_TOKEN), so also scan those for placeholders.
+            // Missing a placeholder here causes the argument to be treated as `Comment` by default, which can grey-out large code blocks.
+            if (e.elementType != LatexTypes.NORMAL_TEXT_WORD && e.elementType != LatexTypes.RAW_TEXT_TOKEN) return@traverse
             if (!e.textContains('#')) return@traverse
             parameterPlaceholderRegex.findAll(e.text).forEach { match ->
                 val paramIndex = match.value.removePrefix("#").toIntOrNull() ?: return@forEach
@@ -359,12 +361,14 @@ object LatexDefinitionUtil {
         return contextIntroArr to exitState
     }
 
-    private fun guessArgumentContextIntro(
+    internal fun guessArgumentContextIntro(
         codeElement: PsiElement, argCount: Int, lookup: LatexSemanticsLookup,
         contextIntroArr: Array<LatexContextIntro?> = arrayOfNulls(argCount)
     ): List<LatexContextIntro> {
         return guessArgumentContextIntroAndExitState(codeElement, argCount, lookup, contextIntroArr).first.map {
-            it ?: LatexContextIntro.assign(LatexContexts.Comment) // this argument is somehow not used, so we assign it to the comment context
+            // If we cannot infer the context for an argument, do not treat it as a comment.
+            // In practice, a `Comment` fallback can grey-out large parts of a document when inference fails.
+            it ?: LatexContextIntro.inherit()
         }
     }
 
