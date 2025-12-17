@@ -228,7 +228,6 @@ object LatexSdkUtil {
      *        When no distribution type can be determined, the function falls back to checking PATH.
      */
     fun getExecutableName(executableName: String, project: Project, latexSdk: Sdk? = null, latexDistributionType: LatexDistributionType? = null): String {
-
         if (latexSdk != null && latexSdk.homePath != null) {
             (latexSdk.sdkType as? LatexSdk)?.getExecutableName(executableName, latexSdk.homePath!!)?.let { return it }
         }
