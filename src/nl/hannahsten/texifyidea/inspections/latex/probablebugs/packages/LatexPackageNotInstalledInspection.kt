@@ -116,12 +116,13 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
             // I don't know if you actually could install multiple packages
             // with one fix, but it's not a bad idea to clear cache once in a while
             knownNotInstalledPackages.clear()
-            val tlmgrExecutable = LatexSdkUtil.getExecutableName("tlmgr", project)
+            val psiFile = filePointer.element
+            val tlmgrExecutable = LatexSdkUtil.getExecutableName("tlmgr", psiFile, project)
 
             ProgressManager.getInstance()
                 .run(object : Task.Backgroundable(project, "Installing $packageName...") {
                     override fun run(indicator: ProgressIndicator) {
-                        val tlname = TexLivePackages.findTexLiveName(this, packageName, project)
+                        val tlname = TexLivePackages.findTexLiveName(this, packageName, project, psiFile)
 
                         if (tlname == null) {
                             Notification(

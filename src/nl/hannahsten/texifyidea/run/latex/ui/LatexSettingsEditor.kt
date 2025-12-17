@@ -62,7 +62,7 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
     private var expandMacrosEnvVariables: JBCheckBox? = null
     private var compileTwice: JBCheckBox? = null
     private lateinit var outputFormat: LabeledComponent<ComboBox<Format>>
-    private lateinit var latexDistribution: LabeledComponent<ComboBox<LatexDistributionType>>
+    private lateinit var latexDistribution: LabeledComponent<ComboBox<LatexDistributionSelection>>
     private val extensionSeparator = TitledSeparator("Extensions")
     private lateinit var externalToolsPanel: RunConfigurationPanel
 
@@ -153,8 +153,9 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
             }
         }
 
-        // Reset LaTeX distribution
-        latexDistribution.component.selectedItem = runConfiguration.latexDistribution
+        // Reset LaTeX distribution selection
+        val selection = LatexDistributionSelection.fromDistributionType(runConfiguration.latexDistribution)
+        latexDistribution.component.selectedItem = selection
 
         // Reset project.
         project = runConfiguration.project
@@ -246,8 +247,10 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
         val format = outputFormat.component.selectedItem as Format?
         runConfiguration.outputFormat = format ?: Format.PDF
 
-        // Apply LaTeX distribution
-        runConfiguration.latexDistribution = latexDistribution.component.selectedItem as LatexDistributionType? ?: LatexDistributionType.TEXLIVE
+        // Apply LaTeX distribution selection
+        val selectedDistribution = latexDistribution.component.selectedItem as? LatexDistributionSelection
+        runConfiguration.latexDistribution = selectedDistribution?.distributionType
+            ?: LatexDistributionType.MODULE_SDK
 
         if (chosenCompiler == LatexCompiler.ARARA) {
             outputPath.isVisible = false
@@ -345,9 +348,22 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
         outputFormat.setSize(128, outputFormat.height)
         panel.add(outputFormat)
 
-        // LaTeX distribution
-        @Suppress("DialogTitleCapitalization")
-        latexDistribution = LabeledComponent.create(ComboBox(LatexDistributionType.entries.filter { it.isAvailable(project) }.toTypedArray()), "LaTeX Distribution")
+        // LaTeX distribution selection
+        val distributionSelections = LatexDistributionSelection.getAvailableSelections(project).toTypedArray()
+        val distributionComboBox = ComboBox(distributionSelections)
+        distributionComboBox.renderer = LatexDistributionComboBoxRenderer(project) {
+            // Get the main file from the mainFile text field
+            val txtFile = mainFile.component as TextFieldWithBrowseButton
+            val path = txtFile.text
+            if (path.isNotBlank()) {
+                com.intellij.openapi.vfs.LocalFileSystem.getInstance().findFileByPath(path)
+            }
+            else {
+                null
+            }
+        }
+        @Suppress("DialogTitleCapitalization") // "LaTeX Distribution" is correctly capitalized (LaTeX is a proper noun)
+        latexDistribution = LabeledComponent.create(distributionComboBox, "LaTeX Distribution")
         panel.add(latexDistribution)
 
         panel.add(extensionSeparator)

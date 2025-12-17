@@ -28,7 +28,7 @@ internal object BibtexCompiler : Compiler<BibtexRunConfiguration> {
 
             // Include files from auxiliary directory on Windows
             // We (mis)use project SDK as default setting for backwards compatibility
-            if ((runConfig.getLatexDistributionType() == LatexDistributionType.PROJECT_SDK && LatexSdkUtil.isMiktexAvailable) || runConfig.getLatexDistributionType().isMiktex(project)) {
+            if (runConfig.getLatexDistributionType().isMiktex(project, runConfig.mainFile) || (runConfig.getLatexDistributionType() == LatexDistributionType.PROJECT_SDK && LatexSdkUtil.isMiktexAvailable)) {
                 val mainPath = runConfig.mainFile?.parent?.path?.toWslPathIfNeeded(runConfig.getLatexDistributionType()) ?: ""
                 add("-include-directory=$mainPath")
                 addAll(moduleRoots.map { "-include-directory=${it.path.toWslPathIfNeeded(runConfig.getLatexDistributionType())}" })

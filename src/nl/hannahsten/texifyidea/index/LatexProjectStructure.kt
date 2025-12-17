@@ -42,6 +42,8 @@ import nl.hannahsten.texifyidea.lang.predefined.CommandNames.EXTERNAL_DOCUMENT
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.nameWithSlash
 import nl.hannahsten.texifyidea.settings.TexifySettings
+import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
+import nl.hannahsten.texifyidea.settings.sdk.SdkPath
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.LatexPackageLocation
 import nl.hannahsten.texifyidea.util.files.allChildDirectories
@@ -192,18 +194,26 @@ class LatexLibraryInfo(
 }
 
 /**
+ * Cache key for library structure information, combining SDK path and package file name.
+ * This ensures different LaTeX distributions in different modules get separate caches.
  *
+ * @property sdkPath The SDK home path or resolved kpsewhich path (see [nl.hannahsten.texifyidea.settings.sdk.SdkPath])
+ * @property nameWithExt The package file name with extension (e.g., "amsmath.sty")
+ */
+data class LibStructureCacheKey(val sdkPath: SdkPath, val nameWithExt: String)
+
+/**
  * Provides methods to build and manage the structure of LaTeX libraries (.sty and .cls files).
  *
- *
- * For the cache, the key is the package name with extension, e.g. `amsmath.sty` or `article.cls`.
+ * The cache is keyed by [LibStructureCacheKey] to support different LaTeX distributions
+ * in different modules. For example, `LibStructureCacheKey("/usr/local/texlive/2024", "amsmath.sty")`.
  *
  * @author Ezrnest
  */
 @Service(Service.Level.PROJECT)
 class LatexLibraryStructureService(
     private val project: Project
-) : AbstractBlockingCacheService<String, LatexLibraryInfo?>() {
+) : AbstractBlockingCacheService<LibStructureCacheKey, LatexLibraryInfo?>() {
     companion object {
         val performanceTracker = SimplePerformanceTracker()
 
@@ -222,9 +232,10 @@ class LatexLibraryStructureService(
         }
     }
 
-    override fun computeValue(key: String, oldValue: LatexLibraryInfo?): LatexLibraryInfo? {
+    override fun computeValue(key: LibStructureCacheKey, oldValue: LatexLibraryInfo?): LatexLibraryInfo? {
+        val (sdkPath, nameWithExt) = key
         return performanceTracker.track {
-            computePackageFilesetsRecur(key, mutableSetOf())
+            computePackageFilesetsRecur(sdkPath, nameWithExt, mutableSetOf())
         }
     }
 
@@ -245,13 +256,14 @@ class LatexLibraryStructureService(
         return fileName
     }
 
-    private fun computePackageFilesetsRecur(nameWithExt: String, processing: MutableSet<String>): LatexLibraryInfo? {
+    private fun computePackageFilesetsRecur(sdkPath: SdkPath, nameWithExt: String, processing: MutableSet<String>): LatexLibraryInfo? {
         if (!processing.add(nameWithExt)) return null // Prevent infinite recursion
-        getUpToDateValueOrNull(nameWithExt, LIBRARY_FILESET_EXPIRATION_TIME)?.let {
+        val cacheKey = LibStructureCacheKey(sdkPath, nameWithExt)
+        getUpToDateValueOrNull(cacheKey, LIBRARY_FILESET_EXPIRATION_TIME)?.let {
             return it // Return cached value if available
         }
 
-        val path = LatexPackageLocation.getPackageLocation(nameWithExt, project) ?: run {
+        val path = LatexPackageLocation.getPackageLocationBySdkPath(nameWithExt, sdkPath, project) ?: run {
             Log.info("LatexLibrary not found!! $nameWithExt")
             return null
         }
@@ -271,7 +283,7 @@ class LatexLibraryStructureService(
                 val name = trimmed + ext
                 directDependencies.add(name)
                 if (name in allPackages) continue // prevent infinite recursion
-                val info = computePackageFilesetsRecur(name, processing)
+                val info = computePackageFilesetsRecur(sdkPath, name, processing)
                 info?.let {
                     refTexts.add(trimmed)
                     refInfos.add(setOf(it.location))
@@ -289,30 +301,51 @@ class LatexLibraryStructureService(
             val name = "$it.sty"
             directDependencies.add(name)
             if (name in allPackages) return@forEach
-            val info = computePackageFilesetsRecur(name, processing)
+            val info = computePackageFilesetsRecur(sdkPath, name, processing)
             info?.let {
                 allFiles.addAll(info.files)
                 allPackages.addAll(info.allIncludedPackageNames)
             }
         }
         val info = LatexLibraryInfo(LatexLib.fromFileName(nameWithExt), file, allFiles, directDependencies, allPackages)
-        putValue(nameWithExt, info)
-        Log.info("LatexLibrary Loaded: $nameWithExt")
+        putValue(cacheKey, info)
+        Log.info("LatexLibrary Loaded: $nameWithExt (SDK: $sdkPath)")
         return info
     }
 
+    /**
+     * Get library info for a package, using the SDK resolved from the given file context.
+     *
+     * @param nameWithExt Package name with extension, e.g. "amsmath.sty"
+     * @param contextFile The file context to determine which SDK to use
+     */
+    fun getLibraryInfo(nameWithExt: String, contextFile: VirtualFile?): LatexLibraryInfo? {
+        val sdkPath = LatexSdkUtil.resolveSdkPath(contextFile, project) ?: return null
+        return getOrComputeNow(LibStructureCacheKey(sdkPath, nameWithExt), LIBRARY_FILESET_EXPIRATION_TIME)
+    }
+
+    /**
+     * Get library info for a package, using the SDK resolved from the given file context.
+     */
+    fun getLibraryInfo(nameWithExt: String, contextFile: PsiFile): LatexLibraryInfo? {
+        return getLibraryInfo(nameWithExt, contextFile.virtualFile)
+    }
+
+    /**
+     * Get library info for a package, using project SDK only (no file context).
+     */
     fun getLibraryInfo(nameWithExt: String): LatexLibraryInfo? {
-        return getOrComputeNow(nameWithExt, LIBRARY_FILESET_EXPIRATION_TIME)
+        return getLibraryInfo(nameWithExt, null as VirtualFile?)
     }
 
-    fun getLibraryInfo(lib: LatexLib): LatexLibraryInfo? {
+    fun getLibraryInfo(lib: LatexLib, contextFile: VirtualFile? = null): LatexLibraryInfo? {
         val fileName = lib.toFileName() ?: return null
-        return getLibraryInfo(fileName)
+        return getLibraryInfo(fileName, contextFile)
     }
 
-    fun getLibraryInfo(path: Path): LatexLibraryInfo? {
+    fun getLibraryInfo(path: Path, contextFile: VirtualFile? = null): LatexLibraryInfo? {
         if (path.nameCount != 1) return null
-        return getLibraryInfo(path.fileName.pathString)
+        return getLibraryInfo(path.fileName.pathString, contextFile)
     }
 
     fun invalidateLibraryCache() {
@@ -477,7 +510,7 @@ object LatexProjectStructure {
         ) {
             for ((paths, refInfo) in elements.zip(refInfoList)) {
                 for (path in paths) {
-                    val libraryInfo = LatexLibraryStructureService.getInstance(project).getLibraryInfo(path)
+                    val libraryInfo = LatexLibraryStructureService.getInstance(project).getLibraryInfo(path, root)
                     if (libraryInfo != null) {
                         addLibrary(libraryInfo)
                         refInfo.add(libraryInfo.location)

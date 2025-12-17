@@ -46,7 +46,7 @@ class LatexPackageUpdateInspection : TexifyInspectionBase() {
         if (!LatexSdkUtil.isTlmgrAvailable(file.project) || !TexliveSdk.Cache.isAvailable) return emptyList()
 
         if (Cache.availablePackageUpdates == null) {
-            val tlmgrExecutable = LatexSdkUtil.getExecutableName("tlmgr", file.project)
+            val tlmgrExecutable = LatexSdkUtil.getExecutableName("tlmgr", file)
             val result = runCommand(tlmgrExecutable, "update", "--list")
             // Try to fill the cache only once
             if (result == null) {
@@ -90,7 +90,8 @@ class LatexPackageUpdateInspection : TexifyInspectionBase() {
             val message = if (packageName == "--all") "Updating all packages" else "Updating $packageName..."
             ProgressManager.getInstance().run(object : Backgroundable(project, message) {
                 override fun run(indicator: ProgressIndicator) {
-                    val tlmgrExecutable = LatexSdkUtil.getExecutableName("tlmgr", project)
+                    val psiFile = filePointer.element
+                    val tlmgrExecutable = LatexSdkUtil.getExecutableName("tlmgr", psiFile, project)
 
                     val timeout: Long = if (packageName == "--all") 1200 else 15
                     var (output, exitCode) = runCommandWithExitCode(tlmgrExecutable, "update", packageName, returnExceptionMessage = true, timeout = timeout)
