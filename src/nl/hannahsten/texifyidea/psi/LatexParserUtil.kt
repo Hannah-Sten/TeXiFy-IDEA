@@ -10,6 +10,44 @@ class LatexParserUtil : GeneratedParserUtilBase() {
     companion object {
 
         /**
+         * Checks if there is a matching closing brace for the current opening brace.
+         * This is used to avoid exponential backtracking when parsing nested unclosed braces.
+         *
+         * The predicate scans ahead from the current position to find a matching `}`.
+         * It tracks brace nesting to handle nested braces correctly.
+         * Returns true if a matching `}` is found, false otherwise.
+         */
+        @JvmStatic
+        fun hasMatchingCloseBrace(builder: PsiBuilder, level: Int): Boolean {
+            // Save current position
+            val marker = builder.mark()
+
+            // Skip the opening brace if present
+            if (builder.tokenType == LatexTypes.OPEN_BRACE) {
+                builder.advanceLexer()
+            }
+
+            var braceDepth = 1
+            var tokenCount = 0
+            val maxTokensToScan = 10000 // Limit lookahead to prevent performance issues
+
+            while (!builder.eof() && braceDepth > 0 && tokenCount < maxTokensToScan) {
+                when (builder.tokenType) {
+                    LatexTypes.OPEN_BRACE -> braceDepth++
+                    LatexTypes.CLOSE_BRACE -> braceDepth--
+                }
+                builder.advanceLexer()
+                tokenCount++
+            }
+
+            // Rollback to original position
+            marker.rollbackTo()
+
+            // Return true if we found a matching close brace
+            return braceDepth == 0
+        }
+
+        /**
          * Remap tokens inside verbatim environments to raw text.
          * Requires the lexer to be in a proper state before and after the environment.
          */
