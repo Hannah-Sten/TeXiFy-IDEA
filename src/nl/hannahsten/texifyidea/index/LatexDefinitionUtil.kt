@@ -13,27 +13,9 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.index.SourcedDefinition.DefinitionSource
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
 import nl.hannahsten.texifyidea.index.stub.requiredParamAt
-import nl.hannahsten.texifyidea.lang.LArgument
-import nl.hannahsten.texifyidea.lang.LArgumentType
-import nl.hannahsten.texifyidea.lang.LContextSet
-import nl.hannahsten.texifyidea.lang.LSemanticCommand
-import nl.hannahsten.texifyidea.lang.LSemanticEntity
-import nl.hannahsten.texifyidea.lang.LSemanticEnv
-import nl.hannahsten.texifyidea.lang.LatexContext
-import nl.hannahsten.texifyidea.lang.LatexContextIntro
-import nl.hannahsten.texifyidea.lang.LatexContexts
-import nl.hannahsten.texifyidea.lang.LatexLib
-import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
+import nl.hannahsten.texifyidea.lang.*
 import nl.hannahsten.texifyidea.lang.predefined.PredefinedCmdDefinitions
-import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexContent
-import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.psi.LatexTypes
-import nl.hannahsten.texifyidea.psi.contentText
-import nl.hannahsten.texifyidea.psi.getEnvironmentName
-import nl.hannahsten.texifyidea.psi.getNthRequiredParameter
-import nl.hannahsten.texifyidea.psi.nameWithoutSlash
+import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
@@ -345,9 +327,9 @@ object LatexDefinitionUtil {
         codeElement: PsiElement, argCount: Int, lookup: LatexSemanticsLookup, contextIntroArr: Array<LatexContextIntro?> = arrayOfNulls(argCount)
     ): Pair<Array<LatexContextIntro?>, List<LatexContextIntro>> {
         val exitState = LatexPsiUtil.traverseRecordingContextIntro(codeElement, lookup) traverse@{ e, introList ->
-            // In definitions, arguments may appear in raw/verbatim-like areas (RAW_TEXT_TOKEN), so also scan those for placeholders.
+            // In definitions, arguments may appear in raw/verbatim-like areas (RAW_TEXT), so also scan those for placeholders.
             // Missing a placeholder here causes the argument to be treated as `Comment` by default, which can grey-out large code blocks.
-            if (e.elementType != LatexTypes.NORMAL_TEXT_WORD && e.elementType != LatexTypes.RAW_TEXT_TOKEN) return@traverse
+            if (e.elementType != LatexTypes.NORMAL_TEXT_WORD && e.elementType != LatexTypes.RAW_TEXT) return@traverse
             if (!e.textContains('#')) return@traverse
             parameterPlaceholderRegex.findAll(e.text).forEach { match ->
                 val paramIndex = match.value.removePrefix("#").toIntOrNull() ?: return@forEach

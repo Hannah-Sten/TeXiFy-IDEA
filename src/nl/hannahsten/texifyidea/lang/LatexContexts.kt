@@ -105,6 +105,11 @@ object LatexContexts {
     val Identifier = SimpleLatexContext("identifier")
 
     /**
+     * Verbatim as in \verb|...| or verbatim environments
+     */
+    val Verbatim = SimpleLatexContext("verbatim")
+
+    /**
      * Some string literal that may be meaningful, such as `cc` in `\begin{tabular}{cc}`.
      *
      * Creating more specific contexts for literals is preferred and auto-completion can be further provided.
