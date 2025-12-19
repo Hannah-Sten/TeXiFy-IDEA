@@ -70,6 +70,9 @@ OPEN_BRACKET="["
 CLOSE_BRACKET="]"
 OPEN_BRACE="{"
 CLOSE_BRACE="}"
+// To support folding
+OPEN_ESCAPED_BRACE="\\{"
+CLOSE_ESCAPED_BRACE="\\}"
 OPEN_PAREN="("
 CLOSE_PAREN=")"
 
@@ -577,6 +580,8 @@ END_IFS=\\fi
 {CLOSE_BRACKET}         { return CLOSE_BRACKET; }
 {OPEN_BRACE}            { return OPEN_BRACE; }
 {CLOSE_BRACE}           { return CLOSE_BRACE; }
+{OPEN_ESCAPED_BRACE}    { return OPEN_ESCAPED_BRACE; }
+{CLOSE_ESCAPED_BRACE}   { return CLOSE_ESCAPED_BRACE; }
 {OPEN_PAREN}            { return OPEN_PAREN; }
 {CLOSE_PAREN}           { return CLOSE_PAREN; }
 {LEFT}                  { return LEFT; }

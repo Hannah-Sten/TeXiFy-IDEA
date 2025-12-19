@@ -86,7 +86,7 @@ abstract class StringStubIndexWrapper<Psi : PsiElement>(
         scope: GlobalSearchScope = project.contentSearchScope
     ): List<Psi> {
         return names.flatMap { name ->
-            StubIndex.getElements(key, name, project, scope, clazz)
+            StubIndex.getElements(key, name, project, scope, clazz).filter { it.isValid }
         }
     }
 

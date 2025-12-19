@@ -61,10 +61,15 @@ class LatexUnresolvedReferenceInspection : AbstractTexifyContextAwareInspection(
                     return@run
                 }
                 val labelOffset = part.indexOfFirst { !it.isWhitespace() }
+                val range = TextRange.from(offset + labelOffset, label.length)
+                // #4299
+                if (range.length > element.textLength) {
+                    return@run
+                }
                 descriptors.add(
                     manager.createProblemDescriptor(
                         element,
-                        TextRange.from(offset + labelOffset, label.length),
+                        range,
                         "Unresolved reference '$label'",
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOnTheFly

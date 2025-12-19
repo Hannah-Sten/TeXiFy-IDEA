@@ -150,15 +150,18 @@ For custom commands that take labels, references or citations as parameters, TeX
 When writing in an itemize-like environment, pressing <shortcut>Enter</shortcut> will automatically insert an `\item` on the next line.
 This allows for easy writing of lists.
 
-If you are writing an item in the list but you do want a linebreak, for example to start a new sentence, use <shortcut>Shift + Enter</shortcut>.
 
-If your cursor is in the middle of a line and you want to split it, but without inserting an `\item` in the middle, use <shortcut>Ctrl + Enter</shortcut>.
+If your cursor is in the middle of a line and you want to split it, but without inserting an `\item` in the middle, use <shortcut>Ctrl + Enter</shortcut> to invoke the 'split line' action.
+<shortcut>Shift + Enter</shortcut> is bound by default to the 'Start new line' action, which is different from the <shortcut>Enter</shortcut> action in that it will not put everything after the cursor on the new line.
 
 An example which shows the use of <shortcut>Enter</shortcut> at the end of a line, <shortcut>Enter</shortcut> at the middle of a line, <shortcut>Shift + Enter</shortcut> and <shortcut>Ctrl + Enter</shortcut> (in that order):
 
 ![itemize-enter](itemize-enter.gif)
 
 Note that for even quicker insertion of an itemize you can use live templates (`itm` for itemize by default) as described in [Live templates](#live-templates).
+If you want to start a new line without an `\item`, but you do want your cursor to move there automatically (which the 'split line' action does not do), you can for example [record a macro](https://www.jetbrains.com/help/idea/using-macros-in-the-editor.html).
+For example, you could use the 'Start new line' action, following by deleting the `\item`.
+Then, in the Keymap you can bind a shortcut to the Macro.
 
 ## Brace matching
 

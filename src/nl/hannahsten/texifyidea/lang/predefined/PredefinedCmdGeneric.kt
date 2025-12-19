@@ -1,8 +1,8 @@
 package nl.hannahsten.texifyidea.lang.predefined
 
 import nl.hannahsten.texifyidea.lang.LArgument
-import nl.hannahsten.texifyidea.lang.PredefinedCommandSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.lang.PredefinedCommandSet
 
 object PredefinedCmdGeneric : PredefinedCommandSet() {
     private val textArg = LArgument.required("text", LatexContexts.Text)
@@ -397,6 +397,13 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
             "nameCrefs".cmd(labelArg) { "NAMECREFS_CAPITAL" }
             "namecref".cmd(labelArg) { "NAMECREF" }
             "namecrefs".cmd(labelArg) { "NAMECREFS" }
+        }
+
+        underPackage("zref-clever") {
+            "zcref".cmd("options".optional, labelArg) { "ZCREF" }
+            "zcref*".cmd("options".optional, labelArg) { "ZCREF_STAR" }
+            "zcpageref".cmd("options".optional, labelArg) { "ZCPAGEREF" }
+            "zcpageref*".cmd("options".optional, labelArg) { "ZCPAGEREF_STAR" }
         }
 
         underPackage("hyperref") {

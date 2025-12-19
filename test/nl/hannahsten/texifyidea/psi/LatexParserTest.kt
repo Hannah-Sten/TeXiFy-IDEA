@@ -28,6 +28,8 @@ class LatexParserTest : BasePlatformTestCase() {
             \anycommand{test = {Some text with (Round Brackets)}}
             
             \href{\thefield{#%}}{#1}
+            
+            \begin{maxi!}|l|[3] \end{maxi!}
             """.trimIndent()
         )
         myFixture.checkHighlighting()

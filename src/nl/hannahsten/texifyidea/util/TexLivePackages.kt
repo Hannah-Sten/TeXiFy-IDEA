@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.util
 
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
+import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 
 object TexLivePackages {
@@ -27,10 +28,11 @@ object TexLivePackages {
      * we search for the line that starts with tlmgr. Then the name of the package we are
      * looking for will be on the next line, if it exists.
      */
-    fun findTexLiveName(task: Task.Backgroundable, packageName: String, project: Project): String? {
+    fun findTexLiveName(task: Task.Backgroundable, packageName: String, project: Project, psiFile: PsiFile? = null): String? {
         // Find the package name for tlmgr.
         task.title = "Searching for $packageName..."
-        val tlmgrExecutable = LatexSdkUtil.getExecutableName("tlmgr", project)
+        val tlmgrExecutable = LatexSdkUtil.getExecutableName("tlmgr", psiFile, project)
+
         // Assume that you can not use the bundle name in a \\usepackage if it is different from the package name (otherwise this search won't work and we would need to use tlmgr search --global $packageName
         val searchResult = "$tlmgrExecutable search --file --global /$packageName.sty".runCommand()
             ?: return null
