@@ -60,7 +60,7 @@ class LatexOverInsteadOfFracInspection : TexifyInspectionBase() {
         return descriptors
     }
 
-    private inner class OverToFracFix : LocalQuickFix {
+    private class OverToFracFix : LocalQuickFix {
 
         @Nls
         override fun getFamilyName(): String {

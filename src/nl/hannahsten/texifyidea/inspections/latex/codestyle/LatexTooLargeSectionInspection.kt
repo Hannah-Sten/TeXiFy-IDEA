@@ -16,11 +16,7 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.lang.predefined.CommandNames
 import nl.hannahsten.texifyidea.lang.predefined.EnvironmentNames
-import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexEndCommand
-import nl.hannahsten.texifyidea.psi.LatexNoMathContent
-import nl.hannahsten.texifyidea.psi.environmentName
-import nl.hannahsten.texifyidea.psi.traverseCommands
+import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettingsManager
 import nl.hannahsten.texifyidea.ui.CreateFileDialog
 import nl.hannahsten.texifyidea.util.*
@@ -117,7 +113,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
      * in this file. (If [command] is a \chapter, \section can still occur.)
      */
     private fun isAlreadySplit(command: LatexCommands, commands: Collection<LatexCommands>): Boolean {
-        return commands.asSequence().filter { cmd -> cmd.name == command.name }.count() <= 1
+        return commands.count { cmd -> cmd.name == command.name } <= 1
     }
 
     /**

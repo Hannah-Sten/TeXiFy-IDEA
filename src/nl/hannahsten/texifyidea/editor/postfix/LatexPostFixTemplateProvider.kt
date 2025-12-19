@@ -45,13 +45,16 @@ class LatexPostFixTemplateProvider : PostfixTemplateProvider, CompletionContribu
     override fun getPresentableName() = "LaTeX"
 
     override fun createEditor(templateToEdit: PostfixTemplate?): PostfixTemplateEditor? {
-        return if (templateToEdit == null) {
-            LatexPostfixTemplateEditor(this)
+        return when (templateToEdit) {
+            null -> {
+                LatexPostfixTemplateEditor(this)
+            }
+            is LatexEditablePostfixTemplate if !templateToEdit.isBuiltin -> {
+                LatexPostfixTemplateEditor(this).apply { setTemplate(templateToEdit) }
+            }
+
+            else -> null
         }
-        else if (templateToEdit is LatexEditablePostfixTemplate && !templateToEdit.isBuiltin) {
-            LatexPostfixTemplateEditor(this).apply { setTemplate(templateToEdit) }
-        }
-        else null
     }
 
     override fun isTerminalSymbol(currentChar: Char): Boolean = (currentChar == '.')

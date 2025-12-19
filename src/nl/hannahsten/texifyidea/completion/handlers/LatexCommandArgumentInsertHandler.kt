@@ -44,7 +44,7 @@ class LatexCommandArgumentInsertHandler(val arguments: List<LArgument>) : Insert
         val template = TemplateImpl(
             "",
             arguments.mapIndexed { index: Int, argument: LArgument ->
-                if (argument.isRequired) "{\$__Variable$index$}" else "[\$__Variable$index$]"
+                if (argument.isRequired) $$"{$__Variable$$index$}" else $$"[$__Variable$$index$]"
             }.joinToString(""),
             ""
         )

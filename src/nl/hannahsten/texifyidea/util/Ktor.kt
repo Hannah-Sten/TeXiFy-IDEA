@@ -9,8 +9,7 @@ import io.ktor.client.statement.*
 fun String.parseLinkHeader(): Map<String, String> {
     return Regex("<(?<url>[^>]*)>; rel=\"(?<key>\\w+)\"").findAll(this)
         .filter { it.groups["key"] != null && it.groups["url"] != null }
-        .map { it.groups["key"]!!.value to it.groups["url"]!!.value }
-        .toMap()
+        .associate { it.groups["key"]!!.value to it.groups["url"]!!.value }
 }
 
 /**

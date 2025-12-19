@@ -50,7 +50,7 @@ object PredefinedCmdPairedDelimiters : PredefinedCommandSet() {
     }
 
     val delimiterCommands = mathCommands {
-        delimiters.map { delimiter ->
+        delimiters.forEach { delimiter ->
             underPackage(delimiter.dependency) {
                 symbol(delimiter.left, delimiter.leftDisplay)
                 symbol(delimiter.right, delimiter.rightDisplay)

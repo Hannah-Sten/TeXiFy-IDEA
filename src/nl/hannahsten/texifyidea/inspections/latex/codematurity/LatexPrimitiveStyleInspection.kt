@@ -59,7 +59,7 @@ class LatexPrimitiveStyleInspection : TexifyInspectionBase() {
         return descriptors
     }
 
-    private inner class InspectionFix(val oldCommand: SmartPsiElementPointer<LatexCommands>) : LocalQuickFixAndIntentionActionOnPsiElement(oldCommand.element) {
+    private class InspectionFix(val oldCommand: SmartPsiElementPointer<LatexCommands>) : LocalQuickFixAndIntentionActionOnPsiElement(oldCommand.element) {
 
         @Nls
         override fun getFamilyName(): String {

@@ -779,7 +779,7 @@ ive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></home/thomas/texl
 
     fun `test undefined control sequence`() {
         val log =
-            """
+            $$"""
 
 
         (./nested/lipsum-one.tex
@@ -791,7 +791,7 @@ ive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></home/thomas/texl
 
         (/home/user/texlive/2020/texmf-dist/tex/latex/stmaryrd/Ustmry.fd)
         ./hw5.tex:79: Undefined control sequence.
-        l.79 ...ut uncovering any other vertex in ${'$'}S \cupt
+        l.79 ...ut uncovering any other vertex in $S \cupt
                                                            T$).
         [1{/home/user/texlive/2020/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
             """.trimIndent()

@@ -16,27 +16,27 @@ import nl.hannahsten.texifyidea.lang.LatexPackage
 /* General wrappers. */
 internal object LatexWrapWithInlineMathPostfixTemplate : ConstantStringBasedPostfixTemplate(
     "math",
-    "\$expr$",
-    "$$\$expr$$$\$END$",
+    $$"$expr$",
+    $$$$$"$$$expr$$$$END$",
     textOnly = true
 )
 
 internal object LatexWrapWithGroupPostfixTemplate : ConstantStringBasedPostfixTemplate(
     "braces",
     "{expr}",
-    "{\$expr$}\$END$"
+    $$"{$expr$}$END$"
 )
 
 internal object LatexWrapWithOpenGroupPostfixTemplate : ConstantStringBasedPostfixTemplate(
     "brackets",
     "[expr]",
-    "[\$expr$]\$END$"
+    $$"[$expr$]$END$"
 )
 
 internal object LatexWrapWithTextPostfixTemplate : ConstantStringBasedPostfixTemplate(
     "text",
     "\\text{expr}",
-    "\\text{\$expr$\$more$}\$END$",
+    $$$"\\text{$expr$$more$}$END$",
     mathOnly = true,
     pack = LatexPackage.AMSMATH
 ) {
@@ -68,7 +68,7 @@ internal object LatexWrapWithMathcalPostfixTemplate : LatexWrapWithCommandPostfi
 internal open class LatexWrapWithCommandPostfixTemplate(commandName: String, name: String = commandName, mathOnly: Boolean = false, textOnly: Boolean = false, pack: LatexPackage? = null) : ConstantStringBasedPostfixTemplate(
     name,
     "\\$commandName{expr}",
-    "\\$commandName{\$expr$}\$END$",
+    $$"\\$$commandName{$expr$}$END$",
     mathOnly, textOnly, pack
 )
 

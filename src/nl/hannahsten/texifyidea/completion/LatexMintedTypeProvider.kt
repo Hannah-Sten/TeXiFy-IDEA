@@ -162,7 +162,7 @@ object LatexMintedTypeProvider : LatexContextAgnosticCompletionProvider() {
 
     override fun addCompletions(parameters: CompletionParameters, result: CompletionResultSet) {
         result.addAllElements(
-            LANGUAGES.map { lang -> lang.createLookupElement() }.flatten()
+            LANGUAGES.flatMap { lang -> lang.createLookupElement() }
         )
     }
 }

@@ -232,7 +232,7 @@ class LatexRunConfiguration(
     ): RunProfileState {
         val filter = RegexpFilter(
             environment.project,
-            "^\$FILE_PATH$:\$LINE$"
+            $$"^$FILE_PATH$:$LINE$"
         )
 
         val state = LatexCommandLineState(
@@ -634,7 +634,7 @@ class LatexRunConfiguration(
     }
 
     fun setSuggestedName() {
-        setName(suggestedName())
+        suggestedName()?.let { name = it }
     }
 
     override fun isGeneratedName(): Boolean {

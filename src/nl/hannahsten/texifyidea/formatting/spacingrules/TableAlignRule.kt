@@ -160,15 +160,17 @@ private fun removeExtraSpaces(contentLinesWithoutRules: MutableList<String>): Li
         val indices = mutableListOf<Int>()
         var removedSpaces = 0
         line.withIndex().forEach { (i, value) ->
-            when {
+            when (value) {
                 // Ignore escaped ampersands
-                value == '&' && if (i > 0) line[i - 1] != '\\' else true -> {
+                '&' if if (i > 0) line[i - 1] != '\\' else true -> {
                     indices += i - removedSpaces
                 }
-                value == '\\' && if (i < line.length - 1) line[i + 1] == '\\' else false -> {
+
+                '\\' if if (i < line.length - 1) line[i + 1] == '\\' else false -> {
                     indices += i - removedSpaces
                 }
-                value in setOf(' ', '\n') -> {
+
+                in setOf(' ', '\n') -> {
                     if (i > 0 && i < line.length - 1) {
                         // Spaces after an ignored ampersand are not removed
                         val isAfterSpaceOrSeparator = (line[i - 1] in setOf(' ', '&', '\n') && (i < 2 || line[i - 2] != '\\'))
@@ -177,6 +179,7 @@ private fun removeExtraSpaces(contentLinesWithoutRules: MutableList<String>): Li
                         if (isAfterSpaceOrSeparator || isBeforeSpaceOrSeparator || isBeforeDoubleBackslash) removedSpaces++
                     }
                 }
+
                 else -> {
                 }
             }

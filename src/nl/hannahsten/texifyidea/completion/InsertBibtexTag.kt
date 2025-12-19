@@ -48,7 +48,7 @@ open class InsertBibtexTag : EnterHandlerDelegate {
      * Starts the tag insertion template process.
      */
     private fun startTemplate(file: PsiFile, editor: Editor) {
-        val template = TemplateImpl("", "\$__Variable0$ = {\$__Variable1$},", "")
+        val template = TemplateImpl("", $$"$__Variable0$ = {$__Variable1$},", "")
         template.addVariable(TextExpression("key"), true)
         template.addVariable(TextExpression("value"), true)
 

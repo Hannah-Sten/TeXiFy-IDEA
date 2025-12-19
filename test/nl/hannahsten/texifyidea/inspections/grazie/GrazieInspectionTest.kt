@@ -64,7 +64,7 @@ class GrazieInspectionTest : BasePlatformTestCase() {
     }
 
     fun testInlineMath() {
-        myFixture.configureByText(LatexFileType, """Does Grazie detect ${'$'}m$ as a sentence?""")
+        myFixture.configureByText(LatexFileType, $$"""Does Grazie detect $m$ as a sentence?""")
         myFixture.checkHighlighting()
     }
 
@@ -138,8 +138,8 @@ class GrazieInspectionTest : BasePlatformTestCase() {
         GrazieConfig.update { it.copy(enabledLanguages = it.enabledLanguages + Lang.GERMANY_GERMAN) }
         myFixture.configureByText(
             LatexFileType,
-            """
-            Eine \textbf{Folge oder Zahlenfolge} in ${'$'}M$ ist eine Abbildung
+            $$"""
+            Eine \textbf{Folge oder Zahlenfolge} in $M$ ist eine Abbildung
             """.trimIndent()
         )
         myFixture.checkHighlighting()
@@ -162,10 +162,10 @@ class GrazieInspectionTest : BasePlatformTestCase() {
         GrazieConfig.update { it.copy(enabledLanguages = it.enabledLanguages + Lang.GERMANY_GERMAN) }
         myFixture.configureByText(
             LatexFileType,
-            """
+            $$"""
                 \begin{tabular}{llll}
-                    ${'$'}a$:                 & $\mathbb{N}$ & \rightarrow & ${'$'}M$     \\
-                    \multicolumn{1}{l}{} & ${'$'}n$          & \mapsto     & ${'$'}a(n)$.
+                    $a$:                 & $\mathbb{N}$ & \rightarrow & $M$     \\
+                    \multicolumn{1}{l}{} & $n$          & \mapsto     & $a(n)$.
                 \end{tabular}
 
                 Ich bin über die Entwicklung sehr froh.
