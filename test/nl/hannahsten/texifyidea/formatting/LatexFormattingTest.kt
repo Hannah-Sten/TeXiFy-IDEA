@@ -337,6 +337,56 @@ fun Int?.ifPositiveAddTwo(): Int =
         """.trimIndent()
     }
 
+    fun `test environments`() {
+        """
+            \begin{center}
+                text
+                text
+            \end{center}
+            
+            \begin{equation}
+                [x+y]^2
+                \xi
+                \begin{center}
+                a
+                \end{center}
+            \end{equation}
+            
+            \begin{equation}
+                [x+y]
+                \xi
+            \alpha
+            \end{equation}
+            
+            \begin{figure}[h]
+            fig
+            \end{figure}
+        """.trimIndent() `should be reformatted to` """
+            \begin{center}
+                text
+                text
+            \end{center}
+            
+            \begin{equation}
+                [x+y]^2
+                \xi
+                \begin{center}
+                    a
+                \end{center}
+            \end{equation}
+            
+            \begin{equation}
+                [x+y]
+                \xi
+                \alpha
+            \end{equation}
+            
+            \begin{figure}[h]
+                fig
+            \end{figure}
+        """.trimIndent()
+    }
+
     fun `test newlines before sectioning commands`() {
         """
             Text.

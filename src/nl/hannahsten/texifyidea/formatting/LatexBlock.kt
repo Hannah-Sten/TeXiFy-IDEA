@@ -175,6 +175,18 @@ class LatexBlock(
         ) {
             return Indent.getNormalIndent(true)
         }
+
+        // Workaround for fake parameter case below, to fix formatting of elements in the block which does not start on a newline due to starting right after the fake parameter
+        // For children of environment, or environment content contains normal text and then other blocks in which case we check if we are in the first block
+        if (myNode.psi.parent is LatexEnvironmentContent || ((myNode.psi.firstParentOfType<LatexEnvironmentContent>() as? LatexEnvironmentContent)?.firstChild?.firstChild == myNode.psi.parent)) {
+            val environmentContent = myNode.psi.firstParentOfType<LatexEnvironmentContent>()
+            // Check if there is a newline before the environment content starts: if so, we don't need to correct anything
+            if (environmentContent?.prevSibling is LatexBeginCommand || (environmentContent?.prevSibling is PsiWhiteSpace && environmentContent.prevSibling.text?.contains("\n") != true)) {
+                // Since the (first block in the) environment content does not start on a newline, we need to indent manually
+                return Indent.getNormalIndent(false)
+            }
+        }
+
         // for mistakenly parsed parameters, such as \begin{equation} [x+y]^2 \end{equation}, we use semantics to decide whether to indent or not
         if (shouldIndentEnvironments && elementType === LatexTypes.PARAMETER) {
             val parameter = myNode.psi as? LatexParameter
