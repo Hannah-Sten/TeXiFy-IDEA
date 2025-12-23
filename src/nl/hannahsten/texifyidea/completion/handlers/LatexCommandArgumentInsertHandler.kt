@@ -29,7 +29,8 @@ class LatexCommandArgumentInsertHandler(val arguments: List<LArgument>) : Insert
         val caret = editor.caretModel
         val offset = caret.offset
         // When not followed by { or [ (whichever the first parameter starts with) insert the parameters.
-        if (arguments.isNotEmpty() && (
+        if (arguments.isNotEmpty() &&
+            (
                 offset >= document.textLength - 1 || document.getText(TextRange.from(offset, 1)) !in setOf("{", "[")
                 )
         ) {

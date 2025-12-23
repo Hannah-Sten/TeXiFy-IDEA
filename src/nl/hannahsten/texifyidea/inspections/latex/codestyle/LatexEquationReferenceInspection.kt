@@ -56,9 +56,7 @@ class LatexEquationReferenceInspection : AbstractTexifyCommandBasedInspection(
     }
 
     private class ReplaceEquationReferenceQuickFix : LocalQuickFix {
-        override fun getFamilyName(): @IntentionFamilyName String {
-            return "Replace with \\eqref"
-        }
+        override fun getFamilyName(): @IntentionFamilyName String = "Replace with \\eqref"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val element = descriptor.psiElement as? LatexCommands ?: return

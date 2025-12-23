@@ -13,11 +13,9 @@ class LatexModuleWizardStep(private val builder: LatexModuleBuilder) : ModuleWiz
 
     private lateinit var bibtexEnabled: JCheckBox
 
-    override fun getComponent(): JComponent {
-        return JPanel(FlowLayout(FlowLayout.LEFT)).apply {
-            bibtexEnabled = JCheckBox("Configure with BibTeX support")
-            add(bibtexEnabled)
-        }
+    override fun getComponent(): JComponent = JPanel(FlowLayout(FlowLayout.LEFT)).apply {
+        bibtexEnabled = JCheckBox("Configure with BibTeX support")
+        add(bibtexEnabled)
     }
 
     override fun updateDataModel() {

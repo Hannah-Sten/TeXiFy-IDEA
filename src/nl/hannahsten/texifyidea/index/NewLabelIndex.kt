@@ -12,13 +12,9 @@ import nl.hannahsten.texifyidea.psi.LatexComposite
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 class NewLabelsIndexEx : LatexCompositeTransformedStubIndex<StubElement<LatexComposite>, LatexComposite>(LatexComposite::class.java) {
-    override fun getVersion(): Int {
-        return 102
-    }
+    override fun getVersion(): Int = 102
 
-    override fun getKey(): StubIndexKey<String, LatexComposite> {
-        return LatexStubIndexKeys.LABELED_ELEMENT
-    }
+    override fun getKey(): StubIndexKey<String, LatexComposite> = LatexStubIndexKeys.LABELED_ELEMENT
 
     override fun sinkIndex(stub: StubElement<LatexComposite>, sink: IndexSink) {
         when (stub) {
@@ -51,13 +47,9 @@ class NewLabelsIndexEx : LatexCompositeTransformedStubIndex<StubElement<LatexCom
         stub.label?.let { sink.occurrence(key, it) }
     }
 
-    fun getAllLabels(project: Project): Set<String> {
-        return getAllKeys(project)
-    }
+    fun getAllLabels(project: Project): Set<String> = getAllKeys(project)
 
-    fun getAllLabels(filesetScope: GlobalSearchScope): Set<String> {
-        return getAllKeys(filesetScope)
-    }
+    fun getAllLabels(filesetScope: GlobalSearchScope): Set<String> = getAllKeys(filesetScope)
 }
 
 /**

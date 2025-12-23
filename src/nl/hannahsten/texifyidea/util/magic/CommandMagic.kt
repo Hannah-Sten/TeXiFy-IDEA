@@ -70,10 +70,8 @@ object CommandMagic {
         )
     }
 
-    private fun allCommandsWithContext(context: LatexContext): Map<String, LSemanticCommand> {
-        return AllPredefined.findCommandsByContext(context).associateBy {
-            it.nameWithSlash
-        }
+    private fun allCommandsWithContext(context: LatexContext): Map<String, LSemanticCommand> = AllPredefined.findCommandsByContext(context).associateBy {
+        it.nameWithSlash
     }
 
     /**

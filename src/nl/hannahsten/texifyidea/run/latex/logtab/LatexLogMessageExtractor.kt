@@ -15,9 +15,7 @@ object LatexLogMessageExtractor {
     /**
      * Pre-processing to check if line is worth looking at.
      */
-    fun skip(text: String?): Boolean {
-        return text.isNullOrBlank()
-    }
+    fun skip(text: String?): Boolean = text.isNullOrBlank()
 
     /**
      * Look for a warning or error message in [text], and return a handler that

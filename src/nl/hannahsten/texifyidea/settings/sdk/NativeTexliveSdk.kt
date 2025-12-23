@@ -35,12 +35,10 @@ class NativeTexliveSdk : TexliveSdk("Native TeX Live SDK") {
         return "/usr/bin"
     }
 
-    override fun suggestHomePaths(): MutableCollection<String> {
-        return TexliveSdk().suggestHomePaths().plus(suggestHomePath())
-            // Avoid duplicates of TexliveSdks, which probably have x86_64-linux in the path
-            .filter { path -> !path.containsAny(setOf("x86_64-linux", "universal-darwin")) }
-            .toMutableSet()
-    }
+    override fun suggestHomePaths(): MutableCollection<String> = TexliveSdk().suggestHomePaths().plus(suggestHomePath())
+        // Avoid duplicates of TexliveSdks, which probably have x86_64-linux in the path
+        .filter { path -> !path.containsAny(setOf("x86_64-linux", "universal-darwin")) }
+        .toMutableSet()
 
     override fun isValidSdkHome(path: String): Boolean {
         // We expect the location of the executables, wherever that is.
@@ -57,13 +55,9 @@ class NativeTexliveSdk : TexliveSdk("Native TeX Live SDK") {
         return """TeX Live (\d\d\d\d).*""".toRegex().find(output)?.value ?: "Unknown version"
     }
 
-    override fun getDefaultDocumentationUrl(sdk: Sdk): String {
-        return "${Cache.texmfDistPath}/doc"
-    }
+    override fun getDefaultDocumentationUrl(sdk: Sdk): String = "${Cache.texmfDistPath}/doc"
 
-    override fun getExecutableName(executable: String, homePath: String): String {
-        return "$homePath/$executable"
-    }
+    override fun getExecutableName(executable: String, homePath: String): String = "$homePath/$executable"
 
     override fun getDefaultStyleFilesPath(homePath: String): VirtualFile? {
         // We cannot call system commands in a blocking way because it may cause freezes (#4102)

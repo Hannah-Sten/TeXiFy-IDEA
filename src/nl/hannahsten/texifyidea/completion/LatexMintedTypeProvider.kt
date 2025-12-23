@@ -172,14 +172,12 @@ class LatexMintedLanguage(
     val languageAbbr: List<String>,
     val fileExtensions: List<String>,
 ) {
-    fun createLookupElement(): List<LookupElement> {
-        return languageAbbr.map {
-            LookupElementBuilder.create(it)
-                .withPresentableText(languageName)
-                .bold()
-                .withLookupStrings(listOf(languageName))
-                .withCaseSensitivity(false)
-                .withTypeText(it)
-        }
+    fun createLookupElement(): List<LookupElement> = languageAbbr.map {
+        LookupElementBuilder.create(it)
+            .withPresentableText(languageName)
+            .bold()
+            .withLookupStrings(listOf(languageName))
+            .withCaseSensitivity(false)
+            .withTypeText(it)
     }
 }

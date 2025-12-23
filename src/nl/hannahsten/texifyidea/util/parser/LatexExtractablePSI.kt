@@ -28,9 +28,7 @@ class LatexExtractablePSI(
     val extractableIntRange
         get() = extractableRange.toIntRange()
 
-    override fun getTextRangeInParent(): TextRange {
-        return self.textRangeInParent
-    }
+    override fun getTextRangeInParent(): TextRange = self.textRangeInParent
 }
 
 fun PsiElement.asExtractable(): LatexExtractablePSI = LatexExtractablePSI(this)

@@ -199,13 +199,11 @@ fun formatAsFilePathWithExistingParents(basePath: String, newFileName: String): 
 /**
  * Formats the string as a valid LaTeX label name.
  */
-fun String.formatAsLabel(): String {
-    return this.let { Normalizer.normalize(it, Normalizer.Form.NFKD) }
-        .replace(" ", "-")
-        .removeAll("%", "~", "#", "\\", ",")
-        .replace("[^\\x00-\\x7F]".toRegex(), "")
-        .lowercase(Locale.getDefault())
-}
+fun String.formatAsLabel(): String = this.let { Normalizer.normalize(it, Normalizer.Form.NFKD) }
+    .replace(" ", "-")
+    .removeAll("%", "~", "#", "\\", ",")
+    .replace("[^\\x00-\\x7F]".toRegex(), "")
+    .lowercase(Locale.getDefault())
 
 /**
  * Split the given string on whitespace.

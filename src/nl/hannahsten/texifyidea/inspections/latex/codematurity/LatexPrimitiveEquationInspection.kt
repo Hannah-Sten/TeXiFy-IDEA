@@ -15,15 +15,9 @@ class LatexPrimitiveEquationInspection : AbstractTexifyWholeFileRegexBasedInspec
     regex = """\$\$([\s\S]*?)\$\$""".toRegex() // Matches $$...$$ with minimal content in between
 ) {
 
-    override fun errorMessage(matcher: MatchResult, context: LContextSet): String {
-        return "Use '\\[..\\]' instead of primitive TeX display math."
-    }
+    override fun errorMessage(matcher: MatchResult, context: LContextSet): String = "Use '\\[..\\]' instead of primitive TeX display math."
 
-    override fun quickFixName(matcher: MatchResult, contexts: LContextSet): String {
-        return "Replace with '\\[..\\]'"
-    }
+    override fun quickFixName(matcher: MatchResult, contexts: LContextSet): String = "Replace with '\\[..\\]'"
 
-    override fun getReplacement(match: MatchResult, fullElementText: String, project: Project, problemDescriptor: ProblemDescriptor): String {
-        return "\\[${match.groupValues[1]}\\]"
-    }
+    override fun getReplacement(match: MatchResult, fullElementText: String, project: Project, problemDescriptor: ProblemDescriptor): String = "\\[${match.groupValues[1]}\\]"
 }

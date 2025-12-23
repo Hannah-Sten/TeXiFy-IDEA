@@ -11,9 +11,7 @@ import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 
 class LatexMissingImportInspectionTest : TexifyInspectionTestBase(LatexMissingImportInspection()) {
 
-    override fun getTestDataPath(): String {
-        return "test/resources/inspections/latex/missingimport"
-    }
+    override fun getTestDataPath(): String = "test/resources/inspections/latex/missingimport"
 
     override fun setUp() {
         super.setUp()

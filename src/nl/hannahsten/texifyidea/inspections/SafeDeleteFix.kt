@@ -33,9 +33,7 @@ open class SafeDeleteFix(element: PsiElement) : LocalQuickFixAndIntentionActionO
         return "Safe delete " + startElement.text
     }
 
-    override fun getFamilyName(): String {
-        return "Safe delete"
-    }
+    override fun getFamilyName(): String = "Safe delete"
 
     override fun invoke(
         project: Project,
@@ -49,7 +47,5 @@ open class SafeDeleteFix(element: PsiElement) : LocalQuickFixAndIntentionActionO
         SafeDeleteHandler.invoke(project, elements, true)
     }
 
-    override fun startInWriteAction(): Boolean {
-        return false
-    }
+    override fun startInWriteAction(): Boolean = false
 }

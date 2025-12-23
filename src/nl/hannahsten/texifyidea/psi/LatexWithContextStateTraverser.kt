@@ -49,18 +49,14 @@ abstract class LatexWithContextStateTraverser<S>(
     /**
      * Called when starting to process an element.
      */
-    protected open fun elementStart(e: PsiElement): WalkAction {
-        return WalkAction.CONTINUE
-    }
+    protected open fun elementStart(e: PsiElement): WalkAction = WalkAction.CONTINUE
 
     /**
      * Called when finishing processing an element.
      *
      * @return Whether to continue the whole traversal.
      */
-    protected open fun elementFinish(e: PsiElement): Boolean {
-        return true
-    }
+    protected open fun elementFinish(e: PsiElement): Boolean = true
 
     /**
      * Update the [state] when entering a context intro if returns [WalkAction.CONTINUE],
@@ -213,9 +209,7 @@ abstract class RecordingContextIntroTraverser(
         return WalkAction.CONTINUE
     }
 
-    fun traverse(e: PsiElement): Boolean {
-        return traverseRecur(e)
-    }
+    fun traverse(e: PsiElement): Boolean = traverseRecur(e)
 
     val exitState: List<LatexContextIntro>
         get() = state

@@ -17,9 +17,7 @@ import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 
 class GrazieInspectionTest : BasePlatformTestCase() {
 
-    override fun getTestDataPath(): String {
-        return "test/resources/inspections/grazie"
-    }
+    override fun getTestDataPath(): String = "test/resources/inspections/grazie"
 
     override fun setUp() {
         super.setUp()
@@ -216,9 +214,7 @@ class GrazieInspectionTest : BasePlatformTestCase() {
     /**
      * Text as sent to Grazie.
      */
-    private fun getSubmittedText(file: PsiFile): String {
-        return LatexTextExtractor().buildTextContent(file.findFirstChildOfType(LatexContent::class)!!).toString()
-    }
+    private fun getSubmittedText(file: PsiFile): String = LatexTextExtractor().buildTextContent(file.findFirstChildOfType(LatexContent::class)!!).toString()
 
     fun testNewlinesShouldBeKept() {
         val text = """

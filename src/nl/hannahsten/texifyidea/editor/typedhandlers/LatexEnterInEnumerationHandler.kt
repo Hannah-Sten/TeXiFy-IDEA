@@ -42,7 +42,8 @@ class LatexEnterInEnumerationHandler : EnterHandlerDelegate {
         if (DataManager.getInstance().loadFromDataContext(
                 context,
                 LineWrappingUtil.WRAP_LONG_LINE_DURING_FORMATTING_IN_PROGRESS_KEY
-            ) == true || DataManager.getInstance()
+            ) == true ||
+            DataManager.getInstance()
                 .loadFromDataContext(context, AutoHardWrapHandler.AUTO_WRAP_LINE_IN_PROGRESS_KEY) == true
         ) {
             return Result.Continue
@@ -70,9 +71,7 @@ class LatexEnterInEnumerationHandler : EnterHandlerDelegate {
         file: PsiFile, editor: Editor, p2: Ref<Int>, p3: Ref<Int>,
         context: DataContext,
         p5: EditorActionHandler?
-    ): Result {
-        return Result.Continue
-    }
+    ): Result = Result.Continue
 
     /**
      * Get the special marker that is used at the previous item (if any).
@@ -144,7 +143,8 @@ class LatexEnterInEnumerationHandler : EnterHandlerDelegate {
             DataManager.getInstance().loadFromDataContext(
                 context,
                 SPLIT_LINE_KEY
-            ) == true || // SplitLineAction means Ctrl+Enter was pressed, we decide to not insert \item in that case
+            ) == true ||
+            // SplitLineAction means Ctrl+Enter was pressed, we decide to not insert \item in that case
             element.inMathContext()
         ) {
             return false

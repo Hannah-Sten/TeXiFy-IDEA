@@ -29,14 +29,10 @@ object BibtexTypeTokenProvider : CompletionProvider<CompletionParameters>() {
         )
     }
 
-    private fun tags(entry: BibtexDefaultEntryType): String {
-        return " {" + entry.required.joinToString { it.toString().lowercase(Locale.getDefault()) } + "}"
-    }
+    private fun tags(entry: BibtexDefaultEntryType): String = " {" + entry.required.joinToString { it.toString().lowercase(Locale.getDefault()) } + "}"
 
-    private fun packageName(entry: BibtexDefaultEntryType): String {
-        return when (val dependency = entry.dependency) {
-            LatexPackage.DEFAULT -> ""
-            else -> " (${dependency.name})"
-        }
+    private fun packageName(entry: BibtexDefaultEntryType): String = when (val dependency = entry.dependency) {
+        LatexPackage.DEFAULT -> ""
+        else -> " (${dependency.name})"
     }
 }

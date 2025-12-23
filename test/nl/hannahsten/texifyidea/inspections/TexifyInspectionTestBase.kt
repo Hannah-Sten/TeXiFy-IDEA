@@ -16,9 +16,7 @@ abstract class TexifyInspectionTestBase(vararg val inspections: LocalInspectionT
         myFixture.enableInspections(*inspections)
     }
 
-    protected fun configureByFilesAndBuildFilesets(vararg files: String): Array<out PsiFile> {
-        return myFixture.configureByFilesAndBuildFilesets(*files)
-    }
+    protected fun configureByFilesAndBuildFilesets(vararg files: String): Array<out PsiFile> = myFixture.configureByFilesAndBuildFilesets(*files)
 
     protected fun testHighlighting(text: String) {
         myFixture.configureByText(LatexFileType, text)

@@ -305,6 +305,4 @@ fun PsiFile.insertUsepackage(pack: LatexPackage) = PackageUtils.insertUsepackage
  *
  * @return List of all included packages, including those that are included indirectly.
  */
-fun PsiFile.includedPackagesInFileset(): Set<LatexPackage> {
-    return PackageUtils.getIncludedLibrariesInFileset(this).map { LatexPackage(it.substringBefore('.')) }.toSet()
-}
+fun PsiFile.includedPackagesInFileset(): Set<LatexPackage> = PackageUtils.getIncludedLibrariesInFileset(this).map { LatexPackage(it.substringBefore('.')) }.toSet()

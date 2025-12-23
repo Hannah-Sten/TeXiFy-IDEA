@@ -28,9 +28,7 @@ class LatexOverInsteadOfFracInspection : TexifyInspectionBase() {
         get() = InsightGroup.LATEX
 
     @Nls
-    override fun getDisplayName(): String {
-        return "Discouraged use of \\over"
-    }
+    override fun getDisplayName(): String = "Discouraged use of \\over"
 
     override val inspectionId: String
         get() = "OverInsteadOfFrac"
@@ -63,9 +61,7 @@ class LatexOverInsteadOfFracInspection : TexifyInspectionBase() {
     private class OverToFracFix : LocalQuickFix {
 
         @Nls
-        override fun getFamilyName(): String {
-            return "Convert to \\frac"
-        }
+        override fun getFamilyName(): String = "Convert to \\frac"
 
         override fun applyFix(
             project: Project,

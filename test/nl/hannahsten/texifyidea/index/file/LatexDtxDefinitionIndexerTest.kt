@@ -12,9 +12,7 @@ class LatexDtxDefinitionIndexerTest : BasePlatformTestCase() {
         override fun <T : Any?> getUserData(key: Key<T>): T? = null
         override fun <T : Any?> putUserData(key: Key<T>, value: T?) {}
         override fun getFileType() = LatexSourceFileType
-        override fun getFileName(): String {
-            return name
-        }
+        override fun getFileName(): String = name
         override fun getFile(): VirtualFile = throw UnsupportedOperationException()
         override fun getProject() = throw UnsupportedOperationException()
         override fun getContent() = ByteArray(0)

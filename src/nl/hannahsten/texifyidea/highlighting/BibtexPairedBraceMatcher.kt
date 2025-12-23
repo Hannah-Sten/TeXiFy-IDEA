@@ -19,9 +19,7 @@ open class BibtexPairedBraceMatcher : PairedBraceMatcher {
 
     override fun getPairs() = bracePairs
 
-    override fun isPairedBracesAllowedBeforeType(leftBrace: IElementType, contextType: IElementType?): Boolean {
-        return true
-    }
+    override fun isPairedBracesAllowedBeforeType(leftBrace: IElementType, contextType: IElementType?): Boolean = true
 
     override fun getCodeConstructStart(file: PsiFile?, openingBraceOffset: Int) = openingBraceOffset
 }

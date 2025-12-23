@@ -14,7 +14,5 @@ class BibtexRefactoringSupportProvider : RefactoringSupportProvider() {
         return false
     }
 
-    override fun isSafeDeleteAvailable(element: PsiElement): Boolean {
-        return element is BibtexId
-    }
+    override fun isSafeDeleteAvailable(element: PsiElement): Boolean = element is BibtexId
 }

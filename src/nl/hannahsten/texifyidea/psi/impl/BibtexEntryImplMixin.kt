@@ -53,20 +53,14 @@ abstract class BibtexEntryImplMixin : BibtexEntry, StubBasedPsiElementBase<Bibte
         return emptyArray()
     }
 
-    override fun setName(name: @NonNls String): PsiElement {
-        return this
-    }
+    override fun setName(name: @NonNls String): PsiElement = this
 
     override fun getName(): String? {
         val stub = this.stub
         return if (stub != null) stub.name else this.getIdentifier()
     }
 
-    override fun getNameIdentifier(): PsiElement {
-        return this
-    }
+    override fun getNameIdentifier(): PsiElement = this
 
-    override fun toString(): String {
-        return this.text
-    }
+    override fun toString(): String = this.text
 }

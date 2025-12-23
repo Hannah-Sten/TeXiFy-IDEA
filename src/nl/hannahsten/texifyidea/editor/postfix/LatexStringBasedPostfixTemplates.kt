@@ -86,7 +86,5 @@ internal abstract class ConstantStringBasedPostfixTemplate(
 
     override fun getElementToRemove(expr: PsiElement?) = expr
 
-    override fun isBuiltin(): Boolean {
-        return true
-    }
+    override fun isBuiltin(): Boolean = true
 }

@@ -51,9 +51,7 @@ class AddBibtexFileAction : AddLibraryAction<BibtexFileLibrary, AddBibtexFileAct
         }
     }
 
-    override fun getDialog(project: Project): AddBibtexFileDialogWrapper {
-        return AddBibtexFileDialogWrapper(project)
-    }
+    override fun getDialog(project: Project): AddBibtexFileDialogWrapper = AddBibtexFileDialogWrapper(project)
 
     override suspend fun createLibrary(dialogWrapper: AddBibtexFileDialogWrapper, project: Project): Either<RemoteLibraryRequestFailure, Pair<BibtexFileLibrary, List<BibtexEntry>>?> = either {
         val name = if (File(dialogWrapper.path).exists()) File(dialogWrapper.path).name else BibtexFileLibrary.NAME

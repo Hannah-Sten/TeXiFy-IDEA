@@ -90,9 +90,7 @@ open class ImagePasteProvider : PasteProvider {
             transferable.isDataFlavorSupported(DataFlavor.javaFileListFlavor)
     }
 
-    fun hasRawImage(transferable: Transferable): Boolean {
-        return transferable.isDataFlavorSupported(DataFlavor.imageFlavor) && transferable.getTransferData(DataFlavor.imageFlavor) is BufferedImage
-    }
+    fun hasRawImage(transferable: Transferable): Boolean = transferable.isDataFlavorSupported(DataFlavor.imageFlavor) && transferable.getTransferData(DataFlavor.imageFlavor) is BufferedImage
 
     override fun isPasteEnabled(dataContext: DataContext) = isPastePossible(dataContext)
 

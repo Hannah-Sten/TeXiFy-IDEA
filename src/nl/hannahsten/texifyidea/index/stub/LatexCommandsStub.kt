@@ -53,10 +53,6 @@ fun LatexCommandsStub.parameterOfTypeAt(index: Int, type: Int): String? {
     return null
 }
 
-fun LatexCommandsStub.requiredParamAt(index: Int): String? {
-    return parameterOfTypeAt(index, LatexParameterStub.REQUIRED)
-}
+fun LatexCommandsStub.requiredParamAt(index: Int): String? = parameterOfTypeAt(index, LatexParameterStub.REQUIRED)
 
-fun LatexCommandsStub.optionalParamAt(index: Int): String? {
-    return parameterOfTypeAt(index, LatexParameterStub.OPTIONAL)
-}
+fun LatexCommandsStub.optionalParamAt(index: Int): String? = parameterOfTypeAt(index, LatexParameterStub.OPTIONAL)

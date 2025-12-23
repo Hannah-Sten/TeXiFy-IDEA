@@ -26,13 +26,9 @@ object SpecialKeys {
  * Records special commands in the project, such as file inputs, command definitions, environment definitions, and package includes.
  */
 class NewSpecialCommandsIndexEx : SpecialKeyStubIndexWrapper<LatexCommands>(LatexCommands::class.java) {
-    override fun getKey(): StubIndexKey<String, LatexCommands> {
-        return LatexStubIndexKeys.COMMANDS_SPECIAL
-    }
+    override fun getKey(): StubIndexKey<String, LatexCommands> = LatexStubIndexKeys.COMMANDS_SPECIAL
 
-    override fun getVersion(): Int {
-        return 105
-    }
+    override fun getVersion(): Int = 105
 
     val mappingPairs = listOf(
         PredefinedCmdFiles.namesOfAllFileIncludeCommands to SpecialKeys.FILE_INPUTS,
@@ -54,37 +50,21 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexWrapper<LatexCommands>(Late
         }
     }
 
-    fun getAllFileInputs(project: Project): Collection<LatexCommands> {
-        return getByName(SpecialKeys.FILE_INPUTS, project)
-    }
+    fun getAllFileInputs(project: Project): Collection<LatexCommands> = getByName(SpecialKeys.FILE_INPUTS, project)
 
-    fun getAllFileInputsInFileset(file: PsiFile): Collection<LatexCommands> {
-        return getByNameInFileSet(SpecialKeys.FILE_INPUTS, file)
-    }
+    fun getAllFileInputsInFileset(file: PsiFile): Collection<LatexCommands> = getByNameInFileSet(SpecialKeys.FILE_INPUTS, file)
 
-    fun getAllFileInputs(project: Project, file: VirtualFile): Collection<LatexCommands> {
-        return getByName(SpecialKeys.FILE_INPUTS, project, GlobalSearchScope.fileScope(project, file))
-    }
+    fun getAllFileInputs(project: Project, file: VirtualFile): Collection<LatexCommands> = getByName(SpecialKeys.FILE_INPUTS, project, GlobalSearchScope.fileScope(project, file))
 
-    fun getPackageIncludes(project: Project, scope: GlobalSearchScope): Collection<LatexCommands> {
-        return getByName(SpecialKeys.PACKAGE_INCLUDES, project, scope)
-    }
+    fun getPackageIncludes(project: Project, scope: GlobalSearchScope): Collection<LatexCommands> = getByName(SpecialKeys.PACKAGE_INCLUDES, project, scope)
 
-    fun getPackageIncludes(project: Project, file: VirtualFile): Collection<LatexCommands> {
-        return getByName(SpecialKeys.PACKAGE_INCLUDES, project, GlobalSearchScope.fileScope(project, file))
-    }
+    fun getPackageIncludes(project: Project, file: VirtualFile): Collection<LatexCommands> = getByName(SpecialKeys.PACKAGE_INCLUDES, project, GlobalSearchScope.fileScope(project, file))
 
-    fun getRegularCommandDef(project: Project, scope: GlobalSearchScope): Collection<LatexCommands> {
-        return getByName(SpecialKeys.COMMAND_DEFINITIONS, project, scope)
-    }
+    fun getRegularCommandDef(project: Project, scope: GlobalSearchScope): Collection<LatexCommands> = getByName(SpecialKeys.COMMAND_DEFINITIONS, project, scope)
 
-    fun getAllCommandDefInFileset(file: PsiFile): Collection<LatexCommands> {
-        return getByNameInFileSet(SpecialKeys.COMMAND_DEFINITIONS, file)
-    }
+    fun getAllCommandDefInFileset(file: PsiFile): Collection<LatexCommands> = getByNameInFileSet(SpecialKeys.COMMAND_DEFINITIONS, file)
 
-    fun getAllDefinitions(project: Project, file: VirtualFile): Collection<LatexCommands> {
-        return getByName(SpecialKeys.ALL_DEFINITIONS, project, GlobalSearchScope.fileScope(project, file))
-    }
+    fun getAllDefinitions(project: Project, file: VirtualFile): Collection<LatexCommands> = getByName(SpecialKeys.ALL_DEFINITIONS, project, GlobalSearchScope.fileScope(project, file))
 
     fun processCommandDef(scope: GlobalSearchScope, filter: IdFilter?, processor: Processor<LatexCommands>) {
         processByName(SpecialKeys.COMMAND_DEFINITIONS, scope.project!!, scope, filter, processor)

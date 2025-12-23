@@ -57,15 +57,13 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         }
     }
 
-    override fun getAlphaSortKey(): String {
-        return (element as? LatexCommands)?.commandToken?.text?.lowercase(Locale.getDefault())
-            ?: if (element is PsiNameIdentifierOwner) {
-                element.name!!.lowercase(Locale.getDefault())
-            }
-            else {
-                element.text.lowercase(Locale.getDefault())
-            }
-    }
+    override fun getAlphaSortKey(): String = (element as? LatexCommands)?.commandToken?.text?.lowercase(Locale.getDefault())
+        ?: if (element is PsiNameIdentifierOwner) {
+            element.name!!.lowercase(Locale.getDefault())
+        }
+        else {
+            element.text.lowercase(Locale.getDefault())
+        }
 
     override fun getPresentation(): ItemPresentation {
         if (element is LatexCommands) {

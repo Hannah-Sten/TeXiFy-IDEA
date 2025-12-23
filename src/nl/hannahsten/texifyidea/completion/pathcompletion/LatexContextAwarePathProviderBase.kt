@@ -267,7 +267,5 @@ abstract class LatexContextAwarePathProviderBase : LatexContextAwareCompletionAd
     /**
      * search in given path for subfiles or directories
      */
-    private fun getContents(base: VirtualFile?, directory: Boolean): List<VirtualFile> {
-        return base?.children?.filter { it.isDirectory == directory } ?: mutableListOf()
-    }
+    private fun getContents(base: VirtualFile?, directory: Boolean): List<VirtualFile> = base?.children?.filter { it.isDirectory == directory } ?: mutableListOf()
 }

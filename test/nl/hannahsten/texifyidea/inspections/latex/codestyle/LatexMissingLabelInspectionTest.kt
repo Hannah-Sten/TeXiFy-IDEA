@@ -17,9 +17,7 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
         myFixture.updateConvention { s -> s.currentScheme = TexifyConventionsScheme() }
     }
 
-    override fun getTestDataPath(): String {
-        return "test/resources/inspections/latex/missinglabel"
-    }
+    override fun getTestDataPath(): String = "test/resources/inspections/latex/missinglabel"
 
     fun `test missing label warnings`() {
         myFixture.configureByFile("MissingLabelWarnings.tex")

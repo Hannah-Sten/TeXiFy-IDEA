@@ -18,6 +18,4 @@ open class CompositeHandler<T : LookupElement>(vararg val handlers: InsertHandle
 /**
  * Adds multiple insert handlers to the LookupElementBuilder.
  */
-fun LookupElementBuilder.withInsertHandlers(vararg handlers: InsertHandler<LookupElement>): LookupElementBuilder {
-    return withInsertHandler(CompositeHandler(*handlers))
-}
+fun LookupElementBuilder.withInsertHandlers(vararg handlers: InsertHandler<LookupElement>): LookupElementBuilder = withInsertHandler(CompositeHandler(*handlers))

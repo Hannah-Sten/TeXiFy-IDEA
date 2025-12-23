@@ -214,9 +214,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
         Process finished with exit code 12
         """.trimIndent()
 
-    override fun getTestDataPath(): String {
-        return "test/resources/run"
-    }
+    override fun getTestDataPath(): String = "test/resources/run"
 
     private fun testLog(log: String, expectedMessages: Set<LatexLogMessage> = setOf(), expectedBibMessages: Set<BibtexLogMessage> = setOf()) {
         val project = myFixture.project

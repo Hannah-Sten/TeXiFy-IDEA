@@ -53,9 +53,7 @@ class LibraryStateConverter : Converter<Map<String, LibraryState>>() {
         module.addDeserializer(
             BibItems::class.java,
             object : JsonDeserializer<BibItems>() {
-                override fun deserialize(p0: JsonParser, p1: DeserializationContext): BibItems {
-                    return runReadAction { BibItems(BibtexEntryListConverter().fromString(p0.text)) }
-                }
+                override fun deserialize(p0: JsonParser, p1: DeserializationContext): BibItems = runReadAction { BibItems(BibtexEntryListConverter().fromString(p0.text)) }
             }
         )
 

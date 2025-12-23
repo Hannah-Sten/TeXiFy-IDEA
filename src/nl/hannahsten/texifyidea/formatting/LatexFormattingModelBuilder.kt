@@ -26,7 +26,5 @@ class LatexFormattingModelBuilder : FormattingModelBuilder {
         )
     }
 
-    override fun getRangeAffectingIndent(file: PsiFile, offset: Int, elementAtOffset: ASTNode): TextRange? {
-        return null
-    }
+    override fun getRangeAffectingIndent(file: PsiFile, offset: Int, elementAtOffset: ASTNode): TextRange? = null
 }

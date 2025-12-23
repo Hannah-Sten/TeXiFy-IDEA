@@ -126,9 +126,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
      * Checks if the given file is already a split up section or chapter, with [command] being the only section/chapter
      * in this file. (If [command] is a \chapter, \section can still occur.)
      */
-    private fun isAlreadySplit(command: LatexCommands, commands: Collection<LatexCommands>): Boolean {
-        return commands.count { cmd -> cmd.name == command.name } <= 1
-    }
+    private fun isAlreadySplit(command: LatexCommands, commands: Collection<LatexCommands>): Boolean = commands.count { cmd -> cmd.name == command.name } <= 1
 
     /**
      * Checks if the given command starts a section that is too long.

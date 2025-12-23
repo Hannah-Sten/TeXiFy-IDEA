@@ -192,9 +192,7 @@ object LatexSdkUtil {
      * @param psiFile The file context to determine the module SDK. If null, falls back to project SDK.
      * @param project The current project (required when psiFile is null)
      */
-    fun getExecutableName(executableName: String, psiFile: PsiFile?, project: Project): String {
-        return getExecutableName(executableName, psiFile?.virtualFile, project)
-    }
+    fun getExecutableName(executableName: String, psiFile: PsiFile?, project: Project): String = getExecutableName(executableName, psiFile?.virtualFile, project)
 
     /**
      * Get executable name for a specific file context, respecting module SDK configuration.
@@ -203,9 +201,7 @@ object LatexSdkUtil {
      * @param executableName The base executable name (e.g., "pdflatex")
      * @param psiFile The file context to determine the module SDK
      */
-    fun getExecutableName(executableName: String, psiFile: PsiFile): String {
-        return getExecutableName(executableName, psiFile.virtualFile, psiFile.project)
-    }
+    fun getExecutableName(executableName: String, psiFile: PsiFile): String = getExecutableName(executableName, psiFile.virtualFile, psiFile.project)
 
     /**
      * Get executable name of pdflatex, which in case it is not in PATH may be prefixed by the full path (or even by a docker command).
@@ -278,22 +274,18 @@ object LatexSdkUtil {
     /**
      * Get the SDK type class for a given distribution type.
      */
-    private fun getSdkTypeForDistribution(distributionType: LatexDistributionType): LatexSdk? {
-        return when (distributionType) {
-            LatexDistributionType.TEXLIVE -> TexliveSdk()
-            LatexDistributionType.MIKTEX -> if (SystemInfo.isWindows) MiktexWindowsSdk() else MiktexLinuxSdk()
-            LatexDistributionType.WSL_TEXLIVE -> WslTexliveSdk()
-            else -> null
-        }
+    private fun getSdkTypeForDistribution(distributionType: LatexDistributionType): LatexSdk? = when (distributionType) {
+        LatexDistributionType.TEXLIVE -> TexliveSdk()
+        LatexDistributionType.MIKTEX -> if (SystemInfo.isWindows) MiktexWindowsSdk() else MiktexLinuxSdk()
+        LatexDistributionType.WSL_TEXLIVE -> WslTexliveSdk()
+        else -> null
     }
 
     /**
      * Get all configured LaTeX SDKs from the application-level SDK table.
      * This returns all SDKs whose type extends [LatexSdk].
      */
-    fun getAllLatexSdks(): List<Sdk> {
-        return ProjectJdkTable.getInstance().allJdks.filter { it.sdkType is LatexSdk }
-    }
+    fun getAllLatexSdks(): List<Sdk> = ProjectJdkTable.getInstance().allJdks.filter { it.sdkType is LatexSdk }
 
     /**
      * If a LaTeX SDK is selected as project SDK, return it, otherwise return null.
@@ -351,16 +343,12 @@ object LatexSdkUtil {
     /**
      * Get type of project SDK. If null or not a LaTeX sdk, return null.
      */
-    fun getLatexProjectSdkType(project: Project): LatexSdk? {
-        return getLatexProjectSdk(project)?.sdkType as? LatexSdk
-    }
+    fun getLatexProjectSdkType(project: Project): LatexSdk? = getLatexProjectSdk(project)?.sdkType as? LatexSdk
 
     /**
      * Get the LaTeX SDK type for the given file, checking module SDK first, then falling back to project SDK.
      */
-    fun getLatexSdkTypeForFile(file: VirtualFile, project: Project): LatexSdk? {
-        return getLatexSdkForFile(file, project)?.sdkType as? LatexSdk
-    }
+    fun getLatexSdkTypeForFile(file: VirtualFile, project: Project): LatexSdk? = getLatexSdkForFile(file, project)?.sdkType as? LatexSdk
 
     fun getLatexDistributionType(project: Project): LatexDistributionType? {
         val sdk = getLatexProjectSdk(project) ?: return null

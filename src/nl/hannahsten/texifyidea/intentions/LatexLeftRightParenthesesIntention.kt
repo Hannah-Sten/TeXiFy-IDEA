@@ -110,21 +110,19 @@ open class LatexLeftRightParenthesesIntention : TexifyIntentionBase("Change to \
         increaseNesting: String,
         nested: Int,
         decreaseNesting: String?
-    ): Int {
-        return when (char) {
-            // Open nesting
-            increaseNesting -> {
-                nested + 1
-            }
+    ): Int = when (char) {
+        // Open nesting
+        increaseNesting -> {
+            nested + 1
+        }
 
-            // Close nesting
-            decreaseNesting if nested > 0 -> {
-                nested - 1
-            }
+        // Close nesting
+        decreaseNesting if nested > 0 -> {
+            nested - 1
+        }
 
-            else -> {
-                nested
-            }
+        else -> {
+            nested
         }
     }
 

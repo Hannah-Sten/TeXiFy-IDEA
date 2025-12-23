@@ -12,15 +12,9 @@ class LatexCommandElementManipulators : ElementManipulator<LatexCommands> {
      * arguments, the PsiReference for custom commands gets in the way of the
      * completion inside of the required arguments.
      */
-    override fun getRangeInElement(element: LatexCommands): TextRange {
-        return element.commandToken.textRangeInParent
-    }
+    override fun getRangeInElement(element: LatexCommands): TextRange = element.commandToken.textRangeInParent
 
-    override fun handleContentChange(element: LatexCommands, range: TextRange, newContent: String?): LatexCommands? {
-        return null
-    }
+    override fun handleContentChange(element: LatexCommands, range: TextRange, newContent: String?): LatexCommands? = null
 
-    override fun handleContentChange(element: LatexCommands, newContent: String?): LatexCommands? {
-        return null
-    }
+    override fun handleContentChange(element: LatexCommands, newContent: String?): LatexCommands? = null
 }

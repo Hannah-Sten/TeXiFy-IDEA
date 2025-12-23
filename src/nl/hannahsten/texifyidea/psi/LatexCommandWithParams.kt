@@ -46,35 +46,25 @@ interface LatexCommandWithParams : LatexComposite {
     /**
      * Whether this command has any parameters, either required or optional.
      */
-    fun hasParameter(): Boolean {
-        return firstParameter() != null
-    }
+    fun hasParameter(): Boolean = firstParameter() != null
 
-    fun hasRequiredParameter(): Boolean {
-        return firstRequiredParameter() != null
-    }
+    fun hasRequiredParameter(): Boolean = firstRequiredParameter() != null
 
     /**
      * Looks up all the required parameters of this command.
      *
      * @return A list of all required parameters.
      */
-    fun requiredParameters(): List<LatexRequiredParam> {
-        return parameterList.mapNotNull { it.requiredParam }
-    }
+    fun requiredParameters(): List<LatexRequiredParam> = parameterList.mapNotNull { it.requiredParam }
 
     /**
      * Generates a list of all names of all required parameters in the command.
      */
-    fun requiredParametersText(): List<String> {
-        return parameterList.mapNotNull {
-            if (it.requiredParam != null) it.contentText() else null
-        }
+    fun requiredParametersText(): List<String> = parameterList.mapNotNull {
+        if (it.requiredParam != null) it.contentText() else null
     }
 
-    fun optionalParameterTextMap(): Map<String, String> {
-        return getOptionalParameterMap().toStringMap()
-    }
+    fun optionalParameterTextMap(): Map<String, String> = getOptionalParameterMap().toStringMap()
 
     /**
      * Gets the required parameters of this command at the specified index, or null if the index is out of bounds.

@@ -9,9 +9,7 @@ open class SimpleLatexContext(
     val name: String,
     final override val display: String = name
 ) : LatexContext {
-    override fun toString(): String {
-        return display
-    }
+    override fun toString(): String = display
 
     private val hash = name.hashCode()
 

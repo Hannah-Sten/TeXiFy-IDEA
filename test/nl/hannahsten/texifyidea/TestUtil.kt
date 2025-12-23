@@ -20,8 +20,6 @@ fun CodeInsightTestFixture.updateCommandDef() {
     }
 }
 
-fun CodeInsightTestFixture.configureByFilesAndBuildFilesets(vararg filenames: String): Array<out PsiFile> {
-    return configureByFiles(*filenames).also {
-        updateFilesets()
-    }
+fun CodeInsightTestFixture.configureByFilesAndBuildFilesets(vararg filenames: String): Array<out PsiFile> = configureByFiles(*filenames).also {
+    updateFilesets()
 }

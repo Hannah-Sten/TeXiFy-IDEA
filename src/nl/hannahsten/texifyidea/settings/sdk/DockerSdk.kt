@@ -47,9 +47,7 @@ class DockerSdk : LatexSdk("LaTeX Docker SDK") {
         } ?: mutableListOf()
     }
 
-    override fun isValidSdkHome(path: String): Boolean {
-        return "$path/docker image ls".runCommand()?.containsAny(setOf("miktex", "texlive")) == true
-    }
+    override fun isValidSdkHome(path: String): Boolean = "$path/docker image ls".runCommand()?.containsAny(setOf("miktex", "texlive")) == true
 
     override fun getLatexDistributionType(sdk: Sdk): LatexDistributionType {
         val imageName = (sdk.sdkAdditionalData as? DockerSdkAdditionalData)?.imageName
@@ -80,13 +78,9 @@ class DockerSdk : LatexSdk("LaTeX Docker SDK") {
 
     override fun getHomeFieldLabel() = "Path to directory containing Docker executable:"
 
-    override fun getInvalidHomeMessage(path: String): String {
-        return "Could not find docker executable $path/docker"
-    }
+    override fun getInvalidHomeMessage(path: String): String = "Could not find docker executable $path/docker"
 
-    override fun createAdditionalDataConfigurable(sdkModel: SdkModel, sdkModificator: SdkModificator): AdditionalDataConfigurable {
-        return DockerSdkConfigurable()
-    }
+    override fun createAdditionalDataConfigurable(sdkModel: SdkModel, sdkModificator: SdkModificator): AdditionalDataConfigurable = DockerSdkConfigurable()
 
     override fun saveAdditionalData(additionalData: SdkAdditionalData, additional: Element) {
         if (additionalData is DockerSdkAdditionalData) {
@@ -94,9 +88,7 @@ class DockerSdk : LatexSdk("LaTeX Docker SDK") {
         }
     }
 
-    override fun loadAdditionalData(additional: Element): SdkAdditionalData {
-        return DockerSdkAdditionalData(additional)
-    }
+    override fun loadAdditionalData(additional: Element): SdkAdditionalData = DockerSdkAdditionalData(additional)
 
     override fun supportsCustomCreateUI() = true
 

@@ -40,9 +40,7 @@ open class InsertBibtexTag : EnterHandlerDelegate {
         return Result.Continue
     }
 
-    override fun preprocessEnter(file: PsiFile, editor: Editor, p2: Ref<Int>, p3: Ref<Int>, context: DataContext, p5: EditorActionHandler?): Result {
-        return Result.Continue
-    }
+    override fun preprocessEnter(file: PsiFile, editor: Editor, p2: Ref<Int>, p3: Ref<Int>, context: DataContext, p5: EditorActionHandler?): Result = Result.Continue
 
     /**
      * Starts the tag insertion template process.
@@ -88,8 +86,10 @@ open class InsertBibtexTag : EnterHandlerDelegate {
 
         // Check when no prior tags existed in the entry.
         val noTags = (
-            previous is LeafPsiElement && next is LeafPsiElement &&
-                previous.elementType == BibtexTypes.SEPARATOR && next.elementType == BibtexTypes.CLOSE_BRACE
+            previous is LeafPsiElement &&
+                next is LeafPsiElement &&
+                previous.elementType == BibtexTypes.SEPARATOR &&
+                next.elementType == BibtexTypes.CLOSE_BRACE
             )
         if (!noTags) {
             return false

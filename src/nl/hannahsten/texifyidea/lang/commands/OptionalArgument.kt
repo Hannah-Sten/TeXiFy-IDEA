@@ -11,11 +11,7 @@ class OptionalArgument : Argument {
 
     override fun toString() = "[$name]"
 
-    override fun equals(other: Any?): Boolean {
-        return (other as? OptionalArgument)?.name == this.name
-    }
+    override fun equals(other: Any?): Boolean = (other as? OptionalArgument)?.name == this.name
 
-    override fun hashCode(): Int {
-        return this.name.hashCode()
-    }
+    override fun hashCode(): Int = this.name.hashCode()
 }

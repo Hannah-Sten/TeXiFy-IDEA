@@ -64,11 +64,7 @@ open class RequiredFileArgument(name: String?, open val isAbsolutePathSupported:
         pattern = Pattern.compile(regex)
     }
 
-    override fun matchesName(fileName: String): Boolean {
-        return pattern!!.matcher(fileName.lowercase(Locale.getDefault())).matches()
-    }
+    override fun matchesName(fileName: String): Boolean = pattern!!.matcher(fileName.lowercase(Locale.getDefault())).matches()
 
-    override fun matchesExtension(extension: String): Boolean {
-        return supportedExtensions.contains(extension.lowercase(Locale.getDefault()))
-    }
+    override fun matchesExtension(extension: String): Boolean = supportedExtensions.contains(extension.lowercase(Locale.getDefault()))
 }

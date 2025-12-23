@@ -35,17 +35,11 @@ class NewLatexFileAction : CreateElementActionBase("LaTeX File", "Create a new L
         builder.show<PsiElement>("", null, fileCreator) {}
     }
 
-    override fun create(s: String, psiDirectory: PsiDirectory): Array<PsiElement> {
-        return arrayOf()
-    }
+    override fun create(s: String, psiDirectory: PsiDirectory): Array<PsiElement> = arrayOf()
 
-    override fun getErrorTitle(): String {
-        return "Error"
-    }
+    override fun getErrorTitle(): String = "Error"
 
-    override fun getActionName(psiDirectory: PsiDirectory, s: String): String {
-        return ""
-    }
+    override fun getActionName(psiDirectory: PsiDirectory, s: String): String = ""
 
     private class LatexFileCreator(private val project: Project, private val directory: PsiDirectory) : FileCreator<PsiElement?> {
 
@@ -54,14 +48,12 @@ class NewLatexFileAction : CreateElementActionBase("LaTeX File", "Create a new L
             fileEditorManager.openFile(virtualFile, true)
         }
 
-        private fun getTemplateNameFromExtension(extensionWithoutDot: String): String {
-            return when (extensionWithoutDot) {
-                OPTION_STY_FILE -> LatexTemplatesFactory.FILE_TEMPLATE_STY
-                OPTION_CLS_FILE -> LatexTemplatesFactory.FILE_TEMPLATE_CLS
-                OPTION_BIB_FILE -> LatexTemplatesFactory.FILE_TEMPLATE_BIB
-                OPTION_TIKZ_FILE -> LatexTemplatesFactory.FILE_TEMPLATE_TIKZ
-                else -> LatexTemplatesFactory.FILE_TEMPLATE_TEX
-            }
+        private fun getTemplateNameFromExtension(extensionWithoutDot: String): String = when (extensionWithoutDot) {
+            OPTION_STY_FILE -> LatexTemplatesFactory.FILE_TEMPLATE_STY
+            OPTION_CLS_FILE -> LatexTemplatesFactory.FILE_TEMPLATE_CLS
+            OPTION_BIB_FILE -> LatexTemplatesFactory.FILE_TEMPLATE_BIB
+            OPTION_TIKZ_FILE -> LatexTemplatesFactory.FILE_TEMPLATE_TIKZ
+            else -> LatexTemplatesFactory.FILE_TEMPLATE_TEX
         }
 
         private fun getFileType(fileName: String, option: String): FileType {
@@ -104,13 +96,9 @@ class NewLatexFileAction : CreateElementActionBase("LaTeX File", "Create a new L
             return file
         }
 
-        override fun getActionName(fileName: String, option: String): String {
-            return "New LaTeX File"
-        }
+        override fun getActionName(fileName: String, option: String): String = "New LaTeX File"
 
-        override fun startInWriteAction(): Boolean {
-            return false
-        }
+        override fun startInWriteAction(): Boolean = false
     }
 
     companion object {

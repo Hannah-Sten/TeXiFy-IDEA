@@ -8,9 +8,7 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
  */
 class LatexFoldingTest : BasePlatformTestCase() {
 
-    override fun getTestDataPath(): String {
-        return "test/resources/editor/folding"
-    }
+    override fun getTestDataPath(): String = "test/resources/editor/folding"
 
     fun testDashFolding() {
         // Unicode issues on windows

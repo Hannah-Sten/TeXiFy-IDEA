@@ -16,9 +16,7 @@ import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
  */
 class BibtexEntryListConverter : Converter<List<BibtexEntry>>() {
 
-    override fun toString(value: List<BibtexEntry>): String {
-        return value.joinToString("\n") { it.text }
-    }
+    override fun toString(value: List<BibtexEntry>): String = value.joinToString("\n") { it.text }
 
     override fun fromString(value: String): List<BibtexEntry> {
         val project = ProjectManager.getInstance().defaultProject

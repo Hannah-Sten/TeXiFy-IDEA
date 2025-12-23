@@ -67,9 +67,7 @@ fun LatexNoMathContent.isDisplayMath() = children.firstOrNull() is LatexMathEnvi
  *
  * @return `true` when the fileset has a bibliography included, `false` otherwise.
  */
-fun PsiFile.hasBibliography(): Boolean {
-    return NewCommandsIndex.getByNameInFileSet("\\bibliography", this).isNotEmpty()
-}
+fun PsiFile.hasBibliography(): Boolean = NewCommandsIndex.getByNameInFileSet("\\bibliography", this).isNotEmpty()
 
 /**
  * Checks if the fileset for this file uses \printbibliography, in which case the user probably wants to use biber.
@@ -137,24 +135,22 @@ fun PsiElement.findOccurrences(searchRoot: PsiElement): List<LatexExtractablePSI
     return visitor.foundOccurrences.map { it.asExtractable() }
 }
 
-fun PsiElement.findDependencies(): Set<LatexLib> {
-    return this.collectSubtreeTo(mutableSetOf(), Int.MAX_VALUE) { e ->
-        val dependency = when (e) {
-            is LatexCommands -> {
-                // If the command is a known command, add its dependency.
-                val nameNoSlash = e.name?.removePrefix("\\") ?: ""
-                AllPredefined.lookupCommand(nameNoSlash)?.dependency
-            }
-
-            is LatexEnvironment -> {
-                // If the environment is a known environment, add its dependency.
-                AllPredefined.lookupEnv(e.getEnvironmentName())?.dependency
-            }
-
-            else -> null
+fun PsiElement.findDependencies(): Set<LatexLib> = this.collectSubtreeTo(mutableSetOf(), Int.MAX_VALUE) { e ->
+    val dependency = when (e) {
+        is LatexCommands -> {
+            // If the command is a known command, add its dependency.
+            val nameNoSlash = e.name?.removePrefix("\\") ?: ""
+            AllPredefined.lookupCommand(nameNoSlash)?.dependency
         }
-        dependency?.takeIf { it.requiresImport }
+
+        is LatexEnvironment -> {
+            // If the environment is a known environment, add its dependency.
+            AllPredefined.lookupEnv(e.getEnvironmentName())?.dependency
+        }
+
+        else -> null
     }
+    dependency?.takeIf { it.requiresImport }
 }
 
 fun LatexSemanticsEnvLookup.lookupEnv(name: String?): LSemanticEnv? {
@@ -167,9 +163,7 @@ fun LatexSemanticsCommandLookup.lookupCommandN(name: String?): LSemanticCommand?
     return lookupCommand(name)
 }
 
-fun LatexSemanticsCommandLookup.lookupCommandPsi(cmd: LatexCommands): LSemanticCommand? {
-    return lookupCommandN(cmd.nameWithoutSlash)
-}
+fun LatexSemanticsCommandLookup.lookupCommandPsi(cmd: LatexCommands): LSemanticCommand? = lookupCommandN(cmd.nameWithoutSlash)
 
 /**
  * Utility functions for the Latex PSI file structure.
@@ -240,27 +234,21 @@ object LatexPsiUtil {
         return true
     }
 
-    fun stubTypeToLArgumentType(type: Int): LArgumentType {
-        return when (type) {
-            LatexParameterStub.REQUIRED -> LArgumentType.REQUIRED
-            LatexParameterStub.OPTIONAL -> LArgumentType.OPTIONAL
-            else -> LArgumentType.REQUIRED
-        }
+    fun stubTypeToLArgumentType(type: Int): LArgumentType = when (type) {
+        LatexParameterStub.REQUIRED -> LArgumentType.REQUIRED
+        LatexParameterStub.OPTIONAL -> LArgumentType.OPTIONAL
+        else -> LArgumentType.REQUIRED
     }
 
-    fun parameterToLArgumentType(parameter: LatexParameter): LArgumentType {
-        return when {
-            parameter.requiredParam != null -> LArgumentType.REQUIRED
-            parameter.optionalParam != null -> LArgumentType.OPTIONAL
-            else -> LArgumentType.REQUIRED // default to required if no parameters are present
-        }
+    fun parameterToLArgumentType(parameter: LatexParameter): LArgumentType = when {
+        parameter.requiredParam != null -> LArgumentType.REQUIRED
+        parameter.optionalParam != null -> LArgumentType.OPTIONAL
+        else -> LArgumentType.REQUIRED // default to required if no parameters are present
     }
 
-    fun parameterTypeMatchesStub(parameter: LatexParameterStub, type: LArgumentType): Boolean {
-        return when (type) {
-            LArgumentType.REQUIRED -> parameter.type == LatexParameterStub.REQUIRED
-            LArgumentType.OPTIONAL -> parameter.type == LatexParameterStub.OPTIONAL
-        }
+    fun parameterTypeMatchesStub(parameter: LatexParameterStub, type: LArgumentType): Boolean = when (type) {
+        LArgumentType.REQUIRED -> parameter.type == LatexParameterStub.REQUIRED
+        LArgumentType.OPTIONAL -> parameter.type == LatexParameterStub.OPTIONAL
     }
 
     inline fun processArgumentsWithSemantics(cmd: LatexCommandWithParams, semantics: LSemanticCommand, action: (LatexParameter, LArgument?) -> Unit) {
@@ -373,7 +361,8 @@ object LatexPsiUtil {
         var current: PsiElement = e
         // see Latex.bnf
         while (true) {
-            current = current.firstStrictParent { // `firstParent` is inclusive
+            current = current.firstStrictParent {
+                // `firstParent` is inclusive
                 it is LatexParameter || it is LatexEnvironment || it is LatexMathEnvironment
             } ?: break
             val intro = when (current) {

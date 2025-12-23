@@ -128,16 +128,12 @@ fun Project?.latexTemplateRunConfig(): LatexRunConfiguration? = this?.let {
 /**
  * Gets the currently focused text editor (returns null for example if the user has clicked on some button)
  */
-fun Project.focusedTextEditor(): TextEditor? {
-    return FileEditorManager.getInstance(this).focusedEditor as? TextEditor?
-}
+fun Project.focusedTextEditor(): TextEditor? = FileEditorManager.getInstance(this).focusedEditor as? TextEditor?
 
 /**
  * Gets the text editor which was last selected (may not be focused anymore)
  */
-fun Project.selectedTextEditor(): TextEditor? {
-    return FileEditorManager.getInstance(this).selectedEditor as? TextEditor?
-}
+fun Project.selectedTextEditor(): TextEditor? = FileEditorManager.getInstance(this).selectedEditor as? TextEditor?
 
 fun Project.selectedTextEditorOrWarning(): TextEditor? {
     selectedTextEditor()?.let { return it }
@@ -167,11 +163,9 @@ fun Project.hasLatexModule(): Boolean {
  * Best guess at whether this project can be considered a project containing significant LaTeX things.
  */
 @RequiresReadLock // Required by containsFileOfType
-fun Project.isLatexProject(): Boolean {
-    return hasLatexModule() ||
-        getLatexRunConfigurations().isNotEmpty() ||
-        (ApplicationNamesInfo.getInstance().scriptName != "idea" && containsFileOfType(LatexFileType))
-}
+fun Project.isLatexProject(): Boolean = hasLatexModule() ||
+    getLatexRunConfigurations().isNotEmpty() ||
+    (ApplicationNamesInfo.getInstance().scriptName != "idea" && containsFileOfType(LatexFileType))
 
 /**
  * True if we are probably in a unit test.
@@ -183,6 +177,4 @@ fun isTestProject() = ApplicationManager.getApplication().isUnitTestMode
  *
  * @return A list containing all the section marker [LatexCommands].
  */
-fun Project.findSectionMarkers(): Collection<LatexCommands> {
-    return NewCommandsIndex.getByNames(CommandMagic.sectionNameToLevel.keys, this)
-}
+fun Project.findSectionMarkers(): Collection<LatexCommands> = NewCommandsIndex.getByNames(CommandMagic.sectionNameToLevel.keys, this)

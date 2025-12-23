@@ -18,9 +18,7 @@ class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnr
         every { runCommandWithExitCode(*anyVararg(), workingDirectory = any(), timeout = any(), returnExceptionMessage = any()) } returns Pair(null, 0)
     }
 
-    override fun getTestDataPath(): String {
-        return "test/resources/inspections/latex/unresolvedreference"
-    }
+    override fun getTestDataPath(): String = "test/resources/inspections/latex/unresolvedreference"
 
     fun testWarning() {
         myFixture.configureByText(

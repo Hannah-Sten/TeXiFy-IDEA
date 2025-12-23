@@ -11,9 +11,7 @@ abstract class SystemPdfViewer(
     override val name: String
         get() = viewerCommand
 
-    override fun toString(): String {
-        return displayName
-    }
+    override fun toString(): String = displayName
 
     /**
      * Check if the PDF viewer is available on the system, the result of this function is cached.
@@ -53,10 +51,8 @@ abstract class SystemPdfViewer(
         availability = checkAvailabilityOnSystem(possiblePath)
     }
 
-    override fun isAvailable(): Boolean {
-        return availability ?: checkAvailabilityOnSystem().also {
-            availability = it
-        }
+    override fun isAvailable(): Boolean = availability ?: checkAvailabilityOnSystem().also {
+        availability = it
     }
 
     override val isForwardSearchSupported: Boolean

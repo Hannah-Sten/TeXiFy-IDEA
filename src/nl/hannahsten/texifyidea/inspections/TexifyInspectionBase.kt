@@ -78,10 +78,8 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
      * Checks whether the inspection must be suppressed (`true`) or not (`false`) based on the position of the given
      * PsiElement.
      */
-    protected open fun PsiElement.isSuppressed(): Boolean {
-        return magicComment()?.containsPair("suppress", inspectionId) == true ||
-            allParentMagicComments().containsPair("suppress", inspectionId)
-    }
+    protected open fun PsiElement.isSuppressed(): Boolean = magicComment()?.containsPair("suppress", inspectionId) == true ||
+        allParentMagicComments().containsPair("suppress", inspectionId)
 
     override fun getBatchSuppressActions(element: PsiElement?): Array<SuppressQuickFix> {
         val result = createSuppression(element, inspectionId, outerSuppressionScopes)
@@ -173,9 +171,7 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
          */
         override fun generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo = IntentionPreviewInfo.EMPTY
 
-        override fun isAvailable(project: Project, context: PsiElement): Boolean {
-            return context.containingFile.fileType == LatexFileType
-        }
+        override fun isAvailable(project: Project, context: PsiElement): Boolean = context.containingFile.fileType == LatexFileType
 
         override fun isSuppressAll() = false
     }
@@ -206,9 +202,7 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
 
         override fun getFamilyName() = "Suppress for environment '$environmentName'"
 
-        override fun isAvailable(project: Project, context: PsiElement): Boolean {
-            return super.isAvailable(project, context)
-        }
+        override fun isAvailable(project: Project, context: PsiElement): Boolean = super.isAvailable(project, context)
     }
 
     /**
@@ -235,9 +229,7 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
 
         override fun getFamilyName() = "Suppress for command '$commandToken'"
 
-        override fun isAvailable(project: Project, context: PsiElement): Boolean {
-            return commandToken != null && super.isAvailable(project, context)
-        }
+        override fun isAvailable(project: Project, context: PsiElement): Boolean = commandToken != null && super.isAvailable(project, context)
     }
 
     /**
