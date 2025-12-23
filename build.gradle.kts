@@ -28,7 +28,7 @@ plugins {
     id("org.jetbrains.kotlinx.kover") version "0.9.4"
 
     // Linting
-    id("org.jlleitschuh.gradle.ktlint") version "12.1.2"
+    id("org.jlleitschuh.gradle.ktlint") version "14.0.1"
 
     // Vulnerability scanning
     id("org.owasp.dependencycheck") version "12.1.9"
@@ -130,8 +130,8 @@ dependencies {
 //    implementation(files("lib/JavaDDEx64.dll"))
 
     // D-Bus Java bindings
-    implementation("com.github.hypfvieh:dbus-java-core:5.1.1")
-    implementation("com.github.hypfvieh:dbus-java-transport-native-unixsocket:5.1.1")
+    implementation("com.github.hypfvieh:dbus-java-core:5.2.0")
+    implementation("com.github.hypfvieh:dbus-java-transport-native-unixsocket:5.2.0")
     implementation("org.slf4j:slf4j-simple:2.0.17")
 
     // Unzipping tar.xz/tar.bz2 files on Windows containing dtx files
