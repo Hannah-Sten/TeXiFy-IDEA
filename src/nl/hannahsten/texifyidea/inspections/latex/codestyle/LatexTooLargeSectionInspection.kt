@@ -4,6 +4,7 @@ import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.openapi.editor.Document
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.LocalFileSystem
@@ -68,6 +69,19 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
             return command.containingFile.traverseReversed().filterIsInstance<LatexEndCommand>().firstOrNull {
                 it.environmentName() == EnvironmentNames.DOCUMENT
             }
+        }
+
+        fun findTextUntilNextSection(
+            label: LatexCommands?,
+            cmd: LatexCommands,
+            document: Document,
+            nextCmd: PsiElement?
+        ): Triple<Int, Int, String> {
+            val startIndex = label?.endOffset() ?: cmd.endOffset()
+            val cmdIndent = document.lineIndentation(document.getLineNumber(nextCmd?.textOffset ?: 0))
+            val endIndex = (nextCmd?.textOffset ?: document.textLength) - cmdIndent.length
+            val text = document.getText(TextRange(startIndex, endIndex)).trimEnd().removeIndents()
+            return Triple(startIndex, endIndex, text)
         }
     }
 
@@ -168,10 +182,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
             val file = cmd.containingFile
             val document = PsiDocumentManager.getInstance(project).getDocument(file) ?: return
 
-            val startIndex = label?.endOffset() ?: cmd.endOffset()
-            val cmdIndent = document.lineIndentation(document.getLineNumber(nextCmd?.textOffset ?: 0))
-            val endIndex = (nextCmd?.textOffset ?: document.textLength) - cmdIndent.length
-            val text = document.getText(TextRange(startIndex, endIndex)).trimEnd().removeIndents()
+            val (startIndex, endIndex, text) = Util.findTextUntilNextSection(label, cmd, document, nextCmd)
 
             // Create new file.
             val fileNameBraces = if (cmd.parameterList.isNotEmpty()) cmd.parameterList[0].text else return

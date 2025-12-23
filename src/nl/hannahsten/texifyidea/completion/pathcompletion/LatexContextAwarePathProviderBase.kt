@@ -96,16 +96,7 @@ abstract class LatexContextAwarePathProviderBase : LatexContextAwareCompletionAd
         // full path (on the local file system) to the project directory, but in tests this will be just "src/"
         // causing LocalFileSystem.findByPath to always return null.
         projectDir.findFileByRelativePath(pathOffset)?.let { baseDir ->
-            if (searchFolders()) {
-                addFolderNavigations(pathOffset, resultSet)
-                getContents(baseDir, true).forEach {
-                    addDirectoryCompletion(pathOffset, it, resultSet)
-                }
-            }
-
-            if (searchFiles()) getContents(baseDir, false).forEach {
-                addFileCompletion(pathOffset, it, validExtensions, resultSet)
-            }
+            addPathCompletions(pathOffset, resultSet, baseDir, validExtensions)
         }
     }
 
@@ -115,16 +106,25 @@ abstract class LatexContextAwarePathProviderBase : LatexContextAwareCompletionAd
     private fun addAbsolutePathCompletion(baseDir: String, validExtensions: Set<String>?, resultSet: CompletionResultSet) {
         if (baseDir.isBlank()) return
         LocalFileSystem.getInstance().refreshAndFindFileByPath(baseDir)?.let { dirFile ->
-            if (searchFolders()) {
-                addFolderNavigations(baseDir, resultSet)
-                getContents(dirFile, true).forEach {
-                    addDirectoryCompletion(baseDir, it, resultSet)
-                }
-            }
+            addPathCompletions(baseDir, resultSet, dirFile, validExtensions)
+        }
+    }
 
-            if (searchFiles()) getContents(dirFile, false).forEach {
-                addFileCompletion(baseDir, it, validExtensions, resultSet)
+    private fun addPathCompletions(
+        pathOffset: String,
+        resultSet: CompletionResultSet,
+        baseDir: VirtualFile,
+        validExtensions: Set<String>?
+    ) {
+        if (searchFolders()) {
+            addFolderNavigations(pathOffset, resultSet)
+            getContents(baseDir, true).forEach {
+                addDirectoryCompletion(pathOffset, it, resultSet)
             }
+        }
+
+        if (searchFiles()) getContents(baseDir, false).forEach {
+            addFileCompletion(pathOffset, it, validExtensions, resultSet)
         }
     }
 
