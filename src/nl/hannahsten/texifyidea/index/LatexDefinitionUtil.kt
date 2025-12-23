@@ -342,12 +342,10 @@ object LatexDefinitionUtil {
     internal fun guessArgumentContextIntro(
         codeElement: PsiElement, argCount: Int, lookup: LatexSemanticsLookup,
         contextIntroArr: Array<LatexContextIntro?> = arrayOfNulls(argCount)
-    ): List<LatexContextIntro> {
-        return guessArgumentContextIntroAndExitState(codeElement, argCount, lookup, contextIntroArr).first.map {
-            // If we cannot infer the context for an argument, do not treat it as a comment.
-            // In practice, a `Comment` fallback can grey-out large parts of a document when inference fails.
-            it ?: LatexContextIntro.inherit()
-        }
+    ): List<LatexContextIntro> = guessArgumentContextIntroAndExitState(codeElement, argCount, lookup, contextIntroArr).first.map {
+        // If we cannot infer the context for an argument, do not treat it as a comment.
+        // In practice, a `Comment` fallback can grey-out large parts of a document when inference fails.
+        it ?: LatexContextIntro.inherit()
     }
 
     private val namesOfEnvDefRegular = buildSet {
