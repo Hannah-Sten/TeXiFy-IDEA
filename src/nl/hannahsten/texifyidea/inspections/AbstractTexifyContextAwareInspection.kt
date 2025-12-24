@@ -180,9 +180,7 @@ abstract class AbstractTexifyContextAwareInspection(
      *
      * @see isAvailableForFile
      */
-    protected open fun prepareInspectionForFile(file: PsiFile, bundle: DefinitionBundle): Boolean {
-        return true
-    }
+    protected open fun prepareInspectionForFile(file: PsiFile, bundle: DefinitionBundle): Boolean = true
 
     /**
      * Looks at the start of the file to see if there is a magic comment that suppresses this inspection.
@@ -203,9 +201,7 @@ abstract class AbstractTexifyContextAwareInspection(
      *
      * Overriding this method can be used to avoid descending into certain elements to improve performance.
      */
-    protected open fun shouldInspectChildrenOf(element: PsiElement, state: LContextSet, lookup: LatexSemanticsLookup): Boolean {
-        return true
-    }
+    protected open fun shouldInspectChildrenOf(element: PsiElement, state: LContextSet, lookup: LatexSemanticsLookup): Boolean = true
 
     protected inner class InspectionTraverser(
         private val manager: InspectionManager, private val isOnTheFly: Boolean,
@@ -276,9 +272,7 @@ abstract class AbstractTexifyContextAwareInspection(
         override fun generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo =
             IntentionPreviewInfo.EMPTY
 
-        override fun isAvailable(project: Project, context: PsiElement): Boolean {
-            return context.containingFile.fileType == LatexFileType
-        }
+        override fun isAvailable(project: Project, context: PsiElement): Boolean = context.containingFile.fileType == LatexFileType
 
         override fun isSuppressAll() = false
     }
@@ -308,9 +302,7 @@ abstract class AbstractTexifyContextAwareInspection(
 
         override fun getFamilyName() = "Suppress for environment '$environmentName'"
 
-        override fun isAvailable(project: Project, context: PsiElement): Boolean {
-            return super.isAvailable(project, context)
-        }
+        override fun isAvailable(project: Project, context: PsiElement): Boolean = super.isAvailable(project, context)
     }
 
     /**
@@ -339,9 +331,7 @@ abstract class AbstractTexifyContextAwareInspection(
 
         override fun getFamilyName() = "Suppress for command '$commandToken'"
 
-        override fun isAvailable(project: Project, context: PsiElement): Boolean {
-            return commandToken != null && super.isAvailable(project, context)
-        }
+        override fun isAvailable(project: Project, context: PsiElement): Boolean = commandToken != null && super.isAvailable(project, context)
     }
 
     /**

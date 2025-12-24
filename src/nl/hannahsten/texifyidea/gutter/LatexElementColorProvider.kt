@@ -180,14 +180,12 @@ class LatexElementColorProvider : ElementColorProvider {
     /**
      * Mix two colors, used to support red!50!yellow color definitions.
      */
-    private fun mix(a: Color, b: Color, percent: Int): Color {
-        return (percent / 100.0).let {
-            Color(
-                (a.red * it + b.red * (1.0 - it)).toInt(),
-                (a.green * it + b.green * (1.0 - it)).toInt(),
-                (a.blue * it + b.blue * (1.0 - it)).toInt()
-            )
-        }
+    private fun mix(a: Color, b: Color, percent: Int): Color = (percent / 100.0).let {
+        Color(
+            (a.red * it + b.red * (1.0 - it)).toInt(),
+            (a.green * it + b.green * (1.0 - it)).toInt(),
+            (a.blue * it + b.blue * (1.0 - it)).toInt()
+        )
     }
 
     /**
@@ -293,9 +291,7 @@ class LatexElementColorProvider : ElementColorProvider {
     /**
      * Get a [Color] from a hex color string.
      */
-    private fun fromHtmlString(htmlText: String): Color {
-        return Color.decode("#$htmlText")
-    }
+    private fun fromHtmlString(htmlText: String): Color = Color.decode("#$htmlText")
 
     /**
      * Get the hex string of a [Color], without leading #.

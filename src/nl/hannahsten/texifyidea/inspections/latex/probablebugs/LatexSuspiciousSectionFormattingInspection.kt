@@ -29,35 +29,31 @@ open class LatexSuspiciousSectionFormattingInspection : TexifyInspectionBase() {
 
     override val inspectionId = "SuspiciousSectionFormatting"
 
-    override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        return file.commandsInFile()
-            .asSequence()
-            .filter { it.name in CommandMagic.sectionNameToLevel }
-            .filter { it.parameterList.mapNotNull { param -> param.optionalParam }.isEmpty() }
-            .filter { it.requiredParameterText(0)?.containsAny(formatting) == true }
-            .map { psiElement ->
-                val requiredParam = psiElement.findFirstChildOfType(LatexRequiredParam::class)
-                // Plus 1 for the opening brace.
-                val startOffset = requiredParam?.startOffsetIn(psiElement)?.plus(1) ?: 0
-                // Minus 2 for the braces surrounding the parameter.
-                val endOffset = requiredParam?.textLength?.minus(2)?.plus(startOffset) ?: psiElement.textLength
-                manager.createProblemDescriptor(
-                    psiElement,
-                    TextRange(startOffset, endOffset),
-                    "Suspicious formatting in ${psiElement.name}",
-                    ProblemHighlightType.WARNING,
-                    isOntheFly,
-                    AddOptionalArgumentQuickFix(formatting)
-                )
-            }
-            .toList()
-    }
+    override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> = file.commandsInFile()
+        .asSequence()
+        .filter { it.name in CommandMagic.sectionNameToLevel }
+        .filter { it.parameterList.mapNotNull { param -> param.optionalParam }.isEmpty() }
+        .filter { it.requiredParameterText(0)?.containsAny(formatting) == true }
+        .map { psiElement ->
+            val requiredParam = psiElement.findFirstChildOfType(LatexRequiredParam::class)
+            // Plus 1 for the opening brace.
+            val startOffset = requiredParam?.startOffsetIn(psiElement)?.plus(1) ?: 0
+            // Minus 2 for the braces surrounding the parameter.
+            val endOffset = requiredParam?.textLength?.minus(2)?.plus(startOffset) ?: psiElement.textLength
+            manager.createProblemDescriptor(
+                psiElement,
+                TextRange(startOffset, endOffset),
+                "Suspicious formatting in ${psiElement.name}",
+                ProblemHighlightType.WARNING,
+                isOntheFly,
+                AddOptionalArgumentQuickFix(formatting)
+            )
+        }
+        .toList()
 
     class AddOptionalArgumentQuickFix(@SafeFieldForPreview val formatting: Set<String>) : LocalQuickFix {
 
-        override fun getFamilyName(): String {
-            return "Fix formatting in table of contents and running head"
-        }
+        override fun getFamilyName(): String = "Fix formatting in table of contents and running head"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands

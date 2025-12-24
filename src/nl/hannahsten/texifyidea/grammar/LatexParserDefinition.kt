@@ -54,13 +54,9 @@ object LatexStubFileElementType : IStubFileElementType<LatexFileStub>(
 ) {
     override fun getStubVersion(): Int = 92
 
-    override fun getExternalId(): @NonNls String {
-        return "texify.latex.LatexStubFileElementType"
-    }
+    override fun getExternalId(): @NonNls String = "texify.latex.LatexStubFileElementType"
 
-    override fun deserialize(dataStream: StubInputStream, parentStub: StubElement<*>?): LatexFileStub {
-        return LatexFileStub(null)
-    }
+    override fun deserialize(dataStream: StubInputStream, parentStub: StubElement<*>?): LatexFileStub = LatexFileStub(null)
 
     override fun serialize(stub: LatexFileStub, dataStream: StubOutputStream) {
         super.serialize(stub, dataStream)

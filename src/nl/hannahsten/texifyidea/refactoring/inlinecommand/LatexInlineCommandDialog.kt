@@ -26,22 +26,14 @@ class LatexInlineCommandDialog(
         init()
     }
 
-    override fun getNameLabelText(): String {
-        return if (getNumberOfOccurrences() > -1) "Command " + myDefinition.name + " has " + getNumberOfOccurrences() + " ocurrences"
-        else "Command " + myDefinition.name
-    }
+    override fun getNameLabelText(): String = if (getNumberOfOccurrences() > -1) "Command " + myDefinition.name + " has " + getNumberOfOccurrences() + " ocurrences"
+    else "Command " + myDefinition.name
 
-    override fun getInlineThisText(): String {
-        return "Inline this and keep the command"
-    }
+    override fun getInlineThisText(): String = "Inline this and keep the command"
 
-    override fun getInlineAllText(): String {
-        return if (myDefinition.isWritable) "Inline all and remove the command" else "All invocations in project"
-    }
+    override fun getInlineAllText(): String = if (myDefinition.isWritable) "Inline all and remove the command" else "All invocations in project"
 
-    override fun getKeepTheDeclarationText(): String {
-        return if (myDefinition.isWritable) "Inline all and keep the command" else super.getKeepTheDeclarationText()
-    }
+    override fun getKeepTheDeclarationText(): String = if (myDefinition.isWritable) "Inline all and keep the command" else super.getKeepTheDeclarationText()
 
     override fun doAction() {
         invokeRefactoring(
@@ -56,7 +48,5 @@ class LatexInlineCommandDialog(
         )
     }
 
-    override fun getNumberOfOccurrences(): Int {
-        return if (myDefinition.definitionCommand() == null) 0 else super.getNumberOfOccurrences(myDefinition.definitionCommand())
-    }
+    override fun getNumberOfOccurrences(): Int = if (myDefinition.definitionCommand() == null) 0 else super.getNumberOfOccurrences(myDefinition.definitionCommand())
 }

@@ -27,6 +27,8 @@ import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.psi.nameWithoutSlash
 import nl.hannahsten.texifyidea.settings.TexifySettings
+import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
+import nl.hannahsten.texifyidea.settings.sdk.SdkPath
 import nl.hannahsten.texifyidea.util.AbstractBackgroundCacheService
 import nl.hannahsten.texifyidea.util.AbstractBlockingCacheService
 import nl.hannahsten.texifyidea.util.Log
@@ -50,18 +52,14 @@ class SourcedDefinition(
         return entity.name == other.entity.name
     }
 
-    override fun hashCode(): Int {
-        return entity.name.hashCode()
-    }
+    override fun hashCode(): Int = entity.name.hashCode()
 
-    override fun toString(): String {
-        return buildString {
-            append("Def($entity, ${source.name}")
-            if (definitionCommandPointer != null) {
-                append(", with PSI")
-            }
-            append(")")
+    override fun toString(): String = buildString {
+        append("Def($entity, ${source.name}")
+        if (definitionCommandPointer != null) {
+            append(", with PSI")
         }
+        append(")")
     }
 
     enum class DefinitionSource {
@@ -76,9 +74,7 @@ class SourcedDefinition(
 interface DefinitionBundle : LatexSemanticsLookup {
     fun findDefinition(name: String): SourcedDefinition?
 
-    override fun lookup(name: String): LSemanticEntity? {
-        return findDefinition(name)?.entity
-    }
+    override fun lookup(name: String): LSemanticEntity? = findDefinition(name)?.entity
 
     fun appendDefinitionsTo(nameMap: MutableMap<String, SourcedDefinition>, includedPackages: MutableSet<LatexLib>)
 
@@ -105,9 +101,7 @@ abstract class MergedDefinitionBundle(
         }
     }
 
-    override fun containsLibrary(lib: LatexLib): Boolean {
-        return directDependencies.any { it.containsLibrary(lib) }
-    }
+    override fun containsLibrary(lib: LatexLib): Boolean = directDependencies.any { it.containsLibrary(lib) }
 }
 
 open class CachedMergedDefinitionBundle(
@@ -126,13 +120,9 @@ open class CachedMergedDefinitionBundle(
         }
     }
 
-    override fun allEntitiesSeq(): Sequence<LSemanticEntity> {
-        return allEntities.asSequence()
-    }
+    override fun allEntitiesSeq(): Sequence<LSemanticEntity> = allEntities.asSequence()
 
-    final override fun sourcedDefinitions(): Collection<SourcedDefinition> {
-        return simpleNameLookup.values
-    }
+    final override fun sourcedDefinitions(): Collection<SourcedDefinition> = simpleNameLookup.values
 
     final override fun findDefinition(name: String): SourcedDefinition? {
         // this would load the cached full map, but necessary
@@ -147,13 +137,9 @@ class LibDefinitionBundle(
     val allLibraries: Set<LatexLib> = setOf(libName)
 ) : CachedMergedDefinitionBundle(introducedDefinitions, directDependencies) {
 
-    override fun containsLibrary(lib: LatexLib): Boolean {
-        return allLibraries.contains(lib)
-    }
+    override fun containsLibrary(lib: LatexLib): Boolean = allLibraries.contains(lib)
 
-    override fun toString(): String {
-        return "Lib($libName, #defs=${introducedDefinitions.size})"
-    }
+    override fun toString(): String = "Lib($libName, #defs=${introducedDefinitions.size})"
 
     override fun appendDefinitionsTo(nameMap: MutableMap<String, SourcedDefinition>, includedPackages: MutableSet<LatexLib>) {
         if (!includedPackages.add(libName)) return // do not process the same package twice
@@ -162,14 +148,26 @@ class LibDefinitionBundle(
 }
 
 /**
+ * Cache key for library definitions, combining SDK path and library name.
+ * This ensures different LaTeX distributions in different modules get separate caches.
+ *
+ * @property sdkPath The SDK home path or resolved kpsewhich path (see [SdkPath])
+ * @property libName The library name (e.g., amsmath, hyperref)
+ */
+data class LibDefinitionCacheKey(val sdkPath: SdkPath, val libName: LatexLib)
+
+/**
  * Command definition service for a single LaTeX package (`.cls` or `.sty` file).
+ *
+ * The cache is keyed by [LibDefinitionCacheKey] to support different LaTeX distributions
+ * in different modules.
  *
  * @author Ezrnest
  */
 @Service(Service.Level.PROJECT)
 class LatexLibraryDefinitionService(
     val project: Project
-) : AbstractBlockingCacheService<LatexLib, LibDefinitionBundle>() {
+) : AbstractBlockingCacheService<LibDefinitionCacheKey, LibDefinitionBundle>() {
 
     fun invalidateCache() {
         clearAllCache()
@@ -226,14 +224,15 @@ class LatexLibraryDefinitionService(
     }
 
     private fun computeDefinitionsRecur(
-        pkgName: LatexLib, processedPackages: MutableSet<LatexLib> // to prevent loops
+        sdkPath: String, pkgName: LatexLib, processedPackages: MutableSet<LatexLib>, contextFile: VirtualFile?
     ): LibDefinitionBundle {
-        getTimedValue(pkgName)?.takeIf { it.isNotExpired(libExpiration) }?.let { return it.value }
+        val cacheKey = LibDefinitionCacheKey(sdkPath, pkgName)
+        getTimedValue(cacheKey)?.takeIf { it.isNotExpired(libExpiration) }?.let { return it.value }
         if (!processedPackages.add(pkgName)) {
             Log.debug("Recursive package dependency detected for package [$pkgName] !")
             return LibDefinitionBundle(pkgName)
         }
-        val libInfo = LatexLibraryStructureService.getInstance(project).getLibraryInfo(pkgName)
+        val libInfo = LatexLibraryStructureService.getInstance(project).getLibraryInfo(pkgName, contextFile)
         val currentSourcedDefinitions = mutableMapOf<String, SourcedDefinition>()
         processPredefinedCommandsAndEnvironments(pkgName, currentSourcedDefinitions)
 
@@ -254,7 +253,8 @@ class LatexLibraryDefinitionService(
                     continue
                 }
                 // recursively compute the command definitions for the dependency
-                val depBundle = getValueOrNull(dependency) ?: computeDefinitionsRecur(dependency, processedPackages)
+                val depCacheKey = LibDefinitionCacheKey(sdkPath, dependency)
+                val depBundle = getValueOrNull(depCacheKey) ?: computeDefinitionsRecur(sdkPath, dependency, processedPackages, contextFile)
                 directDependencies.add(depBundle)
                 includedPackages.addAll(depBundle.allLibraries)
             }
@@ -268,22 +268,23 @@ class LatexLibraryDefinitionService(
         }
 
         val result = LibDefinitionBundle(pkgName, currentSourcedDefinitions, directDependencies, includedPackages)
-        putValue(pkgName, result)
+        putValue(cacheKey, result)
         return result
     }
 
     /**
      * Computes the command definitions for a given package (`.cls` or `.sty` file).
      *
-     * @param key the name of the package (with the file extension)
+     * @param key The cache key containing the SDK path and library name (with file extension).
      */
-    override fun computeValue(key: LatexLib, oldValue: LibDefinitionBundle?): LibDefinitionBundle {
+    override fun computeValue(key: LibDefinitionCacheKey, oldValue: LibDefinitionBundle?): LibDefinitionBundle {
+        val (sdkPath, libName) = key
         return performanceTracker.track {
-            if (key == LatexLib.BASE) {
+            if (libName == LatexLib.BASE) {
                 computeBaseBundle()
             }
             else {
-                computeDefinitionsRecur(key, mutableSetOf())
+                computeDefinitionsRecur(sdkPath, libName, mutableSetOf(), null)
             }
         }
     }
@@ -310,31 +311,45 @@ class LatexLibraryDefinitionService(
     }
 
     /**
-     * Should be long, since packages do not change much
+     * Get the definition bundle for a library, using the SDK resolved from the given file context.
+     *
+     * @param libName The library name
+     * @param contextFile The file context to determine which SDK to use
      */
-
-    fun getLibBundle(libName: LatexLib): LibDefinitionBundle {
-        return getOrComputeNow(libName, libExpiration)
+    fun getLibBundle(libName: LatexLib, contextFile: VirtualFile?): LibDefinitionBundle {
+        // Use empty string as fallback SDK path when no SDK is configured.
+        // This ensures predefined definitions are still loaded in test environments
+        // or when no LaTeX distribution is installed.
+        val sdkPath = LatexSdkUtil.resolveSdkPath(contextFile, project) ?: ""
+        return getOrComputeNow(LibDefinitionCacheKey(sdkPath, libName), libExpiration)
     }
 
-    fun getLibBundle(fileName: String): LibDefinitionBundle {
-        return getLibBundle(LatexLib.fromFileName(fileName))
-    }
+    /**
+     * Get the definition bundle for a library, using the SDK resolved from the given file context.
+     */
+    fun getLibBundle(libName: LatexLib, contextFile: PsiFile): LibDefinitionBundle = getLibBundle(libName, contextFile.virtualFile)
 
-    fun getBaseBundle(): LibDefinitionBundle {
-        return getLibBundle(LatexLib.BASE)
-    }
+    /**
+     * Get the definition bundle for a library, using project SDK only (no file context).
+     */
+    fun getLibBundle(libName: LatexLib): LibDefinitionBundle = getLibBundle(libName, null as VirtualFile?)
+
+    fun getLibBundle(fileName: String, contextFile: VirtualFile? = null): LibDefinitionBundle = getLibBundle(LatexLib.fromFileName(fileName), contextFile)
+
+    fun getBaseBundle(): LibDefinitionBundle = getLibBundle(LatexLib.BASE)
 
     /**
      * Build definition bundles for all packages found in the project.
      *
      * This can take a relatively long time.
+     *
+     * @param contextFile The file context to determine which SDK to use
      */
-    fun buildAllLibBundles(): Map<LatexLib, LibDefinitionBundle> {
-        val allNames = LatexPackageLocation.getAllPackageFileNames(project)
+    fun buildAllLibBundles(contextFile: VirtualFile? = null): Map<LatexLib, LibDefinitionBundle> {
+        val allNames = LatexPackageLocation.getAllPackageFileNames(contextFile, project)
         return allNames.associate {
             val lib = LatexLib.fromFileName(it)
-            lib to getLibBundle(lib)
+            lib to getLibBundle(lib, contextFile)
         }
     }
 
@@ -342,9 +357,7 @@ class LatexLibraryDefinitionService(
 
         val libExpiration: Duration = 1.hours
 
-        fun getInstance(project: Project): LatexLibraryDefinitionService {
-            return project.service()
-        }
+        fun getInstance(project: Project): LatexLibraryDefinitionService = project.service()
 
         val performanceTracker = SimplePerformanceTracker()
 
@@ -386,13 +399,9 @@ class WorkingFilesetDefinitionBundle(
         nameMap.putAll(allNameLookup)
     }
 
-    override fun findDefinition(name: String): SourcedDefinition? {
-        return allNameLookup[name]
-    }
+    override fun findDefinition(name: String): SourcedDefinition? = allNameLookup[name]
 
-    override fun allEntitiesSeq(): Sequence<LSemanticEntity> {
-        return allNameLookup.values.asSequence().map { it.entity }
-    }
+    override fun allEntitiesSeq(): Sequence<LSemanticEntity> = allNameLookup.values.asSequence().map { it.entity }
 
     /**
      * Overwrite the definition for a custom command or environment.
@@ -407,13 +416,9 @@ class WorkingFilesetDefinitionBundle(
         }
     }
 
-    override fun sourcedDefinitions(): Collection<SourcedDefinition> {
-        return allNameLookup.values
-    }
+    override fun sourcedDefinitions(): Collection<SourcedDefinition> = allNameLookup.values
 
-    override fun containsLibrary(lib: LatexLib): Boolean {
-        return libraryBundles.any { it.containsLibrary(lib) }
-    }
+    override fun containsLibrary(lib: LatexLib): Boolean = libraryBundles.any { it.containsLibrary(lib) }
 }
 
 /**
@@ -432,39 +437,32 @@ class LatexDefinitionService(
     val project: Project, scope: CoroutineScope
 ) : AbstractBackgroundCacheService<Fileset, DefinitionBundle>(scope) {
 
-    private fun computeValue(key: Fileset, oldValue: DefinitionBundle?): DefinitionBundle {
-        return performanceTracker.track {
-            // packages first
-            val packageService = LatexLibraryDefinitionService.getInstance(project)
-            val libraries = ArrayList<LibDefinitionBundle>(key.libraries.size + 1)
-            libraries.add(packageService.getBaseBundle()) // add the default commands
-            key.libraries.mapTo(libraries) { packageService.getLibBundle(it) }
+    private fun computeValue(key: Fileset, oldValue: DefinitionBundle?): DefinitionBundle = performanceTracker.track {
+        // packages first
+        val packageService = LatexLibraryDefinitionService.getInstance(project)
+        val contextFile = key.root
+        val libraries = ArrayList<LibDefinitionBundle>(key.libraries.size + 1)
+        libraries.add(packageService.getBaseBundle()) // add the default commands
+        key.libraries.mapTo(libraries) { packageService.getLibBundle(it, contextFile) }
 
-            val bundle = WorkingFilesetDefinitionBundle(libraries)
+        val bundle = WorkingFilesetDefinitionBundle(libraries)
 
-            val projectFileIndex = ProjectFileIndex.getInstance(project)
-            // a building placeholder for the bundle to make lookups work
-            for (file in key.files) {
-                if (!projectFileIndex.isInProject(file)) continue
-                LatexDefinitionUtil.collectCustomDefinitions(file, project, bundle)
-            }
-            bundle
+        val projectFileIndex = ProjectFileIndex.getInstance(project)
+        // a building placeholder for the bundle to make lookups work
+        for (file in key.files) {
+            if (!projectFileIndex.isInProject(file)) continue
+            LatexDefinitionUtil.collectCustomDefinitions(file, project, bundle)
         }
+        bundle
     }
 
-    override suspend fun computeValueSuspend(key: Fileset, oldValue: DefinitionBundle?): DefinitionBundle {
-        return smartReadAction(project) {
-            computeValue(key, oldValue)
-        }
+    override suspend fun computeValueSuspend(key: Fileset, oldValue: DefinitionBundle?): DefinitionBundle = smartReadAction(project) {
+        computeValue(key, oldValue)
     }
 
-    fun getDefBundleForFileset(fileset: Fileset): DefinitionBundle {
-        return getAndComputeLater(fileset, expirationTime, LatexLibraryDefinitionService.predefinedBaseLibBundle)
-    }
+    fun getDefBundleForFileset(fileset: Fileset): DefinitionBundle = getAndComputeLater(fileset, expirationTime, LatexLibraryDefinitionService.predefinedBaseLibBundle)
 
-    fun getDefBundleForFilesetOrNull(fileset: Fileset): DefinitionBundle? {
-        return getAndComputeLater(fileset, expirationTime)
-    }
+    fun getDefBundleForFilesetOrNull(fileset: Fileset): DefinitionBundle? = getAndComputeLater(fileset, expirationTime)
 
     /**
      * Get the merged definition bundle for the given [psiFile], which may belong to multiple filesets.
@@ -484,13 +482,9 @@ class LatexDefinitionService(
         return union(bundles)
     }
 
-    fun resolveCommandDef(v: VirtualFile, commandName: String): SourcedDefinition? {
-        return resolveDef(v, commandName.removePrefix("\\"))
-    }
+    fun resolveCommandDef(v: VirtualFile, commandName: String): SourcedDefinition? = resolveDef(v, commandName.removePrefix("\\"))
 
-    fun resolveEnvDef(v: VirtualFile, envName: String): SourcedDefinition? {
-        return resolveDef(v, envName)
-    }
+    fun resolveEnvDef(v: VirtualFile, envName: String): SourcedDefinition? = resolveDef(v, envName)
 
     fun resolveDef(v: VirtualFile, name: String): SourcedDefinition? {
         val filesetData = LatexProjectStructure.getFilesetDataFor(v, project) ?: return resolvePredefined(name)
@@ -528,9 +522,7 @@ class LatexDefinitionService(
     class CompositeOverridingDefinitionBundle(
         val bundles: List<DefinitionBundle>
     ) : CachedLatexSemanticsLookup(), DefinitionBundle {
-        override fun findDefinition(name: String): SourcedDefinition? {
-            return bundles.firstNotNullOfOrNull { it.findDefinition(name) }
-        }
+        override fun findDefinition(name: String): SourcedDefinition? = bundles.firstNotNullOfOrNull { it.findDefinition(name) }
 
         override fun appendDefinitionsTo(nameMap: MutableMap<String, SourcedDefinition>, includedPackages: MutableSet<LatexLib>) {
             for (bundle in bundles) {
@@ -540,13 +532,9 @@ class LatexDefinitionService(
             }
         }
 
-        override fun containsLibrary(lib: LatexLib): Boolean {
-            return bundles.any { it.containsLibrary(lib) }
-        }
+        override fun containsLibrary(lib: LatexLib): Boolean = bundles.any { it.containsLibrary(lib) }
 
-        override fun allEntitiesSeq(): Sequence<LSemanticEntity> {
-            return bundles.asSequence().flatMap { it.allEntitiesSeq() }
-        }
+        override fun allEntitiesSeq(): Sequence<LSemanticEntity> = bundles.asSequence().flatMap { it.allEntitiesSeq() }
     }
 
     companion object {
@@ -554,21 +542,15 @@ class LatexDefinitionService(
         val expirationTime: Duration
             get() = TexifySettings.getState().filesetExpirationTimeMs.milliseconds
 
-        fun getInstance(project: Project): LatexDefinitionService {
-            return project.service()
-        }
+        fun getInstance(project: Project): LatexDefinitionService = project.service()
 
         val performanceTracker = SimplePerformanceTracker()
 
-        fun resolvePredefined(name: String): SourcedDefinition? {
-            return AllPredefined.lookup(name)?.let {
-                SourcedDefinition(it, null, DefinitionSource.Predefined)
-            }
+        fun resolvePredefined(name: String): SourcedDefinition? = AllPredefined.lookup(name)?.let {
+            SourcedDefinition(it, null, DefinitionSource.Predefined)
         }
 
-        fun baseBundle(): DefinitionBundle {
-            return LatexLibraryDefinitionService.predefinedBaseLibBundle
-        }
+        fun baseBundle(): DefinitionBundle = LatexLibraryDefinitionService.predefinedBaseLibBundle
 
         fun union(list: List<DefinitionBundle>): DefinitionBundle {
             if (list.size == 1) return list[0]

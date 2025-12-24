@@ -23,9 +23,7 @@ class LatexEnDashInspection : AbstractTexifyRegexBasedInspection(
 
     override fun quickFixName(matcher: MatchResult, contexts: LContextSet): String = "Convert to en dash"
 
-    override fun getReplacement(match: MatchResult, fullElementText: String, project: Project, problemDescriptor: ProblemDescriptor): String {
-        return "${match.groupValues[2]}--${match.groupValues[3]}"
-    }
+    override fun getReplacement(match: MatchResult, fullElementText: String, project: Project, problemDescriptor: ProblemDescriptor): String = "${match.groupValues[2]}--${match.groupValues[3]}"
 
     override fun getHighlightRange(matcher: MatchResult): IntRange = matcher.groups[1]?.range ?: matcher.range
 
@@ -34,9 +32,7 @@ class LatexEnDashInspection : AbstractTexifyRegexBasedInspection(
         return !PatternMagic.correctEnDash.matcher(group1).matches()
     }
 
-    override fun shouldInspectElement(element: PsiElement, lookup: LatexSemanticsLookup): Boolean {
-        return element is LatexNormalText
-    }
+    override fun shouldInspectElement(element: PsiElement, lookup: LatexSemanticsLookup): Boolean = element is LatexNormalText
 
     override fun shouldInspectChildrenOf(element: PsiElement, state: LContextSet, lookup: LatexSemanticsLookup): Boolean {
         if (element is LatexNormalText) return false

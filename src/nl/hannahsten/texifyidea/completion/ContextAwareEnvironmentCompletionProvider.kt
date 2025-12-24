@@ -64,13 +64,14 @@ object ContextAwareEnvironmentCompletionProvider : LatexContextAwareCompletionAd
         parameters: CompletionParameters, result: CompletionResultSet
     ) {
         val project = parameters.originalFile.project
+        val contextFile = parameters.originalFile.virtualFile
         val addedLibs = mutableSetOf<LatexLib>()
-        val allNames = LatexPackageLocation.getAllPackageFileNames(project)
+        val allNames = LatexPackageLocation.getAllPackageFileNames(parameters.originalFile)
         val defService = LatexLibraryDefinitionService.getInstance(project)
         for (name in allNames) {
             val lib = LatexLib.fromFileName(name)
             if (!addedLibs.add(lib)) continue // skip already added libs
-            val libBundle = defService.getLibBundle(name)
+            val libBundle = defService.getLibBundle(name, contextFile)
             addBundleEnvironments(result, libBundle, checkCtx = false)
             addedLibs.addAll(libBundle.allLibraries)
         }

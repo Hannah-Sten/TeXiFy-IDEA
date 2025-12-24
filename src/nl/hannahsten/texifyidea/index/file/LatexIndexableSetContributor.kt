@@ -114,7 +114,5 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
         filesets.mapping.keys.filterTo(roots) { it.isValid }
     }
 
-    override fun getAdditionalRootsToIndex(): Set<VirtualFile> {
-        return emptySet()
-    }
+    override fun getAdditionalRootsToIndex(): Set<VirtualFile> = emptySet()
 }

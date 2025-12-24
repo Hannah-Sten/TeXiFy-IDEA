@@ -20,11 +20,7 @@ class GotoSectionDefinitionSymbolContributor : TexifyGotoSymbolBase<LatexCommand
 //        NewSpecialCommandsIndex.
     }
 
-    override fun extractName(item: LatexCommands): String? {
-        return item.requiredParameterText(0)
-    }
+    override fun extractName(item: LatexCommands): String? = item.requiredParameterText(0)
 
-    override fun createNavigationItem(item: LatexCommands): NavigationItem? {
-        return NavigationItemUtil.createSectionMarkerNavigationItem(item)
-    }
+    override fun createNavigationItem(item: LatexCommands): NavigationItem? = NavigationItemUtil.createSectionMarkerNavigationItem(item)
 }

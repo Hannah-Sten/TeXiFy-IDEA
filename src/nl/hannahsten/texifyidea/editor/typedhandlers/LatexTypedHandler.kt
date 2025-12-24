@@ -97,17 +97,15 @@ class LatexTypedHandler : TypedHandlerDelegate() {
      * Disable autocomplete when typing a period, otherwise starting a new line
      * at the end of a line would be impossible (because postfix templates).
      */
-    override fun checkAutoPopup(charTyped: Char, project: Project, editor: Editor, file: PsiFile): Result {
-        return when {
-            charTyped != '.' -> {
-                super.checkAutoPopup(charTyped, project, editor, file)
-            }
-            file.isLatexFile() -> {
-                Result.STOP
-            }
-            else -> {
-                super.checkAutoPopup(charTyped, project, editor, file)
-            }
+    override fun checkAutoPopup(charTyped: Char, project: Project, editor: Editor, file: PsiFile): Result = when {
+        charTyped != '.' -> {
+            super.checkAutoPopup(charTyped, project, editor, file)
+        }
+        file.isLatexFile() -> {
+            Result.STOP
+        }
+        else -> {
+            super.checkAutoPopup(charTyped, project, editor, file)
         }
     }
 

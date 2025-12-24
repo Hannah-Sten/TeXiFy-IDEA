@@ -64,13 +64,11 @@ fun InspectionManager.createDescriptor(
     highlightType: ProblemHighlightType = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
     rangeInElement: TextRange? = null,
     fixes: Array<LocalQuickFix>
-): ProblemDescriptor {
-    return createProblemDescriptor(
-        element,
-        rangeInElement,
-        descriptionTemplate,
-        highlightType,
-        isOnTheFly,
-        *fixes
-    )
-}
+): ProblemDescriptor = createProblemDescriptor(
+    element,
+    rangeInElement,
+    descriptionTemplate,
+    highlightType,
+    isOnTheFly,
+    *fixes
+)

@@ -25,13 +25,9 @@ data class LatexLib(
     val isCustom: Boolean
         get() = type == LibType.CUSTOM
 
-    fun asPackageName(): String? {
-        return if (isPackageFile) name else null
-    }
+    fun asPackageName(): String? = if (isPackageFile) name else null
 
-    fun asClassName(): String? {
-        return if (isClassFile) name else null
-    }
+    fun asClassName(): String? = if (isClassFile) name else null
 
     /**
      * Gets the file name with suffix, or null if this is not a package or class.
@@ -48,18 +44,14 @@ data class LatexLib(
      *
      * @param withParan Whether to include parentheses and suffix in the display string (but not for base or custom).
      */
-    fun displayString(withParan: Boolean = false): String {
-        return when(type) {
-            LibType.PACKAGE -> if(withParan) "($name.sty)" else "$name.sty"
-            LibType.CLASS -> if(withParan) "($name.cls)" else "$name.cls"
-            LibType.BASE -> "(base)"
-            LibType.CUSTOM -> ""
-        }
+    fun displayString(withParan: Boolean = false): String = when(type) {
+        LibType.PACKAGE -> if(withParan) "($name.sty)" else "$name.sty"
+        LibType.CLASS -> if(withParan) "($name.cls)" else "$name.cls"
+        LibType.BASE -> "(base)"
+        LibType.CUSTOM -> ""
     }
 
-    override fun toString(): String {
-        return displayString(false)
-    }
+    override fun toString(): String = displayString(false)
 
     enum class LibType {
         PACKAGE,
@@ -80,14 +72,10 @@ data class LatexLib(
         val BASE = LatexLib("(base)", LibType.BASE) // Represents the base package
 
         @Suppress("FunctionName") // package is a keyword in Kotlin
-        fun Package(name: String): LatexLib {
-            return if (name.isEmpty()) BASE else LatexLib(name, LibType.PACKAGE)
-        }
+        fun Package(name: String): LatexLib = if (name.isEmpty()) BASE else LatexLib(name, LibType.PACKAGE)
 
         @Suppress("FunctionName")
-        fun Class(name: String): LatexLib {
-            return if (name.isEmpty()) BASE else LatexLib(name, LibType.CLASS)
-        }
+        fun Class(name: String): LatexLib = if (name.isEmpty()) BASE else LatexLib(name, LibType.CLASS)
 
         fun fromFileName(fileName: String): LatexLib {
             if (fileName.isEmpty()) return BASE
@@ -179,6 +167,4 @@ data class LatexLib(
     }
 }
 
-fun LatexLib.toLatexPackage(): LatexPackage? {
-    return if (isPackageFile) LatexPackage(name) else null
-}
+fun LatexLib.toLatexPackage(): LatexPackage? = if (isPackageFile) LatexPackage(name) else null

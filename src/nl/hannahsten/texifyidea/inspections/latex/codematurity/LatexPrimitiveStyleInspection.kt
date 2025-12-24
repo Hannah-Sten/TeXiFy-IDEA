@@ -29,9 +29,7 @@ class LatexPrimitiveStyleInspection : TexifyInspectionBase() {
         get() = InsightGroup.LATEX
 
     @Nls
-    override fun getDisplayName(): String {
-        return "Discouraged use of TeX styling primitives"
-    }
+    override fun getDisplayName(): String = "Discouraged use of TeX styling primitives"
 
     override val inspectionId: String
         get() = "PrimitiveStyle"
@@ -59,18 +57,14 @@ class LatexPrimitiveStyleInspection : TexifyInspectionBase() {
         return descriptors
     }
 
-    private inner class InspectionFix(val oldCommand: SmartPsiElementPointer<LatexCommands>) : LocalQuickFixAndIntentionActionOnPsiElement(oldCommand.element) {
+    private class InspectionFix(val oldCommand: SmartPsiElementPointer<LatexCommands>) : LocalQuickFixAndIntentionActionOnPsiElement(oldCommand.element) {
 
         @Nls
-        override fun getFamilyName(): String {
-            return "Convert to LaTeX alternative"
-        }
+        override fun getFamilyName(): String = "Convert to LaTeX alternative"
 
-        override fun getText(): String {
-            return oldCommand.element
-                ?.let { "Convert ${it.name} to ${CommandMagic.stylePrimitiveReplacements[it.name]}" }
-                ?: familyName
-        }
+        override fun getText(): String = oldCommand.element
+            ?.let { "Convert ${it.name} to ${CommandMagic.stylePrimitiveReplacements[it.name]}" }
+            ?: familyName
 
         override fun invoke(project: Project, file: PsiFile, editor: Editor?, startElement: PsiElement, endElement: PsiElement) {
             val command = startElement as? LatexCommands ?: return

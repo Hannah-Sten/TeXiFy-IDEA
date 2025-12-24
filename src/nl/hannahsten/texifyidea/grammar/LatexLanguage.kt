@@ -8,7 +8,5 @@ import com.intellij.lang.Language
 object LatexLanguage : Language("Latex") {
     private fun readResolve(): Any = LatexLanguage
 
-    override fun getDisplayName(): String {
-        return "LaTeX"
-    }
+    override fun getDisplayName(): String = "LaTeX"
 }

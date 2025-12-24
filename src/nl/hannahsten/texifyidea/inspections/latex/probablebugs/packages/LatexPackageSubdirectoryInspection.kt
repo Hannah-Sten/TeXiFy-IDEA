@@ -22,9 +22,7 @@ class LatexPackageSubdirectoryInspection : TexifyInspectionBase() {
 
     override val inspectionId: String = "PackageSubdirectoryInspection"
 
-    override fun getShortName(): String {
-        return "LatexPackageSubdirectory"
-    }
+    override fun getShortName(): String = "LatexPackageSubdirectory"
 
     override fun getDisplayName(): String =
         "Package name does not have the correct directory"

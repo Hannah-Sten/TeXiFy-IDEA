@@ -31,13 +31,9 @@ class LatexPostfixTemplateEditor(private val templateProvider: LatexPostFixTempl
         .addComponent(JLabel("Use the Custom Postfix Templates plugin to create more complex postfix templates.").apply { icon = AllIcons.General.Information })
         .panel
 
-    override fun createTemplate(templateId: String, templateName: String): PostfixTemplate {
-        return LatexEditablePostfixTemplate(templateId, templateName, myTemplateEditor.document.text, myExpressionTypesListModel.elements().toSet(), templateProvider)
-    }
+    override fun createTemplate(templateId: String, templateName: String): PostfixTemplate = LatexEditablePostfixTemplate(templateId, templateName, myTemplateEditor.document.text, myExpressionTypesListModel.elements().toSet(), templateProvider)
 
-    override fun getComponent(): JComponent {
-        return panel
-    }
+    override fun getComponent(): JComponent = panel
 
     override fun fillConditions(group: DefaultActionGroup) {
         group.add(AddConditionAction(LatexPostfixTemplateMathOnlyExpressionCondition()))

@@ -4,20 +4,22 @@ import com.intellij.openapi.command.CommandProcessor
 import com.intellij.openapi.command.UndoConfirmationPolicy
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexTooLargeSectionInspection.Util.findNextSection
 import nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexTooLargeSectionInspection.InspectionFix.Companion.findLabel
+import nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexTooLargeSectionInspection.Util
+import nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexTooLargeSectionInspection.Util.findNextSection
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.ui.CreateFileDialog
-import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.files.writeToFileUndoable
-import nl.hannahsten.texifyidea.util.parser.endOffset
+import nl.hannahsten.texifyidea.util.formatAsFileName
+import nl.hannahsten.texifyidea.util.isTestProject
 import nl.hannahsten.texifyidea.util.parser.findIndentation
 import nl.hannahsten.texifyidea.util.parser.parentOfType
+import nl.hannahsten.texifyidea.util.removeAll
+import nl.hannahsten.texifyidea.util.runWriteAction
 import java.io.File
 
 /**
@@ -53,10 +55,7 @@ open class LatexMoveSectionToFileIntention : TexifyIntentionBase("Move section c
         val nextCmd = findNextSection(sectionCommand)
 
         // Find text.
-        val start = label?.endOffset() ?: sectionCommand.endOffset()
-        val cmdIndent = document.lineIndentation(document.getLineNumber(nextCmd?.textOffset ?: 0))
-        val end = (nextCmd?.textOffset ?: document.textLength) - cmdIndent.length
-        val text = document.getText(TextRange(start, end)).trimEnd().removeIndents()
+        val (start, end, text) = Util.findTextUntilNextSection(label, sectionCommand, document, nextCmd)
 
         // Create new file.
         val fileNameBraces = sectionCommand.requiredParameterText(0) ?: return

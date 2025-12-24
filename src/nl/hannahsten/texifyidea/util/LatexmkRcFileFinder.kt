@@ -101,25 +101,21 @@ object LatexmkRcFileFinder {
     /**
      * Get TEXINPUTS from latexmkrc.
      */
-    private fun getTexinputs(file: VirtualFile): String? {
-        return """ensure_path\(\s*'TEXINPUTS',\s*'(?<path>[^']+)'\s*\)""".toRegex().find(file.inputStream.reader().readText())?.groups?.get("path")?.value
-    }
+    private fun getTexinputs(file: VirtualFile): String? = """ensure_path\(\s*'TEXINPUTS',\s*'(?<path>[^']+)'\s*\)""".toRegex().find(file.inputStream.reader().readText())?.groups?.get("path")?.value
 
     /**
      * Get the first TEXINPUTS we can find in latexmkrc files.
      * Cached because searching involves quite some system calls, and it's a rarely used feature.
      */
-    fun getTexinputsVariable(directory: VirtualFile, runConfig: LatexRunConfiguration?, project: Project): String? {
-        return if (usesLatexmkrc == false) {
-            null
+    fun getTexinputsVariable(directory: VirtualFile, runConfig: LatexRunConfiguration?, project: Project): String? = if (usesLatexmkrc == false) {
+        null
+    }
+    else {
+        val texinputs = getTexinputsVariableNoCache(directory, runConfig, project)
+        if (usesLatexmkrc == null) {
+            usesLatexmkrc = texinputs != null
         }
-        else {
-            val texinputs = getTexinputsVariableNoCache(directory, runConfig, project)
-            if (usesLatexmkrc == null) {
-                usesLatexmkrc = texinputs != null
-            }
-            texinputs
-        }
+        texinputs
     }
 
     /**

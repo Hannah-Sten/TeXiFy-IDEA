@@ -9,9 +9,7 @@ import nl.hannahsten.texifyidea.run.latex.logtab.ui.LatexCompileMessageTreeView
 
 class BibtexOutputListenerTest : BasePlatformTestCase() {
 
-    override fun getTestDataPath(): String {
-        return "test/resources/run"
-    }
+    override fun getTestDataPath(): String = "test/resources/run"
 
     private fun testLog(log: String, expectedMessages: Set<BibtexLogMessage>) {
         val srcRoot = myFixture.copyDirectoryToProject("./", "./")

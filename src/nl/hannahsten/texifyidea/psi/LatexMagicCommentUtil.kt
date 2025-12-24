@@ -16,9 +16,7 @@ fun LatexMagicComment.key(): MagicKey<String> {
     return DefaultMagicKeys.entries.firstOrNull { it.key == key } ?: CustomMagicKey(key)
 }
 
-fun LatexMagicComment.containsKeyValuePair(key: String, value: String? = null): Boolean {
-    return TextBasedMagicCommentParser.containsMagicCommentPair(magicCommentToken.text, key, value)
-}
+fun LatexMagicComment.containsKeyValuePair(key: String, value: String? = null): Boolean = TextBasedMagicCommentParser.containsMagicCommentPair(magicCommentToken.text, key, value)
 
 /**
  * Get the value from a [LatexMagicComment] psi element.

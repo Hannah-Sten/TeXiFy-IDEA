@@ -6,8 +6,9 @@ import com.intellij.psi.util.startOffset
 import nl.hannahsten.texifyidea.util.toIntRange
 
 /**
- * A wrapper for [PsiElement] that includes a range to extract. This allows extracting subtext from a text block or other non-total extracitons
+ * A wrapper for [PsiElement] that includes a range to extract. This allows extracting subtext from a text block or other non-total extractions
  */
+@Suppress("JavaDefaultMethodsNotOverriddenByDelegation") // Methods are experimental
 class LatexExtractablePSI(
     val self: PsiElement,
     /**
@@ -26,6 +27,8 @@ class LatexExtractablePSI(
 
     val extractableIntRange
         get() = extractableRange.toIntRange()
+
+    override fun getTextRangeInParent(): TextRange = self.textRangeInParent
 }
 
 fun PsiElement.asExtractable(): LatexExtractablePSI = LatexExtractablePSI(this)

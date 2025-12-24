@@ -28,9 +28,7 @@ class TexifySettings : SimplePersistentStateComponent<TexifySettings.State>(Stat
          * Warning: don't retrieve the settings on class initialization (e.g. storing it in a companion object), as that is not unlikely to throw a ProcessCanceledException.
          */
         @JvmStatic
-        fun getInstance(): TexifySettings {
-            return ApplicationManager.getApplication().service()
-        }
+        fun getInstance(): TexifySettings = ApplicationManager.getApplication().service()
 
         @JvmStatic
         fun getState() = getInstance().state
@@ -107,22 +105,18 @@ class TexifySettings : SimplePersistentStateComponent<TexifySettings.State>(Stat
         }
     }
 
-    fun isAutoCompileEnabled(): Boolean {
-        return when (state.autoCompileOption) {
-            AutoCompile.OFF -> false
-            AutoCompile.ALWAYS, AutoCompile.AFTER_DOCUMENT_SAVE -> true
-            AutoCompile.DISABLE_ON_POWER_SAVE -> !PowerSaveMode.isEnabled()
-        }
+    fun isAutoCompileEnabled(): Boolean = when (state.autoCompileOption) {
+        AutoCompile.OFF -> false
+        AutoCompile.ALWAYS, AutoCompile.AFTER_DOCUMENT_SAVE -> true
+        AutoCompile.DISABLE_ON_POWER_SAVE -> !PowerSaveMode.isEnabled()
     }
 
     /**
      * Returns true if the auto compile should be triggered immediately after a change in the document.
      */
-    fun isAutoCompileImmediate(): Boolean {
-        return when (state.autoCompileOption) {
-            AutoCompile.ALWAYS -> true
-            AutoCompile.OFF, AutoCompile.AFTER_DOCUMENT_SAVE -> false
-            AutoCompile.DISABLE_ON_POWER_SAVE -> !PowerSaveMode.isEnabled()
-        }
+    fun isAutoCompileImmediate(): Boolean = when (state.autoCompileOption) {
+        AutoCompile.ALWAYS -> true
+        AutoCompile.OFF, AutoCompile.AFTER_DOCUMENT_SAVE -> false
+        AutoCompile.DISABLE_ON_POWER_SAVE -> !PowerSaveMode.isEnabled()
     }
 }

@@ -66,9 +66,7 @@ open class BibtexDuplicateBibliographystyleInspection : TexifyInspectionBase() {
      */
     object RemoveOtherCommandsFix : LocalQuickFix {
 
-        override fun getFamilyName(): String {
-            return "Remove other \\bibliographystyle commands"
-        }
+        override fun getFamilyName(): String = "Remove other \\bibliographystyle commands"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands

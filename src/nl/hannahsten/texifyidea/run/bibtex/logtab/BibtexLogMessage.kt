@@ -19,7 +19,5 @@ enum class BibtexLogMessageType(val category: Int) {
     ERROR(MessageCategory.ERROR),
     WARNING(MessageCategory.WARNING);
 
-    override fun toString(): String {
-        return super.toString().lowercase(Locale.getDefault())
-    }
+    override fun toString(): String = super.toString().lowercase(Locale.getDefault())
 }

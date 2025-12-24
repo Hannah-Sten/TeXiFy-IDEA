@@ -51,11 +51,9 @@ object FileUtil {
      * @return The corresponding FileType instance.
      */
     @JvmStatic
-    fun fileTypeByExtension(extensionWithoutDot: String): FileType {
-        return FileMagic.fileTypes.firstOrNull {
-            it.defaultExtension == extensionWithoutDot
-        } ?: LatexFileType
-    }
+    fun fileTypeByExtension(extensionWithoutDot: String): FileType = FileMagic.fileTypes.firstOrNull {
+        it.defaultExtension == extensionWithoutDot
+    } ?: LatexFileType
 
     /**
      * Retrieves the file path relative to the root path, or `null` if the file is not a child
@@ -69,9 +67,7 @@ object FileUtil {
      * the root.
      */
     @JvmStatic
-    fun pathRelativeTo(rootPath: String, filePath: String): String? {
-        return pathRelativeTo(rootPath.toNioPathOrNull(), filePath.toNioPathOrNull())?.pathString
-    }
+    fun pathRelativeTo(rootPath: String, filePath: String): String? = pathRelativeTo(rootPath.toNioPathOrNull(), filePath.toNioPathOrNull())?.pathString
 
     fun pathRelativeTo(rootPath: Path?, filePath: Path?): Path? {
         if (rootPath == null || filePath == null) return null
@@ -253,9 +249,7 @@ fun findFileByPath(path: String): VirtualFile? {
 /**
  * Converts the absolute path to a relative path.
  */
-fun String.toRelativePath(basePath: String): String {
-    return File(basePath).toURI().relativize(File(this).toURI()).path
-}
+fun String.toRelativePath(basePath: String): String = File(basePath).toURI().relativize(File(this).toURI()).path
 
 /**
  * Extracts the list of files from the Drag and Drop Transferable, only if java file list is a supported flavour.

@@ -56,9 +56,7 @@ open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
 
     class RemoveFigureFix(label: SmartPsiElementPointer<LatexParameterText>) : SafeDeleteFix(label.element as PsiElement) {
 
-        override fun getText(): String {
-            return "Safe delete figure environment"
-        }
+        override fun getText(): String = "Safe delete figure environment"
     }
 }
 

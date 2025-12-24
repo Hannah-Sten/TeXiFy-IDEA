@@ -38,12 +38,10 @@ object LatexCommandLineOptionsCache {
         return Options()
     }
 
-    private fun getOptions(optionsList: List<Pair<String, String>>): Options {
-        return Options().apply {
-            for ((option, description) in optionsList) {
-                // option is with one - and .longOpt is with two --, but both are possible it seems with pdflatex
-                addOption(Option.builder().longOpt(option).desc(description).build())
-            }
+    private fun getOptions(optionsList: List<Pair<String, String>>): Options = Options().apply {
+        for ((option, description) in optionsList) {
+            // option is with one - and .longOpt is with two --, but both are possible it seems with pdflatex
+            addOption(Option.builder().longOpt(option).desc(description).build())
         }
     }
 
@@ -76,33 +74,31 @@ object LatexCommandLineOptionsCache {
      * These are slightly different per compiler.
      * Tested with pdflatex, lualatex, xelatex and latexmk
      */
-    fun parseHelpOutput(compiler: String, text: String): List<Pair<String, String>> {
-        return text.split("\n")
-            .asSequence()
-            .map { it.trim(' ').split(if (compiler == "latexmk") " - " else " ") }
-            .filter { it.size >= 2 }
-            .map { Pair(it.first(), it.drop(1).joinToString(" ").trim(' ')) }
-            .flatMap { (option, description) ->
-                // [-no] for pdflatex, --[no-] for lualatex
-                if (option.contains("[-no]") || option.contains("[no-]")) {
-                    val cleanedOption = option.remove("[-no]").remove("[no-]").trim('-')
-                    listOf(
-                        Pair(cleanedOption, description),
-                        Pair("no-$cleanedOption", description)
-                    )
-                }
-                // latexmk
-                else if (option.contains(" or ")) {
-                    option.split(" or ").map { singleOption -> Pair(singleOption, description) }
-                }
-                else if (option.startsWith("-")) {
-                    listOf(Pair(option, description))
-                }
-                else {
-                    emptyList()
-                }
+    fun parseHelpOutput(compiler: String, text: String): List<Pair<String, String>> = text.split("\n")
+        .asSequence()
+        .map { it.trim(' ').split(if (compiler == "latexmk") " - " else " ") }
+        .filter { it.size >= 2 }
+        .map { Pair(it.first(), it.drop(1).joinToString(" ").trim(' ')) }
+        .flatMap { (option, description) ->
+            // [-no] for pdflatex, --[no-] for lualatex
+            if (option.contains("[-no]") || option.contains("[no-]")) {
+                val cleanedOption = option.remove("[-no]").remove("[no-]").trim('-')
+                listOf(
+                    Pair(cleanedOption, description),
+                    Pair("no-$cleanedOption", description)
+                )
             }
-            .map { Pair(it.first.trim(' ').trimStart('-'), it.second) }
-            .toList()
-    }
+            // latexmk
+            else if (option.contains(" or ")) {
+                option.split(" or ").map { singleOption -> Pair(singleOption, description) }
+            }
+            else if (option.startsWith("-")) {
+                listOf(Pair(option, description))
+            }
+            else {
+                emptyList()
+            }
+        }
+        .map { Pair(it.first.trim(' ').trimStart('-'), it.second) }
+        .toList()
 }

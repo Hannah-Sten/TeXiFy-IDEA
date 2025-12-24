@@ -13,27 +13,9 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.index.SourcedDefinition.DefinitionSource
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
 import nl.hannahsten.texifyidea.index.stub.requiredParamAt
-import nl.hannahsten.texifyidea.lang.LArgument
-import nl.hannahsten.texifyidea.lang.LArgumentType
-import nl.hannahsten.texifyidea.lang.LContextSet
-import nl.hannahsten.texifyidea.lang.LSemanticCommand
-import nl.hannahsten.texifyidea.lang.LSemanticEntity
-import nl.hannahsten.texifyidea.lang.LSemanticEnv
-import nl.hannahsten.texifyidea.lang.LatexContext
-import nl.hannahsten.texifyidea.lang.LatexContextIntro
-import nl.hannahsten.texifyidea.lang.LatexContexts
-import nl.hannahsten.texifyidea.lang.LatexLib
-import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
+import nl.hannahsten.texifyidea.lang.*
 import nl.hannahsten.texifyidea.lang.predefined.PredefinedCmdDefinitions
-import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexContent
-import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.psi.LatexTypes
-import nl.hannahsten.texifyidea.psi.contentText
-import nl.hannahsten.texifyidea.psi.getEnvironmentName
-import nl.hannahsten.texifyidea.psi.getNthRequiredParameter
-import nl.hannahsten.texifyidea.psi.nameWithoutSlash
+import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
@@ -128,7 +110,8 @@ object LatexDefinitionUtil {
      * @return shift in index, name of the defined command
      */
     private fun getCommandDefNameStub(defStub: LatexCommandsStub, idx: Int, stubs: List<StubElement<*>>): String? {
-        defStub.requiredParamAt(0)?.let { // \newcommand{\cmd}{...}
+        defStub.requiredParamAt(0)?.let {
+            // \newcommand{\cmd}{...}
             return it.trim()
         }
         // \def\cmd\something
@@ -138,7 +121,8 @@ object LatexDefinitionUtil {
     }
 
     private fun getCommandDefNameAST(defCommand: LatexCommands): String? {
-        defCommand.parameterList.getOrNull(0)?.let { // \newcommand{\cmd}{...}
+        defCommand.parameterList.getOrNull(0)?.let {
+            // \newcommand{\cmd}{...}
             return it.contentText().trim()
         }
         return LatexPsiUtil.getDefinedCommandElement(defCommand)?.name
@@ -205,13 +189,9 @@ object LatexDefinitionUtil {
         return null
     }
 
-    private fun List<Pair<LArgumentType, String>>.getNthRequiredArg(index: Int): String? {
-        return getNthArgOfType(index, LArgumentType.REQUIRED)
-    }
+    private fun List<Pair<LArgumentType, String>>.getNthRequiredArg(index: Int): String? = getNthArgOfType(index, LArgumentType.REQUIRED)
 
-    private fun List<Pair<LArgumentType, String>>.getNthOptionalArg(index: Int): String? {
-        return getNthArgOfType(index, LArgumentType.OPTIONAL)
-    }
+    private fun List<Pair<LArgumentType, String>>.getNthOptionalArg(index: Int): String? = getNthArgOfType(index, LArgumentType.OPTIONAL)
 
     private val namesOfCmdDefRegular = buildSet {
         PredefinedCmdDefinitions.regularDefinitionOfCommand.mapTo(this) { it.name }
@@ -230,14 +210,12 @@ object LatexDefinitionUtil {
 
     private fun parseCommandDef(
         defCmdName: String, defCommand: LatexCommands, lookup: LatexSemanticsLookup, project: Project
-    ): LSemanticCommand? {
-        return when (defCmdName) {
-            in namesOfCmdDefRegular -> parseRegularCommandDef(defCommand, lookup, project)
-            in namesOfCmdDefArgSpec -> parseArgSpecCommandDef(defCommand, lookup, project)
-            in namesOfCmdDefMath -> parseCommandDefNameOnlyUnderCtx(defCommand, setOf(LatexContexts.Math))
-            in namesOfCmdDefText -> parseCommandDefNameOnlyUnderCtx(defCommand, setOf(LatexContexts.Text))
-            else -> parseCommandDefNameOnlyUnderCtx(defCommand)
-        }
+    ): LSemanticCommand? = when (defCmdName) {
+        in namesOfCmdDefRegular -> parseRegularCommandDef(defCommand, lookup, project)
+        in namesOfCmdDefArgSpec -> parseArgSpecCommandDef(defCommand, lookup, project)
+        in namesOfCmdDefMath -> parseCommandDefNameOnlyUnderCtx(defCommand, setOf(LatexContexts.Math))
+        in namesOfCmdDefText -> parseCommandDefNameOnlyUnderCtx(defCommand, setOf(LatexContexts.Text))
+        else -> parseCommandDefNameOnlyUnderCtx(defCommand)
     }
 
     private fun parseCommandDefNameOnlyUnderCtx(defCommand: LatexCommands, requiredCtx: LContextSet? = null): LSemanticCommand? {
@@ -345,7 +323,9 @@ object LatexDefinitionUtil {
         codeElement: PsiElement, argCount: Int, lookup: LatexSemanticsLookup, contextIntroArr: Array<LatexContextIntro?> = arrayOfNulls(argCount)
     ): Pair<Array<LatexContextIntro?>, List<LatexContextIntro>> {
         val exitState = LatexPsiUtil.traverseRecordingContextIntro(codeElement, lookup) traverse@{ e, introList ->
-            if (e.elementType != LatexTypes.NORMAL_TEXT_WORD) return@traverse
+            // In definitions, arguments may appear in raw/verbatim-like areas (RAW_TEXT), so also scan those for placeholders.
+            // Missing a placeholder here causes the argument to be treated as `Comment` by default, which can grey-out large code blocks.
+            if (e.elementType != LatexTypes.NORMAL_TEXT_WORD && e.elementType != LatexTypes.RAW_TEXT) return@traverse
             if (!e.textContains('#')) return@traverse
             parameterPlaceholderRegex.findAll(e.text).forEach { match ->
                 val paramIndex = match.value.removePrefix("#").toIntOrNull() ?: return@forEach
@@ -359,13 +339,13 @@ object LatexDefinitionUtil {
         return contextIntroArr to exitState
     }
 
-    private fun guessArgumentContextIntro(
+    internal fun guessArgumentContextIntro(
         codeElement: PsiElement, argCount: Int, lookup: LatexSemanticsLookup,
         contextIntroArr: Array<LatexContextIntro?> = arrayOfNulls(argCount)
-    ): List<LatexContextIntro> {
-        return guessArgumentContextIntroAndExitState(codeElement, argCount, lookup, contextIntroArr).first.map {
-            it ?: LatexContextIntro.assign(LatexContexts.Comment) // this argument is somehow not used, so we assign it to the comment context
-        }
+    ): List<LatexContextIntro> = guessArgumentContextIntroAndExitState(codeElement, argCount, lookup, contextIntroArr).first.map {
+        // If we cannot infer the context for an argument, do not treat it as a comment.
+        // In practice, a `Comment` fallback can grey-out large parts of a document when inference fails.
+        it ?: LatexContextIntro.inherit()
     }
 
     private val namesOfEnvDefRegular = buildSet {
@@ -459,9 +439,7 @@ object LatexDefinitionUtil {
         return oldCtx.union(newCtx)
     }
 
-    private fun replaceIfEmpty(old: String, new: String): String {
-        return old.ifEmpty { new }
-    }
+    private fun replaceIfEmpty(old: String, new: String): String = old.ifEmpty { new }
 
     private fun chooseArgs(old: List<LArgument>, new: List<LArgument>, isOldPredefined: Boolean): List<LArgument> {
         if (new.isEmpty()) return old

@@ -65,11 +65,9 @@ class HtmlPasteProvider : PasteProvider {
     /**
      * Use various converters to convert all the tables, image references and styled text to LaTeX.
      */
-    fun convertHtmlToLatex(htmlIn: Node, latexFile: LatexFile): String {
-        return when(TexifySettings.getState().htmlPasteTranslator) {
-            TexifySettings.HtmlPasteTranslator.BUILTIN -> convertHtmlToLatex(htmlIn.childNodes(), latexFile)
-            TexifySettings.HtmlPasteTranslator.PANDOC -> PandocHtmlToLatexConverter().translateHtml(htmlIn.toString()) ?: convertHtmlToLatex(htmlIn.childNodes(), latexFile)
-            TexifySettings.HtmlPasteTranslator.DISABLED -> htmlIn.toString() // Should not happen
-        }
+    fun convertHtmlToLatex(htmlIn: Node, latexFile: LatexFile): String = when(TexifySettings.getState().htmlPasteTranslator) {
+        TexifySettings.HtmlPasteTranslator.BUILTIN -> convertHtmlToLatex(htmlIn.childNodes(), latexFile)
+        TexifySettings.HtmlPasteTranslator.PANDOC -> PandocHtmlToLatexConverter().translateHtml(htmlIn.toString()) ?: convertHtmlToLatex(htmlIn.childNodes(), latexFile)
+        TexifySettings.HtmlPasteTranslator.DISABLED -> htmlIn.toString() // Should not happen
     }
 }

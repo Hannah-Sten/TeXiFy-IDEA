@@ -34,7 +34,5 @@ enum class LabelConventionType(private val prettyName: String) {
     ENVIRONMENT("Environment"),
     COMMAND("Command");
 
-    override fun toString(): String {
-        return prettyName
-    }
+    override fun toString(): String = prettyName
 }

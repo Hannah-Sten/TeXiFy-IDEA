@@ -18,17 +18,11 @@ class LatexXInsteadOfTimesInspection : AbstractTexifyRegexBasedInspection(
     highlight = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
     applicableContexts = setOf(LatexContexts.Math),
 ) {
-    override fun errorMessage(matcher: MatchResult, context: LContextSet): String {
-        return "\\times expected"
-    }
+    override fun errorMessage(matcher: MatchResult, context: LContextSet): String = "\\times expected"
 
-    override fun getReplacement(match: MatchResult, fullElementText: String, project: Project, problemDescriptor: ProblemDescriptor): String {
-        return "\\times"
-    }
+    override fun getReplacement(match: MatchResult, fullElementText: String, project: Project, problemDescriptor: ProblemDescriptor): String = "\\times"
 
-    override fun quickFixName(matcher: MatchResult, contexts: LContextSet): String {
-        return "Change to \\times"
-    }
+    override fun quickFixName(matcher: MatchResult, contexts: LContextSet): String = "Change to \\times"
 
     override fun additionalChecks(element: PsiElement, match: MatchResult, bundle: DefinitionBundle, file: PsiFile): Boolean {
         // inspection only triggers when x is surrounded by whitespace and both sides are numbers

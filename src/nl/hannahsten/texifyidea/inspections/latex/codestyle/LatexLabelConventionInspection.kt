@@ -29,12 +29,10 @@ import java.util.*
  */
 class LatexLabelConventionInspection : TexifyInspectionBase() {
 
-    private fun shouldBeBraced(labeledCommand: PsiElement): Boolean {
-        return when (labeledCommand) {
-            is LatexCommands -> CommandMagic.labelAsParameter.contains(labeledCommand.name)
-            is LatexEnvironment -> EnvironmentMagic.labelAsParameter.contains(labeledCommand.getEnvironmentName())
-            else -> false
-        }
+    private fun shouldBeBraced(labeledCommand: PsiElement): Boolean = when (labeledCommand) {
+        is LatexCommands -> CommandMagic.labelAsParameter.contains(labeledCommand.name)
+        is LatexEnvironment -> EnvironmentMagic.labelAsParameter.contains(labeledCommand.getEnvironmentName())
+        else -> false
     }
 
     /**
@@ -125,12 +123,10 @@ class LatexLabelConventionInspection : TexifyInspectionBase() {
      *
      *
      */
-    private fun LatexComposite.extractLabelParameterText(): LatexParameterText? {
-        return when (this) {
-            is LatexCommands -> getLabelParameterTextCommand()
-            is LatexEnvironment -> getLabelParameterTextEnv()
-            else -> null
-        }
+    private fun LatexComposite.extractLabelParameterText(): LatexParameterText? = when (this) {
+        is LatexCommands -> getLabelParameterTextCommand()
+        is LatexEnvironment -> getLabelParameterTextEnv()
+        else -> null
     }
 
     override val inspectionGroup = InsightGroup.LATEX
@@ -147,9 +143,7 @@ class LatexLabelConventionInspection : TexifyInspectionBase() {
         return descriptors
     }
 
-    private fun filterLabelParameterTextOrNull(e: PsiElement): LatexParameterText? {
-        return null
-    }
+    private fun filterLabelParameterTextOrNull(e: PsiElement): LatexParameterText? = null
 
     private fun checkLabels(
         file: PsiFile, manager: InspectionManager, isOntheFly: Boolean,

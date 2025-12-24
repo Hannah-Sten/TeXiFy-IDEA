@@ -20,7 +20,5 @@ object LatexWrappingStrategy {
         else getNoneWrap()
     }
 
-    fun getNoneWrap(): Wrap? {
-        return Wrap.createWrap(WrapType.NONE, false)
-    }
+    fun getNoneWrap(): Wrap? = Wrap.createWrap(WrapType.NONE, false)
 }

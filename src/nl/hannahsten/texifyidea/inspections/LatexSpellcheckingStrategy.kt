@@ -22,9 +22,7 @@ import nl.hannahsten.texifyidea.util.parser.lookupCommandPsi
  */
 class LatexSpellcheckingStrategy : SpellcheckingStrategy() {
 
-    override fun isMyContext(psiElement: PsiElement): Boolean {
-        return psiElement.language == LatexLanguage
-    }
+    override fun isMyContext(psiElement: PsiElement): Boolean = psiElement.language == LatexLanguage
 
     override fun getTokenizer(psiElement: PsiElement): Tokenizer<*> {
         if (psiElement !is LeafPsiElement) {
@@ -93,9 +91,7 @@ class LatexSpellcheckingStrategy : SpellcheckingStrategy() {
         return false
     }
 
-    private fun isBeginEnd(element: PsiElement): Boolean {
-        return element.parentOfType<LatexEndCommand>() != null || element.parentOfType<LatexBeginCommand>() != null
-    }
+    private fun isBeginEnd(element: PsiElement): Boolean = element.parentOfType<LatexEndCommand>() != null || element.parentOfType<LatexBeginCommand>() != null
 
     /**
      * Get the argument (with type) from TeXiFy knowledge that corresponds with the current psi element.

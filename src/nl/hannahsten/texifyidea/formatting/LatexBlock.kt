@@ -156,7 +156,9 @@ class LatexBlock(
             else -> shouldIndentEnvironments
         }
 
-        if (shouldIndentEnvironment || myNode.elementType === LatexTypes.PSEUDOCODE_BLOCK_CONTENT || myNode.elementType === LatexTypes.IF_BLOCK_CONTENT ||
+        if (shouldIndentEnvironment ||
+            myNode.elementType === LatexTypes.PSEUDOCODE_BLOCK_CONTENT ||
+            myNode.elementType === LatexTypes.IF_BLOCK_CONTENT ||
             // Fix for leading comments inside an environment, because somehow they are not placed inside environments.
             // Note that this does not help to insert the indentation, but at least the indent is not removed
             // when formatting.
@@ -206,16 +208,10 @@ class LatexBlock(
         else Indent.getNoneIndent()
     }
 
-    override fun getSpacing(child1: Block?, child2: Block): Spacing? {
-        return spacingBuilder.getSpacing(this, child1, child2)
-    }
+    override fun getSpacing(child1: Block?, child2: Block): Spacing? = spacingBuilder.getSpacing(this, child1, child2)
 
-    override fun isLeaf(): Boolean {
-        return myNode.firstChildNode == null && sectionIndent <= 0
-    }
+    override fun isLeaf(): Boolean = myNode.firstChildNode == null && sectionIndent <= 0
 
     // Automatic indent when enter is pressed
-    override fun getChildAttributes(newChildIndex: Int): ChildAttributes {
-        return LatexEnterHandler.getChildAttributes(newChildIndex, node, subBlocks)
-    }
+    override fun getChildAttributes(newChildIndex: Int): ChildAttributes = LatexEnterHandler.getChildAttributes(newChildIndex, node, subBlocks)
 }

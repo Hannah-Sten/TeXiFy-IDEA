@@ -9,9 +9,7 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
  * Also see https://plugins.jetbrains.com/docs/intellij/testing-highlighting.html#syntax-highlighting
  */
 class LatexHighlightingTest : BasePlatformTestCase() {
-    override fun getTestDataPath(): String {
-        return "test/resources/highlighting"
-    }
+    override fun getTestDataPath(): String = "test/resources/highlighting"
 
     fun testCommandsAndComments() {
         val testFile = myFixture.configureByFile("CommandsAndComments.tex")

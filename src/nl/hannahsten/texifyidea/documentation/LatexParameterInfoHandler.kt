@@ -22,9 +22,7 @@ class LatexParameterInfoHandler : ParameterInfoHandler<LatexCommands, LSemanticC
         return PsiTreeUtil.getParentOfType(element, LatexCommands::class.java)
     }
 
-    override fun findElementForParameterInfo(context: CreateParameterInfoContext): LatexCommands? {
-        return findLatexCommand(context.file, context.offset)
-    }
+    override fun findElementForParameterInfo(context: CreateParameterInfoContext): LatexCommands? = findLatexCommand(context.file, context.offset)
 
     override fun showParameterInfo(element: LatexCommands, context: CreateParameterInfoContext) {
         val semantics = LatexDefinitionService.resolveCommand(element) ?: return
@@ -32,9 +30,7 @@ class LatexParameterInfoHandler : ParameterInfoHandler<LatexCommands, LSemanticC
         context.showHint(element, element.textOffset, this)
     }
 
-    override fun findElementForUpdatingParameterInfo(context: UpdateParameterInfoContext): LatexCommands? {
-        return findLatexCommand(context.file, context.offset)
-    }
+    override fun findElementForUpdatingParameterInfo(context: UpdateParameterInfoContext): LatexCommands? = findLatexCommand(context.file, context.offset)
 
     override fun updateParameterInfo(element: LatexCommands, context: UpdateParameterInfoContext) {
         context.setCurrentParameter(0)

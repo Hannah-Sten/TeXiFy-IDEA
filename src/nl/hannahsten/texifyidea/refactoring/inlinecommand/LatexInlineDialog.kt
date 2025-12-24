@@ -26,11 +26,7 @@ abstract class LatexInlineDialog(project: Project?, genericDefinition: PsiElemen
 
     override fun isInlineThis(): Boolean = false
 
-    override fun hasHelpAction(): Boolean {
-        return false
-    }
+    override fun hasHelpAction(): Boolean = false
 
-    override fun allowInlineAll(): Boolean {
-        return true
-    }
+    override fun allowInlineAll(): Boolean = true
 }

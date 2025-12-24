@@ -9,9 +9,7 @@ import nl.hannahsten.texifyidea.updateCommandDef
 
 class LatexGlossaryCompletionTest : BasePlatformTestCase() {
 
-    override fun getTestDataPath(): String {
-        return "test/resources/completion/glossary"
-    }
+    override fun getTestDataPath(): String = "test/resources/completion/glossary"
 
     private fun validateLookupElement(
         lookup: String,

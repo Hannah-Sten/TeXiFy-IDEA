@@ -15,9 +15,7 @@ import nl.hannahsten.texifyidea.util.parser.endOffset
  */
 open class LatexSurrounder(private val before: String, private val after: String, val displayBefore: String = before, val displayAfter: String = after) : Surrounder {
 
-    override fun isApplicable(elements: Array<out PsiElement>): Boolean {
-        return true
-    }
+    override fun isApplicable(elements: Array<out PsiElement>): Boolean = true
 
     /**
      * Puts [before] before the first element of [elements], and puts [after]
@@ -39,9 +37,7 @@ open class LatexSurrounder(private val before: String, private val after: String
         return TextRange(endOffset, endOffset)
     }
 
-    override fun getTemplateDescription(): String {
-        return "Surround with $displayBefore...$displayAfter"
-    }
+    override fun getTemplateDescription(): String = "Surround with $displayBefore...$displayAfter"
 }
 
 open class LatexPairSurrounder(surroundPair: Pair<String, String>) : LatexSurrounder(surroundPair.first, surroundPair.second)

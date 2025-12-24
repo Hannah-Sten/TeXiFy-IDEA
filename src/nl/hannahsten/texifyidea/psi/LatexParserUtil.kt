@@ -78,7 +78,8 @@ class LatexParserUtil : GeneratedParserUtilBase() {
             // This makes sure the the optional argument of a verbatim environment is not by mistake also remapped to raw text
             // \end is remapped because the lexer only knows afterwards whether it ended the environment or not, and whitespace is remapped because this allows keeping the last whitespace for the formatter
             builder.setTokenTypeRemapper { token, start, end, _ ->
-                if (startIndex <= start && end <= endIndex &&
+                if (startIndex <= start &&
+                    end <= endIndex &&
                     (token == LatexTypes.END_TOKEN || token == LatexTypes.BEGIN_TOKEN || token == LatexTypes.OPEN_BRACE || token == LatexTypes.OPEN_BRACE || token == com.intellij.psi.TokenType.WHITE_SPACE)
                 ) {
                     LatexTypes.RAW_TEXT_TOKEN

@@ -13,10 +13,7 @@ import nl.hannahsten.texifyidea.TexifyIcons
 class LatexModuleType : ModuleType<LatexModuleBuilder>(ID) {
 
     companion object {
-
         const val ID = "LATEX_MODULE_TYPE"
-
-        val INSTANCE = LatexModuleType()
     }
 
     override fun createModuleBuilder() = LatexModuleBuilder()

@@ -39,9 +39,7 @@ class LatexStructureViewModel(
 
     override fun isAlwaysLeaf(structureViewTreeElement: StructureViewTreeElement) = false
 
-    override fun getSuitableClasses(): Array<Class<LatexCommands>> {
-        return arrayOf(
-            LatexCommands::class.java
-        )
-    }
+    override fun getSuitableClasses(): Array<Class<LatexCommands>> = arrayOf(
+        LatexCommands::class.java
+    )
 }

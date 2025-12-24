@@ -9,15 +9,13 @@ import nl.hannahsten.texifyidea.file.LatexFile
  */
 class LatexCharFilter : CharFilter() {
 
-    override fun acceptChar(c: Char, prefixLength: Int, lookup: Lookup): Result? {
-        return if (!isInLatexContext(lookup)) {
-            null
-        }
-        else when (c) {
-            '$' -> Result.HIDE_LOOKUP
-            ':' -> Result.ADD_TO_PREFIX
-            else -> null
-        }
+    override fun acceptChar(c: Char, prefixLength: Int, lookup: Lookup): Result? = if (!isInLatexContext(lookup)) {
+        null
+    }
+    else when (c) {
+        '$' -> Result.HIDE_LOOKUP
+        ':' -> Result.ADD_TO_PREFIX
+        else -> null
     }
 
     private fun isInLatexContext(lookup: Lookup): Boolean {

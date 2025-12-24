@@ -15,13 +15,9 @@ class CacheValueTimed<T>(
     val value: T,
     val timestamp: Instant = Clock.System.now()
 ) {
-    fun isExpired(expiration: Duration): Boolean {
-        return Clock.System.now() - timestamp >= expiration
-    }
+    fun isExpired(expiration: Duration): Boolean = Clock.System.now() - timestamp >= expiration
 
-    fun isNotExpired(expiration: Duration): Boolean {
-        return !isExpired(expiration)
-    }
+    fun isNotExpired(expiration: Duration): Boolean = !isExpired(expiration)
 }
 
 /**
@@ -42,21 +38,15 @@ abstract class AbstractCacheServiceBase<K : Any, V> {
     protected val caches: MutableMap<K, CacheValueTimed<V>> = ConcurrentHashMap()
     protected val computingState = ConcurrentHashMap<K, Mutex>()
 
-    protected fun getComputingState(key: K): Mutex {
-        return computingState.computeIfAbsent(key) { Mutex() }
-    }
+    protected fun getComputingState(key: K): Mutex = computingState.computeIfAbsent(key) { Mutex() }
 
     protected fun putValue(key: K, value: V) {
         caches[key] = CacheValueTimed(value)
     }
 
-    protected fun getTimedValue(key: K): CacheValueTimed<V>? {
-        return caches[key]
-    }
+    protected fun getTimedValue(key: K): CacheValueTimed<V>? = caches[key]
 
-    protected fun getValueOrNull(key: K): V? {
-        return caches[key]?.value
-    }
+    protected fun getValueOrNull(key: K): V? = caches[key]?.value
 
     protected fun getUpToDateValueOrNull(key: K, expiration: Duration): V? {
         val cachedValue = caches[key] ?: return null
@@ -119,9 +109,7 @@ abstract class AbstractBackgroundCacheService<K : Any, V : Any>(protected val co
         return cachedValue?.value
     }
 
-    protected fun getAndComputeLater(key: K, expiration: Duration, defaultValue: V): V {
-        return getAndComputeLater(key, expiration) ?: defaultValue
-    }
+    protected fun getAndComputeLater(key: K, expiration: Duration, defaultValue: V): V = getAndComputeLater(key, expiration) ?: defaultValue
 
     protected suspend fun refreshAll(keys: Collection<K>) {
         for (key in keys) {
@@ -166,17 +154,11 @@ abstract class GenericCacheService<P>(val param: P, private val coroutineScope: 
     private data class TypedKeyFromFunction<T>(val kClass: KClass<*>) : TypedKey<T>
 
     companion object {
-        fun <T> createKey(): TypedKey<T> {
-            return PlainTypedKey()
-        }
+        fun <T> createKey(): TypedKey<T> = PlainTypedKey()
 
-        private fun <P, T> createKeyFromFunction2(f: suspend (P, T?) -> T?): TypedKey<T> {
-            return TypedKeyFromFunction(f::class)
-        }
+        private fun <P, T> createKeyFromFunction2(f: suspend (P, T?) -> T?): TypedKey<T> = TypedKeyFromFunction(f::class)
 
-        private fun <P, T> createKeyFromFunction(f: suspend (P) -> T?): TypedKey<T> {
-            return TypedKeyFromFunction(f::class)
-        }
+        private fun <P, T> createKeyFromFunction(f: suspend (P) -> T?): TypedKey<T> = TypedKeyFromFunction(f::class)
     }
 
     /**
@@ -202,9 +184,7 @@ abstract class GenericCacheService<P>(val param: P, private val coroutineScope: 
      *
      * Note that this method does not check for expiration.
      */
-    fun <T : Any> getOrNull(key: TypedKey<T>): T? {
-        return getTimed(key)?.value
-    }
+    fun <T : Any> getOrNull(key: TypedKey<T>): T? = getTimed(key)?.value
 
     private fun <T> getCachedValueOrNull(key: TypedKey<T>, expiration: Duration): CacheValueTimed<T>? {
         val cachedValue = getTimed(key) ?: return null
@@ -227,9 +207,7 @@ abstract class GenericCacheService<P>(val param: P, private val coroutineScope: 
         return result
     }
 
-    fun <T> getOrComputeNow(expiration: Duration = 1.seconds, f: (P) -> T): T {
-        return getOrComputeNow(createKeyFromFunction(f), expiration, f)
-    }
+    fun <T> getOrComputeNow(expiration: Duration = 1.seconds, f: (P) -> T): T = getOrComputeNow(createKeyFromFunction(f), expiration, f)
 
     /**
      * Gets a cached value (possibly expired) by its key or the [instantResult] if no cache exists.
@@ -253,17 +231,11 @@ abstract class GenericCacheService<P>(val param: P, private val coroutineScope: 
         return cachedValue?.value ?: instantResult // Return the instant result while computation is in progress
     }
 
-    fun <T : Any> getAndComputeLater(expiration: Duration = 1.seconds, instantResult: T, f: suspend (P, T?) -> T?): T {
-        return getAndComputeLater(createKeyFromFunction2(f), expiration, instantResult, f)
-    }
+    fun <T : Any> getAndComputeLater(expiration: Duration = 1.seconds, instantResult: T, f: suspend (P, T?) -> T?): T = getAndComputeLater(createKeyFromFunction2(f), expiration, instantResult, f)
 
-    fun <T : Any> getAndComputeLater(expiration: Duration = 1.seconds, f: suspend (P, T?) -> T?): T? {
-        return getAndComputeLater(createKeyFromFunction2(f), expiration, null, f)
-    }
+    fun <T : Any> getAndComputeLater(expiration: Duration = 1.seconds, f: suspend (P, T?) -> T?): T? = getAndComputeLater(createKeyFromFunction2(f), expiration, null, f)
 
-    fun <T : Any> getAndComputeLater(key: TypedKey<T>, expiration: Duration = 1.seconds, f: suspend (P, T?) -> T?): T? {
-        return getAndComputeLater(key, expiration, null, f)
-    }
+    fun <T : Any> getAndComputeLater(key: TypedKey<T>, expiration: Duration = 1.seconds, f: suspend (P, T?) -> T?): T? = getAndComputeLater(key, expiration, null, f)
 
     private fun <T : Any> scheduleComputation(
         key: TypedKey<T>, previousValue: T? = null, suspendComputation: suspend (P, T?) -> T?

@@ -22,9 +22,7 @@ class LatexMightBreakTexifyInspection : TexifyInspectionBase() {
         get() = InsightGroup.LATEX
 
     @Nls
-    override fun getDisplayName(): String {
-        return "Might break TeXiFy functionality"
-    }
+    override fun getDisplayName(): String = "Might break TeXiFy functionality"
 
     override val inspectionId: String
         get() = "MightBreakTexify"

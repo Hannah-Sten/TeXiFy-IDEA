@@ -65,21 +65,17 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
 
     override fun isCollapsedByDefault(node: ASTNode): Boolean = false
 
-    private fun foldingDescriptorSection(element: PsiElement, range: TextRange): FoldingDescriptor {
-        return foldingDescriptor(
-            element, range,
-            placeholderText = element.node.text + "...",
-            isCollapsedByDefault = LatexCodeFoldingSettings.getInstance().foldSections
-        )
-    }
+    private fun foldingDescriptorSection(element: PsiElement, range: TextRange): FoldingDescriptor = foldingDescriptor(
+        element, range,
+        placeholderText = element.node.text + "...",
+        isCollapsedByDefault = LatexCodeFoldingSettings.getInstance().foldSections
+    )
 
-    private fun foldingDescriptorRegion(element: PsiElement, range: TextRange, name: String): FoldingDescriptor {
-        return foldingDescriptor(
-            element, range,
-            placeholderText = name.ifEmpty { "..." },
-            isCollapsedByDefault = false
-        )
-    }
+    private fun foldingDescriptorRegion(element: PsiElement, range: TextRange, name: String): FoldingDescriptor = foldingDescriptor(
+        element, range,
+        placeholderText = name.ifEmpty { "..." },
+        isCollapsedByDefault = false
+    )
 
     /**
      * Escape special symbols in LaTeX.
@@ -93,21 +89,17 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
         return cmd.display
     }
 
-    private fun foldingDescriptorSymbol(cmdToken: PsiElement, display: String): FoldingDescriptor {
-        return foldingDescriptor(
-            cmdToken, cmdToken.textRange,
-            placeholderText = display,
-            isCollapsedByDefault = LatexCodeFoldingSettings.getInstance().foldSymbols
-        )
-    }
+    private fun foldingDescriptorSymbol(cmdToken: PsiElement, display: String): FoldingDescriptor = foldingDescriptor(
+        cmdToken, cmdToken.textRange,
+        placeholderText = display,
+        isCollapsedByDefault = LatexCodeFoldingSettings.getInstance().foldSymbols
+    )
 
-    private fun foldingDescriptorEnvironment(o: LatexEnvironment, range: TextRange): FoldingDescriptor {
-        return foldingDescriptor(
-            o, range,
-            placeholderText = "...",
-            isCollapsedByDefault = LatexCodeFoldingSettings.getInstance().foldEnvironments
-        )
-    }
+    private fun foldingDescriptorEnvironment(o: LatexEnvironment, range: TextRange): FoldingDescriptor = foldingDescriptor(
+        o, range,
+        placeholderText = "...",
+        isCollapsedByDefault = LatexCodeFoldingSettings.getInstance().foldEnvironments
+    )
 
     /**
      * Minimum length of a footnote to fold.
@@ -275,7 +267,8 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
             // fold section commands
             val level = sectionLevels[name]
             // If the command is likely in a command definition or in the preamble, skip it
-            if (level != null && element.firstChild != null &&
+            if (level != null &&
+                element.firstChild != null &&
                 PsiTreeUtil.getParentOfType(element, LatexParameter::class.java) == null
             ) {
                 encounterSectionCommand(FoldingEntry(element, element.startOffset, level, name))

@@ -73,8 +73,6 @@ class LatexMathFunctionTextInspection : AbstractTexifyCommandBasedInspection(
             return IntentionPreviewInfo.CustomDiff(LatexFileType, textCommand.text, functionText)
         }
 
-        private fun extractFunction(textCommandElement: LatexCommands): String? {
-            return textCommandElement.requiredParameterText(0)?.trim()?.let { "\\$it" }
-        }
+        private fun extractFunction(textCommandElement: LatexCommands): String? = textCommandElement.requiredParameterText(0)?.trim()?.let { "\\$it" }
     }
 }

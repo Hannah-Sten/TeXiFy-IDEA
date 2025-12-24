@@ -32,8 +32,6 @@ enum class InsightGroup(
     companion object {
 
         @JvmStatic
-        fun byFileType(fileType: FileType): List<InsightGroup> {
-            return entries.filter { fileType in it.fileTypes }
-        }
+        fun byFileType(fileType: FileType): List<InsightGroup> = entries.filter { fileType in it.fileTypes }
     }
 }
