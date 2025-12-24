@@ -16,11 +16,9 @@ import nl.hannahsten.texifyidea.util.parser.*
  */
 class LatexInlineCommandHandler : LatexInlineHandler() {
 
-    override fun canInlineElement(element: PsiElement?): Boolean {
-        return Util.canInlineLatexElement(
-            element
-        )
-    }
+    override fun canInlineElement(element: PsiElement?): Boolean = Util.canInlineLatexElement(
+        element
+    )
 
     override fun inlineElement(project: Project, editor: Editor?, element: PsiElement) {
         // Resolve the file to be inlined

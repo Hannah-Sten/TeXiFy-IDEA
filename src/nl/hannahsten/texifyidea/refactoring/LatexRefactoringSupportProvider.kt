@@ -21,9 +21,7 @@ class LatexRefactoringSupportProvider : RefactoringSupportProvider() {
         }
     }
 
-    override fun isSafeDeleteAvailable(element: PsiElement): Boolean {
-        return element is LatexParameterText
-    }
+    override fun isSafeDeleteAvailable(element: PsiElement): Boolean = element is LatexParameterText
 
     override fun getIntroduceVariableHandler(): RefactoringActionHandler = LatexExtractCommandHandler()
 }

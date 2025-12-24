@@ -59,11 +59,9 @@ class PerformanceDiagnosticAction : AnAction() {
         val additionalInfo: String = ""
     )
 
-    private fun performance(name: String, tracker: SimplePerformanceTracker, additionalInfo: String = ""): PerformanceData {
-        return PerformanceData(
-            name, tracker.countOfBuilds, tracker.totalTimeCost, additionalInfo
-        )
-    }
+    private fun performance(name: String, tracker: SimplePerformanceTracker, additionalInfo: String = ""): PerformanceData = PerformanceData(
+        name, tracker.countOfBuilds, tracker.totalTimeCost, additionalInfo
+    )
 
     private fun buildFilesetInfo(projectFilesets: LatexProjectFilesets?): String = buildString {
         if (projectFilesets == null) {
@@ -75,11 +73,9 @@ class PerformanceDiagnosticAction : AnAction() {
         appendLine("Expiration: ${LatexProjectStructure.expirationTime}")
     }
 
-    private fun buildCustomDefinitionsInfo(project: Project): String {
-        return """
+    private fun buildCustomDefinitionsInfo(project: Project): String = """
             Expiration: ${LatexDefinitionService.expirationTime}
-        """.trimIndent()
-    }
+    """.trimIndent()
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
@@ -160,11 +156,7 @@ class PerformanceDiagnosticAction : AnAction() {
         }
     }
 
-    override fun isDumbAware(): Boolean {
-        return true
-    }
+    override fun isDumbAware(): Boolean = true
 
-    override fun getActionUpdateThread(): ActionUpdateThread {
-        return ActionUpdateThread.EDT
-    }
+    override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.EDT
 }

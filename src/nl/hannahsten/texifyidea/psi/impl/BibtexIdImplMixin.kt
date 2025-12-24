@@ -11,9 +11,7 @@ import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 
 abstract class BibtexIdImplMixin(node: ASTNode) : BibtexId, ASTWrapperPsiElement(node) {
 
-    override fun getNameIdentifier(): PsiElement {
-        return this
-    }
+    override fun getNameIdentifier(): PsiElement = this
 
     override fun setName(name: String): PsiElement {
         // Replace the complete bibtex entry to automatically update the index (which is on entries, not ids)
@@ -25,9 +23,7 @@ abstract class BibtexIdImplMixin(node: ASTNode) : BibtexId, ASTWrapperPsiElement
         return this
     }
 
-    override fun getName(): String {
-        return this.text
-    }
+    override fun getName(): String = this.text
 
     override fun delete() {
         val parent = firstParentOfType<BibtexEntry>() ?: return

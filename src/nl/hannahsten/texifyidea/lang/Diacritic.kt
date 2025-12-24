@@ -62,15 +62,11 @@ interface Diacritic {
 
         companion object {
 
-            fun fromUnicode(unicode: String): Normal? {
-                return entries
-                    .find { it.unicode == unicode }
-            }
+            fun fromUnicode(unicode: String): Normal? = entries
+                .find { it.unicode == unicode }
 
-            fun fromCommand(command: String): Normal? {
-                return entries
-                    .find { it.command == command }
-            }
+            fun fromCommand(command: String): Normal? = entries
+                .find { it.command == command }
         }
 
         override fun buildCommand(param: String): String {
@@ -102,15 +98,11 @@ interface Diacritic {
 
         companion object {
 
-            fun fromUnicode(unicode: String): Math? {
-                return entries
-                    .find { it.unicode == unicode }
-            }
+            fun fromUnicode(unicode: String): Math? = entries
+                .find { it.unicode == unicode }
 
-            fun fromCommand(command: String): Math? {
-                return entries
-                    .find { it.command == command }
-            }
+            fun fromCommand(command: String): Math? = entries
+                .find { it.command == command }
         }
 
         override fun buildCommand(param: String): String {

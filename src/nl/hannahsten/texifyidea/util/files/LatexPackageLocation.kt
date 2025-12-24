@@ -154,9 +154,7 @@ object LatexPackageLocation : AbstractBlockingCacheService<SdkPath, Map<String, 
      * @param name Package name with extension.
      * @param psiFile The file context to determine which SDK to use.
      */
-    fun getPackageLocation(name: String, psiFile: PsiFile): Path? {
-        return getPackageLocation(name, psiFile.virtualFile, psiFile.project)
-    }
+    fun getPackageLocation(name: String, psiFile: PsiFile): Path? = getPackageLocation(name, psiFile.virtualFile, psiFile.project)
 
     /**
      * Get the full path to the location of the package with the given name, or null in case there was any problem.
@@ -165,9 +163,7 @@ object LatexPackageLocation : AbstractBlockingCacheService<SdkPath, Map<String, 
      * @param name Package name with extension.
      * @param project The current project.
      */
-    fun getPackageLocation(name: String, project: Project): Path? {
-        return getPackageLocation(name, null, project)
-    }
+    fun getPackageLocation(name: String, project: Project): Path? = getPackageLocation(name, null, project)
 
     /**
      * Get the full path to the location of the package with the given name, using a pre-resolved SDK path.
@@ -206,9 +202,7 @@ object LatexPackageLocation : AbstractBlockingCacheService<SdkPath, Map<String, 
      *
      * @param psiFile The file context to determine which SDK to use.
      */
-    fun getAllPackageFileNames(psiFile: PsiFile): Set<String> {
-        return getAllPackageFileNames(psiFile.virtualFile, psiFile.project)
-    }
+    fun getAllPackageFileNames(psiFile: PsiFile): Set<String> = getAllPackageFileNames(psiFile.virtualFile, psiFile.project)
 
     /**
      * Get all known package names in the LaTeX installation.
@@ -216,7 +210,5 @@ object LatexPackageLocation : AbstractBlockingCacheService<SdkPath, Map<String, 
      *
      * @param project The current project.
      */
-    fun getAllPackageFileNames(project: Project): Set<String> {
-        return getAllPackageFileNames(null, project)
-    }
+    fun getAllPackageFileNames(project: Project): Set<String> = getAllPackageFileNames(null, project)
 }

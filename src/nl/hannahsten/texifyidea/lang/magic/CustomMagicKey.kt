@@ -13,7 +13,5 @@ open class CustomMagicKey<Key>(override val key: Key) : MagicKey<Key> {
         return key == other.key
     }
 
-    override fun hashCode(): Int {
-        return key?.hashCode() ?: 0
-    }
+    override fun hashCode(): Int = key?.hashCode() ?: 0
 }

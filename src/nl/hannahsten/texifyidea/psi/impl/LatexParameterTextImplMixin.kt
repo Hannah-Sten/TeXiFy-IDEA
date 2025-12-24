@@ -23,9 +23,7 @@ import nl.hannahsten.texifyidea.util.parser.remove
 
 abstract class LatexParameterTextImplMixin(node: ASTNode) : LatexParameterText, ASTWrapperPsiElement(node) {
 
-    override fun toString(): String {
-        return "ParameterText(${this.text})"
-    }
+    override fun toString(): String = "ParameterText(${this.text})"
 
     /**
      * If the normal text is the parameter of a \ref-like command, get the references to the label declaration.
@@ -74,8 +72,11 @@ abstract class LatexParameterTextImplMixin(node: ASTNode) : LatexParameterText, 
         val name = this.firstParentOfType(LatexCommands::class)?.name
 
         // reference
-        if (name in CommandMagic.labels || name in CommandMagic.reference || name in CommandMagic.labelAsParameter ||
-            name in CommandMagic.bibliographyReference || name in CommandMagic.glossaryEntry
+        if (name in CommandMagic.labels ||
+            name in CommandMagic.reference ||
+            name in CommandMagic.labelAsParameter ||
+            name in CommandMagic.bibliographyReference ||
+            name in CommandMagic.glossaryEntry
         ) {
             return this
         }
@@ -174,9 +175,7 @@ abstract class LatexParameterTextImplMixin(node: ASTNode) : LatexParameterText, 
         return this
     }
 
-    override fun getName(): String {
-        return this.text ?: ""
-    }
+    override fun getName(): String = this.text ?: ""
 
     override fun delete() {
         val cmd = this.parentOfType(LatexCommands::class) ?: return

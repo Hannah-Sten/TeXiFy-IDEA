@@ -43,7 +43,5 @@ class ShowContextAction : AnAction() {
         e.presentation.isEnabledAndVisible = e.project != null && isInternalMode
     }
 
-    override fun getActionUpdateThread(): ActionUpdateThread {
-        return ActionUpdateThread.BGT
-    }
+    override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
 }

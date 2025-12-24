@@ -40,8 +40,10 @@ open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
     override fun update(e: AnActionEvent) {
         e.presentation.isEnabledAndVisible = (
             e.project?.selectedRunConfig()?.pdfViewer == viewer
-                || (e.project?.selectedRunConfig() == null && e.project?.latexTemplateRunConfig()?.pdfViewer == viewer)
-            ) && e.getData(CommonDataKeys.VIRTUAL_FILE)?.fileType is LatexFileType
+                ||
+                (e.project?.selectedRunConfig() == null && e.project?.latexTemplateRunConfig()?.pdfViewer == viewer)
+            ) &&
+            e.getData(CommonDataKeys.VIRTUAL_FILE)?.fileType is LatexFileType
     }
 
     override fun getActionUpdateThread() = ActionUpdateThread.BGT

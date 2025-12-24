@@ -4,9 +4,7 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
 
 class BibtexIdCompletionTest : BasePlatformTestCase() {
 
-    override fun getTestDataPath(): String {
-        return "test/resources/completion/cite"
-    }
+    override fun getTestDataPath(): String = "test/resources/completion/cite"
 
     @Throws(Exception::class)
     override fun setUp() {

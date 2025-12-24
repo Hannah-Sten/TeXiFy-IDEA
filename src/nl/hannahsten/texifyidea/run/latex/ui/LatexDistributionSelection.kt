@@ -19,22 +19,20 @@ data class LatexDistributionSelection(val distributionType: LatexDistributionTyp
      * Returns the display name for this selection.
      * For MODULE_SDK and PROJECT_SDK, shows the resolved SDK name if available.
      */
-    fun getDisplayName(mainFile: VirtualFile?, project: Project): String {
-        return when (distributionType) {
-            LatexDistributionType.MODULE_SDK -> {
-                val sdk = if (mainFile != null) {
-                    LatexSdkUtil.getLatexSdkForFile(mainFile, project)
-                }
-                else {
-                    LatexSdkUtil.getLatexProjectSdk(project)
-                }
-                sdk?.name ?: "<no SDK configured>"
+    fun getDisplayName(mainFile: VirtualFile?, project: Project): String = when (distributionType) {
+        LatexDistributionType.MODULE_SDK -> {
+            val sdk = if (mainFile != null) {
+                LatexSdkUtil.getLatexSdkForFile(mainFile, project)
             }
-            LatexDistributionType.PROJECT_SDK -> {
-                LatexSdkUtil.getLatexProjectSdk(project)?.name ?: "<no SDK configured>"
+            else {
+                LatexSdkUtil.getLatexProjectSdk(project)
             }
-            else -> distributionType.displayName
+            sdk?.name ?: "<no SDK configured>"
         }
+        LatexDistributionType.PROJECT_SDK -> {
+            LatexSdkUtil.getLatexProjectSdk(project)?.name ?: "<no SDK configured>"
+        }
+        else -> distributionType.displayName
     }
 
     /**
@@ -91,8 +89,6 @@ data class LatexDistributionSelection(val distributionType: LatexDistributionTyp
         /**
          * Create a selection from a persisted distribution type.
          */
-        fun fromDistributionType(distributionType: LatexDistributionType): LatexDistributionSelection {
-            return LatexDistributionSelection(distributionType)
-        }
+        fun fromDistributionType(distributionType: LatexDistributionType): LatexDistributionSelection = LatexDistributionSelection(distributionType)
     }
 }

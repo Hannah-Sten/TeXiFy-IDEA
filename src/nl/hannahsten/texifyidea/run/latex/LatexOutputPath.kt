@@ -32,9 +32,7 @@ class LatexOutputPath(private val variant: String, var mainFile: VirtualFile?, p
         const val MAIN_FILE_STRING = "{mainFileParent}"
     }
 
-    fun clone(): LatexOutputPath {
-        return LatexOutputPath(variant, mainFile, project).apply { if (this@LatexOutputPath.pathString.isNotBlank()) this.pathString = this@LatexOutputPath.pathString }
-    }
+    fun clone(): LatexOutputPath = LatexOutputPath(variant, mainFile, project).apply { if (this@LatexOutputPath.pathString.isNotBlank()) this.pathString = this@LatexOutputPath.pathString }
 
     // Acts as a sort of cache
     var virtualFile: VirtualFile? = null

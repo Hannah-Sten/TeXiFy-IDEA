@@ -19,9 +19,7 @@ import java.util.stream.Collectors
 class LatexCommandsStubElementType(debugName: String) :
     IStubElementType<LatexCommandsStub, LatexCommands>(debugName, LatexLanguage) {
 
-    override fun createPsi(latexCommandsStub: LatexCommandsStub): LatexCommands {
-        return LatexCommandsImpl(latexCommandsStub, this)
-    }
+    override fun createPsi(latexCommandsStub: LatexCommandsStub): LatexCommands = LatexCommandsImpl(latexCommandsStub, this)
 
     override fun createStub(latexCommands: LatexCommands, parent: StubElement<*>): LatexCommandsStub {
         val commandToken = latexCommands.commandToken.text
@@ -108,10 +106,8 @@ class LatexCommandsStubElementType(debugName: String) :
         NewLabelsIndex.sinkIndexCommand(stub, sink) // labels
     }
 
-    private fun deserialiseList(string: String): List<String> {
-        return LIST_ELEMENT_SEPARATOR.splitAsStream(string)
-            .collect(Collectors.toList())
-    }
+    private fun deserialiseList(string: String): List<String> = LIST_ELEMENT_SEPARATOR.splitAsStream(string)
+        .collect(Collectors.toList())
 
     private fun serialiseOptionalMap(stub: LatexCommandsStub): String {
         val keyValuePairs = stub.optionalParamsMap.map { "${it.key}=${it.value}" }

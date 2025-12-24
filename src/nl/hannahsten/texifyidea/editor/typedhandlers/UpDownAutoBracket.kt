@@ -76,7 +76,7 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
             is PsiWhiteSpace -> {
                 // When the whitespace is the end of a math environment.
                 val sibling = element.previousSiblingIgnoreWhitespace() ?: return element.parentOfType(LatexNormalText::class)
-                return when (sibling) {
+                when (sibling) {
                     is LatexMathContent, is LatexEnvironmentContent -> {
                         sibling.lastChildOfType(LatexNoMathContent::class)
                             ?.findFirstChildOfType(LatexNormalText::class)
@@ -92,7 +92,7 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
             is PsiComment -> {
                 // When for some reason people want to insert it directly before a comment.
                 val mother = element.previousSiblingIgnoreWhitespace() ?: return null
-                return mother.lastChildOfType(LatexNormalText::class)
+                mother.lastChildOfType(LatexNormalText::class)
             }
             is LeafPsiElement -> {
                 when (element.elementType) {
@@ -100,18 +100,18 @@ open class UpDownAutoBracket : TypedHandlerDelegate() {
                         // When it is followed by a LatexCommands or comment tokens.
                         val noMathContent = element.firstParentOfType(LatexNoMathContent::class) ?: return null
                         val sibling = noMathContent.previousSiblingIgnoreWhitespace() ?: return null
-                        return sibling.findFirstChildOfType(LatexNormalText::class)
+                        sibling.findFirstChildOfType(LatexNormalText::class)
                     }
                     INLINE_MATH_END -> {
                         // At the end of inline math.
                         val mathContent = element.previousSiblingIgnoreWhitespace() as? LatexMathContent ?: return null
                         val noMathContent = mathContent.lastChildOfType(LatexNoMathContent::class) ?: return null
-                        return noMathContent.findFirstChildOfType(LatexNormalText::class)
+                        noMathContent.findFirstChildOfType(LatexNormalText::class)
                     }
                     else -> {
                         // When a character is inserted just before the close brace of a group/inline math end.
                         val content = element.prevSibling ?: return null
-                        return content.findFirstChildOfType(LatexNormalText::class)
+                        content.findFirstChildOfType(LatexNormalText::class)
                     }
                 }
             }

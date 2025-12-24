@@ -82,14 +82,12 @@ object LatexDtxDefinitionDataIndexer : DataIndexer<String, List<LatexSimpleDefin
      */
     const val MAX_CHARS = 100000
 
-    private fun String.truncate(maxLength: Int, fileName: String): String {
-        return if (this.length > maxLength) {
-            Log.warn(("Truncating in $fileName: ${this.take(50)}"))
-            this.take(maxLength)
-        }
-        else {
-            this
-        }
+    private fun String.truncate(maxLength: Int, fileName: String): String = if (this.length > maxLength) {
+        Log.warn(("Truncating in $fileName: ${this.take(50)}"))
+        this.take(maxLength)
+    }
+    else {
+        this
     }
 
     private fun parseDtxLines(fileName: String, lines: Sequence<String>): DtxDoc {
@@ -302,27 +300,17 @@ object LatexDtxDefinitionDataIndexer : DataIndexer<String, List<LatexSimpleDefin
 class LatexDtxDefinitionIndexEx : FileBasedIndexExtension<String, List<LatexSimpleDefinition>>() {
     private val myInputFilter = DefaultFileTypeSpecificInputFilter(LatexSourceFileType) // only .dtx
 
-    override fun getKeyDescriptor(): KeyDescriptor<String> {
-        return EnumeratorStringDescriptor.INSTANCE
-    }
+    override fun getKeyDescriptor(): KeyDescriptor<String> = EnumeratorStringDescriptor.INSTANCE
 
-    override fun getName(): ID<String, List<LatexSimpleDefinition>> {
-        return LatexFileBasedIndexKeys.DTX_DEFINITIONS
-    }
+    override fun getName(): ID<String, List<LatexSimpleDefinition>> = LatexFileBasedIndexKeys.DTX_DEFINITIONS
 
-    override fun getIndexer(): DataIndexer<String, List<LatexSimpleDefinition>, FileContent> {
-        return LatexDtxDefinitionDataIndexer
-    }
+    override fun getIndexer(): DataIndexer<String, List<LatexSimpleDefinition>, FileContent> = LatexDtxDefinitionDataIndexer
 
-    override fun getValueExternalizer(): DataExternalizer<List<LatexSimpleDefinition>> {
-        return MyValueExternalizer
-    }
+    override fun getValueExternalizer(): DataExternalizer<List<LatexSimpleDefinition>> = MyValueExternalizer
 
     override fun getVersion() = 8
 
-    override fun getInputFilter(): FileBasedIndex.InputFilter {
-        return myInputFilter
-    }
+    override fun getInputFilter(): FileBasedIndex.InputFilter = myInputFilter
 
     override fun dependsOnFileContent() = true
 

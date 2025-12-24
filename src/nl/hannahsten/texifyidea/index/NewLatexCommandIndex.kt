@@ -11,13 +11,9 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 class NewCommandsIndexEx : LatexCompositeStubIndex<LatexCommands>(LatexCommands::class.java) {
 
-    override fun getKey(): StubIndexKey<String, LatexCommands> {
-        return LatexStubIndexKeys.COMMANDS
-    }
+    override fun getKey(): StubIndexKey<String, LatexCommands> = LatexStubIndexKeys.COMMANDS
 
-    override fun getVersion(): Int {
-        return 2
-    }
+    override fun getVersion(): Int = 2
 }
 
 /**
@@ -27,13 +23,9 @@ val NewCommandsIndex = NewCommandsIndexEx()
 
 class NewLatexEnvironmentIndexEx : LatexCompositeStubIndex<LatexEnvironment>(LatexEnvironment::class.java) {
 
-    override fun getKey(): StubIndexKey<String, LatexEnvironment> {
-        return LatexStubIndexKeys.ENVIRONMENTS
-    }
+    override fun getKey(): StubIndexKey<String, LatexEnvironment> = LatexStubIndexKeys.ENVIRONMENTS
 
-    override fun getVersion(): Int {
-        return 2
-    }
+    override fun getVersion(): Int = 2
 }
 
 /**
@@ -45,9 +37,7 @@ val NewLatexEnvironmentIndex = NewLatexEnvironmentIndexEx()
  * Definitions of both commands and theorems
  */
 class NewDefinitionIndexEx : LatexCompositeTransformedStubIndex<LatexCommandsStub, LatexCommands>(LatexCommands::class.java) {
-    override fun getVersion(): Int {
-        return 1004
-    }
+    override fun getVersion(): Int = 1004
 
     override fun sinkIndex(stub: LatexCommandsStub, sink: IndexSink) {
         val command = stub.commandToken
@@ -58,9 +48,7 @@ class NewDefinitionIndexEx : LatexCompositeTransformedStubIndex<LatexCommandsStu
         }
     }
 
-    override fun getKey(): StubIndexKey<String, LatexCommands> {
-        return LatexStubIndexKeys.DEFINITIONS
-    }
+    override fun getKey(): StubIndexKey<String, LatexCommands> = LatexStubIndexKeys.DEFINITIONS
 }
 
 val NewDefinitionIndex = NewDefinitionIndexEx()

@@ -35,9 +35,7 @@ class MakeindexRunConfiguration(
     var commandLineArguments: String? = null
     var workingDirectory: VirtualFile? = null
 
-    override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState {
-        return MakeindexCommandLineState(environment, mainFile, workingDirectory, project, makeindexProgram, commandLineArguments)
-    }
+    override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState = MakeindexCommandLineState(environment, mainFile, workingDirectory, project, makeindexProgram, commandLineArguments)
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = MakeindexSettingsEditor(project)
 

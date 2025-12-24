@@ -31,7 +31,5 @@ class LatexModuleConfigurationEditorProvider : ModuleConfigurationEditorProvider
         )
     }
 
-    private fun isLatexModule(module: Module): Boolean {
-        return ModuleType.get(module).id == LatexModuleType.ID
-    }
+    private fun isLatexModule(module: Module): Boolean = ModuleType.get(module).id == LatexModuleType.ID
 }

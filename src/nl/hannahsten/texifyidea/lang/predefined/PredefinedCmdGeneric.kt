@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.lang.predefined
 
 import nl.hannahsten.texifyidea.lang.LArgument
 import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.PredefinedCommandSet
 
 object PredefinedCmdGeneric : PredefinedCommandSet() {
@@ -546,15 +547,14 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
 
     val listings = buildCommands {
         underPackage("luacode") {
-            "directlua".cmd("lua code".required)
-            "luaexec".cmd("lua code".required)
+            "directlua".cmd("lua code".required(LatexContexts.Verbatim))
+            "luaexec".cmd("lua code".required(LatexContexts.Verbatim))
         }
         underPackage("pythontex") {
-            +"py"
-            +"pyb"
-            +"pyc"
-            +"pys"
-            +"pyv"
+            listOf("py", "pyb", "pyc", "pys", "pyv").forEach { it.cmd("code".required(LatexContexts.Verbatim)) }
+        }
+        underPackage(LatexLib.LISTINGS) {
+            "lstinline".cmd("code".required(LatexContexts.Verbatim))
         }
     }
 

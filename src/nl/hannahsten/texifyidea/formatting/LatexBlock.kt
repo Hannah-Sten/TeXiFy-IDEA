@@ -244,16 +244,10 @@ class LatexBlock(
         else Indent.getNoneIndent()
     }
 
-    override fun getSpacing(child1: Block?, child2: Block): Spacing? {
-        return spacingBuilder.getSpacing(this, child1, child2)
-    }
+    override fun getSpacing(child1: Block?, child2: Block): Spacing? = spacingBuilder.getSpacing(this, child1, child2)
 
-    override fun isLeaf(): Boolean {
-        return myNode.firstChildNode == null && sectionIndent <= 0
-    }
+    override fun isLeaf(): Boolean = myNode.firstChildNode == null && sectionIndent <= 0
 
     // Automatic indent when enter is pressed
-    override fun getChildAttributes(newChildIndex: Int): ChildAttributes {
-        return LatexEnterHandler.getChildAttributes(newChildIndex, node, subBlocks)
-    }
+    override fun getChildAttributes(newChildIndex: Int): ChildAttributes = LatexEnterHandler.getChildAttributes(newChildIndex, node, subBlocks)
 }

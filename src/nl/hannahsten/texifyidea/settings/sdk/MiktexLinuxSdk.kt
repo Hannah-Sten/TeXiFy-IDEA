@@ -23,9 +23,7 @@ class MiktexLinuxSdk : LatexSdk("MiKTeX Mac/Linux SDK") {
 
     override fun getLatexDistributionType(sdk: Sdk) = LatexDistributionType.MIKTEX
 
-    override fun getExecutableName(executable: String, homePath: String): String {
-        return "$homePath/$executable"
-    }
+    override fun getExecutableName(executable: String, homePath: String): String = "$homePath/$executable"
 
     override fun suggestHomePath(): String {
         // The user can by default install globally or for the user only (see below)
@@ -33,12 +31,10 @@ class MiktexLinuxSdk : LatexSdk("MiKTeX Mac/Linux SDK") {
         return "~/bin/"
     }
 
-    override fun suggestHomePaths(): MutableCollection<String> {
-        return listOf(
-            Paths.get(System.getProperty("user.home"), "bin").toString(),
-            "/usr/local/bin"
-        ).toMutableList()
-    }
+    override fun suggestHomePaths(): MutableCollection<String> = listOf(
+        Paths.get(System.getProperty("user.home"), "bin").toString(),
+        "/usr/local/bin"
+    ).toMutableList()
 
     override fun isValidSdkHome(path: String): Boolean {
         // We just want a path where pdflatex is present
@@ -67,7 +63,5 @@ class MiktexLinuxSdk : LatexSdk("MiKTeX Mac/Linux SDK") {
         return LocalFileSystem.getInstance().findFileByPath(Paths.get(System.getProperty("user.home"), ".miktex", "texmfs", "install", "source").toString())
     }
 
-    override fun getDefaultStyleFilesPath(homePath: String): VirtualFile? {
-        return LocalFileSystem.getInstance().findFileByPath(Paths.get(System.getProperty("user.home"), ".miktex", "texmfs", "install", "tex").toString())
-    }
+    override fun getDefaultStyleFilesPath(homePath: String): VirtualFile? = LocalFileSystem.getInstance().findFileByPath(Paths.get(System.getProperty("user.home"), ".miktex", "texmfs", "install", "tex").toString())
 }

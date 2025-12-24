@@ -13,9 +13,7 @@ open class LatexMagicCommentStubElementType(debugName: String) : IStubElementTyp
 
     override fun createPsi(stub: LatexMagicCommentStub): LatexMagicComment = LatexMagicCommentImpl(stub, this)
 
-    override fun createStub(psi: LatexMagicComment, parentStub: StubElement<*>): LatexMagicCommentStub {
-        return LatexMagicCommentStubImpl(parentStub, this, psi.key().toString(), psi.value())
-    }
+    override fun createStub(psi: LatexMagicComment, parentStub: StubElement<*>): LatexMagicCommentStub = LatexMagicCommentStubImpl(parentStub, this, psi.key().toString(), psi.value())
 
     override fun getExternalId() = "texify.latex." + super.toString()
 

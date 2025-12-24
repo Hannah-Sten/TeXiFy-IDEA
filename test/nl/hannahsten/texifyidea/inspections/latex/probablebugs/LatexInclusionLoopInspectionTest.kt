@@ -4,9 +4,7 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 
 class LatexInclusionLoopInspectionTest : TexifyInspectionTestBase(LatexInclusionLoopInspection()) {
 
-    override fun getTestDataPath(): String {
-        return "test/resources/inspections/latex/inclusionloop"
-    }
+    override fun getTestDataPath(): String = "test/resources/inspections/latex/inclusionloop"
 
     // Test is not working
     // fun testWarning() {

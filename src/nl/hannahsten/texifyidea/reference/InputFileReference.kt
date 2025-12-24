@@ -129,9 +129,7 @@ class InputFileReference(
         }
     }
 
-    override fun handleElementRename(newElementName: String): PsiElement {
-        return handleElementRename(element, newElementName, true, refText, range)
-    }
+    override fun handleElementRename(newElementName: String): PsiElement = handleElementRename(element, newElementName, true, refText, range)
 
     // Required for moving referenced files
     override fun bindToElement(givenElement: PsiElement): PsiElement {

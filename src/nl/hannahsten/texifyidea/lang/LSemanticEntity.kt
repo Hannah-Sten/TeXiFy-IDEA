@@ -44,13 +44,9 @@ sealed class LSemanticEntity(
         return result
     }
 
-    fun isApplicableIn(context: LContextSet): Boolean {
-        return applicableContext == null || applicableContext.any { it in context }
-    }
+    fun isApplicableIn(context: LContextSet): Boolean = applicableContext == null || applicableContext.any { it in context }
 
-    fun isApplicableIn(context: LatexContext): Boolean {
-        return applicableContext == null || context in applicableContext
-    }
+    fun isApplicableIn(context: LatexContext): Boolean = applicableContext == null || context in applicableContext
 
     fun applicableContextDisplay(): String {
         return if (applicableContext == null) "*"
@@ -78,9 +74,7 @@ class LSemanticCommand(
     val nameWithSlash: String = "\\$name",
 ) : LSemanticEntity(name, namespace, applicableCtx, description) {
 
-    override fun toString(): String {
-        return "Cmd($displayName, ctx=${applicableContextDisplay()}, arg=${arguments.joinToString("")}, description='$description')"
-    }
+    override fun toString(): String = "Cmd($displayName, ctx=${applicableContextDisplay()}, arg=${arguments.joinToString("")}, description='$description')"
 }
 
 class LSemanticEnv(
@@ -100,7 +94,5 @@ class LSemanticEnv(
      */
     description: String = "",
 ) : LSemanticEntity(name, namespace, requiredContext, description) {
-    override fun toString(): String {
-        return "Env($displayName, ctx=${applicableContextDisplay()}, arg=${arguments.joinToString("")}, scope=$contextSignature, description='$description')"
-    }
+    override fun toString(): String = "Env($displayName, ctx=${applicableContextDisplay()}, arg=${arguments.joinToString("")}, scope=$contextSignature, description='$description')"
 }

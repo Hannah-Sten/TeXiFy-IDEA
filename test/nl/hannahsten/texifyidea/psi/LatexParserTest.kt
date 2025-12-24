@@ -69,13 +69,13 @@ class LatexParserTest : BasePlatformTestCase() {
     fun testIfnextchar() {
         myFixture.configureByText(
             LatexFileType,
-            """
+            $$"""
             \newcommand{\xyz}{\@ifnextchar[{\@xyz}{\@xyz[default]}}
             \def\@xyz[#1]#2{do something with #1 and #2}
             
             \@namedef{#1}{\@ifnextchar{^}{\@nameuse{#1@}}{\@nameuse{#1@}^{}}}
             
-            \newcommand{\abc}{\@ifnextchar${'$'}{Math coming: }{No math}}
+            \newcommand{\abc}{\@ifnextchar${Math coming: }{No math}}
             """.trimIndent()
         )
         myFixture.checkHighlighting()
@@ -268,13 +268,13 @@ class LatexParserTest : BasePlatformTestCase() {
     fun testUnmatchedBeginInDefinition() {
         myFixture.configureByText(
             LatexFileType,
-            """
+            $$"""
             \newcommand{\tableMod}[0]{
                 \end{multicols}
                 \insertedObject
                 \begin{multicols}{2}
             }
-            \newcommand{\cmd}{${'$'}x$}
+            \newcommand{\cmd}{$x$}
             \newcommand\MnMissing{$\times$} % MnSymbol package
             
             \AfterEndEnvironment{minted}{

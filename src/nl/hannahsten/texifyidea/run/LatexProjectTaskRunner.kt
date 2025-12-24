@@ -26,10 +26,12 @@ class LatexProjectTaskRunner : ProjectTaskRunner() {
 
     override fun canRun(projectTask: ProjectTask): Boolean {
         // Only run if we're only going to build LaTeX run configurations: don't interfere with other languages (e.g. maven tasks)
-        return projectTask is ModuleBuildTask && (
-            ModuleType.get(projectTask.module).id == LatexModuleType.ID
-                || RunManager.getInstance(projectTask.module.project).allConfigurationsList.let { it.all { config -> config is LatexRunConfiguration } && it.isNotEmpty() }
-            )
+        return projectTask is ModuleBuildTask &&
+            (
+                ModuleType.get(projectTask.module).id == LatexModuleType.ID
+                    ||
+                    RunManager.getInstance(projectTask.module.project).allConfigurationsList.let { it.all { config -> config is LatexRunConfiguration } && it.isNotEmpty() }
+                )
     }
 
     override fun run(project: Project, context: ProjectTaskContext, vararg tasks: ProjectTask?): Promise<Result> {

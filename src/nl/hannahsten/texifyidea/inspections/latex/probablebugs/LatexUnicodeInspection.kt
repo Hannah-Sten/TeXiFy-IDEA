@@ -89,9 +89,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
     override val inspectionGroup = InsightGroup.LATEX
 
     @Nls
-    override fun getDisplayName(): String {
-        return "Unsupported non-ASCII character"
-    }
+    override fun getDisplayName(): String = "Unsupported non-ASCII character"
 
     override val inspectionId = "Unicode"
 
@@ -150,9 +148,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
     private class InsertUnicodePackageFix : LocalQuickFix {
 
         @Nls
-        override fun getFamilyName(): String {
-            return "Include Unicode support packages"
-        }
+        override fun getFamilyName(): String = "Include Unicode support packages"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val file = descriptor.psiElement.containingFile
@@ -182,9 +178,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
     private class EscapeUnicodeFix(private val inMathMode: Boolean) : LocalQuickFix {
 
         @Nls
-        override fun getFamilyName(): String {
-            return "Escape Unicode character"
-        }
+        override fun getFamilyName(): String = "Escape Unicode character"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val element = descriptor.psiElement

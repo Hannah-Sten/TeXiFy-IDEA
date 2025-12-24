@@ -30,9 +30,7 @@ object AllPredefined : CachedLatexSemanticsLookup() {
         it.allEntities
     }
 
-    override fun allEntitiesSeq(): Sequence<LSemanticEntity> {
-        return allEntities.asSequence()
-    }
+    override fun allEntitiesSeq(): Sequence<LSemanticEntity> = allEntities.asSequence()
 
     val allCommands: List<LSemanticCommand> = allEntities.filterIsInstance<LSemanticCommand>()
 
@@ -41,29 +39,19 @@ object AllPredefined : CachedLatexSemanticsLookup() {
     private val packageToEntities: Map<LatexLib, List<LSemanticEntity>> =
         allEntities.groupBy { it.dependency }.mapValues { it.value }
 
-    fun findByLib(packageName: LatexLib): List<LSemanticEntity> {
-        return packageToEntities[packageName] ?: emptyList()
-    }
+    fun findByLib(packageName: LatexLib): List<LSemanticEntity> = packageToEntities[packageName] ?: emptyList()
 
     private val simpleNameLookup = allEntities.associateBy { it.name }
 
-    override fun lookup(name: String): LSemanticEntity? {
-        return simpleNameLookup[name]
-    }
+    override fun lookup(name: String): LSemanticEntity? = simpleNameLookup[name]
 
     val nameToEntities = allEntities.groupBy { it.name }
 
-    fun findAll(name: String): List<LSemanticEntity> {
-        return nameToEntities[name] ?: emptyList()
-    }
+    fun findAll(name: String): List<LSemanticEntity> = nameToEntities[name] ?: emptyList()
 
-    fun findAllCommand(name: String): List<LSemanticCommand> {
-        return findAll(name).filterIsInstance<LSemanticCommand>()
-    }
+    fun findAllCommand(name: String): List<LSemanticCommand> = findAll(name).filterIsInstance<LSemanticCommand>()
 
-    fun findAllEnvironment(name: String): List<LSemanticEnv> {
-        return findAll(name).filterIsInstance<LSemanticEnv>()
-    }
+    fun findAllEnvironment(name: String): List<LSemanticEnv> = findAll(name).filterIsInstance<LSemanticEnv>()
 
     private val displayToCommand: Map<String, List<LSemanticCommand>> by lazy {
         buildMap<String, MutableList<LSemanticCommand>> {
@@ -74,9 +62,7 @@ object AllPredefined : CachedLatexSemanticsLookup() {
         }
     }
 
-    fun findCommandByDisplay(display: String): List<LSemanticCommand> {
-        return displayToCommand[display] ?: emptyList()
-    }
+    fun findCommandByDisplay(display: String): List<LSemanticCommand> = displayToCommand[display] ?: emptyList()
 
     private val commandContextInverseSearch: Map<LatexContext, List<LSemanticCommand>> by lazy {
         buildMap<LatexContext, MutableList<LSemanticCommand>> {
@@ -95,9 +81,7 @@ object AllPredefined : CachedLatexSemanticsLookup() {
         }
     }
 
-    fun findCommandsByContext(context: LatexContext): List<LSemanticCommand> {
-        return commandContextInverseSearch[context] ?: emptyList()
-    }
+    fun findCommandsByContext(context: LatexContext): List<LSemanticCommand> = commandContextInverseSearch[context] ?: emptyList()
 
     init {
         val app = ApplicationManager.getApplication()

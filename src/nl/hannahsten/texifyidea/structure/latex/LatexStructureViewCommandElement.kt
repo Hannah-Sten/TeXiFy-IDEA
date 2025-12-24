@@ -63,11 +63,7 @@ class LatexStructureViewCommandElement private constructor(private val element: 
         }
     }
 
-    override fun canNavigate(): Boolean {
-        return element is NavigationItem && (element as NavigationItem).canNavigate()
-    }
+    override fun canNavigate(): Boolean = element is NavigationItem && (element as NavigationItem).canNavigate()
 
-    override fun canNavigateToSource(): Boolean {
-        return element is NavigationItem && (element as NavigationItem).canNavigateToSource()
-    }
+    override fun canNavigateToSource(): Boolean = element is NavigationItem && (element as NavigationItem).canNavigateToSource()
 }

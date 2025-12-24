@@ -61,9 +61,7 @@ class InlineFileTest : LightPlatformCodeInsightTestCase() {
             @NonNls val fileName = configure()
             performAction(
                 object : MockInlineMethodOptions() {
-                    override fun isInlineThisOnly(): Boolean {
-                        return true
-                    }
+                    override fun isInlineThisOnly(): Boolean = true
                 },
                 false
             )
@@ -74,9 +72,7 @@ class InlineFileTest : LightPlatformCodeInsightTestCase() {
                 @NonNls val fileName = configure(testIndex)
                 performAction(
                     object : MockInlineMethodOptions() {
-                        override fun isInlineThisOnly(): Boolean {
-                            return true
-                        }
+                        override fun isInlineThisOnly(): Boolean = true
                     },
                     false
                 )

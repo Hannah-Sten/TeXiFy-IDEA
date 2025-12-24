@@ -9,10 +9,8 @@ import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import java.util.regex.Pattern
 
-fun extractSubParameterRanges(param: LatexRequiredParam): List<TextRange> {
-    return splitToRanges(stripGroup(param.text), PatternMagic.parameterSplit)
-        .map { r: TextRange -> r.shiftRight(1) }
-}
+fun extractSubParameterRanges(param: LatexRequiredParam): List<TextRange> = splitToRanges(stripGroup(param.text), PatternMagic.parameterSplit)
+    .map { r: TextRange -> r.shiftRight(1) }
 
 fun splitToRanges(text: String, pattern: Pattern): List<TextRange> {
     val parts = pattern.split(text)

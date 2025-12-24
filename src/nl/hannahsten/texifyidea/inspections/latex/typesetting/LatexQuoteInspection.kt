@@ -155,9 +155,7 @@ class LatexQuoteInspection : TexifyInspectionBase() {
      */
     private class MathFix : LocalQuickFix {
 
-        override fun getFamilyName(): String {
-            return "Convert to inline maths environment, for typesetting feet, inches or other mathematical punctuation."
-        }
+        override fun getFamilyName(): String = "Convert to inline maths environment, for typesetting feet, inches or other mathematical punctuation."
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val document = descriptor.psiElement.containingFile.document() ?: return
@@ -171,9 +169,7 @@ class LatexQuoteInspection : TexifyInspectionBase() {
 
     private class LatexQuoteFix(val description: String, val replacement: String) : LocalQuickFix {
 
-        override fun getFamilyName(): String {
-            return "Replace with a LaTeX $description"
-        }
+        override fun getFamilyName(): String = "Replace with a LaTeX $description"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val document = descriptor.psiElement.containingFile.document() ?: return

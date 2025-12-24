@@ -20,9 +20,7 @@ class LatexPackageNameDoesNotMatchFileNameInspection : TexifyInspectionBase() {
     override val inspectionId: String =
         "PackageNameDoesNotMatchFileName"
 
-    override fun getDisplayName(): String {
-        return "Package name does not match file name"
-    }
+    override fun getDisplayName(): String = "Package name does not match file name"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
@@ -50,9 +48,7 @@ class LatexPackageNameDoesNotMatchFileNameInspection : TexifyInspectionBase() {
 
     object PackageNameMatchFileNameQuickFix : LocalQuickFix {
 
-        override fun getFamilyName(): String {
-            return "Fix package name"
-        }
+        override fun getFamilyName(): String = "Fix package name"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val providesCommand = descriptor.psiElement as LatexCommands

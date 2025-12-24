@@ -30,9 +30,7 @@ abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStu
     constructor(node: ASTNode) : super(node)
     constructor(stub: LatexCommandsStub?, nodeType: IElementType?, node: ASTNode?) : super(stub, nodeType, node)
 
-    override fun toString(): String {
-        return "Command($name)"
-    }
+    override fun toString(): String = "Command($name)"
 
     override fun getTextOffset(): Int {
         val name = getName()
@@ -45,9 +43,7 @@ abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStu
         }
     }
 
-    override fun getNameIdentifier(): PsiElement {
-        return this
-    }
+    override fun getNameIdentifier(): PsiElement = this
 
     override fun hasStar(): Boolean {
         forEachDirectChild {
@@ -92,13 +88,9 @@ abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStu
     /**
      * Get the reference for this command, assuming it has exactly one reference (return null otherwise).
      */
-    override fun getReference(): PsiReference? {
-        return this.references.firstOrNull()
-    }
+    override fun getReference(): PsiReference? = this.references.firstOrNull()
 
-    override fun getPresentation(): ItemPresentation? {
-        return LatexPresentationFactory.getPresentation(this)
-    }
+    override fun getPresentation(): ItemPresentation? = LatexPresentationFactory.getPresentation(this)
 
     override fun getOptionalParameterMap() = getOptionalParameterMapFromParameters(this.parameterList)
 

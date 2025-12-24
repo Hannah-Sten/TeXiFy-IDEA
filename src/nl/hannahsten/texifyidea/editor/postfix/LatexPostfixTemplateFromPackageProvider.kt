@@ -24,13 +24,11 @@ abstract class LatexPostfixTemplateFromPackageProvider(private val pack: LatexPa
 
     companion object {
 
-        fun getProvider(pack: LatexPackage?): PostfixTemplateProvider {
-            return when (pack) {
-                LatexPackage.AMSMATH -> LatexPostfixTemplateFromAmsMathProvider()
-                LatexPackage.AMSFONTS -> LatexPostfixTemplateFromAmsFontsProvider()
-                LatexPackage.BM -> LatexPostfixTemplateFromBmProvider()
-                else -> LatexPostFixTemplateProvider()
-            }
+        fun getProvider(pack: LatexPackage?): PostfixTemplateProvider = when (pack) {
+            LatexPackage.AMSMATH -> LatexPostfixTemplateFromAmsMathProvider()
+            LatexPackage.AMSFONTS -> LatexPostfixTemplateFromAmsFontsProvider()
+            LatexPackage.BM -> LatexPostfixTemplateFromBmProvider()
+            else -> LatexPostFixTemplateProvider()
         }
     }
 }

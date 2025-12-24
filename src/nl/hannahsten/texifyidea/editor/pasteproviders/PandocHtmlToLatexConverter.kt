@@ -32,7 +32,7 @@ class PandocHtmlToLatexConverter {
             )
             val (output, exitCode) = runCommandWithExitCode(*commands, inputString = htmlIn)
             if (exitCode != 0 || output == null) return null
-            return output
+            output
         }
         else null
     }

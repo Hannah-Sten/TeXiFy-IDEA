@@ -19,21 +19,13 @@ class LatexEscapeHashOutsideCommandInspection : AbstractTexifyRegexBasedInspecti
     regex = Regex("""(?<!\\)#"""),
     inspectionGroup = InsightGroup.LATEX
 ) {
-    override fun errorMessage(matcher: MatchResult, context: LContextSet): String {
-        return "Unescaped #"
-    }
+    override fun errorMessage(matcher: MatchResult, context: LContextSet): String = "Unescaped #"
 
-    override fun quickFixName(matcher: MatchResult, contexts: LContextSet): String {
-        return "Escape #"
-    }
+    override fun quickFixName(matcher: MatchResult, contexts: LContextSet): String = "Escape #"
 
-    override fun getReplacement(match: MatchResult, fullElementText: String, project: Project, problemDescriptor: ProblemDescriptor): String {
-        return "\\#"
-    }
+    override fun getReplacement(match: MatchResult, fullElementText: String, project: Project, problemDescriptor: ProblemDescriptor): String = "\\#"
 
-    override fun additionalChecks(element: PsiElement, match: MatchResult, bundle: DefinitionBundle, file: PsiFile): Boolean {
-        return !LatexPsiUtil.isInsideDefinition(element, bundle)
-    }
+    override fun additionalChecks(element: PsiElement, match: MatchResult, bundle: DefinitionBundle, file: PsiFile): Boolean = !LatexPsiUtil.isInsideDefinition(element, bundle)
 
     override fun shouldInspectElement(element: PsiElement, lookup: LatexSemanticsLookup): Boolean {
         if (!super.shouldInspectElement(element, lookup)) return false

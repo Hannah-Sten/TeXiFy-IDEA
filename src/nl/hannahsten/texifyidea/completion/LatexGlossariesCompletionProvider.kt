@@ -14,17 +14,13 @@ import nl.hannahsten.texifyidea.util.parser.toStringMap
 
 object LatexGlossariesCompletionProvider : LatexContextAgnosticCompletionProvider() {
 
-    private fun getOptionsMap(pairs: List<LatexStrictKeyValPair>): LinkedHashMap<String, String> {
-        return pairs.associate { pair -> Pair(pair.keyValKey, pair.keyValValue) }.toStringMap()
-    }
+    private fun getOptionsMap(pairs: List<LatexStrictKeyValPair>): LinkedHashMap<String, String> = pairs.associate { pair -> Pair(pair.keyValKey, pair.keyValValue) }.toStringMap()
 
-    private fun prettyPrintParameter(param: LatexRequiredParam): String {
-        return if (param.requiredParamContentList.isNotEmpty()) {
-            param.requiredParamContentList.joinToString { c -> c.text }
-        }
-        else {
-            param.strictKeyValPairList.joinToString { p -> p.text }
-        }
+    private fun prettyPrintParameter(param: LatexRequiredParam): String = if (param.requiredParamContentList.isNotEmpty()) {
+        param.requiredParamContentList.joinToString { c -> c.text }
+    }
+    else {
+        param.strictKeyValPairList.joinToString { p -> p.text }
     }
 
     private fun buildLookupElement(command: LatexCommands, label: String, short: String, long: String) =

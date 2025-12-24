@@ -29,9 +29,7 @@ class LatexInlineFileProcessor(
     private val myScope: SearchScope = GlobalSearchScope.projectScope(myProject)
 ) : BaseRefactoringProcessor(myProject) {
 
-    override fun createUsageViewDescriptor(usages: Array<out UsageInfo>): UsageViewDescriptor {
-        return LatexInlineFileDescriptor(inlineFile)
-    }
+    override fun createUsageViewDescriptor(usages: Array<out UsageInfo>): UsageViewDescriptor = LatexInlineFileDescriptor(inlineFile)
 
     override fun findUsages(): Array<UsageInfo> {
         val tempreferences = ReferencesSearch.search(inlineFile, myScope).findAll().asSequence()
@@ -83,7 +81,5 @@ class LatexInlineFileProcessor(
         }
     }
 
-    override fun getCommandName(): String {
-        return "Inlining File " + this.inlineFile.name
-    }
+    override fun getCommandName(): String = "Inlining File " + this.inlineFile.name
 }

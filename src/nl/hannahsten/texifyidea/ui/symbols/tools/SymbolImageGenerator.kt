@@ -25,7 +25,8 @@ fun generateSymbolImages(symbolDirectory: String, skipExisting: Boolean = true) 
     symbols.forEach { symbol ->
         println("Generating images for symbol " + symbol.command?.commandWithSlash)
 
-        if (skipExisting && File("$symbolDirectory/${symbol.fileName}").exists() &&
+        if (skipExisting &&
+            File("$symbolDirectory/${symbol.fileName}").exists() &&
             File("$symbolDirectory/${symbol.fileName}").exists()
         ) {
             println("> Skipping")

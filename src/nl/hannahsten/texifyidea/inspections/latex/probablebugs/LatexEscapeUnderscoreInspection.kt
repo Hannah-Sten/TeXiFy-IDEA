@@ -25,15 +25,9 @@ class LatexEscapeUnderscoreInspection : AbstractTexifyRegexBasedInspection(
         LatexContexts.LabelDefinition, LatexContexts.LabelReference, LatexContexts.URL, // Label names and URLs may contain _.
     ),
 ) {
-    override fun errorMessage(matcher: MatchResult, context: LContextSet): String {
-        return """Escape character \ expected"""
-    }
+    override fun errorMessage(matcher: MatchResult, context: LContextSet): String = """Escape character \ expected"""
 
-    override fun getReplacement(match: MatchResult, fullElementText: String, project: Project, problemDescriptor: ProblemDescriptor): String {
-        return """\_"""
-    }
+    override fun getReplacement(match: MatchResult, fullElementText: String, project: Project, problemDescriptor: ProblemDescriptor): String = """\_"""
 
-    override fun quickFixName(matcher: MatchResult, contexts: LContextSet): String {
-        return """Change to \_"""
-    }
+    override fun quickFixName(matcher: MatchResult, contexts: LContextSet): String = """Change to \_"""
 }

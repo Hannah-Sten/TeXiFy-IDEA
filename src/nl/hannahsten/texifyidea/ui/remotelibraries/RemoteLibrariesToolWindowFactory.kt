@@ -112,13 +112,11 @@ class RemoteLibrariesToolWindowFactory : ToolWindowFactory {
 
         val content = JBScrollPane(tree)
 
-        override fun getData(dataId: String): Any? {
-            return when {
-                TexifyDataKeys.LIBRARY_TREE.`is`(dataId) -> tree
-                TexifyDataKeys.LIBRARY_NAME.`is`(dataId) -> (tree.selectionPath?.getPathComponent(1) as? LibraryMutableTreeNode)?.toString()
-                TexifyDataKeys.LIBRARY_IDENTIFIER.`is`(dataId) -> (tree.selectionPath?.getPathComponent(1) as? LibraryMutableTreeNode)?.identifier
-                else -> null
-            }
+        override fun getData(dataId: String): Any? = when {
+            TexifyDataKeys.LIBRARY_TREE.`is`(dataId) -> tree
+            TexifyDataKeys.LIBRARY_NAME.`is`(dataId) -> (tree.selectionPath?.getPathComponent(1) as? LibraryMutableTreeNode)?.toString()
+            TexifyDataKeys.LIBRARY_IDENTIFIER.`is`(dataId) -> (tree.selectionPath?.getPathComponent(1) as? LibraryMutableTreeNode)?.identifier
+            else -> null
         }
     }
 }

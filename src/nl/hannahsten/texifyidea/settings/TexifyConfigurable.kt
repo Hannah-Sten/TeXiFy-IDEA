@@ -97,33 +97,31 @@ class TexifyConfigurable : SearchableConfigurable {
 
     override fun getDisplayName() = "TeXiFy"
 
-    override fun createComponent(): JComponent {
-        return JPanel(FlowLayout(FlowLayout.LEFT)).apply {
-            add(
-                JPanel().apply {
-                    layout = BoxLayout(this, BoxLayout.Y_AXIS)
-                    automaticSecondInlineMathSymbol = addCheckbox("Automatically insert second '$'")
-                    automaticUpDownBracket = addCheckbox("Automatically insert braces around text in subscript and superscript")
-                    automaticItemInItemize = addCheckbox("Automatically insert '\\item' in itemize-like environments on pressing enter")
-                    completionMode = addComboBox("Autocompletion mode", "Smart", "Included only", "All packages")
-                    automaticDependencyCheck = addCheckbox("Automatically check for required package dependencies and insert them")
-                    automaticBibtexImport = addCheckbox("Automatically copy BibTeX entries from remote libraries to the local library")
-                    continuousPreview = addCheckbox("Automatically refresh preview of math and TikZ pictures")
-                    includeBackslashInSelection = addCheckbox("Include the backslash in the selection when selecting a LaTeX command")
-                    showPackagesInStructureView = addCheckbox("Show LaTeX package files in structure view (warning: structure view will take more time to load)")
-                    enableExternalIndex = addCheckbox("Enable indexing of MiKTeX/TeX Live package files (requires restart)")
-                    enableSpellcheckEverywhere = addCheckbox("Enable spellcheck inspection in all scopes")
-                    enableTextidote = addCheckbox("Enable the Textidote linter")
-                    textidoteOptions = addCommandLineEditor("Textidote", TexifySettings.DEFAULT_TEXTIDOTE_OPTIONS)
-                    latexIndentOptions = addCommandLineEditor("Latexindent", "")
-                    addSumatraPathField(this)
-                    automaticQuoteReplacement = addComboBox("Smart quote substitution: ", "Off", "TeX ligatures", "TeX commands", "csquotes")
-                    htmlPasteTranslator = addComboBox("HTML paste translator", "Built-in", "Pandoc", "Disabled")
-                    autoCompileOption = addComboBox("Automatic compilation", "Off", "Always", "After document save", "Disable in power save mode")
-                    addFilesetExpirationTimeMs(this)
-                }
-            )
-        }
+    override fun createComponent(): JComponent = JPanel(FlowLayout(FlowLayout.LEFT)).apply {
+        add(
+            JPanel().apply {
+                layout = BoxLayout(this, BoxLayout.Y_AXIS)
+                automaticSecondInlineMathSymbol = addCheckbox("Automatically insert second '$'")
+                automaticUpDownBracket = addCheckbox("Automatically insert braces around text in subscript and superscript")
+                automaticItemInItemize = addCheckbox("Automatically insert '\\item' in itemize-like environments on pressing enter")
+                completionMode = addComboBox("Autocompletion mode", "Smart", "Included only", "All packages")
+                automaticDependencyCheck = addCheckbox("Automatically check for required package dependencies and insert them")
+                automaticBibtexImport = addCheckbox("Automatically copy BibTeX entries from remote libraries to the local library")
+                continuousPreview = addCheckbox("Automatically refresh preview of math and TikZ pictures")
+                includeBackslashInSelection = addCheckbox("Include the backslash in the selection when selecting a LaTeX command")
+                showPackagesInStructureView = addCheckbox("Show LaTeX package files in structure view (warning: structure view will take more time to load)")
+                enableExternalIndex = addCheckbox("Enable indexing of MiKTeX/TeX Live package files (requires restart)")
+                enableSpellcheckEverywhere = addCheckbox("Enable spellcheck inspection in all scopes")
+                enableTextidote = addCheckbox("Enable the Textidote linter")
+                textidoteOptions = addCommandLineEditor("Textidote", TexifySettings.DEFAULT_TEXTIDOTE_OPTIONS)
+                latexIndentOptions = addCommandLineEditor("Latexindent", "")
+                addSumatraPathField(this)
+                automaticQuoteReplacement = addComboBox("Smart quote substitution: ", "Off", "TeX ligatures", "TeX commands", "csquotes")
+                htmlPasteTranslator = addComboBox("HTML paste translator", "Built-in", "Pandoc", "Disabled")
+                autoCompileOption = addComboBox("Automatic compilation", "Off", "Always", "After document save", "Disable in power save mode")
+                addFilesetExpirationTimeMs(this)
+            }
+        )
     }
 
     /**
@@ -226,14 +224,12 @@ class TexifyConfigurable : SearchableConfigurable {
         panel.add(subPanel)
     }
 
-    override fun isModified(): Boolean {
-        return booleanSettings.any { it.first.get()?.isSelected != it.second.get() } ||
-            textidoteOptions?.text != (settings.textidoteOptions ?: "") ||
-            latexIndentOptions?.text != (settings.latexIndentOptions ?: "") ||
-            enumSettings.any { it.comboBox.get()?.selectedIndex != it.setting.get().ordinal } ||
-            getUISumatraPath() != settings.pathToSumatra ||
-            filesetExpirationTimeMs?.value != settings.filesetExpirationTimeMs
-    }
+    override fun isModified(): Boolean = booleanSettings.any { it.first.get()?.isSelected != it.second.get() } ||
+        textidoteOptions?.text != (settings.textidoteOptions ?: "") ||
+        latexIndentOptions?.text != (settings.latexIndentOptions ?: "") ||
+        enumSettings.any { it.comboBox.get()?.selectedIndex != it.setting.get().ordinal } ||
+        getUISumatraPath() != settings.pathToSumatra ||
+        filesetExpirationTimeMs?.value != settings.filesetExpirationTimeMs
 
     override fun apply() {
         for (setting in booleanSettings) {

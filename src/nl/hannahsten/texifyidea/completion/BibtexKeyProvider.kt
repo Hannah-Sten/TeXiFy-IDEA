@@ -81,10 +81,8 @@ object BibtexKeyProvider : CompletionProvider<CompletionParameters>() {
         return result
     }
 
-    private fun packageName(dependend: Dependend): String {
-        return when (val dependency = dependend.dependency) {
-            LatexPackage.DEFAULT -> ""
-            else -> "  (${dependency.name})"
-        }
+    private fun packageName(dependend: Dependend): String = when (val dependency = dependend.dependency) {
+        LatexPackage.DEFAULT -> ""
+        else -> "  (${dependency.name})"
     }
 }

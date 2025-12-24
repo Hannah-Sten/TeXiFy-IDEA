@@ -21,13 +21,9 @@ class LatexGroupedSubSupScriptInspection : AbstractTexifyRegexBasedInspection(
         return "${subSup}script is not grouped"
     }
 
-    override fun quickFixName(matcher: MatchResult, contexts: LContextSet): String {
-        return "Insert curly braces"
-    }
+    override fun quickFixName(matcher: MatchResult, contexts: LContextSet): String = "Insert curly braces"
 
-    override fun getHighlightRange(matcher: MatchResult): IntRange {
-        return matcher.groups["content"]?.range ?: matcher.range
-    }
+    override fun getHighlightRange(matcher: MatchResult): IntRange = matcher.groups["content"]?.range ?: matcher.range
 
     override fun getReplacement(match: MatchResult, fullElementText: String, project: Project, problemDescriptor: ProblemDescriptor): String {
         val content = match.groups["content"]?.value ?: ""

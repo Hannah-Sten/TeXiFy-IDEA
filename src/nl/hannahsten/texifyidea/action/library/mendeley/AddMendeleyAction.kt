@@ -25,9 +25,7 @@ class AddMendeleyAction : AddLibraryAction<MendeleyLibrary, AddMendeleyAction.Ad
         library to bibItems
     }
 
-    override fun getDialog(project: Project): AddMendeleyDialogWrapper {
-        return AddMendeleyDialogWrapper(project)
-    }
+    override fun getDialog(project: Project): AddMendeleyDialogWrapper = AddMendeleyDialogWrapper(project)
 
     /**
      * Reset the authorization server when the library is added, to prepare for the next time we want to add a library.
@@ -46,13 +44,9 @@ class AddMendeleyAction : AddLibraryAction<MendeleyLibrary, AddMendeleyAction.Ad
             init()
         }
 
-        override fun createCenterPanel(): JComponent {
-            return browser.component
-        }
+        override fun createCenterPanel(): JComponent = browser.component
 
-        override fun doValidate(): ValidationInfo? {
-            return if (MendeleyAuthenticator.isUserAuthenticationFinished) null
-            else ValidationInfo("You are not yet logged in to Mendeley")
-        }
+        override fun doValidate(): ValidationInfo? = if (MendeleyAuthenticator.isUserAuthenticationFinished) null
+        else ValidationInfo("You are not yet logged in to Mendeley")
     }
 }
