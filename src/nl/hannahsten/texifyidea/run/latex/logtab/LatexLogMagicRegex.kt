@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.run.latex.logtab
 
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.FILE_LINE_REGEX
 
-
 /**
  * Regex (text) every error handler and message processor can use.
  */
