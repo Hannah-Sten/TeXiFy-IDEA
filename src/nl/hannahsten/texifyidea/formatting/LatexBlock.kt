@@ -164,7 +164,9 @@ class LatexBlock(
             else -> shouldIndentEnvironments
         }
 
-        if (shouldIndentEnvironment || elementType === LatexTypes.PSEUDOCODE_BLOCK_CONTENT || elementType === LatexTypes.IF_BLOCK_CONTENT ||
+        if (shouldIndentEnvironment ||
+            elementType === LatexTypes.PSEUDOCODE_BLOCK_CONTENT ||
+            elementType === LatexTypes.IF_BLOCK_CONTENT ||
             // Fix for leading comments inside an environment, because somehow they are not placed inside environments.
             // Note that this does not help to insert the indentation, but at least the indent is not removed
             // when formatting.
