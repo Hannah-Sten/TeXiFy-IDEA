@@ -1,5 +1,8 @@
 package nl.hannahsten.texifyidea.run.latex.logtab
 
+import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.FILE_LINE_REGEX
+
+
 /**
  * Regex (text) every error handler and message processor can use.
  */
@@ -37,14 +40,10 @@ object LatexLogMagicRegex {
     /** A variation on [FILE_LINE_REGEX] by lualatex (?) */
     val directLuaError =
         """^\((?!\s*\.\.\.)(.+\.\w+)\)(\[.+])?:(?<line>\d+): (?<message>.*)""".toRegex()
-    val fixMeError =
-        """FiXme (Fatal )?Error: '(?<message>.+)' on input line (?<line>\d+).""".toRegex()
 
     /*
      * Warnings
      */
-    val fixMeWarning =
-        """FiXme Warning: '(?<message>.+)' on input line (?<line>\d+).""".toRegex()
     val pdfTeXWarning =
         """pdfTeX warning(.+)?: (?<message>.+)""".toRegex()
 

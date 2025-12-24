@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.run.latex.logtab.messagehandlers.errors
 
-import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.fixMeError
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessage
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessageType
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexMessageHandler
@@ -10,7 +9,7 @@ import nl.hannahsten.texifyidea.run.latex.logtab.LatexMessageHandler
  */
 class LatexFixMeMessageHandler(messageType: LatexLogMessageType) : LatexMessageHandler(
     messageType,
-    fixMeError
+    """FiXme (Fatal )?${if (messageType == LatexLogMessageType.ERROR) "Error" else "Warning"}: '(?<message>.+)' on input line (?<line>\d+).""".toRegex()
 ) {
 
     override fun findMessage(text: String, newText: String, currentFile: String?): LatexLogMessage? {
