@@ -16,15 +16,9 @@ abstract class LatexEnvironmentImplMixin : LatexEnvironment, StubBasedPsiElement
     constructor(node: ASTNode) : super(node)
     constructor(stub: LatexEnvironmentStub?, nodeType: IElementType?, node: ASTNode?) : super(stub, nodeType, node)
 
-    override fun isValidHost(): Boolean {
-        return true
-    }
+    override fun isValidHost(): Boolean = true
 
-    override fun updateText(text: String): PsiLanguageInjectionHost {
-        return ElementManipulators.handleContentChange(this, text)
-    }
+    override fun updateText(text: String): PsiLanguageInjectionHost = ElementManipulators.handleContentChange(this, text)
 
-    override fun createLiteralTextEscaper(): LiteralTextEscaper<LatexEnvironment> {
-        return LiteralTextEscaper.createSimple(this)
-    }
+    override fun createLiteralTextEscaper(): LiteralTextEscaper<LatexEnvironment> = LiteralTextEscaper.createSimple(this)
 }

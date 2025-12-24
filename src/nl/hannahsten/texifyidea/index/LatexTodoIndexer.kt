@@ -13,9 +13,7 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
  * Counts the "to do" item, so that it shows up in the Project "to do" window and the count of the number of items is correct.
  */
 class LatexTodoIndexer : LexerBasedTodoIndexer() {
-    override fun createLexer(consumer: OccurrenceConsumer): Lexer {
-        return LatexFilterLexer(consumer)
-    }
+    override fun createLexer(consumer: OccurrenceConsumer): Lexer = LatexFilterLexer(consumer)
 }
 
 class LatexFilterLexer(consumer: OccurrenceConsumer) : BaseFilterLexer(LatexLexerAdapter(), consumer) {

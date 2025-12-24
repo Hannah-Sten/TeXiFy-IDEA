@@ -25,20 +25,18 @@ enum class LatexDistributionType(val displayName: String) {
      * Check if this distribution type represents MiKTeX.
      * For SDK-based types, resolves the actual SDK to determine the distribution.
      */
-    fun isMiktex(project: Project, mainFile: VirtualFile? = null): Boolean {
-        return when (this) {
-            MIKTEX, DOCKER_MIKTEX -> true
-            PROJECT_SDK -> LatexSdkUtil.getLatexDistributionType(project)?.isMiktex() == true
-            MODULE_SDK -> {
-                if (mainFile != null) {
-                    LatexSdkUtil.getLatexDistributionTypeForFile(mainFile, project)?.isMiktex() == true
-                }
-                else {
-                    LatexSdkUtil.getLatexDistributionType(project)?.isMiktex() == true
-                }
+    fun isMiktex(project: Project, mainFile: VirtualFile? = null): Boolean = when (this) {
+        MIKTEX, DOCKER_MIKTEX -> true
+        PROJECT_SDK -> LatexSdkUtil.getLatexDistributionType(project)?.isMiktex() == true
+        MODULE_SDK -> {
+            if (mainFile != null) {
+                LatexSdkUtil.getLatexDistributionTypeForFile(mainFile, project)?.isMiktex() == true
             }
-            else -> false
+            else {
+                LatexSdkUtil.getLatexDistributionType(project)?.isMiktex() == true
+            }
         }
+        else -> false
     }
 
     fun isDocker() = this == DOCKER_MIKTEX || this == DOCKER_TEXLIVE
@@ -49,8 +47,6 @@ enum class LatexDistributionType(val displayName: String) {
 
     companion object {
 
-        fun valueOfIgnoreCase(value: String?): LatexDistributionType {
-            return entries.firstOrNull { it.name.equals(value, true) } ?: TEXLIVE
-        }
+        fun valueOfIgnoreCase(value: String?): LatexDistributionType = entries.firstOrNull { it.name.equals(value, true) } ?: TEXLIVE
     }
 }

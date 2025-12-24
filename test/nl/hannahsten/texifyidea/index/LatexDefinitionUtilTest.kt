@@ -102,7 +102,5 @@ class LatexDefinitionUtilTest : BasePlatformTestCase() {
         return intro.toString().contains("Comment")
     }
 
-    private fun isInheritContext(intro: LatexContextIntro): Boolean {
-        return intro == LatexContextIntro.inherit() || intro is LatexContextIntro.Inherit
-    }
+    private fun isInheritContext(intro: LatexContextIntro): Boolean = intro == LatexContextIntro.inherit() || intro is LatexContextIntro.Inherit
 }

@@ -5,9 +5,7 @@ import nl.hannahsten.texifyidea.testutils.writeCommand
 
 class LatexPackageNameDoesNotMatchFileNameInspectionTest : BasePlatformTestCase() {
 
-    override fun getTestDataPath(): String {
-        return "test/resources/inspections/latex/packagenamedoesnotmatch"
-    }
+    override fun getTestDataPath(): String = "test/resources/inspections/latex/packagenamedoesnotmatch"
 
     override fun setUp() {
         super.setUp()

@@ -31,7 +31,8 @@ fun LatexCommands?.isDefinition() = this != null && this.name in CommandMagic.de
 fun LatexCommands?.isDefinitionOrRedefinition() = this != null &&
     (
         this.name in CommandMagic.commandDefinitionsAndRedefinitions ||
-            this.name in CommandMagic.environmentDefinitions || this.name in CommandMagic.environmentRedefinitions
+            this.name in CommandMagic.environmentDefinitions ||
+            this.name in CommandMagic.environmentRedefinitions
         )
 
 /**
@@ -111,9 +112,7 @@ fun LatexCommands.getOptionalArgumentValueByName(argument: String, lookup: Latex
  *
  * @return Whether the command is known (`true`), or unknown (`false`).
  */
-fun LatexCommands.isKnown(): Boolean {
-    return AllPredefined.lookupCommandPsi(this) != null
-}
+fun LatexCommands.isKnown(): Boolean = AllPredefined.lookupCommandPsi(this) != null
 
 /**
  * Finds the indentation of the line where the section command starts.

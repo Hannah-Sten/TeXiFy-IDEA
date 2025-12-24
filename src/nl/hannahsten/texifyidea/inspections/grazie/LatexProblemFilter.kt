@@ -5,7 +5,5 @@ import com.intellij.grazie.text.TextProblem
 
 class LatexProblemFilter : ProblemFilter() {
 
-    override fun shouldIgnore(problem: TextProblem): Boolean {
-        return false
-    }
+    override fun shouldIgnore(problem: TextProblem): Boolean = false
 }

@@ -14,9 +14,7 @@ import nl.hannahsten.texifyidea.remotelibraries.zotero.ZoteroLibrary
 
 class BibtexIdRemoteLibraryCompletionTest : BasePlatformTestCase() {
 
-    override fun getTestDataPath(): String {
-        return "test/resources/completion/cite/library"
-    }
+    override fun getTestDataPath(): String = "test/resources/completion/cite/library"
 
     @Throws(Exception::class)
     override fun setUp() {

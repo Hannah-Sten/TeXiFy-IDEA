@@ -45,9 +45,7 @@ class LatexLabelParameterReference(element: LatexParameterText) : PsiReferenceBa
         return externalDocumentInfo.firstOrNull { labelName.startsWith(it.labelPrefix) }?.labelPrefix
     }
 
-    override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
-        return multiResolve(labelName, myElement.containingFile).toTypedArray()
-    }
+    override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> = multiResolve(labelName, myElement.containingFile).toTypedArray()
 
     override fun handleElementRename(newElementName: String): PsiElement {
         var newName = newElementName

@@ -198,9 +198,7 @@ class LatexRunConfiguration(
     val filesToCleanUp = mutableListOf<File>()
     val filesToCleanUpIfEmpty = mutableSetOf<File>()
 
-    override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> {
-        return LatexSettingsEditor(project)
-    }
+    override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = LatexSettingsEditor(project)
 
     override fun createAdditionalTabComponents(
         manager: AdditionalTabComponentManager,
@@ -232,7 +230,7 @@ class LatexRunConfiguration(
     ): RunProfileState {
         val filter = RegexpFilter(
             environment.project,
-            "^\$FILE_PATH$:\$LINE$"
+            $$"^$FILE_PATH$:$LINE$"
         )
 
         val state = LatexCommandLineState(
@@ -523,9 +521,7 @@ class LatexRunConfiguration(
     /**
      * All run configs in the chain except the LaTeX ones.
      */
-    fun getAllAuxiliaryRunConfigs(): Set<RunnerAndConfigurationSettings> {
-        return bibRunConfigs + makeindexRunConfigs + externalToolRunConfigs
-    }
+    fun getAllAuxiliaryRunConfigs(): Set<RunnerAndConfigurationSettings> = bibRunConfigs + makeindexRunConfigs + externalToolRunConfigs
 
     /**
      * Looks up the corresponding [VirtualFile] and sets [LatexRunConfiguration.mainFile].
@@ -582,21 +578,19 @@ class LatexRunConfiguration(
     /**
      * Resolve module and project SDK to a LaTeX SDK if possible, otherwise return null.
      */
-    fun getLatexSdk(): Sdk? {
-        return when (latexDistribution) {
-            LatexDistributionType.MODULE_SDK -> {
-                val sdk = mainFile?.let { LatexSdkUtil.getLatexSdkForFile(it, project) }
-                    ?: LatexSdkUtil.getLatexProjectSdk(project)
-                if (sdk?.sdkType is LatexSdk) sdk else null
-            }
-
-            LatexDistributionType.PROJECT_SDK -> {
-                val sdk = LatexSdkUtil.getLatexProjectSdk(this.project)
-                if (sdk?.sdkType is LatexSdk) sdk else null
-            }
-
-            else -> null
+    fun getLatexSdk(): Sdk? = when (latexDistribution) {
+        LatexDistributionType.MODULE_SDK -> {
+            val sdk = mainFile?.let { LatexSdkUtil.getLatexSdkForFile(it, project) }
+                ?: LatexSdkUtil.getLatexProjectSdk(project)
+            if (sdk?.sdkType is LatexSdk) sdk else null
         }
+
+        LatexDistributionType.PROJECT_SDK -> {
+            val sdk = LatexSdkUtil.getLatexProjectSdk(this.project)
+            if (sdk?.sdkType is LatexSdk) sdk else null
+        }
+
+        else -> null
     }
 
     /**
@@ -623,18 +617,16 @@ class LatexRunConfiguration(
      *
      * @return The auxil folder when MiKTeX used, or else the out folder when used.
      */
-    fun getAuxilDirectory(): VirtualFile? {
-        return if (getLatexDistributionType().isMiktex(project, mainFile)) {
-            // If we are using MiKTeX it might still be we are not using an auxil directory, so then fall back to the out directory
-            auxilPath.getAndCreatePath() ?: outputPath.getAndCreatePath()
-        }
-        else {
-            outputPath.getAndCreatePath()
-        }
+    fun getAuxilDirectory(): VirtualFile? = if (getLatexDistributionType().isMiktex(project, mainFile)) {
+        // If we are using MiKTeX it might still be we are not using an auxil directory, so then fall back to the out directory
+        auxilPath.getAndCreatePath() ?: outputPath.getAndCreatePath()
+    }
+    else {
+        outputPath.getAndCreatePath()
     }
 
     fun setSuggestedName() {
-        setName(suggestedName())
+        suggestedName()?.let { name = it }
     }
 
     override fun isGeneratedName(): Boolean {
@@ -689,22 +681,18 @@ class LatexRunConfiguration(
         return usesAuxilDir || usesOutDir
     }
 
-    override fun suggestedName(): String? {
-        return if (mainFile == null) {
-            null
-        }
-        else {
-            mainFile!!.nameWithoutExtension
-        }
+    override fun suggestedName(): String? = if (mainFile == null) {
+        null
+    }
+    else {
+        mainFile!!.nameWithoutExtension
     }
 
-    override fun toString(): String {
-        return "LatexRunConfiguration{" + "compiler=" + compiler +
-            ", compilerPath=" + compilerPath +
-            ", mainFile=" + mainFile +
-            ", outputFormat=" + outputFormat +
-            '}'.toString()
-    }
+    override fun toString(): String = "LatexRunConfiguration{" + "compiler=" + compiler +
+        ", compilerPath=" + compilerPath +
+        ", mainFile=" + mainFile +
+        ", outputFormat=" + outputFormat +
+        '}'.toString()
 
     // Explicitly deep clone references, otherwise a copied run config has references to the original objects
     override fun clone(): RunConfiguration {

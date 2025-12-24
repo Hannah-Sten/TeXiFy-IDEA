@@ -7,9 +7,7 @@ import nl.hannahsten.texifyidea.updateCommandDef
 
 class LatexPathCompletionWithCommandExpansion : BasePlatformTestCase() {
 
-    override fun getTestDataPath(): String {
-        return "test/resources/completion/path/commandexpansion"
-    }
+    override fun getTestDataPath(): String = "test/resources/completion/path/commandexpansion"
 
     override fun setUp() {
         super.setUp()

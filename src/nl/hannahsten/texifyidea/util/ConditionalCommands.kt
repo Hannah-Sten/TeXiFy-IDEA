@@ -55,9 +55,7 @@ private fun nextConditionalCommand(element: PsiElement, searchBackwards: Boolean
     return current
 }
 
-private fun isConditional(element: PsiElement): Boolean {
-    return isStartConditional(element) || isEndConditional(element)
-}
+private fun isConditional(element: PsiElement): Boolean = isStartConditional(element) || isEndConditional(element)
 
 private fun isStartConditional(rootElement: PsiElement): Boolean {
     // To keep it simple, only look one level down

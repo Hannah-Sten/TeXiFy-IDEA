@@ -478,11 +478,9 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
     companion object {
 
-        fun byExecutableName(exe: String): LatexCompiler {
-            return entries.firstOrNull {
-                it.executableName.equals(exe, true)
-            } ?: PDFLATEX
-        }
+        fun byExecutableName(exe: String): LatexCompiler = entries.firstOrNull {
+            it.executableName.equals(exe, true)
+        } ?: PDFLATEX
 
         /**
          * Convert Windows paths to WSL paths.
@@ -508,11 +506,9 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
         companion object {
 
-            fun byNameIgnoreCase(name: String?): Format {
-                return entries.firstOrNull {
-                    it.name.equals(name, ignoreCase = true)
-                } ?: PDF
-            }
+            fun byNameIgnoreCase(name: String?): Format = entries.firstOrNull {
+                it.name.equals(name, ignoreCase = true)
+            } ?: PDF
         }
     }
 }

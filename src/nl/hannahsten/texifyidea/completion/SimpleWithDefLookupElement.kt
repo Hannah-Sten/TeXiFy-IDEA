@@ -61,13 +61,9 @@ data class SimpleWithDefLookupElement(
 
     override fun getAllLookupStrings(): Set<String> = allLookupStrings
 
-    override fun getObject(): Any {
-        return def
-    }
+    override fun getObject(): Any = def
 
-    override fun getPsiElement(): PsiElement? {
-        return def.definitionCommandPointer?.element
-    }
+    override fun getPsiElement(): PsiElement? = def.definitionCommandPointer?.element
 
     override fun isCaseSensitive(): Boolean = caseSensitive
 

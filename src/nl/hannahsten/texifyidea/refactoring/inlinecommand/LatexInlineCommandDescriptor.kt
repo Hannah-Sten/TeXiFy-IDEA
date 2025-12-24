@@ -14,18 +14,12 @@ import nl.hannahsten.texifyidea.file.LatexFile
  */
 class LatexInlineCommandDescriptor(private val myElement: PsiElement) : UsageViewDescriptor {
 
-    override fun getElements(): Array<PsiElement> {
-        return arrayOf(myElement)
-    }
+    override fun getElements(): Array<PsiElement> = arrayOf(myElement)
 
-    override fun getProcessedElementsHeader(): String {
-        return if (this.myElement is LatexFile)
-            "Command to inline"
-        else
-            "Unknown element"
-    }
+    override fun getProcessedElementsHeader(): String = if (this.myElement is LatexFile)
+        "Command to inline"
+    else
+        "Unknown element"
 
-    override fun getCodeReferencesText(usagesCount: Int, filesCount: Int): String {
-        return "Invocations to be inlined: ${UsageViewBundle.getReferencesString(usagesCount, filesCount)}"
-    }
+    override fun getCodeReferencesText(usagesCount: Int, filesCount: Int): String = "Invocations to be inlined: ${UsageViewBundle.getReferencesString(usagesCount, filesCount)}"
 }

@@ -70,9 +70,7 @@ object ContextAwareCommandCompletionProvider : LatexContextAwareCompletionAdapto
         }
     }
 
-    private fun buildArgumentInformation(cmd: LSemanticCommand, args: List<LArgument>): String {
-        return args.joinToString("")
-    }
+    private fun buildArgumentInformation(cmd: LSemanticCommand, args: List<LArgument>): String = args.joinToString("")
 
     private fun buildCommandDisplay(cmd: LSemanticCommand): String {
         if (cmd.display == null) {

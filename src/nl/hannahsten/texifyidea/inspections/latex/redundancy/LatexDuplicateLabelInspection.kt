@@ -146,13 +146,11 @@ open class LatexDuplicateLabelInspection : TexifyInspectionBase() {
     /**
      * make the mapping from command etc. to ProblemDescriptor
      */
-    private fun createProblemDescriptor(desc: LabelDescriptor, isOntheFly: Boolean, manager: InspectionManager): ProblemDescriptor {
-        return manager.createProblemDescriptor(
-            desc.element,
-            desc.textRange,
-            "Duplicate label '${desc.label}'",
-            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-            isOntheFly
-        )
-    }
+    private fun createProblemDescriptor(desc: LabelDescriptor, isOntheFly: Boolean, manager: InspectionManager): ProblemDescriptor = manager.createProblemDescriptor(
+        desc.element,
+        desc.textRange,
+        "Duplicate label '${desc.label}'",
+        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+        isOntheFly
+    )
 }

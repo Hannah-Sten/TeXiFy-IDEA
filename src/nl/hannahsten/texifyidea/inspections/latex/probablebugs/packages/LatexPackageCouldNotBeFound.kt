@@ -21,9 +21,7 @@ class LatexPackageCouldNotBeFound : TexifyInspectionBase() {
     override val inspectionId: String =
         "PackageCouldNotBeFound"
 
-    override fun getDisplayName(): String {
-        return "Package could not be found locally or on CTAN"
-    }
+    override fun getDisplayName(): String = "Package could not be found locally or on CTAN"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()

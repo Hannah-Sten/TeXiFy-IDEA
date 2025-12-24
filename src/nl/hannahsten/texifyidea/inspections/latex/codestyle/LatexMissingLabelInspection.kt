@@ -146,9 +146,7 @@ class LatexMissingLabelInspection : AbstractTexifyContextAwareInspection(
     private class ChangeMinimumLabelLevelFix : LocalQuickFix {
 
         @Nls
-        override fun getFamilyName(): String {
-            return "Change label conventions"
-        }
+        override fun getFamilyName(): String = "Change label conventions"
 
         override fun startInWriteAction() = false
 

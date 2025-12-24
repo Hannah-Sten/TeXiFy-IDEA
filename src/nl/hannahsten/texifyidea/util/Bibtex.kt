@@ -155,18 +155,14 @@ fun BibtexDefinedString.evaluate(): String {
  *
  * E.g. `{{T}est $\alpha$ {H}ello}` becomes `{T}est $\alpha$ {H}ello`.
  */
-fun BibtexBracedString.evaluate(): String {
-    return text.substring(1 until text.length - 1)
-}
+fun BibtexBracedString.evaluate(): String = text.substring(1 until text.length - 1)
 
 /**
  * Returns the contents of the quoted string.
  *
  * E.g. `"Test Hello"` becomes `Test Hello`.
  */
-fun BibtexQuotedString.evaluate(): String {
-    return text.substring(1 until text.length - 1)
-}
+fun BibtexQuotedString.evaluate(): String = text.substring(1 until text.length - 1)
 
 /**
  * Returns the contents of the quoted verbatim string.

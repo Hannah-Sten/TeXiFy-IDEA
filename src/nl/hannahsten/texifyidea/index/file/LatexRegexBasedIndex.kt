@@ -53,9 +53,7 @@ abstract class AbstractLatexRegexBasedDefIndexExtension : SingleEntryFileBasedIn
         return PACKAGE_FILE_INPUT_FILTER
     }
 
-    override fun getValueExternalizer(): DataExternalizer<List<String>> {
-        return STRING_LIST_EXTERNALIZER
-    }
+    override fun getValueExternalizer(): DataExternalizer<List<String>> = STRING_LIST_EXTERNALIZER
 }
 
 object LatexIndexRegexes {
@@ -81,29 +79,21 @@ class LatexRegexBasedCommandDefIndex : AbstractLatexRegexBasedDefIndexExtension(
 
     private val myIndexer = LatexRegexBasedDefinitionDataIndexer(LatexIndexRegexes.COMMAND_DEFINITION)
 
-    override fun getIndexer(): SingleEntryIndexer<List<String>> {
-        return myIndexer
-    }
+    override fun getIndexer(): SingleEntryIndexer<List<String>> = myIndexer
 
     override fun getVersion() = 2
 
-    override fun getName(): ID<Int, List<String>> {
-        return LatexFileBasedIndexKeys.REGEX_COMMAND_DEFINITIONS
-    }
+    override fun getName(): ID<Int, List<String>> = LatexFileBasedIndexKeys.REGEX_COMMAND_DEFINITIONS
 }
 
 class LatexRegexBasedEnvironmentDefIndex : AbstractLatexRegexBasedDefIndexExtension() {
     private val myIndexer = LatexRegexBasedDefinitionDataIndexer(LatexIndexRegexes.ENVIRONMENT_DEFINITION)
 
-    override fun getIndexer(): SingleEntryIndexer<List<String>> {
-        return myIndexer
-    }
+    override fun getIndexer(): SingleEntryIndexer<List<String>> = myIndexer
 
     override fun getVersion() = 2
 
-    override fun getName(): ID<Int, List<String>> {
-        return LatexFileBasedIndexKeys.REGEX_ENVIRONMENT_DEFINITIONS
-    }
+    override fun getName(): ID<Int, List<String>> = LatexFileBasedIndexKeys.REGEX_ENVIRONMENT_DEFINITIONS
 }
 
 object LatexRegexBasedIndex {
@@ -122,23 +112,17 @@ object LatexRegexBasedIndex {
     /**
      * Gets the command definitions for the given virtual file from the regex-based index.
      */
-    fun getCommandDefinitions(vf: VirtualFile, project: Project): List<String> {
-        return retrieveIndexData(vf, project, LatexFileBasedIndexKeys.REGEX_COMMAND_DEFINITIONS)
-    }
+    fun getCommandDefinitions(vf: VirtualFile, project: Project): List<String> = retrieveIndexData(vf, project, LatexFileBasedIndexKeys.REGEX_COMMAND_DEFINITIONS)
 
     /**
      * Gets the environment definitions for the given virtual file from the regex-based index.
      */
-    fun getEnvironmentDefinitions(vf: VirtualFile, project: Project): List<String> {
-        return retrieveIndexData(vf, project, LatexFileBasedIndexKeys.REGEX_ENVIRONMENT_DEFINITIONS)
-    }
+    fun getEnvironmentDefinitions(vf: VirtualFile, project: Project): List<String> = retrieveIndexData(vf, project, LatexFileBasedIndexKeys.REGEX_ENVIRONMENT_DEFINITIONS)
 
     /**
      * Gets the package inclusions for the given virtual file from the regex-based index.
      */
-    fun getPackageInclusions(vf: VirtualFile, project: Project): List<String> {
-        return retrieveIndexData(vf, project, LatexFileBasedIndexKeys.REGEX_PACKAGE_INCLUSIONS)
-    }
+    fun getPackageInclusions(vf: VirtualFile, project: Project): List<String> = retrieveIndexData(vf, project, LatexFileBasedIndexKeys.REGEX_PACKAGE_INCLUSIONS)
 
     fun processDtxDefinitions(lib: LatexLib, project: Project, callback: (LatexSimpleDefinition) -> Unit) {
         if (DumbService.isDumb(project)) return

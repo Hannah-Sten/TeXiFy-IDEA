@@ -31,9 +31,7 @@ class LatexVerticallyCenteredColonInspection : AbstractTexifyRegexBasedInspectio
     regex = Util.REGEX,
     highlight = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
 ) {
-    override fun errorMessage(matcher: MatchResult, context: LContextSet): String {
-        return "Colon is vertically uncentered"
-    }
+    override fun errorMessage(matcher: MatchResult, context: LContextSet): String = "Colon is vertically uncentered"
 
     override fun quickFixName(matcher: MatchResult, contexts: LContextSet): String {
         val key = Util.PATTERNS.keys.firstOrNull { matcher.value.replace(Util.WHITESPACE, "") == it }
@@ -41,18 +39,12 @@ class LatexVerticallyCenteredColonInspection : AbstractTexifyRegexBasedInspectio
         return "Change to $command (mathtools)"
     }
 
-    override fun getHighlightRange(matcher: MatchResult): IntRange {
-        return matcher.range
-    }
+    override fun getHighlightRange(matcher: MatchResult): IntRange = matcher.range
 
-    override fun shouldInspectElement(element: PsiElement, lookup: LatexSemanticsLookup): Boolean {
-        return element is LatexMathEnvironment ||
-            (element is LatexEnvironment && LatexPsiUtil.isContextIntroduced(element, lookup, LatexContexts.Math))
-    }
+    override fun shouldInspectElement(element: PsiElement, lookup: LatexSemanticsLookup): Boolean = element is LatexMathEnvironment ||
+        (element is LatexEnvironment && LatexPsiUtil.isContextIntroduced(element, lookup, LatexContexts.Math))
 
-    override fun shouldInspectChildrenOf(element: PsiElement, state: LContextSet, lookup: LatexSemanticsLookup): Boolean {
-        return !shouldInspectElement(element, lookup)
-    }
+    override fun shouldInspectChildrenOf(element: PsiElement, state: LContextSet, lookup: LatexSemanticsLookup): Boolean = !shouldInspectElement(element, lookup)
 
     override fun getReplacement(match: MatchResult, fullElementText: String, project: Project, problemDescriptor: ProblemDescriptor): String {
         val key = Util.PATTERNS.keys.firstOrNull { match.value.replace(Util.WHITESPACE, "") == it }

@@ -49,10 +49,8 @@ class LatexProjectSdkSetupValidator : ProjectSdkSetupValidator {
         return "No LaTeX installation could be found. Please add it to PATH or set up a LaTeX SDK (and reopen this file)."
     }
 
-    override fun getFixHandler(project: Project, file: VirtualFile): EditorNotificationPanel.ActionHandler {
-        return SdkPopupFactory.newBuilder().withProject(project)
-            .withSdkTypeFilter { id: SdkTypeId -> id is LatexSdk }
-            .updateProjectSdkFromSelection()
-            .buildEditorNotificationPanelHandler()
-    }
+    override fun getFixHandler(project: Project, file: VirtualFile): EditorNotificationPanel.ActionHandler = SdkPopupFactory.newBuilder().withProject(project)
+        .withSdkTypeFilter { id: SdkTypeId -> id is LatexSdk }
+        .updateProjectSdkFromSelection()
+        .buildEditorNotificationPanelHandler()
 }

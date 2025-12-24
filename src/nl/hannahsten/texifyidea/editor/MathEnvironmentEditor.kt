@@ -114,20 +114,14 @@ class MathEnvironmentEditor(
         }
     }
 
-    private fun isAmsMathEnvironment(environmentName: String): Boolean {
-        return AllPredefined.lookupEnv(environmentName)?.dependency == LatexLib.AMSMATH
-    }
+    private fun isAmsMathEnvironment(environmentName: String): Boolean = AllPredefined.lookupEnv(environmentName)?.dependency == LatexLib.AMSMATH
 
     /**
      * Determines if the environment is a one line environment.
      */
-    private fun isOneLineEnvironment(environmentName: String): Boolean {
-        return environmentName == "inline" || environmentName == "display" || environmentName == EnvironmentNames.EQUATION || environmentName == EnvironmentNames.EQUATION_STAR
-    }
+    private fun isOneLineEnvironment(environmentName: String): Boolean = environmentName == "inline" || environmentName == "display" || environmentName == EnvironmentNames.EQUATION || environmentName == EnvironmentNames.EQUATION_STAR
 
-    private fun needsParameter(environmentName: String): Boolean {
-        return environmentName.contains("alignat")
-    }
+    private fun needsParameter(environmentName: String): Boolean = environmentName.contains("alignat")
 
     /**
      * Construct the begin block for an environment.

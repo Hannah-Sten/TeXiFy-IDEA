@@ -30,10 +30,8 @@ class LatexPsiHelper(private val project: Project) {
         return environment.environmentContent!!
     }
 
-    private fun createLatexOptionalParam(): LatexParameter {
-        return createFromText("\\usepackage[]{package}")
-            .findFirstChildTyped<LatexParameter> { c -> c.optionalParam != null }!!
-    }
+    private fun createLatexOptionalParam(): LatexParameter = createFromText("\\usepackage[]{package}")
+        .findFirstChildTyped<LatexParameter> { c -> c.optionalParam != null }!!
 
     /**
      * Create a label command \label{labelName}.
@@ -174,8 +172,6 @@ class LatexPsiHelper(private val project: Project) {
 
     companion object {
 
-        fun createFromText(text: String, project: Project): PsiFile {
-            return PsiFileFactory.getInstance(project).createFileFromText("DUMMY.tex", LatexLanguage, text, false, true)
-        }
+        fun createFromText(text: String, project: Project): PsiFile = PsiFileFactory.getInstance(project).createFileFromText("DUMMY.tex", LatexLanguage, text, false, true)
     }
 }

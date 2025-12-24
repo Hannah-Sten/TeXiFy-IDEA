@@ -83,20 +83,10 @@ open class LatexLeftRightParenthesesIntention : TexifyIntentionBase("Change to \
                 break
             }
 
-            // Open nesting
-            if (char == open) {
-                nested++
-                continue
-            }
-
-            // Close nesting
-            if (char == close && nested > 0) {
-                nested--
-                continue
-            }
+            nested = getNestingLevel(char, open, nested, close)
 
             // Whenever met at correct closure
-            if (char == close) {
+            if (char == close && nested <= 0) {
                 closeOffset = current
                 break
             }
@@ -112,6 +102,27 @@ open class LatexLeftRightParenthesesIntention : TexifyIntentionBase("Change to \
             document.replaceString(closeOffset, closeOffset + 1, "\\right$close")
             document.replaceString(offset, offset + 1, "\\left$open")
             editor.caretModel.moveToOffset(offset + 6)
+        }
+    }
+
+    private fun getNestingLevel(
+        char: String,
+        increaseNesting: String,
+        nested: Int,
+        decreaseNesting: String?
+    ): Int = when (char) {
+        // Open nesting
+        increaseNesting -> {
+            nested + 1
+        }
+
+        // Close nesting
+        decreaseNesting if nested > 0 -> {
+            nested - 1
+        }
+
+        else -> {
+            nested
         }
     }
 
@@ -137,20 +148,10 @@ open class LatexLeftRightParenthesesIntention : TexifyIntentionBase("Change to \
                 break
             }
 
-            // Open nesting
-            if (char == close) {
-                nested++
-                continue
-            }
-
-            // Close nesting
-            if (char == open && nested > 0) {
-                nested--
-                continue
-            }
+            nested = getNestingLevel(char, close, nested, open)
 
             // Whenever met at correct closure
-            if (char == open) {
+            if (char == open && nested <= 0) {
                 openOffset = current
                 break
             }

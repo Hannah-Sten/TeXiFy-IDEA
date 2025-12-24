@@ -110,7 +110,8 @@ object LatexDefinitionUtil {
      * @return shift in index, name of the defined command
      */
     private fun getCommandDefNameStub(defStub: LatexCommandsStub, idx: Int, stubs: List<StubElement<*>>): String? {
-        defStub.requiredParamAt(0)?.let { // \newcommand{\cmd}{...}
+        defStub.requiredParamAt(0)?.let {
+            // \newcommand{\cmd}{...}
             return it.trim()
         }
         // \def\cmd\something
@@ -120,7 +121,8 @@ object LatexDefinitionUtil {
     }
 
     private fun getCommandDefNameAST(defCommand: LatexCommands): String? {
-        defCommand.parameterList.getOrNull(0)?.let { // \newcommand{\cmd}{...}
+        defCommand.parameterList.getOrNull(0)?.let {
+            // \newcommand{\cmd}{...}
             return it.contentText().trim()
         }
         return LatexPsiUtil.getDefinedCommandElement(defCommand)?.name
@@ -187,13 +189,9 @@ object LatexDefinitionUtil {
         return null
     }
 
-    private fun List<Pair<LArgumentType, String>>.getNthRequiredArg(index: Int): String? {
-        return getNthArgOfType(index, LArgumentType.REQUIRED)
-    }
+    private fun List<Pair<LArgumentType, String>>.getNthRequiredArg(index: Int): String? = getNthArgOfType(index, LArgumentType.REQUIRED)
 
-    private fun List<Pair<LArgumentType, String>>.getNthOptionalArg(index: Int): String? {
-        return getNthArgOfType(index, LArgumentType.OPTIONAL)
-    }
+    private fun List<Pair<LArgumentType, String>>.getNthOptionalArg(index: Int): String? = getNthArgOfType(index, LArgumentType.OPTIONAL)
 
     private val namesOfCmdDefRegular = buildSet {
         PredefinedCmdDefinitions.regularDefinitionOfCommand.mapTo(this) { it.name }
@@ -212,14 +210,12 @@ object LatexDefinitionUtil {
 
     private fun parseCommandDef(
         defCmdName: String, defCommand: LatexCommands, lookup: LatexSemanticsLookup, project: Project
-    ): LSemanticCommand? {
-        return when (defCmdName) {
-            in namesOfCmdDefRegular -> parseRegularCommandDef(defCommand, lookup, project)
-            in namesOfCmdDefArgSpec -> parseArgSpecCommandDef(defCommand, lookup, project)
-            in namesOfCmdDefMath -> parseCommandDefNameOnlyUnderCtx(defCommand, setOf(LatexContexts.Math))
-            in namesOfCmdDefText -> parseCommandDefNameOnlyUnderCtx(defCommand, setOf(LatexContexts.Text))
-            else -> parseCommandDefNameOnlyUnderCtx(defCommand)
-        }
+    ): LSemanticCommand? = when (defCmdName) {
+        in namesOfCmdDefRegular -> parseRegularCommandDef(defCommand, lookup, project)
+        in namesOfCmdDefArgSpec -> parseArgSpecCommandDef(defCommand, lookup, project)
+        in namesOfCmdDefMath -> parseCommandDefNameOnlyUnderCtx(defCommand, setOf(LatexContexts.Math))
+        in namesOfCmdDefText -> parseCommandDefNameOnlyUnderCtx(defCommand, setOf(LatexContexts.Text))
+        else -> parseCommandDefNameOnlyUnderCtx(defCommand)
     }
 
     private fun parseCommandDefNameOnlyUnderCtx(defCommand: LatexCommands, requiredCtx: LContextSet? = null): LSemanticCommand? {
@@ -346,12 +342,10 @@ object LatexDefinitionUtil {
     internal fun guessArgumentContextIntro(
         codeElement: PsiElement, argCount: Int, lookup: LatexSemanticsLookup,
         contextIntroArr: Array<LatexContextIntro?> = arrayOfNulls(argCount)
-    ): List<LatexContextIntro> {
-        return guessArgumentContextIntroAndExitState(codeElement, argCount, lookup, contextIntroArr).first.map {
-            // If we cannot infer the context for an argument, do not treat it as a comment.
-            // In practice, a `Comment` fallback can grey-out large parts of a document when inference fails.
-            it ?: LatexContextIntro.inherit()
-        }
+    ): List<LatexContextIntro> = guessArgumentContextIntroAndExitState(codeElement, argCount, lookup, contextIntroArr).first.map {
+        // If we cannot infer the context for an argument, do not treat it as a comment.
+        // In practice, a `Comment` fallback can grey-out large parts of a document when inference fails.
+        it ?: LatexContextIntro.inherit()
     }
 
     private val namesOfEnvDefRegular = buildSet {
@@ -445,9 +439,7 @@ object LatexDefinitionUtil {
         return oldCtx.union(newCtx)
     }
 
-    private fun replaceIfEmpty(old: String, new: String): String {
-        return old.ifEmpty { new }
-    }
+    private fun replaceIfEmpty(old: String, new: String): String = old.ifEmpty { new }
 
     private fun chooseArgs(old: List<LArgument>, new: List<LArgument>, isOldPredefined: Boolean): List<LArgument> {
         if (new.isEmpty()) return old

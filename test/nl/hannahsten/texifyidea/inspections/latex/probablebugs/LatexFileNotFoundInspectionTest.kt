@@ -30,9 +30,7 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
         mockkStatic(LatexNavigationGutter::collectNavigationMarkers)
     }
 
-    override fun getTestDataPath(): String {
-        return "test/resources/inspections/latex/filenotfound"
-    }
+    override fun getTestDataPath(): String = "test/resources/inspections/latex/filenotfound"
 
     fun testMissingAbsolutePath() {
         // Avoid "VfsRootAccess$VfsRootAccessNotAllowedError: File accessed outside allowed roots" on Windows in github actions

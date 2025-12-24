@@ -8,9 +8,7 @@ import nl.hannahsten.texifyidea.testutils.writeCommand
 
 class BibtexUnusedEntryInspectionTest : TexifyInspectionTestBase(BibtexUnusedEntryInspection()) {
 
-    override fun getTestDataPath(): String {
-        return "test/resources/inspections/bibtex/unusedbibentry"
-    }
+    override fun getTestDataPath(): String = "test/resources/inspections/bibtex/unusedbibentry"
 
     fun `test warnings where needed`() {
         try {

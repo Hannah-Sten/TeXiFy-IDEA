@@ -95,13 +95,9 @@ data class Fileset(
         return result
     }
 
-    fun projectFileScope(project: Project): GlobalSearchScope {
-        return allFileScope.intersectWith(project.contentSearchScope)
-    }
+    fun projectFileScope(project: Project): GlobalSearchScope = allFileScope.intersectWith(project.contentSearchScope)
 
-    fun texFileScope(project: Project): GlobalSearchScope {
-        return allFileScope.restrictedByFileTypes(LatexFileType).intersectWith(project.contentSearchScope)
-    }
+    fun texFileScope(project: Project): GlobalSearchScope = allFileScope.restrictedByFileTypes(LatexFileType).intersectWith(project.contentSearchScope)
 }
 
 data class ExternalDocumentInfo(
@@ -137,9 +133,7 @@ data class FilesetData(
         return filesets == other.filesets
     }
 
-    override fun hashCode(): Int {
-        return filesets.hashCode()
-    }
+    override fun hashCode(): Int = filesets.hashCode()
 }
 
 /**
@@ -149,9 +143,7 @@ data class LatexProjectFilesets(
     val filesets: Set<Fileset>,
     val mapping: Map<VirtualFile, FilesetData>,
 ) {
-    fun getData(file: VirtualFile): FilesetData? {
-        return mapping[file]
-    }
+    fun getData(file: VirtualFile): FilesetData? = mapping[file]
 
     override fun equals(other: Any?): Boolean {
         // we only need to compare the filesets, as they uniquely determine the mapping
@@ -163,9 +155,7 @@ data class LatexProjectFilesets(
         return filesets == other.filesets
     }
 
-    override fun hashCode(): Int {
-        return filesets.hashCode()
-    }
+    override fun hashCode(): Int = filesets.hashCode()
 }
 
 class LatexLibraryInfo(
@@ -188,9 +178,7 @@ class LatexLibraryInfo(
     val isClass: Boolean
         get() = name.isClassFile
 
-    override fun toString(): String {
-        return "PackageInfo(name='$name', location=${location.path}, files=${files.size})"
-    }
+    override fun toString(): String = "PackageInfo(name='$name', location=${location.path}, files=${files.size})"
 }
 
 /**
@@ -227,9 +215,7 @@ class LatexLibraryStructureService(
         // never expire unless invalidated manually
         private val LIBRARY_FILESET_EXPIRATION_TIME = Duration.INFINITE
 
-        fun getInstance(project: Project): LatexLibraryStructureService {
-            return project.service()
-        }
+        fun getInstance(project: Project): LatexLibraryStructureService = project.service()
     }
 
     override fun computeValue(key: LibStructureCacheKey, oldValue: LatexLibraryInfo?): LatexLibraryInfo? {
@@ -327,16 +313,12 @@ class LatexLibraryStructureService(
     /**
      * Get library info for a package, using the SDK resolved from the given file context.
      */
-    fun getLibraryInfo(nameWithExt: String, contextFile: PsiFile): LatexLibraryInfo? {
-        return getLibraryInfo(nameWithExt, contextFile.virtualFile)
-    }
+    fun getLibraryInfo(nameWithExt: String, contextFile: PsiFile): LatexLibraryInfo? = getLibraryInfo(nameWithExt, contextFile.virtualFile)
 
     /**
      * Get library info for a package, using project SDK only (no file context).
      */
-    fun getLibraryInfo(nameWithExt: String): LatexLibraryInfo? {
-        return getLibraryInfo(nameWithExt, null as VirtualFile?)
-    }
+    fun getLibraryInfo(nameWithExt: String): LatexLibraryInfo? = getLibraryInfo(nameWithExt, null as VirtualFile?)
 
     fun getLibraryInfo(lib: LatexLib, contextFile: VirtualFile? = null): LatexLibraryInfo? {
         val fileName = lib.toFileName() ?: return null
@@ -352,9 +334,7 @@ class LatexLibraryStructureService(
         clearAllCache()
     }
 
-    fun librarySize(): Int {
-        return caches.size
-    }
+    fun librarySize(): Int = caches.size
 }
 
 /**
@@ -372,9 +352,10 @@ object LatexProjectStructure {
     /**
      * Stores the files that are referenced by the latex command.
      */
+    // List of pairs of original text and set of files in order
     val userDataKeyFileReference = Key.create<
         CacheValueTimed<
-            Pair<List<String>, List<Set<VirtualFile>>> // List of pairs of original text and set of files in order
+            Pair<List<String>, List<Set<VirtualFile>>>
             >
         >("latex.command.reference.files")
 
@@ -417,7 +398,8 @@ object LatexProjectStructure {
      */
     private class FilesetProcessor(
         project: Project,
-        rootDirs: MutableSet<VirtualFile>, bibInputPaths: MutableSet<VirtualFile>,
+        rootDirs: MutableSet<VirtualFile>,
+        bibInputPaths: MutableSet<VirtualFile>,
         timestamp: Instant,
         val root: VirtualFile,
     ) : ProjectInfo(project, rootDirs, bibInputPaths, timestamp) {
@@ -558,9 +540,7 @@ object LatexProjectStructure {
             return result
         }
 
-        private fun resolveSubfolder(root: VirtualFile, siblingRelativePath: String): VirtualFile? {
-            return runCatching { root.parent?.findDirectory(siblingRelativePath) }.getOrNull()
-        }
+        private fun resolveSubfolder(root: VirtualFile, siblingRelativePath: String): VirtualFile? = runCatching { root.parent?.findDirectory(siblingRelativePath) }.getOrNull()
 
         private fun findReferredFiles(
             command: LatexCommands, file: VirtualFile,
@@ -965,9 +945,7 @@ object LatexProjectStructure {
      * Calls to update the filesets for the given project.
      * This will ensure that the filesets are recomputed and up-to-date.
      */
-    suspend fun updateFilesetsSuspend(project: Project): LatexProjectFilesets {
-        return TexifyProjectCacheService.getInstance(project).ensureRefresh(CACHE_KEY, ::buildFilesetsSuspend)
-    }
+    suspend fun updateFilesetsSuspend(project: Project): LatexProjectFilesets = TexifyProjectCacheService.getInstance(project).ensureRefresh(CACHE_KEY, ::buildFilesetsSuspend)
 
     /**
      * Gets the recently built filesets for the given project and schedule a recomputation if they are not available or expired.
@@ -980,13 +958,9 @@ object LatexProjectStructure {
     /**
      * Checks if the filesets are available for the given project, and potentially schedules a recomputation.
      */
-    fun isProjectFilesetsAvailable(project: Project): Boolean {
-        return getFilesets(project) != null
-    }
+    fun isProjectFilesetsAvailable(project: Project): Boolean = getFilesets(project) != null
 
-    fun getFilesetDataFor(virtualFile: VirtualFile, project: Project): FilesetData? {
-        return getFilesets(project)?.getData(virtualFile)
-    }
+    fun getFilesetDataFor(virtualFile: VirtualFile, project: Project): FilesetData? = getFilesets(project)?.getData(virtualFile)
 
     fun getFilesetDataFor(psiFile: PsiFile): FilesetData? {
         val virtualFile = psiFile.virtualFile ?: return null
@@ -1089,6 +1063,4 @@ fun pathOrNull(pathText: String?): Path? {
     }
 }
 
-fun GlobalSearchScope.restrictedByFileTypes(vararg fileTypes: FileType): GlobalSearchScope {
-    return GlobalSearchScope.getScopeRestrictedByFileTypes(this, *fileTypes)
-}
+fun GlobalSearchScope.restrictedByFileTypes(vararg fileTypes: FileType): GlobalSearchScope = GlobalSearchScope.getScopeRestrictedByFileTypes(this, *fileTypes)

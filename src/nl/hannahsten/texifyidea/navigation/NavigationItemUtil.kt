@@ -7,8 +7,8 @@ import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.labels.LatexLabelUtil
-import nl.hannahsten.texifyidea.util.parser.forcedFirstRequiredParameterAsCommand
 import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
+import nl.hannahsten.texifyidea.util.parser.forcedFirstRequiredParameterAsCommand
 
 /**
  * @author Hannah Schellekens
@@ -21,7 +21,7 @@ object NavigationItemUtil {
             is LatexCommands -> {
                 val text = LatexLabelUtil.extractLabelTextIn(psiElement)
                 if (text.isNullOrBlank()) return null
-                return GoToSymbolProvider.BaseNavigationItem(
+                GoToSymbolProvider.BaseNavigationItem(
                     psiElement,
                     text,
                     if (psiElement.name in getLabelDefinitionCommands()) {

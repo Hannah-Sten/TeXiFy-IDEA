@@ -77,8 +77,6 @@ open class LatexMoveSelectionToFileIntention : TexifyIntentionBase("Move selecti
         }
     }
 
-    private fun selectionOffsets(editor: Editor): List<Pair<Int, Int>> {
-        return editor.caretModel.allCarets
-            .map { Pair(it.selectionStart, it.selectionEnd) }
-    }
+    private fun selectionOffsets(editor: Editor): List<Pair<Int, Int>> = editor.caretModel.allCarets
+        .map { Pair(it.selectionStart, it.selectionEnd) }
 }

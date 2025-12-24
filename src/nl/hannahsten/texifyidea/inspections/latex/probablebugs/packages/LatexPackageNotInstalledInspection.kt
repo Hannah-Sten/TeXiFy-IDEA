@@ -43,9 +43,7 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
     override val inspectionId: String =
         "PackageNotInstalled"
 
-    override fun getDisplayName(): String {
-        return "Package is not installed"
-    }
+    override fun getDisplayName(): String = "Package is not installed"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()

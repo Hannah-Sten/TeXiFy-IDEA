@@ -31,9 +31,7 @@ import nl.hannahsten.texifyidea.util.parser.parentOfType
  */
 class LatexParagraphFillHandler : ParagraphFillHandler() {
 
-    override fun isAvailableForFile(psiFile: PsiFile?): Boolean {
-        return psiFile is LatexFile
-    }
+    override fun isAvailableForFile(psiFile: PsiFile?): Boolean = psiFile is LatexFile
 
     /**
      * Given the leaf [element] at the caret at the time of invoking the fill paragraph action, replace the text of the
@@ -112,17 +110,15 @@ class LatexParagraphFillHandler : ParagraphFillHandler() {
      * In that case the current element is the first element that is not part of the paragraph anymore. If the last
      * element before the current element is a white space, that white space is still part of the paragraph.
      */
-    private fun separatesParagraph(element: PsiElement): Boolean {
-        return when {
-            element is PsiWhiteSpace -> element.text.count { it == '\n' } >= 2
-            element.hasParent(LatexBeginCommand::class) -> true
-            element.hasParent(LatexEndCommand::class) -> true
-            element.hasParent(LatexDisplayMath::class) -> true
-            element.hasParent(LatexCommands::class) -> {
-                CommandMagic.sectionNameToLevel.contains(element.parentOfType(LatexCommands::class)?.commandToken?.text)
-            }
-            else -> false
+    private fun separatesParagraph(element: PsiElement): Boolean = when {
+        element is PsiWhiteSpace -> element.text.count { it == '\n' } >= 2
+        element.hasParent(LatexBeginCommand::class) -> true
+        element.hasParent(LatexEndCommand::class) -> true
+        element.hasParent(LatexDisplayMath::class) -> true
+        element.hasParent(LatexCommands::class) -> {
+            CommandMagic.sectionNameToLevel.contains(element.parentOfType(LatexCommands::class)?.commandToken?.text)
         }
+        else -> false
     }
 
     /**

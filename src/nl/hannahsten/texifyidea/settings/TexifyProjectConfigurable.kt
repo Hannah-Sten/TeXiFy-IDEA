@@ -18,13 +18,9 @@ class TexifyProjectConfigurable : SearchableConfigurable {
 
     override fun getDisplayName() = "Project Settings"
 
-    override fun createComponent(): JComponent? {
-        return null
-    }
+    override fun createComponent(): JComponent? = null
 
-    override fun isModified(): Boolean {
-        return false
-    }
+    override fun isModified(): Boolean = false
 
     override fun apply() {}
 }

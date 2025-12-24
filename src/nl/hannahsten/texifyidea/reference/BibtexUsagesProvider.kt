@@ -11,41 +11,29 @@ import nl.hannahsten.texifyidea.psi.BibtexTypes
 
 class BibtexUsagesProvider : FindUsagesProvider {
 
-    override fun getWordsScanner(): WordsScanner {
-        return DefaultWordsScanner(
-            BibtexLexerAdapter(),
-            // Identifiers.
-            TokenSet.create(
-                BibtexTypes.ID, BibtexTypes.IDENTIFIER
-            ),
-            // Comments.
-            TokenSet.create(BibtexTypes.COMMENT, BibtexTypes.COMMENT_TOKEN),
-            // Literals.
-            TokenSet.create(
-                BibtexTypes.STRING, BibtexTypes.BRACED_STRING,
-                BibtexTypes.QUOTED_STRING, BibtexTypes.DEFINED_STRING,
-                BibtexTypes.NORMAL_TEXT_WORD, BibtexTypes.NORMAL_TEXT
-            )
+    override fun getWordsScanner(): WordsScanner = DefaultWordsScanner(
+        BibtexLexerAdapter(),
+        // Identifiers.
+        TokenSet.create(
+            BibtexTypes.ID, BibtexTypes.IDENTIFIER
+        ),
+        // Comments.
+        TokenSet.create(BibtexTypes.COMMENT, BibtexTypes.COMMENT_TOKEN),
+        // Literals.
+        TokenSet.create(
+            BibtexTypes.STRING, BibtexTypes.BRACED_STRING,
+            BibtexTypes.QUOTED_STRING, BibtexTypes.DEFINED_STRING,
+            BibtexTypes.NORMAL_TEXT_WORD, BibtexTypes.NORMAL_TEXT
         )
-    }
+    )
 
-    override fun getNodeText(element: PsiElement, useFullName: Boolean): String {
-        return element.node.text
-    }
+    override fun getNodeText(element: PsiElement, useFullName: Boolean): String = element.node.text
 
-    override fun getDescriptiveName(element: PsiElement): String {
-        return element.text
-    }
+    override fun getDescriptiveName(element: PsiElement): String = element.text
 
-    override fun getType(element: PsiElement): String {
-        return element.node.elementType.toString()
-    }
+    override fun getType(element: PsiElement): String = element.node.elementType.toString()
 
-    override fun getHelpId(psiElement: PsiElement): String? {
-        return null
-    }
+    override fun getHelpId(psiElement: PsiElement): String? = null
 
-    override fun canFindUsagesFor(psiElement: PsiElement): Boolean {
-        return psiElement is PsiNameIdentifierOwner
-    }
+    override fun canFindUsagesFor(psiElement: PsiElement): Boolean = psiElement is PsiNameIdentifierOwner
 }

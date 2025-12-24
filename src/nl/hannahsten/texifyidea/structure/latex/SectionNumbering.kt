@@ -74,12 +74,10 @@ class SectionNumbering(private val documentClass: DocumentClass) {
 
         companion object {
 
-            fun getClassByName(name: String): DocumentClass {
-                return if (BOOK.name == name) {
-                    BOOK
-                }
-                else ARTICLE
+            fun getClassByName(name: String): DocumentClass = if (BOOK.name == name) {
+                BOOK
             }
+            else ARTICLE
         }
     }
 }

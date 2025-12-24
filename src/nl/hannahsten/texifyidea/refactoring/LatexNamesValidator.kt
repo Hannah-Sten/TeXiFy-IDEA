@@ -9,9 +9,7 @@ import nl.hannahsten.texifyidea.util.formatAsLabel
  */
 class LatexNamesValidator : NamesValidator {
 
-    override fun isKeyword(name: String, project: Project?): Boolean {
-        return false
-    }
+    override fun isKeyword(name: String, project: Project?): Boolean = false
 
     override fun isIdentifier(name: String, project: Project?): Boolean {
         // Unfortunately this is a global rule

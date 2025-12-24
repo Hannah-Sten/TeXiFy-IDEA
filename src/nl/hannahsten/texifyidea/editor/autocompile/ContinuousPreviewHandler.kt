@@ -51,14 +51,12 @@ class ContinuousPreviewBackspacehandler : BackspaceHandlerDelegate() {
 
     override fun beforeCharDeleted(c: Char, file: PsiFile, editor: Editor) {}
 
-    override fun charDeleted(c: Char, file: PsiFile, editor: Editor): Boolean {
-        return if (file.isLatexFile()) {
-            ContinuousPreviewHandler().charTyped(c, file.project, editor, file)
-            true
-        }
-        else {
-            // Returning true would block functionality of other plugins (e.g. removing second brace of pair in [<cursor>])
-            false
-        }
+    override fun charDeleted(c: Char, file: PsiFile, editor: Editor): Boolean = if (file.isLatexFile()) {
+        ContinuousPreviewHandler().charTyped(c, file.project, editor, file)
+        true
+    }
+    else {
+        // Returning true would block functionality of other plugins (e.g. removing second brace of pair in [<cursor>])
+        false
     }
 }

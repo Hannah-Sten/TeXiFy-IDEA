@@ -23,9 +23,9 @@ class LatexGatherEquationsInspectionTest : TexifyInspectionTestBase(LatexGatherE
     fun `test two consecutive inline math environments`() {
         myFixture.configureByText(
             LatexFileType,
-            """
-            ${"$"}a=b$
-            ${"$"}b=a$
+            $$"""
+            $a=b$
+            $b=a$
             """.trimIndent()
         )
         myFixture.checkHighlighting()
@@ -34,11 +34,11 @@ class LatexGatherEquationsInspectionTest : TexifyInspectionTestBase(LatexGatherE
     fun `test display math seperated by inline math environments`() {
         myFixture.configureByText(
             LatexFileType,
-            """
+            $$"""
             \[
                 a=b
             \]
-            ${"$"}c=d$
+            $c=d$
             \[
                 e=f
             \]

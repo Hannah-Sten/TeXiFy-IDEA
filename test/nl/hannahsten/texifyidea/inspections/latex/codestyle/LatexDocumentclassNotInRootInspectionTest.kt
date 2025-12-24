@@ -5,9 +5,7 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 
 class LatexDocumentclassNotInRootInspectionTest : TexifyInspectionTestBase(LatexDocumentclassNotInRootInspection()) {
 
-    override fun getTestDataPath(): String {
-        return "test/resources/inspections/latex/documentclassnotinroot"
-    }
+    override fun getTestDataPath(): String = "test/resources/inspections/latex/documentclassnotinroot"
 
     fun testNoWarning() {
         myFixture.configureByText(

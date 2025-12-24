@@ -11,31 +11,31 @@ fun properties(key: String) = project.findProperty(key).toString()
 
 // NOTE: when updating versions, also update Qodana in qodana.yaml
 plugins {
-    id("org.jetbrains.intellij.platform") version "2.5.0"
-    kotlin("jvm") version ("2.1.20")
-    kotlin("plugin.serialization") version ("2.1.20")
+    id("org.jetbrains.intellij.platform") version "2.10.5"
+    kotlin("jvm") version ("2.3.0")
+    kotlin("plugin.serialization") version ("2.3.0")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
-    id("com.github.ben-manes.versions") version "0.52.0"
+    id("com.github.ben-manes.versions") version "0.53.0"
 
     // Plugin which can update Gradle dependencies, use the help/useLatestVersions task.
-    id("se.patrikerdes.use-latest-versions") version "0.2.18"
+    id("se.patrikerdes.use-latest-versions") version "0.2.19"
 
     // Used to debug in a different IDE
     id("de.undercouch.download") version "5.6.0"
 
     // Test coverage
-    id("org.jetbrains.kotlinx.kover") version "0.9.1"
+    id("org.jetbrains.kotlinx.kover") version "0.9.4"
 
     // Linting
-    id("org.jlleitschuh.gradle.ktlint") version "12.1.2"
+    id("org.jlleitschuh.gradle.ktlint") version "14.0.1"
 
     // Vulnerability scanning
-    id("org.owasp.dependencycheck") version "12.1.0"
+    id("org.owasp.dependencycheck") version "12.1.9"
 
-    id("org.jetbrains.changelog") version "2.2.1"
+    id("org.jetbrains.changelog") version "2.5.0"
 
-    id("org.jetbrains.grammarkit") version "2022.3.2.2"
+    id("org.jetbrains.grammarkit") version "2023.3.0.1"
 }
 
 group = "nl.hannahsten"
@@ -130,45 +130,45 @@ dependencies {
 //    implementation(files("lib/JavaDDEx64.dll"))
 
     // D-Bus Java bindings
-    implementation("com.github.hypfvieh:dbus-java-core:5.1.1")
-    implementation("com.github.hypfvieh:dbus-java-transport-native-unixsocket:5.1.1")
+    implementation("com.github.hypfvieh:dbus-java-core:5.2.0")
+    implementation("com.github.hypfvieh:dbus-java-transport-native-unixsocket:5.2.0")
     implementation("org.slf4j:slf4j-simple:2.0.17")
 
     // Unzipping tar.xz/tar.bz2 files on Windows containing dtx files
     implementation("org.codehaus.plexus:plexus-component-api:1.0-alpha-33")
     implementation("org.codehaus.plexus:plexus-container-default:2.1.1")
-    implementation("org.codehaus.plexus:plexus-archiver:4.10.0")
+    implementation("org.codehaus.plexus:plexus-archiver:4.10.4")
 
     // Parsing json
     implementation("com.beust:klaxon:5.6")
 
     // Parsing xml
-    implementation("com.fasterxml.jackson.core:jackson-core:2.18.3")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.18.3")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-toml:2.18.3")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.3")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.20.1")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.20.1")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-toml:2.20.1")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.20.1")
 
     // Http requests
-    implementation("io.ktor:ktor-client-core:3.1.2")
-    implementation("io.ktor:ktor-client-cio:3.1.2")
-    implementation("io.ktor:ktor-client-auth:3.1.2")
-    implementation("io.ktor:ktor-client-content-negotiation:3.1.2")
-    implementation("io.ktor:ktor-server-core:3.1.2")
-    implementation("io.ktor:ktor-server-jetty-jakarta:3.1.2")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:3.1.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
+    implementation("io.ktor:ktor-client-core:3.3.3")
+    implementation("io.ktor:ktor-client-cio:3.3.3")
+    implementation("io.ktor:ktor-client-auth:3.3.3")
+    implementation("io.ktor:ktor-client-content-negotiation:3.3.3")
+    implementation("io.ktor:ktor-server-core:3.3.3")
+    implementation("io.ktor:ktor-server-jetty-jakarta:3.3.3")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:3.3.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
 
     // Comparing versions
     implementation("org.apache.maven:maven-artifact:4.0.0-rc-2")
 
     // LaTeX rendering for preview
     implementation("org.scilab.forge:jlatexmath:1.0.7")
-    implementation("org.apache.xmlgraphics:batik-all:1.18")
+    implementation("org.apache.xmlgraphics:batik-all:1.19")
     implementation("batik:batik-svg-dom:1.6-1")
 
-    implementation("io.arrow-kt:arrow-core:2.0.1")
-    implementation("io.arrow-kt:arrow-fx-coroutines:2.0.1")
-    implementation("io.arrow-kt:arrow-resilience:2.0.1")
+    implementation("io.arrow-kt:arrow-core:2.2.1.1")
+    implementation("io.arrow-kt:arrow-fx-coroutines:2.2.1.1")
+    implementation("io.arrow-kt:arrow-resilience:2.2.1.1")
     // Test dependencies
     // No version specified, it equals the kotlin version
     testImplementation("org.jetbrains.kotlin:kotlin-test")
@@ -178,13 +178,13 @@ dependencies {
     testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.12.0")
 
     // Use junit 5 for test cases
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.12.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:6.0.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.12.0")
 
     // Enable use of the JUnitPlatform Runner within the IDE
-    testImplementation("org.junit.platform:junit-platform-runner:1.12.1")
+    testImplementation("org.junit.platform:junit-platform-runner:1.14.1")
 
-    testImplementation("io.mockk:mockk:1.13.17")
+    testImplementation("io.mockk:mockk:1.14.7")
 
     // Add custom ruleset from github.com/slideclimb/ktlint-ruleset
     ktlintRuleset(files("lib/ktlint-ruleset-0.2.jar"))

@@ -112,25 +112,22 @@ open class WordCountAction : AnAction() {
         return makeDialog(psiFile, words, chars)
     }
 
-    private fun formatAsHtml(type: String, message: String?): String {
-        return if (message == null) {
-            ""
-        }
-        else {
-            "|   <tr><td style='text-align:right'>$type:</td><td><b>${message.take(5000)}</b></td></tr>"
-        }
+    private fun formatAsHtml(type: String, message: String?): String = if (message == null) {
+        ""
+    }
+    else {
+        "|   <tr><td style='text-align:right'>$type:</td><td><b>${message.take(5000)}</b></td></tr>"
     }
 
     /**
      * Builds the dialog that must show the word count.
      */
-    private fun makeDialog(baseFile: PsiFile, wordCount: Int?, characters: Int? = null, errorMessage: String? = null): DialogBuilder {
-        return DialogBuilder().apply {
-            setTitle("Word Count")
+    private fun makeDialog(baseFile: PsiFile, wordCount: Int?, characters: Int? = null, errorMessage: String? = null): DialogBuilder = DialogBuilder().apply {
+        setTitle("Word Count")
 
-            setCenterPanel(
-                JLabel(
-                    """|<html>
+        setCenterPanel(
+            JLabel(
+                """|<html>
                         |<p>Analysis of <i>${baseFile.name}</i> (and inclusions):</p>
                         |<table cellpadding=1 style='margin-top:4px'>
                         ${formatAsHtml("Word count", wordCount?.toString())}
@@ -138,16 +135,15 @@ open class WordCountAction : AnAction() {
                         ${formatAsHtml("Error message", errorMessage)}
                         |</table>
                         |</html>
-                    """.trimMargin(),
-                    AllIcons.General.InformationDialog,
-                    SwingConstants.LEADING
-                )
+                """.trimMargin(),
+                AllIcons.General.InformationDialog,
+                SwingConstants.LEADING
             )
+        )
 
-            addOkAction()
-            setOkOperation {
-                dialogWrapper.close(0)
-            }
+        addOkAction()
+        setOkOperation {
+            dialogWrapper.close(0)
         }
     }
 
@@ -233,8 +229,12 @@ open class WordCountAction : AnAction() {
         val set: MutableSet<PsiElement> = HashSet()
 
         for (word in words) {
-            if (isWrongCommand(word) || isOptionalParameter(word) || isEnvironmentMarker(word) || isPunctuation(word) ||
-                isInWrongEnvironment(word) || isInMath(word)
+            if (isWrongCommand(word) ||
+                isOptionalParameter(word) ||
+                isEnvironmentMarker(word) ||
+                isPunctuation(word) ||
+                isInWrongEnvironment(word) ||
+                isInMath(word)
             ) {
                 continue
             }
@@ -248,16 +248,12 @@ open class WordCountAction : AnAction() {
     /**
      * Checks if the word is in inline math mode or not.
      */
-    private fun isInMath(word: PsiElement): Boolean {
-        return word.inMathContext()
-    }
+    private fun isInMath(word: PsiElement): Boolean = word.inMathContext()
 
     /**
      * Checks if the given word is in an environment that must be ignored.
      */
-    private fun isInWrongEnvironment(word: PsiElement): Boolean {
-        return word.inDirectEnvironment(Util.IGNORE_ENVIRONMENTS)
-    }
+    private fun isInWrongEnvironment(word: PsiElement): Boolean = word.inDirectEnvironment(Util.IGNORE_ENVIRONMENTS)
 
     /**
      * `I've` counts for two words: `I` and `have`. This function gives you the number of original words.
@@ -284,18 +280,14 @@ open class WordCountAction : AnAction() {
         return count
     }
 
-    private fun isPunctuation(word: PsiElement): Boolean {
-        return Util.PUNCTUATION.matcher(word.text).matches()
-    }
+    private fun isPunctuation(word: PsiElement): Boolean = Util.PUNCTUATION.matcher(word.text).matches()
 
     private fun isEnvironmentMarker(word: PsiElement): Boolean {
         val grandparent = word.grandparent(7)
         return grandparent is LatexBeginCommand || grandparent is LatexEndCommand
     }
 
-    private fun isOptionalParameter(word: PsiElement): Boolean {
-        return word.grandparent(5) is LatexOptionalParam
-    }
+    private fun isOptionalParameter(word: PsiElement): Boolean = word.grandparent(5) is LatexOptionalParam
 
     private fun isWrongCommand(word: PsiElement): Boolean {
         val command = word.grandparent(7) as? LatexCommands ?: return false

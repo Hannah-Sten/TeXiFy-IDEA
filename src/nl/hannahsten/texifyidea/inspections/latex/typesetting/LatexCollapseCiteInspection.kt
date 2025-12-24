@@ -23,7 +23,10 @@ import nl.hannahsten.texifyidea.util.caretOffset
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.parser.*
+import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
+import nl.hannahsten.texifyidea.util.parser.firstParentOfType
+import nl.hannahsten.texifyidea.util.parser.nextSiblingIgnoreWhitespace
+import nl.hannahsten.texifyidea.util.parser.previousSiblingIgnoreWhitespace
 import java.util.*
 
 /**
@@ -147,14 +150,12 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
      * in this bundle have only required parameters, as cites with optional parameters should not
      * be collapsed.
      */
-    private inner class InspectionFix(val citeBundle: List<SmartPsiElementPointer<LatexCommands>>) : LocalQuickFix {
+    private class InspectionFix(val citeBundle: List<SmartPsiElementPointer<LatexCommands>>) : LocalQuickFix {
         val sortedBundle = lazy {
             citeBundle.mapNotNull { it.element }.sortedBy { it.textOffset }
         }
 
-        override fun getFamilyName(): String {
-            return "Collapse citations"
-        }
+        override fun getFamilyName(): String = "Collapse citations"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val (targetCite, _, replacement) = replacement(project) ?: return

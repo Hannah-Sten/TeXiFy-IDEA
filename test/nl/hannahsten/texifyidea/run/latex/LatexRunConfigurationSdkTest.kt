@@ -67,13 +67,11 @@ class LatexRunConfigurationSdkTest : BasePlatformTestCase() {
         }
     }
 
-    private fun createRunConfiguration(): LatexRunConfiguration {
-        return LatexRunConfiguration(
-            project,
-            LatexRunConfigurationProducer().configurationFactory,
-            "Test SDK Run Config"
-        )
-    }
+    private fun createRunConfiguration(): LatexRunConfiguration = LatexRunConfiguration(
+        project,
+        LatexRunConfigurationProducer().configurationFactory,
+        "Test SDK Run Config"
+    )
 
     // Tests for getLatexDistributionType resolution
 

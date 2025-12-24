@@ -26,13 +26,9 @@ interface LatexSemanticsLookup : LatexSemanticsCommandLookup, LatexSemanticsEnvL
      */
     fun lookup(name: String): LSemanticEntity?
 
-    override fun lookupCommand(name: String): LSemanticCommand? {
-        return lookup(name) as? LSemanticCommand
-    }
+    override fun lookupCommand(name: String): LSemanticCommand? = lookup(name) as? LSemanticCommand
 
-    override fun lookupEnv(name: String): LSemanticEnv? {
-        return lookup(name) as? LSemanticEnv
-    }
+    override fun lookupEnv(name: String): LSemanticEnv? = lookup(name) as? LSemanticEnv
 
     fun allEntitiesSeq(): Sequence<LSemanticEntity>
 
@@ -48,9 +44,7 @@ abstract class CachedLatexSemanticsLookup : LatexSemanticsLookup {
         buildContextInverseSearch(allEntitiesSeq())
     }
 
-    final override fun findByRelatedContext(context: LatexContext): List<LSemanticEntity> {
-        return contextInverseSearch[context] ?: emptyList()
-    }
+    final override fun findByRelatedContext(context: LatexContext): List<LSemanticEntity> = contextInverseSearch[context] ?: emptyList()
 
     companion object {
         fun buildContextInverseSearch(entities: Sequence<LSemanticEntity>): MutableMap<LatexContext, MutableList<LSemanticEntity>> {

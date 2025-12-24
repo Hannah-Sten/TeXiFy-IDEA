@@ -17,11 +17,9 @@ class SimpleFileReference(fileReference: PsiElement, val filePath: String, val t
         rangeInElement = textRange ?: TextRange.from(element.text.indexOf(filePath), filePath.length)
     }
 
-    override fun resolve(): PsiFile? {
-        return element.containingFile
-            ?.containingDirectory
-            ?.virtualFile
-            ?.findVirtualFileByAbsoluteOrRelativePath(filePath)
-            ?.psiFile(element.project)
-    }
+    override fun resolve(): PsiFile? = element.containingFile
+        ?.containingDirectory
+        ?.virtualFile
+        ?.findVirtualFileByAbsoluteOrRelativePath(filePath)
+        ?.psiFile(element.project)
 }

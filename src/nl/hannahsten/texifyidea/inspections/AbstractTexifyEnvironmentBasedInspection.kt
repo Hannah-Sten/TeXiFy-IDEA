@@ -60,9 +60,7 @@ abstract class AbstractTexifyEnvironmentBasedInspection(
         @FileModifier.SafeFieldForPreview
         private val requiredPkg: LatexLib = LatexLib.BASE
     ) : LocalQuickFix {
-        override fun getFamilyName(): @IntentionFamilyName String {
-            return fixName
-        }
+        override fun getFamilyName(): @IntentionFamilyName String = fixName
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val element = descriptor.psiElement as? LatexEnvironment ?: return

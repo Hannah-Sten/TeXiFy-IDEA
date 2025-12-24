@@ -39,9 +39,7 @@ fun PsiFile.findLatexLabelingElementsInFileSet(): Sequence<PsiElement> {
 
 object LatexLabelUtil {
 
-    fun isDefinedLabelOrBibtexLabel(label: String, project: Project, scope: GlobalSearchScope): Boolean {
-        return NewLabelsIndex.existsByName(label, project, scope) || NewBibtexEntryIndex.existsByName(label, project, scope)
-    }
+    fun isDefinedLabelOrBibtexLabel(label: String, project: Project, scope: GlobalSearchScope): Boolean = NewLabelsIndex.existsByName(label, project, scope) || NewBibtexEntryIndex.existsByName(label, project, scope)
 
     /**
      * Generate a unique label name based on the original label by appending or incrementing a number at the end.
@@ -85,9 +83,7 @@ object LatexLabelUtil {
         return null
     }
 
-    private fun LatexCommands.firstRequiredParameterText(): LatexParameterText? {
-        return firstRequiredParameter()?.findFirstChildTyped<LatexParameterText>()
-    }
+    private fun LatexCommands.firstRequiredParameterText(): LatexParameterText? = firstRequiredParameter()?.findFirstChildTyped<LatexParameterText>()
 
     /**
      * Extracts the label parameter from the command if it is a known labeling command or if it is defined as a parameter.
@@ -122,19 +118,15 @@ object LatexLabelUtil {
         return extractLabelWithSemantics(element.beginCommand, semantics.arguments)
     }
 
-    fun extractLabelParamIn(element: PsiElement, withCustomized: Boolean = false): PsiElement? {
-        return when (element) {
-            is BibtexEntry -> element.findFirstChildTyped<BibtexId>()
-            is LatexCommands -> extractLabelParamInCommand(element, withCustomized)
-            is LatexEnvironment -> extractLabelFromEnvironment(element, withCustomized)
-            is LatexParameterText -> element
-            else -> null
-        }
+    fun extractLabelParamIn(element: PsiElement, withCustomized: Boolean = false): PsiElement? = when (element) {
+        is BibtexEntry -> element.findFirstChildTyped<BibtexId>()
+        is LatexCommands -> extractLabelParamInCommand(element, withCustomized)
+        is LatexEnvironment -> extractLabelFromEnvironment(element, withCustomized)
+        is LatexParameterText -> element
+        else -> null
     }
 
-    fun extractLabelTextIn(element: PsiElement, customDef: Boolean = false): String? {
-        return extractLabelParamIn(element, customDef)?.text
-    }
+    fun extractLabelTextIn(element: PsiElement, customDef: Boolean = false): String? = extractLabelParamIn(element, customDef)?.text
 
     fun interface LabelProcessor {
         /**

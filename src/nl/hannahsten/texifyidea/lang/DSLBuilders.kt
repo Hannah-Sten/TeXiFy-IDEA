@@ -100,41 +100,27 @@ open class DSLLatexBuilderScope {
 
     fun String.required(
         ctx: LatexContext, description: String = ""
-    ): LArgument {
-        return LArgument.required(this, ctx, description)
-    }
+    ): LArgument = LArgument.required(this, ctx, description)
 
     fun String.required(
         ctx: LContextSet, description: String = ""
-    ): LArgument {
-        return LArgument.required(this, LatexContextIntro.Assign(ctx), description)
-    }
+    ): LArgument = LArgument.required(this, LatexContextIntro.Assign(ctx), description)
 
     fun String.required(
         ctx: LatexContextIntro, description: String = ""
-    ): LArgument {
-        return LArgument.required(this, ctx, description)
-    }
+    ): LArgument = LArgument.required(this, ctx, description)
 
     fun String.optional(
         ctx: LatexContext, description: String = ""
-    ): LArgument {
-        return LArgument.optional(this, ctx, description)
-    }
+    ): LArgument = LArgument.optional(this, ctx, description)
 
     fun String.optional(
         ctx: LatexContextIntro, description: String = ""
-    ): LArgument {
-        return LArgument.optional(this, ctx, description)
-    }
+    ): LArgument = LArgument.optional(this, ctx, description)
 
-    operator fun LatexContext.unaryPlus(): LatexContextIntro {
-        return LatexContextIntro.add(this)
-    }
+    operator fun LatexContext.unaryPlus(): LatexContextIntro = LatexContextIntro.add(this)
 
-    operator fun LatexContext.unaryMinus(): LatexContextIntro {
-        return LatexContextIntro.remove(this)
-    }
+    operator fun LatexContext.unaryMinus(): LatexContextIntro = LatexContextIntro.remove(this)
 
     fun command(
         name: String, arguments: List<LArgument>, description: String, display: String?
@@ -160,9 +146,7 @@ open class DSLLatexBuilderScope {
         return command(this, arguments.toList(), description = desc(), display = display)
     }
 
-    fun symbol(name: String, display: String? = null, description: String? = null): LSemanticCommand {
-        return command(name, emptyList(), description ?: display ?: name, display)
-    }
+    fun symbol(name: String, display: String? = null, description: String? = null): LSemanticCommand = command(name, emptyList(), description ?: display ?: name, display)
 
     fun environment(
         name: String, context: LatexContextIntro,
@@ -216,30 +200,20 @@ open class DSLLatexBuilderScope {
         myEntities.add(entity)
     }
 
-    fun build(): List<LSemanticEntity> {
-        return myEntities.toList()
-    }
+    fun build(): List<LSemanticEntity> = myEntities.toList()
 }
 
 class DSLLatexCommandBuilderScope : DSLLatexBuilderScope() {
-    fun buildCommands(): List<LSemanticCommand> {
-        return build().filterIsInstance<LSemanticCommand>()
-    }
+    fun buildCommands(): List<LSemanticCommand> = build().filterIsInstance<LSemanticCommand>()
 
-    operator fun String.unaryPlus(): LSemanticCommand {
-        return this.cmd()
-    }
+    operator fun String.unaryPlus(): LSemanticCommand = this.cmd()
 }
 
 class DSLLatexEnvironmentBuilderScope : DSLLatexBuilderScope() {
 
-    fun buildEnvironments(): List<LSemanticEnv> {
-        return build().filterIsInstance<LSemanticEnv>()
-    }
+    fun buildEnvironments(): List<LSemanticEnv> = build().filterIsInstance<LSemanticEnv>()
 
-    operator fun String.unaryPlus(): LSemanticEnv {
-        return this.env(LatexContextIntro.inherit())
-    }
+    operator fun String.unaryPlus(): LSemanticEnv = this.env(LatexContextIntro.inherit())
 }
 
 abstract class PredefinedEntitySet {
@@ -262,11 +236,9 @@ abstract class PredefinedEntitySet {
 
     protected inline fun definedUnder(
         packageName: String, action: DSLLatexBuilderScope.() -> Unit
-    ): List<LSemanticEntity> {
-        return definitions {
-            packageOf(packageName)
-            action()
-        }
+    ): List<LSemanticEntity> = definitions {
+        packageOf(packageName)
+        action()
     }
 }
 
@@ -288,25 +260,19 @@ abstract class PredefinedCommandSet : PredefinedEntitySet() {
         return built
     }
 
-    protected inline fun mathCommands(action: DSLLatexCommandBuilderScope.() -> Unit): List<LSemanticCommand> {
-        return buildCommands {
-            applicableIn(LatexContexts.Math)
-            action()
-        }
+    protected inline fun mathCommands(action: DSLLatexCommandBuilderScope.() -> Unit): List<LSemanticCommand> = buildCommands {
+        applicableIn(LatexContexts.Math)
+        action()
     }
 
-    protected inline fun textCommands(action: DSLLatexCommandBuilderScope.() -> Unit): List<LSemanticCommand> {
-        return buildCommands {
-            applicableIn(LatexContexts.Text)
-            action()
-        }
+    protected inline fun textCommands(action: DSLLatexCommandBuilderScope.() -> Unit): List<LSemanticCommand> = buildCommands {
+        applicableIn(LatexContexts.Text)
+        action()
     }
 
-    protected inline fun preambleCommands(action: DSLLatexCommandBuilderScope.() -> Unit): List<LSemanticCommand> {
-        return buildCommands {
-            applicableIn(LatexContexts.Preamble)
-            action()
-        }
+    protected inline fun preambleCommands(action: DSLLatexCommandBuilderScope.() -> Unit): List<LSemanticCommand> = buildCommands {
+        applicableIn(LatexContexts.Preamble)
+        action()
     }
 }
 
@@ -323,10 +289,8 @@ abstract class PredefinedEnvironmentSet : PredefinedEntitySet() {
         return built
     }
 
-    protected fun mathEnvironments(action: DSLLatexEnvironmentBuilderScope.() -> Unit): List<LSemanticEnv> {
-        return buildEnvironments {
-            applicableIn(LatexContexts.Math)
-            action()
-        }
+    protected fun mathEnvironments(action: DSLLatexEnvironmentBuilderScope.() -> Unit): List<LSemanticEnv> = buildEnvironments {
+        applicableIn(LatexContexts.Math)
+        action()
     }
 }

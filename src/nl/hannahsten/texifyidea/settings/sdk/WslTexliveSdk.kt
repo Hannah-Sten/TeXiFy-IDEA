@@ -26,17 +26,13 @@ object WslPathUtil {
      * Convert a WSL path to a Windows path using wslpath.
      * e.g., /usr/local/texlive/2025 -> \\wsl.localhost\Ubuntu\usr\local\texlive\2025
      */
-    fun wslPathToWindows(wslPath: String): String? {
-        return runCommand(*SystemEnvironment.wslCommand, "wslpath -w '$wslPath'")?.trim()
-    }
+    fun wslPathToWindows(wslPath: String): String? = runCommand(*SystemEnvironment.wslCommand, "wslpath -w '$wslPath'")?.trim()
 
     /**
      * Convert a Windows path to a WSL path using wslpath.
      * e.g., \\wsl$\Ubuntu\usr\local\texlive\2025 -> /usr/local/texlive/2025
      */
-    fun windowsPathToWsl(windowsPath: String): String? {
-        return runCommand(*SystemEnvironment.wslCommand, "wslpath -a '$windowsPath'")?.trim()
-    }
+    fun windowsPathToWsl(windowsPath: String): String? = runCommand(*SystemEnvironment.wslCommand, "wslpath -a '$windowsPath'")?.trim()
 }
 
 /**
@@ -109,17 +105,11 @@ class WslTexliveSdk : LatexSdk("WSL TeX Live SDK") {
         return "WSL TeX Live $year"
     }
 
-    override fun getDefaultDocumentationUrl(sdk: Sdk): String? {
-        return sdk.homePath
-    }
+    override fun getDefaultDocumentationUrl(sdk: Sdk): String? = sdk.homePath
 
-    override fun getDefaultSourcesPath(homePath: String): VirtualFile? {
-        return LocalFileSystem.getInstance().findFileByPath("$homePath/texmf-dist/source/latex")
-    }
+    override fun getDefaultSourcesPath(homePath: String): VirtualFile? = LocalFileSystem.getInstance().findFileByPath("$homePath/texmf-dist/source/latex")
 
-    override fun getDefaultStyleFilesPath(homePath: String): VirtualFile? {
-        return LocalFileSystem.getInstance().findFileByPath("$homePath/texmf-dist/tex")
-    }
+    override fun getDefaultStyleFilesPath(homePath: String): VirtualFile? = LocalFileSystem.getInstance().findFileByPath("$homePath/texmf-dist/tex")
 
     override fun getExecutableName(executable: String, homePath: String): String {
         // For WSL, we need to return the WSL path to the executable

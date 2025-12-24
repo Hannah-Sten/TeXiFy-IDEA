@@ -30,9 +30,7 @@ fun BibtexEntry.getIdentifier(): String {
         ?: ""
 }
 
-fun BibtexEntry.getAbstract(): String {
-    return this.getTagContent("abstract")
-}
+fun BibtexEntry.getAbstract(): String = this.getTagContent("abstract")
 
 fun BibtexEntry.getTagContent(tagName: String?): String {
     val entryContent = this.entryContent ?: return ""

@@ -64,44 +64,28 @@ data class LArgument(
     companion object {
         fun required(
             name: String, ctx: LatexContextIntro = LatexContextIntro.Inherit, description: String = ""
-        ): LArgument {
-            return LArgument(name, LArgumentType.REQUIRED, ctx, description)
-        }
+        ): LArgument = LArgument(name, LArgumentType.REQUIRED, ctx, description)
 
         fun required(
             name: String, ctx: LContextSet, description: String = ""
-        ): LArgument {
-            return LArgument(name, LArgumentType.REQUIRED, LatexContextIntro.assign(ctx), description)
-        }
+        ): LArgument = LArgument(name, LArgumentType.REQUIRED, LatexContextIntro.assign(ctx), description)
 
         fun required(
             name: String, ctx: LatexContext, description: String = ""
-        ): LArgument {
-            return LArgument(name, LArgumentType.REQUIRED, LatexContextIntro.assign(ctx), description)
-        }
+        ): LArgument = LArgument(name, LArgumentType.REQUIRED, LatexContextIntro.assign(ctx), description)
 
         fun optional(
             name: String, ctx: LatexContextIntro = LatexContextIntro.Inherit, description: String = ""
-        ): LArgument {
-            return LArgument(name, LArgumentType.OPTIONAL, ctx, description)
-        }
+        ): LArgument = LArgument(name, LArgumentType.OPTIONAL, ctx, description)
 
         fun optional(
             name: String, ctx: LatexContext, description: String = ""
-        ): LArgument {
-            return LArgument(name, LArgumentType.OPTIONAL, LatexContextIntro.Assign(ctx), description)
-        }
+        ): LArgument = LArgument(name, LArgumentType.OPTIONAL, LatexContextIntro.Assign(ctx), description)
 
-        fun getRequiredByIdx(arguments: List<LArgument>, idx: Int): LArgument? {
-            return arguments.getByIndexWithin({ it.isRequired }, idx)
-        }
+        fun getRequiredByIdx(arguments: List<LArgument>, idx: Int): LArgument? = arguments.getByIndexWithin({ it.isRequired }, idx)
 
-        inline fun indexOfFirstRequired(arguments: List<LArgument>, predicate: (LArgument) -> Boolean): Int {
-            return arguments.indexOfFirstWithin({ it.isRequired }, predicate)
-        }
+        inline fun indexOfFirstRequired(arguments: List<LArgument>, predicate: (LArgument) -> Boolean): Int = arguments.indexOfFirstWithin({ it.isRequired }, predicate)
 
-        inline fun indexOfFirstOptional(arguments: List<LArgument>, predicate: (LArgument) -> Boolean): Int {
-            return arguments.indexOfFirstWithin({ it.isOptional }, predicate)
-        }
+        inline fun indexOfFirstOptional(arguments: List<LArgument>, predicate: (LArgument) -> Boolean): Int = arguments.indexOfFirstWithin({ it.isOptional }, predicate)
     }
 }
