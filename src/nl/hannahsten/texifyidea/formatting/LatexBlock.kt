@@ -179,7 +179,7 @@ class LatexBlock(
         }
 
         // Workaround for fake parameter case below, to fix formatting of elements in the block which does not start on a newline due to starting right after the fake parameter
-        // For children of environment, or environment content contains normal text and then other blocks in which case we check if we are in the first block
+        // For children of environment, or environment content contains normal text and then other blocks, in which case we check if we are in the first block
         if (myNode.psi.parent is LatexEnvironmentContent || ((myNode.psi.firstParentOfType<LatexEnvironmentContent>() as? LatexEnvironmentContent)?.firstChild?.firstChild == myNode.psi.parent)) {
             val environmentContent = myNode.psi.firstParentOfType<LatexEnvironmentContent>()
             // Check if there is a newline before the environment content starts: if so, we don't need to correct anything

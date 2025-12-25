@@ -402,6 +402,8 @@ fun Int?.ifPositiveAddTwo(): Int =
     private infix fun String.`should be reformatted to`(expected: String) {
         myFixture.configureByText(LatexFileType, this)
         writeCommand(project) { CodeStyleManager.getInstance(project).reformat(myFixture.file) }
+        // In some rare cases, we need two reformats, for example around fake environment parameters
+        writeCommand(project) { CodeStyleManager.getInstance(project).reformat(myFixture.file) }
         myFixture.checkResult(expected)
     }
 }

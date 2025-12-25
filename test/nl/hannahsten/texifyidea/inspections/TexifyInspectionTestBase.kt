@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.inspections
 import com.intellij.codeInspection.InspectionsBundle
 import com.intellij.codeInspection.LocalInspectionTool
 import com.intellij.psi.PsiFile
+import com.intellij.psi.codeStyle.CodeStyleManager
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.configureByFilesAndBuildFilesets
 import nl.hannahsten.texifyidea.file.LatexFileType
@@ -41,6 +42,9 @@ abstract class TexifyInspectionTestBase(vararg val inspections: LocalInspectionT
         writeCommand(myFixture.project) {
             quickFixes[selectedFix - 1]?.invoke(myFixture.project, myFixture.editor, myFixture.file)
         }
+        // Reformat file, needed in some edge cases
+        writeCommand(project) { CodeStyleManager.getInstance(project).reformat(myFixture.file) }
+
         myFixture.checkResult(after)
     }
 
