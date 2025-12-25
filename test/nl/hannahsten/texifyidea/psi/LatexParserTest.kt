@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.psi
 
-import com.intellij.psi.PsiElement
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import io.mockk.every
 import io.mockk.mockkStatic
@@ -446,7 +445,6 @@ class LatexParserTest : BasePlatformTestCase() {
         )
         myFixture.checkHighlighting()
     }
-
 
     fun testCombinedBraceEdgeCases() {
         myFixture.configureByText(
