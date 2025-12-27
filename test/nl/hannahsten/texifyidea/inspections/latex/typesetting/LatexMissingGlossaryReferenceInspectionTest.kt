@@ -120,9 +120,9 @@ class LatexMissingGlossaryReferenceInspectionTest : TexifyInspectionTestBase(Lat
             \documentclass{article}
             \usepackage{acronym}
             \begin{document}
-            	\begin{acronym}
-            		\acro{CD}{Compact Disc}
-            	\end{acronym}
+                \begin{acronym}
+                    \acro{CD}{Compact Disc}
+                \end{acronym}
                 Play \ac{CD}.
             \end{document}
             """.trimIndent(),
