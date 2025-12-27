@@ -8,15 +8,12 @@ import nl.hannahsten.texifyidea.formatting.spacingrules.leftTableSpaceAlign
 import nl.hannahsten.texifyidea.formatting.spacingrules.rightTableSpaceAlign
 import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
-import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.psi.LatexNoMathContent
-import nl.hannahsten.texifyidea.psi.LatexParameter
+import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.psi.LatexTypes.*
 import nl.hannahsten.texifyidea.settings.codestyle.LatexCodeStyleSettings
+import nl.hannahsten.texifyidea.util.labels.isLabelCommand
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
-import nl.hannahsten.texifyidea.psi.asCommandName
 import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 import nl.hannahsten.texifyidea.util.parser.inDirectEnvironment
 import nl.hannahsten.texifyidea.util.parser.parentOfType
@@ -44,6 +41,10 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
                 // Don't insert or remove spaces in front of the first word in a verbatim environment.
                 else if (right.node?.elementType === ENVIRONMENT_CONTENT) {
                     if (right.node?.psi?.inDirectEnvironment(EnvironmentMagic.verbatim) == true) {
+                        return@customRule Spacing.getReadOnlySpacing()
+                    }
+                    // We make an exception for the \label command: it makes sense to put it on the same line as the \begin, so we don't force it to the next line
+                    if ((right.node?.psi?.firstChild?.firstChild as? LatexCommands)?.let { it.isLabelCommand(LatexDefinitionService.getBundleFor(it)) } == true) {
                         return@customRule Spacing.getReadOnlySpacing()
                     }
                     left.node?.let { leftNode ->
