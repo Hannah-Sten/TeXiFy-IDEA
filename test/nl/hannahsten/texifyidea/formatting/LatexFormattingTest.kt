@@ -37,8 +37,7 @@ class LatexFormattingTest : BasePlatformTestCase() {
     }
 
     /**
-     * This may not be what we want (though personally I've gotten used to it and think it's actually quite nice),
-     * but having a test we at least notice when we (accidentally) change it.
+     * This is debatable
      */
     fun `test labeled equation`() {
         """
@@ -46,8 +45,7 @@ class LatexFormattingTest : BasePlatformTestCase() {
                 x = y
             \end{equation}
         """.trimIndent() `should be reformatted to` """
-            \begin{equation}
-                \label{eq:xy}
+            \begin{equation}\label{eq:xy}
                 x = y
             \end{equation}
         """.trimIndent()

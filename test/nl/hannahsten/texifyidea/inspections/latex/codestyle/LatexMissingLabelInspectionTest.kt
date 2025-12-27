@@ -115,8 +115,7 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
         """.trimIndent(),
         after = """
         \begin{document}
-            \begin{figure}
-                \label{fig:figure}<caret>
+            \begin{figure}\label{fig:figure}<caret>
         
             \end{figure}
         \end{document}
