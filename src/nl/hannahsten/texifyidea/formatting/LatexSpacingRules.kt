@@ -45,7 +45,7 @@ fun createSpacingBuilder(settings: CodeStyleSettings): TexSpacingBuilder {
                     }
                     // We make an exception for the \label command: it makes sense to put it on the same line as the \begin, so we don't force it to the next line
                     if ((right.node?.psi?.firstChild?.firstChild as? LatexCommands)?.let { it.isLabelCommand(LatexDefinitionService.getBundleFor(it)) } == true) {
-                        return@customRule Spacing.getReadOnlySpacing()
+                        return@customRule Spacing.createSafeSpacing(true, 1)
                     }
                     left.node?.let { leftNode ->
                         if (leftNode.elementType === PARAMETER) {
