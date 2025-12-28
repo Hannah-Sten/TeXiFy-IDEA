@@ -166,9 +166,9 @@ dependencies {
     implementation("org.apache.xmlgraphics:batik-all:1.19")
     implementation("batik:batik-svg-dom:1.6-1")
 
-    implementation("io.arrow-kt:arrow-core:2.0.1")
-    implementation("io.arrow-kt:arrow-fx-coroutines:2.0.1")
-    implementation("io.arrow-kt:arrow-resilience:2.0.1")
+    implementation("io.arrow-kt:arrow-core:2.1.2")
+    implementation("io.arrow-kt:arrow-fx-coroutines:2.1.2")
+    implementation("io.arrow-kt:arrow-resilience:2.1.2")
     // Test dependencies
     // No version specified, it equals the kotlin version
     testImplementation("org.jetbrains.kotlin:kotlin-test")
