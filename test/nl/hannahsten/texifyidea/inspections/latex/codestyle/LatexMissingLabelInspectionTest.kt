@@ -264,7 +264,7 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
         """.trimIndent(),
         after = """
         \begin{document}
-                \lstinputlisting[someoption,otheroption={with value},label={lst:lstinputlisting}]{some/file}
+            \lstinputlisting[someoption,otheroption={with value},label={lst:lstinputlisting}]{some/file}
         \end{document}
         """.trimIndent()
     )
@@ -277,7 +277,7 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
         """.trimIndent(),
         after = """
         \begin{document}
-                \lstinputlisting[label={lst:lstinputlisting}]{some/file}
+            \lstinputlisting[label={lst:lstinputlisting}]{some/file}
         \end{document}
         """.trimIndent()
     )

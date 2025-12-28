@@ -2,12 +2,15 @@ package nl.hannahsten.texifyidea.inspections
 
 import com.intellij.codeInspection.InspectionsBundle
 import com.intellij.codeInspection.LocalInspectionTool
+import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
+import com.intellij.psi.codeStyle.CodeStyleManager
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.configureByFilesAndBuildFilesets
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.testutils.writeCommand
 import nl.hannahsten.texifyidea.updateCommandDef
+import nl.hannahsten.texifyidea.util.files.document
 
 abstract class TexifyInspectionTestBase(vararg val inspections: LocalInspectionTool) : BasePlatformTestCase() {
 
@@ -31,7 +34,7 @@ abstract class TexifyInspectionTestBase(vararg val inspections: LocalInspectionT
         fileName: String = "test.tex",
         updateCommand: Boolean = false
     ) {
-        myFixture.configureByText(fileName, before)
+        val file = myFixture.configureByText(fileName, before)
         if (updateCommand) {
             myFixture.updateCommandDef()
         }
@@ -41,6 +44,10 @@ abstract class TexifyInspectionTestBase(vararg val inspections: LocalInspectionT
         writeCommand(myFixture.project) {
             quickFixes[selectedFix - 1]?.invoke(myFixture.project, myFixture.editor, myFixture.file)
         }
+        // Reformat file, needed in some edge cases
+        PsiDocumentManager.getInstance(project).commitDocument(file.document()!!)
+        writeCommand(project) { CodeStyleManager.getInstance(project).reformat(myFixture.file) }
+
         myFixture.checkResult(after)
     }
 
