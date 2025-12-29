@@ -110,6 +110,9 @@ abstract class StringStubIndexWrapper<Psi : PsiElement>(
     @RequiresReadLock
     override fun processAllKeys(project: Project, processor: Processor<in String>): Boolean = processAllKeys(project.contentSearchScope, processor = processor)
 
+    /**
+     * Note: the action should not be a stub index operation itself, see #4327
+     */
     @RequiresReadLock
     fun forEachKey(
         project: Project,
