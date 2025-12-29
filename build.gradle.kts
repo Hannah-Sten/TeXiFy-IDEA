@@ -34,8 +34,8 @@ plugins {
     id("org.owasp.dependencycheck") version "12.1.9"
 
     id("org.jetbrains.changelog") version "2.5.0"
-
     id("org.jetbrains.grammarkit") version "2023.3.0.1"
+    id("io.sentry.jvm.gradle") version "5.12.2"
 }
 
 group = "nl.hannahsten"
@@ -346,4 +346,20 @@ tasks {
     compileKotlin {
         dependsOn(initializeIntellijPlatformPlugin)
     }
+
+    generateSentryBundleIdJava {
+        dependsOn(initializeIntellijPlatformPlugin)
+    }
+
+}
+
+sentry {
+    // Generates a JVM (Java, Kotlin, etc.) source bundle and uploads your source code to Sentry.
+    // This enables source context, allowing you to see your source
+    // code as part of your stack traces in Sentry.
+    includeSourceContext = true
+
+    org = "hannah-sten"
+    projectName = "texify-idea"
+    authToken = System.getenv("SENTRY_AUTH_TOKEN")
 }
