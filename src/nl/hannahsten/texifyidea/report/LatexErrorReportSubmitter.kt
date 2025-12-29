@@ -53,7 +53,7 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
         parentComponent: Component,
         consumer: Consumer<in SubmittedReportInfo>
     ): Boolean {
-        val retrySchedule = Schedule.Companion.exponential<Throwable>(250.milliseconds)
+        val retrySchedule = Schedule.exponential<Throwable>(250.milliseconds)
 
         val latestVersion = try {
             runBlocking {
@@ -77,7 +77,7 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
                 "to check if the error is already fixed. Go to Settings > Plugins to update.\n" +
                 if (currentIdeaVersion < requiredIdeaVersion) "You first need to update your current IDE version ($currentIdeaVersion) to $requiredIdeaVersion or newer.\n" else ""
 
-            val result = MessageDialogBuilder.Companion.okCancel("Update TeXiFy", message)
+            val result = MessageDialogBuilder.okCancel("Update TeXiFy", message)
                 .yesText("Cancel Submit") // Sort of the wrong way around, but it suggests to cancel this way
                 .noText("Submit Anyway")
                 .ask(parentComponent)
