@@ -6,19 +6,8 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.index.FilesetData
-import nl.hannahsten.texifyidea.index.LatexDefinitionService
-import nl.hannahsten.texifyidea.index.LatexProjectStructure
-import nl.hannahsten.texifyidea.index.NewBibtexEntryIndex
-import nl.hannahsten.texifyidea.index.NewCommandsIndex
-import nl.hannahsten.texifyidea.index.NewLabelsIndex
-import nl.hannahsten.texifyidea.index.NewLatexEnvironmentIndex
-import nl.hannahsten.texifyidea.index.restrictedByFileTypes
-import nl.hannahsten.texifyidea.lang.LArgument
-import nl.hannahsten.texifyidea.lang.LSemanticCommand
-import nl.hannahsten.texifyidea.lang.LSemanticEnv
-import nl.hannahsten.texifyidea.lang.LatexContexts
-import nl.hannahsten.texifyidea.lang.LatexLib
+import nl.hannahsten.texifyidea.index.*
+import nl.hannahsten.texifyidea.lang.*
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
@@ -178,8 +167,16 @@ object LatexLabelUtil {
     ) {
         val filesetData = LatexProjectStructure.getFilesetDataFor(file, project)
         val scope = filesetData?.filesetScope?.restrictedByFileTypes(LatexFileType) ?: GlobalSearchScope.fileScope(project, file)
+
+        // We cannot process with an index operation inside an index operation, see #4327
+        val extractedLabels = mutableSetOf<String>()
+
         NewLabelsIndex.forEachKey(project, scope) { extractedLabel ->
             if (extractedLabel.isBlank()) return@forEachKey
+            extractedLabels.add(extractedLabel)
+        }
+
+        extractedLabels.forEach { extractedLabel ->
             NewLabelsIndex.forEachByName(extractedLabel, project, scope) { labelingElement ->
                 val label = prefix + extractedLabel
                 val param = extractLabelParamIn(labelingElement, withCustomized = false) ?: return@forEachByName
