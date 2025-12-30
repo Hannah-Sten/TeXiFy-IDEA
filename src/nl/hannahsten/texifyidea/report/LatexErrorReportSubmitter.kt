@@ -1,4 +1,4 @@
-package nl.hannahsten.texifyidea
+package nl.hannahsten.texifyidea.report
 
 import arrow.resilience.Schedule
 import arrow.resilience.retry
@@ -6,9 +6,14 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
-import com.intellij.ide.BrowserUtil
+import com.intellij.ide.DataManager
+import com.intellij.ide.plugins.IdeaPluginDescriptor
 import com.intellij.ide.plugins.PluginManagerCore
+import com.intellij.idea.IdeaLogger
+import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.application.ApplicationInfo
+import com.intellij.openapi.application.ApplicationNamesInfo
+import com.intellij.openapi.application.ex.ApplicationInfoEx
 import com.intellij.openapi.diagnostic.ErrorReportSubmitter
 import com.intellij.openapi.diagnostic.IdeaLoggingEvent
 import com.intellij.openapi.diagnostic.SubmittedReportInfo
@@ -17,21 +22,30 @@ import com.intellij.openapi.ui.MessageDialogBuilder
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.util.Consumer
+import io.sentry.Sentry
+import io.sentry.SentryEvent
+import io.sentry.SentryLevel
+import io.sentry.protocol.Message
 import kotlinx.coroutines.runBlocking
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import java.awt.Component
-import java.io.UnsupportedEncodingException
-import java.net.*
+import java.net.HttpURLConnection
+import java.net.SocketTimeoutException
+import java.net.URI
+import java.net.UnknownHostException
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
- * Send error report to GitHub issue tracker.
+ * Send error report to Sentry.
+ * Previously, we used to submit to GitHub, but it resulted in too much spam and duplicates.
+ * For the original implementation, see https://github.com/Hannah-Sten/TeXiFy-IDEA/blob/2cf0b6a8dbdbeb2355249f80a00b9082bc64c6a5/src/nl/hannahsten/texifyidea/LatexErrorReportSubmitter.kt
+ * Also see the PdfErrorReportSubmitter in the PDF Viewer plugin.
  *
  * @author Sten Wessel
  */
 class LatexErrorReportSubmitter : ErrorReportSubmitter() {
 
-    override fun getReportActionText() = "Report to TeXiFy-IDEA Issue Tracker"
+    override fun getReportActionText() = "Report to TeXiFy-IDEA"
 
     override fun submit(
         events: Array<out IdeaLoggingEvent>,
@@ -52,7 +66,8 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
         }
 
         if (latestVersion.version.toString().isNotBlank() && DefaultArtifactVersion(Util.currentVersion) < latestVersion.version) {
-            val currentIdeaVersion = DefaultArtifactVersion(ApplicationInfo.getInstance().build.asStringWithoutProductCode())
+            val currentIdeaVersion =
+                DefaultArtifactVersion(ApplicationInfo.getInstance().build.asStringWithoutProductCode())
             val requiredIdeaVersion = latestVersion.ideaVersion.sinceBuild
 
             JBPopupFactory.getInstance().createMessage("")
@@ -71,60 +86,49 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
             return !result
         }
 
-        submit(events, additionalInfo, consumer)
+        return submitEvents(events, additionalInfo, parentComponent, consumer)
+    }
+
+    private fun submitEvents(events: Array<out IdeaLoggingEvent>?, additionalInfo: String?, parentComponent: Component, consumer: Consumer<in SubmittedReportInfo>): Boolean {
+        Sentry.init { options ->
+            // PHPirates' Sentry project
+            options.dsn = "https://b238e72aa4e237556b9476465dea9116@o4508981186461696.ingest.de.sentry.io/4510618514882640"
+        }
+
+        val context = DataManager.getInstance().getDataContext(parentComponent)
+        val sentryEvents = createEvents(events ?: return false, additionalInfo)
+        val project = CommonDataKeys.PROJECT.getData(context)
+
+        SendReportBackgroundTask(project, sentryEvents, consumer).queue()
+
         return true
     }
 
-    private fun submit(events: Array<out IdeaLoggingEvent>?, additionalInfo: String?, consumer: Consumer<in SubmittedReportInfo>): Boolean {
-        val event = events?.firstOrNull()
-        val title = event?.throwableText?.lineSequence()?.first()
-            ?: event?.message
-            ?: "Crash Report: <Fill in title>"
-        val body = event?.throwableText ?: "Please paste the full stacktrace from the IDEA error popup."
-        // In some cases, very long stacktraces can refer to TeXiFy code only at the bottom (after 7000 characters), but we do want to submit this information, so we trim the middle part of the stacktrace
-        val maximumUrlSize = 6000
-        val smallBody = if ("at nl.hannahsten.texifyidea" in body && "at nl.hannahsten.texifyidea" !in body.take(maximumUrlSize)) {
-            Util.filterInterestingLines(body)
-        }
-        else {
-            body
-        }
+    private fun createEvents(events: Array<out IdeaLoggingEvent>, additionalInfo: String?): List<SentryEvent> = events
+        .map { ideaEvent ->
+            SentryEvent().apply {
+                this.message = Message().apply { this.message = additionalInfo ?: ideaEvent.throwableText }
+                this.level = SentryLevel.ERROR
+                this.throwable = ideaEvent.throwable
 
-        val builder = StringBuilder(ISSUE_URL)
-        try {
-            builder.append(URLEncoder.encode(title.take(500), ENCODING))
-            builder.append("&body=")
-
-            val applicationInfo = ApplicationInfo.getInstance().let { "${it.fullApplicationName} (build ${it.build})" }
-            builder.append(URLEncoder.encode("### Type of JetBrains IDE (IntelliJ, PyCharm, etc.) and version\n${applicationInfo}\n\n", ENCODING))
-            val systemInfo = "${SystemInfo.OS_NAME} ${SystemInfo.OS_VERSION} (${SystemInfo.OS_ARCH})"
-            builder.append(URLEncoder.encode("### Operating System \n$systemInfo\n\n", ENCODING))
-            builder.append(URLEncoder.encode("### TeXiFy IDEA version\n${Util.currentVersion}\n\n", ENCODING))
-            builder.append(URLEncoder.encode("### Description\n", ENCODING))
-            builder.append(URLEncoder.encode(additionalInfo ?: "\n", ENCODING))
-            builder.append(URLEncoder.encode("\n\n### Stacktrace\n```\n${smallBody.take(6000)}\n```", ENCODING))
-        }
-        catch (e: UnsupportedEncodingException) {
-            consumer.consume(
-                SubmittedReportInfo(
-                    null,
-                    null,
-                    SubmittedReportInfo.SubmissionStatus.FAILED
+                (pluginDescriptor as? IdeaPluginDescriptor)?.let { release = it.version }
+                extras = mapOf("last_action" to IdeaLogger.ourLastActionId)
+                val applicationNamesInfo = ApplicationNamesInfo.getInstance()
+                val instanceEx = ApplicationInfoEx.getInstanceEx()
+                tags = mapOf(
+                    "os_name" to SystemInfo.OS_NAME,
+                    "os_version" to SystemInfo.OS_VERSION,
+                    "os_arch" to SystemInfo.OS_ARCH,
+                    "plugin_version" to Util.currentVersion,
+                    "app_name" to applicationNamesInfo.productName,
+                    "app_full_name" to applicationNamesInfo.fullProductName,
+                    "app_version_name" to instanceEx.versionName,
+                    "is_eap" to instanceEx.isEAP.toString(),
+                    "app_build" to instanceEx.build.asString(),
+                    "app_version" to instanceEx.fullVersion,
                 )
-            )
-            return false
+            }
         }
-
-        BrowserUtil.browse(builder.toString())
-        consumer.consume(
-            SubmittedReportInfo(
-                null,
-                "GitHub issue",
-                SubmittedReportInfo.SubmissionStatus.NEW_ISSUE
-            )
-        )
-        return true
-    }
 
     object Util {
         private var latestVersionCached = IdeaPlugin()

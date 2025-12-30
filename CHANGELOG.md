@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Reported exceptions will now be submitted to Sentry, to avoid spam on GitHub Issues
 
 ### Fixed
 * Fix a formatting issue when using square brackets as first text in an environment, by @Ezrnest
