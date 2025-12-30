@@ -14,10 +14,11 @@ import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 class CommandSelectionFilter : Condition<PsiElement> {
 
     override fun value(t: PsiElement?) = !(
-        TexifySettings.getState().includeBackslashInSelection && (
-            t?.firstParentOfType(LatexCommands::class)?.text == t?.text ||
-                t?.firstParentOfType(LatexBeginCommand::class)?.textOffset == t?.textOffset ||
-                t?.firstParentOfType(LatexEndCommand::class)?.textOffset == t?.textOffset
-            )
+        TexifySettings.getState().includeBackslashInSelection &&
+            (
+                t?.firstParentOfType(LatexCommands::class)?.text == t?.text ||
+                    t?.firstParentOfType(LatexBeginCommand::class)?.textOffset == t?.textOffset ||
+                    t?.firstParentOfType(LatexEndCommand::class)?.textOffset == t?.textOffset
+                )
         )
 }

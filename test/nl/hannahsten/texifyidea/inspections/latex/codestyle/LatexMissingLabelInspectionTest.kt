@@ -17,9 +17,7 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
         myFixture.updateConvention { s -> s.currentScheme = TexifyConventionsScheme() }
     }
 
-    override fun getTestDataPath(): String {
-        return "test/resources/inspections/latex/missinglabel"
-    }
+    override fun getTestDataPath(): String = "test/resources/inspections/latex/missinglabel"
 
     fun `test missing label warnings`() {
         myFixture.configureByFile("MissingLabelWarnings.tex")
@@ -266,7 +264,7 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
         """.trimIndent(),
         after = """
         \begin{document}
-                \lstinputlisting[someoption,otheroption={with value},label={lst:lstinputlisting}]{some/file}
+            \lstinputlisting[someoption,otheroption={with value},label={lst:lstinputlisting}]{some/file}
         \end{document}
         """.trimIndent()
     )
@@ -279,7 +277,7 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
         """.trimIndent(),
         after = """
         \begin{document}
-                \lstinputlisting[label={lst:lstinputlisting}]{some/file}
+            \lstinputlisting[label={lst:lstinputlisting}]{some/file}
         \end{document}
         """.trimIndent()
     )

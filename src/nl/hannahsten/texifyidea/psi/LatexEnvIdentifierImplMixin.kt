@@ -12,9 +12,7 @@ import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 
 abstract class LatexEnvIdentifierImplMixin(node: ASTNode) : LatexEnvIdentifier, ASTWrapperPsiElement(node) {
 
-    override fun getNameIdentifier(): PsiElement? {
-        return this
-    }
+    override fun getNameIdentifier(): PsiElement? = this
 
     override fun setName(name: String): PsiElement? {
         if(!VALID_IDENTIFIERS_REGEX.matches(name)) {
@@ -33,9 +31,7 @@ abstract class LatexEnvIdentifierImplMixin(node: ASTNode) : LatexEnvIdentifier, 
         return this
     }
 
-    override fun getName(): String? {
-        return this.envIdentifierText?.text
-    }
+    override fun getName(): String? = this.envIdentifierText?.text
 
     override fun getReference(): PsiReference? {
         // The environment's definition is resolved by LatexBeginCommand

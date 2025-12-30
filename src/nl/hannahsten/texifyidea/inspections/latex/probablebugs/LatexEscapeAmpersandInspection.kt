@@ -25,19 +25,11 @@ class LatexEscapeAmpersandInspection : AbstractTexifyRegexBasedInspection(
         LatexContexts.LabelReference, LatexContexts.LabelDefinition // Label names and URLs may contain &.
     )
 ) {
-    override fun shouldInspectElement(element: PsiElement, lookup: LatexSemanticsLookup): Boolean {
-        return element.elementType == LatexTypes.AMPERSAND
-    }
+    override fun shouldInspectElement(element: PsiElement, lookup: LatexSemanticsLookup): Boolean = element.elementType == LatexTypes.AMPERSAND
 
-    override fun errorMessage(matcher: MatchResult, context: LContextSet): String {
-        return """Escape character \ expected"""
-    }
+    override fun errorMessage(matcher: MatchResult, context: LContextSet): String = """Escape character \ expected"""
 
-    override fun getReplacement(match: MatchResult, fullElementText: String, project: Project, problemDescriptor: ProblemDescriptor): String {
-        return """\&"""
-    }
+    override fun getReplacement(match: MatchResult, fullElementText: String, project: Project, problemDescriptor: ProblemDescriptor): String = """\&"""
 
-    override fun quickFixName(matcher: MatchResult, contexts: LContextSet): String {
-        return """Change to \&"""
-    }
+    override fun quickFixName(matcher: MatchResult, contexts: LContextSet): String = """Change to \&"""
 }

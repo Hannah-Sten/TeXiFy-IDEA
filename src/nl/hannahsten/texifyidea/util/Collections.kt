@@ -63,12 +63,10 @@ fun <T> List<T>.randomElement(random: Random): T = this[random.nextInt(this.size
  *
  * @return All keys with the given value.
  */
-fun <K, V> Map<K, V>.findKeys(value: V): Set<K> {
-    return entries.asSequence()
-        .filter { (_, v) -> v == value }
-        .map { it.key }
-        .toSet()
-}
+fun <K, V> Map<K, V>.findKeys(value: V): Set<K> = entries.asSequence()
+    .filter { (_, v) -> v == value }
+    .map { it.key }
+    .toSet()
 
 /**
  * Finds at least `amount` elements matching the given predicate.

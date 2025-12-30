@@ -172,7 +172,5 @@ open class MutableMagicComment<Key, Value> : MagicComment<Key, Value>() {
         return other is MutableMagicComment<*, *>
     }
 
-    override fun hashCode(): Int {
-        return javaClass.hashCode()
-    }
+    override fun hashCode(): Int = javaClass.hashCode()
 }

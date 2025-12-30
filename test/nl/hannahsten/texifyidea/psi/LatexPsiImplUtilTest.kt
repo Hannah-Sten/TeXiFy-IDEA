@@ -11,9 +11,7 @@ class LatexPsiImplUtilTest : BasePlatformTestCase() {
 
     private val url = "https://github.com/Hannah-Sten/TeXiFy-IDEA"
 
-    override fun getTestDataPath(): String {
-        return "test/resources/psi"
-    }
+    override fun getTestDataPath(): String = "test/resources/psi"
 
     private val optionalParameters =
         """\usepackage[backend=biber,style={alphabetic order},optionwithoutvalue]{biblatex}"""

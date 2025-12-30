@@ -13,9 +13,7 @@ object PredefinedCmdPairedDelimiters : PredefinedCommandSet() {
     )
     private fun d(
         left: String, right: String, leftDisplay: String? = null, rightDisplay: String? = null, dependency: String = ""
-    ): Delimiter {
-        return Delimiter(left, right, leftDisplay, rightDisplay)
-    }
+    ): Delimiter = Delimiter(left, right, leftDisplay, rightDisplay)
 
     /**
      * The predefined paired delimiters in LaTeX.
@@ -50,7 +48,7 @@ object PredefinedCmdPairedDelimiters : PredefinedCommandSet() {
     }
 
     val delimiterCommands = mathCommands {
-        delimiters.map { delimiter ->
+        delimiters.forEach { delimiter ->
             underPackage(delimiter.dependency) {
                 symbol(delimiter.left, delimiter.leftDisplay)
                 symbol(delimiter.right, delimiter.rightDisplay)

@@ -18,9 +18,7 @@ class LatexGlossaryReference(element: LatexParameterText) :
         rangeInElement = ElementManipulators.getValueTextRange(element)
     }
 
-    override fun isReferenceTo(element: PsiElement): Boolean {
-        return multiResolve(false).any { it.element == element }
-    }
+    override fun isReferenceTo(element: PsiElement): Boolean = multiResolve(false).any { it.element == element }
 
     override fun resolve(): PsiElement? {
         val resolveResults = multiResolve(false)

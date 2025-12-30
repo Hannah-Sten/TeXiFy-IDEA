@@ -17,9 +17,7 @@ open class GraphicsDragAndDropHandler : FileDropHandler {
     /**
      * Whether the file can be dropped using this handler.
      */
-    private fun File.isDroppable(): Boolean {
-        return extension.lowercase(Locale.getDefault()) in FileMagic.graphicFileExtensions
-    }
+    private fun File.isDroppable(): Boolean = extension.lowercase(Locale.getDefault()) in FileMagic.graphicFileExtensions
 
     override suspend fun handleDrop(e: FileDropEvent): Boolean {
         // Only allow dropping in LaTeX sources.

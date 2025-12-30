@@ -18,16 +18,13 @@ import nl.hannahsten.texifyidea.intentions.LatexAddLabelToEnvironmentIntention
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.LatexLib
-import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.psi.getEnvironmentName
-import nl.hannahsten.texifyidea.psi.getLabel
-import nl.hannahsten.texifyidea.psi.nameWithSlash
-import nl.hannahsten.texifyidea.psi.nextContextualSiblingIgnoreWhitespace
+import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.settings.conventions.LabelConventionType
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsConfigurable
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettingsManager
-import nl.hannahsten.texifyidea.util.files.*
+import nl.hannahsten.texifyidea.util.files.documentClass
+import nl.hannahsten.texifyidea.util.files.findRootFile
+import nl.hannahsten.texifyidea.util.files.openedTextEditor
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.getOptionalParameterMapFromParameters
 import nl.hannahsten.texifyidea.util.parser.lookupCommandPsi
@@ -146,9 +143,7 @@ class LatexMissingLabelInspection : AbstractTexifyContextAwareInspection(
     private class ChangeMinimumLabelLevelFix : LocalQuickFix {
 
         @Nls
-        override fun getFamilyName(): String {
-            return "Change label conventions"
-        }
+        override fun getFamilyName(): String = "Change label conventions"
 
         override fun startInWriteAction() = false
 

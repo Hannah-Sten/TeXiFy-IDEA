@@ -82,7 +82,8 @@ object LatexLineWrapper {
                 // No point in splitting line when its left part contains only white spaces, example:
                 //    line start -> |                   | <- right margin
                 //                  |   aaaaaaaaaaaaaaaa|aaaaaaaaaaaaaaaaaaaa() <- don't want to wrap this line even if it exceeds right margin
-                || CharArrayUtil.shiftBackward(text, startLineOffset, wrapOffset - 1, " \t") < startLineOffset
+                ||
+                CharArrayUtil.shiftBackward(text, startLineOffset, wrapOffset - 1, " \t") < startLineOffset
             ) {
                 continue
             }
@@ -173,12 +174,10 @@ object LatexLineWrapper {
     private fun wrapPositionForTextWithoutTabs(
         startLineOffset: Int, endLineOffset: Int, targetRangeEndOffset: Int,
         reservedWidthInColumns: Int, rightMargin: Int
-    ): Int {
-        return if (min(endLineOffset, targetRangeEndOffset) - startLineOffset > rightMargin) {
-            startLineOffset + rightMargin - reservedWidthInColumns
-        }
-        else -1
+    ): Int = if (min(endLineOffset, targetRangeEndOffset) - startLineOffset > rightMargin) {
+        startLineOffset + rightMargin - reservedWidthInColumns
     }
+    else -1
 
     private fun wrapPositionForTabbedTextWithOptimization(
         text: CharSequence,
@@ -197,7 +196,8 @@ object LatexLineWrapper {
             val c = text[i]
             symbolWidth = if (c == '\t') tabSize - width % tabSize else 1
             if (width + symbolWidth + reservedWidthInColumns >= rightMargin
-                && min(endLineOffset, targetRangeEndOffset) - i >= reservedWidthInColumns
+                &&
+                min(endLineOffset, targetRangeEndOffset) - i >= reservedWidthInColumns
             ) {
                 // Remember preferred position.
                 result = i - 1
@@ -242,7 +242,8 @@ object LatexLineWrapper {
                 symbolWidth = 1
             }
             if (width + symbolWidth + reservedWidthInColumns >= rightMargin
-                && min(endLineOffset, targetRangeEndOffset) - i >= reservedWidthInColumns
+                &&
+                min(endLineOffset, targetRangeEndOffset) - i >= reservedWidthInColumns
             ) {
                 result = i - 1
             }

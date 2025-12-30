@@ -12,9 +12,7 @@ import nl.hannahsten.texifyidea.util.parser.getYear
 
 open class BibtexEntryStubElementType(debugName: String) : IStubElementType<BibtexEntryStub, BibtexEntry>(debugName, BibtexLanguage) {
 
-    override fun createPsi(stub: BibtexEntryStub): BibtexEntry {
-        return BibtexEntryImpl(stub, this)
-    }
+    override fun createPsi(stub: BibtexEntryStub): BibtexEntry = BibtexEntryImpl(stub, this)
 
     override fun serialize(stub: BibtexEntryStub, dataStream: StubOutputStream) {
         dataStream.writeName(stub.identifier)
@@ -31,9 +29,7 @@ open class BibtexEntryStubElementType(debugName: String) : IStubElementType<Bibt
         return BibtexEntryStubImpl(parentStub, this, name, authors, year, title)
     }
 
-    override fun createStub(entry: BibtexEntry, parentStub: StubElement<*>?): BibtexEntryStub {
-        return BibtexEntryStubImpl(parentStub, this, entry.getIdentifier(), entry.getAuthors(), entry.getYear(), entry.getTitle())
-    }
+    override fun createStub(entry: BibtexEntry, parentStub: StubElement<*>?): BibtexEntryStub = BibtexEntryStubImpl(parentStub, this, entry.getIdentifier(), entry.getAuthors(), entry.getYear(), entry.getTitle())
 
     override fun getExternalId() = "texify.bibtex." + super.toString()
 

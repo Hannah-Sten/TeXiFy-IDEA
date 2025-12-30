@@ -20,16 +20,14 @@ open class BibtexStringReference(
         rangeInElement = (0..string.textLength).toTextRange()
     }
 
-    override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
-        return string.containingFile.traverseTyped<BibtexEntry>(3)
-            .filter { it.tokenName().lowercase(Locale.getDefault()) == "string" }
-            .map { it.tags() }
-            .mapNotNull { it.firstOrNull()?.key }
-            .filter { it.text == string.text }
-            .map { PsiElementResolveResult(it) }
-            .toList()
-            .toTypedArray()
-    }
+    override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> = string.containingFile.traverseTyped<BibtexEntry>(3)
+        .filter { it.tokenName().lowercase(Locale.getDefault()) == "string" }
+        .map { it.tags() }
+        .mapNotNull { it.firstOrNull()?.key }
+        .filter { it.text == string.text }
+        .map { PsiElementResolveResult(it) }
+        .toList()
+        .toTypedArray()
 
     override fun resolve(): PsiElement? {
         val results = multiResolve(false)

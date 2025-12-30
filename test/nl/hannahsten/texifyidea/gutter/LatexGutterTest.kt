@@ -20,9 +20,7 @@ class LatexGutterTest : BasePlatformTestCase() {
         every { runCommandWithExitCode(*anyVararg(), workingDirectory = any(), timeout = any(), returnExceptionMessage = any()) } returns Pair(null, 0)
     }
 
-    override fun getTestDataPath(): String {
-        return "test/resources/gutter"
-    }
+    override fun getTestDataPath(): String = "test/resources/gutter"
 
     fun testPackageGutter() {
         for (i in 1..3) {
@@ -116,9 +114,7 @@ class LatexGutterTest : BasePlatformTestCase() {
         myFixture.findAllGutters()
     }
 
-    private fun getLineMarkerLine(marker: LineMarkerInfo<*>): Int {
-        return myFixture.editor.document.getLineNumber((marker.element as LeafPsiElement).textRange.startOffset)
-    }
+    private fun getLineMarkerLine(marker: LineMarkerInfo<*>): Int = myFixture.editor.document.getLineNumber((marker.element as LeafPsiElement).textRange.startOffset)
 
     private fun withLineMarkersEnabled(action: () -> Unit) {
         val before = DaemonCodeAnalyzerSettings.getInstance().SHOW_METHOD_SEPARATORS

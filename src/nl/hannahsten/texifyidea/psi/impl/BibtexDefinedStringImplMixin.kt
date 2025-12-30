@@ -10,7 +10,5 @@ abstract class BibtexDefinedStringImplMixin(node: ASTNode) : BibtexDefinedString
     /**
      * Get a reference to the declaration of the string variable.
      */
-    override fun getReference(): PsiReference {
-        return BibtexStringReference(this)
-    }
+    override fun getReference(): PsiReference = BibtexStringReference(this)
 }

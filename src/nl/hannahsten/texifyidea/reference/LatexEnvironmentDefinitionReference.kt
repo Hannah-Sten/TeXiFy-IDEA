@@ -21,9 +21,7 @@ class LatexEnvironmentDefinitionReference(
         rangeInElement = ElementManipulators.getValueTextRange(element)
     }
 
-    override fun resolve(): PsiElement? {
-        return multiResolve(false).firstOrNull()?.element
-    }
+    override fun resolve(): PsiElement? = multiResolve(false).firstOrNull()?.element
 
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
         val name = environment.getEnvironmentName()

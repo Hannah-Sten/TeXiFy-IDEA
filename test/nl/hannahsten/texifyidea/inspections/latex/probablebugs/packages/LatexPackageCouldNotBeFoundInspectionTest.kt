@@ -5,9 +5,7 @@ import org.junit.Test
 
 class LatexPackageCouldNotBeFoundInspectionTest : BasePlatformTestCase() {
 
-    override fun getTestDataPath(): String {
-        return "test/resources/inspections/latex/packagenotfound"
-    }
+    override fun getTestDataPath(): String = "test/resources/inspections/latex/packagenotfound"
 
     override fun setUp() {
         super.setUp()

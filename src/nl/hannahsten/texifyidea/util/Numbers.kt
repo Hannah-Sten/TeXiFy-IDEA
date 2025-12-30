@@ -41,9 +41,7 @@ fun Int.toHexString(): String = Integer.toHexString(this)
 /**
  * Return true if [this] has a non-empty overlap with [other].
  */
-fun IntRange.overlaps(other: IntRange): Boolean {
-    return this.last >= other.first && other.last >= this.first
-}
+fun IntRange.overlaps(other: IntRange): Boolean = this.last >= other.first && other.last >= this.first
 
 /**
  * Merge [this] with all [others] to result in one IntRange, assuming that [this] overlaps with all [others].

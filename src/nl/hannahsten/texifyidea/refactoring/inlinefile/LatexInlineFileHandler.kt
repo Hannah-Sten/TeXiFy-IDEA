@@ -23,9 +23,7 @@ import nl.hannahsten.texifyidea.util.parser.firstParentOfType
  */
 class LatexInlineFileHandler : LatexInlineHandler() {
 
-    override fun canInlineElement(element: PsiElement?): Boolean {
-        return Util.canInlineLatexElement(element)
-    }
+    override fun canInlineElement(element: PsiElement?): Boolean = Util.canInlineLatexElement(element)
 
     override fun inlineElement(project: Project, editor: Editor?, element: PsiElement) {
         // Resolve the file to be inlined
@@ -65,18 +63,16 @@ class LatexInlineFileHandler : LatexInlineHandler() {
         /**
          * This is static only so that the unit tests can use it, and also since it can be static
          */
-        fun canInlineLatexElement(element: PsiElement?): Boolean {
-            return when (element) {
-                is LatexFile -> {
-                    element.containingFile.isLatexFile()
-                }
-
-                is LatexCommands -> {
-                    (element.references.filterIsInstance<InputFileReference>().isNotEmpty())
-                }
-
-                else -> false
+        fun canInlineLatexElement(element: PsiElement?): Boolean = when (element) {
+            is LatexFile -> {
+                element.containingFile.isLatexFile()
             }
+
+            is LatexCommands -> {
+                (element.references.filterIsInstance<InputFileReference>().isNotEmpty())
+            }
+
+            else -> false
         }
 
         fun resolveInlineFile(element: PsiElement) = when (element) {
@@ -96,17 +92,15 @@ class LatexInlineFileHandler : LatexInlineHandler() {
         fun getReference(
             element: PsiElement,
             editor: Editor?
-        ): PsiElement? {
-            return element as? LatexCommands ?: if (editor != null) {
-                val ref: LatexCommands? = getElementAtCaret(editor)?.firstParentOfType(LatexCommands::class)
-                if (ref != null)
-                    ref
-                else {
-                    Log.warn("Could not find the command element for " + element.text)
-                    null
-                }
+        ): PsiElement? = element as? LatexCommands ?: if (editor != null) {
+            val ref: LatexCommands? = getElementAtCaret(editor)?.firstParentOfType(LatexCommands::class)
+            if (ref != null)
+                ref
+            else {
+                Log.warn("Could not find the command element for " + element.text)
+                null
             }
-            else null
         }
+        else null
     }
 }

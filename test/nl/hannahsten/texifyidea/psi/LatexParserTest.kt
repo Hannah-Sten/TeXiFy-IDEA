@@ -4,6 +4,7 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import io.mockk.every
 import io.mockk.mockkStatic
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 
 class LatexParserTest : BasePlatformTestCase() {
@@ -69,13 +70,13 @@ class LatexParserTest : BasePlatformTestCase() {
     fun testIfnextchar() {
         myFixture.configureByText(
             LatexFileType,
-            """
+            $$"""
             \newcommand{\xyz}{\@ifnextchar[{\@xyz}{\@xyz[default]}}
             \def\@xyz[#1]#2{do something with #1 and #2}
             
             \@namedef{#1}{\@ifnextchar{^}{\@nameuse{#1@}}{\@nameuse{#1@}^{}}}
             
-            \newcommand{\abc}{\@ifnextchar${'$'}{Math coming: }{No math}}
+            \newcommand{\abc}{\@ifnextchar${Math coming: }{No math}}
             """.trimIndent()
         )
         myFixture.checkHighlighting()
@@ -268,18 +269,219 @@ class LatexParserTest : BasePlatformTestCase() {
     fun testUnmatchedBeginInDefinition() {
         myFixture.configureByText(
             LatexFileType,
-            """
+            $$"""
             \newcommand{\tableMod}[0]{
                 \end{multicols}
                 \insertedObject
                 \begin{multicols}{2}
             }
-            \newcommand{\cmd}{${'$'}x$}
+            \newcommand{\cmd}{$x$}
             \newcommand\MnMissing{$\times$} % MnSymbol package
             
             \AfterEndEnvironment{minted}{
                 \end{tcolorbox}
             }
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testMultipleUnclosedParametersDoNotCauseExponentialBacktracking() {
+        // Generate a string like "\cmd{ \cmd{ \cmd{ \cmd{ \cmd{ \cmd{ \cmd{ \cmd{"
+        // The hasMatchingCloseBrace predicate ensures unclosed braces are not parsed as required_param.
+        // This test verifies the PSI tree structure is correct for this edge case.
+        val depth = 16
+        val unclosedCommands = (1..depth).joinToString(" ") { "\\cmd{" }
+
+        val psiFile = myFixture.configureByText(
+            LatexFileType,
+            unclosedCommands
+        )
+
+        // Verify the PSI tree structure is correct:
+        // 1. We should have exactly `depth` commands (one per \cmd)
+        // 2. None of the { should be parsed as required_param (since they're unclosed
+        //    and the hasMatchingCloseBrace predicate prevents parsing them as such)
+
+        val commands = psiFile.collectSubtreeTyped<LatexCommands>()
+        assertEquals(
+            "Expected $depth commands, but found ${commands.size}. " +
+                "This might indicate incorrect parsing.",
+            depth,
+            commands.size
+        )
+
+        val requiredParams = psiFile.collectSubtreeTyped<LatexRequiredParam>()
+
+        assertEquals(
+            "Expected 0 required params (all braces are unclosed), but found ${requiredParams.size}",
+            0,
+            requiredParams.size
+        )
+    }
+
+    fun testBracesInCommentsDoNotAffectLookahead() {
+        // The } in the comment should not be counted as matching the outer {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \cmd{text % } this brace is in a comment
+            more text}
+            \another{param}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testBracesInVerbatimDoNotAffectLookahead() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \cmd{before}
+            \begin{verbatim}
+            } { } { unmatched braces in verbatim
+            \end{verbatim}
+            \another{after}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testEscapedBracesDoNotAffectLookahead() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \cmd{text with \} escaped close brace}
+            \another{text with \{ escaped open brace}
+            \third{\{ and \} both escaped}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testInlineVerbatimBracesDoNotAffectLookahead() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \cmd{before \verb|}{| after}
+            \another{text}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testNestedCommandsWithMatchedBraces() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \outer{\inner{\deepest{text}}}
+            \cmd{\textbf{\textit{nested formatting}}}
+            \section{Title with \emph{emphasis}}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testMixedMatchedAndUnmatchedBraces() {
+        val psiFile = myFixture.configureByText(
+            LatexFileType,
+            """
+            \cmd{properly matched}
+            \another{ this one is not closed
+            \third{also matched}
+            """.trimIndent()
+        )
+
+        // Verify that matched braces are parsed as required_param, but unclosed ones are not
+        val commands = psiFile.collectSubtreeTyped<LatexCommands>()
+        assertEquals(3, commands.size)
+
+        val requiredParams = psiFile.collectSubtreeTyped<LatexRequiredParam>()
+        // Only \cmd and \third have matched braces, \another does not
+        assertEquals(2, requiredParams.size)
+    }
+
+    fun testVerbWithBracesInContent() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            Text before \verb|{ } { }| text after
+            \verb+{}+ also works
+            \cmd{normal param}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testLstinlineWithPipeDelimiter() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \lstinline|code with { and } inside|
+            \cmd{normal param}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testLstinlineWithBraceDelimiterSimple() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \lstinline{simple code without braces}
+            \cmd{normal param}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testUrlWithNestedBraces() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \url{http://example.com/path?param={value}}
+            \cmd{normal param}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testCombinedBraceEdgeCases() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \section{Title with \textbf{bold} and \emph{emphasis}}
+
+            Some text with \{ escaped braces \} in it.
+
+            \begin{lstlisting}[language=Java]
+            public void method() { // comment with }
+                System.out.println("{nested}");
+            }
+            \end{lstlisting}
+
+            Back to normal \cmd{with % } comment in param
+            continuation of param}
+
+            \verb|special { chars }| and more text.
+
+            \href{http://example.com}{Link with \textbf{bold}}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testNewenvironmentWithUnmatchedBeginEnd() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \newenvironment{myenv}
+                {\begin{center}\bfseries}
+                {\end{center}}
+
+            \begin{myenv}
+                Content here
+            \end{myenv}
             """.trimIndent()
         )
         myFixture.checkHighlighting()

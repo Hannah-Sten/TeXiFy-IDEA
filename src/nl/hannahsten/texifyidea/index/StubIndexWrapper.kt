@@ -22,23 +22,17 @@ abstract class StringStubIndexWrapper<Psi : PsiElement>(
 
     protected fun buildFileset(
         baseFile: PsiFile,
-    ): GlobalSearchScope {
-        return LatexProjectStructure.getFilesetScopeFor(baseFile)
-    }
+    ): GlobalSearchScope = LatexProjectStructure.getFilesetScopeFor(baseFile)
 
     @RequiresReadLock
     fun getByName(
         name: String, project: Project, scope: GlobalSearchScope = project.contentSearchScope
-    ): Collection<Psi> {
-        return StubIndex.getElements(key, name, project, scope, clazz)
-    }
+    ): Collection<Psi> = StubIndex.getElements(key, name, project, scope, clazz)
 
     @RequiresReadLock
     fun getByName(
         name: String, project: Project, file: VirtualFile
-    ): Collection<Psi> {
-        return getByName(name, project, GlobalSearchScope.fileScope(project, file))
-    }
+    ): Collection<Psi> = getByName(name, project, GlobalSearchScope.fileScope(project, file))
 
     @RequiresReadLock
     fun countByName(
@@ -69,9 +63,7 @@ abstract class StringStubIndexWrapper<Psi : PsiElement>(
     fun getByName(
         name: String,
         scope: GlobalSearchScope
-    ): Collection<Psi> {
-        return getByName(name, scope.project!!, scope)
-    }
+    ): Collection<Psi> = getByName(name, scope.project!!, scope)
 
     @RequiresReadLock
     fun getByName(name: String, file: PsiFile): Collection<Psi> {
@@ -84,18 +76,14 @@ abstract class StringStubIndexWrapper<Psi : PsiElement>(
     fun getByNames(
         names: Collection<String>, project: Project,
         scope: GlobalSearchScope = project.contentSearchScope
-    ): List<Psi> {
-        return names.flatMap { name ->
-            StubIndex.getElements(key, name, project, scope, clazz).filter { it.isValid }
-        }
+    ): List<Psi> = names.flatMap { name ->
+        StubIndex.getElements(key, name, project, scope, clazz).filter { it.isValid }
     }
 
     @RequiresReadLock
     fun getByNames(
         names: Collection<String>, project: Project, file: VirtualFile,
-    ): List<Psi> {
-        return getByNames(names, project, GlobalSearchScope.fileScope(project, file))
-    }
+    ): List<Psi> = getByNames(names, project, GlobalSearchScope.fileScope(project, file))
 
     @RequiresReadLock
     fun getByNames(
@@ -114,20 +102,17 @@ abstract class StringStubIndexWrapper<Psi : PsiElement>(
     }
 
     @RequiresReadLock
-    fun processAllKeys(scope: GlobalSearchScope, idFilter: IdFilter? = null, processor: Processor<in String>): Boolean {
-        return StubIndex.getInstance().processAllKeys(key, processor, scope, idFilter)
-    }
+    fun processAllKeys(scope: GlobalSearchScope, idFilter: IdFilter? = null, processor: Processor<in String>): Boolean = StubIndex.getInstance().processAllKeys(key, processor, scope, idFilter)
 
     @RequiresReadLock
-    override fun getAllKeys(project: Project): Set<String> {
-        return getAllKeys(project.contentSearchScope)
-    }
+    override fun getAllKeys(project: Project): Set<String> = getAllKeys(project.contentSearchScope)
 
     @RequiresReadLock
-    override fun processAllKeys(project: Project, processor: Processor<in String>): Boolean {
-        return processAllKeys(project.contentSearchScope, processor = processor)
-    }
+    override fun processAllKeys(project: Project, processor: Processor<in String>): Boolean = processAllKeys(project.contentSearchScope, processor = processor)
 
+    /**
+     * Note: the action should not be a stub index operation itself, see #4327
+     */
     @RequiresReadLock
     fun forEachKey(
         project: Project,
@@ -142,9 +127,7 @@ abstract class StringStubIndexWrapper<Psi : PsiElement>(
     }
 
     @RequiresReadLock
-    fun processByName(name: String, project: Project, scope: GlobalSearchScope = project.contentSearchScope, idFilter: IdFilter?, processor: Processor<in Psi>): Boolean {
-        return StubIndex.getInstance().processElements(key, name, project, scope, idFilter, clazz, processor)
-    }
+    fun processByName(name: String, project: Project, scope: GlobalSearchScope = project.contentSearchScope, idFilter: IdFilter?, processor: Processor<in Psi>): Boolean = StubIndex.getInstance().processElements(key, name, project, scope, idFilter, clazz, processor)
 
     /**
      * Traverses all elements with the given name in the index, and applies the action to each of them,
@@ -158,9 +141,7 @@ abstract class StringStubIndexWrapper<Psi : PsiElement>(
         project: Project,
         scope: GlobalSearchScope = project.contentSearchScope,
         action: (Psi) -> Boolean
-    ): Boolean {
-        return StubIndexKt.traverseElements(key, name, project, scope, action)
-    }
+    ): Boolean = StubIndexKt.traverseElements(key, name, project, scope, action)
 
     @RequiresReadLock
     fun forEachByName(

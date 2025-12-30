@@ -159,18 +159,14 @@ fun PsiElement.nextLeafIgnoreWhitespace(): PsiElement? {
  *
  * @return The first following sibling of the given type, or `null` when the sibling couldn't be found.
  */
-fun <T : PsiElement> PsiElement.nextSiblingOfType(clazz: KClass<T>): T? {
-    return siblingOfType(clazz, PsiElement::getNextSibling)
-}
+fun <T : PsiElement> PsiElement.nextSiblingOfType(clazz: KClass<T>): T? = siblingOfType(clazz, PsiElement::getNextSibling)
 
 /**
  * Finds the previous sibling of the element that has the given type.
  *
  * @return The first previous sibling of the given type, or `null` when the sibling couldn't be found.
  */
-fun <T : PsiElement> PsiElement.previousSiblingOfType(clazz: KClass<T>): T? {
-    return siblingOfType(clazz, PsiElement::getPrevSibling)
-}
+fun <T : PsiElement> PsiElement.previousSiblingOfType(clazz: KClass<T>): T? = siblingOfType(clazz, PsiElement::getPrevSibling)
 
 private fun <T : PsiElement> PsiElement.siblingOfType(clazz: KClass<T>, next: PsiElement.() -> PsiElement): T? {
     var sibling: PsiElement? = this
@@ -317,9 +313,7 @@ inline fun <reified Psi : PsiElement> PsiElement.parentsOfType(): Sequence<Psi> 
 /**
  * Get a sequence of all parents of this PsiElement that are of the given type.
  */
-fun <Psi : PsiElement> PsiElement.parentsOfType(klass: KClass<out Psi>): Sequence<Psi> {
-    return parents().filterIsInstance(klass.java)
-}
+fun <Psi : PsiElement> PsiElement.parentsOfType(klass: KClass<out Psi>): Sequence<Psi> = parents().filterIsInstance(klass.java)
 
 /**
  * Get a sequence of all parents of this element.
@@ -337,9 +331,7 @@ fun <Psi : PsiElement> PsiElementPattern.Capture<Psi>.withPattern(
 ) = with(object : PatternCondition<PsiElement>(debugName) {
 
     // This helper function allows for a simple lambda on  the call site.
-    override fun accepts(psiElement: PsiElement, context: ProcessingContext?): Boolean {
-        return acceptFunction(psiElement, context)
-    }
+    override fun accepts(psiElement: PsiElement, context: ProcessingContext?): Boolean = acceptFunction(psiElement, context)
 })
 
 /**

@@ -21,19 +21,11 @@ class LatexCdotInspection : AbstractTexifyRegexBasedInspection(
     highlight = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
     applicableContexts = setOf(LatexContexts.Math),
 ) {
-    override fun errorMessage(matcher: MatchResult, context: LContextSet): String {
-        return "\\cdot expected"
-    }
+    override fun errorMessage(matcher: MatchResult, context: LContextSet): String = "\\cdot expected"
 
-    override fun getReplacement(match: MatchResult, fullElementText: String, project: Project, problemDescriptor: ProblemDescriptor): String {
-        return "\\cdot"
-    }
+    override fun getReplacement(match: MatchResult, fullElementText: String, project: Project, problemDescriptor: ProblemDescriptor): String = "\\cdot"
 
-    override fun quickFixName(matcher: MatchResult, contexts: LContextSet): String {
-        return "Change to \\cdot"
-    }
+    override fun quickFixName(matcher: MatchResult, contexts: LContextSet): String = "Change to \\cdot"
 
-    override fun additionalChecks(element: PsiElement, match: MatchResult, bundle: DefinitionBundle, file: PsiFile): Boolean {
-        return element.findPrevAdjacentWhiteSpace() != null && element.findNextAdjacentWhiteSpace() != null
-    }
+    override fun additionalChecks(element: PsiElement, match: MatchResult, bundle: DefinitionBundle, file: PsiFile): Boolean = element.findPrevAdjacentWhiteSpace() != null && element.findNextAdjacentWhiteSpace() != null
 }

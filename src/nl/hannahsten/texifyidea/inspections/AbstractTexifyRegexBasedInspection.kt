@@ -38,9 +38,7 @@ abstract class AbstractTexifyRegexBasedInspection(
 
     protected abstract fun quickFixName(matcher: MatchResult, contexts: LContextSet): String
 
-    protected open fun getHighlightRange(matcher: MatchResult): IntRange {
-        return matcher.range
-    }
+    protected open fun getHighlightRange(matcher: MatchResult): IntRange = matcher.range
 
     /**
      * Gets the replacement string for the given match.
@@ -55,13 +53,9 @@ abstract class AbstractTexifyRegexBasedInspection(
      * By default, only `LatexTypes.NORMAL_TEXT_WORD` elements are inspected.
      * Also override [shouldInspectChildrenOf] to avoid descending into unwanted elements.
      */
-    protected open fun shouldInspectElement(element: PsiElement, lookup: LatexSemanticsLookup): Boolean {
-        return element.elementType == LatexTypes.NORMAL_TEXT_WORD
-    }
+    protected open fun shouldInspectElement(element: PsiElement, lookup: LatexSemanticsLookup): Boolean = element.elementType == LatexTypes.NORMAL_TEXT_WORD
 
-    override fun shouldInspectChildrenOf(element: PsiElement, state: LContextSet, lookup: LatexSemanticsLookup): Boolean {
-        return true
-    }
+    override fun shouldInspectChildrenOf(element: PsiElement, state: LContextSet, lookup: LatexSemanticsLookup): Boolean = true
 
     /**
      * Additional checks to be performed after a regex match is found.
@@ -71,9 +65,7 @@ abstract class AbstractTexifyRegexBasedInspection(
     protected open fun additionalChecks(
         element: PsiElement, match: MatchResult,
         bundle: DefinitionBundle, file: PsiFile
-    ): Boolean {
-        return true
-    }
+    ): Boolean = true
 
     override fun inspectElement(
         element: PsiElement, contexts: LContextSet, bundle: DefinitionBundle,
@@ -144,9 +136,7 @@ abstract class AbstractTexifyRegexBasedInspection(
             doApplyFix(project, problemDescriptor, match, fullElementText)
         }
 
-        override fun generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo {
-            return doGeneratePreview(project, previewDescriptor, match, fullElementText)
-        }
+        override fun generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo = doGeneratePreview(project, previewDescriptor, match, fullElementText)
     }
 }
 

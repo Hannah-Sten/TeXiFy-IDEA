@@ -136,7 +136,9 @@ optional_key_val_key ::= optional_param_content+ {
 // Either the entire required parameter must be a key/val list or it is considered a regular required_param_content.
 // Due to the large variety of required parameters, we restrict key/val pairs to those which actually have both
 // a key and a value.
-required_param ::= OPEN_BRACE (strict_key_val_pair (COMMA strict_key_val_pair)* CLOSE_BRACE | required_param_content* CLOSE_BRACE) { pin=1 }
+// The hasMatchingCloseBrace predicate checks if there's a matching } before attempting to parse.
+// This avoids exponential backtracking when parsing nested unclosed braces.
+required_param ::= <<hasMatchingCloseBrace>> OPEN_BRACE (strict_key_val_pair (COMMA strict_key_val_pair)* CLOSE_BRACE | required_param_content* CLOSE_BRACE) { pin=2 }
 
 // Picture environment (and derived environments) from beamer uses parentheses for arguments
 picture_param ::= OPEN_PAREN picture_param_content* CLOSE_PAREN { pin=3 }

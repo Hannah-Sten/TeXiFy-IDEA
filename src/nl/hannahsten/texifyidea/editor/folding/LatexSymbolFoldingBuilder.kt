@@ -42,13 +42,11 @@ class LatexSymbolFoldingBuilder : FoldingBuilderEx(), DumbAware {
         return descriptors.toTypedArray()
     }
 
-    private fun getPlaceholderText(string: String): String {
-        return when (string) {
-            // The following are covered by the DASH token type
-            "-" -> "-" // hyphen
-            "--" -> "–" // en dash
-            "---" -> "—" // em dash
-            else -> string
-        }
+    private fun getPlaceholderText(string: String): String = when (string) {
+        // The following are covered by the DASH token type
+        "-" -> "-" // hyphen
+        "--" -> "–" // en dash
+        "---" -> "—" // em dash
+        else -> string
     }
 }

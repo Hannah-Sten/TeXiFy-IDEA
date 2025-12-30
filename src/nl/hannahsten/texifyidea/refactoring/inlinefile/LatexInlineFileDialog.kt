@@ -27,22 +27,14 @@ class LatexInlineFileDialog(
         init()
     }
 
-    override fun getNameLabelText(): String {
-        return if (getNumberOfOccurrences() > -1) "File " + myFile.name + " has " + getNumberOfOccurrences() + " ocurrences"
-        else "File " + myFile.name
-    }
+    override fun getNameLabelText(): String = if (getNumberOfOccurrences() > -1) "File " + myFile.name + " has " + getNumberOfOccurrences() + " ocurrences"
+    else "File " + myFile.name
 
-    override fun getInlineThisText(): String {
-        return "Inline this and keep the file"
-    }
+    override fun getInlineThisText(): String = "Inline this and keep the file"
 
-    override fun getInlineAllText(): String {
-        return if (myFile.isWritable) "Inline all and remove the file" else "All invocations in project"
-    }
+    override fun getInlineAllText(): String = if (myFile.isWritable) "Inline all and remove the file" else "All invocations in project"
 
-    override fun getKeepTheDeclarationText(): String {
-        return if (myFile.isWritable) "Inline all and keep the file" else super.getKeepTheDeclarationText()
-    }
+    override fun getKeepTheDeclarationText(): String = if (myFile.isWritable) "Inline all and keep the file" else super.getKeepTheDeclarationText()
 
     override fun doAction() {
         invokeRefactoring(
@@ -57,9 +49,7 @@ class LatexInlineFileDialog(
         )
     }
 
-    override fun getNumberOfOccurrences(): Int {
-        return super.getNumberOfOccurrences(myFile)
-    }
+    override fun getNumberOfOccurrences(): Int = super.getNumberOfOccurrences(myFile)
 
     companion object {
 

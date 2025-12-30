@@ -11,9 +11,7 @@ import java.io.IOException
 
 open class LatexEnvironmentStubElementType(debugName: String) : IStubElementType<LatexEnvironmentStub, LatexEnvironment>(debugName, LatexLanguage) {
 
-    override fun createPsi(stub: LatexEnvironmentStub): LatexEnvironment {
-        return LatexEnvironmentImpl(stub, this)
-    }
+    override fun createPsi(stub: LatexEnvironmentStub): LatexEnvironment = LatexEnvironmentImpl(stub, this)
 
     override fun createStub(psi: LatexEnvironment, parentStub: StubElement<*>): LatexEnvironmentStub {
         val envName = psi.getEnvironmentName()

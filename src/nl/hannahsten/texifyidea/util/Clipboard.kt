@@ -12,11 +12,9 @@ object Clipboard {
      * @return null when it could not find html
      */
     @JvmStatic
-    fun extractHtmlFromClipboard(clipboardContents: String): String {
-        return clipboardContents.indexOf("<html", ignoreCase = true)
-            .coerceAtLeast(0)
-            .let { clipboardContents.substring(it) }
-    }
+    fun extractHtmlFromClipboard(clipboardContents: String): String = clipboardContents.indexOf("<html", ignoreCase = true)
+        .coerceAtLeast(0)
+        .let { clipboardContents.substring(it) }
 
     /**
      * Extracts the fragment html from the given contents.

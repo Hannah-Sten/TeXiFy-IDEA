@@ -11,9 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 class TexifyApplicationCacheService(coroutineScope: CoroutineScope) : GenericCacheService<Application>(ApplicationManager.getApplication(), coroutineScope) {
 
     companion object {
-        fun getInstance(): TexifyApplicationCacheService {
-            return service()
-        }
+        fun getInstance(): TexifyApplicationCacheService = service()
     }
 }
 
@@ -21,8 +19,6 @@ class TexifyApplicationCacheService(coroutineScope: CoroutineScope) : GenericCac
 class TexifyProjectCacheService(project: Project, coroutineScope: CoroutineScope) : GenericCacheService<Project>(project, coroutineScope) {
 
     companion object {
-        fun getInstance(project: Project): TexifyProjectCacheService {
-            return project.service()
-        }
+        fun getInstance(project: Project): TexifyProjectCacheService = project.service()
     }
 }

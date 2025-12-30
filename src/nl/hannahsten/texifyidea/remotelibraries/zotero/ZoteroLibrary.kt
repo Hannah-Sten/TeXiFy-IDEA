@@ -59,7 +59,7 @@ class ZoteroLibrary(val url: String?, override val identifier: String = NAME, ov
         const val VERSION = 3
         const val PAGINATION_LIMIT = 50
         const val NAME = "Zotero"
-        const val USER_ID_MACRO = "\$USER_ID$"
+        const val USER_ID_MACRO = $$"$USER_ID$"
         const val DEFAULT_URL = "https://api.zotero.org/users/$USER_ID_MACRO/items?format=bibtex"
     }
 }

@@ -4,7 +4,6 @@ import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.openapi.module.ModuleUtil
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.rootManager
-import com.intellij.openapi.projectRoots.ProjectJdkTable
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
@@ -35,7 +34,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         ): MutableList<String> {
             // For now only support custom executable for TeX Live
             // At least avoids prepending a full path to a supposed TeX Live executable when in fact it will be prepended by a docker command
-            val executable = LatexSdkUtil.getExecutableName(executableName, runConfig.project, runConfig.getLatexDistributionType())
+            val executable = LatexSdkUtil.getExecutableName(executableName, runConfig.project, runConfig.getLatexSdk(), runConfig.getLatexDistributionType())
             val command = mutableListOf(runConfig.compilerPath ?: executable)
 
             command.add("-file-line-error")
@@ -74,6 +73,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
                 runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(
                     executableName,
                     runConfig.project,
+                    runConfig.getLatexSdk(),
                     runConfig.getLatexDistributionType()
                 )
             )
@@ -112,6 +112,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
                 runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(
                     executableName,
                     runConfig.project,
+                    runConfig.getLatexSdk(),
                     runConfig.getLatexDistributionType()
                 )
             )
@@ -157,6 +158,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
                 runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(
                     executableName,
                     runConfig.project,
+                    runConfig.getLatexSdk(),
                     runConfig.getLatexDistributionType()
                 )
             )
@@ -203,6 +205,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
                 runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(
                     executableName,
                     runConfig.project,
+                    runConfig.getLatexSdk(),
                     runConfig.getLatexDistributionType()
                 )
             )
@@ -388,7 +391,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         }
 
         // Find the sdk corresponding to the type the user has selected in the run config
-        val sdk = ProjectJdkTable.getInstance().allJdks.firstOrNull { it.sdkType is DockerSdk }
+        val sdk = LatexSdkUtil.getAllLatexSdks().firstOrNull { it.sdkType is DockerSdk }
 
         val parameterList = mutableListOf(
             if (sdk == null) "docker" else (sdk.sdkType as DockerSdk).getExecutableName("docker", sdk.homePath!!),
@@ -475,11 +478,9 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
     companion object {
 
-        fun byExecutableName(exe: String): LatexCompiler {
-            return entries.firstOrNull {
-                it.executableName.equals(exe, true)
-            } ?: PDFLATEX
-        }
+        fun byExecutableName(exe: String): LatexCompiler = entries.firstOrNull {
+            it.executableName.equals(exe, true)
+        } ?: PDFLATEX
 
         /**
          * Convert Windows paths to WSL paths.
@@ -505,11 +506,9 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
         companion object {
 
-            fun byNameIgnoreCase(name: String?): Format {
-                return entries.firstOrNull {
-                    it.name.equals(name, ignoreCase = true)
-                } ?: PDF
-            }
+            fun byNameIgnoreCase(name: String?): Format = entries.firstOrNull {
+                it.name.equals(name, ignoreCase = true)
+            } ?: PDF
         }
     }
 }

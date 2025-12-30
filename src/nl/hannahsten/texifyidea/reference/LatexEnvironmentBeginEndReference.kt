@@ -18,9 +18,7 @@ class LatexEnvironmentBeginEndReference(element: LatexEnvIdentifier, val toBegin
         rangeInElement = ElementManipulators.getValueTextRange(element)
     }
 
-    override fun isReferenceTo(element: PsiElement): Boolean {
-        return resolve() == element
-    }
+    override fun isReferenceTo(element: PsiElement): Boolean = resolve() == element
 
     override fun resolve(): PsiElement? {
         // Navigate from the current text in \end, to the text in \begin

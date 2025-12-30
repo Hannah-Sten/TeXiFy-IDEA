@@ -36,7 +36,5 @@ interface PathAlgorithm<N> : Algorithm {
      * When the algorithm hasn't been executed first using [Algorithm.execute].
      */
     @Throws(IllegalArgumentException::class)
-    fun size(): Int {
-        return path.size
-    }
+    fun size(): Int = path.size
 }

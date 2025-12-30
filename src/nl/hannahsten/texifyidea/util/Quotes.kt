@@ -12,29 +12,32 @@ fun getOpenAndCloseQuotes(char: Char): Pair<String, String> {
     // Get the saved value to find the correct replacement
     val quoteSetting = TexifySettings.getState().automaticQuoteReplacement
 
-    if (quoteSetting == TexifySettings.QuoteReplacement.LIGATURES && char == '"') {
-        openingQuotes = "``"
-        closingQuotes = "''"
-    }
-    else if (quoteSetting == TexifySettings.QuoteReplacement.COMMANDS && char == '"') {
-        openingQuotes = "\\lq\\lq{}"
-        closingQuotes = "\\rq\\rq{}"
-    }
-    else if (quoteSetting == TexifySettings.QuoteReplacement.CSQUOTES && char == '"') {
-        openingQuotes = "\\enquote{"
-        closingQuotes = "}"
-    }
-    else if (quoteSetting == TexifySettings.QuoteReplacement.LIGATURES && char == '\'') {
-        openingQuotes = "`"
-        closingQuotes = "'"
-    }
-    else if (quoteSetting == TexifySettings.QuoteReplacement.COMMANDS && char == '\'') {
-        openingQuotes = "\\lq{}"
-        closingQuotes = "\\rq{}"
-    }
-    else if (quoteSetting == TexifySettings.QuoteReplacement.CSQUOTES && char == '\'') {
-        openingQuotes = "\\enquote*{"
-        closingQuotes = "}"
+    when (quoteSetting) {
+        TexifySettings.QuoteReplacement.LIGATURES if char == '"' -> {
+            openingQuotes = "``"
+            closingQuotes = "''"
+        }
+        TexifySettings.QuoteReplacement.COMMANDS if char == '"' -> {
+            openingQuotes = "\\lq\\lq{}"
+            closingQuotes = "\\rq\\rq{}"
+        }
+        TexifySettings.QuoteReplacement.CSQUOTES if char == '"' -> {
+            openingQuotes = "\\enquote{"
+            closingQuotes = "}"
+        }
+        TexifySettings.QuoteReplacement.LIGATURES if char == '\'' -> {
+            openingQuotes = "`"
+            closingQuotes = "'"
+        }
+        TexifySettings.QuoteReplacement.COMMANDS if char == '\'' -> {
+            openingQuotes = "\\lq{}"
+            closingQuotes = "\\rq{}"
+        }
+        TexifySettings.QuoteReplacement.CSQUOTES if char == '\'' -> {
+            openingQuotes = "\\enquote*{"
+            closingQuotes = "}"
+        }
+        else -> {}
     }
 
     return Pair(openingQuotes, closingQuotes)

@@ -6,9 +6,7 @@ import nl.hannahsten.texifyidea.inspections.latex.probablebugs.LatexFileNotFound
 
 class RootFileTest : BasePlatformTestCase() {
 
-    override fun getTestDataPath(): String {
-        return "test/resources/util/rootfile"
-    }
+    override fun getTestDataPath(): String = "test/resources/util/rootfile"
 
     fun testTwoLevelDeepInclusion() {
         myFixture.enableInspections(LatexFileNotFoundInspection())

@@ -18,17 +18,11 @@ class LatexSentenceEndWithCapitalInspection : AbstractTexifyRegexBasedInspection
     regex = """(?<=[A-ZÀ-Ý])\.""".toRegex(),
     applicableContexts = setOf(LatexContexts.Text)
 ) {
-    override fun errorMessage(matcher: MatchResult, context: LContextSet): String {
-        return "Sentences ending with a capital letter should end with an end-of-sentence space"
-    }
+    override fun errorMessage(matcher: MatchResult, context: LContextSet): String = "Sentences ending with a capital letter should end with an end-of-sentence space"
 
-    override fun quickFixName(matcher: MatchResult, contexts: LContextSet): String {
-        return "Add an end-of-sentence space"
-    }
+    override fun quickFixName(matcher: MatchResult, contexts: LContextSet): String = "Add an end-of-sentence space"
 
-    override fun getReplacement(match: MatchResult, fullElementText: String, project: Project, problemDescriptor: ProblemDescriptor): String {
-        return "\\@."
-    }
+    override fun getReplacement(match: MatchResult, fullElementText: String, project: Project, problemDescriptor: ProblemDescriptor): String = "\\@."
 
     override fun additionalChecks(element: PsiElement, match: MatchResult, bundle: DefinitionBundle, file: PsiFile): Boolean {
         val nextWhiteSpace = element.findNextAdjacentWhiteSpace() ?: return false

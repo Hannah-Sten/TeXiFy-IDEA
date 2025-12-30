@@ -75,7 +75,7 @@ class LatexPrimitiveStyleInspectionTest : TexifyInspectionTestBase(LatexPrimitiv
             """.trimIndent(),
             """
             \begin{center}
-            {\Large \textbf{Instructions for formatting (S)PC list}}
+                {\Large \textbf{Instructions for formatting (S)PC list}}
             \end{center}
 
             The format of the text file should be as follows. \\

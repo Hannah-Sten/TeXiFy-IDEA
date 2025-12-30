@@ -7,7 +7,5 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 
 class LatexMoveElementLeftRightHandler : MoveElementLeftRightHandler() {
 
-    override fun getMovableSubElements(element: PsiElement): Array<PsiElement> {
-        return (element as? LatexCommands)?.parameterList?.toArray(emptyArray()) ?: emptyArray()
-    }
+    override fun getMovableSubElements(element: PsiElement): Array<PsiElement> = (element as? LatexCommands)?.parameterList?.toArray(emptyArray()) ?: emptyArray()
 }

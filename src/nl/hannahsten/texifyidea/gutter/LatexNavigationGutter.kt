@@ -53,11 +53,7 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
         result.add(builder.createLineMarkerInfo(element))
     }
 
-    override fun getName(): String {
-        return "Navigate to referenced file"
-    }
+    override fun getName(): String = "Navigate to referenced file"
 
-    override fun getIcon(): Icon {
-        return TexifyIcons.LATEX_FILE
-    }
+    override fun getIcon(): Icon = TexifyIcons.LATEX_FILE
 }

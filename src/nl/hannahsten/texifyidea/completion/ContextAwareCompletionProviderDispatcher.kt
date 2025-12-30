@@ -43,9 +43,7 @@ object ContextAwareCompletionProviderDispatcher : LatexContextAwareCompletionAda
         return null
     }
 
-    private fun dispatchContext(context: LatexContext): LatexContextAwareCompletionProvider? {
-        return dispatchMap[context] ?: additionalDispatching(context)
-    }
+    private fun dispatchContext(context: LatexContext): LatexContextAwareCompletionProvider? = dispatchMap[context] ?: additionalDispatching(context)
 
     override fun addContextAwareCompletions(
         parameters: CompletionParameters, contexts: LContextSet, defBundle: DefinitionBundle,

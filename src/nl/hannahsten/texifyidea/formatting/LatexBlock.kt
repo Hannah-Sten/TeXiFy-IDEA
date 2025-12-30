@@ -8,10 +8,12 @@ import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.formatter.common.AbstractBlock
 import com.intellij.psi.util.prevLeaf
 import nl.hannahsten.texifyidea.editor.typedhandlers.LatexEnterHandler
+import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.lang.predefined.EnvironmentNames
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.settings.codestyle.LatexCodeStyleSettings
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 import java.lang.Integer.max
@@ -33,7 +35,6 @@ class LatexBlock(
 ) : AbstractBlock(node, wrap, alignment) {
 
     override fun buildChildren(): List<Block> {
-        val blocks = mutableListOf<LatexBlock>()
         var child = myNode.firstChildNode
 
         // Only applicable for section indenting:
@@ -63,8 +64,10 @@ class LatexBlock(
                 extraSectionIndent,
                 newFakeSectionIndent
             )
-            blocks.add(block)
+            return listOf(block)
         }
+
+        val blocks = mutableListOf<Block>()
 
         var isPreviousWhiteSpace = child != null && child.elementType !== TokenType.WHITE_SPACE && child !is PsiWhiteSpace
         // Create child blocks
@@ -94,7 +97,11 @@ class LatexBlock(
                     targetIndent,
                     newFakeSectionIndent
                 )
-                blocks.add(block)
+                if(child.elementType == LatexTypes.BEGIN_COMMAND) {
+                    blocks.addAll(block.subBlocks)
+                } else {
+                    blocks.add(block)
+                }
                 isPreviousWhiteSpace = false
             }
             else isPreviousWhiteSpace = true
@@ -147,29 +154,62 @@ class LatexBlock(
         val latexSettings = settings.getCustomSettings(LatexCodeStyleSettings::class.java)
         val shouldIndentDocumentEnvironment = latexSettings.INDENT_DOCUMENT_ENVIRONMENT
         val shouldIndentEnvironments = latexSettings.INDENT_ENVIRONMENTS
-        val isDocumentEnvironment = myNode.elementType === LatexTypes.ENVIRONMENT_CONTENT &&
+        val elementType = myNode.elementType
+        val isDocumentEnvironment = elementType === LatexTypes.ENVIRONMENT_CONTENT &&
             (myNode.psi as LatexEnvironmentContent)
                 .firstParentOfType(LatexEnvironment::class)?.getEnvironmentName() == EnvironmentNames.DOCUMENT
         val shouldIndentEnvironment = when {
-            myNode.elementType !== LatexTypes.ENVIRONMENT_CONTENT -> false
+            elementType !== LatexTypes.ENVIRONMENT_CONTENT -> false
             isDocumentEnvironment -> shouldIndentDocumentEnvironment
             else -> shouldIndentEnvironments
         }
 
-        if (shouldIndentEnvironment || myNode.elementType === LatexTypes.PSEUDOCODE_BLOCK_CONTENT || myNode.elementType === LatexTypes.IF_BLOCK_CONTENT ||
+        if (shouldIndentEnvironment ||
+            elementType === LatexTypes.PSEUDOCODE_BLOCK_CONTENT ||
+            elementType === LatexTypes.IF_BLOCK_CONTENT ||
             // Fix for leading comments inside an environment, because somehow they are not placed inside environments.
             // Note that this does not help to insert the indentation, but at least the indent is not removed
             // when formatting.
             (
-                myNode.elementType === LatexTypes.COMMENT_TOKEN &&
+                elementType === LatexTypes.COMMENT_TOKEN &&
                     myNode.treeParent?.elementType === LatexTypes.ENVIRONMENT
                 )
         ) {
             return Indent.getNormalIndent(true)
         }
 
+        // Workaround for fake parameter case below, to fix formatting of elements in the block which does not start on a newline due to starting right after the fake parameter
+        // For children of environment, or environment content contains normal text and then other blocks, in which case we check if we are in the first block
+        if (myNode.psi.parent is LatexEnvironmentContent || ((myNode.psi.firstParentOfType<LatexEnvironmentContent>() as? LatexEnvironmentContent)?.firstChild?.firstChild == myNode.psi.parent)) {
+            val environmentContent = myNode.psi.firstParentOfType<LatexEnvironmentContent>()
+            // Check if there is a newline before the environment content starts: if so, we don't need to correct anything
+            if (environmentContent?.prevSibling is LatexBeginCommand || (environmentContent?.prevSibling is PsiWhiteSpace && environmentContent.prevSibling.text?.contains("\n") != true)) {
+                // Since the (first block in the) environment content does not start on a newline, we need to indent manually
+                return Indent.getNormalIndent(false)
+            }
+        }
+
+        // for mistakenly parsed parameters, such as \begin{equation} [x+y]^2 \end{equation}, we use semantics to decide whether to indent or not
+        if (shouldIndentEnvironments && elementType === LatexTypes.PARAMETER) {
+            val parameter = myNode.psi as? LatexParameter
+            val beginElement = parameter?.parent as? LatexBeginCommand
+            val envElement = beginElement?.parent as? LatexEnvironment
+            if (envElement != null) {
+                if (envElement.getEnvironmentName() == EnvironmentNames.DOCUMENT) {
+                    // document environment do not have parameters, so always indent according to settings
+                    return if (shouldIndentDocumentEnvironment) Indent.getNormalIndent(true) else Indent.getNoneIndent()
+                }
+
+                val semantics = LatexDefinitionService.resolveEnv(envElement)
+                if (semantics != null) {
+                    val arg = LatexPsiUtil.getCorrespondingArgument(beginElement, parameter, semantics.arguments)
+                    // if the argument is null, it means it's a mistakenly parsed parameter, so we indent according to settings
+                    return if (arg == null) Indent.getNormalIndent(true) else Indent.getNoneIndent()
+                }
+            }
+        }
+
         // Indentation of sections
-        // TODO improve
         val indentSections = latexSettings.INDENT_SECTIONS
         if (indentSections) {
             if (sectionIndent > 0 || fakeSectionIndent > 0) {
@@ -178,27 +218,27 @@ class LatexBlock(
         }
 
         // Indentation in groups and parameters.
-        if (myNode.elementType === LatexTypes.REQUIRED_PARAM_CONTENT ||
-            myNode.elementType === LatexTypes.STRICT_KEY_VAL_PAIR ||
-            myNode.elementType === LatexTypes.OPTIONAL_KEY_VAL_PAIR ||
+        if (elementType === LatexTypes.REQUIRED_PARAM_CONTENT ||
+            elementType === LatexTypes.STRICT_KEY_VAL_PAIR ||
+            elementType === LatexTypes.OPTIONAL_KEY_VAL_PAIR ||
             (
-                myNode.elementType !== LatexTypes.CLOSE_BRACE &&
+                elementType !== LatexTypes.CLOSE_BRACE &&
                     myNode.treeParent?.elementType === LatexTypes.GROUP
                 ) ||
             (
-                myNode.elementType !== LatexTypes.CLOSE_BRACE &&
+                elementType !== LatexTypes.CLOSE_BRACE &&
                     myNode.treeParent?.elementType === LatexTypes.PARAMETER_GROUP
                 )
         ) {
             return Indent.getNormalIndent(false)
         }
 
-        if (myNode.elementType == LatexTypes.LEFT_RIGHT_CONTENT) {
+        if (elementType == LatexTypes.LEFT_RIGHT_CONTENT) {
             return Indent.getNormalIndent(true)
         }
 
         // Display math
-        return if ((myNode.elementType === LatexTypes.MATH_CONTENT || myNode.elementType === LatexTypes.COMMENT_TOKEN) &&
+        return if ((elementType === LatexTypes.MATH_CONTENT || elementType === LatexTypes.COMMENT_TOKEN) &&
             myNode.treeParent?.elementType === LatexTypes.DISPLAY_MATH
         ) {
             Indent.getNormalIndent(true)
@@ -206,16 +246,10 @@ class LatexBlock(
         else Indent.getNoneIndent()
     }
 
-    override fun getSpacing(child1: Block?, child2: Block): Spacing? {
-        return spacingBuilder.getSpacing(this, child1, child2)
-    }
+    override fun getSpacing(child1: Block?, child2: Block): Spacing? = spacingBuilder.getSpacing(this, child1, child2)
 
-    override fun isLeaf(): Boolean {
-        return myNode.firstChildNode == null && sectionIndent <= 0
-    }
+    override fun isLeaf(): Boolean = myNode.firstChildNode == null && sectionIndent <= 0
 
     // Automatic indent when enter is pressed
-    override fun getChildAttributes(newChildIndex: Int): ChildAttributes {
-        return LatexEnterHandler.getChildAttributes(newChildIndex, node, subBlocks)
-    }
+    override fun getChildAttributes(newChildIndex: Int): ChildAttributes = LatexEnterHandler.getChildAttributes(newChildIndex, node, subBlocks)
 }

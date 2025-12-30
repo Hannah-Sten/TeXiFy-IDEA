@@ -36,29 +36,28 @@ open class LatexIncorrectSectionNestingInspection : TexifyInspectionBase() {
 
     override fun getDisplayName() = "Incorrect nesting"
 
-    override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        return file.traverseCommands()
-            .filter {
-                it.name in commandToForbiddenPredecessors
-            }
-            .sortedBy { it.textOffset }
-            .zipWithNext()
-            .filter { (first, second) ->
-                first.isValid && second.isValid &&
-                    commandToForbiddenPredecessors[second.commandName()]?.contains(first.commandName()) == true
-            }
-            .map {
-                manager.createProblemDescriptor(
-                    it.second,
-                    "Incorrect nesting",
-                    arrayOf(InsertParentCommandFix(), ChangeToParentCommandFix()),
-                    ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                    isOntheFly,
-                    false
-                )
-            }
-            .toList()
-    }
+    override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> = file.traverseCommands()
+        .filter {
+            it.name in commandToForbiddenPredecessors
+        }
+        .sortedBy { it.textOffset }
+        .zipWithNext()
+        .filter { (first, second) ->
+            first.isValid &&
+                second.isValid &&
+                commandToForbiddenPredecessors[second.commandName()]?.contains(first.commandName()) == true
+        }
+        .map {
+            manager.createProblemDescriptor(
+                it.second,
+                "Incorrect nesting",
+                arrayOf(InsertParentCommandFix(), ChangeToParentCommandFix()),
+                ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                isOntheFly,
+                false
+            )
+        }
+        .toList()
 
     private fun LatexCommands.commandName(): String = this.commandToken.text
 

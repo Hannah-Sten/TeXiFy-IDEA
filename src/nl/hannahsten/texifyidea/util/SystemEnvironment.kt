@@ -75,11 +75,11 @@ class SystemEnvironment {
         }
 
         val texinputs by lazy {
-            runCommand("kpsewhich", "--expand-var", "'\$TEXINPUTS'")
+            runCommand("kpsewhich", "--expand-var", $$"'$TEXINPUTS'")
         }
 
         val texmfhome by lazy {
-            runCommand("kpsewhich", "--expand-var", "'\$TEXMFHOME'")
+            runCommand("kpsewhich", "--expand-var", $$"'$TEXMFHOME'")
         }
     }
 }

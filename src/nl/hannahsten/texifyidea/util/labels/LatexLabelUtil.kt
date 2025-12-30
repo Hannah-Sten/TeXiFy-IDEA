@@ -6,19 +6,8 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.index.FilesetData
-import nl.hannahsten.texifyidea.index.LatexDefinitionService
-import nl.hannahsten.texifyidea.index.LatexProjectStructure
-import nl.hannahsten.texifyidea.index.NewBibtexEntryIndex
-import nl.hannahsten.texifyidea.index.NewCommandsIndex
-import nl.hannahsten.texifyidea.index.NewLabelsIndex
-import nl.hannahsten.texifyidea.index.NewLatexEnvironmentIndex
-import nl.hannahsten.texifyidea.index.restrictedByFileTypes
-import nl.hannahsten.texifyidea.lang.LArgument
-import nl.hannahsten.texifyidea.lang.LSemanticCommand
-import nl.hannahsten.texifyidea.lang.LSemanticEnv
-import nl.hannahsten.texifyidea.lang.LatexContexts
-import nl.hannahsten.texifyidea.lang.LatexLib
+import nl.hannahsten.texifyidea.index.*
+import nl.hannahsten.texifyidea.lang.*
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
@@ -39,9 +28,7 @@ fun PsiFile.findLatexLabelingElementsInFileSet(): Sequence<PsiElement> {
 
 object LatexLabelUtil {
 
-    fun isDefinedLabelOrBibtexLabel(label: String, project: Project, scope: GlobalSearchScope): Boolean {
-        return NewLabelsIndex.existsByName(label, project, scope) || NewBibtexEntryIndex.existsByName(label, project, scope)
-    }
+    fun isDefinedLabelOrBibtexLabel(label: String, project: Project, scope: GlobalSearchScope): Boolean = NewLabelsIndex.existsByName(label, project, scope) || NewBibtexEntryIndex.existsByName(label, project, scope)
 
     /**
      * Generate a unique label name based on the original label by appending or incrementing a number at the end.
@@ -85,9 +72,7 @@ object LatexLabelUtil {
         return null
     }
 
-    private fun LatexCommands.firstRequiredParameterText(): LatexParameterText? {
-        return firstRequiredParameter()?.findFirstChildTyped<LatexParameterText>()
-    }
+    private fun LatexCommands.firstRequiredParameterText(): LatexParameterText? = firstRequiredParameter()?.findFirstChildTyped<LatexParameterText>()
 
     /**
      * Extracts the label parameter from the command if it is a known labeling command or if it is defined as a parameter.
@@ -122,19 +107,15 @@ object LatexLabelUtil {
         return extractLabelWithSemantics(element.beginCommand, semantics.arguments)
     }
 
-    fun extractLabelParamIn(element: PsiElement, withCustomized: Boolean = false): PsiElement? {
-        return when (element) {
-            is BibtexEntry -> element.findFirstChildTyped<BibtexId>()
-            is LatexCommands -> extractLabelParamInCommand(element, withCustomized)
-            is LatexEnvironment -> extractLabelFromEnvironment(element, withCustomized)
-            is LatexParameterText -> element
-            else -> null
-        }
+    fun extractLabelParamIn(element: PsiElement, withCustomized: Boolean = false): PsiElement? = when (element) {
+        is BibtexEntry -> element.findFirstChildTyped<BibtexId>()
+        is LatexCommands -> extractLabelParamInCommand(element, withCustomized)
+        is LatexEnvironment -> extractLabelFromEnvironment(element, withCustomized)
+        is LatexParameterText -> element
+        else -> null
     }
 
-    fun extractLabelTextIn(element: PsiElement, customDef: Boolean = false): String? {
-        return extractLabelParamIn(element, customDef)?.text
-    }
+    fun extractLabelTextIn(element: PsiElement, customDef: Boolean = false): String? = extractLabelParamIn(element, customDef)?.text
 
     fun interface LabelProcessor {
         /**
@@ -178,8 +159,16 @@ object LatexLabelUtil {
     ) {
         val filesetData = LatexProjectStructure.getFilesetDataFor(file, project)
         val scope = filesetData?.filesetScope?.restrictedByFileTypes(LatexFileType) ?: GlobalSearchScope.fileScope(project, file)
+
+        // We cannot process with an index operation inside an index operation, see #4327
+        val extractedLabels = mutableSetOf<String>()
+
         NewLabelsIndex.forEachKey(project, scope) { extractedLabel ->
             if (extractedLabel.isBlank()) return@forEachKey
+            extractedLabels.add(extractedLabel)
+        }
+
+        extractedLabels.forEach { extractedLabel ->
             NewLabelsIndex.forEachByName(extractedLabel, project, scope) { labelingElement ->
                 val label = prefix + extractedLabel
                 val param = extractLabelParamIn(labelingElement, withCustomized = false) ?: return@forEachByName

@@ -16,9 +16,7 @@ fun foldingDescriptor(
     group: FoldingGroup? = null,
     neverExpand: Boolean = false,
     dependencies: Set<Any> = emptySet(),
-): FoldingDescriptor {
-    return FoldingDescriptor(
-        element.node, range, group, dependencies, neverExpand, placeholderText,
-        isCollapsedByDefault
-    )
-}
+): FoldingDescriptor = FoldingDescriptor(
+    element.node, range, group, dependencies, neverExpand, placeholderText,
+    isCollapsedByDefault
+)

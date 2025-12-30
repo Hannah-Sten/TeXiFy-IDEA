@@ -18,7 +18,5 @@ class LatexFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, Late
     /**
      * Required for refactoring
      */
-    override fun getNameIdentifier(): PsiElement {
-        return this
-    }
+    override fun getNameIdentifier(): PsiElement = this
 }

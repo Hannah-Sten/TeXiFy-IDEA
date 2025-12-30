@@ -12,9 +12,7 @@ class LatexQuickRunLogParserTest : BasePlatformTestCase() {
      * Useful regex for matching braces: \(([^(^)]+)\)
      */
 
-    override fun getTestDataPath(): String {
-        return "test/resources/run"
-    }
+    override fun getTestDataPath(): String = "test/resources/run"
 
     fun testFileStack() {
         val text =

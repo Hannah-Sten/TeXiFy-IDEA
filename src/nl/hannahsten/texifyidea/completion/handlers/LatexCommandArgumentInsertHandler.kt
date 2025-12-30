@@ -29,7 +29,8 @@ class LatexCommandArgumentInsertHandler(val arguments: List<LArgument>) : Insert
         val caret = editor.caretModel
         val offset = caret.offset
         // When not followed by { or [ (whichever the first parameter starts with) insert the parameters.
-        if (arguments.isNotEmpty() && (
+        if (arguments.isNotEmpty() &&
+            (
                 offset >= document.textLength - 1 || document.getText(TextRange.from(offset, 1)) !in setOf("{", "[")
                 )
         ) {
@@ -44,7 +45,7 @@ class LatexCommandArgumentInsertHandler(val arguments: List<LArgument>) : Insert
         val template = TemplateImpl(
             "",
             arguments.mapIndexed { index: Int, argument: LArgument ->
-                if (argument.isRequired) "{\$__Variable$index$}" else "[\$__Variable$index$]"
+                if (argument.isRequired) $$"{$__Variable$$index$}" else $$"[$__Variable$$index$]"
             }.joinToString(""),
             ""
         )

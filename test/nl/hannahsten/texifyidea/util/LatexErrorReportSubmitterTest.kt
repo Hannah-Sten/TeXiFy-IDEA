@@ -1,6 +1,6 @@
 package nl.hannahsten.texifyidea.util
 
-import nl.hannahsten.texifyidea.LatexErrorReportSubmitter
+import nl.hannahsten.texifyidea.report.LatexErrorReportSubmitter
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

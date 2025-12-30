@@ -9,9 +9,7 @@ open class SimpleLatexContext(
     val name: String,
     final override val display: String = name
 ) : LatexContext {
-    override fun toString(): String {
-        return display
-    }
+    override fun toString(): String = display
 
     private val hash = name.hashCode()
 
@@ -103,6 +101,11 @@ object LatexContexts {
      * Used in `\begin{...}`.
      */
     val Identifier = SimpleLatexContext("identifier")
+
+    /**
+     * Verbatim as in \verb|...| or verbatim environments
+     */
+    val Verbatim = SimpleLatexContext("verbatim")
 
     /**
      * Some string literal that may be meaningful, such as `cc` in `\begin{tabular}{cc}`.

@@ -52,9 +52,7 @@ class LatexMultipleGraphicsPathInspection : TexifyInspectionBase() {
      */
     class RemoveFix : LocalQuickFix {
 
-        override fun getFamilyName(): String {
-            return "Remove this Line"
-        }
+        override fun getFamilyName(): String = "Remove this Line"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             descriptor.psiElement.delete()

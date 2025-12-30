@@ -178,24 +178,21 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
     /**
      * The check boxes for the figure locations.
      */
-    private val checkPosition = FigureLocation.entries.asSequence()
-        .map { location ->
-            location.symbol to JBCheckBox(location.description).apply {
-                addActionListener { event ->
-                    val source = event.source as? JBCheckBox ?: error("Not a JBCheckBox!")
-                    // Add symbol if selected.
-                    if (source.isSelected && txtPosition.text.contains(location.symbol).not()) {
-                        txtPosition.text += location.symbol
-                    }
-                    // Remove if deselected.
-                    else {
-                        txtPosition.text = txtPosition.text.replace(location.symbol, "")
-                    }
+    private val checkPosition = FigureLocation.entries.associateTo(LinkedHashMap()) { location ->
+        location.symbol to JBCheckBox(location.description).apply {
+            addActionListener { event ->
+                val source = event.source as? JBCheckBox ?: error("Not a JBCheckBox!")
+                // Add symbol if selected.
+                if (source.isSelected && txtPosition.text.contains(location.symbol).not()) {
+                    txtPosition.text += location.symbol
+                }
+                // Remove if deselected.
+                else {
+                    txtPosition.text = txtPosition.text.replace(location.symbol, "")
                 }
             }
         }
-        // Use linked hash map to preserve order.
-        .toMap(LinkedHashMap())
+    }
 
     init {
         super.init()

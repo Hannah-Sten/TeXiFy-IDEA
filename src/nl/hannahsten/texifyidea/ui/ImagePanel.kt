@@ -59,12 +59,10 @@ internal class ImagePanel : JPanel() {
         scaled = image?.getScaledInstance(scaledImageWidth, scaledImageHeight, Image.SCALE_SMOOTH)
     }
 
-    override fun getPreferredSize(): Dimension {
-        return if (image == null) {
-            Dimension(200, 200)
-        }
-        else Dimension(image!!.getWidth(this), image!!.getHeight(this))
+    override fun getPreferredSize(): Dimension = if (image == null) {
+        Dimension(200, 200)
     }
+    else Dimension(image!!.getWidth(this), image!!.getHeight(this))
 
     override fun paintComponent(g: Graphics) {
         super.paintComponent(g)

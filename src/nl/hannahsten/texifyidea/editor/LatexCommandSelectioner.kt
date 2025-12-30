@@ -11,9 +11,7 @@ import com.intellij.psi.PsiElement
  */
 class LatexCommandSelectioner : ExtendWordSelectionHandlerBase() {
 
-    override fun canSelect(e: PsiElement): Boolean {
-        return !CommandSelectionFilter().value(e)
-    }
+    override fun canSelect(e: PsiElement): Boolean = !CommandSelectionFilter().value(e)
 
     override fun select(e: PsiElement, editorText: CharSequence, cursorOffset: Int, editor: Editor): MutableList<TextRange>? {
         val ranges = super.select(e, editorText, cursorOffset, editor) ?: return null
