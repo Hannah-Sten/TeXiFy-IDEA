@@ -350,7 +350,6 @@ tasks {
     generateSentryBundleIdJava {
         dependsOn(initializeIntellijPlatformPlugin)
     }
-
 }
 
 sentry {
