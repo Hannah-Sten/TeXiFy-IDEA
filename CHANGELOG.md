@@ -9,6 +9,7 @@
 * Fix a formatting issue when using square brackets as first text in an environment, by @Ezrnest
 * Fix a parser performance issue which could cause a freeze, by @fberlakovich
 * Fix a highlighting issue when paramater context was not detected, by @fberlakovich
+* Ignore labels in command definitions
 * Fixed various exceptions
 
 ## [0.11.5] - 2025-12-01
