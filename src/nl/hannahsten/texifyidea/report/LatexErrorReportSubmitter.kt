@@ -104,33 +104,31 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
         return true
     }
 
-    private fun createEvents(events: Array<out IdeaLoggingEvent>, additionalInfo: String?): List<SentryEvent> {
-        return events
-            .map { ideaEvent ->
-                SentryEvent().apply {
-                    this.message = Message().apply { this.message = additionalInfo ?: ideaEvent.throwableText }
-                    this.level = SentryLevel.ERROR
-                    this.throwable = ideaEvent.throwable
+    private fun createEvents(events: Array<out IdeaLoggingEvent>, additionalInfo: String?): List<SentryEvent> = events
+        .map { ideaEvent ->
+            SentryEvent().apply {
+                this.message = Message().apply { this.message = additionalInfo ?: ideaEvent.throwableText }
+                this.level = SentryLevel.ERROR
+                this.throwable = ideaEvent.throwable
 
-                    (pluginDescriptor as? IdeaPluginDescriptor)?.let { release = it.version }
-                    extras = mapOf("last_action" to IdeaLogger.ourLastActionId)
-                    val applicationNamesInfo = ApplicationNamesInfo.getInstance()
-                    val instanceEx = ApplicationInfoEx.getInstanceEx()
-                    tags = mapOf(
-                        "os_name" to SystemInfo.OS_NAME,
-                        "os_version" to SystemInfo.OS_VERSION,
-                        "os_arch" to SystemInfo.OS_ARCH,
-                        "plugin_version" to Util.currentVersion,
-                        "app_name" to applicationNamesInfo.productName,
-                        "app_full_name" to applicationNamesInfo.fullProductName,
-                        "app_version_name" to instanceEx.versionName,
-                        "is_eap" to instanceEx.isEAP.toString(),
-                        "app_build" to instanceEx.build.asString(),
-                        "app_version" to instanceEx.fullVersion,
-                    )
-                }
+                (pluginDescriptor as? IdeaPluginDescriptor)?.let { release = it.version }
+                extras = mapOf("last_action" to IdeaLogger.ourLastActionId)
+                val applicationNamesInfo = ApplicationNamesInfo.getInstance()
+                val instanceEx = ApplicationInfoEx.getInstanceEx()
+                tags = mapOf(
+                    "os_name" to SystemInfo.OS_NAME,
+                    "os_version" to SystemInfo.OS_VERSION,
+                    "os_arch" to SystemInfo.OS_ARCH,
+                    "plugin_version" to Util.currentVersion,
+                    "app_name" to applicationNamesInfo.productName,
+                    "app_full_name" to applicationNamesInfo.fullProductName,
+                    "app_version_name" to instanceEx.versionName,
+                    "is_eap" to instanceEx.isEAP.toString(),
+                    "app_build" to instanceEx.build.asString(),
+                    "app_version" to instanceEx.fullVersion,
+                )
             }
-    }
+        }
 
     object Util {
         private var latestVersionCached = IdeaPlugin()
