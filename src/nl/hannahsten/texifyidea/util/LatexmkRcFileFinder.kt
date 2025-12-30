@@ -132,6 +132,7 @@ object LatexmkRcFileFinder {
         if (runConfig != null) {
             getLocalLatexmkRcFile(runConfig.compilerArguments, runConfig.mainFile?.parent?.path)?.let { return getTexinputs(it) }
         }
+        if (!directory.isValid) return null
         // File could be anywhere if run configurations are not used, but searching the whole project could be too expensive
         directory.findChild(".latexmkrc")?.let { return getTexinputs(it) }
         directory.findChild("latexmkrc")?.let { return getTexinputs(it) }
