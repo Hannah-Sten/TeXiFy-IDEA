@@ -1,7 +1,6 @@
 - [ ] Create branch bx.x.x
 - [ ] Run 'Usage of IntelliJ API not available in older IDEs' and 'Stateful extension' inspection (ctrl+alt+shift+i)
 - [ ] Increase stub version in LatexParserDefinition
-- [ ] Re-include Sumatra dlls in build.gradle.kts to enable forward search
 - [ ] Run ctan.py
 
 - [ ] Add welcome text to Changelog.md
@@ -9,7 +8,6 @@
 - [ ] run patchChangelog
 - [ ] runIDE and check the changelog is formatted correctly, then close the dev instance
 - [ ] Run publishPlugin
-- [ ] Re-exclude Sumatra dlls in build.gradle.kts
 - [ ] Merge PR
 - [ ] buildPlugin and release on GitHub, tag version: v0.x.x and release title: Beta x.x.x
 - [ ] Close the milestone
