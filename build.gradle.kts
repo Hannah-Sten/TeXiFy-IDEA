@@ -124,10 +124,6 @@ dependencies {
 
     // Local dependencies
     implementation(files("lib/pretty-tools-JDDE-2.1.0.jar"))
-    // These lines can sometimes be problematic on Linux, but are required for SumatraPDF
-    // TODO Temporarily disabled to fix Linux builds
-//    implementation(files("lib/JavaDDE.dll"))
-//    implementation(files("lib/JavaDDEx64.dll"))
 
     // D-Bus Java bindings
     implementation("com.github.hypfvieh:dbus-java-core:5.2.0")

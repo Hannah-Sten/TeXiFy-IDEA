@@ -3,12 +3,26 @@
 ## [Unreleased]
 
 ### Added
+
+### Fixed
+
+## [0.11.6] - 2026-01-01
+
+Welcome to TeXiFy IDEA 0.11.6! This release changes the exception reporting to Sentry, and has some very nice contributions to improve formatting, highlighting and the parser.
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
+
+### Added
+
 * Reported exceptions will now be submitted to Sentry, to avoid spam on GitHub Issues
 
 ### Fixed
+
 * Fix a formatting issue when using square brackets as first text in an environment, by @Ezrnest
 * Fix a parser performance issue which could cause a freeze, by @fberlakovich
 * Fix a highlighting issue when paramater context was not detected, by @fberlakovich
+* Ignore labels in command definitions
 * Fixed various exceptions
 
 ## [0.11.5] - 2025-12-01
@@ -707,7 +721,8 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.5...HEAD
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.6...HEAD
+[0.11.6]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.5...v0.11.6
 [0.11.5]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.4...v0.11.5
 [0.11.4]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.3...v0.11.4
 [0.11.3]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.2...v0.11.3

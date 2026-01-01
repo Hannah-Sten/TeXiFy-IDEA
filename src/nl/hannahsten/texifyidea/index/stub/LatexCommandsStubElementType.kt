@@ -2,7 +2,10 @@ package nl.hannahsten.texifyidea.index.stub
 
 import com.intellij.psi.stubs.*
 import nl.hannahsten.texifyidea.grammar.LatexLanguage
-import nl.hannahsten.texifyidea.index.*
+import nl.hannahsten.texifyidea.index.LatexStubIndexKeys
+import nl.hannahsten.texifyidea.index.NewDefinitionIndex
+import nl.hannahsten.texifyidea.index.NewLabelsIndex
+import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexParameter
 import nl.hannahsten.texifyidea.psi.contentText
@@ -91,13 +94,6 @@ class LatexCommandsStubElementType(debugName: String) :
     }
 
     override fun indexStub(stub: LatexCommandsStub, sink: IndexSink) {
-        // We do not want all the commands from all package source files in this index, because
-//        // then we end up with 200k keys for texlive full, but we need to iterate over all keys
-//        // every time we need to get e.g. all commands in a file, so that would be too slow.
-//        // Therefore, we check if the indexing of this file was caused by being in an extra project root or not
-//        // It seems we cannot make a distinction that we do want to index with LatexExternalCommandIndex but not this index
-//        // Unfortunately, this seems to make indexing five times slower
-
         val token = stub.commandToken
         sink.occurrence(LatexStubIndexKeys.COMMANDS, token)
 

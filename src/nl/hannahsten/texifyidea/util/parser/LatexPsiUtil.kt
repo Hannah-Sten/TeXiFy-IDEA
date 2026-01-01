@@ -10,18 +10,7 @@ import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
 import nl.hannahsten.texifyidea.index.stub.LatexParameterStub
 import nl.hannahsten.texifyidea.index.stub.requiredParamAt
-import nl.hannahsten.texifyidea.lang.LArgument
-import nl.hannahsten.texifyidea.lang.LArgumentType
-import nl.hannahsten.texifyidea.lang.LatexContextIntro
-import nl.hannahsten.texifyidea.lang.LContextSet
-import nl.hannahsten.texifyidea.lang.LSemanticCommand
-import nl.hannahsten.texifyidea.lang.LSemanticEnv
-import nl.hannahsten.texifyidea.lang.LatexContext
-import nl.hannahsten.texifyidea.lang.LatexContexts
-import nl.hannahsten.texifyidea.lang.LatexLib
-import nl.hannahsten.texifyidea.lang.LatexSemanticsCommandLookup
-import nl.hannahsten.texifyidea.lang.LatexSemanticsEnvLookup
-import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
+import nl.hannahsten.texifyidea.lang.*
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.lang.predefined.EnvironmentNames
 import nl.hannahsten.texifyidea.psi.*
@@ -352,6 +341,8 @@ object LatexPsiUtil {
         val lookup = LatexDefinitionService.getInstance(file.project).getDefBundlesMerged(file)
         return resolveContextUpward(e, lookup)
     }
+
+    fun PsiElement.isInCommandDefinition(): Boolean = resolveContextUpward(this).contains(LatexContexts.InsideDefinition)
 
     /**
      * Resolve the context introductions at the given element by traversing the PSI tree upwards and collecting context changes.
