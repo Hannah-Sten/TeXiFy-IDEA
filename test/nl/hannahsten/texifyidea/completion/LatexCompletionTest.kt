@@ -142,42 +142,44 @@ class LatexCompletionTest : BasePlatformTestCase() {
         assertTrue(result.any { it.lookupString == "label2" })
     }
 
-    // TODO: The following can be implemented but not now
-//    fun testCustomLabelAliasCompletion() {
-//        myFixture.configureByText(
-//            LatexFileType,
-//            """
-//            \newcommand{\mylabel}[1]{\label{#1}}
-//
-//            \mylabel{label1}
-//            \label{label2}
-//
-//            ~\ref{la<caret>}
-//            """.trimIndent()
-//        )
-//
-//        val result = myFixture.complete(CompletionType.BASIC)
-//
-//        assertTrue(result.any { it.lookupString == "label1" })
-//    }
+    fun testCustomLabelAliasCompletion() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \newcommand{\mylabel}[1]{\label{#1}}
 
-    // Test only works when no other tests are run
-    // fun testCustomLabelPositionAliasCompletion() {
-    //     myFixture.configureByText(LatexFileType, """
-    //         \newcommand{\mylabel}[2]{\section{#1}\label{sec:#2}}
-    //
-    //         \mylabel{section1}{label1}
-    //         \label{label2}
-    //
-    //         ~\ref{<caret>}
-    //     """.trimIndent())
-    //
-    //     CommandManager.updateAliases(Magic.Command.labelDefinition, project)
-    //     val result = myFixture.complete(CompletionType.BASIC)
-    //
-    //     assertEquals(2, result.size)
-    //     assertTrue(result.any { it.lookupString == "label1" })
-    //     assertFalse(result.any { it.lookupString == "section1" })
-    //     assertFalse(result.any { it.lookupString == "sec:#2" })
-    // }
+            \mylabel{label1}
+            \label{label2}
+
+            ~\ref{la<caret>}
+            """.trimIndent()
+        )
+        myFixture.updateCommandDef()
+
+        val result = myFixture.complete(CompletionType.BASIC)
+
+        assertTrue(result.any { it.lookupString == "label1" })
+    }
+
+    fun testCustomLabelPositionAliasCompletion() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+             \newcommand{\mylabel}[2]{\section{#1}\label{sec:#2}}
+
+             \mylabel{section1}{label1}
+             \label{label2}
+
+             ~\ref{<caret>}
+            """.trimIndent()
+        )
+
+        myFixture.updateCommandDef()
+        val result = myFixture.complete(CompletionType.BASIC)
+
+        assertEquals(2, result.size)
+        assertTrue(result.any { it.lookupString == "label1" })
+        assertFalse(result.any { it.lookupString == "section1" })
+        assertFalse(result.any { it.lookupString == "sec:#2" })
+    }
 }

@@ -12,6 +12,7 @@ import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
+import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil.isInCommandDefinition
 import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
 
 /**
@@ -82,6 +83,8 @@ object LatexLabelUtil {
      * @return The parameter text containing the label, or null if not found.
      */
     fun extractLabelParamInCommand(element: LatexCommands, customDef: Boolean, providedSemantics: LSemanticCommand? = null): PsiElement? {
+        // Ignore \labels in command definitions because we should always resolve to the command containing the definition
+        if (element.isInCommandDefinition()) return null
         val nameWithSlash = element.nameWithSlash
         if (nameWithSlash in CommandMagic.labels) {
             return element.firstRequiredParameterText()
