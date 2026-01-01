@@ -75,6 +75,7 @@ class LatexGlossaryCompletionTest : BasePlatformTestCase() {
         myFixture.configureByFiles("LoadExternalGlossary.tex", "glossar.tex")
 
         myFixture.updateFilesets()
+        myFixture.updateCommandDef()
 
         // when
         val result = myFixture.complete(CompletionType.BASIC)
