@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.inspections.latex.probablebugs.packages
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.testutils.writeCommand
+import nl.hannahsten.texifyidea.updateFilesets
 
 class LatexPackageNameDoesNotMatchFileNameInspectionTest : BasePlatformTestCase() {
 
@@ -41,26 +42,15 @@ class LatexPackageNameDoesNotMatchFileNameInspectionTest : BasePlatformTestCase(
         )
     }
 
-    // TODO(TEX-213) Fix tests using file set cache
-//    fun testNoWarnings() {
-//        try {
-//            myFixture.configureByFilesWithMockCache("pkg/secondpackage.sty", "main.tex")
-//            myFixture.checkHighlighting()
-//        }
-//        finally {
-//            clearAllMocks()
-//            unmockkAll()
-//        }
-//    }
-//
-//    fun testSubdirWarnings() {
-//        try {
-//            myFixture.configureByFilesWithMockCache("pkg/mypackage.sty", "main.tex")
-//            myFixture.checkHighlighting()
-//        }
-//        finally {
-//            clearAllMocks()
-//            unmockkAll()
-//        }
-//    }
+    fun testNoWarnings() {
+        myFixture.configureByFiles("pkg/secondpackage.sty", "main.tex")
+        myFixture.updateFilesets()
+        myFixture.checkHighlighting()
+    }
+
+    fun testSubdirWarnings() {
+        myFixture.configureByFiles("pkg/mypackage.sty", "main.tex")
+        myFixture.updateFilesets()
+        myFixture.checkHighlighting()
+    }
 }

@@ -13,8 +13,11 @@ import nl.hannahsten.texifyidea.lang.LatexContextIntro
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.merge
+import nl.hannahsten.texifyidea.util.overlaps
 import nl.hannahsten.texifyidea.util.parser.*
+import nl.hannahsten.texifyidea.util.substringOrNull
+import nl.hannahsten.texifyidea.util.toTextRange
 
 /**
  * Explains to Grazie which psi elements contain text and which don't.
@@ -31,7 +34,6 @@ class LatexTextExtractor : TextExtractor() {
     }
 
     fun buildTextContent(root: LatexContent): TextContent? {
-        // TODO: Performance
         // Since Grazie works by first checking leaf elements, and if it gets null tries one level higher, we cannot return anything (e.g. literal for a command, comment for comments) other than LatexContent because then LatexContent itself will not be used as a root.
         // However, we do need it as a root because we need to filter out certain things like inline math ourselves, so that we can make sure all the whitespace around ignored items is correct.
         val domain = TextContent.TextDomain.PLAIN_TEXT
@@ -56,7 +58,6 @@ class LatexTextExtractor : TextExtractor() {
      * Note: IntRange has an inclusive end.
      */
     fun getStealthyRanges(root: PsiElement): List<IntRange> {
-        // TODO: performance
         // Getting text takes time, so we only do it once
         val rootText = root.text
 
@@ -73,7 +74,7 @@ class LatexTextExtractor : TextExtractor() {
             // Even commands which have no text as argument, for example certain reference commands like autoref, may need to be kept in to get correct punctuation
             .filter { text ->
                 if (text is LatexCommands) {
-                    isUserDefinedTextCommand(text.name ?: return@filter false, text.project)
+                    false // previously we checked if the command was a user-defined command and if the definition text had any known text commands, see 62c8e9f0afe22f8bef0cd73282a5af84a24531f7
                 }
                 else {
                     !hasNonTextArgument(text.firstParentOfType(LatexCommands::class)?.name ?: return@filter true, text.project)
@@ -150,15 +151,6 @@ class LatexTextExtractor : TextExtractor() {
             (intro is LatexContextIntro.Assign && hasNonTextContext(intro.contexts)) ||
                 intro is LatexContextIntro.Modify
         }
-    }
-
-    /**
-     * Maybe it is a user defined command which contains text.
-     * Special case: if the command does not have parameters but the definition contains a text command, we assume the command itself will fit into the sentence (as we can't do a text replacement before sending to Grazie).
-     */
-    private fun isUserDefinedTextCommand(commandName: String, project: Project): Boolean {
-        // TODO: we will re-implement this later
-        return false
     }
 
     private fun PsiElement.isNotInSquareBrackets() = parents().find { it is LatexGroup || it is LatexOptionalParam }
