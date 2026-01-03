@@ -5,8 +5,9 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.lang.LatexContexts
-import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.psi.LatexCommandWithParams
+import nl.hannahsten.texifyidea.psi.LatexRequiredParam
+import nl.hannahsten.texifyidea.psi.MyPsiRecursiveWalker
 import kotlin.reflect.KClass
 
 /*
@@ -60,6 +61,7 @@ inline fun PsiElement.traverseParents(action: (PsiElement) -> Unit) {
 /**
  * Determines whether any parent of this PsiElement matches the given predicate.
  */
+@Suppress("unused")
 inline fun PsiElement.anyParent(predicate: (PsiElement) -> Boolean): Boolean {
     traverseParents {
         if (predicate(it)) {
@@ -86,6 +88,7 @@ fun PsiElement.startOffsetInAncestor(ancestor: PsiElement): Int {
 /**
  * Returns the text range of this PsiElement in the given ancestor, or null if the ancestor is not a parent of this PsiElement.
  */
+@Suppress("unused")
 fun PsiElement.textRangeInAncestor(ancestor: PsiElement): TextRange? {
     // If the ancestor is not a parent, return null
     val startOffset = this.startOffsetInAncestor(ancestor)
@@ -332,6 +335,7 @@ fun <R : Any, C : MutableCollection<R>> PsiElement.collectSubtreeTo(collection: 
  * If you know the PSI structure, then you can set a depth limit to improve performance, especially for large PSI trees.
  *
  */
+@Suppress("unused")
 fun PsiElement.collectSubtree(depth: Int, predicate: (PsiElement) -> Boolean): List<PsiElement> {
     // Collect all children of the PsiElement that match the predicate
     return collectSubtreeTo(mutableListOf(), depth) { it.takeIf(predicate) }

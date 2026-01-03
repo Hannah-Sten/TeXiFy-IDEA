@@ -12,10 +12,10 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.psi.LatexRawText
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.caretOffset
 import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.length
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
-import nl.hannahsten.texifyidea.util.parser.hasParent
 import nl.hannahsten.texifyidea.util.parser.inMathContext
 import nl.hannahsten.texifyidea.util.parser.isComment
 import java.util.regex.Matcher
@@ -99,14 +99,6 @@ abstract class TexifyRegexInspection(
          * Get the IntRange that spans the inspectionGroup with the given id.
          */
         fun Matcher.groupRange(groupId: Int): IntRange = start(groupId)..end(groupId)
-
-        /**
-         * Checks if the matched element is a child of a certain PsiElement.
-         */
-        inline fun <reified T : PsiElement> isInElement(matcher: Matcher, file: PsiFile): Boolean {
-            val element = file.findElementAt(matcher.start()) ?: return false
-            return element.hasParent(T::class)
-        }
     }
 
     override fun getDisplayName() = inspectionDisplayName

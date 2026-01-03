@@ -11,7 +11,6 @@ import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectFileIndex
 import com.intellij.openapi.util.Key
-import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.findDirectory
@@ -169,9 +168,11 @@ class LatexLibraryInfo(
     val allIncludedPackageNames: Set<String>,
 ) {
 
+    @Suppress("unused")
     val isPackage: Boolean
         get() = name.isPackageFile
 
+    @Suppress("unused")
     val isClass: Boolean
         get() = name.isClassFile
 
@@ -222,6 +223,7 @@ class LatexLibraryStructureService(
         }
     }
 
+    @Suppress("unused")
     private fun getLibraryName(current: VirtualFile, project: Project): String {
         val fileName = current.name
         if (current.fileType == StyleFileType) {
@@ -306,16 +308,6 @@ class LatexLibraryStructureService(
         val sdkPath = LatexSdkUtil.resolveSdkPath(contextFile, project) ?: return null
         return getOrComputeNow(LibStructureCacheKey(sdkPath, nameWithExt), LIBRARY_FILESET_EXPIRATION_TIME)
     }
-
-    /**
-     * Get library info for a package, using the SDK resolved from the given file context.
-     */
-    fun getLibraryInfo(nameWithExt: String, contextFile: PsiFile): LatexLibraryInfo? = getLibraryInfo(nameWithExt, contextFile.virtualFile)
-
-    /**
-     * Get library info for a package, using project SDK only (no file context).
-     */
-    fun getLibraryInfo(nameWithExt: String): LatexLibraryInfo? = getLibraryInfo(nameWithExt, null as VirtualFile?)
 
     fun getLibraryInfo(lib: LatexLib, contextFile: VirtualFile? = null): LatexLibraryInfo? {
         val fileName = lib.toFileName() ?: return null
@@ -449,20 +441,6 @@ object LatexProjectStructure {
             libraries.addAll(info.allIncludedPackageNames)
         }
 
-        private inline fun processElementsWithPaths0(
-            elements: List<Sequence<Path>>, refInfoList: List<MutableSet<VirtualFile>>,
-            crossinline findFiles: (Path) -> Collection<VirtualFile>
-        ) {
-            for ((paths, refInfo) in elements.zip(refInfoList)) {
-                for (path in paths) {
-                    for (file in findFiles(path)) {
-                        processNext(file)
-                        refInfo.add(file)
-                    }
-                }
-            }
-        }
-
         private inline fun processElementsWithPaths(
             elements: List<Sequence<Path>>, refInfoList: List<MutableSet<VirtualFile>>,
             crossinline findFile: (Path) -> VirtualFile?
@@ -508,18 +486,6 @@ object LatexProjectStructure {
                     }
                 }
             }
-        }
-
-        private fun splitTextAndBuildRanges(text: String, delim: String, startOffset0: Int = 0): List<Pair<TextRange, String>> {
-            val splits = text.split(delim)
-            val result = ArrayList<Pair<TextRange, String>>(splits.size)
-            var startOffset = startOffset0
-            for (s in splits) {
-                val range = TextRange(startOffset, startOffset + s.length)
-                result.add(range to s)
-                startOffset += s.length + delim.length // move the start offset to the next split
-            }
-            return result
         }
 
         private fun pathTextExtraProcessing(
@@ -991,6 +957,7 @@ object LatexProjectStructure {
         return scope
     }
 
+    @Suppress("unused")
     fun getRootfilesFor(file: PsiFile): Set<VirtualFile> {
         val project = file.project
         val virtualFile = file.virtualFile ?: return emptySet()

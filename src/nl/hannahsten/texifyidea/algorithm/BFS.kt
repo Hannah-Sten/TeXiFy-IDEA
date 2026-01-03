@@ -29,6 +29,7 @@ import java.util.*
  *
  * @author Hannah Schellekens
  */
+@Suppress("unused")
 class BFS<N>(startNode: N, private val adjacencyFunction: (N) -> List<N>, endNode: N? = null) : PathAlgorithm<N> {
 
     /**

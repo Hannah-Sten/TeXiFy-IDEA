@@ -60,16 +60,6 @@ object CommandMagic {
         )
     }
 
-    /**
-     * LaTeX commands that increase a counter that can be labeled.
-     */
-    val increasesCounter = CommandNames.run {
-        hashSetOf(
-            CAPTION, CAPTION_OF, CHAPTER, SECTION, SUB_SECTION,
-            ITEM, LSTINPUTLISTING
-        )
-    }
-
     private fun allCommandsWithContext(context: LatexContext): Map<String, LSemanticCommand> = AllPredefined.findCommandsByContext(context).associateBy {
         it.nameWithSlash
     }

@@ -10,6 +10,7 @@ import javax.swing.JComponent
  *
  * Note: We don't currently use this, but keeping it so we don't have to figure it out all over again
  */
+@Suppress("unused")
 class TexifyProjectConfigurable : SearchableConfigurable {
 
     private val projectSettings: TexifyProjectSettings = TexifyProjectSettings()

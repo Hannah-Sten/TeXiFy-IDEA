@@ -60,7 +60,6 @@ class SourcedDefinition(
     enum class DefinitionSource {
         Primitive,
         Predefined,
-        Merged,
         LibraryScan,
         UserDefined
     }
@@ -428,6 +427,7 @@ class WorkingFilesetDefinitionBundle(
  *
  * @author Ezrnest
  */
+@Suppress("unused")
 @Service(Service.Level.PROJECT)
 class LatexDefinitionService(
     val project: Project, scope: CoroutineScope

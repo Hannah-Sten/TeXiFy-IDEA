@@ -11,13 +11,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
  */
 class GotoSectionDefinitionSymbolContributor : TexifyGotoSymbolBase<LatexCommands>() {
 
-    //    override fun Project.findElements() = findSectionMarkers()
-//
-//    override fun LatexCommands.extractName() = requiredParameter(0)
-//
-//    override fun LatexCommands.createNavigationItem() = NavigationItemUtil.createSectionMarkerNavigationItem(this)
     override fun processElements(scope: GlobalSearchScope, filter: IdFilter?, processor: Processor<LatexCommands>) {
-//        NewSpecialCommandsIndex.
     }
 
     override fun extractName(item: LatexCommands): String? = item.requiredParameterText(0)
