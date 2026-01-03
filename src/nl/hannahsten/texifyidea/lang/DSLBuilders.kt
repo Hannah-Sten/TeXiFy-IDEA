@@ -60,6 +60,7 @@ open class DSLLatexBuilderScope {
         namespace = oldDependency
     }
 
+    @Suppress("unused")
     @OptIn(ExperimentalContracts::class)
     inline fun underAnyContext(action: () -> Unit) {
         contract { callsInPlace(action, InvocationKind.EXACTLY_ONCE) }

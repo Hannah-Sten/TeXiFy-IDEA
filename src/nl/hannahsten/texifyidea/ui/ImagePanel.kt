@@ -14,8 +14,6 @@ import javax.swing.JPanel
 internal class ImagePanel : JPanel() {
 
     companion object {
-
-        private const val SERIAL_VERSION_UID = 1L
     }
 
     private var image: Image? = null

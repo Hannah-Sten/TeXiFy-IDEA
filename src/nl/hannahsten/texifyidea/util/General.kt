@@ -17,6 +17,7 @@ val Boolean.int: Int
     get() = if (this) 1 else 0
 
 // Copied from grazie utils
+@Suppress("unused")
 fun Boolean?.orTrue() = this ?: true
 fun Boolean?.orFalse() = this ?: false
 

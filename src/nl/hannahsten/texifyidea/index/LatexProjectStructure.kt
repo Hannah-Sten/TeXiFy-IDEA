@@ -27,7 +27,6 @@ import nl.hannahsten.texifyidea.action.debug.SimplePerformanceTracker
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexGraphicsPathProvider.getGraphicsPaths
 import nl.hannahsten.texifyidea.file.ClassFileType
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.file.LatexSourceFileType
 import nl.hannahsten.texifyidea.file.StyleFileType
 import nl.hannahsten.texifyidea.index.file.LatexRegexBasedIndex
 import nl.hannahsten.texifyidea.lang.LatexContexts
@@ -94,8 +93,6 @@ data class Fileset(
         result = 31 * result + files.hashCode()
         return result
     }
-
-    fun projectFileScope(project: Project): GlobalSearchScope = allFileScope.intersectWith(project.contentSearchScope)
 
     fun texFileScope(project: Project): GlobalSearchScope = allFileScope.restrictedByFileTypes(LatexFileType).intersectWith(project.contentSearchScope)
 }
@@ -375,13 +372,6 @@ object LatexProjectStructure {
             .forEach { rootFiles.add(it) }
 
         return rootFiles
-    }
-
-    fun isLatexLibraryFile(file: VirtualFile, project: Project): Boolean {
-        // Check if the file is a library file, e.g. in the texlive distribution
-        val filetype = file.fileType
-        return (filetype == StyleFileType || filetype == ClassFileType || filetype == LatexSourceFileType) &&
-            !ProjectFileIndex.getInstance(project).isInProject(file)
     }
 
     private open class ProjectInfo(

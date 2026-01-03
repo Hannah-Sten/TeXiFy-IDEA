@@ -75,6 +75,7 @@ abstract class MyPsiRecursiveWalker(private var depth: Int) : PsiRecursiveElemen
         isWalkingStopped = true
     }
 
+    @Suppress("unused")
     protected fun stopGoingDown() {
         goDown = false
     }

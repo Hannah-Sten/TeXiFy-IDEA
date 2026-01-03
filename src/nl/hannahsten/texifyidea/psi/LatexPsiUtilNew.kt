@@ -140,7 +140,7 @@ inline fun PsiElement.traverseContextualSiblingsTemplate(action: (PsiElement) ->
  *  @see [traverseContextualSiblingsNext]
  *  @see [traverseContextualSiblingsPrev]
  */
-fun <T : Any> PsiElement.contextualSiblings(): List<LatexComposite> {
+fun PsiElement.contextualSiblings(): List<LatexComposite> {
     // Find the contextual siblings of the current element in the PSI tree.
     // The current element is surrounded by `no_math_content`, so we should go an extra level up
     val parent = contextualSurrounder() ?: return emptyList()
@@ -295,11 +295,4 @@ fun LatexCommandWithParams.getNthRequiredParameter(n: Int): LatexRequiredParam? 
         it is LatexParameter && it.requiredParam != null
     } as? LatexParameter
     return parameter?.requiredParam
-}
-
-fun LatexCommandWithParams.getNthOptionalParameter(n: Int): LatexOptionalParam? {
-    val parameter = getNthChildThat(n) {
-        it is LatexParameter && it.optionalParam != null
-    } as? LatexParameter
-    return parameter?.optionalParam
 }

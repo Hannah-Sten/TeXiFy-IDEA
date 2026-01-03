@@ -193,7 +193,6 @@ object LatexPackageLocation : AbstractBlockingCacheService<SdkPath, Map<String, 
 
         val sdkPath = LatexSdkUtil.resolveSdkPath(file, project) ?: return emptySet()
         // Only return cached values, don't trigger computation here
-        // (computation happens via getPackageLocation)
         return getValueOrNull(sdkPath)?.keys ?: emptySet()
     }
 
@@ -203,12 +202,4 @@ object LatexPackageLocation : AbstractBlockingCacheService<SdkPath, Map<String, 
      * @param psiFile The file context to determine which SDK to use.
      */
     fun getAllPackageFileNames(psiFile: PsiFile): Set<String> = getAllPackageFileNames(psiFile.virtualFile, psiFile.project)
-
-    /**
-     * Get all known package names in the LaTeX installation.
-     * Uses project SDK only (no file context).
-     *
-     * @param project The current project.
-     */
-    fun getAllPackageFileNames(project: Project): Set<String> = getAllPackageFileNames(null, project)
 }

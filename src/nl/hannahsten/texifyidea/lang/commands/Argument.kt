@@ -1,8 +1,5 @@
 package nl.hannahsten.texifyidea.lang.commands
 
-import com.intellij.codeInsight.completion.CompletionParameters
-import com.intellij.codeInsight.completion.CompletionProvider
-
 /**
  * @author Sten Wessel
  */
@@ -13,14 +10,7 @@ abstract class Argument @JvmOverloads protected constructor(val name: String, va
     /**
      * @author Hannah Schellekens, Sten Wessel
      */
-    enum class Type(
-
-        /**
-         * Provides the autocomplete options for the argument of this type.
-         * `null` for no autocomplete options.
-         */
-        val completionProvider: CompletionProvider<CompletionParameters>? = null
-    ) {
+    enum class Type {
 
         /**
          * Can contain any kind of argument content.

@@ -172,6 +172,7 @@ sealed interface LatexContextIntro {
 
         fun assign(ctx: LContextSet): LatexContextIntro = Assign(ctx)
 
+        @Suppress("unused")
         fun buildContext(introList: List<LatexContextIntro>, outerCtx: LContextSet = emptySet()): LContextSet = introList.fold(outerCtx) { ctx, intro ->
             intro.applyTo(ctx)
         }

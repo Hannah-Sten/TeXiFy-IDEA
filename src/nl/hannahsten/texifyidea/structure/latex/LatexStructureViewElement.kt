@@ -9,7 +9,6 @@ import com.intellij.openapi.roots.ProjectFileIndex
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiNameIdentifierOwner
-import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.file.*
@@ -33,9 +32,7 @@ import java.util.*
  */
 class LatexStructureViewElement(private val element: PsiElement) : StructureViewTreeElement, SortableTreeElement {
 
-    object Cache {
-        val includedFiles = mutableMapOf<SmartPsiElementPointer<LatexCommands>, List<SmartPsiElementPointer<PsiFile>>>()
-    }
+    object Cache
 
     // Get document class, this can take over one second but does not change frequently, and is only used for the correct sectioning levels, so cache it
     val docClass: String

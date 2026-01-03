@@ -35,12 +35,6 @@ class SimpleFileInputContext(
 ) : SimpleLatexContext(name), ILFileInputContext
 
 /**
- * A context that describes a literal, for example `cc` in `\begin{tabular}{cc}`.
- * This is used to provide autocompletion for text content.
- */
-interface LLiteralContext : LatexContext
-
-/**
  * Some predefined contexts that are used in LaTeX files.
  *
  * @author Ezrnest
@@ -64,11 +58,6 @@ object LatexContexts {
     val ClassName = SimpleLatexContext("class")
 
     val Preamble = SimpleLatexContext("preamble")
-
-    /**
-     * This context should never be introduced, so command under this context will never be suggested.
-     */
-    val Nothing = SimpleLatexContext("nothing")
 
     /**
      * Definitions of labels, such as `\label{...}`.
