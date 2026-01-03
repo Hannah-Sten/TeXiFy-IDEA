@@ -12,14 +12,18 @@ import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
 import nl.hannahsten.texifyidea.index.stub.optionalParamAt
 import nl.hannahsten.texifyidea.index.stub.requiredParamAt
 import nl.hannahsten.texifyidea.index.stub.requiredParams
+import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.reference.LatexCommandDefinitionReference
 import nl.hannahsten.texifyidea.structure.latex.LatexPresentationFactory
-import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.parser.*
+import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil.resolveContextUpward
+import nl.hannahsten.texifyidea.util.parser.extractUrlReferences
+import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
+import nl.hannahsten.texifyidea.util.parser.forEachDirectChild
+import nl.hannahsten.texifyidea.util.parser.getOptionalParameterMapFromParameters
 
 /**
  * This class is a mixin for LatexCommandsImpl.
@@ -73,10 +77,9 @@ abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStu
         val result = mutableListOf<PsiReference>()
         // If it is a reference to a file
         result.addAll(InputFileReference.getFileArgumentsReferences(this))
-        val firstParam = requiredParameters().getOrNull(0)
-        if (CommandMagic.urls.contains(this.getName()) && firstParam != null) {
-            result.addAll(this.extractUrlReferences(firstParam))
-        }
+
+        result.addAll(this.parameterList.mapNotNull { it.requiredParam }.filter { resolveContextUpward(it).contains(LatexContexts.URL) }.flatMap { this.extractUrlReferences(it) })
+
         result.add(LatexCommandDefinitionReference(this))
         // We deal with the command itself, not its parameters
         // and the user is interested in the location of the command definition

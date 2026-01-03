@@ -219,9 +219,7 @@ val commandTokens = setOf(LatexTypes.COMMAND_TOKEN, LatexTypes.LEFT, LatexTypes.
 /**
  * Checks whether the psi element is part of a comment or not.
  */
-fun PsiElement.isComment(): Boolean {
-    return this is PsiComment // TODO: use new context aware functionalities but reuse the resolved context, don't resolve here
-}
+fun PsiElement.isComment(): Boolean = this is PsiComment
 
 fun PsiElement.isLatexOrBibtex() = language == LatexLanguage || language == BibtexLanguage
 

@@ -8,39 +8,41 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.createSmartPointer
 import com.intellij.psi.search.searches.ReferencesSearch
+import nl.hannahsten.texifyidea.index.DefinitionBundle
+import nl.hannahsten.texifyidea.inspections.AbstractTexifyContextAwareInspection
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.SafeDeleteFix
-import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
+import nl.hannahsten.texifyidea.lang.LContextSet
+import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
-import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexParameterText
-import nl.hannahsten.texifyidea.psi.traverseCommands
+import nl.hannahsten.texifyidea.psi.*
+import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
-import nl.hannahsten.texifyidea.util.isFigureLabel
 import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
 import java.util.*
 
-open class LatexFigureNotReferencedInspection : TexifyInspectionBase() {
-
-    override val inspectionGroup: InsightGroup = InsightGroup.LATEX
-
-    override val inspectionId: String = "FigureNotReferenced"
+open class LatexFigureNotReferencedInspection : AbstractTexifyContextAwareInspection(
+    inspectionId = "FigureNotReferenced",
+    inspectionGroup = InsightGroup.LATEX,
+    applicableContexts = null,
+    excludedContexts = setOf(),
+    skipChildrenInContext = setOf(LatexContexts.Comment, LatexContexts.InsideDefinition),
+) {
 
     override val outerSuppressionScopes = EnumSet.of(MagicCommentScope.GROUP)!!
 
     override fun getDisplayName(): String = "Figure not referenced"
 
-    override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
-        val figureLabels = file.traverseCommands().filter { it.isFigureLabel() }
-        val descriptors = descriptorList()
-        for (label in figureLabels) {
-            // Remove labels that are referenced in the file
-            val labelText = label.findFirstChildTyped<LatexParameterText>() ?: continue
-            if(ReferencesSearch.search(labelText).none()) {
-                descriptors.add(createDescriptor(manager, label, isOntheFly) ?: continue)
-            }
+    override fun inspectElement(element: PsiElement, contexts: LContextSet, bundle: DefinitionBundle, file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {
+        if (element !is LatexEnvironment) return
+        if (element.getEnvironmentName() !in EnvironmentMagic.figures) return
+
+        // Does not yet support other labels like defined in parameters
+        val label = element.getLabelCommand() ?: return
+        val labelText = label.findFirstChildTyped<LatexParameterText>() ?: return
+        if (ReferencesSearch.search(labelText).none()) {
+            descriptors.add(createDescriptor(manager, label, isOnTheFly) ?: return)
         }
-        return descriptors
     }
 
     private fun createDescriptor(manager: InspectionManager, label: LatexCommands, isOntheFly: Boolean): ProblemDescriptor? =
