@@ -109,10 +109,7 @@ sealed interface LatexContextIntro {
 
         override fun introduces(candidate: LatexContext): Boolean = contexts.contains(candidate)
 
-        override fun introducesAny(candidates: LContextSet): Boolean {
-            //
-            return contexts.existsIntersection(candidates)
-        }
+        override fun introducesAny(candidates: LContextSet): Boolean = contexts.existsIntersection(candidates)
 
         override fun toString(): String = "Assign(${contexts.joinToString(",") { it.display }})"
 

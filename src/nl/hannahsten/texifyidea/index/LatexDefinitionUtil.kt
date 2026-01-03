@@ -15,6 +15,7 @@ import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
 import nl.hannahsten.texifyidea.index.stub.requiredParamAt
 import nl.hannahsten.texifyidea.lang.*
 import nl.hannahsten.texifyidea.lang.predefined.PredefinedCmdDefinitions
+import nl.hannahsten.texifyidea.lang.predefined.PredefinedCmdGeneric
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
@@ -319,6 +320,15 @@ object LatexDefinitionUtil {
 
     private val parameterPlaceholderRegex = Regex("#[1-9]")
 
+    /**
+     *
+     *
+     * @param codeElement A definition of a command/environment
+     * @param argCount Number of arguments of the command/environment being defined as [codeElement]
+     * @param lookup Look up known semantics
+     * @param contextIntroArr For each argument, what contexts are introduced
+     * @return ?
+     */
     private fun guessArgumentContextIntroAndExitState(
         codeElement: PsiElement, argCount: Int, lookup: LatexSemanticsLookup, contextIntroArr: Array<LatexContextIntro?> = arrayOfNulls(argCount)
     ): Pair<Array<LatexContextIntro?>, List<LatexContextIntro>> {
@@ -350,6 +360,7 @@ object LatexDefinitionUtil {
 
     private val namesOfEnvDefRegular = buildSet {
         PredefinedCmdDefinitions.regularDefinitionOfEnvironment.mapTo(this) { it.name }
+        PredefinedCmdGeneric.listingsDefinitionCommands.mapTo(this) { it.name }
     }
     private val namesOfEnvDefArgSpec = buildSet {
         PredefinedCmdDefinitions.argSpecDefinitionOfEnvironment.mapTo(this) { it.name }
