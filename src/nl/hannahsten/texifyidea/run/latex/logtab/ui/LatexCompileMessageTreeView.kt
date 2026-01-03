@@ -55,6 +55,7 @@ class LatexCompileMessageTreeView(
     /**
      * Get selected elements.
      */
+    @Suppress("unused")
     private fun getSelectedElements(): List<ErrorTreeElement> {
         val selectedRows = myTree.selectionRows ?: return emptyList()
         val tree = errorViewStructure

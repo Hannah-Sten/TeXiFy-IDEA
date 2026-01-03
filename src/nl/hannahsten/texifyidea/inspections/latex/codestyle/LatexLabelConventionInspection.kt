@@ -143,8 +143,6 @@ class LatexLabelConventionInspection : TexifyInspectionBase() {
         return descriptors
     }
 
-    private fun filterLabelParameterTextOrNull(e: PsiElement): LatexParameterText? = null
-
     private fun checkLabels(
         file: PsiFile, manager: InspectionManager, isOntheFly: Boolean,
         descriptors: MutableList<ProblemDescriptor>

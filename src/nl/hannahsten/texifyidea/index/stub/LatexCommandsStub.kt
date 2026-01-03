@@ -39,9 +39,6 @@ interface LatexCommandsStub : StubElement<LatexCommands>, NamedStub<LatexCommand
 val LatexCommandsStub.requiredParams: List<String>
     get() = parameters.mapNotNull { if (it.type == LatexParameterStub.REQUIRED) it.content else null }
 
-val LatexCommandsStub.optionalParams: List<String>
-    get() = parameters.mapNotNull { if (it.type == LatexParameterStub.OPTIONAL) it.content else null }
-
 fun LatexCommandsStub.parameterOfTypeAt(index: Int, type: Int): String? {
     var pos = 0
     for (param in parameters) {

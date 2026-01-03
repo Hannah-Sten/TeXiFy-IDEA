@@ -259,6 +259,7 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
 
             visitPossibleSectionCommand(element, name)
             visitPossibleSymbol(element, name)
+            visitPossibleFootnoteCommand(element, name)
 
             element.acceptChildren(this)
         }
@@ -317,7 +318,7 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
                 return
             }
 
-            endRegionRegex.find(text)?.let { match ->
+            endRegionRegex.find(text)?.let { _ ->
                 endRegionCommand(o)
                 return
             }

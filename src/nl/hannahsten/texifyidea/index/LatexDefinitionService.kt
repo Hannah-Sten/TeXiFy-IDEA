@@ -14,12 +14,7 @@ import kotlinx.coroutines.launch
 import nl.hannahsten.texifyidea.action.debug.SimplePerformanceTracker
 import nl.hannahsten.texifyidea.index.SourcedDefinition.DefinitionSource
 import nl.hannahsten.texifyidea.index.file.LatexRegexBasedIndex
-import nl.hannahsten.texifyidea.lang.CachedLatexSemanticsLookup
-import nl.hannahsten.texifyidea.lang.LSemanticCommand
-import nl.hannahsten.texifyidea.lang.LSemanticEntity
-import nl.hannahsten.texifyidea.lang.LSemanticEnv
-import nl.hannahsten.texifyidea.lang.LatexLib
-import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
+import nl.hannahsten.texifyidea.lang.*
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.lang.predefined.PredefinedPrimitives
 import nl.hannahsten.texifyidea.psi.LatexCommands
@@ -65,7 +60,6 @@ class SourcedDefinition(
     enum class DefinitionSource {
         Primitive,
         Predefined,
-        Merged,
         LibraryScan,
         UserDefined
     }
@@ -164,6 +158,7 @@ data class LibDefinitionCacheKey(val sdkPath: SdkPath, val libName: LatexLib)
  *
  * @author Ezrnest
  */
+@Suppress("unused")
 @Service(Service.Level.PROJECT)
 class LatexLibraryDefinitionService(
     val project: Project
@@ -432,12 +427,13 @@ class WorkingFilesetDefinitionBundle(
  *
  * @author Ezrnest
  */
+@Suppress("unused")
 @Service(Service.Level.PROJECT)
 class LatexDefinitionService(
     val project: Project, scope: CoroutineScope
 ) : AbstractBackgroundCacheService<Fileset, DefinitionBundle>(scope) {
 
-    private fun computeValue(key: Fileset, oldValue: DefinitionBundle?): DefinitionBundle = performanceTracker.track {
+    private fun computeValue(key: Fileset): DefinitionBundle = performanceTracker.track {
         // packages first
         val packageService = LatexLibraryDefinitionService.getInstance(project)
         val contextFile = key.root
@@ -457,7 +453,7 @@ class LatexDefinitionService(
     }
 
     override suspend fun computeValueSuspend(key: Fileset, oldValue: DefinitionBundle?): DefinitionBundle = smartReadAction(project) {
-        computeValue(key, oldValue)
+        computeValue(key)
     }
 
     fun getDefBundleForFileset(fileset: Fileset): DefinitionBundle = getAndComputeLater(fileset, expirationTime, LatexLibraryDefinitionService.predefinedBaseLibBundle)

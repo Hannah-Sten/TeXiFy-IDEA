@@ -100,9 +100,6 @@ interface Diacritic {
 
             fun fromUnicode(unicode: String): Math? = entries
                 .find { it.unicode == unicode }
-
-            fun fromCommand(command: String): Math? = entries
-                .find { it.command == command }
         }
 
         override fun buildCommand(param: String): String {

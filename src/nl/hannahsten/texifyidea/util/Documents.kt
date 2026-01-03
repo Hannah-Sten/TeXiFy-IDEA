@@ -6,7 +6,6 @@ import com.intellij.openapi.editor.CaretModel
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiElement
 
 /**
  * Gets all the indentation characters of the line of the given lineNumber.
@@ -66,17 +65,6 @@ operator fun Document.set(offset: Int, value: CharSequence) = replaceString(offs
  * @see [Document.replaceString]
  */
 operator fun Document.set(range: IntRange, value: CharSequence) = replaceString(range.first, range.last, value)
-
-/**
- * Deletes the given element from the document.
- *
- * @param element
- *         The element to remove from the document.
- */
-fun Document.deleteElement(element: PsiElement) {
-    val offset = element.textOffset
-    deleteString(offset, offset + element.textLength)
-}
 
 /**
  * Inserts a string into the document and moves the caret to the end of the inserted string.

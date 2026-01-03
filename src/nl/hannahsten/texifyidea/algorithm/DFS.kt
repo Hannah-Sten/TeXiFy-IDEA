@@ -7,6 +7,7 @@ import java.util.*
  *
  * @author Hannah Schellekens
  */
+@Suppress("unused")
 open class DFS<Node>(
 
     /**

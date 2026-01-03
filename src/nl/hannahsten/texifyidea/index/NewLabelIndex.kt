@@ -47,6 +47,7 @@ class NewLabelsIndexEx : LatexCompositeTransformedStubIndex<StubElement<LatexCom
         stub.label?.let { sink.occurrence(key, it) }
     }
 
+    @Suppress("unused")
     fun getAllLabels(project: Project): Set<String> = getAllKeys(project)
 
     fun getAllLabels(filesetScope: GlobalSearchScope): Set<String> = getAllKeys(filesetScope)

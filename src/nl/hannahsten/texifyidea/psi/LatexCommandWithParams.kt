@@ -43,11 +43,6 @@ interface LatexCommandWithParams : LatexComposite {
         return null
     }
 
-    /**
-     * Whether this command has any parameters, either required or optional.
-     */
-    fun hasParameter(): Boolean = firstParameter() != null
-
     fun hasRequiredParameter(): Boolean = firstRequiredParameter() != null
 
     /**

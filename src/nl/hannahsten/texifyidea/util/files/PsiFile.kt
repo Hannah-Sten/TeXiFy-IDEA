@@ -43,12 +43,6 @@ fun PsiFile.isStyleFile() = virtualFile?.extension == "sty"
 fun PsiFile.isClassFile() = virtualFile?.extension == "cls"
 
 /**
- * Looks up the argument that is in the documentclass command, and if the file is found in the project return it.
- * Note this explicitly does not find files elsewhere on the system.
- */
-fun PsiFile.documentClassFileInProject() = findFile("${documentClass()}.cls", supportsAnyExtension = true)
-
-/**
  * If the file has a top-level \documentclass command, return the class name, null otherwise.
  */
 fun PsiFile.documentClass(): String? = traverseCommands(4).firstOrNull { it.nameWithSlash == "\\documentclass" }?.requiredParameterText(0)

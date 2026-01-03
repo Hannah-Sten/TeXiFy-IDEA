@@ -10,8 +10,6 @@ exclude: # Some of these are valid inspections but not important or accurate eno
   - name: HtmlRequiredLangAttribute
   - name: MemberVisibilityCanBePrivate
   - name: UnstableApiUsage
-  - name: unused
-  - name: UnusedSymbol
   - name: XmlHighlighting
   - name: XmlUnusedNamespaceDeclaration
   - name: All
@@ -34,10 +32,8 @@ exclude: # Some of these are valid inspections but not important or accurate eno
   # Qodana false positives:
   - name: EmptyMethod
   - name: SameReturnValue
-  - name: UnusedProperty
   - name: EditorConfigKeyCorrectness
   - name: KotlinConstantConditions
-  - name: UnusedReceiverParameter
   - name: RedundantNullableReturnType
   - name: UselessCallOnCollection
   - name: KDocUnresolvedReference

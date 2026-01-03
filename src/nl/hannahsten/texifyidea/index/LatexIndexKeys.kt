@@ -28,19 +28,11 @@ object LatexStubIndexKeys {
     val MAGIC_COMMENTS_KEY =
         StubIndexKey.createIndexKey<String, LatexMagicComment>("nl.hannahsten.texifyidea.magiccomment")
 
-    // The following keys are not used
-
     val ENVIRONMENTS =
         StubIndexKey.createIndexKey<String, LatexEnvironment>("nl.hannahsten.texifyidea.environments")
-
-    val LABELED_COMMANDS_KEY =
-        StubIndexKey.createIndexKey<String, LatexCommands>("nl.hannahsten.texifyidea.parameterlabeledcommands")
-    val GLOSSARY_ENTRIES_KEY =
-        StubIndexKey.createIndexKey<String, LatexCommands>("nl.hannahsten.texifyidea.glossaryentries")
 }
 
 object LatexFileBasedIndexKeys {
-    val EXTERNAL_COMMANDS: ID<String, String> = ID.create("nl.hannahsten.texifyidea.external.commands")
 
     val DTX_DEFINITIONS: ID<String, List<LatexSimpleDefinition>> = ID.create("nl.hannahsten.texifyidea.dtx.definitions")
 

@@ -24,6 +24,7 @@ import kotlin.io.path.*
  * @author Sten Wessel, Li Ernest
  * @since b0.4
  */
+@Suppress("unused")
 object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
 
     override val isFocusSupported: Boolean

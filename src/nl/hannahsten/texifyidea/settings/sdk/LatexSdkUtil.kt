@@ -96,13 +96,6 @@ object LatexSdkUtil {
         return isTlgmrAvailable!!
     }
 
-    /**
-     * Whether the user does not have MiKTeX or TeX Live, but does have the miktex docker image available.
-     * In this case we assume the user wants to use Dockerized MiKTeX.
-     */
-    private fun defaultIsDockerMiktex() =
-        (!isMiktexAvailable && !TexliveSdk.Cache.isAvailable && DockerSdk.Availability.isAvailable)
-
     fun isAvailable(type: LatexDistributionType, project: Project): Boolean {
         if (type == LatexDistributionType.PROJECT_SDK && getLatexProjectSdk(project) != null) return true
         if (type == LatexDistributionType.MODULE_SDK && getAllLatexSdks().isNotEmpty()) return true

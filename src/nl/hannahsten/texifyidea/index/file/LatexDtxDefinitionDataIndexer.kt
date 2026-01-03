@@ -233,10 +233,6 @@ object LatexDtxDefinitionDataIndexer : DataIndexer<String, List<LatexSimpleDefin
         return result
     }
 
-    private val regexOneLineArgs = """
-        \\(?<type>(marg|oarg|parg|meta))\{(?<name>[^}]+)}
-    """.trimIndent().toRegex()
-
     private val parameterSuffix = """
         \s*(\\star|\*)?(?<params>(\s*\\(marg|oarg|parg|meta)\{[^}]+})+)
     """.trimIndent()

@@ -49,10 +49,6 @@ object AllPredefined : CachedLatexSemanticsLookup() {
 
     fun findAll(name: String): List<LSemanticEntity> = nameToEntities[name] ?: emptyList()
 
-    fun findAllCommand(name: String): List<LSemanticCommand> = findAll(name).filterIsInstance<LSemanticCommand>()
-
-    fun findAllEnvironment(name: String): List<LSemanticEnv> = findAll(name).filterIsInstance<LSemanticEnv>()
-
     private val displayToCommand: Map<String, List<LSemanticCommand>> by lazy {
         buildMap<String, MutableList<LSemanticCommand>> {
             for (entity in allCommands) {

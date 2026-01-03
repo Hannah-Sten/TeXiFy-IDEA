@@ -15,6 +15,7 @@ import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.lang.predefined.EnvironmentNames
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil.getDefinedCommandName
 
 /**
  * Finds the [LatexEndCommand] that matches the begin command.
@@ -194,25 +195,14 @@ object LatexPsiUtil {
         return nextCommand.name
     }
 
+    /**
+     * Use [getDefinedCommandName] if possible, since it can use stub info.
+     */
     fun getDefinedCommandElement(cmd: LatexCommands): LatexCommands? {
         cmd.firstRequiredParameter()?.let {
             return it.findFirstChildTyped<LatexCommands>()
         }
         return cmd.nextContextualSibling { true } as? LatexCommands
-    }
-
-    /**
-     * Check if the command is inside a definition command as a parameter, like `\newcommand{\cmd}{}`.
-     */
-    private fun isInsideNewCommandDef(cmd: LatexComposite): Boolean {
-        // command - parameter - required_parameter - required_param_content - parameter_text - command
-        //                                                                                    - NormalTextWord
-        // we leave some space
-        val parentParameter = cmd.firstParentOfType<LatexParameter>(5) ?: return false
-        val defCommand = parentParameter.firstParentOfType<LatexCommands>(1) ?: return false
-        val name = defCommand.name
-        if (name !in CommandMagic.definitions) return false
-        return defCommand.firstParameter() === parentParameter // they should be exactly the same object
     }
 
     private fun isInsidePlainDef(cmd: PsiElement): Boolean {
@@ -283,6 +273,7 @@ object LatexPsiUtil {
         }
     }
 
+    @Suppress("unused")
     inline fun processArgumentsWithSemantics(cmd: LatexCommandsStub, semantics: LSemanticCommand, action: (LatexParameterStub, LArgument) -> Unit) {
         val arguments = semantics.arguments
         var argIdx = 0
@@ -413,9 +404,10 @@ object LatexPsiUtil {
     /**
      * Check if the given element is nested inside a command definition (maybe deeply).
      */
-    fun isInsideDefinition(element: PsiElement): Boolean {
-        val bundle = LatexDefinitionService.getBundleFor(element)
-        return isInsideDefinition(element, bundle)
+    @Suppress("unused")
+    fun PsiElement.isInsideDefinition(): Boolean {
+        val bundle = LatexDefinitionService.getBundleFor(this)
+        return isInsideDefinition(this, bundle)
     }
 
     /**

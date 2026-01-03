@@ -4,12 +4,7 @@ import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.util.indexing.DefaultFileTypeSpecificInputFilter
-import com.intellij.util.indexing.FileBasedIndex
-import com.intellij.util.indexing.FileContent
-import com.intellij.util.indexing.ID
-import com.intellij.util.indexing.SingleEntryFileBasedIndexExtension
-import com.intellij.util.indexing.SingleEntryIndexer
+import com.intellij.util.indexing.*
 import com.intellij.util.io.DataExternalizer
 import com.intellij.util.io.externalizer.StringCollectionExternalizer.STRING_LIST_EXTERNALIZER
 import nl.hannahsten.texifyidea.file.ClassFileType
@@ -142,6 +137,7 @@ object LatexRegexBasedIndex {
         )
     }
 
+    @Suppress("unused")
     fun getDtxDefinitions(lib: LatexLib, project: Project): List<LatexSimpleDefinition> {
         if (DumbService.isDumb(project)) return emptyList()
         val fIndex = FileBasedIndex.getInstance()

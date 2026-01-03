@@ -22,7 +22,6 @@ import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.Transferable
 import java.io.File
 import java.io.IOException
-import java.nio.charset.StandardCharsets
 import java.nio.file.Path
 import java.util.regex.Pattern
 import kotlin.io.path.pathString
@@ -104,23 +103,6 @@ fun Module.createExcludedDir(path: String) {
  * @return The PSI file matching the document, or `null` when the PSI file could not be found.
  */
 fun Document.psiFile(project: Project): PsiFile? = runReadAction { PsiDocumentManager.getInstance(project).getPsiFile(this) }
-
-/**
- * Creates a new file with a given name and given content.
- *
- * Also checks if the file already exists, and modifies the name accordingly.
- *
- * @return The created file.
- */
-fun createFile(fileName: String, contents: String): File {
-    val currentFileName = getUniqueFileName(fileName)
-
-    return File(currentFileName).apply {
-        createNewFile()
-        LocalFileSystem.getInstance().refresh(true)
-        writeText(contents, StandardCharsets.UTF_8)
-    }
-}
 
 /**
  * This writes to a file without using java.io.File

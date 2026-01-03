@@ -130,6 +130,7 @@ class LatexOutputPath(private val variant: String, var mainFile: VirtualFile?, p
     /**
      * Whether the current output path is the default.
      */
+    @Suppress("unused")
     fun isDefault() = getDefaultOutputPath() == virtualFile
 
     /**

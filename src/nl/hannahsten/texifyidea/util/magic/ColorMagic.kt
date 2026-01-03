@@ -10,7 +10,8 @@ object ColorMagic {
     /**
      * All commands that have a color as an argument.
      */
-    val takeColorCommands = AllPredefined.allCommands
+    @Suppress("unused")
+    val colorReferenceCommands = AllPredefined.allCommands
         .filter { cmd ->
             cmd.arguments.any {
                 it.contextSignature.introduces(LatexContexts.ColorReference)

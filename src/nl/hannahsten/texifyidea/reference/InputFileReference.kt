@@ -138,13 +138,4 @@ class InputFileReference(
         val newFileName = newFile.virtualFile?.path?.toRelativePath(this.element.containingFile.findRootFile().virtualFile.parent.path) ?: return this.element
         return handleElementRename(element, newFileName, false, refText, range)
     }
-
-    /**
-     * Create a set possible complete file names (including extension), based on
-     * the command that includes a file, and the name of the file.
-     */
-    private fun LatexCommands.getFileNameWithExtensions(fileName: String): Set<String> {
-        val extension = CommandMagic.includeAndExtensions[this.commandToken.text] ?: emptySet()
-        return extension.map { "$fileName.$it" }.toSet() + setOf(fileName)
-    }
 }

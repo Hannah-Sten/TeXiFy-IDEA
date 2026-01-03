@@ -52,6 +52,7 @@ object StubIndexKt {
         action(key)
     }, scope)
 
+    @Suppress("unused")
     inline fun <Key : Any, Psi : PsiElement> traverseKeys(
         indexKey: StubIndexKey<Key, Psi>,
         project: Project, scope: GlobalSearchScope,
@@ -97,6 +98,7 @@ object StubIndexKt {
     /**
      * Traverse all elements in the given [indexKey] for the specified [key] and apply the action to each element.
      */
+    @Suppress("unused")
     @RequiresReadLock
     inline fun <Key : Any, Psi : PsiElement> forEachElement(
         indexKey: StubIndexKey<Key, Psi>,
@@ -112,6 +114,7 @@ object StubIndexKt {
         }
     }
 
+    @Suppress("unused")
     @RequiresReadLock
     inline fun <Key : Any, reified Psi : PsiElement> forEachAllElements(
         indexKey: StubIndexKey<Key, Psi>,
@@ -125,6 +128,7 @@ object StubIndexKt {
         }
     }
 
+    @Suppress("unused")
     @RequiresReadLock
     inline fun <Key : Any, Psi : PsiElement> forEachAllElements(
         indexKey: StubIndexKey<Key, Psi>,

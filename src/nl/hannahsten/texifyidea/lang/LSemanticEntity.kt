@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package nl.hannahsten.texifyidea.lang
 
 import nl.hannahsten.texifyidea.lang.LatexContextIntro.Inherit

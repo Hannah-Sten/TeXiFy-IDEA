@@ -62,6 +62,7 @@ abstract class AbstractCacheServiceBase<K : Any, V> {
         caches.clear()
     }
 
+    @Suppress("unused")
     protected fun clearOutdatedCache(expiration: Duration) {
         caches.entries.removeIf { it.value.isExpired(expiration) }
     }
@@ -120,12 +121,6 @@ abstract class AbstractBackgroundCacheService<K : Any, V : Any>(protected val co
             }
         }
     }
-
-    protected fun scheduleRefreshAll(keys: Collection<K> = caches.keys.toSet()) {
-        coroutineScope.launch {
-            refreshAll(keys)
-        }
-    }
 }
 
 abstract class AbstractBlockingCacheService<K : Any, V> : AbstractCacheServiceBase<K, V>() {
@@ -146,6 +141,7 @@ abstract class AbstractBlockingCacheService<K : Any, V> : AbstractCacheServiceBa
 /**
  * Provides a cache service for a project or an application that allows storing and retrieving values with expiration.
  */
+@Suppress("unused")
 abstract class GenericCacheService<P>(val param: P, private val coroutineScope: CoroutineScope) : AbstractCacheServiceBase<GenericCacheService.TypedKey<*>, Any?>() {
 
     interface TypedKey<T>

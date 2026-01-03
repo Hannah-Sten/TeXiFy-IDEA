@@ -9,7 +9,6 @@ import com.intellij.openapi.editor.Document
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
-import com.intellij.psi.PsiWhiteSpace
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
@@ -73,21 +72,6 @@ open class LatexSpaceAfterAbbreviationInspection : TexifyInspectionBase() {
         }
 
         return descriptors
-    }
-
-    private fun isFollowedByWhitespace(text: LatexNormalText, matchRange: IntRange): Boolean {
-        // Whitespace followed in the Normal Text.
-        val string = text.text
-        if (text.text.length > matchRange.last) {
-            val spaceMaybe = string.substring(matchRange.last, matchRange.last + 1)
-            if (matchRange.last < string.length && spaceMaybe.matches(Regex("\\s+"))) {
-                return true
-            }
-        }
-
-        // Whitespace as PsiWhitespace
-        val content = text.parent?.parent ?: return false
-        return content.nextSibling is PsiWhiteSpace
     }
 
     /**

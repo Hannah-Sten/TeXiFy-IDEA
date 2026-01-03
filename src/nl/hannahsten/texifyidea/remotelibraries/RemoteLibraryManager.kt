@@ -37,10 +37,6 @@ class RemoteLibraryManager : PersistentStateComponent<RemoteLibraryState> {
         }
     }
 
-    fun removeLibrary(library: RemoteBibLibrary) {
-        removeLibraryByKey(library.identifier)
-    }
-
     fun removeLibraryByKey(key: String) {
         libraries.remove(key)
     }

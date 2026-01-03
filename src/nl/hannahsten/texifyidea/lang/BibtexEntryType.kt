@@ -33,11 +33,6 @@ interface BibtexEntryType : Described, Dependend {
         return list
     }
 
-    fun bibPackage(): String = when (dependency) {
-        LatexPackage.BIBLATEX -> "BIBLATEX"
-        else -> "BIBTEX"
-    }
-
     /**
      * Create a template to insert when inserting this BibTeX entry.
      */

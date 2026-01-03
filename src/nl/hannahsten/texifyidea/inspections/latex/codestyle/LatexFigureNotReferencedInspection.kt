@@ -61,9 +61,3 @@ open class LatexFigureNotReferencedInspection : AbstractTexifyContextAwareInspec
         override fun getText(): String = "Safe delete figure environment"
     }
 }
-
-private val LatexCommands.labelName: String?
-    get() = requiredParameterText(0)
-
-private val LatexCommands.referencedLabelNames: List<String>
-    get() = requiredParameterText(0)?.split(",") ?: emptyList()

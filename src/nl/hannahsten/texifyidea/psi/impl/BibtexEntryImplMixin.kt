@@ -7,7 +7,6 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference
 import com.intellij.psi.stubs.IStubElementType
-import com.intellij.psi.tree.IElementType
 import com.intellij.util.containers.toArray
 import nl.hannahsten.texifyidea.index.stub.BibtexEntryStub
 import nl.hannahsten.texifyidea.psi.BibtexEntry
@@ -20,7 +19,6 @@ abstract class BibtexEntryImplMixin : BibtexEntry, StubBasedPsiElementBase<Bibte
 
     constructor(stub: BibtexEntryStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
     constructor(node: ASTNode) : super(node)
-    constructor(stub: BibtexEntryStub?, nodeType: IElementType?, node: ASTNode?) : super(stub, nodeType, node)
 
     /**
      * Get all the references from a BibTeX entry.

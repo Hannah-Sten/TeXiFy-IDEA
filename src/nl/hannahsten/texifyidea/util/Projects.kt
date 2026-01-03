@@ -21,13 +21,11 @@ import com.intellij.util.concurrency.annotations.RequiresReadLock
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.modules.LatexModuleType
-import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationType
 import nl.hannahsten.texifyidea.util.files.allChildFiles
-import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 /**
  * Get a project [GlobalSearchScope] for this project.
@@ -38,12 +36,14 @@ val Project.projectSearchScope: GlobalSearchScope
 val Project.contentSearchScope: GlobalSearchScope
     get() = ProjectScope.getContentScope(this)
 
+@Suppress("unused")
 val Project.librarySearchScope: GlobalSearchScope
     get() = ProjectScope.getLibrariesScope(this)
 
 /**
  * Get a project [GlobalSearchScope] for this project.
  */
+@Suppress("unused")
 val Project.everythingScope: GlobalSearchScope
     get() = GlobalSearchScope.everythingScope(this)
 
@@ -171,10 +171,3 @@ fun Project.isLatexProject(): Boolean = hasLatexModule() ||
  * True if we are probably in a unit test.
  */
 fun isTestProject() = ApplicationManager.getApplication().isUnitTestMode
-
-/**
- * Finds all section marker commands (as defined in [CommandMagic.sectionNameToLevel]) in the project.
- *
- * @return A list containing all the section marker [LatexCommands].
- */
-fun Project.findSectionMarkers(): Collection<LatexCommands> = NewCommandsIndex.getByNames(CommandMagic.sectionNameToLevel.keys, this)
