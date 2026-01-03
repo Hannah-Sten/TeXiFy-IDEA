@@ -14,11 +14,7 @@ import nl.hannahsten.texifyidea.reference.LatexLabelParameterReference
 import nl.hannahsten.texifyidea.util.existsIntersection
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
-import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
-import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
-import nl.hannahsten.texifyidea.util.parser.firstParentOfType
-import nl.hannahsten.texifyidea.util.parser.parentOfType
-import nl.hannahsten.texifyidea.util.parser.remove
+import nl.hannahsten.texifyidea.util.parser.*
 
 abstract class LatexParameterTextImplMixin(node: ASTNode) : LatexParameterText, ASTWrapperPsiElement(node) {
 
