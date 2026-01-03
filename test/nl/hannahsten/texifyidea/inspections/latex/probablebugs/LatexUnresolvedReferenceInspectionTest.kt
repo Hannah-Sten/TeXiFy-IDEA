@@ -110,13 +110,7 @@ class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnr
                 }
             }{}
             
-            <caret>
-            """.trimIndent()
-        )
-        myFixture.updateCommandDef()
-        myFixture.type(
-            """
-            \begin{java}[Test]{lst:test}
+            \begin{<caret>}[Test]{lst:test}
                 class Main {
                     public static void main(String[] args) {
                         return "HelloWorld";
@@ -127,7 +121,9 @@ class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnr
             \ref{lst:test}
             """.trimIndent()
         )
+        // The environment label is saved with the stub but it requires the semantics to be already present in cache, so we first update semantics and then type something to trigger stub creation with label
         myFixture.updateCommandDef()
+        myFixture.type("java")
         myFixture.checkHighlighting()
     }
 
