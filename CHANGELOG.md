@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Add support for labels defined with \lstset in a custom listings environment
 
 ### Fixed
 

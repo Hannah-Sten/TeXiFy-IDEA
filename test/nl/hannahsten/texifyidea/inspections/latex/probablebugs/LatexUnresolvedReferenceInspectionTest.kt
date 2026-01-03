@@ -7,6 +7,7 @@ import io.mockk.unmockkAll
 import nl.hannahsten.texifyidea.configureByFilesAndBuildFilesets
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
+import nl.hannahsten.texifyidea.updateCommandDef
 import nl.hannahsten.texifyidea.updateFilesets
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 
@@ -57,45 +58,43 @@ class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnr
         }
     }
 
-    // TODO: Re-enable the following tests when custom commands are supported
-
-    /*
-    fun testNoWarningCustomCommandWithPrefix() {
-        myFixture.configureByText(
-            LatexFileType,
-            """
-            \newcommand{\mylabel}[1]{\label{sec:#1}}
-            \section{some sec}\mylabel{some-sec}
-            ~\ref{sec:some-sec}
-            """.trimIndent()
-        )
-        CommandManager.updateAliases(setOf("\\mylabel"), project)
-        myFixture.checkHighlighting()
-    }
-
-    fun testFigureReferencedCustomCommandOptionalParameter() {
-        myFixture.configureByText(
-            LatexFileType,
-            """
-            \newcommand{\includenamedimage}[3][]{
-            \begin{figure}
-                \centering
-                \includegraphics[width=#1\textwidth]{#2}
-                \caption{#3}
-                \label{fig:#2}
-            \end{figure}
-            }
-
-            \includenamedimage[0.5]{test.png}{fancy caption}
-            \includenamedimage{test2.png}{fancy caption}
-
-            some text~\ref{fig:test.png} more text.
-            some text~\ref{fig:test2.png} more text.
-            """.trimIndent()
-        )
-        CommandManager.updateAliases(setOf("\\label"), project)
-        myFixture.checkHighlighting()
-    }
+    // Was implemented previously but not yet implemented back after refactoring (TEX-243)
+//    fun testNoWarningCustomCommandWithPrefix() {
+//        myFixture.configureByText(
+//            LatexFileType,
+//            """
+//            \newcommand{\mylabel}[1]{\label{sec:#1}}
+//            \section{some sec}\mylabel{some-sec}
+//            ~\ref{sec:some-sec}
+//            """.trimIndent()
+//        )
+//        myFixture.updateCommandDef()
+//        myFixture.checkHighlighting()
+//    }
+//
+//    fun testFigureReferencedCustomCommandOptionalParameter() {
+//        myFixture.configureByText(
+//            LatexFileType,
+//            """
+//            \newcommand{\includenamedimage}[3][]{
+//            \begin{figure}
+//                \centering
+//                \includegraphics[width=#1\textwidth]{#2}
+//                \caption{#3}
+//                \label{fig:#2}
+//            \end{figure}
+//            }
+//
+//            \includenamedimage[0.5]{test.png}{fancy caption}
+//            \includenamedimage{test2.png}{fancy caption}
+//
+//            some text~\ref{fig:test.png} more text.
+//            some text~\ref{fig:test2.png} more text.
+//            """.trimIndent()
+//        )
+//        myFixture.updateCommandDef()
+//        myFixture.checkHighlighting()
+//    }e
 
     fun testFigureReferencedCustomListingsEnvironment() {
         myFixture.configureByText(
@@ -110,7 +109,13 @@ class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnr
                     label={#2},
                 }
             }{}
-
+            
+            <caret>
+            """.trimIndent()
+        )
+        myFixture.updateCommandDef()
+        myFixture.type(
+            """
             \begin{java}[Test]{lst:test}
                 class Main {
                     public static void main(String[] args) {
@@ -122,10 +127,9 @@ class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnr
             \ref{lst:test}
             """.trimIndent()
         )
-        EnvironmentManager.updateAliases(setOf("lstlisting"), project)
+        myFixture.updateCommandDef()
         myFixture.checkHighlighting()
     }
-
 
     fun testNoWarningCustomCommand() {
         myFixture.configureByText(
@@ -136,11 +140,9 @@ class LatexUnresolvedReferenceInspectionTest : TexifyInspectionTestBase(LatexUnr
             ~\ref{some-sec}
             """.trimIndent()
         )
-        CommandManager.updateAliases(setOf("\\label"), project)
+        myFixture.updateCommandDef()
         myFixture.checkHighlighting()
     }
-
-     */
 
     fun `test using xr package`() {
         myFixture.copyFileToProject("presentations/presentation.tex")

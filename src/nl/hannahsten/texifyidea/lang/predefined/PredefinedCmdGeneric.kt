@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.lang.predefined
 
 import nl.hannahsten.texifyidea.lang.LArgument
+import nl.hannahsten.texifyidea.lang.LArgument.Companion.required
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.PredefinedCommandSet
@@ -535,14 +536,15 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
     val listingsDefinitionCommands = buildCommands {
         packageOf("listings")
 
-        val nameRequired = "name".required
+        val nameRequired = required("name", LatexContexts.EnvironmentDeclaration)
         val numberOptional = "number".optional
         val defaultArgOptional = "default arg".optional
-        val textCtx = LatexContexts.Text
-        val startingCodeRequired = "starting code".required(ctx = textCtx)
-        val endingCodeRequired = "ending code".required(ctx = textCtx)
+        val startingCodeRequired = "starting code".required(ctx = LatexContexts.InsideDefinition)
+        val endingCodeRequired = "ending code".required(ctx = LatexContexts.InsideDefinition)
 
         "lstnewenvironment".cmd(nameRequired, numberOptional, defaultArgOptional, startingCodeRequired, endingCodeRequired) { "Define a new listings environment" }
+
+        "lstset".cmd(required("settings"))
     }
 
     val listings = buildCommands {

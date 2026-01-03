@@ -138,7 +138,7 @@ optional_key_val_key ::= optional_param_content+ {
 // a key and a value.
 // The hasMatchingCloseBrace predicate checks if there's a matching } before attempting to parse.
 // This avoids exponential backtracking when parsing nested unclosed braces.
-required_param ::= <<hasMatchingCloseBrace>> OPEN_BRACE (strict_key_val_pair (COMMA strict_key_val_pair)* CLOSE_BRACE | required_param_content* CLOSE_BRACE) { pin=2 }
+required_param ::= <<hasMatchingCloseBrace>> OPEN_BRACE (strict_key_val_pair (COMMA strict_key_val_pair)* COMMA? CLOSE_BRACE | required_param_content* CLOSE_BRACE) { pin=2 }
 
 // Picture environment (and derived environments) from beamer uses parentheses for arguments
 picture_param ::= OPEN_PAREN picture_param_content* CLOSE_PAREN { pin=3 }

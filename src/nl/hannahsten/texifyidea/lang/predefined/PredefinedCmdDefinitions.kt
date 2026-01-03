@@ -3,8 +3,8 @@ package nl.hannahsten.texifyidea.lang.predefined
 import nl.hannahsten.texifyidea.lang.LArgument
 import nl.hannahsten.texifyidea.lang.LArgument.Companion.required
 import nl.hannahsten.texifyidea.lang.LatexContextIntro
-import nl.hannahsten.texifyidea.lang.PredefinedCommandSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.lang.PredefinedCommandSet
 
 /**
  * The set of basic commands that will be used for
@@ -180,6 +180,7 @@ object PredefinedCmdDefinitions : PredefinedCommandSet() {
         argSpecDefinitionOfEnvironment.forEach { add(it.name) }
         xargsDefinitionOfEnvironment.forEach { add(it.name) }
         newTheoremDefinitionOfEnvironment.forEach { add(it.name) }
+        PredefinedCmdGeneric.listingsDefinitionCommands.forEach { add(it.name) }
     }
 
     val namesOfAllDef: Set<String> = namesOfAllCommandDef + namesOfAllEnvironmentDef

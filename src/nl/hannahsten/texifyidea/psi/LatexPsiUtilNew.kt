@@ -2,16 +2,11 @@ package nl.hannahsten.texifyidea.psi
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
+import nl.hannahsten.texifyidea.index.LatexDefinitionService
+import nl.hannahsten.texifyidea.util.labels.LatexLabelUtil.extractLabelWithSemantics
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
-import nl.hannahsten.texifyidea.util.parser.forEachChildTyped
-import nl.hannahsten.texifyidea.util.parser.forEachDirectChild
-import nl.hannahsten.texifyidea.util.parser.forEachDirectChildTyped
-import nl.hannahsten.texifyidea.util.parser.getNthChildThat
-import nl.hannahsten.texifyidea.util.parser.getOptionalParameterMapFromParameters
-import nl.hannahsten.texifyidea.util.parser.toStringMap
-import nl.hannahsten.texifyidea.util.parser.traversePruneIf
-import nl.hannahsten.texifyidea.util.parser.traverseTyped
+import nl.hannahsten.texifyidea.util.parser.*
 
 /*
 This file contains utility functions for the LaTex-related PSI elements.
@@ -36,6 +31,9 @@ fun LatexEndCommand.environmentName(): String? = envIdentifier?.name
  */
 fun LatexBeginCommand.environmentName(): String? = envIdentifier?.name
 
+/**
+ * Possible duplicate of [nl.hannahsten.texifyidea.util.labels.LatexLabelUtil.extractLabelFromEnvironment]
+ */
 fun LatexEnvironment.getLabelFromOptionalParameter(): String? {
     if (EnvironmentMagic.labelAsParameter.contains(this.getEnvironmentName())) {
         // See if we can find a label option
@@ -46,6 +44,11 @@ fun LatexEnvironment.getLabelFromOptionalParameter(): String? {
         }
     }
     return null
+}
+
+fun LatexEnvironment.getLabelFromRequiredParameter(): String? {
+    val semantics = LatexDefinitionService.resolveEnv(this) ?: return null
+    return extractLabelWithSemantics(beginCommand, semantics.arguments)?.text
 }
 
 /**
