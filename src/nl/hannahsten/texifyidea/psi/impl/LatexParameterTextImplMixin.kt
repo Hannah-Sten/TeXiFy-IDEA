@@ -15,11 +15,7 @@ import nl.hannahsten.texifyidea.util.existsIntersection
 import nl.hannahsten.texifyidea.util.isFigureLabel
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
-import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
-import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
-import nl.hannahsten.texifyidea.util.parser.firstParentOfType
-import nl.hannahsten.texifyidea.util.parser.parentOfType
-import nl.hannahsten.texifyidea.util.parser.remove
+import nl.hannahsten.texifyidea.util.parser.*
 
 abstract class LatexParameterTextImplMixin(node: ASTNode) : LatexParameterText, ASTWrapperPsiElement(node) {
 
@@ -46,7 +42,6 @@ abstract class LatexParameterTextImplMixin(node: ASTNode) : LatexParameterText, 
         }
         if (name in CommandMagic.reference) {
             // If the command is a reference, we return a reference to the label parameter
-            // TODO: allow custom reference commands
             return LatexLabelParameterReference(this)
         }
 

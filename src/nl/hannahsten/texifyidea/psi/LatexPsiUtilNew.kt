@@ -4,14 +4,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
-import nl.hannahsten.texifyidea.util.parser.forEachChildTyped
-import nl.hannahsten.texifyidea.util.parser.forEachDirectChild
-import nl.hannahsten.texifyidea.util.parser.forEachDirectChildTyped
-import nl.hannahsten.texifyidea.util.parser.getNthChildThat
-import nl.hannahsten.texifyidea.util.parser.getOptionalParameterMapFromParameters
-import nl.hannahsten.texifyidea.util.parser.toStringMap
-import nl.hannahsten.texifyidea.util.parser.traversePruneIf
-import nl.hannahsten.texifyidea.util.parser.traverseTyped
+import nl.hannahsten.texifyidea.util.parser.*
 
 /*
 This file contains utility functions for the LaTex-related PSI elements.
@@ -66,7 +59,7 @@ fun LatexEnvironment.getLabel(): String? {
 
     val content = this.environmentContent ?: return null
 
-    // TODO: We have to deal with the fact that the label command can be nested inside other commands,
+    // TODO(TEX-244): We have to deal with the fact that the label command can be nested inside other commands,
     //  but the label can be belong to the outer command.
     //  We should whether the label belongs to the outer command or the inner command.
     // The current level 7 is set to make the test pass, but it is not a good solution.

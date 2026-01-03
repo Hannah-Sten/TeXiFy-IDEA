@@ -20,7 +20,6 @@ import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
  * May contain duplicates.
  */
 fun PsiFile.findLatexLabelingElementsInFileSet(): Sequence<PsiElement> {
-    // TODO: Better implementation
     val fileset = LatexProjectStructure.getFilesetScopeFor(this)
     return NewLabelsIndex.getAllLabels(fileset).asSequence().flatMap {
         NewLabelsIndex.getByName(it, fileset)
