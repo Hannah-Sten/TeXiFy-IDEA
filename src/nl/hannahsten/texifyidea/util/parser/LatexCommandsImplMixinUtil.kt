@@ -4,7 +4,6 @@ import com.intellij.openapi.paths.WebReference
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference
-import com.intellij.util.containers.toArray
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import java.util.regex.Pattern
@@ -54,7 +53,6 @@ fun getOptionalParameterMapFromParameters(parameters: List<LatexParameter>): Lin
     return parameterMap
 }
 
-fun LatexCommands.extractUrlReferences(firstParam: LatexRequiredParam): Array<PsiReference> =
+fun LatexCommands.extractUrlReferences(firstParam: LatexRequiredParam): List<PsiReference> =
     extractSubParameterRanges(firstParam)
         .map { WebReference(this, it.shiftRight(firstParam.textOffset - textOffset)) }
-        .toArray(emptyArray())

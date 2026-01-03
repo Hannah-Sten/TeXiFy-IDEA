@@ -7,10 +7,11 @@ import nl.hannahsten.texifyidea.lang.LSemanticCommand
 import nl.hannahsten.texifyidea.lang.LatexContext
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.LatexLib
-import nl.hannahsten.texifyidea.lang.predefined.PredefinedCmdMathSymbols
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
-import nl.hannahsten.texifyidea.lang.predefined.PredefinedCmdFiles
 import nl.hannahsten.texifyidea.lang.predefined.CommandNames
+import nl.hannahsten.texifyidea.lang.predefined.PredefinedCmdFiles
+import nl.hannahsten.texifyidea.lang.predefined.PredefinedCmdMathSymbols
+import nl.hannahsten.texifyidea.util.magic.CommandMagic.stylePrimitives
 
 object CommandMagic {
 
@@ -377,14 +378,6 @@ object CommandMagic {
      */
     val textStyles = CommandNames.run {
         setOf(TEXT_RM, TEXT_SF, TEXT_TT, TEXT_IT, TEXT_SL, TEXT_SC, TEXT_BF, EMPH, TEXT_UP, TEXT_MD)
-    }
-
-    /**
-     * All LaTeX commands that contain a url (in their first parameter).
-     */
-    val urls = CommandNames.run {
-        // TODO: use command semantics
-        hashSetOf(URL, HREF)
     }
 
     /**
