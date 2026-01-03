@@ -12,7 +12,6 @@ import nl.hannahsten.texifyidea.reference.BibtexIdReference
 import nl.hannahsten.texifyidea.reference.LatexGlossaryReference
 import nl.hannahsten.texifyidea.reference.LatexLabelParameterReference
 import nl.hannahsten.texifyidea.util.existsIntersection
-import nl.hannahsten.texifyidea.util.isFigureLabel
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
@@ -179,7 +178,7 @@ abstract class LatexParameterTextImplMixin(node: ASTNode) : LatexParameterText, 
 
     override fun delete() {
         val cmd = this.parentOfType(LatexCommands::class) ?: return
-        if (cmd.isFigureLabel()) {
+        if (cmd.name in CommandMagic.labels && cmd.inDirectEnvironment(EnvironmentMagic.figures)) {
             // Look for the NoMathContent that is around the environment, because that is the PsiElement that has the
             // whitespace and other normal text as siblings.
             cmd.parentOfType(LatexEnvironment::class)

@@ -12,9 +12,7 @@ import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.psi.traverseCommands
 import nl.hannahsten.texifyidea.util.PackageUtils.getDefaultInsertAnchor
 import nl.hannahsten.texifyidea.util.files.definitions
-import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommands
-import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
-import nl.hannahsten.texifyidea.util.parser.*
+import nl.hannahsten.texifyidea.util.parser.getRequiredArgumentValueByName
 import nl.hannahsten.texifyidea.util.parser.traverseTyped
 
 /**
@@ -77,6 +75,3 @@ fun expandCommandsOnce(inputText: String, project: Project, file: VirtualFile?):
     }
     return text
 }
-
-fun LatexCommands.isFigureLabel(): Boolean =
-    name in getLabelDefinitionCommands() && inDirectEnvironment(EnvironmentMagic.figures)

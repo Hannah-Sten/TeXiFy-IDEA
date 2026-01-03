@@ -64,20 +64,28 @@ fun LatexEnvironment.getLabel(): String? {
     // EnvironmentMagic
     // Find the nested label command in the environment content
 
-    val content = this.environmentContent ?: return null
+    val labelCommand = getLabelCommand() ?: return null
+    // In fact, it is a simple \label command
+    return labelCommand.requiredParameterText(0)
+}
 
-    // TODO: We have to deal with the fact that the label command can be nested inside other commands,
-    //  but the label can be belong to the outer command.
-    //  We should whether the label belongs to the outer command or the inner command.
-    // The current level 7 is set to make the test pass, but it is not a good solution.
-    // Setting it to 2 (environment_content - no_math_content - commands) ignores the nested label commands.
-    val labelCommand = content.traversePruneIf(7) {
+/**
+ * Find \label command for this environment
+ *
+ * TODO(TEX-244): We have to deal with the fact that the label command can be nested inside other commands,
+ *  but the label can be belong to the outer command.
+ *  We should whether the label belongs to the outer command or the inner command.
+ * The current level 7 is set to make the test pass, but it is not a good solution.
+ * Setting it to 2 (environment_content - no_math_content - commands) ignores the nested label commands.
+ *
+ */
+fun LatexEnvironment.getLabelCommand(): LatexCommands? {
+    val content = this.environmentContent ?: return null
+    return content.traversePruneIf(7) {
         it is LatexEnvironment // ignore the subtree if we reach another environment
     }.filterIsInstance<LatexCommands>().firstOrNull {
         it.name in CommandMagic.labels
-    } ?: return null
-    // In fact, it is a simple \label command
-    return labelCommand.requiredParameterText(0)
+    }
 }
 
 /**
