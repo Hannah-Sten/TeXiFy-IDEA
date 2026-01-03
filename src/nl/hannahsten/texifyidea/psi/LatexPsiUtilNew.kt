@@ -69,7 +69,7 @@ fun LatexEnvironment.getLabel(): String? {
 
     val content = this.environmentContent ?: return null
 
-    // TODO: We have to deal with the fact that the label command can be nested inside other commands,
+    // TODO(TEX-244): We have to deal with the fact that the label command can be nested inside other commands,
     //  but the label can be belong to the outer command.
     //  We should whether the label belongs to the outer command or the inner command.
     // The current level 7 is set to make the test pass, but it is not a good solution.

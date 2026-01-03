@@ -13,11 +13,7 @@ import com.intellij.psi.createSmartPointer
 import com.intellij.util.SmartList
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.lang.magic.*
-import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.psi.LatexGroup
-import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
-import nl.hannahsten.texifyidea.psi.getEnvironmentName
+import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.parser.isComment
 import nl.hannahsten.texifyidea.util.parser.parentOfType
 
@@ -102,7 +98,6 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
         if (file.isSuppressed()) {
             return null
         }
-        // TODO: improvement can be done for inspections
         return inspectFile(file, manager, isOnTheFly)
             .filter { checkContext(it.psiElement) }
             .toTypedArray()
