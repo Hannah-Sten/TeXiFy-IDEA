@@ -1,15 +1,22 @@
 package nl.hannahsten.texifyidea.action.analysis
 
 import com.intellij.icons.AllIcons
+import com.intellij.ide.ui.PaletteKeys
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.ui.DialogBuilder
+import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
+import com.intellij.ui.dsl.builder.Panel
+import com.intellij.ui.dsl.builder.RowsRange
+import com.intellij.ui.dsl.builder.panel
+import com.intellij.util.ui.JBUI
+import fleet.util.capitalizeLocaleAgnostic
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.files.findRootFile
@@ -18,6 +25,7 @@ import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.parser.*
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import org.jetbrains.annotations.NonNls
+import java.awt.Component
 import java.util.*
 import java.util.regex.Pattern
 import javax.swing.JLabel
@@ -65,6 +73,16 @@ open class WordCountAction : AnAction() {
         val PUNCTUATION: Pattern = Pattern.compile("[.,\\-_–:;?!'\"~=+*/\\\\&|]+")
     }
 
+    private data class TextCount(
+        val total: Int,
+        val currentFile: Int? = null
+    )
+
+    private data class CountData(
+        val wordCount: TextCount,
+        val charsCount: TextCount? = null
+    )
+
     override fun actionPerformed(event: AnActionEvent) {
         val virtualFile = event.getData(PlatformDataKeys.VIRTUAL_FILE) ?: return
         val project = event.getData(PlatformDataKeys.PROJECT) ?: return
@@ -98,18 +116,17 @@ open class WordCountAction : AnAction() {
         FileDocumentManager.getInstance().apply { saveDocument(getDocument(root) ?: return@apply) }
         val (output, exitCode) = runCommandWithExitCode("texcount", "-1", "-inc", "-sum", root.name, workingDirectory = Path(workingDirectory))
         return if (exitCode == 0 && output?.toIntOrNull() != null) {
-            makeDialog(psiFile, output.toInt())
+            makeDialog(psiFile, CountData(TextCount(output.toInt())))
         }
         else {
             // If there is an error, the output will contain both word count and error message (which could indicate a problem with the document itself)
             val words = "[0-9]+".toRegex().find(output ?: "")?.value
-            makeDialog(psiFile, wordCount = words?.toIntOrNull(), errorMessage = output?.drop(words?.length ?: 0))
+            makeDialog(psiFile, count = words?.let { CountData(TextCount(it.toInt())) }, errorMessage = output?.drop(words?.length ?: 0))
         }
     }
 
     private fun defaultWordCount(psiFile: PsiFile): DialogBuilder {
-        val (words, chars) = countWords(psiFile)
-        return makeDialog(psiFile, words, chars)
+        return makeDialog(psiFile, countWords(psiFile))
     }
 
     private fun formatAsHtml(type: String, message: String?): String = if (message == null) {
@@ -122,23 +139,47 @@ open class WordCountAction : AnAction() {
     /**
      * Builds the dialog that must show the word count.
      */
-    private fun makeDialog(baseFile: PsiFile, wordCount: Int?, characters: Int? = null, errorMessage: String? = null): DialogBuilder = DialogBuilder().apply {
+    private fun makeDialog(baseFile: PsiFile, count: CountData?, errorMessage: String? = null): DialogBuilder = DialogBuilder().apply {
+        fun Panel.renderCount(title: String, count: TextCount) {
+            groupRowsRange(
+                title = title.lowercase().split(" ").joinToString(" ") { it.replaceFirstChar { c -> c.titlecaseChar() } },
+                topGroupGap = false
+            ) {
+                row("Entire document:") { label(count.total.toString()) }
+                count.currentFile?.let {
+                    row("Current file:") { label(it.toString()) }
+                }
+            }
+        }
+
         setTitle("Word Count")
 
         setCenterPanel(
-            JLabel(
-                """|<html>
-                        |<p>Analysis of <i>${baseFile.name}</i> (and inclusions):</p>
-                        |<table cellpadding=1 style='margin-top:4px'>
-                        ${formatAsHtml("Word count", wordCount?.toString())}
-                        ${formatAsHtml("Characters", characters?.toString())}
-                        ${formatAsHtml("Error message", errorMessage)}
-                        |</table>
-                        |</html>
-                """.trimMargin(),
-                AllIcons.General.InformationDialog,
-                SwingConstants.LEADING
-            )
+            panel {
+                row {
+                    icon(AllIcons.General.InformationDialog)
+                    panel {
+                        row {
+                            text("Analysis of document that includes ${baseFile.name}")
+                        }
+                        if (count != null) {
+                            renderCount("word count", count.wordCount)
+                            count.charsCount?.let { renderCount("characters", it) }
+                        } else {
+                            row {
+                                text("Word count failed")
+                            }
+                        }
+                    }
+                }
+
+                errorMessage?.let {
+                    row {
+                        icon(AllIcons.General.ErrorDialog)
+                        text(it)
+                    }
+                }
+            }
         )
 
         addOkAction()
@@ -150,7 +191,7 @@ open class WordCountAction : AnAction() {
     /**
      * Counts all the words in the given base file.
      */
-    private fun countWords(baseFile: PsiFile): Pair<Int, Int> {
+    private fun countWords(baseFile: PsiFile): CountData {
         val fileSet = baseFile.referencedFileSet()
             .filter { it.name.endsWith(".tex", ignoreCase = true) }
         val allNormalText = mutableListOf<LatexNormalText>()
@@ -184,7 +225,10 @@ open class WordCountAction : AnAction() {
         val (wordsParameter, charsParameter) = countWords(parameterText)
         val (wordsBib, charsBib) = countWords(bibliography)
 
-        return Pair(wordsNormal + wordsParameter - wordsBib, charsNormal + charsParameter - charsBib)
+        return CountData(
+            wordCount = TextCount(wordsNormal + wordsParameter - wordsBib),
+            charsCount = TextCount(charsNormal + charsParameter - charsBib)
+        )
     }
 
     /**
