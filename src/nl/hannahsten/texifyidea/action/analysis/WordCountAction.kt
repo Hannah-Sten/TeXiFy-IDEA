@@ -1,24 +1,17 @@
 package nl.hannahsten.texifyidea.action.analysis
 
-import arrow.core.flatten
-import arrow.core.padZip
 import com.intellij.icons.AllIcons
-import com.intellij.ide.ui.PaletteKeys
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.ui.DialogBuilder
-import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.ui.dsl.builder.Panel
-import com.intellij.ui.dsl.builder.RowsRange
 import com.intellij.ui.dsl.builder.panel
-import com.intellij.util.ui.JBUI
-import fleet.util.capitalizeLocaleAgnostic
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.files.findRootFile
@@ -27,12 +20,45 @@ import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.parser.*
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import org.jetbrains.annotations.NonNls
-import java.awt.Component
 import java.util.*
 import java.util.regex.Pattern
-import javax.swing.JLabel
-import javax.swing.SwingConstants
 import kotlin.io.path.Path
+
+internal data class CountData(
+    val scope: CountScope,
+    val wordCount: Int? = null,
+    val charsCount: Int? = null
+) {
+    fun name() = scope.name()
+}
+
+internal sealed class CountScope(val renderOrder: Int) {
+    abstract fun name(): String
+
+    companion object {
+        val DOCUMENT_SCOPE = DocumentCountScope()
+    }
+}
+
+internal class FileCountScope(val psiFile: PsiFile) : CountScope(0) {
+    override fun name(): String = "Current file (${psiFile.name})"
+}
+
+internal class DocumentCountScope : CountScope(1) {
+    override fun name(): String = "Entire document"
+}
+
+internal enum class CountMethod {
+    TEX_COUNT {
+        override fun renderString(): String = "texcount (default if available)"
+    },
+
+    DEFAULT {
+        override fun renderString() = "TeXiFy word count"
+    };
+
+    abstract fun renderString(): String
+}
 
 /**
  * @author Hannah Schellekens
@@ -75,16 +101,6 @@ open class WordCountAction : AnAction() {
         val PUNCTUATION: Pattern = Pattern.compile("[.,\\-_–:;?!'\"~=+*/\\\\&|]+")
     }
 
-    private data class TextCount(
-        val total: Int,
-        val currentFile: Int? = null
-    )
-
-    private data class CountData(
-        val wordCount: TextCount,
-        val charsCount: TextCount? = null
-    )
-
     override fun actionPerformed(event: AnActionEvent) {
         val virtualFile = event.getData(PlatformDataKeys.VIRTUAL_FILE) ?: return
         val project = event.getData(PlatformDataKeys.PROJECT) ?: return
@@ -118,32 +134,32 @@ open class WordCountAction : AnAction() {
         FileDocumentManager.getInstance().apply { saveDocument(getDocument(root) ?: return@apply) }
         val (output, exitCode) = runCommandWithExitCode("texcount", "-1", "-inc", "-sum", root.name, workingDirectory = Path(workingDirectory))
         return if (exitCode == 0 && output?.toIntOrNull() != null) {
-            makeDialog(psiFile, CountData(TextCount(output.toInt())))
+            makeDialog(psiFile, listOf(CountData(CountScope.DOCUMENT_SCOPE, output.toInt())), CountMethod.TEX_COUNT)
         }
         else {
             // If there is an error, the output will contain both word count and error message (which could indicate a problem with the document itself)
             val words = "[0-9]+".toRegex().find(output ?: "")?.value
-            makeDialog(psiFile, count = words?.let { CountData(TextCount(it.toInt())) }, errorMessage = output?.drop(words?.length ?: 0))
+            makeDialog(psiFile, count = words?.let { listOf(CountData(CountScope.DOCUMENT_SCOPE, it.toInt())) } ?: emptyList(), method = CountMethod.TEX_COUNT, errorMessage = output?.drop(words?.length ?: 0))
         }
     }
 
     private fun defaultWordCount(psiFile: PsiFile): DialogBuilder {
-        return makeDialog(psiFile, countWords(psiFile))
+        return makeDialog(psiFile, countWords(psiFile), CountMethod.DEFAULT)
     }
 
     /**
      * Builds the dialog that must show the word count.
      */
-    private fun makeDialog(baseFile: PsiFile, count: CountData?, errorMessage: String? = null): DialogBuilder = DialogBuilder().apply {
-        fun Panel.renderCount(title: String, count: TextCount) {
+    private fun makeDialog(baseFile: PsiFile, count: List<CountData>, method: CountMethod, errorMessage: String? = null): DialogBuilder = DialogBuilder().apply {
+        fun Panel.renderCount(data: CountData) {
             groupRowsRange(
-                title = title.lowercase().split(" ").joinToString(" ") { it.replaceFirstChar { c -> c.titlecaseChar() } },
-                topGroupGap = false,
-                bottomGroupGap = false
+                title = data.name().lowercase().split(" ").joinToString(" ") { it.replaceFirstChar { c -> c.titlecaseChar() } },
             ) {
-                row("Entire document:") { label(count.total.toString()) }
-                count.currentFile?.let {
-                    row("Current file (${baseFile.name}):") { label(it.toString()) }
+                data.wordCount?.let {
+                    row("Word Count:") { text(it.toString()) }
+                }
+                data.charsCount?.let {
+                    row("Character count:") { text(it.toString()) }
                 }
             }
         }
@@ -153,14 +169,15 @@ open class WordCountAction : AnAction() {
         setCenterPanel(
             panel {
                 row {
-                    icon(AllIcons.General.InformationDialog)
                     panel {
                         row {
                             text("Analysis of document that includes ${baseFile.name}")
+                                .comment("Counted with ${method.renderString()}")
                         }
-                        if (count != null) {
-                            renderCount("word count", count.wordCount)
-                            count.charsCount?.let { renderCount("character count", it) }
+                        if (count.isNotEmpty()) {
+                            count.sortedBy { it.scope.renderOrder }.forEach {
+                                renderCount(it)
+                            }
                         } else {
                             row {
                                 text("Word count failed")
@@ -187,12 +204,12 @@ open class WordCountAction : AnAction() {
     /**
      * Counts all the words in the given base file.
      */
-    private fun countWords(baseFile: PsiFile): CountData {
+    private fun countWords(baseFile: PsiFile): List<CountData> {
         val fileSet = baseFile.referencedFileSet()
             .filter { it.name.endsWith(".tex", ignoreCase = true) }
-        val allNormalText = mutableMapOf<PsiFile, List<LatexNormalText>>()
-        val parameterText = mutableMapOf<PsiFile, List<LatexParameterText>>()
-        val bibliographies = mutableMapOf<PsiFile, List<LatexEnvironment>>()
+
+        val words = mutableMapOf<PsiFile, Int>()
+        val chars = mutableMapOf<PsiFile, Int>()
 
         for (f in fileSet) {
             val normal = mutableListOf<LatexNormalText>()
@@ -216,23 +233,15 @@ open class WordCountAction : AnAction() {
                 }
                 true
             }
-            allNormalText[f] = normal.toList()
-            parameterText[f] = parameter.toList()
-            bibliographies[f] = bib.toList()
+
+            val (w, c) = countWords(normal.toList(), parameter.toList(), bib.flatMap { it.collectSubtreeTyped<LatexNormalText>() })
+            words[f] = w
+            chars[f] = c
         }
 
-        val bibliography = bibliographies.values.flatten().flatMap { it.collectSubtreeTyped<LatexNormalText>() }
-
-        val (wordsTotal, charsTotal) = countWords(allNormalText.values.flatten(), parameterText.values.flatten(), bibliography)
-        val (wordsCurrent, charsCurrent) = countWords(
-            allNormalText[baseFile] ?: emptyList(),
-            parameterText[baseFile] ?: emptyList(),
-            bibliographies[baseFile]?.flatMap { it.collectSubtreeTyped<LatexNormalText>() } ?: emptyList()
-        )
-
-        return CountData(
-            wordCount = TextCount(wordsTotal, wordsCurrent),
-            charsCount = TextCount(charsTotal, charsCurrent)
+        return listOf(
+            CountData(FileCountScope(baseFile), words[baseFile], chars[baseFile]),
+            CountData(CountScope.DOCUMENT_SCOPE, words.values.sum(), chars.values.sum())
         )
     }
 
