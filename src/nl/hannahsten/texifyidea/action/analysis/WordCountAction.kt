@@ -1,5 +1,7 @@
 package nl.hannahsten.texifyidea.action.analysis
 
+import arrow.core.flatten
+import arrow.core.padZip
 import com.intellij.icons.AllIcons
 import com.intellij.ide.ui.PaletteKeys
 import com.intellij.openapi.actionSystem.AnAction
@@ -129,13 +131,6 @@ open class WordCountAction : AnAction() {
         return makeDialog(psiFile, countWords(psiFile))
     }
 
-    private fun formatAsHtml(type: String, message: String?): String = if (message == null) {
-        ""
-    }
-    else {
-        "|   <tr><td style='text-align:right'>$type:</td><td><b>${message.take(5000)}</b></td></tr>"
-    }
-
     /**
      * Builds the dialog that must show the word count.
      */
@@ -143,11 +138,12 @@ open class WordCountAction : AnAction() {
         fun Panel.renderCount(title: String, count: TextCount) {
             groupRowsRange(
                 title = title.lowercase().split(" ").joinToString(" ") { it.replaceFirstChar { c -> c.titlecaseChar() } },
-                topGroupGap = false
+                topGroupGap = false,
+                bottomGroupGap = false
             ) {
                 row("Entire document:") { label(count.total.toString()) }
                 count.currentFile?.let {
-                    row("Current file:") { label(it.toString()) }
+                    row("Current file (${baseFile.name}):") { label(it.toString()) }
                 }
             }
         }
@@ -164,7 +160,7 @@ open class WordCountAction : AnAction() {
                         }
                         if (count != null) {
                             renderCount("word count", count.wordCount)
-                            count.charsCount?.let { renderCount("characters", it) }
+                            count.charsCount?.let { renderCount("character count", it) }
                         } else {
                             row {
                                 text("Word count failed")
@@ -194,40 +190,49 @@ open class WordCountAction : AnAction() {
     private fun countWords(baseFile: PsiFile): CountData {
         val fileSet = baseFile.referencedFileSet()
             .filter { it.name.endsWith(".tex", ignoreCase = true) }
-        val allNormalText = mutableListOf<LatexNormalText>()
-        val parameterText = mutableListOf<LatexParameterText>()
-        val bibliographies = mutableListOf<LatexEnvironment>()
+        val allNormalText = mutableMapOf<PsiFile, List<LatexNormalText>>()
+        val parameterText = mutableMapOf<PsiFile, List<LatexParameterText>>()
+        val bibliographies = mutableMapOf<PsiFile, List<LatexEnvironment>>()
 
         for (f in fileSet) {
+            val normal = mutableListOf<LatexNormalText>()
+            val parameter = mutableListOf<LatexParameterText>()
+            val bib = mutableListOf<LatexEnvironment>()
             f.traverse { e ->
                 when (e) {
                     is LatexNormalText -> {
-                        allNormalText.add(e)
+                        normal.add(e)
                     }
                     is LatexParameterText -> {
                         if (e.command?.text !in Util.IGNORE_COMMANDS) {
-                            parameterText.add(e)
+                            parameter.add(e)
                         }
                     }
                     is LatexEnvironment -> {
                         if(e.getEnvironmentName() == "thebibliography") {
-                            bibliographies.add(e)
+                            bib.add(e)
                         }
                     }
                 }
                 true
             }
+            allNormalText[f] = normal.toList()
+            parameterText[f] = parameter.toList()
+            bibliographies[f] = bib.toList()
         }
 
-        val bibliography = bibliographies.flatMap { it.collectSubtreeTyped<LatexNormalText>() }
+        val bibliography = bibliographies.values.flatten().flatMap { it.collectSubtreeTyped<LatexNormalText>() }
 
-        val (wordsNormal, charsNormal) = countWords(allNormalText)
-        val (wordsParameter, charsParameter) = countWords(parameterText)
-        val (wordsBib, charsBib) = countWords(bibliography)
+        val (wordsTotal, charsTotal) = countWords(allNormalText.values.flatten(), parameterText.values.flatten(), bibliography)
+        val (wordsCurrent, charsCurrent) = countWords(
+            allNormalText[baseFile] ?: emptyList(),
+            parameterText[baseFile] ?: emptyList(),
+            bibliographies[baseFile]?.flatMap { it.collectSubtreeTyped<LatexNormalText>() } ?: emptyList()
+        )
 
         return CountData(
-            wordCount = TextCount(wordsNormal + wordsParameter - wordsBib),
-            charsCount = TextCount(charsNormal + charsParameter - charsBib)
+            wordCount = TextCount(wordsTotal, wordsCurrent),
+            charsCount = TextCount(charsTotal, charsCurrent)
         )
     }
 
@@ -264,6 +269,14 @@ open class WordCountAction : AnAction() {
         }
 
         return Pair(wordCount, characters)
+    }
+
+    private fun countWords(normal: List<LatexNormalText>, parameter: List<LatexParameterText>, bib: List<LatexNormalText>): Pair<Int, Int> {
+        val (wordsNormal, charsNormal) = countWords(normal)
+        val (wordsParameter, charsParameter) = countWords(parameter)
+        val (wordsBib, charsBib) = countWords(bib)
+
+        return wordsNormal + wordsParameter - wordsBib to charsNormal + charsParameter - charsBib
     }
 
     /**
