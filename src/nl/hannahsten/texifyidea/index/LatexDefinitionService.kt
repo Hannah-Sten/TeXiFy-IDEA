@@ -14,12 +14,7 @@ import kotlinx.coroutines.launch
 import nl.hannahsten.texifyidea.action.debug.SimplePerformanceTracker
 import nl.hannahsten.texifyidea.index.SourcedDefinition.DefinitionSource
 import nl.hannahsten.texifyidea.index.file.LatexRegexBasedIndex
-import nl.hannahsten.texifyidea.lang.CachedLatexSemanticsLookup
-import nl.hannahsten.texifyidea.lang.LSemanticCommand
-import nl.hannahsten.texifyidea.lang.LSemanticEntity
-import nl.hannahsten.texifyidea.lang.LSemanticEnv
-import nl.hannahsten.texifyidea.lang.LatexLib
-import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
+import nl.hannahsten.texifyidea.lang.*
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.lang.predefined.PredefinedPrimitives
 import nl.hannahsten.texifyidea.psi.LatexCommands
@@ -320,7 +315,7 @@ class LatexLibraryDefinitionService(
         // Use empty string as fallback SDK path when no SDK is configured.
         // This ensures predefined definitions are still loaded in test environments
         // or when no LaTeX distribution is installed.
-        val sdkPath = LatexSdkUtil.resolveSdkPath(contextFile, project) ?: ""
+        val sdkPath = cacheRetrievalTracker.track { LatexSdkUtil.resolveSdkPath(contextFile, project) ?: "" }
         return getOrComputeNow(LibDefinitionCacheKey(sdkPath, libName), libExpiration)
     }
 
@@ -360,6 +355,8 @@ class LatexLibraryDefinitionService(
         fun getInstance(project: Project): LatexLibraryDefinitionService = project.service()
 
         val performanceTracker = SimplePerformanceTracker()
+
+        val cacheRetrievalTracker = SimplePerformanceTracker()
 
         val predefinedBaseLibBundle: LibDefinitionBundle by lazy {
             // return the hard-coded basic commands

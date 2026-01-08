@@ -16,6 +16,7 @@ Your input is valuable and well appreciated.
 
 ### Added
 
+* Add module-level SDK support for multi-module projects, by @fberlakovich 
 * Reported exceptions will now be submitted to Sentry, to avoid spam on GitHub Issues
 
 ### Fixed
