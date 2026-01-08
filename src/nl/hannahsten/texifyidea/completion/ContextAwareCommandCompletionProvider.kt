@@ -8,13 +8,10 @@ import nl.hannahsten.texifyidea.completion.handlers.LatexCommandInsertHandler
 import nl.hannahsten.texifyidea.index.DefinitionBundle
 import nl.hannahsten.texifyidea.index.LatexLibraryDefinitionService
 import nl.hannahsten.texifyidea.index.SourcedDefinition
-import nl.hannahsten.texifyidea.lang.LArgument
-import nl.hannahsten.texifyidea.lang.LArgumentType
-import nl.hannahsten.texifyidea.lang.LContextSet
-import nl.hannahsten.texifyidea.lang.LSemanticCommand
-import nl.hannahsten.texifyidea.lang.LatexLib
+import nl.hannahsten.texifyidea.lang.*
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.settings.TexifySettings.CompletionMode
+import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.files.LatexPackageLocation
 import nl.hannahsten.texifyidea.util.files.isClassFile
 import nl.hannahsten.texifyidea.util.files.isStyleFile
@@ -61,10 +58,11 @@ object ContextAwareCommandCompletionProvider : LatexContextAwareCompletionAdapto
         val addedLibs = mutableSetOf<LatexLib>()
         val allFileNames = LatexPackageLocation.getAllPackageFileNames(parameters.originalFile)
         val defService = LatexLibraryDefinitionService.getInstance(project)
+        val sdkPath = LatexSdkUtil.resolveSdkPath(contextFile, project) ?: ""
         for (fileName in allFileNames) {
             val lib = LatexLib.fromFileName(fileName)
             if (!addedLibs.add(lib)) continue // skip already added libs
-            val libBundle = defService.getLibBundle(fileName, contextFile)
+            val libBundle = defService.getLibBundle(fileName, sdkPath)
             addBundleCommands(parameters, result, libBundle, isClassOrStyleFile, checkCtx = false)
             addedLibs.addAll(libBundle.allLibraries)
         }

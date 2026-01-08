@@ -97,7 +97,7 @@ class PerformanceDiagnosticAction : AnAction() {
                         td { +"CPU Time (ms)" }
                         td { +"% of Total Uptime" }
                         td { +"Runs" }
-                        td { +"Average Time" }
+                        td { +"Average Time (ms)" }
                         td { +"Additional Info" }
                     }
                     for (data in tableData) {
