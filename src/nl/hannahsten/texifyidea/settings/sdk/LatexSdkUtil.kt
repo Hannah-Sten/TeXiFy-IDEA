@@ -11,6 +11,7 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.index.LatexLibraryDefinitionService
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil.getExecutableName
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil.getLatexSdkForFile
@@ -368,11 +369,13 @@ object LatexSdkUtil {
      */
     fun resolveSdkPath(file: VirtualFile?, project: Project): SdkPath? {
         // Use getLatexSdkForFile which correctly handles module SDK -> project SDK fallback
-        val sdk = if (file != null) {
-            getLatexSdkForFile(file, project)
-        }
-        else {
-            getLatexProjectSdk(project)
+        val sdk = LatexLibraryDefinitionService.cacheRetrievalTracker.track {
+            if (file != null) {
+                getLatexSdkForFile(file, project)
+            }
+            else {
+                getLatexProjectSdk(project)
+            }
         }
 
         // If we have an SDK with a home path, use that
@@ -380,10 +383,12 @@ object LatexSdkUtil {
 
         // Otherwise, try to resolve kpsewhich from PATH and use its location as a key
         if (isPdflatexInPath) {
-            val kpsewhichPath = if (SystemInfo.isWindows) {
-                runCommand("where", "kpsewhich", timeout = 5)
-            } else {
-                runCommand("which", "kpsewhich", timeout = 5)
+            val kpsewhichPath = LatexLibraryDefinitionService.cacheRetrievalTracker.track {
+                if (SystemInfo.isWindows) {
+                    runCommand("where", "kpsewhich", timeout = 5)
+                } else {
+                    runCommand("which", "kpsewhich", timeout = 5)
+                }
             }
             kpsewhichPath?.trim()?.takeIf { it.isNotEmpty() }?.let { return it }
         }

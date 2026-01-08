@@ -420,7 +420,7 @@ class LatexDefinitionService(
         val contextFile = key.root
         val libraries = ArrayList<LibDefinitionBundle>(key.libraries.size + 1)
         libraries.add(packageService.getBaseBundle()) // add the default commands
-        val sdkPath = LatexLibraryDefinitionService.cacheRetrievalTracker.track { LatexSdkUtil.resolveSdkPath(contextFile, project) ?: "" }
+        val sdkPath = LatexSdkUtil.resolveSdkPath(contextFile, project) ?: ""
         key.libraries.mapTo(libraries) { packageService.getLibBundle(it, sdkPath) }
 
         val bundle = WorkingFilesetDefinitionBundle(libraries)
