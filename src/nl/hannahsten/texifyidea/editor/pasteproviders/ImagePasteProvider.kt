@@ -11,9 +11,9 @@ import nl.hannahsten.texifyidea.action.wizard.graphic.InsertGraphicWizardAction
 import nl.hannahsten.texifyidea.file.SaveImageDialog
 import nl.hannahsten.texifyidea.util.Clipboard
 import nl.hannahsten.texifyidea.util.caretOffset
-import nl.hannahsten.texifyidea.util.focusedTextEditor
 import nl.hannahsten.texifyidea.util.files.extractFile
 import nl.hannahsten.texifyidea.util.files.isLatexFile
+import nl.hannahsten.texifyidea.util.focusedTextEditor
 import org.apache.commons.io.FilenameUtils
 import org.jsoup.Jsoup
 import java.awt.datatransfer.DataFlavor
@@ -68,7 +68,7 @@ open class ImagePasteProvider : PasteProvider {
         val image = html.select("img").firstOrNull() ?: return Pair(null, null)
 
         // Handle data.
-        val source = image.attr("src") ?: return Pair(null, null)
+        val source = image.attr("src")
         val imageFormat = FilenameUtils.getExtension(source)
         val imageName = FilenameUtils.getBaseName(source)
         return Pair(imageName, imageFormat)

@@ -6,7 +6,9 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.codeStyle.CodeStyleSettings
 import nl.hannahsten.texifyidea.psi.LatexBeginCommand
 import nl.hannahsten.texifyidea.psi.environmentName
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.caretOffset
+import nl.hannahsten.texifyidea.util.insertAndMove
+import nl.hannahsten.texifyidea.util.lineIndentationByOffset
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.parser.endCommand
 import nl.hannahsten.texifyidea.util.parser.endOffset
@@ -30,7 +32,7 @@ class LatexInsertFormatterCommentsIntention : TexifyIntentionBase("Insert commen
             ?.parentOfType(LatexBeginCommand::class)
         val endCommand = beginCommand?.endCommand() ?: return
 
-        val indent: String = editor?.document?.lineIndentationByOffset(beginCommand.textOffset) ?: return
+        val indent: String = editor.document.lineIndentationByOffset(beginCommand.textOffset)
         val offComment = "% $offTag\n$indent"
         val onComment = "\n$indent% $onTag"
 

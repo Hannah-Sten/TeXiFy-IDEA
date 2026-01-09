@@ -25,6 +25,7 @@ class LatexProjectGeneratorPeer : ProjectGeneratorPeer<TexifySettings> {
 
     override fun getSettings() = settings
 
+    @Suppress("DEPRECATION")
     override fun buildUI(settingsStep: SettingsStep) = settingsStep.addExpertPanel(component)
 
     override fun isBackgroundJobRunning() = false
