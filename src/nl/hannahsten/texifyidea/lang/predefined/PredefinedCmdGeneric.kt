@@ -1,16 +1,16 @@
 package nl.hannahsten.texifyidea.lang.predefined
 
-import nl.hannahsten.texifyidea.lang.LArgument
+import nl.hannahsten.texifyidea.lang.LArgument.Companion.required
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.PredefinedCommandSet
 
 object PredefinedCmdGeneric : PredefinedCommandSet() {
-    private val textArg = LArgument.required("text", LatexContexts.Text)
-    private val labelArg = LArgument.required("label", LatexContexts.LabelReference)
+    private val textArg = required("text", LatexContexts.Text)
+    private val labelArg = required("label", LatexContexts.LabelReference)
 
     val genericCommands = buildCommands {
-        val titleArg = LArgument.required("title", LatexContexts.Text)
+        val titleArg = required("title", LatexContexts.Text)
 
         symbol("LaTeX", "LaTeX")
         symbol("LaTeXe", "LaTeX2ε")
@@ -370,8 +370,8 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
             "Define a label for referencing"
         }
 
-        val label1 = LArgument.required("label1", LatexContexts.LabelReference)
-        val label2 = LArgument.required("label2", LatexContexts.LabelReference)
+        val label1 = required("label1", LatexContexts.LabelReference)
+        val label2 = required("label2", LatexContexts.LabelReference)
         "ref".cmd(labelArg) { "Reference to a label" }
         "pageref".cmd(labelArg) { "Page reference to a label" }
 
@@ -413,7 +413,7 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
             "fullref".cmd(labelArg) { "FULLREF" }
             "hyperref".cmd("options".optional, labelArg) { "HYPERREF" }
 
-            val urlArg = LArgument.required("url", LatexContexts.URL)
+            val urlArg = required("url", LatexContexts.URL)
             "href".cmd(urlArg, textArg) { "HREF" }
             "url".cmd(urlArg) { "URL" }
         }
@@ -535,14 +535,15 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
     val listingsDefinitionCommands = buildCommands {
         packageOf("listings")
 
-        val nameRequired = "name".required
+        val nameRequired = required("name", LatexContexts.EnvironmentDeclaration)
         val numberOptional = "number".optional
         val defaultArgOptional = "default arg".optional
-        val textCtx = LatexContexts.Text
-        val startingCodeRequired = "starting code".required(ctx = textCtx)
-        val endingCodeRequired = "ending code".required(ctx = textCtx)
+        val startingCodeRequired = "starting code".required(ctx = LatexContexts.InsideDefinition)
+        val endingCodeRequired = "ending code".required(ctx = LatexContexts.InsideDefinition)
 
         "lstnewenvironment".cmd(nameRequired, numberOptional, defaultArgOptional, startingCodeRequired, endingCodeRequired) { "Define a new listings environment" }
+
+        "lstset".cmd(required("settings"))
     }
 
     val listings = buildCommands {

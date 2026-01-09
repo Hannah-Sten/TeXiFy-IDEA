@@ -63,7 +63,7 @@ object LatexLabelUtil {
         return null
     }
 
-    private fun extractLabelWithSemantics(element: LatexCommandWithParams, arguments: List<LArgument>): PsiElement? {
+    fun extractLabelWithSemantics(element: LatexCommandWithParams, arguments: List<LArgument>): PsiElement? {
         LatexPsiUtil.processArgumentsWithSemantics(element, arguments) { param, arg ->
             if (arg != null && arg.contextSignature.introduces(LatexContexts.LabelDefinition)) {
                 return param.findFirstChildTyped<LatexParameterText>()
@@ -98,6 +98,7 @@ object LatexLabelUtil {
 
     /**
      * Extracts the label from the environment if it is defined as a parameter.
+     * Possible duplicate of LatexPsiUtilNew.getLabelFromOptionalParameter
      */
     fun extractLabelFromEnvironment(element: LatexEnvironment, customDef: Boolean): PsiElement? {
         val name = element.getEnvironmentName()
@@ -227,7 +228,7 @@ object LatexLabelUtil {
         val filesetData = LatexProjectStructure.getFilesetDataFor(file, project)
         val scope = filesetData?.filesetScope?.restrictedByFileTypes(LatexFileType) ?: GlobalSearchScope.fileScope(project, file)
         NewLabelsIndex.forEachByName(label, project, scope) { container ->
-            val param = extractLabelParamIn(container, withCustomized = false) ?: return@forEachByName
+            val param = extractLabelParamIn(container, withCustomized = true) ?: return@forEachByName
             processor(param)
         }
 

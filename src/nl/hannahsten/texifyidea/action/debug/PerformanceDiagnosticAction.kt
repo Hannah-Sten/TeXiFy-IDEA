@@ -5,21 +5,10 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogBuilder
-import kotlinx.html.body
-import kotlinx.html.br
-import kotlinx.html.h2
-import kotlinx.html.hr
-import kotlinx.html.html
+import kotlinx.html.*
 import kotlinx.html.stream.createHTML
-import kotlinx.html.table
-import kotlinx.html.td
-import kotlinx.html.tr
 import nl.hannahsten.texifyidea.completion.LatexContextAwareCompletionAdaptor
-import nl.hannahsten.texifyidea.index.LatexDefinitionService
-import nl.hannahsten.texifyidea.index.LatexProjectStructure
-import nl.hannahsten.texifyidea.index.LatexLibraryDefinitionService
-import nl.hannahsten.texifyidea.index.LatexLibraryStructureService
-import nl.hannahsten.texifyidea.index.LatexProjectFilesets
+import nl.hannahsten.texifyidea.index.*
 import nl.hannahsten.texifyidea.inspections.AbstractTexifyContextAwareInspection
 import java.lang.management.ManagementFactory
 import java.util.concurrent.atomic.AtomicInteger
@@ -107,7 +96,7 @@ class PerformanceDiagnosticAction : AnAction() {
                         td { +"CPU Time (ms)" }
                         td { +"% of Total Uptime" }
                         td { +"Runs" }
-                        td { +"Average Time" }
+                        td { +"Average Time (ms)" }
                         td { +"Additional Info" }
                     }
                     for (data in tableData) {

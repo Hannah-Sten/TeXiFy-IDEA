@@ -6,6 +6,18 @@
 
 ### Fixed
 
+## [0.11.7] - 2026-01-09
+
+This release fixes a performance issue from the previous release. Thanks to the people who reported this!
+
+### Added
+
+* Add support for labels defined with \lstset in a custom listings environment
+
+### Fixed
+
+* Fixed a performance problem introduced in 0.11.6, caused by slow cache key creation
+
 ## [0.11.6] - 2026-01-01
 
 Welcome to TeXiFy IDEA 0.11.6! This release changes the exception reporting to Sentry, and has some very nice contributions to improve formatting, highlighting and the parser.
@@ -15,6 +27,7 @@ Your input is valuable and well appreciated.
 
 ### Added
 
+* Add module-level SDK support for multi-module projects, by @fberlakovich 
 * Reported exceptions will now be submitted to Sentry, to avoid spam on GitHub Issues
 
 ### Fixed
@@ -721,7 +734,8 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.6...HEAD
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.7...HEAD
+[0.11.7]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.6...v0.11.7
 [0.11.6]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.5...v0.11.6
 [0.11.5]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.4...v0.11.5
 [0.11.4]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.3...v0.11.4

@@ -1,11 +1,7 @@
 package nl.hannahsten.texifyidea.psi
 
 import com.intellij.psi.PsiElement
-import nl.hannahsten.texifyidea.lang.LArgument
-import nl.hannahsten.texifyidea.lang.LContextSet
-import nl.hannahsten.texifyidea.lang.LSemanticEnv
-import nl.hannahsten.texifyidea.lang.LatexContextIntro
-import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
+import nl.hannahsten.texifyidea.lang.*
 import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 import nl.hannahsten.texifyidea.util.parser.forEachDirectChild
 
@@ -151,6 +147,13 @@ abstract class LatexWithContextStateTraverser<S>(
 
             is LatexMathContent -> {
                 currentIntro = LatexContextIntro.MATH
+            }
+
+            is LatexKeyValValue -> {
+                // For example, \lstset has label as key=value parameter
+                if ((e.parent as? LatexStrictKeyValPair)?.keyValKey?.text == "label") {
+                    currentIntro = LatexContextIntro.assign(LatexContexts.LabelDefinition)
+                }
             }
         }
 
