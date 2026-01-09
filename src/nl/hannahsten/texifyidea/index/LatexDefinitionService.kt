@@ -308,11 +308,9 @@ class LatexLibraryDefinitionService(
      * Get the definition bundle for a library, using the SDK resolved from the given file context.
      *
      * @param libName The library name
-     * @param contextFile The file context to determine which SDK to use
+     * @param sdkPath Identifies to which LaTeX installation the library belongs
      */
-    fun getLibBundle(libName: LatexLib, sdkPath: SdkPath): LibDefinitionBundle {
-        return getOrComputeNow(LibDefinitionCacheKey(sdkPath, libName), libExpiration)
-    }
+    fun getLibBundle(libName: LatexLib, sdkPath: SdkPath): LibDefinitionBundle = getOrComputeNow(LibDefinitionCacheKey(sdkPath, libName), libExpiration)
 
     /**
      * Get the definition bundle for a library, using the SDK resolved from the given file context.
@@ -335,8 +333,6 @@ class LatexLibraryDefinitionService(
         fun getInstance(project: Project): LatexLibraryDefinitionService = project.service()
 
         val performanceTracker = SimplePerformanceTracker()
-
-        val cacheRetrievalTracker = SimplePerformanceTracker()
 
         val predefinedBaseLibBundle: LibDefinitionBundle by lazy {
             // return the hard-coded basic commands
@@ -420,6 +416,7 @@ class LatexDefinitionService(
         val contextFile = key.root
         val libraries = ArrayList<LibDefinitionBundle>(key.libraries.size + 1)
         libraries.add(packageService.getBaseBundle()) // add the default commands
+        // Depending on number of imports, getLibBundle could be called thousands of times per letter typed, so careful about performance here
         val sdkPath = LatexSdkUtil.resolveSdkPath(contextFile, project) ?: ""
         key.libraries.mapTo(libraries) { packageService.getLibBundle(it, sdkPath) }
 

@@ -81,7 +81,6 @@ class PerformanceDiagnosticAction : AnAction() {
                 buildFilesetInfo(projectFilesets)
             ),
             performance("Package Definitions", LatexLibraryDefinitionService.performanceTracker),
-            performance("Package Definitions Cache", LatexLibraryDefinitionService.cacheRetrievalTracker),
             performance("Custom Definitions", LatexDefinitionService.performanceTracker, buildCustomDefinitionsInfo(project)),
             performance("Completion Lookup", LatexContextAwareCompletionAdaptor.performanceTracker),
             performance("Ctx-aware Inspections", AbstractTexifyContextAwareInspection.performanceTracker)
