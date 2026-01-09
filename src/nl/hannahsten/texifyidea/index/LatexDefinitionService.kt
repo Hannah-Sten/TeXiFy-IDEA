@@ -14,12 +14,7 @@ import kotlinx.coroutines.launch
 import nl.hannahsten.texifyidea.action.debug.SimplePerformanceTracker
 import nl.hannahsten.texifyidea.index.SourcedDefinition.DefinitionSource
 import nl.hannahsten.texifyidea.index.file.LatexRegexBasedIndex
-import nl.hannahsten.texifyidea.lang.CachedLatexSemanticsLookup
-import nl.hannahsten.texifyidea.lang.LSemanticCommand
-import nl.hannahsten.texifyidea.lang.LSemanticEntity
-import nl.hannahsten.texifyidea.lang.LSemanticEnv
-import nl.hannahsten.texifyidea.lang.LatexLib
-import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
+import nl.hannahsten.texifyidea.lang.*
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.lang.predefined.PredefinedPrimitives
 import nl.hannahsten.texifyidea.psi.LatexCommands
@@ -32,7 +27,6 @@ import nl.hannahsten.texifyidea.settings.sdk.SdkPath
 import nl.hannahsten.texifyidea.util.AbstractBackgroundCacheService
 import nl.hannahsten.texifyidea.util.AbstractBlockingCacheService
 import nl.hannahsten.texifyidea.util.Log
-import nl.hannahsten.texifyidea.util.files.LatexPackageLocation
 import nl.hannahsten.texifyidea.util.isTestProject
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
@@ -314,44 +308,23 @@ class LatexLibraryDefinitionService(
      * Get the definition bundle for a library, using the SDK resolved from the given file context.
      *
      * @param libName The library name
-     * @param contextFile The file context to determine which SDK to use
+     * @param sdkPath Identifies to which LaTeX installation the library belongs
      */
-    fun getLibBundle(libName: LatexLib, contextFile: VirtualFile?): LibDefinitionBundle {
-        // Use empty string as fallback SDK path when no SDK is configured.
-        // This ensures predefined definitions are still loaded in test environments
-        // or when no LaTeX distribution is installed.
-        val sdkPath = LatexSdkUtil.resolveSdkPath(contextFile, project) ?: ""
-        return getOrComputeNow(LibDefinitionCacheKey(sdkPath, libName), libExpiration)
-    }
+    fun getLibBundle(libName: LatexLib, sdkPath: SdkPath): LibDefinitionBundle = getOrComputeNow(LibDefinitionCacheKey(sdkPath, libName), libExpiration)
 
     /**
      * Get the definition bundle for a library, using the SDK resolved from the given file context.
      */
-    fun getLibBundle(libName: LatexLib, contextFile: PsiFile): LibDefinitionBundle = getLibBundle(libName, contextFile.virtualFile)
+    fun getLibBundle(libName: LatexLib, contextFile: PsiFile): LibDefinitionBundle = getLibBundle(libName, LatexSdkUtil.resolveSdkPath(contextFile.virtualFile, project) ?: "")
 
     /**
      * Get the definition bundle for a library, using project SDK only (no file context).
      */
-    fun getLibBundle(libName: LatexLib): LibDefinitionBundle = getLibBundle(libName, null as VirtualFile?)
+    fun getLibBundle(libName: LatexLib): LibDefinitionBundle = getLibBundle(libName, "")
 
-    fun getLibBundle(fileName: String, contextFile: VirtualFile? = null): LibDefinitionBundle = getLibBundle(LatexLib.fromFileName(fileName), contextFile)
+    fun getLibBundle(fileName: String, sdkPath: SdkPath): LibDefinitionBundle = getLibBundle(LatexLib.fromFileName(fileName), sdkPath)
 
     fun getBaseBundle(): LibDefinitionBundle = getLibBundle(LatexLib.BASE)
-
-    /**
-     * Build definition bundles for all packages found in the project.
-     *
-     * This can take a relatively long time.
-     *
-     * @param contextFile The file context to determine which SDK to use
-     */
-    fun buildAllLibBundles(contextFile: VirtualFile? = null): Map<LatexLib, LibDefinitionBundle> {
-        val allNames = LatexPackageLocation.getAllPackageFileNames(contextFile, project)
-        return allNames.associate {
-            val lib = LatexLib.fromFileName(it)
-            lib to getLibBundle(lib, contextFile)
-        }
-    }
 
     companion object {
 
@@ -443,7 +416,9 @@ class LatexDefinitionService(
         val contextFile = key.root
         val libraries = ArrayList<LibDefinitionBundle>(key.libraries.size + 1)
         libraries.add(packageService.getBaseBundle()) // add the default commands
-        key.libraries.mapTo(libraries) { packageService.getLibBundle(it, contextFile) }
+        // Depending on number of imports, getLibBundle could be called thousands of times per letter typed, so careful about performance here
+        val sdkPath = LatexSdkUtil.resolveSdkPath(contextFile, project) ?: ""
+        key.libraries.mapTo(libraries) { packageService.getLibBundle(it, sdkPath) }
 
         val bundle = WorkingFilesetDefinitionBundle(libraries)
 

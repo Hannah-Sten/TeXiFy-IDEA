@@ -5,11 +5,12 @@ import com.intellij.codeInsight.completion.CompletionProvider
 import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.util.ProcessingContext
 import nl.hannahsten.texifyidea.action.debug.SimplePerformanceTracker
-import nl.hannahsten.texifyidea.index.DefinitionBundle
-import nl.hannahsten.texifyidea.index.LatexDefinitionService
-import nl.hannahsten.texifyidea.index.SourcedDefinition
+import nl.hannahsten.texifyidea.index.*
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LSemanticEntity
+import nl.hannahsten.texifyidea.lang.LatexLib
+import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
+import nl.hannahsten.texifyidea.util.files.LatexPackageLocation
 import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 
 interface LatexContextAwareCompletionProvider {
@@ -56,6 +57,23 @@ abstract class LatexContextAwareCompletionAdaptor : CompletionProvider<Completio
             addContextAwareCompletions(parameters, latexContexts, defBundle, result)
             // Add a message to the user that this is an experimental feature.
             result.addLookupAdvertisement("Experimental feature: context-aware completion. ")
+        }
+    }
+
+    fun addExternal(parameters: CompletionParameters, addCommands: (LibDefinitionBundle) -> Unit) {
+        val project = parameters.originalFile.project
+        val contextFile = parameters.originalFile.virtualFile
+        val addedLibs = mutableSetOf<LatexLib>()
+        val allFileNames = LatexPackageLocation.getAllPackageFileNames(parameters.originalFile)
+        val defService = LatexLibraryDefinitionService.getInstance(project)
+        val sdkPath = LatexSdkUtil.resolveSdkPath(contextFile, project) ?: ""
+
+        for (fileName in allFileNames) {
+            val lib = LatexLib.fromFileName(fileName)
+            if (!addedLibs.add(lib)) continue // skip already added libs
+            val libBundle = defService.getLibBundle(fileName, sdkPath)
+            addCommands(libBundle)
+            addedLibs.addAll(libBundle.allLibraries)
         }
     }
 
