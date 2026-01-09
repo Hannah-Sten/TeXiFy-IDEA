@@ -13,9 +13,6 @@ import javax.swing.JPanel
  */
 internal class ImagePanel : JPanel() {
 
-    companion object {
-    }
-
     private var image: Image? = null
     private var imageWidth: Int = 1
     private var imageHeight: Int = 1

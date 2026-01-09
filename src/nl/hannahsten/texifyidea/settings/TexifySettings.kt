@@ -2,14 +2,7 @@ package nl.hannahsten.texifyidea.settings
 
 import com.intellij.ide.PowerSaveMode
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.components.BaseState
-import com.intellij.openapi.components.RoamingType
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.components.SimplePersistentStateComponent
-import com.intellij.openapi.components.State
-import com.intellij.openapi.components.Storage
-import com.intellij.openapi.components.service
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
+import com.intellij.openapi.components.*
 import nl.hannahsten.texifyidea.run.pdfviewer.SumatraViewer
 
 @Service
@@ -92,7 +85,6 @@ class TexifySettings : SimplePersistentStateComponent<TexifySettings.State>(Stat
         var automaticQuoteReplacement by enum(QuoteReplacement.NONE)
         var htmlPasteTranslator by enum(HtmlPasteTranslator.BUILTIN)
         var autoCompileOption by enum<AutoCompile>(AutoCompile.OFF)
-        var missingLabelMinimumLevel by enum(LatexGenericRegularCommand.SUBSECTION)
         var pathToSumatra by string(null)
         var hasApprovedDetexify by property(false)
         var filesetExpirationTimeMs by property(DEFAULT_FILESET_EXPIRATION_TIME_MS)
