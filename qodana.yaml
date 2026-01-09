@@ -32,10 +32,10 @@ exclude: # Some of these are valid inspections but not important or accurate eno
   # Qodana false positives:
   - name: EmptyMethod
   - name: SameReturnValue
-  - name: UnusedProperty
   - name: EditorConfigKeyCorrectness
   - name: KotlinConstantConditions
   - name: RedundantNullableReturnType
   - name: UselessCallOnCollection
   - name: KDocUnresolvedReference
   - name: KotlinDeprecation
+  - name: unused
