@@ -375,7 +375,8 @@ object LatexSdkUtil {
         if (isPdflatexInPath) {
             val kpsewhichPath = if (SystemInfo.isWindows) {
                 runCommand("where", "kpsewhich", timeout = 5)
-            } else {
+            }
+            else {
                 runCommand("which", "kpsewhich", timeout = 5)
             }
             kpsewhichPath?.trim()?.takeIf { it.isNotEmpty() }?.let { return it }

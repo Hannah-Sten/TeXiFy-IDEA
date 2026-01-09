@@ -43,7 +43,7 @@ suspend fun runCommandNonBlocking(
         val isExecutableLocationCommand = commands.size == 2 && listOf("where", "which").contains(commands[0]) && commands.getOrNull(1).isNullOrBlank().not()
         val cachedExecutableLocation = SystemEnvironment.executableLocationCache[commands[1]]
         if (isExecutableLocationCommand && cachedExecutableLocation != null) {
-            Log.debug("Retrieved output of $commands from cache: $cachedExecutableLocation")
+            Log.debug("Retrieved output of ${commands.joinToString(" ")} from cache: $cachedExecutableLocation")
             return@withContext CommandResult(0, cachedExecutableLocation, null)
         }
 
