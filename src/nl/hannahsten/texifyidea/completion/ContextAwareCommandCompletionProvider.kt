@@ -6,13 +6,13 @@ import com.intellij.codeInsight.lookup.LookupElement
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.completion.handlers.LatexCommandInsertHandler
 import nl.hannahsten.texifyidea.index.DefinitionBundle
-import nl.hannahsten.texifyidea.index.LatexLibraryDefinitionService
 import nl.hannahsten.texifyidea.index.SourcedDefinition
-import nl.hannahsten.texifyidea.lang.*
+import nl.hannahsten.texifyidea.lang.LArgument
+import nl.hannahsten.texifyidea.lang.LArgumentType
+import nl.hannahsten.texifyidea.lang.LContextSet
+import nl.hannahsten.texifyidea.lang.LSemanticCommand
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.settings.TexifySettings.CompletionMode
-import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
-import nl.hannahsten.texifyidea.util.files.LatexPackageLocation
 import nl.hannahsten.texifyidea.util.files.isClassFile
 import nl.hannahsten.texifyidea.util.files.isStyleFile
 
@@ -29,7 +29,7 @@ object ContextAwareCommandCompletionProvider : LatexContextAwareCompletionAdapto
             checkCtx = completionMode == CompletionMode.SMART, contexts = contexts
         )
         if (completionMode == CompletionMode.ALL_PACKAGES) {
-            addAllExternalCommands(parameters, result, isClassOrStyleFile)
+            addExternal(parameters) { addBundleCommands(parameters, result, it, isClassOrStyleFile, checkCtx = false) }
         }
     }
 
@@ -48,24 +48,6 @@ object ContextAwareCommandCompletionProvider : LatexContextAwareCompletionAdapto
             appendCommandLookupElements(cmd, sd, lookupElements, defBundle)
         }
         result.addAllElements(lookupElements)
-    }
-
-    private fun addAllExternalCommands(
-        parameters: CompletionParameters, result: CompletionResultSet, isClassOrStyleFile: Boolean
-    ) {
-        val project = parameters.originalFile.project
-        val contextFile = parameters.originalFile.virtualFile
-        val addedLibs = mutableSetOf<LatexLib>()
-        val allFileNames = LatexPackageLocation.getAllPackageFileNames(parameters.originalFile)
-        val defService = LatexLibraryDefinitionService.getInstance(project)
-        val sdkPath = LatexSdkUtil.resolveSdkPath(contextFile, project) ?: ""
-        for (fileName in allFileNames) {
-            val lib = LatexLib.fromFileName(fileName)
-            if (!addedLibs.add(lib)) continue // skip already added libs
-            val libBundle = defService.getLibBundle(fileName, sdkPath)
-            addBundleCommands(parameters, result, libBundle, isClassOrStyleFile, checkCtx = false)
-            addedLibs.addAll(libBundle.allLibraries)
-        }
     }
 
     private fun buildArgumentInformation(cmd: LSemanticCommand, args: List<LArgument>): String = args.joinToString("")
