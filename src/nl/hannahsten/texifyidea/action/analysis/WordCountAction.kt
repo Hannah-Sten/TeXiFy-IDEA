@@ -27,7 +27,7 @@ import kotlin.io.path.Path
 internal data class CountData(
     val scope: CountScope,
     val wordCount: Int? = null,
-    val charsCount: Int? = null
+    val charsCount: Int? = null,
 ) {
     fun name() = scope.name()
 }
@@ -49,21 +49,83 @@ internal sealed class CountScope(val renderOrder: Int) {
 
 }
 
+typealias ErrorMessage = String
+
 internal sealed class CountMethod {
     internal class TexCount : CountMethod() {
         override fun renderString(): String = "<a href='https://app.uio.no/ifi/texcount/intro.html'>texcount</a> (default if available)"
 
         fun count(root: VirtualFile, workingDirectory: @NonNls String, psiFile: PsiFile): DialogBuilder {
             // Make sure the file is written to disk before running an external tool on it
-            FileDocumentManager.getInstance().apply { saveDocument(getDocument(root) ?: return@apply) }
-            val (output, exitCode) = runCommandWithExitCode("texcount", "-1", "-inc", "-sum", root.name, workingDirectory = Path(workingDirectory))
-            return if (exitCode == 0 && output?.toIntOrNull() != null) {
-                makeDialog(psiFile, listOf(CountData(CountScope.DOCUMENT_SCOPE, output.toInt())))
+            FileDocumentManager.getInstance().apply {
+                saveDocument(
+                    getDocument(root)
+                    ?: return@apply
+                )
+            }
+            val (output, exitCode) = runCommandWithExitCode("texcount", "-brief", "-inc", "-sum", root.name, workingDirectory = Path(workingDirectory))
+            return if (exitCode != 0 || output == null) {
+                makeDialog(psiFile, emptyList(), errorMessage = "texcount failed")
             }
             else {
-                // If there is an error, the output will contain both word count and error message (which could indicate a problem with the document itself)
-                val words = "[0-9]+".toRegex().find(output ?: "")?.value
-                makeDialog(psiFile, count = words?.let { listOf(CountData(CountScope.DOCUMENT_SCOPE, it.toInt())) } ?: emptyList(), errorMessage = output?.drop(words?.length ?: 0))
+                val (countData, error) = parseOutput(output, workingDirectory, psiFile)
+                makeDialog(psiFile, countData, error)
+            }
+        }
+
+        private fun parseOutput(output: String, workingDirectory: String, psiFile: PsiFile): Pair<List<CountData>, ErrorMessage?> {
+            // texcount output is formatted as follows:
+            //
+            // <error message>?
+            // <digits>: File: <root.tex>
+            // (<digits>: Included file: <included file.tex>)*
+            // Sum of files: <root.tex>
+            // <digits>: File(s) total: <root.tex><error message>?
+
+            val mainFileRegex = """(\d+): File: (.*)""".toRegex()
+            val includedFileRegex = """(\d+): Included file: (.*)""".toRegex()
+            val totalRegex = """(\d+): File\(s\) total: """.toRegex()
+
+            val mainMatch = mainFileRegex.find(output)
+            val rootFileName = mainMatch?.groupValues[2]
+            val totalMatch = totalRegex.find(output)
+
+            val errorMessage = mainMatch?.range?.first?.let {
+                if (it > 0) {
+                    output.substring(0, it)
+                }
+                else {
+                    totalMatch?.range?.last?.let { errorStart ->
+                        val s = errorStart + (rootFileName?.length
+                                              ?: 0)
+                        if (s < output.length) {
+                            output.substring(s + 1, output.length)
+                        }
+                        else null
+                    }
+                }
+            }
+
+            if (mainMatch?.groupValues[2] == psiFile.name) {
+                val totalCount = totalRegex.find(output, mainMatch.range.last)?.groupValues[1]?.toInt()
+                return listOf(
+                    CountData(CountScope.FileCountScope(psiFile), mainMatch.groupValues[1].toInt()),
+                    CountData(CountScope.DOCUMENT_SCOPE, totalCount)
+                ) to errorMessage
+            }
+            else {
+                val includedFileMatches = includedFileRegex.findAll(output).toList()
+                val counts = mutableListOf(
+                    CountData(
+                        CountScope.DOCUMENT_SCOPE,
+                        (mainMatch?.groupValues[1]?.toInt()
+                         ?: 0) + includedFileMatches.sumOf { it.groupValues[1].toInt() })
+                )
+                includedFileMatches.firstOrNull { workingDirectory + it.groupValues[2].removePrefix(".") == psiFile.virtualFile.path }
+                    ?.groupValues[1]?.toInt()?.let {
+                    counts.add(0, CountData(CountScope.FileCountScope(psiFile), it))
+                }
+                return counts to errorMessage
             }
         }
     }
@@ -130,13 +192,15 @@ internal sealed class CountMethod {
                         is LatexNormalText -> {
                             normal.add(e)
                         }
+
                         is LatexParameterText -> {
                             if (e.command?.text !in Util.IGNORE_COMMANDS) {
                                 parameter.add(e)
                             }
                         }
+
                         is LatexEnvironment -> {
-                            if(e.getEnvironmentName() == "thebibliography") {
+                            if (e.getEnvironmentName() == "thebibliography") {
                                 bib.add(e)
                             }
                         }
@@ -266,7 +330,8 @@ internal sealed class CountMethod {
         private fun isOptionalParameter(word: PsiElement): Boolean = word.grandparent(5) is LatexOptionalParam
 
         private fun isWrongCommand(word: PsiElement): Boolean {
-            val command = word.grandparent(7) as? LatexCommands ?: return false
+            val command = word.grandparent(7) as? LatexCommands
+                          ?: return false
 
             return Util.IGNORE_COMMANDS.contains(command.name)
         }
@@ -305,7 +370,8 @@ internal sealed class CountMethod {
                             count.sortedBy { it.scope.renderOrder }.forEach {
                                 renderCount(it)
                             }
-                        } else {
+                        }
+                        else {
                             row {
                                 text("Word count failed")
                             }
