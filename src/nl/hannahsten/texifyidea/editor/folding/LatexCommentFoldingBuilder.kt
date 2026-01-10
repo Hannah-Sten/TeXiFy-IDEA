@@ -9,8 +9,8 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
-import com.intellij.psi.util.startOffset
 import com.intellij.psi.util.endOffset
+import com.intellij.psi.util.startOffset
 import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 
 /**
@@ -55,7 +55,7 @@ class LatexCommentFoldingBuilder : FoldingBuilderEx(), DumbAware {
             }
             else {
                 // If the next comment follows directly after the previous one (and was broken by whitespace) add the next comment to the sequence
-                if (whitespaceLocations.any { it.startOffset == collectedTextRange!!.endOffset && it.endOffset == comment.startOffset }) {
+                if (whitespaceLocations.any { it.startOffset == collectedTextRange.endOffset && it.endOffset == comment.startOffset }) {
                     collectedTextRange = TextRange(collectedTextRange.startOffset, comment.endOffset)
                 }
                 else {

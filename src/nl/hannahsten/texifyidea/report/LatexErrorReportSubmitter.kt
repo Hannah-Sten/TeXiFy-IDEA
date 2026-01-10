@@ -61,7 +61,7 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
             }
         }
         // Don't do the check when there's no internet connection
-        catch (e: UnknownHostException) {
+        catch (_: UnknownHostException) {
             return true
         }
 
@@ -147,7 +147,7 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
             val inputString: String = try {
                 connection.inputStream.reader().use { it.readText() }
             }
-            catch (e: SocketTimeoutException) {
+            catch (_: SocketTimeoutException) {
                 return latestVersionCached
             }
             latestVersionCached = mapper.readValue(inputString, PluginRepo::class.java)
@@ -187,8 +187,8 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
         /**
          * Wrapper for multiple idea-plugin objects. Has to be nullable AND have default value to avoid exception.
          */
-        @JacksonXmlProperty(localName = "idea-plugin")
-        @JacksonXmlElementWrapper(useWrapping = false)
+        @param:JacksonXmlProperty(localName = "idea-plugin")
+        @param:JacksonXmlElementWrapper(useWrapping = false)
         val category: List<IdeaPlugin>? = emptyList()
     )
 
@@ -197,14 +197,14 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
      * All properties have to have a default value, because the class needs to have an empty constructor.
      */
     data class IdeaPlugin(
-        @JacksonXmlProperty(localName = "version")
+        @param:JacksonXmlProperty(localName = "version")
         val version: DefaultArtifactVersion = DefaultArtifactVersion(""),
-        @JacksonXmlProperty(localName = "idea-version")
+        @param:JacksonXmlProperty(localName = "idea-version")
         val ideaVersion: IdeaVersion = IdeaVersion()
     )
 
     data class IdeaVersion(
-        @JacksonXmlProperty(isAttribute = true, localName = "since-build")
+        @param:JacksonXmlProperty(isAttribute = true, localName = "since-build")
         val sinceBuild: DefaultArtifactVersion = DefaultArtifactVersion("")
     )
 }

@@ -88,11 +88,11 @@ fun VirtualFile.findFile(filePath: String, extensions: List<String> = emptyList(
                 LocalFileSystem.getInstance().findFileByPath(lookFor)
             }
 
-            if (file is VirtualFile && !(file as VirtualFile).isDirectory) return file
+            if (file is VirtualFile && !file.isDirectory) return file
         }
     }
     // #2248
-    catch (ignored: InvalidVirtualFileAccessException) {}
+    catch (_: InvalidVirtualFileAccessException) {}
 
     return null
 }

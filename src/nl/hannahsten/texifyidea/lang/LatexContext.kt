@@ -224,7 +224,6 @@ sealed interface LatexContextIntro {
                 is Assign -> when (b) {
                     is Assign -> Assign(a.contexts + b.contexts)
                     is Modify -> Assign(b.applyTo(a.contexts))
-                    else -> a // already handled above
                 }
 
                 is Modify -> when (b) {
@@ -233,8 +232,6 @@ sealed interface LatexContextIntro {
                         toAdd = a.toAdd + b.toAdd,
                         toRemove = a.toRemove + b.toRemove
                     )
-
-                    else -> a // already handled above
                 }
             }
         }

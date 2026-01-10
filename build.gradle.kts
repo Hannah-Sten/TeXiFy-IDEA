@@ -12,8 +12,8 @@ fun properties(key: String) = project.findProperty(key).toString()
 // NOTE: when updating versions, also update Qodana in qodana.yaml
 plugins {
     id("org.jetbrains.intellij.platform") version "2.10.5"
-    kotlin("jvm") version ("2.2.0")
-    kotlin("plugin.serialization") version ("2.2.0")
+    kotlin("jvm") version ("2.3.0")
+    kotlin("plugin.serialization") version ("2.3.0")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
     id("com.github.ben-manes.versions") version "0.53.0"

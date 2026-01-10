@@ -72,7 +72,7 @@ class LatexOutputPath(private val variant: String, var mainFile: VirtualFile?, p
             val contentRoot = getMainFileContentRoot(mainFile)
             val pathString = if (pathString.contains(PROJECT_DIR_STRING)) {
                 if (contentRoot == null) return if (mainFile != null) mainFile?.parent else null
-                pathString.replace(PROJECT_DIR_STRING, contentRoot?.path ?: return null)
+                pathString.replace(PROJECT_DIR_STRING, contentRoot.path)
             }
             else {
                 if (mainFile == null) return null
@@ -92,12 +92,12 @@ class LatexOutputPath(private val variant: String, var mainFile: VirtualFile?, p
 
             // Create and return default path
             if (contentRoot != null) {
-                val defaultPathString = contentRoot!!.path + "/" + variant
+                val defaultPathString = contentRoot.path + "/" + variant
                 createOutputPath(defaultPathString)?.let { return it }
             }
 
             if (contentRoot != null) {
-                return contentRoot!!
+                return contentRoot
             }
 
             return null
