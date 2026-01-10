@@ -11,6 +11,7 @@ import nl.hannahsten.texifyidea.settings.sdk.SdkPath
 import nl.hannahsten.texifyidea.settings.sdk.TectonicSdk
 import nl.hannahsten.texifyidea.util.AbstractBlockingCacheService
 import nl.hannahsten.texifyidea.util.Log
+import nl.hannahsten.texifyidea.util.files.LatexPackageLocation.computeValue
 import nl.hannahsten.texifyidea.util.isTestProject
 import nl.hannahsten.texifyidea.util.runCommand
 import java.nio.file.Path
@@ -154,6 +155,7 @@ object LatexPackageLocation : AbstractBlockingCacheService<SdkPath, Map<String, 
      * @param name Package name with extension.
      * @param psiFile The file context to determine which SDK to use.
      */
+    @Suppress("unused")
     fun getPackageLocation(name: String, psiFile: PsiFile): Path? = getPackageLocation(name, psiFile.virtualFile, psiFile.project)
 
     /**
@@ -163,6 +165,7 @@ object LatexPackageLocation : AbstractBlockingCacheService<SdkPath, Map<String, 
      * @param name Package name with extension.
      * @param project The current project.
      */
+    @Suppress("unused")
     fun getPackageLocation(name: String, project: Project): Path? = getPackageLocation(name, null, project)
 
     /**
@@ -193,7 +196,6 @@ object LatexPackageLocation : AbstractBlockingCacheService<SdkPath, Map<String, 
 
         val sdkPath = LatexSdkUtil.resolveSdkPath(file, project) ?: return emptySet()
         // Only return cached values, don't trigger computation here
-        // (computation happens via getPackageLocation)
         return getValueOrNull(sdkPath)?.keys ?: emptySet()
     }
 
@@ -203,12 +205,4 @@ object LatexPackageLocation : AbstractBlockingCacheService<SdkPath, Map<String, 
      * @param psiFile The file context to determine which SDK to use.
      */
     fun getAllPackageFileNames(psiFile: PsiFile): Set<String> = getAllPackageFileNames(psiFile.virtualFile, psiFile.project)
-
-    /**
-     * Get all known package names in the LaTeX installation.
-     * Uses project SDK only (no file context).
-     *
-     * @param project The current project.
-     */
-    fun getAllPackageFileNames(project: Project): Set<String> = getAllPackageFileNames(null, project)
 }

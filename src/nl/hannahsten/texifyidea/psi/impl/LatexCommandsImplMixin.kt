@@ -7,7 +7,6 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNameIdentifierOwner
 import com.intellij.psi.PsiReference
 import com.intellij.psi.stubs.IStubElementType
-import com.intellij.psi.tree.IElementType
 import com.intellij.psi.util.elementType
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
 import nl.hannahsten.texifyidea.index.stub.optionalParamAt
@@ -32,7 +31,6 @@ import nl.hannahsten.texifyidea.util.parser.getOptionalParameterMapFromParameter
 abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStub>, PsiNameIdentifierOwner, LatexCommands {
     constructor(stub: LatexCommandsStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
     constructor(node: ASTNode) : super(node)
-    constructor(stub: LatexCommandsStub?, nodeType: IElementType?, node: ASTNode?) : super(stub, nodeType, node)
 
     override fun toString(): String = "Command($name)"
 

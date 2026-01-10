@@ -36,13 +36,6 @@ fun LatexCommands?.isDefinitionOrRedefinition() = this != null &&
         )
 
 /**
- * Checks whether the given LaTeX commands is a command definition or not.
- *
- * @return `true` if the command is a command definition, `false` when the command is `null` or otherwise.
- */
-fun LatexCommands?.isCommandDefinition(): Boolean = this != null && name in CommandMagic.commandDefinitionsAndRedefinitions
-
-/**
  * Checks whether the given LaTeX commands is an environment definition or not.
  *
  * @return `true` if the command is an environment definition, `false` when the command is `null` or otherwise.

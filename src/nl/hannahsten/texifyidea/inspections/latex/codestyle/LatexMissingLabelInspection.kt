@@ -69,8 +69,8 @@ class LatexMissingLabelInspection : AbstractTexifyContextAwareInspection(
 
     override fun inspectElement(element: PsiElement, contexts: LContextSet, bundle: DefinitionBundle, file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {
         when(element) {
-            is LatexCommands -> inspectCommand(element, contexts, bundle, file, manager, isOnTheFly, descriptors)
-            is LatexEnvironment -> inspectEnvironment(element, contexts, bundle, file, manager, isOnTheFly, descriptors)
+            is LatexCommands -> inspectCommand(element, bundle, manager, isOnTheFly, descriptors)
+            is LatexEnvironment -> inspectEnvironment(element, manager, isOnTheFly, descriptors)
         }
     }
 
@@ -90,8 +90,8 @@ class LatexMissingLabelInspection : AbstractTexifyContextAwareInspection(
      * Adds a command descriptor to the given command if there is a label missing.
      */
     private fun inspectCommand(
-        command: LatexCommands, contexts: LContextSet,
-        defBundle: DefinitionBundle, file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>
+        command: LatexCommands,
+        defBundle: DefinitionBundle, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>
     ) {
         val nameWithSlash = command.nameWithSlash
         if (labeledCommandsLocal?.contains(nameWithSlash) != true) return
@@ -118,8 +118,7 @@ class LatexMissingLabelInspection : AbstractTexifyContextAwareInspection(
     }
 
     private fun inspectEnvironment(
-        environment: LatexEnvironment, contexts: LContextSet,
-        defBundle: DefinitionBundle, file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>
+        environment: LatexEnvironment, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>
     ) {
         val name = environment.getEnvironmentName()
         if (labeledEnvironmentsLocal?.contains(name) != true) return

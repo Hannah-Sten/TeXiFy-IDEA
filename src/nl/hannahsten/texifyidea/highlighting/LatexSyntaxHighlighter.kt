@@ -96,8 +96,6 @@ class LatexSyntaxHighlighter : SyntaxHighlighterBase() {
         val USER_DEFINED_COMMAND_KEY = USER_DEFINED_COMMAND
         private val COMMENT_KEYS = keys(COMMENT)
         private val MAGIC_COMMENT_KEYS = keys(MAGIC_COMMENT)
-        private val INLINE_MATH_KEYS = keys(INLINE_MATH)
-        private val DISPLAY_MATH_KEYS = keys(DISPLAY_MATH)
         private val STAR_KEYS = keys(STAR)
         private val EMPTY_KEYS = arrayOfNulls<TextAttributesKey>(0)
         private fun createKey(externalName: String, defaultStyle: TextAttributesKey): TextAttributesKey = TextAttributesKey.createTextAttributesKey(externalName, defaultStyle)

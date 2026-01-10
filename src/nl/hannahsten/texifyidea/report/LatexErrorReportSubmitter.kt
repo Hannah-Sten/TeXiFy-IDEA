@@ -177,11 +177,7 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
 
     companion object {
 
-        private const val ISSUE_URL = "https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/new?labels=crash-report&template=crash_report.md&title="
-
         private const val JETBRAINS_API_URL = "https://plugins.jetbrains.com/plugins/list?pluginId=9473"
-
-        private const val ENCODING = "UTF-8"
     }
 
     /**

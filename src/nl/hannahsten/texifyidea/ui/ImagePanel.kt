@@ -13,11 +13,6 @@ import javax.swing.JPanel
  */
 internal class ImagePanel : JPanel() {
 
-    companion object {
-
-        private const val SERIAL_VERSION_UID = 1L
-    }
-
     private var image: Image? = null
     private var imageWidth: Int = 1
     private var imageHeight: Int = 1

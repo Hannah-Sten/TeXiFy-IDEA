@@ -47,6 +47,7 @@ abstract class SystemPdfViewer(
      * Refresh the availability of the PDF viewer.
      * For example, when the user installs or uninstalls the viewer, this method can be called.
      */
+    @Suppress("unused")
     fun refreshAvailability(possiblePath: String? = null) {
         availability = checkAvailabilityOnSystem(possiblePath)
     }

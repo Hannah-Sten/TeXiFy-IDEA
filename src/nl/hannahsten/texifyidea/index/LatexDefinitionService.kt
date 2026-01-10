@@ -59,7 +59,6 @@ class SourcedDefinition(
     enum class DefinitionSource {
         Primitive,
         Predefined,
-        Merged,
         LibraryScan,
         UserDefined
     }
@@ -158,6 +157,7 @@ data class LibDefinitionCacheKey(val sdkPath: SdkPath, val libName: LatexLib)
  *
  * @author Ezrnest
  */
+@Suppress("unused")
 @Service(Service.Level.PROJECT)
 class LatexLibraryDefinitionService(
     val project: Project
@@ -405,12 +405,13 @@ class WorkingFilesetDefinitionBundle(
  *
  * @author Ezrnest
  */
+@Suppress("unused")
 @Service(Service.Level.PROJECT)
 class LatexDefinitionService(
     val project: Project, scope: CoroutineScope
 ) : AbstractBackgroundCacheService<Fileset, DefinitionBundle>(scope) {
 
-    private fun computeValue(key: Fileset, oldValue: DefinitionBundle?): DefinitionBundle = performanceTracker.track {
+    private fun computeValue(key: Fileset): DefinitionBundle = performanceTracker.track {
         // packages first
         val packageService = LatexLibraryDefinitionService.getInstance(project)
         val contextFile = key.root
@@ -432,7 +433,7 @@ class LatexDefinitionService(
     }
 
     override suspend fun computeValueSuspend(key: Fileset, oldValue: DefinitionBundle?): DefinitionBundle = smartReadAction(project) {
-        computeValue(key, oldValue)
+        computeValue(key)
     }
 
     fun getDefBundleForFileset(fileset: Fileset): DefinitionBundle = getAndComputeLater(fileset, expirationTime, LatexLibraryDefinitionService.predefinedBaseLibBundle)

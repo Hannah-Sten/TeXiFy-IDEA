@@ -18,13 +18,13 @@ object SpecialKeys {
     const val ENV_DEFINITIONS = "env_def"
     const val ALL_DEFINITIONS = "all_def"
     const val PACKAGE_INCLUDES = "package_includes"
-    const val REGULAR_COMMAND_DEFINITION = "non_math_cmd_def"
     const val GLOSSARY_ENTRY = "glossary_entry"
 }
 
 /**
  * Records special commands in the project, such as file inputs, command definitions, environment definitions, and package includes.
  */
+@Suppress("unused")
 class NewSpecialCommandsIndexEx : SpecialKeyStubIndexWrapper<LatexCommands>(LatexCommands::class.java) {
     override fun getKey(): StubIndexKey<String, LatexCommands> = LatexStubIndexKeys.COMMANDS_SPECIAL
 

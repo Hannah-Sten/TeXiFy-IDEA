@@ -224,16 +224,6 @@ fun PsiElement.isComment(): Boolean = this is PsiComment
 fun PsiElement.isLatexOrBibtex() = language == LatexLanguage || language == BibtexLanguage
 
 /**
- * Checks if the element is in a direct environment.
- *
- * This method does not take nested environments into account. Meaning that only the first parent environment counts.
- */
-fun PsiElement.inDirectEnvironment(environmentName: String): Boolean {
-    val environment = parentOfType(LatexEnvironment::class) ?: return false
-    return environment.getEnvironmentName() == environmentName
-}
-
-/**
  * Checks if the element is one of certain direct environments.
  *
  * This method does not take nested environments into account. Meaning that only the first parent environment counts.
@@ -241,17 +231,6 @@ fun PsiElement.inDirectEnvironment(environmentName: String): Boolean {
 fun PsiElement.inDirectEnvironment(validNames: Set<String>): Boolean {
     val environment = parentOfType(LatexEnvironment::class) ?: return false
     return environment.getEnvironmentName() in validNames
-}
-
-/**
- * Runs the given predicate on the direct environment element of this psi element.
- *
- * @return `true` when the predicate tests `true`, or `false` when there is no direct environment or when the
- *              predicate failed.
- */
-inline fun PsiElement.inDirectEnvironmentMatching(predicate: (LatexEnvironment) -> Boolean): Boolean {
-    val environment = parentOfType(LatexEnvironment::class) ?: return false
-    return predicate(environment)
 }
 
 /**
@@ -331,37 +310,3 @@ fun <Psi : PsiElement> PsiElementPattern.Capture<Psi>.withPattern(
     // This helper function allows for a simple lambda on  the call site.
     override fun accepts(psiElement: PsiElement, context: ProcessingContext?): Boolean = acceptFunction(psiElement, context)
 })
-
-/**
- * Looks for the index of this child element in the children of the parent that share the type with this child.
- * Zero indexed.
- *
- * Example:
- * PARENT
- * - CHILD A
- * - CHILD B
- * - BREAD A
- * - BREAD B
- * - CHILD C
- *
- * `CHILD C.indexOfChildByType(PARENT) = 2`.
- *
- * @receiver The parent of the children to get the index of.
- * @return The index of this element in the child list, ignoring children of a different type, or `null` when the parent
- *          could not be found, or when no child could be found that matches `this`.
- */
-inline fun <reified PsiChild : PsiElement, reified PsiParent : PsiElement> PsiChild.indexOfChildByType(): Int? {
-    val parentElement = parentOfType(PsiParent::class) ?: return null
-
-    // Loop over all children to find this parameter.
-    var currentIndex = 0
-    parentElement.forEachDirectChildTyped<PsiChild> {
-        if (it == this) {
-            return currentIndex
-        }
-        currentIndex++
-    }
-
-    // No child found.
-    return null
-}

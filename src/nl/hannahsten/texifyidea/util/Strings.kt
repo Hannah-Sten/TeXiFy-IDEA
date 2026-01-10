@@ -3,7 +3,6 @@ package nl.hannahsten.texifyidea.util
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.LocalFileSystem
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
-import org.intellij.lang.annotations.Language
 import java.nio.file.Path
 import java.text.Normalizer
 import java.util.*
@@ -14,21 +13,6 @@ import kotlin.math.min
  * Capitalises the first character of the string, if present.
  */
 fun String.capitalizeFirst(): String = if (this.isEmpty()) this else this[0].uppercaseChar() + substring(1, length)
-
-/**
- * Converts the string to camel case.
- */
-fun String.camelCase(): String {
-    @Language("RegExp")
-    val parts = lowercase(Locale.getDefault()).split(Regex("[_\\s]+"))
-
-    val sb = StringBuilder(parts[0])
-    for (i in 1 until parts.size) {
-        sb.append(parts[i].capitalizeFirst())
-    }
-
-    return sb.toString()
-}
 
 /**
  * Repeats the given string a given amount of times.
@@ -55,6 +39,7 @@ fun String.substringEnd(startIndex: Int, endIndex: Int): String = substring(leng
 /**
  * Takes the substring, but with inverted index, i.e. the index of the first character is `length`, the last index is `0`.
  */
+@Suppress("unused")
 fun String.substringEnd(range: IntRange): String = substringEnd(range.first, range.last + 1)
 
 /**
@@ -250,9 +235,6 @@ fun String.firstIndexOfAny(vararg chars: Char): Int {
 
 /** If this contains any of the given set. */
 fun CharSequence.containsAny(set: Set<String>) = set.any { this.contains(it) }
-
-/** If this starts with any of the given set. */
-fun String.startsWithAny(vararg prefix: String) = prefix.any { this.startsWith(it) }
 
 /** Shrink textrange with the given amount at both sides. */
 fun TextRange.shrink(amount: Int) = TextRange(min(this.startOffset + amount, endOffset - 1), max(0, this.endOffset - amount))

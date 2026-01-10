@@ -61,16 +61,6 @@ object CommandMagic {
         )
     }
 
-    /**
-     * LaTeX commands that increase a counter that can be labeled.
-     */
-    val increasesCounter = CommandNames.run {
-        hashSetOf(
-            CAPTION, CAPTION_OF, CHAPTER, SECTION, SUB_SECTION,
-            ITEM, LSTINPUTLISTING
-        )
-    }
-
     private fun allCommandsWithContext(context: LatexContext): Map<String, LSemanticCommand> = AllPredefined.findCommandsByContext(context).associateBy {
         it.nameWithSlash
     }
@@ -125,11 +115,6 @@ object CommandMagic {
      * Consider migrating to context-aware approach, using [nl.hannahsten.texifyidea.index.LatexDefinitionService].
      */
     val labels = CommandNames.run { setOf(LABEL) }
-
-    /**
-     * All commands that define bibliography items.
-     */
-    val bibliographyItems = CommandNames.run { setOf(BIB_ITEM) }
 
     /**
      * All math operators without a leading slash.
@@ -202,11 +187,6 @@ object CommandMagic {
      * All the commands that may define regular commands, whether it exists or not.
      */
     val allFileIncludeCommands: Set<String> = PredefinedCmdFiles.allCommands.map { it.nameWithSlash }.toSet()
-
-    /**
-     * All commands that can define regular commands.
-     */
-    val commandDefinitions: Set<String> = regularStrictCommandDefinitions + mathCommandDefinitions + flexibleCommandDefinitions
 
     /**
      * All commands that (re)define new commands.
@@ -347,8 +327,6 @@ object CommandMagic {
      */
     val bibliographyIncludeCommands: Set<String> = includeAndExtensions.entries.filter { it.value.contains("bib") }.map { it.key }.toSet()
 
-    val texAndBibliographyIncludeCommands: Set<String> = includeAndExtensions.entries.filter { it.value.contains("bib") || it.value.contains("tex") }.map { it.key }.toSet()
-
     /**
      * All commands that at first glance look like \if-esque commands, but that actually aren't.
      */
@@ -371,13 +349,6 @@ object CommandMagic {
             RM to TEXT_RM, SF to TEXT_SF, TT to TEXT_TT, IT to TEXT_IT,
             SL to TEXT_SL, SC to TEXT_SC, BF to TEXT_BF
         )
-    }
-
-    /**
-     * Set of text styling commands
-     */
-    val textStyles = CommandNames.run {
-        setOf(TEXT_RM, TEXT_SF, TEXT_TT, TEXT_IT, TEXT_SL, TEXT_SC, TEXT_BF, EMPH, TEXT_UP, TEXT_MD)
     }
 
     /**
