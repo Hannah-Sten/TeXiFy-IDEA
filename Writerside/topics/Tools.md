@@ -8,7 +8,7 @@ Count words in the document of the currently open file and reports on the total 
 The count for the currently open file at the moment does not count included files.
 
 Since 0.7.4, in case the [texcount](https://app.uio.no/ifi/texcount/intro.html) LaTeX package is available, that will be used.
-Otherwise, a built-in word counting tool will be used.
+Otherwise, a built-in word counting tool will be used which also counts characters.
 This built-in tool also counts words in LaTeX command arguments, unless the command is known to not typeset its argument. 
 
 ## Table Creation Wizard {id="table-creation-wizard"}
