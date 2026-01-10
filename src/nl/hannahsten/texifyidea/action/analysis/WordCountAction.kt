@@ -46,7 +46,6 @@ internal sealed class CountScope(val renderOrder: Int) {
     companion object {
         val DOCUMENT_SCOPE = DocumentCountScope()
     }
-
 }
 
 typealias ErrorMessage = String
@@ -59,8 +58,7 @@ internal sealed class CountMethod {
             // Make sure the file is written to disk before running an external tool on it
             FileDocumentManager.getInstance().apply {
                 saveDocument(
-                    getDocument(root)
-                    ?: return@apply
+                    getDocument(root) ?: return@apply
                 )
             }
             val (output, exitCode) = runCommandWithExitCode("texcount", "-brief", "-inc", "-sum", root.name, workingDirectory = Path(workingDirectory))
@@ -96,8 +94,7 @@ internal sealed class CountMethod {
                 }
                 else {
                     totalMatch?.range?.last?.let { errorStart ->
-                        val s = errorStart + (rootFileName?.length
-                                              ?: 0)
+                        val s = errorStart + (rootFileName?.length ?: 0)
                         if (s < output.length) {
                             output.substring(s + 1, output.length)
                         }
@@ -118,8 +115,8 @@ internal sealed class CountMethod {
                 val counts = mutableListOf(
                     CountData(
                         CountScope.DOCUMENT_SCOPE,
-                        (mainMatch?.groupValues[1]?.toInt()
-                         ?: 0) + includedFileMatches.sumOf { it.groupValues[1].toInt() })
+                        (mainMatch?.groupValues[1]?.toInt() ?: 0) + includedFileMatches.sumOf { it.groupValues[1].toInt() }
+                    )
                 )
                 includedFileMatches.firstOrNull { workingDirectory + it.groupValues[2].removePrefix(".") == psiFile.virtualFile.path }
                     ?.groupValues[1]?.toInt()?.let {
@@ -169,9 +166,7 @@ internal sealed class CountMethod {
 
         override fun renderString() = "TeXiFy word count"
 
-        fun count(psiFile: PsiFile): DialogBuilder {
-            return makeDialog(psiFile, countWords(psiFile))
-        }
+        fun count(psiFile: PsiFile): DialogBuilder = makeDialog(psiFile, countWords(psiFile))
 
         /**
          * Counts all the words in the given base file.
@@ -331,7 +326,7 @@ internal sealed class CountMethod {
 
         private fun isWrongCommand(word: PsiElement): Boolean {
             val command = word.grandparent(7) as? LatexCommands
-                          ?: return false
+                ?: return false
 
             return Util.IGNORE_COMMANDS.contains(command.name)
         }
