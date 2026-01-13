@@ -41,7 +41,6 @@ abstract class LatexParameterTextImplMixin(node: ASTNode) : LatexParameterText, 
         }
         if (name in CommandMagic.reference) {
             // If the command is a reference, we return a reference to the label parameter
-            // TODO: allow custom reference commands
             return LatexLabelParameterReference(this)
         }
 
