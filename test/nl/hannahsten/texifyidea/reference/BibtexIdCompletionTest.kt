@@ -56,8 +56,8 @@ class BibtexIdCompletionTest : BasePlatformTestCase() {
         // Using the following failed sometimes
         val testName = getTestName(false)
         myFixture.configureByFiles("${testName}_before.tex", "$testName.bib")
+        myFixture.updateCommandDef()
         myFixture.type("goossens")
-        myFixture.updateFilesets()
         myFixture.complete(CompletionType.BASIC)
         myFixture.checkResultByFile("${testName}_after.tex")
     }
