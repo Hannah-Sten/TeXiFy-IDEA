@@ -25,6 +25,7 @@ class LatexProjectGeneratorPeer : ProjectGeneratorPeer<TexifySettings> {
 
     override fun getSettings() = settings
 
+    @Suppress("DEPRECATION")
     override fun buildUI(settingsStep: SettingsStep) = settingsStep.addExpertPanel(component)
 
     override fun isBackgroundJobRunning() = false
@@ -33,10 +34,9 @@ class LatexProjectGeneratorPeer : ProjectGeneratorPeer<TexifySettings> {
         listeners += listener
     }
 
-    override fun getComponent(): JComponent {
-        return JPanel(FlowLayout(FlowLayout.LEFT)).apply {
-            bibtexEnabled = JBCheckBox("Configure with BibTeX support")
-            add(bibtexEnabled)
-        }
+    @Deprecated("Deprecated in Java")
+    override fun getComponent(): JComponent = JPanel(FlowLayout(FlowLayout.LEFT)).apply {
+        bibtexEnabled = JBCheckBox("Configure with BibTeX support")
+        add(bibtexEnabled)
     }
 }

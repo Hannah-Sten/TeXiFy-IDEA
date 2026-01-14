@@ -89,9 +89,7 @@ internal class TexifyConventionsSchemesPanel(val settings: TexifyConventionsSett
         return scheme.deepCopy() != TexifyConventionsScheme(myName = scheme.myName)
     }
 
-    override fun removeScheme(scheme: TexifyConventionsScheme) {
-        throw OperationNotSupportedException()
-    }
+    override fun removeScheme(scheme: TexifyConventionsScheme): Unit = throw OperationNotSupportedException()
 
     /**
      * The actions that can be performed with this panel.
@@ -103,7 +101,7 @@ internal class TexifyConventionsSchemesPanel(val settings: TexifyConventionsSett
          *
          * @param scheme the scheme that has become the selected scheme
          */
-        public override fun onSchemeChanged(scheme: TexifyConventionsScheme?) {
+        override fun onSchemeChanged(scheme: TexifyConventionsScheme?) {
             if (scheme == null)
                 return
 
@@ -133,9 +131,7 @@ internal class TexifyConventionsSchemesPanel(val settings: TexifyConventionsSett
          * This method is useful only if there can be other schemes besides the projet and the global default scheme,
          * which is currently not supported.
          */
-        override fun duplicateScheme(scheme: TexifyConventionsScheme, newName: String) {
-            throw OperationNotSupportedException()
-        }
+        override fun duplicateScheme(scheme: TexifyConventionsScheme, newName: String): Unit = throw OperationNotSupportedException()
 
         /**
          * Renames the currently active scheme.
@@ -144,9 +140,7 @@ internal class TexifyConventionsSchemesPanel(val settings: TexifyConventionsSett
          * which is currently not supported.
          */
 
-        override fun renameScheme(scheme: TexifyConventionsScheme, newName: String) {
-            throw OperationNotSupportedException()
-        }
+        override fun renameScheme(scheme: TexifyConventionsScheme, newName: String): Unit = throw OperationNotSupportedException()
     }
 
     /**

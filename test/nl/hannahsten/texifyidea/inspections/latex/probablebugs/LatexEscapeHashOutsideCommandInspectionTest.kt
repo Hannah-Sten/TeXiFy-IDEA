@@ -10,7 +10,7 @@ internal class LatexEscapeHashOutsideCommandInspectionTest : TexifyInspectionTes
             LatexFileType,
             """
             \begin{document}
-                Dummy text <weak_warning descr="unescaped #">#</weak_warning>.
+                Dummy text <weak_warning descr="Unescaped #">#</weak_warning>.
             \end{document}
             """.trimIndent()
         )

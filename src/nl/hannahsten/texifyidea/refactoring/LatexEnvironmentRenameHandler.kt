@@ -15,9 +15,7 @@ import nl.hannahsten.texifyidea.util.parser.firstParentOfType
  */
 class LatexEnvironmentRenameHandler : MemberInplaceRenameHandler() {
 
-    override fun isAvailable(element: PsiElement?, editor: Editor, file: PsiFile): Boolean {
-        return getElement(editor, file) != null
-    }
+    override fun isAvailable(element: PsiElement?, editor: Editor, file: PsiFile): Boolean = getElement(editor, file) != null
 
     override fun invoke(project: Project, editor: Editor, file: PsiFile, dataContext: DataContext) {
         val element = getElement(editor, file) ?: return

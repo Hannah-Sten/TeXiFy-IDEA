@@ -11,9 +11,9 @@ import nl.hannahsten.texifyidea.action.wizard.graphic.InsertGraphicWizardAction
 import nl.hannahsten.texifyidea.file.SaveImageDialog
 import nl.hannahsten.texifyidea.util.Clipboard
 import nl.hannahsten.texifyidea.util.caretOffset
-import nl.hannahsten.texifyidea.util.currentTextEditor
 import nl.hannahsten.texifyidea.util.files.extractFile
 import nl.hannahsten.texifyidea.util.files.isLatexFile
+import nl.hannahsten.texifyidea.util.focusedTextEditor
 import org.apache.commons.io.FilenameUtils
 import org.jsoup.Jsoup
 import java.awt.datatransfer.DataFlavor
@@ -50,7 +50,7 @@ open class ImagePasteProvider : PasteProvider {
         val (imageName, extension) = extractMetaData(clipboard)
 
         // The caret will not be in the editor after the first dialog, so remember the caret
-        val editor = project.currentTextEditor()
+        val editor = project.focusedTextEditor()
         val caretPosition = editor?.editor?.caretOffset() ?: return
         SaveImageDialog(project, image, imageName, extension) { imageFile -> InsertGraphicWizardAction(imageFile).executeAction(file, project, editor, caretPosition) }
     }
@@ -68,7 +68,7 @@ open class ImagePasteProvider : PasteProvider {
         val image = html.select("img").firstOrNull() ?: return Pair(null, null)
 
         // Handle data.
-        val source = image.attr("src") ?: return Pair(null, null)
+        val source = image.attr("src")
         val imageFormat = FilenameUtils.getExtension(source)
         val imageName = FilenameUtils.getBaseName(source)
         return Pair(imageName, imageFormat)
@@ -90,9 +90,7 @@ open class ImagePasteProvider : PasteProvider {
             transferable.isDataFlavorSupported(DataFlavor.javaFileListFlavor)
     }
 
-    fun hasRawImage(transferable: Transferable): Boolean {
-        return transferable.isDataFlavorSupported(DataFlavor.imageFlavor) && transferable.getTransferData(DataFlavor.imageFlavor) is BufferedImage
-    }
+    fun hasRawImage(transferable: Transferable): Boolean = transferable.isDataFlavorSupported(DataFlavor.imageFlavor) && transferable.getTransferData(DataFlavor.imageFlavor) is BufferedImage
 
     override fun isPasteEnabled(dataContext: DataContext) = isPastePossible(dataContext)
 

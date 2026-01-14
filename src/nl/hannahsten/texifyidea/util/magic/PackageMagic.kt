@@ -40,13 +40,6 @@ object PackageMagic {
     val glossaryNames = glossary.map { it.name }.toSet()
 
     /**
-     * Known conflicting packages.
-     */
-    val conflictingPackages = listOf(
-        setOf(LatexPackage.BIBLATEX, LatexPackage.NATBIB)
-    )
-
-    /**
      * Maps packages to the packages it loads.
      * This list is just there as a sort of default for those users who do not have LaTeX packages installed for example.
      */

@@ -6,6 +6,94 @@
 
 ### Fixed
 
+## [0.11.7] - 2026-01-09
+
+This release fixes a performance issue from the previous release. Thanks to the people who reported this!
+
+### Added
+
+* Add support for labels defined with \lstset in a custom listings environment
+
+### Fixed
+
+* Fixed a performance problem introduced in 0.11.6, caused by slow cache key creation
+
+## [0.11.6] - 2026-01-01
+
+Welcome to TeXiFy IDEA 0.11.6! This release changes the exception reporting to Sentry, and has some very nice contributions to improve formatting, highlighting and the parser.
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
+
+### Added
+
+* Add module-level SDK support for multi-module projects, by @fberlakovich 
+* Reported exceptions will now be submitted to Sentry, to avoid spam on GitHub Issues
+
+### Fixed
+
+* Fix a formatting issue when using square brackets as first text in an environment, by @Ezrnest
+* Fix a parser performance issue which could cause a freeze, by @fberlakovich
+* Fix a highlighting issue when paramater context was not detected, by @fberlakovich
+* Ignore labels in command definitions
+* Fixed various exceptions
+
+## [0.11.5] - 2025-12-01
+
+Welcome to TeXiFy IDEA 0.11.5! This release fixes a bug which caused file icons of other plugins to be overridden.
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
+
+### Added
+
+* Add support for zref-clever package
+* Add mathpar environment
+
+### Fixed
+
+* Do not override file icons from other plugins
+* Allow more characters in environment names
+
+## [0.11.4] - 2025-11-01
+
+Welcome to TeXiFy IDEA 0.11.4! This release mainly improves on the refactoring done in the previous release, and fixes some bugs.
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
+
+### Added
+
+* Improve many inspections, by @Ezrnest
+* Improve support for custom label commands, by @Ezrnest
+* Fold \left...\right expressions, by @jojo2357
+
+### Fixed
+
+* Fix support for custom label commands in structure view
+* Fix 'file not found' error for input commands without extension specified
+* Fix symbol tool window insertion
+* Do not override build project action if there are no run configurations
+
+## [0.11.3] - 2025-09-14
+
+Welcome to TeXiFy IDEA 0.11.3! For this release, @Ezrnest has (re-)added a much improved support for custom command definitions (using \newcommand etc), including showing the parameter context in autocompletion.
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
+
+### Added
+
+* The context of commands and environments (math, reference, etc) is now also supported for custom defined commands, by @Ezrnest
+* Seperate arguments can even have different contexts, by @Ezrnest
+* This context is now also shown in the autocompletion, by @Ezrnest
+* Fix many issues related to custom command definitions, by @Ezrnest
+* Improvements to predefined command and environment definitions, by @Ezrnest
+* Add support for acronym package to missing aronym references inspection
+* Automatically reload pdf when using latexmk continuous update
+* Support no-break space character in parser
+* Add support for multiple paths (comma-separated) in TEXMFHOME environment variables
+
 ## [0.11.2] - 2025-08-10
 
 Welcome to TeXiFy IDEA 0.11.2! This release fixes a few exceptions introduced in the previous release.
@@ -646,7 +734,12 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.2...HEAD
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.7...HEAD
+[0.11.7]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.6...v0.11.7
+[0.11.6]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.5...v0.11.6
+[0.11.5]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.4...v0.11.5
+[0.11.4]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.3...v0.11.4
+[0.11.3]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.2...v0.11.3
 [0.11.2]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.1...v0.11.2
 [0.11.1]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.4...v0.11.1
 [0.11.0]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.10.4...v0.11.0

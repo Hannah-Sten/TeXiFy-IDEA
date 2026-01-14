@@ -1,16 +1,15 @@
 version: "1.0"
-linter: jetbrains/qodana-jvm-community:2025.1
+linter: jetbrains/qodana-jvm-community:2025.3
 profile:
   path: .idea/inspectionProfiles/Project_Default.xml
 failThreshold: 0
+bootstrap: ./gradlew initializeIntellijPlatformPlugin
 exclude: # Some of these are valid inspections but not important or accurate enough to fail the build
   - name: EditorConfigUnusedDeclaration
   - name: HtmlDeprecatedTag
   - name: HtmlRequiredLangAttribute
   - name: MemberVisibilityCanBePrivate
   - name: UnstableApiUsage
-  - name: unused
-  - name: UnusedSymbol
   - name: XmlHighlighting
   - name: XmlUnusedNamespaceDeclaration
   - name: All
@@ -33,11 +32,10 @@ exclude: # Some of these are valid inspections but not important or accurate eno
   # Qodana false positives:
   - name: EmptyMethod
   - name: SameReturnValue
-  - name: UnusedProperty
   - name: EditorConfigKeyCorrectness
   - name: KotlinConstantConditions
-  - name: UnusedReceiverParameter
   - name: RedundantNullableReturnType
   - name: UselessCallOnCollection
   - name: KDocUnresolvedReference
   - name: KotlinDeprecation
+  - name: unused

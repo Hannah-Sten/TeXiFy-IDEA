@@ -25,15 +25,13 @@ class BibtexIdReference(element: LatexParameterText) : PsiReferenceBase<LatexPar
         val name = myElement.name ?: return emptyArray()
         val entries = NewBibtexEntryIndex.getByNameInFileSet(name, myElement.containingFile)
         if (entries.isEmpty()) return ResolveResult.EMPTY_ARRAY
-        return entries.mapNotNull {
+        return entries.mapNotNull { entry ->
             // Resolve to the id, similarly as why we resolve to the label text for latex labels
-            it.findFirstChildOfType(BibtexId::class)?.let { PsiElementResolveResult(it) }
+            entry.findFirstChildOfType(BibtexId::class)?.let { id -> PsiElementResolveResult(id) }
         }.toTypedArray()
     }
 
-    override fun isReferenceTo(element: PsiElement): Boolean {
-        return multiResolve(false).any { it.element == element }
-    }
+    override fun isReferenceTo(element: PsiElement): Boolean = multiResolve(false).any { it.element == element }
 
     override fun handleElementRename(newElementName: String): PsiElement {
         myElement.setName(newElementName)

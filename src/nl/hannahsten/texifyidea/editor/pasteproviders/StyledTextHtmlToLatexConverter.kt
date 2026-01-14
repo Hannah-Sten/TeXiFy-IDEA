@@ -75,13 +75,9 @@ class StyledTextHtmlToLatexConverter : HtmlToLatexConverter {
         return latexString
     }
 
-    private fun getPrefix(element: Element): String {
-        return specialOpeningTags[element.tagName()]?.invoke(element) ?: openingTags[element.tagName()] ?: ""
-    }
+    private fun getPrefix(element: Element): String = specialOpeningTags[element.tagName()]?.invoke(element) ?: openingTags[element.tagName()] ?: ""
 
-    private fun getPostfix(element: Element): String {
-        return specialClosingTags[element.tagName()]?.invoke(element) ?: closingTags[element.tagName()] ?: ""
-    }
+    private fun getPostfix(element: Element): String = specialClosingTags[element.tagName()]?.invoke(element) ?: closingTags[element.tagName()] ?: ""
 
     private val specialOpeningTags = hashMapOf<String, (Element) -> String>(
         "a" to { element ->

@@ -9,11 +9,11 @@ import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.action.insert.InsertTable
 import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.util.caretOffset
-import nl.hannahsten.texifyidea.util.currentTextEditor
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.insertUsepackage
 import nl.hannahsten.texifyidea.util.lineIndentationByOffset
+import nl.hannahsten.texifyidea.util.selectedTextEditorOrWarning
 import java.util.*
 
 /**
@@ -28,7 +28,7 @@ class LatexTableWizardAction : AnAction() {
      * Show a dialog and get the text to insert.
      */
     fun getTableTextWithDialog(project: Project, defaultDialogWrapper: TableCreationDialogWrapper? = null): String {
-        val editor = project.currentTextEditor() ?: return ""
+        val editor = project.selectedTextEditorOrWarning() ?: return ""
         val document = editor.editor.document
 
         // Get the indentation from the current line.
@@ -49,7 +49,7 @@ class LatexTableWizardAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val file = e.getData(PlatformDataKeys.VIRTUAL_FILE) ?: return
         val project = e.getData(PlatformDataKeys.PROJECT) ?: return
-        val editor = project.currentTextEditor() ?: return
+        val editor = project.selectedTextEditorOrWarning() ?: return
         val tableTextToInsert = getTableTextWithDialog(project)
         // Use an insert action to insert the table.
         InsertTable(tableTextToInsert).actionPerformed(file, project, editor)

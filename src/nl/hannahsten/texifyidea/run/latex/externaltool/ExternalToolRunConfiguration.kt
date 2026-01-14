@@ -35,9 +35,7 @@ class ExternalToolRunConfiguration(
     var workingDirectory: VirtualFile? = null
     var environmentVariables: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT
 
-    override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState {
-        return ExternalToolCommandLineState(environment, mainFile, workingDirectory, this.program, environmentVariables)
-    }
+    override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState = ExternalToolCommandLineState(environment, mainFile, workingDirectory, this.program, environmentVariables)
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = ExternalToolSettingsEditor(project)
 

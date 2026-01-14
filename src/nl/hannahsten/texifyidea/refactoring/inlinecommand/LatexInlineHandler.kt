@@ -39,7 +39,5 @@ abstract class LatexInlineHandler : InlineActionHandler() {
         }
     }
 
-    override fun isEnabledForLanguage(language: Language?): Boolean {
-        return language == LatexLanguage
-    }
+    override fun isEnabledForLanguage(language: Language?): Boolean = language == LatexLanguage
 }

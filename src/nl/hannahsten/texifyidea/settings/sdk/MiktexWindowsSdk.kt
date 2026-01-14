@@ -28,9 +28,7 @@ class MiktexWindowsSdk : LatexSdk("MiKTeX Windows SDK") {
         return Paths.get(path, executable).toString()
     }
 
-    override fun suggestHomePath(): String {
-        return Paths.get(System.getProperty("user.home"), "AppData", "Local", "Programs", "MiKTeX 2.9").toString()
-    }
+    override fun suggestHomePath(): String = Paths.get(System.getProperty("user.home"), "AppData", "Local", "Programs", "MiKTeX 2.9").toString()
 
     override fun suggestHomePaths(): MutableCollection<String> {
         val results = mutableSetOf<String>()
@@ -40,7 +38,7 @@ class MiktexWindowsSdk : LatexSdk("MiKTeX Windows SDK") {
                 if (path.isBlank()) return@forEach
                 val index = path.findLastAnyOf(setOf("miktex\\bin"))?.first ?: (path.length - 1)
                 if (index > 0) {
-                    results.add(path.substring(0, index))
+                    results.add(path.take(index))
                 }
             }
         }

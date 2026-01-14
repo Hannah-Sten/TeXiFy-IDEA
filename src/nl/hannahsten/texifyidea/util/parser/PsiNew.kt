@@ -2,11 +2,12 @@ package nl.hannahsten.texifyidea.util.parser
 
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.PsiTreeUtil
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment
-import nl.hannahsten.texifyidea.lang.Environment
-import nl.hannahsten.texifyidea.psi.*
+import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.psi.LatexCommandWithParams
+import nl.hannahsten.texifyidea.psi.LatexRequiredParam
+import nl.hannahsten.texifyidea.psi.MyPsiRecursiveWalker
 import kotlin.reflect.KClass
 
 /*
@@ -19,18 +20,24 @@ import kotlin.reflect.KClass
  * Typically, PSI related extensions are called from a read action, so we must avoid wrapping these methods in a read action.
  */
 
+/**
+ * Find the first parent (including this element) of this PsiElement that matches the given predicate.
+ */
 inline fun PsiElement.firstParent(maxDepth: Int = Int.MAX_VALUE, predicate: (PsiElement) -> Boolean): PsiElement? {
-    var current: PsiElement? = this
-    var depth = -1
-    while (current != null && depth < maxDepth) {
+    var current: PsiElement = this
+    for (depth in 0..maxDepth) {
         if (predicate(current)) {
             return current
         }
-        current = current.parent?.let { if (it.isValid) it else null }
-        depth++
+        current = current.parent ?: return null
     }
     return null
 }
+
+/**
+ * Find the first parent excluding this element that matches the given predicate.
+ */
+inline fun PsiElement.firstStrictParent(maxDepth: Int = Int.MAX_VALUE, predicate: (PsiElement) -> Boolean): PsiElement? = this.parent?.firstParent(maxDepth, predicate)
 
 /**
  * Find the first node of the given type in the parent chain (including this) up to the [maxDepth].
@@ -41,17 +48,7 @@ inline fun PsiElement.firstParent(maxDepth: Int = Int.MAX_VALUE, predicate: (Psi
  * @param maxDepth The maximum depth to search for the element.
  * @see [firstParentOfType]
  */
-inline fun <reified T : PsiElement> PsiElement.firstParentOfType(maxDepth: Int = Int.MAX_VALUE): T? {
-    var current: PsiElement = this
-    for (depth in 0..maxDepth) {
-        if (current is T) {
-            return current
-        }
-        current = current.parent ?: return null
-        if (!current.isValid) return null
-    }
-    return null
-}
+inline fun <reified T : PsiElement> PsiElement.firstParentOfType(maxDepth: Int = Int.MAX_VALUE): T? = firstParent(maxDepth) { it is T } as? T
 
 inline fun PsiElement.traverseParents(action: (PsiElement) -> Unit) {
     var parent: PsiElement? = this.parent
@@ -64,6 +61,7 @@ inline fun PsiElement.traverseParents(action: (PsiElement) -> Unit) {
 /**
  * Determines whether any parent of this PsiElement matches the given predicate.
  */
+@Suppress("unused")
 inline fun PsiElement.anyParent(predicate: (PsiElement) -> Boolean): Boolean {
     traverseParents {
         if (predicate(it)) {
@@ -90,30 +88,21 @@ fun PsiElement.startOffsetInAncestor(ancestor: PsiElement): Int {
 /**
  * Returns the text range of this PsiElement in the given ancestor, or null if the ancestor is not a parent of this PsiElement.
  */
+@Suppress("unused")
 fun PsiElement.textRangeInAncestor(ancestor: PsiElement): TextRange? {
     // If the ancestor is not a parent, return null
     val startOffset = this.startOffsetInAncestor(ancestor)
-    if(startOffset < 0) return null
+    if (startOffset < 0) return null
     return TextRange.from(startOffset, this.textLength)
 }
 
 /**
- * Checks if the psi element is in math mode or not.
+ * Checks if the psi element is in math mode or not using **advanced context resolution**.
  *
- * **This function is slow as it checks all parents of the psi element.**
  *
  * @return `true` when the element is in math mode, `false` when the element is in no math mode.
  */
-fun PsiElement.inMathContext(): Boolean {
-    traverseParents {
-        if (it is LatexMathEnvMarker) return true
-        if (it is LatexEnvironment) {
-            // TODO: make it possible to check if the environment QUITs math mode
-            if (DefaultEnvironment.fromPsi(it)?.context == Environment.Context.MATH) return true
-        }
-    }
-    return false
-}
+fun PsiElement.inMathContext(): Boolean = LatexPsiUtil.resolveContextUpward(this).contains(LatexContexts.Math)
 
 /**
  * Iterate through all direct children of the PsiElement and apply the action to each child
@@ -249,9 +238,7 @@ fun PsiElement.traverseReversed(depth: Int = Int.MAX_VALUE): Sequence<PsiElement
  *
  * @see traverse
  */
-inline fun <reified T : PsiElement> PsiElement.traverseTyped(depth: Int = Int.MAX_VALUE): Sequence<T> {
-    return traverse(depth).filterIsInstance<T>()
-}
+inline fun <reified T : PsiElement> PsiElement.traverseTyped(depth: Int = Int.MAX_VALUE): Sequence<T> = traverse(depth).filterIsInstance<T>()
 
 /**
  * Traverse the PSI tree and apply the action to each element (including this element).
@@ -297,6 +284,17 @@ inline fun <reified T : PsiElement> PsiElement.forEachChildTyped(depth: Int = In
     }
 }
 
+inline fun PsiElement.getNthChildThat(n: Int, predicate: (PsiElement) -> Boolean): PsiElement? {
+    var count = 0
+    forEachDirectChild { child ->
+        if (predicate(child)) {
+            if (count == n) return child
+            count++
+        }
+    }
+    return null
+}
+
 /**
  * Collects all [PsiElement]s in the subtree of this [PsiElement] that match the given predicate.
  *
@@ -312,9 +310,7 @@ fun PsiElement.collectSubtree(predicate: (PsiElement) -> Boolean): List<PsiEleme
  *
  * Note: **This method would be slow as it traverses the entire subtree of the PsiElement.**
  */
-inline fun <reified T : PsiElement> PsiElement.collectSubtreeTyped(): Collection<T> {
-    return PsiTreeUtil.findChildrenOfType(this, T::class.java)
-}
+inline fun <reified T : PsiElement> PsiElement.collectSubtreeTyped(): Collection<T> = PsiTreeUtil.findChildrenOfType(this, T::class.java)
 
 /*
 Collecting the subtree with a depth limit
@@ -339,6 +335,7 @@ fun <R : Any, C : MutableCollection<R>> PsiElement.collectSubtreeTo(collection: 
  * If you know the PSI structure, then you can set a depth limit to improve performance, especially for large PSI trees.
  *
  */
+@Suppress("unused")
 fun PsiElement.collectSubtree(depth: Int, predicate: (PsiElement) -> Boolean): List<PsiElement> {
     // Collect all children of the PsiElement that match the predicate
     return collectSubtreeTo(mutableListOf(), depth) { it.takeIf(predicate) }
@@ -365,25 +362,19 @@ inline fun <reified T : PsiElement> PsiElement.collectSubtreeTyped(depth: Int = 
 /**
  * Collects all [PsiElement]s in the subtree of this [PsiElement] transformed by the given [transform] into a list, filtering out `null` values.
  */
-fun <R : Any> PsiElement.collectSubtreeOf(depth: Int = Int.MAX_VALUE, transform: (PsiElement) -> R?): List<R> {
-    return collectSubtreeTo(mutableListOf(), depth, transform)
-}
+fun <R : Any> PsiElement.collectSubtreeOf(depth: Int = Int.MAX_VALUE, transform: (PsiElement) -> R?): List<R> = collectSubtreeTo(mutableListOf(), depth, transform)
 
 /**
  * Finds the first child in the subtree of a certain type.
  *
  * @see findFirstChildOfType
  */
-inline fun <reified T : PsiElement> PsiElement.findFirstChildTyped(): T? {
-    return PsiTreeUtil.findChildOfType(this, T::class.java)
-}
+inline fun <reified T : PsiElement> PsiElement.findFirstChildTyped(): T? = PsiTreeUtil.findChildOfType(this, T::class.java)
 
 /**
  * Finds the first child in the subtree of a certain type.
  */
-fun <T : PsiElement> PsiElement.findFirstChildOfType(clazz: KClass<T>): T? {
-    return PsiTreeUtil.findChildOfType(this, clazz.java)
-}
+fun <T : PsiElement> PsiElement.findFirstChildOfType(clazz: KClass<T>): T? = PsiTreeUtil.findChildOfType(this, clazz.java)
 
 /**
  * Finds the first child in the subtree of a certain type that matches the given predicate.
@@ -401,3 +392,32 @@ inline fun <reified T : PsiElement> PsiElement.findFirstChildTyped(depth: Int = 
     }
     return result
 }
+
+/**
+ * Find the first adjacent [PsiElement] (sibling or parent's sibling).
+ *
+ */
+fun PsiElement.findNextAdjacentElement(): PsiElement? {
+    var node = this
+    while (true) {
+        val next = node.nextSibling
+        if (next != null) return next
+        node = node.parent ?: return null
+    }
+}
+
+fun PsiElement.findPrevAdjacentElement(): PsiElement? {
+    var node = this
+    while (true) {
+        val prev = node.prevSibling
+        if (prev != null) return prev
+        node = node.parent ?: return null
+    }
+}
+
+/**
+ * Find the adjacent [PsiWhiteSpace],
+ */
+fun PsiElement.findNextAdjacentWhiteSpace(): PsiWhiteSpace? = findNextAdjacentElement() as? PsiWhiteSpace
+
+fun PsiElement.findPrevAdjacentWhiteSpace(): PsiWhiteSpace? = findPrevAdjacentElement() as? PsiWhiteSpace

@@ -3,6 +3,10 @@ package nl.hannahsten.texifyidea.run.latex.logtab
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.process.ProcessOutputType
+import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.actionSystem.ex.ActionUtil
+import com.intellij.openapi.actionSystem.impl.SimpleDataContext
+import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
@@ -15,6 +19,7 @@ import nl.hannahsten.texifyidea.run.latex.logtab.ui.LatexCompileMessageTreeView
 import nl.hannahsten.texifyidea.util.files.findFile
 import nl.hannahsten.texifyidea.util.remove
 import nl.hannahsten.texifyidea.util.removeAll
+import nl.hannahsten.texifyidea.util.runInBackgroundWithoutProgress
 import org.apache.commons.collections.Buffer
 import org.apache.commons.collections.BufferUtils
 import org.apache.commons.collections.buffer.CircularFifoBuffer
@@ -33,19 +38,17 @@ class LatexOutputListener(
         /**
          * Returns true if firstLine is most likely the last line of the message.
          */
-        fun isLineEndOfMessage(secondLine: String, firstLine: String): Boolean {
-            return firstLine.remove("\n").length < LINE_WIDTH - 1 &&
-                // Indent of LaTeX Warning/Error messages
-                !secondLine.startsWith("               ") &&
-                // Package warning/error continuation.
-                !PACKAGE_WARNING_CONTINUATION.toRegex().containsMatchIn(secondLine) &&
-                // Assume the undefined control sequence always continues on the next line
-                !firstLine.trim().endsWith("Undefined control sequence.") &&
-                // And if 'Undefined control sequence' was broken up over line length, we can still check if the second line starts with the line number
-                !"^l\\.(\\d+)".toRegex().containsMatchIn(secondLine) &&
-                // Case of the first line pointing out something interesting on the second line
-                !(firstLine.endsWith(":") && secondLine.startsWith("    "))
-        }
+        fun isLineEndOfMessage(secondLine: String, firstLine: String): Boolean = firstLine.remove("\n").length < LINE_WIDTH - 1 &&
+            // Indent of LaTeX Warning/Error messages
+            !secondLine.startsWith("               ") &&
+            // Package warning/error continuation.
+            !PACKAGE_WARNING_CONTINUATION.toRegex().containsMatchIn(secondLine) &&
+            // Assume the undefined control sequence always continues on the next line
+            !firstLine.trim().endsWith("Undefined control sequence.") &&
+            // And if 'Undefined control sequence' was broken up over line length, we can still check if the second line starts with the line number
+            !"^l\\.(\\d+)".toRegex().containsMatchIn(secondLine) &&
+            // Case of the first line pointing out something interesting on the second line
+            !(firstLine.endsWith(":") && secondLine.startsWith("    "))
     }
 
     /**
@@ -97,6 +100,33 @@ class LatexOutputListener(
 
             // Newlines are important to check when message end. Keep.
             processNewText(collectedLine)
+
+            checkForPdfRefresh(collectedLine)
+        }
+    }
+
+    /**
+     * latexmk -pvc remains running continously and compiles on file changes, so we need to refresh the pdf based on latexmk log messages since the pdf update
+     * will not appear in vfs until refreshed
+     */
+    fun checkForPdfRefresh(text: String) {
+        if (!"\\s*=== Watching for updated files. Use ctrl/C to stop ...\\s*".toRegex().matches(text)) {
+            return
+        }
+        runInBackgroundWithoutProgress {
+            val action = ActionManager.getInstance().getAction("pdf.viewer.ReloadViewAction") ?: return@runInBackgroundWithoutProgress
+            val event = AnActionEvent(
+                SimpleDataContext.getProjectContext(project),
+                Presentation(),
+                ActionPlaces.UNKNOWN,
+                ActionUiKind.NONE,
+                null,
+                0,
+                ActionManager.getInstance(),
+            )
+            runInEdt {
+                ActionUtil.performActionDumbAwareWithCallbacks(action, event)
+            }
         }
     }
 

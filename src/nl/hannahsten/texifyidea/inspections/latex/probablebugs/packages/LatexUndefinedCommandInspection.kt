@@ -1,21 +1,12 @@
 package nl.hannahsten.texifyidea.inspections.latex.probablebugs.packages
 
 import com.intellij.codeInspection.InspectionManager
-import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
-import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.index.NewDefinitionIndex
-import nl.hannahsten.texifyidea.index.file.LatexExternalCommandIndex
-import nl.hannahsten.texifyidea.inspections.InsightGroup
-import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
-import nl.hannahsten.texifyidea.util.files.commandsInFile
-import nl.hannahsten.texifyidea.util.includedPackagesInFileset
-import nl.hannahsten.texifyidea.util.insertUsepackage
-import nl.hannahsten.texifyidea.util.magic.cmd
+import com.intellij.openapi.util.TextRange
+import nl.hannahsten.texifyidea.lang.LSemanticEntity
+import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexEnvironment
 
 /**
  * Warn when the user uses a command that is not defined in any included packages or LaTeX base.
@@ -26,55 +17,41 @@ import nl.hannahsten.texifyidea.util.magic.cmd
  *
  * @author Thomas
  */
-class LatexUndefinedCommandInspection : TexifyInspectionBase() {
-
-    override val inspectionGroup = InsightGroup.LATEX
-
-    override val inspectionId = "UndefinedCommand"
+class LatexUndefinedCommandInspection : LatexMissingImportInspectionBase(inspectionId = "UndefinedCommand") {
 
     override fun getDisplayName() = "Command is not defined"
 
-    override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        val includedPackages = file.includedPackagesInFileset().toSet().plus(LatexPackage.DEFAULT)
-
-        val commandsInFile = file.commandsInFile()
-        val commandNamesInFile = commandsInFile.map { it.name }.toSet()
-        // The number of indexed commands can be quite large (50k+) so we filter the large set based on the small one (in this file).
-        val indexedCommands = LatexExternalCommandIndex.getAllKeys(file.project)
-            .filter { it in commandNamesInFile }
-            .associateWith { command ->
-                val containingPackages =
-                    LatexExternalCommandIndex.getContainingFiles(command, file.project).map { LatexPackage.create(it) }.toSet()
-                containingPackages
-            }
-        val magicCommands = LatexRegularCommand.ALL.associate { Pair(it.cmd, setOf(it.dependency)) }
-        val userDefinedCommands = NewDefinitionIndex.getAllKeys(file.project) // TODO filter only project file, not all files
-            .associateWith { setOf(LatexPackage.DEFAULT) }
-
-        // Join all the maps, map command name (with backslash) to all packages it is defined in
-        val allKnownCommands = (indexedCommands.keys + magicCommands.keys + userDefinedCommands.keys).associateWith {
-            indexedCommands.getOrDefault(it, setOf()) + magicCommands.getOrDefault(it, setOf()) + userDefinedCommands.getOrDefault(it, setOf())
-        }
-
-        return commandsInFile.filter { allKnownCommands.getOrDefault(it.name, emptyList()).intersect(includedPackages).isEmpty() }
-            .map { command ->
-                manager.createProblemDescriptor(
-                    command,
-                    "Command ${command.name} is not defined",
-                    allKnownCommands.getOrDefault(command.name, emptyList()).map { ImportPackageFix(it) }.toTypedArray(),
-                    ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                    isOntheFly,
-                    false
-                )
-            }
+    override fun reportUnknownCommand(
+        command: LatexCommands, descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager, isOntheFly: Boolean
+    ) {
+        descriptors.add(
+            manager.createProblemDescriptor(
+                command,
+                TextRange(0, command.commandToken.textLength),
+                "Undefined command: ${command.name}",
+                ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                isOntheFly
+            )
+        )
     }
 
-    private class ImportPackageFix(val dependency: LatexPackage) : LocalQuickFix {
+    override fun reportUnknownEnvironment(
+        name: String, environment: LatexEnvironment, descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager, isOntheFly: Boolean
+    ) {
+        descriptors.add(
+            manager.createProblemDescriptor(
+                environment,
+                TextRange(7, 7 + name.length),
+                "Undefined environment: $name",
+                ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                isOntheFly,
+            )
+        )
+    }
 
-        override fun getFamilyName() = "Add import for package ${dependency.name}"
+    override fun reportCommandMissingImport(command: LatexCommands, candidates: List<LSemanticEntity>, descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager, isOntheFly: Boolean) {
+    }
 
-        override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            descriptor.psiElement.containingFile.insertUsepackage(dependency)
-        }
+    override fun reportEnvironmentMissingImport(environment: LatexEnvironment, candidates: List<LSemanticEntity>, descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager, isOntheFly: Boolean) {
     }
 }

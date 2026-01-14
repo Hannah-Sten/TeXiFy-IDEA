@@ -8,13 +8,9 @@ import nl.hannahsten.texifyidea.updateFilesets
 
 class LatexFilesetTest : BasePlatformTestCase() {
 
-    override fun getTestDataPath(): String {
-        return "test/resources/fileset"
-    }
+    override fun getTestDataPath(): String = "test/resources/fileset"
 
-    private fun filesetOf(vararg files: PsiFile): Set<VirtualFile> {
-        return files.map { it.virtualFile }.toSet()
-    }
+    private fun filesetOf(vararg files: PsiFile): Set<VirtualFile> = files.map { it.virtualFile }.toSet()
 
     fun testInputFile() {
         val main = myFixture.addFileToProject(

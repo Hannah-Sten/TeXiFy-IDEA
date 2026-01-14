@@ -18,9 +18,7 @@ class LatexEnvironmentBeginEndReference(element: LatexEnvIdentifier, val toBegin
         rangeInElement = ElementManipulators.getValueTextRange(element)
     }
 
-    override fun isReferenceTo(element: PsiElement): Boolean {
-        return resolve() == element
-    }
+    override fun isReferenceTo(element: PsiElement): Boolean = resolve() == element
 
     override fun resolve(): PsiElement? {
         // Navigate from the current text in \end, to the text in \begin
@@ -31,23 +29,6 @@ class LatexEnvironmentBeginEndReference(element: LatexEnvIdentifier, val toBegin
         else {
             env.endCommand?.envIdentifier
         }
-    }
-
-    override fun handleElementRename(newElementName: String): PsiElement {
-        myElement.setName(newElementName)
-        return myElement
-    }
-}
-
-class LatexEnvironmentEndReference(element: LatexEnvIdentifier) : PsiReferenceBase<LatexEnvIdentifier>(element) {
-
-    init {
-        rangeInElement = ElementManipulators.getValueTextRange(element)
-    }
-
-    override fun resolve(): PsiElement? {
-        // Navigate from the current text in \begin, to the text in \end
-        return element.firstParentOfType(LatexEnvironment::class)?.endCommand?.envIdentifier
     }
 
     override fun handleElementRename(newElementName: String): PsiElement {

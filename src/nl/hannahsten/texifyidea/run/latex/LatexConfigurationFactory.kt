@@ -26,7 +26,7 @@ class LatexConfigurationFactory(type: ConfigurationType) : ConfigurationFactory(
             setDefaultPdfViewer()
             setDefaultOutputFormat()
             setSuggestedName()
-            setDefaultDistribution(project)
+            setDefaultLatexDistribution()
         }
         is BibtexRunConfigurationType -> BibtexRunConfiguration(project, this, "BibTeX")
         is MakeindexRunConfigurationType -> MakeindexRunConfiguration(project, this, "Makeindex")

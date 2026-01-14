@@ -11,8 +11,10 @@ import nl.hannahsten.texifyidea.util.parser.getOptionalParameterMapFromParameter
 
 abstract class LatexBeginCommandImplMixin(node: ASTNode) : LatexBeginCommand, ASTWrapperPsiElement(node) {
 
-    override fun getName(): String {
-        return "\\begin"
+    override fun getName(): String = "\\begin"
+
+    override fun hasStar(): Boolean {
+        return false // The \begin command does not have a star version.
     }
 
     override fun getOptionalParameterMap() = getOptionalParameterMapFromParameters(this.parameterList)

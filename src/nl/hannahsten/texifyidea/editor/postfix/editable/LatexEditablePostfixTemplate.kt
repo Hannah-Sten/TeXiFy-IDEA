@@ -14,30 +14,22 @@ class LatexEditablePostfixTemplate(templateId: String, templateName: String, tem
     constructor(templateId: String, templateName: String, templateText: String, conditions: Set<LatexPostfixTemplateExpressionCondition>, provider: LatexPostFixTemplateProvider) :
         this(templateId, templateName, createTemplateFromText(templateText), conditions, provider)
 
-    override fun getExpressions(context: PsiElement, document: Document, offset: Int): MutableList<PsiElement> {
-        return if (myExpressionConditions.isEmpty()) {
-            LatexPostfixExpressionSelector().getExpressions(context, document, offset)
-        }
-        else myExpressionConditions.flatMap { condition ->
-            condition.expressionSelector().getExpressions(context, document, offset).filter { condition.value(it) }
-        }.toSet().toMutableList()
+    override fun getExpressions(context: PsiElement, document: Document, offset: Int): MutableList<PsiElement> = if (myExpressionConditions.isEmpty()) {
+        LatexPostfixExpressionSelector().getExpressions(context, document, offset)
     }
+    else myExpressionConditions.flatMap { condition ->
+        condition.expressionSelector().getExpressions(context, document, offset).filter { condition.value(it) }
+    }.toSet().toMutableList()
 
-    override fun getTopmostExpression(element: PsiElement): PsiElement {
-        return getExpressions(element, element.containingFile.fileDocument, element.textOffset)
-            .minByOrNull { it.textOffset }!!
-    }
+    override fun getTopmostExpression(element: PsiElement): PsiElement = getExpressions(element, element.containingFile.fileDocument, element.textOffset)
+        .minByOrNull { it.textOffset }!!
 
-    override fun isBuiltin(): Boolean {
-        return false
-    }
+    override fun isBuiltin(): Boolean = false
 
     companion object {
-        private fun createTemplateFromText(templateText: String): TemplateImpl {
-            return TemplateImpl("fakeKey", templateText, "").apply {
-                isToReformat = true
-                parseSegments()
-            }
+        private fun createTemplateFromText(templateText: String): TemplateImpl = TemplateImpl("fakeKey", templateText, "").apply {
+            isToReformat = true
+            parseSegments()
         }
     }
 }

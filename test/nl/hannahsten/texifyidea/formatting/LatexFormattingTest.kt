@@ -37,8 +37,7 @@ class LatexFormattingTest : BasePlatformTestCase() {
     }
 
     /**
-     * This may not be what we want (though personally I've gotten used to it and think it's actually quite nice),
-     * but having a test we at least notice when we (accidentally) change it.
+     * This is debatable
      */
     fun `test labeled equation`() {
         """
@@ -46,8 +45,7 @@ class LatexFormattingTest : BasePlatformTestCase() {
                 x = y
             \end{equation}
         """.trimIndent() `should be reformatted to` """
-            \begin{equation}
-                \label{eq:xy}
+            \begin{equation}\label{eq:xy}
                 x = y
             \end{equation}
         """.trimIndent()
@@ -220,8 +218,8 @@ fun Int?.ifPositiveAddTwo(): Int =
     fun testAlgorithmicx() {
         """
             \begin{algorithm} \begin{algorithmic} \State begin 
-            \If {$ i\geq maxval${'$'}} \State $ i\gets 0${'$'} 
-            \Else \If {$ i+k\leq maxval${'$'}} \State $ i\gets i+k${'$'} 
+            \If {$ i\geq maxval$} \State $ i\gets 0$ 
+            \Else \If {$ i+k\leq maxval$} \State $ i\gets i+k$ 
             \EndIf 
             \EndIf \end{algorithmic} \caption{Insertion sort}\label{alg:algorithm2} \end{algorithm}
         """.trimIndent() `should be reformatted to` """
@@ -337,6 +335,56 @@ fun Int?.ifPositiveAddTwo(): Int =
         """.trimIndent()
     }
 
+    fun `test environments`() {
+        """
+            \begin{center}
+                text
+                text
+            \end{center}
+            
+            \begin{equation}
+                [x+y]^2
+                \xi
+                \begin{center}
+                a
+                \end{center}
+            \end{equation}
+            
+            \begin{equation}
+                [x+y]
+                \xi
+            \alpha
+            \end{equation}
+            
+            \begin{figure}[h]
+            fig
+            \end{figure}
+        """.trimIndent() `should be reformatted to` """
+            \begin{center}
+                text
+                text
+            \end{center}
+            
+            \begin{equation}
+                [x+y]^2
+                \xi
+                \begin{center}
+                    a
+                \end{center}
+            \end{equation}
+            
+            \begin{equation}
+                [x+y]
+                \xi
+                \alpha
+            \end{equation}
+            
+            \begin{figure}[h]
+                fig
+            \end{figure}
+        """.trimIndent()
+    }
+
     fun `test newlines before sectioning commands`() {
         """
             Text.
@@ -351,6 +399,8 @@ fun Int?.ifPositiveAddTwo(): Int =
 
     private infix fun String.`should be reformatted to`(expected: String) {
         myFixture.configureByText(LatexFileType, this)
+        writeCommand(project) { CodeStyleManager.getInstance(project).reformat(myFixture.file) }
+        // In some rare cases, we need two reformats, for example around fake environment parameters
         writeCommand(project) { CodeStyleManager.getInstance(project).reformat(myFixture.file) }
         myFixture.checkResult(expected)
     }

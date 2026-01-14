@@ -33,20 +33,15 @@ interface BibtexEntryType : Described, Dependend {
         return list
     }
 
-    fun bibPackage(): String = when (dependency) {
-        LatexPackage.BIBLATEX -> "BIBLATEX"
-        else -> "BIBTEX"
-    }
-
     /**
      * Create a template to insert when inserting this BibTeX entry.
      */
     fun template(): TemplateImpl {
         val keyValueString = required.mapIndexed { i: Int, field: BibtexEntryField ->
-            "${field.fieldName} = {\$__Variable${i + 1}\$}"
+            $$"$${field.fieldName} = {$__Variable$${i + 1}$}"
         }.joinToString(",\n")
 
-        val templateString = "{\$__Variable0\$,\n$keyValueString,\$END\$\n}"
+        val templateString = $$"{$__Variable0$,\n$$keyValueString,$END$\n}"
 
         val template = object : TemplateImpl("", templateString, "") {
             override fun isToReformat(): Boolean = true

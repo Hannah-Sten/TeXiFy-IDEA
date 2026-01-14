@@ -6,7 +6,7 @@ import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.DataProvider
-import com.intellij.openapi.application.smartReadAction
+import com.intellij.openapi.application.readAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.openapi.wm.ToolWindow
@@ -34,7 +34,7 @@ class RemoteLibrariesToolWindowFactory : ToolWindowFactory {
         toolWindow.contentManager.addContent(content)
     }
 
-    override suspend fun isApplicableAsync(project: Project) = smartReadAction(project) { project.isLatexProject() }
+    override suspend fun isApplicableAsync(project: Project) = readAction { project.isLatexProject() }
 
     /**
      * The tool window panel that contains the toolbar and the actual window (which is [RemoteLibraryToolWindow]).
@@ -112,13 +112,11 @@ class RemoteLibrariesToolWindowFactory : ToolWindowFactory {
 
         val content = JBScrollPane(tree)
 
-        override fun getData(dataId: String): Any? {
-            return when {
-                TexifyDataKeys.LIBRARY_TREE.`is`(dataId) -> tree
-                TexifyDataKeys.LIBRARY_NAME.`is`(dataId) -> (tree.selectionPath?.getPathComponent(1) as? LibraryMutableTreeNode)?.toString()
-                TexifyDataKeys.LIBRARY_IDENTIFIER.`is`(dataId) -> (tree.selectionPath?.getPathComponent(1) as? LibraryMutableTreeNode)?.identifier
-                else -> null
-            }
+        override fun getData(dataId: String): Any? = when {
+            TexifyDataKeys.LIBRARY_TREE.`is`(dataId) -> tree
+            TexifyDataKeys.LIBRARY_NAME.`is`(dataId) -> (tree.selectionPath?.getPathComponent(1) as? LibraryMutableTreeNode)?.toString()
+            TexifyDataKeys.LIBRARY_IDENTIFIER.`is`(dataId) -> (tree.selectionPath?.getPathComponent(1) as? LibraryMutableTreeNode)?.identifier
+            else -> null
         }
     }
 }

@@ -21,8 +21,7 @@ import java.util.*
  */
 class ShowTikzPreview : PreviewAction("Tikz Picture Preview", TexifyIcons.TIKZ_PREVIEW) {
 
-    companion object {
-
+    object Util {
         @JvmStatic
         val FORM_KEY = Key<PreviewFormUpdater>("updater")
     }
@@ -35,7 +34,7 @@ class ShowTikzPreview : PreviewAction("Tikz Picture Preview", TexifyIcons.TIKZ_P
         val tikzEnvironment = findTikzEnvironment(element) ?: return
 
         // jlatexmath cannot display tikz
-        displayPreview(project, tikzEnvironment, FORM_KEY, canUseJlatexmath = false) {
+        displayPreview(project, tikzEnvironment, Util.FORM_KEY, canUseJlatexmath = false) {
             resetPreamble()
             val psiFile = getPsiFile(file, project) ?: return@displayPreview
 

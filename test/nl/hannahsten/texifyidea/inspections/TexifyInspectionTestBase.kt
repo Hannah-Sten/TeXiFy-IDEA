@@ -2,11 +2,15 @@ package nl.hannahsten.texifyidea.inspections
 
 import com.intellij.codeInspection.InspectionsBundle
 import com.intellij.codeInspection.LocalInspectionTool
+import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
+import com.intellij.psi.codeStyle.CodeStyleManager
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.configureByFilesAndBuildFilesets
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.testutils.writeCommand
+import nl.hannahsten.texifyidea.updateCommandDef
+import nl.hannahsten.texifyidea.util.files.document
 
 abstract class TexifyInspectionTestBase(vararg val inspections: LocalInspectionTool) : BasePlatformTestCase() {
 
@@ -15,9 +19,7 @@ abstract class TexifyInspectionTestBase(vararg val inspections: LocalInspectionT
         myFixture.enableInspections(*inspections)
     }
 
-    protected fun configureByFilesAndBuildFilesets(vararg files: String): Array<out PsiFile> {
-        return myFixture.configureByFilesAndBuildFilesets(*files)
-    }
+    protected fun configureByFilesAndBuildFilesets(vararg files: String): Array<out PsiFile> = myFixture.configureByFilesAndBuildFilesets(*files)
 
     protected fun testHighlighting(text: String) {
         myFixture.configureByText(LatexFileType, text)
@@ -29,15 +31,23 @@ abstract class TexifyInspectionTestBase(vararg val inspections: LocalInspectionT
         after: String,
         numberOfFixes: Int = 1,
         selectedFix: Int = 1,
-        fileName: String = "test.tex"
+        fileName: String = "test.tex",
+        updateCommand: Boolean = false
     ) {
-        myFixture.configureByText(fileName, before)
+        val file = myFixture.configureByText(fileName, before)
+        if (updateCommand) {
+            myFixture.updateCommandDef()
+        }
         // Collect the quick fixed before going into write action, to avoid AssertionError: Must not start highlighting from within write action.
         val quickFixes = myFixture.getAllQuickFixes()
         assertEquals("Expected number of quick fixes:", numberOfFixes, quickFixes.size)
         writeCommand(myFixture.project) {
             quickFixes[selectedFix - 1]?.invoke(myFixture.project, myFixture.editor, myFixture.file)
         }
+        // Reformat file, needed in some edge cases
+        PsiDocumentManager.getInstance(project).commitDocument(file.document()!!)
+        writeCommand(project) { CodeStyleManager.getInstance(project).reformat(myFixture.file) }
+
         myFixture.checkResult(after)
     }
 

@@ -248,37 +248,33 @@ class TableCreationDialogWrapper(
         return null
     }
 
-    private fun getEditColumnActionButton(): AnActionButton {
-        return object : AnActionButton("Edit Column Header", addText(IconUtil.editIcon, "C")) {
+    private fun getEditColumnActionButton(): AnActionButton = object : AnActionButton("Edit Column Header", addText(IconUtil.editIcon, "C")) {
 
-            override fun isEnabled() = table.columnCount > 0
+        override fun isEnabled() = table.columnCount > 0
 
-            override fun actionPerformed(e: AnActionEvent) {
-                if (table.selectedColumn >= 0) {
-                    TableCreationEditColumnDialog(
-                        { title, columnType, columnIndex -> editTableColumn(title, columnType, columnIndex) },
-                        table.selectedColumn,
-                        table.getColumnName(table.selectedColumn),
-                        columnTypes[table.selectedColumn]
-                    )
-                }
+        override fun actionPerformed(e: AnActionEvent) {
+            if (table.selectedColumn >= 0) {
+                TableCreationEditColumnDialog(
+                    { title, columnType, columnIndex -> editTableColumn(title, columnType, columnIndex) },
+                    table.selectedColumn,
+                    table.getColumnName(table.selectedColumn),
+                    columnTypes[table.selectedColumn]
+                )
             }
-
-            override fun getActionUpdateThread() = ActionUpdateThread.EDT
         }
+
+        override fun getActionUpdateThread() = ActionUpdateThread.EDT
     }
 
-    private fun getAddRowActionButton(): AnActionButton {
-        return object : AnActionButton("Add Row", addText(IconUtil.addIcon, "R")) {
+    private fun getAddRowActionButton(): AnActionButton = object : AnActionButton("Add Row", addText(IconUtil.addIcon, "R")) {
 
-            override fun isEnabled() = table.columnCount > 0
+        override fun isEnabled() = table.columnCount > 0
 
-            override fun actionPerformed(e: AnActionEvent) {
-                tableModel.addEmptyRow()
-            }
-
-            override fun getActionUpdateThread() = ActionUpdateThread.EDT
+        override fun actionPerformed(e: AnActionEvent) {
+            tableModel.addEmptyRow()
         }
+
+        override fun getActionUpdateThread() = ActionUpdateThread.EDT
     }
 
     private fun getRemoveRowActionButton(): AnActionButton {
@@ -301,16 +297,14 @@ class TableCreationDialogWrapper(
         }
     }
 
-    private fun getRemoveColumnActionButton(): AnActionButton {
-        return object : AnActionButton("Remove Column", addText(IconUtil.removeIcon, "C")) {
+    private fun getRemoveColumnActionButton(): AnActionButton = object : AnActionButton("Remove Column", addText(IconUtil.removeIcon, "C")) {
 
-            override fun isEnabled() = table.selectedColumn > -1
+        override fun isEnabled() = table.selectedColumn > -1
 
-            override fun actionPerformed(e: AnActionEvent) {
-                tableModel.removeColumn(table.selectedColumn)
-            }
-
-            override fun getActionUpdateThread() = ActionUpdateThread.EDT
+        override fun actionPerformed(e: AnActionEvent) {
+            tableModel.removeColumn(table.selectedColumn)
         }
+
+        override fun getActionUpdateThread() = ActionUpdateThread.EDT
     }
 }

@@ -22,12 +22,10 @@ interface LatexCommandWithParams : LatexComposite {
 
     val parameterList: List<LatexParameter>
 
-    fun firstParameter(): LatexParameter? {
-        forEachDirectChild {
-            if (it is LatexParameter) return it
-        }
-        return null
-    }
+    /**
+     * Whether this command has a star, such as in `\section*{Title}`.
+     */
+    fun hasStar(): Boolean
 
     fun firstRequiredParameter(): LatexRequiredParam? {
         forEachDirectChild { c ->
@@ -38,46 +36,41 @@ interface LatexCommandWithParams : LatexComposite {
         return null
     }
 
-    /**
-     * Whether this command has any parameters, either required or optional.
-     */
-    fun hasParameter(): Boolean {
-        return firstParameter() != null
-    }
-
-    fun hasRequiredParameter(): Boolean {
-        return firstRequiredParameter() != null
-    }
+    fun hasRequiredParameter(): Boolean = firstRequiredParameter() != null
 
     /**
      * Looks up all the required parameters of this command.
      *
      * @return A list of all required parameters.
      */
-    fun requiredParameters(): List<LatexRequiredParam> {
-        return parameterList.mapNotNull { it.requiredParam }
-    }
+    fun requiredParameters(): List<LatexRequiredParam> = parameterList.mapNotNull { it.requiredParam }
 
     /**
      * Generates a list of all names of all required parameters in the command.
      */
-    fun requiredParametersText(): List<String> {
-        return parameterList.mapNotNull {
-            if (it.requiredParam != null) it.contentText() else null
-        }
+    fun requiredParametersText(): List<String> = parameterList.mapNotNull {
+        if (it.requiredParam != null) it.contentText() else null
     }
 
-    fun optionalParameterTextMap(): Map<String, String> {
-        return getOptionalParameterMap().toStringMap()
-    }
+    fun optionalParameterTextMap(): Map<String, String> = getOptionalParameterMap().toStringMap()
 
     /**
      * Gets the required parameters of this command at the specified index, or null if the index is out of bounds.
      */
     fun requiredParameterText(idx: Int): String? {
-        return requiredParametersText().getOrNull(idx)
+        var pos = 0
+        forEachDirectChildTyped<LatexParameter> { param ->
+            if (param.requiredParam != null) {
+                if (pos == idx) return param.contentText()
+                pos++
+            }
+        }
+        return null
     }
 
+    /**
+     * Gets the optional parameters of this command at the specified index, or null if the index is out of bounds.
+     */
     fun optionalParameterText(idx: Int): String? {
         var pos = 0
         forEachDirectChildTyped<LatexParameter> { param ->
@@ -91,3 +84,9 @@ interface LatexCommandWithParams : LatexComposite {
 
     fun getOptionalParameterMap(): Map<LatexOptionalKeyValKey, LatexKeyValValue?>
 }
+
+val LatexCommandWithParams.nameWithoutSlash: String?
+    get() = getName()?.removePrefix("\\")
+
+val LatexCommandWithParams.nameWithSlash: String?
+    get() = getName()

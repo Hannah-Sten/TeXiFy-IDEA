@@ -72,7 +72,7 @@ open class TexliveSdk(name: String = "TeX Live SDK") : LatexSdk(name) {
                 // Let's just assume that there is only one /bin/ in this path
                 val index = resolvedPath.findLastAnyOf(setOf(File.separator + "bin" + File.separator))?.first ?: (resolvedPath.length - 1)
                 if (index > 0) {
-                    results.add(resolvedPath.substring(0, index))
+                    results.add(resolvedPath.take(index))
                 }
             }
         }
@@ -92,22 +92,16 @@ open class TexliveSdk(name: String = "TeX Live SDK") : LatexSdk(name) {
 
     override fun getLatexDistributionType(sdk: Sdk) = LatexDistributionType.TEXLIVE
 
-    override fun getVersionString(sdkHome: String): String {
-        return "TeX Live " + sdkHome.split("/").lastOrNull { it.isNotBlank() }
-    }
+    override fun getVersionString(sdkHome: String): String = "TeX Live " + sdkHome.split("/").lastOrNull { it.isNotBlank() }
 
     override fun getDefaultDocumentationUrl(sdk: Sdk): String? {
         if (sdk.homePath == null) return null
         return sdk.homePath
     }
 
-    override fun getDefaultSourcesPath(homePath: String): VirtualFile? {
-        return LocalFileSystem.getInstance().findFileByPath("$homePath/texmf-dist/source/latex")
-    }
+    override fun getDefaultSourcesPath(homePath: String): VirtualFile? = LocalFileSystem.getInstance().findFileByPath("$homePath/texmf-dist/source/latex")
 
-    override fun getDefaultStyleFilesPath(homePath: String): VirtualFile? {
-        return LocalFileSystem.getInstance().findFileByPath("$homePath/texmf-dist/tex")
-    }
+    override fun getDefaultStyleFilesPath(homePath: String): VirtualFile? = LocalFileSystem.getInstance().findFileByPath("$homePath/texmf-dist/tex")
 
     override fun getExecutableName(executable: String, homePath: String): String {
         // Get base path of LaTeX distribution

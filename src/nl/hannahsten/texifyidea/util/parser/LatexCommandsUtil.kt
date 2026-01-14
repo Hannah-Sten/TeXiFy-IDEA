@@ -1,21 +1,14 @@
 package nl.hannahsten.texifyidea.util.parser
 
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiWhiteSpace
-import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.util.nextLeaf
-import nl.hannahsten.texifyidea.lang.alias.CommandManager
-import nl.hannahsten.texifyidea.lang.commands.LatexMathCommand
-import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
-import nl.hannahsten.texifyidea.lang.commands.OptionalArgument
-import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
+import nl.hannahsten.texifyidea.lang.LArgument
+import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
+import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.lineIndentation
-import nl.hannahsten.texifyidea.util.magic.ColorMagic
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import kotlin.math.min
 
 /**
  * Checks whether the given LaTeX commands is a definition or not.
@@ -26,8 +19,6 @@ import kotlin.math.min
  *         `null` or otherwise.
  */
 fun LatexCommands?.isDefinition() = this != null && this.name in CommandMagic.definitions
-
-fun LatexCommands?.usesColor() = this != null && this.name in ColorMagic.colorCommands
 
 /**
  * Checks whether the given LaTeX commands is a (re)definition or not.
@@ -40,15 +31,9 @@ fun LatexCommands?.usesColor() = this != null && this.name in ColorMagic.colorCo
 fun LatexCommands?.isDefinitionOrRedefinition() = this != null &&
     (
         this.name in CommandMagic.commandDefinitionsAndRedefinitions ||
-            this.name in CommandMagic.environmentDefinitions || this.name in CommandMagic.environmentRedefinitions
+            this.name in CommandMagic.environmentDefinitions ||
+            this.name in CommandMagic.environmentRedefinitions
         )
-
-/**
- * Checks whether the given LaTeX commands is a command definition or not.
- *
- * @return `true` if the command is a command definition, `false` when the command is `null` or otherwise.
- */
-fun LatexCommands?.isCommandDefinition(): Boolean = this != null && name in CommandMagic.commandDefinitionsAndRedefinitions
 
 /**
  * Checks whether the given LaTeX commands is an environment definition or not.
@@ -66,13 +51,6 @@ fun LatexCommands.definitionCommand(): LatexCommands? = forcedFirstRequiredParam
  * Get the name of the command that is defined by `this` command.
  */
 fun LatexCommands.definedCommandName() = definitionCommand()?.name
-
-/**
- * Checks whether the command has a star or not.
- */
-fun LatexCommands.hasStar() = collectSubtreeTyped<LeafPsiElement>().any {
-    it.elementType == LatexTypes.STAR
-}
 
 /**
  * Looks for the next command relative to the given command.
@@ -101,17 +79,12 @@ fun PsiElement.previousCommand(): LatexCommands? {
 /**
  * Get the value of the named [argument] given in `this` command.
  */
-fun LatexCommands.getRequiredArgumentValueByName(argument: String): String? {
+fun LatexCommands.getRequiredArgumentValueByName(argument: String, lookup: LatexSemanticsLookup = AllPredefined): String? {
     // Find all pre-defined commands that define `this` command.
-    val name = this.name ?: return null
-    val requiredArgIndices = LatexRegularCommand.getWithSlash(name)
-        // Find the index of their required parameter named [argument].
-        ?.map {
-            it.arguments.filterIsInstance<RequiredArgument>()
-                .indexOfFirst { arg -> arg.name == argument }
-        }
-    return if (requiredArgIndices.isNullOrEmpty() || requiredArgIndices.all { it == -1 }) null
-    else requiredParametersText().getOrNull(min(requiredArgIndices.first(), requiredParametersText().size - 1))
+    val semantics = lookup.lookupCommandPsi(this) ?: return null
+    val idx = LArgument.indexOfFirstRequired(semantics.arguments) { it.name == argument }
+    if (idx == -1) return null
+    return this.requiredParameterText(idx)
 }
 
 /**
@@ -119,19 +92,12 @@ fun LatexCommands.getRequiredArgumentValueByName(argument: String): String? {
  *
  * @return null when the optional argument is not given.
  */
-fun LatexCommands.getOptionalArgumentValueByName(argument: String): String? {
+fun LatexCommands.getOptionalArgumentValueByName(argument: String, lookup: LatexSemanticsLookup = AllPredefined): String? {
     // Find all pre-defined commands that define `this` command.
-    val optionalArgIndices = LatexRegularCommand[
-        name?.substring(1)
-            ?: return null
-    ]
-        // Find the index of their optional argument named [argument].
-        ?.map {
-            it.arguments.filterIsInstance<OptionalArgument>()
-                .indexOfFirst { arg -> arg.name == argument }
-        }
-    return if (optionalArgIndices.isNullOrEmpty() || optionalArgIndices.all { it == -1 }) null
-    else getOptionalParameterMap().keys.toList().getOrNull(min(optionalArgIndices.first(), getOptionalParameterMap().keys.toList().size - 1))?.text
+    val semantics = lookup.lookupCommandPsi(this) ?: return null
+    val idx = LArgument.indexOfFirstOptional(semantics.arguments) { it.name == argument }
+    if (idx == -1) return null
+    return this.optionalParameterText(idx)
 }
 
 /**
@@ -139,10 +105,7 @@ fun LatexCommands.getOptionalArgumentValueByName(argument: String): String? {
  *
  * @return Whether the command is known (`true`), or unknown (`false`).
  */
-fun LatexCommands.isKnown(): Boolean {
-    val name = name?.substring(1) ?: ""
-    return LatexRegularCommand[name] != null || LatexMathCommand[name] != null
-}
+fun LatexCommands.isKnown(): Boolean = AllPredefined.lookupCommandPsi(this) != null
 
 /**
  * Finds the indentation of the line where the section command starts.
@@ -174,17 +137,4 @@ fun LatexCommands.forcedFirstRequiredParameterAsCommand(): LatexCommands? {
     // This is just a bit of guesswork about the parser structure.
     // Probably, if we're looking at a \def\mycommand, if the sibling isn't it, probably the parent has a sibling.
     return nextSibling?.nextSiblingOfType(LatexCommands::class) ?: parent?.nextSiblingIgnoreWhitespace()?.findFirstChildOfType(LatexCommands::class)
-}
-
-/**
- * Checks if the command is followed by a label.
- */
-fun LatexCommands.hasLabel(): Boolean {
-    if (CommandMagic.labelAsParameter.contains(this.name)) {
-        return getOptionalParameterMapFromParameters(this.parameterList).toStringMap().containsKey("label")
-    }
-
-    // Next leaf is a command token, parent is LatexCommands
-    val labelMaybe = this.nextLeaf { it !is PsiWhiteSpace }?.parent as? LatexCommands ?: return false
-    return CommandManager.labelAliasesInfo.getOrDefault(labelMaybe.commandToken.text, null)?.labelsPreviousCommand == true
 }

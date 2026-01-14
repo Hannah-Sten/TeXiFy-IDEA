@@ -30,9 +30,7 @@ class TexSpacingBuilder(private val commonSettings: CommonCodeStyleSettings) {
      */
     inner class BasicSpacingBuilder : SpacingBuilder(commonSettings), Builder {
 
-        override fun getSpacing(parent: ASTBlock, left: ASTBlock, right: ASTBlock): Spacing? {
-            return super.getSpacing(parent, left, right)
-        }
+        override fun getSpacing(parent: ASTBlock, left: ASTBlock, right: ASTBlock): Spacing? = super.getSpacing(parent, left, right)
     }
 
     /**

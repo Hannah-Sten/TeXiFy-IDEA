@@ -16,13 +16,9 @@ object SystemDefaultViewer : PdfViewer {
     override val isFocusSupported = false
     override val isForwardSearchSupported = false
 
-    override fun toString(): String {
-        return displayName
-    }
+    override fun toString(): String = displayName
 
-    override fun isAvailable(): Boolean {
-        return !SystemInfo.isWindows
-    }
+    override fun isAvailable(): Boolean = !SystemInfo.isWindows
 
     override fun openFile(pdfPath: String, project: Project, newWindow: Boolean, focusAllowed: Boolean, forceRefresh: Boolean) {
         if (SystemInfo.isMac) {

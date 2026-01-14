@@ -6,12 +6,16 @@ import com.intellij.ide.util.treeView.smartTree.TreeElement
 import com.intellij.navigation.ItemPresentation
 import com.intellij.navigation.NavigationItem
 import com.intellij.openapi.roots.ProjectFileIndex
-import com.intellij.psi.*
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiNameIdentifierOwner
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.file.*
+import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
+import nl.hannahsten.texifyidea.lang.predefined.CommandNames
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.psi.traverseCommands
@@ -19,9 +23,8 @@ import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.structure.bibtex.BibtexStructureViewElement
 import nl.hannahsten.texifyidea.structure.latex.SectionNumbering.DocumentClass
-import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommandsNoUpdate
+import nl.hannahsten.texifyidea.util.labels.isLabelCommand
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.magic.cmd
 import java.util.*
 
 /**
@@ -29,9 +32,7 @@ import java.util.*
  */
 class LatexStructureViewElement(private val element: PsiElement) : StructureViewTreeElement, SortableTreeElement {
 
-    object Cache {
-        val includedFiles = mutableMapOf<SmartPsiElementPointer<LatexCommands>, List<SmartPsiElementPointer<PsiFile>>>()
-    }
+    object Cache
 
     // Get document class, this can take over one second but does not change frequently, and is only used for the correct sectioning levels, so cache it
     val docClass: String
@@ -53,15 +54,13 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         }
     }
 
-    override fun getAlphaSortKey(): String {
-        return (element as? LatexCommands)?.commandToken?.text?.lowercase(Locale.getDefault())
-            ?: if (element is PsiNameIdentifierOwner) {
-                element.name!!.lowercase(Locale.getDefault())
-            }
-            else {
-                element.text.lowercase(Locale.getDefault())
-            }
-    }
+    override fun getAlphaSortKey(): String = (element as? LatexCommands)?.commandToken?.text?.lowercase(Locale.getDefault())
+        ?: if (element is PsiNameIdentifierOwner) {
+            element.name!!.lowercase(Locale.getDefault())
+        }
+        else {
+            element.text.lowercase(Locale.getDefault())
+        }
 
     override fun getPresentation(): ItemPresentation {
         if (element is LatexCommands) {
@@ -84,54 +83,51 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         val commands = element.traverseCommands()
         val treeElements = ArrayList<LatexStructureViewCommandElement>()
 
-        val labelingCommands = getLabelDefinitionCommandsNoUpdate()
+        val bundle = LatexDefinitionService.getBundleFor(element)
 
         // Add sectioning.
         val sections = mutableListOf<LatexStructureViewCommandElement>()
         for (command in commands) {
             // Update counter.
-            if (command.name == LatexGenericRegularCommand.ADDTOCOUNTER.cmd || command.name == LatexGenericRegularCommand.SETCOUNTER.cmd) {
+            if (command.name == CommandNames.ADD_TO_COUNTER || command.name == CommandNames.SET_COUNTER) {
                 updateNumbering(command, numbering)
                 continue
             }
 
             val newElement = LatexStructureViewCommandElement.newCommand(command) ?: continue
 
-            when (command.name) {
-                in CommandMagic.sectionNameToLevel -> {
-                    addSections(command, sections, treeElements, numbering)
-                }
-
-                in labelingCommands + CommandMagic.commandDefinitionsAndRedefinitions + setOf(LatexGenericRegularCommand.BIBITEM.cmd) -> {
-                    addAtCurrentSectionLevel(sections, treeElements, newElement)
-                }
-
-                else -> {
-                    var includedFiles = InputFileReference.getIncludedFiles(command)
-                    if (!TexifySettings.getInstance().showPackagesInStructureView) {
-                        includedFiles = includedFiles.filter {
-                            it.virtualFile?.fileType == LatexFileType || it.virtualFile?.fileType == BibtexFileType
-                        }
+            if (command.name in CommandMagic.sectionNameToLevel) {
+                addSections(command, sections, treeElements, numbering)
+            }
+            else if (command.isLabelCommand(bundle) || command.name in CommandMagic.commandDefinitionsAndRedefinitions + listOf("\\bibitem")) {
+                addAtCurrentSectionLevel(sections, treeElements, newElement)
+            }
+            else {
+                var includedFiles = InputFileReference.getIncludedFiles(command)
+                if (!TexifySettings.getState().showPackagesInStructureView) {
+                    includedFiles = includedFiles.filter {
+                        it.virtualFile?.fileType == LatexFileType || it.virtualFile?.fileType == BibtexFileType
                     }
-                    if (includedFiles.isNotEmpty()) {
-                        for (psiFile in includedFiles) {
-                            when (psiFile.virtualFile?.fileType) {
-                                LatexFileType ->
-                                    newElement.addChild(LatexStructureViewElement(psiFile))
-                                BibtexFileType ->
-                                    newElement.addChild(BibtexStructureViewElement(psiFile))
+                }
+                if (includedFiles.isNotEmpty()) {
+                    for (psiFile in includedFiles) {
+                        when (psiFile.virtualFile?.fileType) {
+                            LatexFileType ->
+                                newElement.addChild(LatexStructureViewElement(psiFile))
 
-                                StyleFileType, ClassFileType -> {
-                                    val inProject = runCatching { ProjectFileIndex.getInstance(element.project).isInProject(psiFile.virtualFile) }
-                                        .getOrDefault(false)
-                                    if (inProject) // let us do not show the style/class files that are not in the project, or the view will be cluttered
-                                        newElement.addChild(LatexStructureViewElement(psiFile))
-                                }
+                            BibtexFileType ->
+                                newElement.addChild(BibtexStructureViewElement(psiFile))
+
+                            StyleFileType, ClassFileType -> {
+                                val inProject = runCatching { ProjectFileIndex.getInstance(element.project).isInProject(psiFile.virtualFile) }
+                                    .getOrDefault(false)
+                                if (inProject) // let us do not show the style/class files that are not in the project, or the view will be cluttered
+                                    newElement.addChild(LatexStructureViewElement(psiFile))
                             }
                         }
-                        newElement.isFileInclude = true
-                        addAtCurrentSectionLevel(sections, treeElements, newElement)
                     }
+                    newElement.isFileInclude = true
+                    addAtCurrentSectionLevel(sections, treeElements, newElement)
                 }
             }
         }
@@ -273,7 +269,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
         // Get the amount to modify with.
         val amount = required[1].toIntOrNull() ?: return
 
-        if (token == LatexGenericRegularCommand.SETCOUNTER.cmd) {
+        if (token == CommandNames.SET_COUNTER) {
             numbering.setCounter(level, amount)
         }
         else {

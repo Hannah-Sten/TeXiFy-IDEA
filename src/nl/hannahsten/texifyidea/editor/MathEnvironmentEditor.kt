@@ -4,8 +4,10 @@ import com.intellij.openapi.application.runUndoTransparentWriteAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
+import nl.hannahsten.texifyidea.lang.predefined.EnvironmentNames
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.parser.endOffset
@@ -112,24 +114,14 @@ class MathEnvironmentEditor(
         }
     }
 
-    private fun isAmsMathEnvironment(environmentName: String): Boolean {
-        val amsMathEnvironments: Array<String> = DefaultEnvironment.entries
-            .filter { it.dependency == LatexPackage.AMSMATH }
-            .map { it.environmentName }
-            .toTypedArray()
-        return amsMathEnvironments.contains(environmentName)
-    }
+    private fun isAmsMathEnvironment(environmentName: String): Boolean = AllPredefined.lookupEnv(environmentName)?.dependency == LatexLib.AMSMATH
 
     /**
      * Determines if the environment is a one line environment.
      */
-    private fun isOneLineEnvironment(environmentName: String): Boolean {
-        return environmentName == "inline" || environmentName == "display" || environmentName == "equation" || environmentName == "equation*"
-    }
+    private fun isOneLineEnvironment(environmentName: String): Boolean = environmentName == "inline" || environmentName == "display" || environmentName == EnvironmentNames.EQUATION || environmentName == EnvironmentNames.EQUATION_STAR
 
-    private fun needsParameter(environmentName: String): Boolean {
-        return environmentName.contains("alignat")
-    }
+    private fun needsParameter(environmentName: String): Boolean = environmentName.contains("alignat")
 
     /**
      * Construct the begin block for an environment.

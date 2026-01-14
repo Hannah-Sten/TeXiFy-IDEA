@@ -7,10 +7,9 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.lang.commands.LatexNewDefinitionCommand
+import nl.hannahsten.texifyidea.lang.predefined.CommandNames
 import nl.hannahsten.texifyidea.psi.forEachCommand
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.forcedFirstRequiredParameterAsCommand
 import org.jetbrains.annotations.Nls
 
@@ -23,9 +22,7 @@ class LatexMightBreakTexifyInspection : TexifyInspectionBase() {
         get() = InsightGroup.LATEX
 
     @Nls
-    override fun getDisplayName(): String {
-        return "Might break TeXiFy functionality"
-    }
+    override fun getDisplayName(): String = "Might break TeXiFy functionality"
 
     override val inspectionId: String
         get() = "MightBreakTexify"
@@ -40,7 +37,7 @@ class LatexMightBreakTexifyInspection : TexifyInspectionBase() {
             // Error when \newcommand is used on existing command
             if (CommandMagic.commandRedefinitions.contains(command.name)) {
                 val newCommand = command.forcedFirstRequiredParameterAsCommand()
-                if (CommandMagic.fragile.contains(newCommand?.name) || command.name == LatexNewDefinitionCommand.CATCODE.cmd) {
+                if (CommandMagic.fragile.contains(newCommand?.name) || command.name == CommandNames.CAT_CODE) {
                     descriptors.add(
                         manager.createProblemDescriptor(
                             command,

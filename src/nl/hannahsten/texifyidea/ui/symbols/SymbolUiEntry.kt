@@ -44,6 +44,7 @@ interface SymbolUiEntry : Described {
     /**
      * The resource location of the symbol `png` image for dark UIs.
      */
+    @Suppress("unused")
     val imagePathDark: String
         get() = imagePath.replace(".png", "_dark.png")
 

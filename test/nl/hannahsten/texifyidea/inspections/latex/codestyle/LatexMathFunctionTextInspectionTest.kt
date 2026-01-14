@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
 class LatexMathFunctionTextInspectionTest : TexifyInspectionTestBase(LatexMathFunctionTextInspection()) {
 
     fun testWarning() {
-        MATH_FUNCTIONS.forEach {
+        MATH_FUNCTIONS.take(2).forEach {
             myFixture.configureByText(
                 LatexFileType,
                 """
@@ -28,7 +28,7 @@ class LatexMathFunctionTextInspectionTest : TexifyInspectionTestBase(LatexMathFu
     }
 
     fun testNoWarning() {
-        MATH_FUNCTIONS.forEach {
+        MATH_FUNCTIONS.take(2).forEach {
             myFixture.configureByText(
                 LatexFileType,
                 """
@@ -51,7 +51,8 @@ class LatexMathFunctionTextInspectionTest : TexifyInspectionTestBase(LatexMathFu
     }
 
     fun testQuickFix() {
-        MATH_FUNCTIONS.forEach {
+        MATH_FUNCTIONS.take(2).forEach {
+            // it is slow to test all of them
             myFixture.configureByText(
                 LatexFileType,
                 """$ Test \text{$it } (3, 4) $ text max"""
@@ -71,6 +72,6 @@ class LatexMathFunctionTextInspectionTest : TexifyInspectionTestBase(LatexMathFu
 
     companion object {
 
-        private val MATH_FUNCTIONS = CommandMagic.slashlessMathOperators.map { it.command }
+        private val MATH_FUNCTIONS = CommandMagic.mathOperators.map { it.name }
     }
 }

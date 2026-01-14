@@ -1,26 +1,30 @@
 package nl.hannahsten.texifyidea.util.magic
 
-import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
+import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.lang.LatexLib
+import nl.hannahsten.texifyidea.lang.introduces
+import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 
 object ColorMagic {
 
     /**
      * All commands that have a color as an argument.
      */
-    val takeColorCommands = LatexRegularCommand.values()
-        .filter { cmd -> cmd.arguments.map { it.name }.contains("color") }
-        .map { it.commandWithSlash }.toSet()
+    @Suppress("unused")
+    val colorReferenceCommands = AllPredefined.allCommands
+        .filter { cmd ->
+            cmd.arguments.any {
+                it.contextSignature.introduces(LatexContexts.ColorReference)
+            }
+        }.associateBy { it.nameWithSlash }
 
     /**
      * All commands that define a new color.
      */
-    val colorDefinitions = LatexRegularCommand.values()
-        .filter { cmd -> cmd.dependency == LatexPackage.XCOLOR }
-        .filter { cmd -> cmd.arguments.any { it.name == "name" } }
-        .map { it.commandWithSlash }.toSet()
-
-    val colorCommands = takeColorCommands + colorDefinitions
+    val colorDefinitions = AllPredefined.allCommands
+        .filter { it.dependency == LatexLib.XCOLOR }
+        .filter { it.introduces(LatexContexts.ColorDefinition) }
+        .associateBy { it.nameWithSlash }
 
     val defaultXcolors = mapOf(
         "red" to 0xff0000,

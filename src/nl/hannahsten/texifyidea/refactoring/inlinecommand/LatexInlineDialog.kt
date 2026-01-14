@@ -4,7 +4,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNameIdentifierOwner
 import com.intellij.psi.search.searches.ReferencesSearch
-import com.intellij.refactoring.RefactoringBundle
 import com.intellij.refactoring.inline.InlineOptionsDialog
 
 abstract class LatexInlineDialog(project: Project?, genericDefinition: PsiElement, invokedOnReference: Boolean) : InlineOptionsDialog(project, true, genericDefinition) {
@@ -25,17 +24,9 @@ abstract class LatexInlineDialog(project: Project?, genericDefinition: PsiElemen
             .toList().size
     }
 
-    override fun getBorderTitle(): String {
-        return RefactoringBundle.message("inline.method.border.title")
-    }
-
     override fun isInlineThis(): Boolean = false
 
-    override fun hasHelpAction(): Boolean {
-        return false
-    }
+    override fun hasHelpAction(): Boolean = false
 
-    override fun allowInlineAll(): Boolean {
-        return true
-    }
+    override fun allowInlineAll(): Boolean = true
 }

@@ -4,7 +4,6 @@ import io.mockk.every
 import io.mockk.mockkStatic
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
-import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 
 class LatexFigureNotReferencedInspectionTest : TexifyInspectionTestBase(LatexFigureNotReferencedInspection()) {
@@ -65,7 +64,6 @@ class LatexFigureNotReferencedInspectionTest : TexifyInspectionTestBase(LatexFig
             some text~\ref{fig:test.png} more text.
             """.trimIndent()
         )
-        CommandManager.updateAliases(setOf("\\label"), project)
         myFixture.checkHighlighting(false, false, true, false)
     }
 

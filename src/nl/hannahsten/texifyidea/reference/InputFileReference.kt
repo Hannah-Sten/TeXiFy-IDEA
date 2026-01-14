@@ -19,7 +19,10 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
  */
 class InputFileReference(
     element: LatexCommands,
-    val key: String,
+    /**
+     * The text of the file name as it appears in the command without any processing.
+     */
+    val refText: String,
     /**
      * The range of the file name within the command text.
      * This is used to replace the file name when renaming the file.
@@ -95,10 +98,10 @@ class InputFileReference(
         /**
          * Get files included by this command built from the fileset information in the project structure.
          */
-        fun getIncludedFiles(command: LatexCommands, includePackages: Boolean = true): List<PsiFile> {
-            val proj = command.project
-            val refInfo = LatexProjectStructure.commandFileReferenceInfo(command, proj) ?: return emptyList()
-            return findValidPSIFiles(refInfo.second.flatten(), proj)
+        fun getIncludedFiles(command: LatexCommands, includePackages: Boolean = true, requireRefresh: Boolean = false): List<PsiFile> {
+            val refInfo = LatexProjectStructure.commandFileReferenceInfo(command, requireRefresh) ?: return emptyList()
+            if(refInfo.first.isEmpty()) return emptyList()
+            return findValidPSIFiles(refInfo.second.flatten(), command.project)
         }
 
         /**
@@ -107,8 +110,9 @@ class InputFileReference(
          *
          * Use this instead of command.references.filterIsInstance<InputFileReference>(), to avoid resolving references of types that will not be needed.
          */
-        fun getFileArgumentsReferences(commands: LatexCommands): List<InputFileReference> {
-            val rawInfo = LatexProjectStructure.commandFileReferenceInfo(commands)
+        fun getFileArgumentsReferences(commands: LatexCommands, requireRefresh: Boolean = false): List<InputFileReference> {
+            val rawInfo = LatexProjectStructure.commandFileReferenceInfo(commands, requireRefresh) ?: return emptyList()
+            if(rawInfo.first.isEmpty()) return emptyList()
             val refInfoMap = recoverTextRanges(commands, rawInfo)
             return refInfoMap.map { (text, range, files) ->
                 InputFileReference(commands, text, range, files)
@@ -125,24 +129,13 @@ class InputFileReference(
         }
     }
 
-    override fun handleElementRename(newElementName: String): PsiElement {
-        return handleElementRename(element, newElementName, true, key, range)
-    }
+    override fun handleElementRename(newElementName: String): PsiElement = handleElementRename(element, newElementName, true, refText, range)
 
     // Required for moving referenced files
     override fun bindToElement(givenElement: PsiElement): PsiElement {
         val newFile = givenElement as? PsiFile ?: return this.element
         // Assume LaTeX will accept paths relative to the root file
         val newFileName = newFile.virtualFile?.path?.toRelativePath(this.element.containingFile.findRootFile().virtualFile.parent.path) ?: return this.element
-        return handleElementRename(element, newFileName, false, key, range)
-    }
-
-    /**
-     * Create a set possible complete file names (including extension), based on
-     * the command that includes a file, and the name of the file.
-     */
-    private fun LatexCommands.getFileNameWithExtensions(fileName: String): Set<String> {
-        val extension = CommandMagic.includeAndExtensions[this.commandToken.text] ?: emptySet()
-        return extension.map { "$fileName.$it" }.toSet() + setOf(fileName)
+        return handleElementRename(element, newFileName, false, refText, range)
     }
 }

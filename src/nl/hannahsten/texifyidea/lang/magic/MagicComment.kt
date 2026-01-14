@@ -129,6 +129,7 @@ open class MutableMagicComment<Key, Value> : MagicComment<Key, Value>() {
      *
      * @return The previous value associated with the key, or `null` if the key was not present in the map.
      */
+    @Suppress("unused")
     fun removeKey(key: MagicKey<Key>): List<Value>? = keyValueStore.remove(key.key)
 
     /**
@@ -172,7 +173,5 @@ open class MutableMagicComment<Key, Value> : MagicComment<Key, Value>() {
         return other is MutableMagicComment<*, *>
     }
 
-    override fun hashCode(): Int {
-        return javaClass.hashCode()
-    }
+    override fun hashCode(): Int = javaClass.hashCode()
 }

@@ -43,20 +43,9 @@ fun PsiFile.isStyleFile() = virtualFile?.extension == "sty"
 fun PsiFile.isClassFile() = virtualFile?.extension == "cls"
 
 /**
- * Looks up the argument that is in the documentclass command, and if the file is found in the project return it.
- * Note this explicitly does not find files elsewhere on the system.
+ * If the file has a top-level \documentclass command, return the class name, null otherwise.
  */
-fun PsiFile.documentClassFileInProject() = findFile("${documentClass()}.cls", supportsAnyExtension = true)
-
-/**
- * If the file has a \documentclass command, return the class name, null otherwise.
- */
-fun PsiFile.documentClass(): String? {
-    return commandsInFile().asSequence()
-        .filter { it.name == "\\documentclass" }
-        .firstOrNull()
-        ?.requiredParameterText(0)
-}
+fun PsiFile.documentClass(): String? = traverseCommands(4).firstOrNull { it.nameWithSlash == "\\documentclass" }?.requiredParameterText(0)
 
 /**
  * Looks up a file relative to this file.
@@ -72,7 +61,8 @@ fun PsiFile.findFile(path: String, extensions: List<String>? = null, supportsAny
 
     val file = directory?.findFile(path, extensions ?: FileMagic.includeExtensions, supportsAnyExtension = supportsAnyExtension) ?: return scanRoots(path, extensions)
     val psiFile = PsiManager.getInstance(project).findFile(file)
-    if (psiFile == null || LatexFileType != psiFile.fileType &&
+    if (psiFile == null ||
+        LatexFileType != psiFile.fileType &&
         StyleFileType != psiFile.fileType &&
         BibtexFileType != psiFile.fileType
     ) {
@@ -135,11 +125,8 @@ fun PsiFile.document(): Document? = PsiDocumentManager.getInstance(project).getD
  *          The name of the command including a backslash, or `null` for all commands.
  */
 fun PsiFile.commandsInFile(commandName: String? = null): Collection<LatexCommands> {
-    if(commandName != null) return traverseCommands().toList()
+    if(commandName != null) return traverseCommands().filter { it.nameWithSlash == commandName }.toList()
     return collectSubtreeTyped<LatexCommands>()
-//    return commandName?.let {
-//        this.allCommands().filter { it.name == commandName }
-//    } ?: this.allCommands()
 }
 
 /**
@@ -167,9 +154,7 @@ fun PsiFile.openedTextEditor(): Editor? = openedEditor()?.let {
 /**
  * Get all the definitions in the file.
  */
-fun PsiFile.definitions(): Collection<LatexCommands> {
-    return NewSpecialCommandsIndex.getByName(SpecialKeys.ALL_DEFINITIONS, this)
-}
+fun PsiFile.definitions(): Collection<LatexCommands> = NewSpecialCommandsIndex.getByName(SpecialKeys.ALL_DEFINITIONS, this)
 
 /**
  * Get all bibtex run configurations that are probably used to compile this file.
@@ -234,7 +219,7 @@ fun PsiFile.findExpressionAtCaret(offset: Int): PsiElement? {
 }
 
 fun PsiFile.rerunInspections() {
-    if (!project.isTestProject()) {
+    if (!isTestProject()) {
         // PSI/document/model changes are not allowed during highlighting in tests
         DaemonCodeAnalyzer.getInstance(project).restart(this)
     }

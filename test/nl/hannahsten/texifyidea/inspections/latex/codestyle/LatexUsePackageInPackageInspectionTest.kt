@@ -2,26 +2,11 @@ package nl.hannahsten.texifyidea.inspections.latex.codestyle
 
 import io.mockk.every
 import io.mockk.mockkStatic
+import nl.hannahsten.texifyidea.file.StyleFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
-import nl.hannahsten.texifyidea.inspections.latex.TexifyRegexInspectionTestBase
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 
-class LatexUsePackageInPackageInspectionRegexTest : TexifyRegexInspectionTestBase(LatexUsePackageInPackageInspection()) {
-
-    override val successfulMatches: List<String> = listOf(
-        """\usepackage{xcolor, twee}""",
-        """\usepackage[colorlinks]{hyperref}""",
-        """\usepackage[aaa, bbb]{test}""",
-        """\usepackage[options]{packagename}[version]""",
-        """\usepackage{name}[version]"""
-    )
-
-    override val failingMatches: List<String> = listOf(
-        """\usepackage[a][b]{test}"""
-    )
-}
-
-class LatexUsePackageInPackageInspectionQuickFixTest : TexifyInspectionTestBase(LatexUsePackageInPackageInspection()) {
+class LatexUsePackageInPackageInspectionTest : TexifyInspectionTestBase(LatexUsePackageInPackageInspection()) {
 
     override fun setUp() {
         super.setUp()
@@ -52,4 +37,19 @@ class LatexUsePackageInPackageInspectionQuickFixTest : TexifyInspectionTestBase(
         after = """\RequirePackage[optional]{xcolor}[version]""",
         fileName = "mypackage.sty"
     )
+
+    fun testMatches() {
+        myFixture.configureByText(
+            StyleFileType,
+            """
+            <weak_warning descr="Use \RequirePackage{...} instead of \usepackage{...}">\usepackage{xcolor, twee}</weak_warning>
+            <weak_warning descr="Use \RequirePackage{...} instead of \usepackage{...}">\usepackage[colorlinks]{hyperref}</weak_warning>
+            <weak_warning descr="Use \RequirePackage{...} instead of \usepackage{...}">\usepackage[aaa, bbb]{test}</weak_warning>
+            <weak_warning descr="Use \RequirePackage{...} instead of \usepackage{...}">\usepackage[options]{packagename}[version]</weak_warning>
+            <weak_warning descr="Use \RequirePackage{...} instead of \usepackage{...}">\usepackage{name}[version]</weak_warning>
+            <weak_warning descr="Use \RequirePackage{...} instead of \usepackage{...}">\usepackage[a][b]{test}</weak_warning>
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
 }

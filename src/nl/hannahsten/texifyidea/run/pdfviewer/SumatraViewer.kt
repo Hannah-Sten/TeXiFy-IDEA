@@ -24,6 +24,7 @@ import kotlin.io.path.*
  * @author Sten Wessel, Li Ernest
  * @since b0.4
  */
+@Suppress("unused")
 object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
 
     override val isFocusSupported: Boolean
@@ -172,14 +173,12 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
      * Try to set the path to the SumatraPDF executable.
      * Returns true if the path is valid and points to SumatraPDF.exe.
      */
-    fun trySumatraPath(path: String): Boolean {
-        return try {
-            trySumatraPath(Path(path))
-        }
-        catch (ignored: InvalidPathException) {
-            // If the path is not valid, we just return false
-            false
-        }
+    fun trySumatraPath(path: String): Boolean = try {
+        trySumatraPath(Path(path))
+    }
+    catch (ignored: InvalidPathException) {
+        // If the path is not valid, we just return false
+        false
     }
 
     /**
@@ -196,9 +195,7 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
         return true
     }
 
-    fun getSumatraPath(): Path? {
-        return sumatraPath
-    }
+    fun getSumatraPath(): Path? = sumatraPath
 
     private fun sendSumatraCommand(vararg args: String) {
         val sumatraRunnable = this.sumatraPath

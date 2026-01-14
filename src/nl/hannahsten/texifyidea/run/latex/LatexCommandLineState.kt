@@ -15,6 +15,7 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.platform.ide.progress.runWithModalProgressBlocking
@@ -33,13 +34,10 @@ import nl.hannahsten.texifyidea.run.latex.externaltool.RunExternalToolListener
 import nl.hannahsten.texifyidea.run.makeindex.RunMakeindexListener
 import nl.hannahsten.texifyidea.run.pdfviewer.OpenViewerListener
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
-import nl.hannahsten.texifyidea.util.Log
-import nl.hannahsten.texifyidea.util.caretOffset
-import nl.hannahsten.texifyidea.util.currentTextEditor
+import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.findTectonicTomlFile
 import nl.hannahsten.texifyidea.util.files.hasTectonicTomlFile
 import nl.hannahsten.texifyidea.util.files.psiFile
-import nl.hannahsten.texifyidea.util.includedPackagesInFileset
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
 import java.io.File
 import kotlin.io.path.Path
@@ -152,7 +150,13 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         // checking for bibliography commands
         if (runConfig.bibRunConfigs.isEmpty() && !compiler.includesBibtex) {
             // Generating a bib run config involves PSI access, which requires a read action.
-            runReadAction { runConfig.generateBibRunConfig() }
+            runReadAction {
+                // If the index is not ready, we cannot check if a bib run config is needed, so skip this and run the main run config anyway
+                if (!DumbService.getInstance(runConfig.project).isDumb) {
+                    Log.debug("Not generating bibtex run config because index is not ready")
+                    runConfig.generateBibRunConfig()
+                }
+            }
 
             runConfig.bibRunConfigs.forEach {
                 // Pass necessary latex run configurations settings to the bibtex run configuration.
@@ -315,7 +319,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
      */
     fun scheduleForwardSearchAfterCompile(viewer: PdfViewer, handler: ProcessHandler, runConfig: LatexRunConfiguration, environment: ExecutionEnvironment, focusAllowed: Boolean = true) {
         // We have to find the file and line number before scheduling the forward search.
-        val editor = environment.project.currentTextEditor()?.editor
+        val editor = environment.project.focusedTextEditor()?.editor ?: environment.project.selectedTextEditor()?.editor
 
         // Get the line number in the currently open file
         val line = editor?.document?.getLineNumber(editor.caretOffset())?.plus(1) ?: 0

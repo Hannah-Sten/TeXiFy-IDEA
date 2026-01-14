@@ -1,11 +1,5 @@
 package nl.hannahsten.texifyidea.lang.commands
 
-import com.intellij.codeInsight.completion.CompletionParameters
-import com.intellij.codeInsight.completion.CompletionProvider
-import nl.hannahsten.texifyidea.completion.LatexBibliographyStyleProvider
-import nl.hannahsten.texifyidea.completion.LatexListTypeProvider
-import nl.hannahsten.texifyidea.completion.LatexMintedTypeProvider
-
 /**
  * @author Sten Wessel
  */
@@ -16,14 +10,7 @@ abstract class Argument @JvmOverloads protected constructor(val name: String, va
     /**
      * @author Hannah Schellekens, Sten Wessel
      */
-    enum class Type(
-
-        /**
-         * Provides the autocomplete options for the argument of this type.
-         * `null` for no autocomplete options.
-         */
-        val completionProvider: CompletionProvider<CompletionParameters>? = null
-    ) {
+    enum class Type {
 
         /**
          * Can contain any kind of argument content.
@@ -48,13 +35,13 @@ abstract class Argument @JvmOverloads protected constructor(val name: String, va
         /**
          * Contains a bibliography style.
          */
-        BIBLIOGRAPHY_STYLE(completionProvider = LatexBibliographyStyleProvider),
+        BIBLIOGRAPHY_STYLE,
 
         /**
          * enumerate, itemize, etc.
          */
-        LIST_ENVIRONMENT(completionProvider = LatexListTypeProvider),
+        LIST_ENVIRONMENT,
 
-        MINTED_FUNTIME_LAND(completionProvider = LatexMintedTypeProvider),
+        MINTED_FUNTIME_LAND,
     }
 }

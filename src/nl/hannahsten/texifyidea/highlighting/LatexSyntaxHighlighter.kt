@@ -16,32 +16,28 @@ import nl.hannahsten.texifyidea.psi.LatexTypes
  */
 class LatexSyntaxHighlighter : SyntaxHighlighterBase() {
 
-    override fun getHighlightingLexer(): Lexer {
-        return LatexLexerAdapter()
-    }
+    override fun getHighlightingLexer(): Lexer = LatexLexerAdapter()
 
-    override fun getTokenHighlights(tokenType: IElementType): Array<out TextAttributesKey?> {
-        return if (tokenType == LatexTypes.OPEN_BRACE || tokenType == LatexTypes.CLOSE_BRACE) {
-            BRACES_KEYS
-        }
-        else if (tokenType == LatexTypes.OPEN_BRACKET || tokenType == LatexTypes.CLOSE_BRACKET) {
-            BRACKET_KEYS
-        }
-        else if (tokenType == LatexTypes.MAGIC_COMMENT_TOKEN) {
-            MAGIC_COMMENT_KEYS
-        }
-        else if (tokenType == LatexTypes.COMMENT_TOKEN) {
-            COMMENT_KEYS
-        }
-        else if (COMMAND_TOKENS.contains(tokenType)) {
-            COMMAND_KEYS
-        }
-        else if (tokenType == LatexTypes.STAR) {
-            STAR_KEYS
-        }
-        else {
-            EMPTY_KEYS
-        }
+    override fun getTokenHighlights(tokenType: IElementType): Array<out TextAttributesKey?> = if (tokenType == LatexTypes.OPEN_BRACE || tokenType == LatexTypes.CLOSE_BRACE) {
+        BRACES_KEYS
+    }
+    else if (tokenType == LatexTypes.OPEN_BRACKET || tokenType == LatexTypes.CLOSE_BRACKET) {
+        BRACKET_KEYS
+    }
+    else if (tokenType == LatexTypes.MAGIC_COMMENT_TOKEN) {
+        MAGIC_COMMENT_KEYS
+    }
+    else if (tokenType == LatexTypes.COMMENT_TOKEN) {
+        COMMENT_KEYS
+    }
+    else if (COMMAND_TOKENS.contains(tokenType)) {
+        COMMAND_KEYS
+    }
+    else if (tokenType == LatexTypes.STAR) {
+        STAR_KEYS
+    }
+    else {
+        EMPTY_KEYS
     }
 
     companion object {
@@ -100,16 +96,10 @@ class LatexSyntaxHighlighter : SyntaxHighlighterBase() {
         val USER_DEFINED_COMMAND_KEY = USER_DEFINED_COMMAND
         private val COMMENT_KEYS = keys(COMMENT)
         private val MAGIC_COMMENT_KEYS = keys(MAGIC_COMMENT)
-        private val INLINE_MATH_KEYS = keys(INLINE_MATH)
-        private val DISPLAY_MATH_KEYS = keys(DISPLAY_MATH)
         private val STAR_KEYS = keys(STAR)
         private val EMPTY_KEYS = arrayOfNulls<TextAttributesKey>(0)
-        private fun createKey(externalName: String, defaultStyle: TextAttributesKey): TextAttributesKey {
-            return TextAttributesKey.createTextAttributesKey(externalName, defaultStyle)
-        }
+        private fun createKey(externalName: String, defaultStyle: TextAttributesKey): TextAttributesKey = TextAttributesKey.createTextAttributesKey(externalName, defaultStyle)
 
-        private fun keys(vararg keys: TextAttributesKey): Array<out TextAttributesKey> {
-            return keys
-        }
+        private fun keys(vararg keys: TextAttributesKey): Array<out TextAttributesKey> = keys
     }
 }

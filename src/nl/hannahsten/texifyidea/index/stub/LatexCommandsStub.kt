@@ -23,6 +23,12 @@ interface LatexCommandsStub : StubElement<LatexCommands>, NamedStub<LatexCommand
     val commandToken: String
 
     /**
+     * The name of the command without the leading backslash.
+     */
+    val commandName: String
+        get() = commandToken.removePrefix("\\")
+
+    /**
      * All the parameters of the command in order
      */
     val parameters: List<LatexParameterStub>
@@ -32,9 +38,6 @@ interface LatexCommandsStub : StubElement<LatexCommands>, NamedStub<LatexCommand
 
 val LatexCommandsStub.requiredParams: List<String>
     get() = parameters.mapNotNull { if (it.type == LatexParameterStub.REQUIRED) it.content else null }
-
-val LatexCommandsStub.optionalParams: List<String>
-    get() = parameters.mapNotNull { if (it.type == LatexParameterStub.OPTIONAL) it.content else null }
 
 fun LatexCommandsStub.parameterOfTypeAt(index: Int, type: Int): String? {
     var pos = 0
@@ -47,10 +50,6 @@ fun LatexCommandsStub.parameterOfTypeAt(index: Int, type: Int): String? {
     return null
 }
 
-fun LatexCommandsStub.requiredParamAt(index: Int): String? {
-    return parameterOfTypeAt(index, LatexParameterStub.REQUIRED)
-}
+fun LatexCommandsStub.requiredParamAt(index: Int): String? = parameterOfTypeAt(index, LatexParameterStub.REQUIRED)
 
-fun LatexCommandsStub.optionalParamAt(index: Int): String? {
-    return parameterOfTypeAt(index, LatexParameterStub.OPTIONAL)
-}
+fun LatexCommandsStub.optionalParamAt(index: Int): String? = parameterOfTypeAt(index, LatexParameterStub.OPTIONAL)

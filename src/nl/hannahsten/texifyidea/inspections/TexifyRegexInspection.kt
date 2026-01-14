@@ -12,10 +12,10 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.psi.LatexRawText
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.caretOffset
 import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.length
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
-import nl.hannahsten.texifyidea.util.parser.hasParent
 import nl.hannahsten.texifyidea.util.parser.inMathContext
 import nl.hannahsten.texifyidea.util.parser.isComment
 import java.util.regex.Matcher
@@ -26,7 +26,6 @@ import kotlin.math.max
  * @author Hannah Schellekens
  */
 abstract class TexifyRegexInspection(
-
     /**
      * The display name of the inspection.
      */
@@ -100,14 +99,6 @@ abstract class TexifyRegexInspection(
          * Get the IntRange that spans the inspectionGroup with the given id.
          */
         fun Matcher.groupRange(groupId: Int): IntRange = start(groupId)..end(groupId)
-
-        /**
-         * Checks if the matched element is a child of a certain PsiElement.
-         */
-        inline fun <reified T : PsiElement> isInElement(matcher: Matcher, file: PsiFile): Boolean {
-            val element = file.findElementAt(matcher.start()) ?: return false
-            return element.hasParent(T::class)
-        }
     }
 
     override fun getDisplayName() = inspectionDisplayName
@@ -272,9 +263,7 @@ abstract class TexifyRegexInspection(
      * sure it is run for the whole file at once.
      * It can be disabled by overriding this method.
      */
-    override fun runForWholeFile(): Boolean {
-        return true
-    }
+    override fun runForWholeFile(): Boolean = true
 
     /**
      * Replaces all text in the replacementRange by the correct replacement.
@@ -290,7 +279,7 @@ abstract class TexifyRegexInspection(
 
         document.replaceString(replacementRange.first, replacementRange.last, replacement)
 
-        return replacement.length - replacementRange.length
+        return replacement.length - replacementRange.length + 1
     }
 
     /**
@@ -380,8 +369,6 @@ abstract class TexifyRegexInspection(
             fixFunction(problemDescriptor, replacementRanges, replacements, groups)
         }
 
-        override fun generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo {
-            return previewFunction(project, previewDescriptor, replacementRanges, replacements, groups)
-        }
+        override fun generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo = previewFunction(project, previewDescriptor, replacementRanges, replacements, groups)
     }
 }

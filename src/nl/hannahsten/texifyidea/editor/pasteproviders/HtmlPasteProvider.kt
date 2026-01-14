@@ -10,8 +10,8 @@ import com.intellij.openapi.editor.actions.PasteAction
 import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.Clipboard
-import nl.hannahsten.texifyidea.util.currentTextEditor
 import nl.hannahsten.texifyidea.util.files.isLatexFile
+import nl.hannahsten.texifyidea.util.focusedTextEditor
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Node
 import java.awt.datatransfer.DataFlavor
@@ -35,7 +35,7 @@ class HtmlPasteProvider : PasteProvider {
     override fun performPaste(dataContext: DataContext) {
         val project = dataContext.getData(PlatformDataKeys.PROJECT) ?: return
         val clipboardHtml = dataContext.transferableHtml() ?: return
-        val editor = project.currentTextEditor()?.editor ?: return
+        val editor = project.focusedTextEditor()?.editor ?: return
         val latexFile = dataContext.getData(PlatformDataKeys.PSI_FILE) as? LatexFile ?: return
 
         val html = Clipboard.extractHtmlFromClipboard(clipboardHtml)
@@ -47,7 +47,7 @@ class HtmlPasteProvider : PasteProvider {
         }
     }
 
-    override fun isPasteEnabled(dataContext: DataContext) = isPastePossible(dataContext) && TexifySettings.getInstance().htmlPasteTranslator != TexifySettings.HtmlPasteTranslator.DISABLED
+    override fun isPasteEnabled(dataContext: DataContext) = isPastePossible(dataContext) && TexifySettings.getState().htmlPasteTranslator != TexifySettings.HtmlPasteTranslator.DISABLED
 
     override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
@@ -65,11 +65,9 @@ class HtmlPasteProvider : PasteProvider {
     /**
      * Use various converters to convert all the tables, image references and styled text to LaTeX.
      */
-    fun convertHtmlToLatex(htmlIn: Node, latexFile: LatexFile): String {
-        return when(TexifySettings.getInstance().htmlPasteTranslator) {
-            TexifySettings.HtmlPasteTranslator.BUILTIN -> convertHtmlToLatex(htmlIn.childNodes(), latexFile)
-            TexifySettings.HtmlPasteTranslator.PANDOC -> PandocHtmlToLatexConverter().translateHtml(htmlIn.toString()) ?: convertHtmlToLatex(htmlIn.childNodes(), latexFile)
-            TexifySettings.HtmlPasteTranslator.DISABLED -> htmlIn.toString() // Should not happen
-        }
+    fun convertHtmlToLatex(htmlIn: Node, latexFile: LatexFile): String = when(TexifySettings.getState().htmlPasteTranslator) {
+        TexifySettings.HtmlPasteTranslator.BUILTIN -> convertHtmlToLatex(htmlIn.childNodes(), latexFile)
+        TexifySettings.HtmlPasteTranslator.PANDOC -> PandocHtmlToLatexConverter().translateHtml(htmlIn.toString()) ?: convertHtmlToLatex(htmlIn.childNodes(), latexFile)
+        TexifySettings.HtmlPasteTranslator.DISABLED -> htmlIn.toString() // Should not happen
     }
 }

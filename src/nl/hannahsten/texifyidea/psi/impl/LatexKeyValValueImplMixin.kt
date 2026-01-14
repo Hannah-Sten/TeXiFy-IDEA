@@ -6,13 +6,11 @@ import nl.hannahsten.texifyidea.psi.LatexKeyValValue
 
 abstract class LatexKeyValValueImplMixin(node: ASTNode) : LatexKeyValValue, ASTWrapperPsiElement(node) {
 
-    override fun toString(): String {
-        return keyValContentList.joinToString(separator = "") {
-            when {
-                it.parameterText != null -> it.parameterText!!.text
-                it.parameterGroup != null -> it.parameterGroup!!.parameterGroupText!!.text
-                else -> ""
-            }
+    override fun toString(): String = keyValContentList.joinToString(separator = "") {
+        when {
+            it.parameterText != null -> it.parameterText!!.text
+            it.parameterGroup != null -> it.parameterGroup!!.parameterGroupText!!.text
+            else -> ""
         }
     }
 }

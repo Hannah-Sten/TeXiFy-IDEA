@@ -29,7 +29,5 @@ class InlineMathBackspaceHandler : BackspaceHandlerDelegate() {
         }
     }
 
-    override fun charDeleted(c: Char, file: PsiFile, editor: Editor): Boolean {
-        return false
-    }
+    override fun charDeleted(c: Char, file: PsiFile, editor: Editor): Boolean = false
 }

@@ -63,15 +63,6 @@ object TexifyIcons {
     val SYNCTEX_FILE = TEXT_FILE
 
     @JvmField
-    val AUX_FILE = TEXT_FILE
-
-    @JvmField
-    val TABLE_OF_CONTENTS_FILE = TEXT_FILE
-
-    @JvmField
-    val BBL_FILE = TEXT_FILE
-
-    @JvmField
     val BUILD = IconLoader.getIcon(
         "/nl/hannahsten/texifyidea/icons/build.svg", TexifyIcons::class.java
     )
@@ -121,6 +112,7 @@ object TexifyIcons {
         "/nl/hannahsten/texifyidea/icons/dot-cls.svg", TexifyIcons::class.java
     )
 
+    @Suppress("unused")
     @JvmField
     val DOT_NUMBER = IconLoader.getIcon(
         "/nl/hannahsten/texifyidea/icons/dot-num.svg", TexifyIcons::class.java
@@ -201,6 +193,7 @@ object TexifyIcons {
         "/nl/hannahsten/texifyidea/icons/font-slanted.svg", TexifyIcons::class.java
     )
 
+    @Suppress("unused")
     @JvmField
     val SUMATRA = IconLoader.getIcon(
         "/nl/hannahsten/texifyidea/icons/sumatra.svg", TexifyIcons::class.java
@@ -216,6 +209,7 @@ object TexifyIcons {
         "/nl/hannahsten/texifyidea/icons/toggle-star.svg", TexifyIcons::class.java
     )
 
+    @Suppress("unused")
     @JvmField
     val STATS = IconLoader.getIcon(
         "/nl/hannahsten/texifyidea/icons/stats.svg", TexifyIcons::class.java
@@ -236,6 +230,7 @@ object TexifyIcons {
         "/nl/hannahsten/texifyidea/icons/tikz-preview.svg", TexifyIcons::class.java
     )
 
+    @Suppress("unused")
     @JvmField
     val SYMBOLS = IconLoader.getIcon(
         "/nl/hannahsten/texifyidea/icons/symbols.svg", TexifyIcons::class.java
@@ -281,10 +276,8 @@ object TexifyIcons {
      * When `extension` is null.
      */
     fun getIconFromExtension(extension: String?, default: Icon? = null): Icon? {
-        return if (extension == null) {
-            default
-        }
-        else when (extension.lowercase(Locale.getDefault())) {
+        if (extension == null) return default
+        return when (extension.lowercase(Locale.getDefault())) {
             "tex" -> LATEX_FILE
             "bib" -> BIBLIOGRAPHY_FILE
             "cls" -> CLASS_FILE
@@ -295,6 +288,7 @@ object TexifyIcons {
             "pdf" -> PDF_FILE
             "synctex.gz" -> SYNCTEX_FILE
             "dvi" -> DVI_FILE
+            // Make sure to not override non-LaTeX extensions with the default icon (from FileTypeManager#getFileTypeByExtension), but allow plugin-provided icons
             else -> default
         }
     }

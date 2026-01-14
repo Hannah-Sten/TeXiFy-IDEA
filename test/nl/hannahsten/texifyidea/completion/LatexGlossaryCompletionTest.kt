@@ -5,12 +5,12 @@ import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementPresentation
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.updateCommandDef
+import nl.hannahsten.texifyidea.updateFilesets
 
 class LatexGlossaryCompletionTest : BasePlatformTestCase() {
 
-    override fun getTestDataPath(): String {
-        return "test/resources/completion/glossary"
-    }
+    override fun getTestDataPath(): String = "test/resources/completion/glossary"
 
     private fun validateLookupElement(
         lookup: String,
@@ -29,7 +29,7 @@ class LatexGlossaryCompletionTest : BasePlatformTestCase() {
     fun testCompleteGlossaryCommandEntries() {
         // given
         myFixture.configureByFiles("${getTestName(false)}.tex")
-
+        myFixture.updateCommandDef()
         // when
         val result = myFixture.complete(CompletionType.BASIC)
 
@@ -53,6 +53,7 @@ class LatexGlossaryCompletionTest : BasePlatformTestCase() {
             \end{document}
             """.trimIndent()
         )
+        myFixture.updateCommandDef()
 
         // when
         val result = myFixture.complete(CompletionType.BASIC)
@@ -69,23 +70,19 @@ class LatexGlossaryCompletionTest : BasePlatformTestCase() {
         testGlossaryReferenceCompletion("Gls")
     }
 
-    // TODO(TEX-213) Fix tests using file set cache
-//    fun testExternalGlossaryCompletion() {
-//        try {
-//            // given
-//            myFixture.configureByFilesWithMockCache("LoadExternalGlossary.tex", "glossar.tex")
-//
-//            // when
-//            val result = myFixture.complete(CompletionType.BASIC)
-//
-//            // then
-//            assertEquals(2, result.size)
-//            assertTrue(result.any { l -> l.lookupString == "aslr" })
-//            assertTrue(result.any { l -> l.lookupString == "maths" })
-//        }
-//        finally {
-//            clearAllMocks()
-//            unmockkAll()
-//        }
-//    }
+    fun testExternalGlossaryCompletion() {
+        // given
+        myFixture.configureByFiles("LoadExternalGlossary.tex", "glossar.tex")
+
+        myFixture.updateFilesets()
+        myFixture.updateCommandDef()
+
+        // when
+        val result = myFixture.complete(CompletionType.BASIC)
+
+        // then
+        assertEquals(2, result.size)
+        assertTrue(result.any { l -> l.lookupString == "aslr" })
+        assertTrue(result.any { l -> l.lookupString == "maths" })
+    }
 }

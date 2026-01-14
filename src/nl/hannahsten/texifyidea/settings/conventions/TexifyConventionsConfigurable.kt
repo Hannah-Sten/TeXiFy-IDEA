@@ -249,9 +249,7 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
         }
     }
 
-    private fun buildEnvironmentSelector(): ComboBox<LabelConventionType> {
-        return ComboBox(LabelConventionType.entries.toTypedArray())
-    }
+    private fun buildEnvironmentSelector(): ComboBox<LabelConventionType> = ComboBox(LabelConventionType.entries.toTypedArray())
 
     override fun createComponent(): JComponent {
         schemesPanel = TexifyConventionsSchemesPanel(unsavedSettings)

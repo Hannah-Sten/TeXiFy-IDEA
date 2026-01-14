@@ -12,7 +12,6 @@ import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.lineIndentationByOffset
 import nl.hannahsten.texifyidea.util.parser.*
-import java.util.*
 
 /**
  * Adds the given magic comment as an actual comment to the file.
@@ -121,7 +120,7 @@ fun PsiElement.magicCommentLookup(
     next: PsiElement.() -> PsiElement?,
     reversed: Boolean = false
 ): MagicComment<String, String> {
-    val commentLines = LinkedList<String>()
+    val commentLines = mutableListOf<String>()
 
     // Scan (backward) through all the magic comments preceding the element.
     var current: PsiElement? = initial() ?: return MagicComment.empty()
@@ -269,9 +268,7 @@ fun LatexCommands.allMagicComments(): MagicComment<String, String> {
 /**
  * Get the magic comment that directly targets this group.
  */
-fun LatexGroup.magicComment(): MagicComment<String, String> {
-    return forwardMagicCommentLookup { firstChildIgnoringWhitespaceOrNull()?.nextSiblingIgnoreWhitespace() }
-}
+fun LatexGroup.magicComment(): MagicComment<String, String> = forwardMagicCommentLookup { firstChildIgnoringWhitespaceOrNull()?.nextSiblingIgnoreWhitespace() }
 
 /**
  * Get the (merged) magic comments that are targeted to this group, all parent goups, commands,
@@ -306,9 +303,7 @@ fun PsiElement.magicComment(): MagicComment<String, String>? = when (this) {
  * To find any comment at the previous line, we need to check for newlines explicitly.
  * Return null if the previous line is not a magic comment.
  */
-fun PsiElement.commentOnPreviousLine(): MagicComment<String, String>? {
-    return prevLeafs.firstOrNull { it is PsiWhiteSpace && it.text.contains("\n") }?.backwardMagicCommentLookup { prevLeaf(true) }
-}
+fun PsiElement.commentOnPreviousLine(): MagicComment<String, String>? = prevLeafs.firstOrNull { it is PsiWhiteSpace && it.text.contains("\n") }?.backwardMagicCommentLookup { prevLeaf(true) }
 
 /**
  * Get the (merged) magic comments that are targeted to all the element's parents (including the whole file).

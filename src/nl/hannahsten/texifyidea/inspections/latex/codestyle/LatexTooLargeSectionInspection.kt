@@ -4,31 +4,27 @@ import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.openapi.editor.Document
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.jetbrains.rd.util.EnumSet
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
-import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexEndCommand
-import nl.hannahsten.texifyidea.psi.LatexNoMathContent
-import nl.hannahsten.texifyidea.psi.environmentName
-import nl.hannahsten.texifyidea.psi.traverseCommands
+import nl.hannahsten.texifyidea.lang.predefined.CommandNames
+import nl.hannahsten.texifyidea.lang.predefined.EnvironmentNames
+import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettingsManager
 import nl.hannahsten.texifyidea.ui.CreateFileDialog
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.writeToFileUndoable
-import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.*
-import java.util.*
 
 /**
  * @author Hannah Schellekens
@@ -40,7 +36,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
         /**
          * All commands that count as inspected sections in order of hierarchy.
          */
-        val SECTION_NAMES = listOf(LatexGenericRegularCommand.CHAPTER.cmd, LatexGenericRegularCommand.SECTION.cmd)
+        val SECTION_NAMES = listOf(CommandNames.CHAPTER, CommandNames.SECTION)
 
         /**
          * Looks up the section command that comes after the given command.
@@ -71,8 +67,21 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
 
             // If no command was found, find the end of the document.
             return command.containingFile.traverseReversed().filterIsInstance<LatexEndCommand>().firstOrNull {
-                it.environmentName() == DefaultEnvironment.DOCUMENT.environmentName
+                it.environmentName() == EnvironmentNames.DOCUMENT
             }
+        }
+
+        fun findTextUntilNextSection(
+            label: LatexCommands?,
+            cmd: LatexCommands,
+            document: Document,
+            nextCmd: PsiElement?
+        ): Triple<Int, Int, String> {
+            val startIndex = label?.endOffset() ?: cmd.endOffset()
+            val cmdIndent = document.lineIndentation(document.getLineNumber(nextCmd?.textOffset ?: 0))
+            val endIndex = (nextCmd?.textOffset ?: document.textLength) - cmdIndent.length
+            val text = document.getText(TextRange(startIndex, endIndex)).trimEnd().removeIndents()
+            return Triple(startIndex, endIndex, text)
         }
     }
 
@@ -80,7 +89,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
 
     override val inspectionId = "TooLargeSection"
 
-    override val ignoredSuppressionScopes = EnumSet.of(MagicCommentScope.GROUP)!!
+    override val ignoredSuppressionScopes: Set<MagicCommentScope> = EnumSet.of(MagicCommentScope.GROUP)
 
     override fun getDisplayName() = "Too large sections"
 
@@ -117,9 +126,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
      * Checks if the given file is already a split up section or chapter, with [command] being the only section/chapter
      * in this file. (If [command] is a \chapter, \section can still occur.)
      */
-    private fun isAlreadySplit(command: LatexCommands, commands: Collection<LatexCommands>): Boolean {
-        return commands.asSequence().filter { cmd -> cmd.name == command.name }.count() <= 1
-    }
+    private fun isAlreadySplit(command: LatexCommands, commands: Collection<LatexCommands>): Boolean = commands.count { cmd -> cmd.name == command.name } <= 1
 
     /**
      * Checks if the given command starts a section that is too long.
@@ -158,7 +165,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
                 val nextSibling = cmd.firstParentOfType(LatexNoMathContent::class)
                     ?.nextSiblingIgnoreWhitespace()
                     ?.findFirstChildOfType(LatexCommands::class) ?: return null
-                return if (nextSibling.name == LatexGenericRegularCommand.LABEL.commandWithSlash) nextSibling else null
+                return if (nextSibling.name == CommandNames.LABEL) nextSibling else null
             }
         }
 
@@ -173,10 +180,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
             val file = cmd.containingFile
             val document = PsiDocumentManager.getInstance(project).getDocument(file) ?: return
 
-            val startIndex = label?.endOffset() ?: cmd.endOffset()
-            val cmdIndent = document.lineIndentation(document.getLineNumber(nextCmd?.textOffset ?: 0))
-            val endIndex = (nextCmd?.textOffset ?: document.textLength) - cmdIndent.length
-            val text = document.getText(TextRange(startIndex, endIndex)).trimEnd().removeIndents()
+            val (startIndex, endIndex, text) = Util.findTextUntilNextSection(label, cmd, document, nextCmd)
 
             // Create new file.
             val fileNameBraces = if (cmd.parameterList.isNotEmpty()) cmd.parameterList[0].text else return
@@ -184,7 +188,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
             // Remove the braces of the LaTeX command before creating a filename of it
             val fileName = fileNameBraces.removeAll("{", "}")
                 .formatAsFileName()
-            val root = file.findRootFile(useIndexCache = false).containingDirectory?.virtualFile?.canonicalPath ?: return
+            val root = file.findRootFile().containingDirectory?.virtualFile?.canonicalPath ?: return
 
             // Display a dialog to ask for the location and name of the new file.
             val filePath =

@@ -32,9 +32,7 @@ class LatexOutputPath(private val variant: String, var mainFile: VirtualFile?, p
         const val MAIN_FILE_STRING = "{mainFileParent}"
     }
 
-    fun clone(): LatexOutputPath {
-        return LatexOutputPath(variant, mainFile, project).apply { if (this@LatexOutputPath.pathString.isNotBlank()) this.pathString = this@LatexOutputPath.pathString }
-    }
+    fun clone(): LatexOutputPath = LatexOutputPath(variant, mainFile, project).apply { if (this@LatexOutputPath.pathString.isNotBlank()) this.pathString = this@LatexOutputPath.pathString }
 
     // Acts as a sort of cache
     var virtualFile: VirtualFile? = null
@@ -74,7 +72,7 @@ class LatexOutputPath(private val variant: String, var mainFile: VirtualFile?, p
             val contentRoot = getMainFileContentRoot(mainFile)
             val pathString = if (pathString.contains(PROJECT_DIR_STRING)) {
                 if (contentRoot == null) return if (mainFile != null) mainFile?.parent else null
-                pathString.replace(PROJECT_DIR_STRING, contentRoot?.path ?: return null)
+                pathString.replace(PROJECT_DIR_STRING, contentRoot.path)
             }
             else {
                 if (mainFile == null) return null
@@ -94,12 +92,12 @@ class LatexOutputPath(private val variant: String, var mainFile: VirtualFile?, p
 
             // Create and return default path
             if (contentRoot != null) {
-                val defaultPathString = contentRoot!!.path + "/" + variant
+                val defaultPathString = contentRoot.path + "/" + variant
                 createOutputPath(defaultPathString)?.let { return it }
             }
 
             if (contentRoot != null) {
-                return contentRoot!!
+                return contentRoot
             }
 
             return null
@@ -132,6 +130,7 @@ class LatexOutputPath(private val variant: String, var mainFile: VirtualFile?, p
     /**
      * Whether the current output path is the default.
      */
+    @Suppress("unused")
     fun isDefault() = getDefaultOutputPath() == virtualFile
 
     /**
@@ -175,7 +174,7 @@ class LatexOutputPath(private val variant: String, var mainFile: VirtualFile?, p
                 FileUtil.pathRelativeTo(includeRoot?.path ?: return@mapNotNull null, it.path)
             }
             .forEach {
-                val file = File(outPath + it)
+                val file = File(outPath, it)
                 if (file.mkdirs()) {
                     createdDirectories.add(file)
                 }

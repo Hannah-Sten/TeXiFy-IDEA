@@ -6,11 +6,15 @@ import com.intellij.openapi.editor.ElementColorProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.LeafPsiElement
+import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
+import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.commands.LatexColorDefinitionCommand
 import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
+import nl.hannahsten.texifyidea.psi.LatexTypes
+import nl.hannahsten.texifyidea.psi.contentText
 import nl.hannahsten.texifyidea.util.magic.ColorMagic
 import nl.hannahsten.texifyidea.util.parser.*
 import nl.hannahsten.texifyidea.util.toHexString
@@ -64,25 +68,14 @@ class LatexElementColorProvider : ElementColorProvider {
      * Get the color that is used in a command that uses color. This color will be shown in the gutter.
      */
     override fun getColorFrom(element: PsiElement): Color? {
-        if (element is LeafPsiElement) {
-            val command = element.firstParentOfType(LatexCommands::class)
-            if (command.usesColor()) {
-                val colorArgument = when (command?.name) {
-                    // Show the defined color.
-                    in ColorMagic.colorDefinitions -> {
-                        command?.getRequiredArgumentValueByName("name")
-                    }
-                    // Show the used color.
-                    in ColorMagic.takeColorCommands -> {
-                        command?.getRequiredArgumentValueByName("color")
-                    }
-
-                    else -> null
-                } ?: return null
-                // Find the color to show.
-                if (command?.name == element.text) {
-                    return findColor(colorArgument, element.containingFile)
-                }
+        if (element !is LeafPsiElement) return null
+        if (element.elementType != LatexTypes.COMMAND_TOKEN) return null
+        val command = element.firstParentOfType(LatexCommands::class) ?: return null
+        val semantics = LatexDefinitionService.resolveCommand(command) ?: return null
+        LatexPsiUtil.processArgumentsWithSemantics(command, semantics) process@{ param, arg ->
+            arg ?: return@process
+            if (arg.contextSignature.introduces(LatexContexts.ColorReference) || arg.contextSignature.introduces(LatexContexts.ColorDefinition)) {
+                return findColor(param.contentText(), element.containingFile)
             }
         }
         return null
@@ -95,7 +88,7 @@ class LatexElementColorProvider : ElementColorProvider {
         if (defaultHex != null) return Color(defaultHex)
 
         val colorDefiningCommands = NewCommandsIndex.getByNames(
-            ColorMagic.colorDefinitions,
+            ColorMagic.colorDefinitions.keys,
             file,
         )
         // If this color is a single color (not a mix, and thus does not contain a !)
@@ -187,14 +180,12 @@ class LatexElementColorProvider : ElementColorProvider {
     /**
      * Mix two colors, used to support red!50!yellow color definitions.
      */
-    private fun mix(a: Color, b: Color, percent: Int): Color {
-        return (percent / 100.0).let {
-            Color(
-                (a.red * it + b.red * (1.0 - it)).toInt(),
-                (a.green * it + b.green * (1.0 - it)).toInt(),
-                (a.blue * it + b.blue * (1.0 - it)).toInt()
-            )
-        }
+    private fun mix(a: Color, b: Color, percent: Int): Color = (percent / 100.0).let {
+        Color(
+            (a.red * it + b.red * (1.0 - it)).toInt(),
+            (a.green * it + b.green * (1.0 - it)).toInt(),
+            (a.blue * it + b.blue * (1.0 - it)).toInt()
+        )
     }
 
     /**
@@ -300,9 +291,7 @@ class LatexElementColorProvider : ElementColorProvider {
     /**
      * Get a [Color] from a hex color string.
      */
-    private fun fromHtmlString(htmlText: String): Color {
-        return Color.decode("#$htmlText")
-    }
+    private fun fromHtmlString(htmlText: String): Color = Color.decode("#$htmlText")
 
     /**
      * Get the hex string of a [Color], without leading #.

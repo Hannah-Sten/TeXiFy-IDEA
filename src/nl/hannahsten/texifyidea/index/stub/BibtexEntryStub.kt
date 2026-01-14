@@ -10,7 +10,5 @@ interface BibtexEntryStub : StubElement<BibtexEntry?>, NamedStub<BibtexEntry?> {
     val authors: List<String?>
     val year: String
     val identifier: String
-    override fun getName(): String? {
-        return identifier
-    }
+    override fun getName(): String? = identifier
 }

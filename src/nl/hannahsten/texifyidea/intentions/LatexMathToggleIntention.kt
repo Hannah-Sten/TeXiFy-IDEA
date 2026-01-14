@@ -5,8 +5,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.editor.MathEnvironmentEditor
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment
-import nl.hannahsten.texifyidea.lang.Environment
+import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.psi.LatexBeginCommand
 import nl.hannahsten.texifyidea.psi.LatexDisplayMath
 import nl.hannahsten.texifyidea.psi.LatexInlineMath
@@ -45,26 +45,27 @@ open class LatexMathToggleIntention : TexifyIntentionBase("Convert to other math
                 element = element.parentOfType(LatexInlineMath::class) ?: return
                 "inline"
             }
+
             element.hasParent(LatexDisplayMath::class) -> {
                 element = element.parentOfType(LatexDisplayMath::class)
                     ?: return
                 "display"
             }
+
             else -> {
                 element = element.findOuterMathEnvironment() ?: return
                 element.findFirstChildTyped<LatexBeginCommand>()?.environmentName()
             }
         } ?: return
 
-        val availableEnvironments: List<String> = arrayOf(
-            DefaultEnvironment.entries
-                .filter { it.context == Environment.Context.MATH }
-                .map { it.environmentName }
-                .toTypedArray(),
-            // Add the inline and display environments.
-            arrayOf("inline", "display")
-        )
-            .flatten()
+        val availableEnvironments: List<String> = buildList {
+            for (env in AllPredefined.allEnvironments) {
+                if (env.contextSignature.introduces(LatexContexts.Math)) {
+                    add(env.name)
+                }
+            }
+            addAll(arrayOf("inline", "display"))
+        }
             // Remove equation*/displaymath, split/cases, and current environments.
             .filter { it != "split" && it != "cases" && it != "equation*" && it != "displaymath" && it != environmentName }
             .sorted()

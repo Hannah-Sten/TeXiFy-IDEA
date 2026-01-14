@@ -7,9 +7,7 @@ object NoViewer : PdfViewer {
     override val isFocusSupported = false
     override val isForwardSearchSupported = false
 
-    override fun toString(): String {
-        return displayName
-    }
+    override fun toString(): String = displayName
 
     override fun isAvailable(): Boolean {
         return true // set it as a backup empty viewer

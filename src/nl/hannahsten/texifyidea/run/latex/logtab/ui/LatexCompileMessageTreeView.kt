@@ -55,6 +55,7 @@ class LatexCompileMessageTreeView(
     /**
      * Get selected elements.
      */
+    @Suppress("unused")
     private fun getSelectedElements(): List<ErrorTreeElement> {
         val selectedRows = myTree.selectionRows ?: return emptyList()
         val tree = errorViewStructure
@@ -95,7 +96,7 @@ class LatexCompileMessageTreeView(
         val hide = logMessage.message.lowercase(Locale.getDefault()).containsAny(
             LatexKeywordFilter.entries
                 .filter { f -> config().showKeywordWarnings[f]?.not() ?: false }
-                .map { f -> f.triggers }.flatten().toSet()
+                .flatMap { f -> f.triggers }.toSet()
         )
         if (!hide && logMessage !in this) {
             addMessage(logMessage)

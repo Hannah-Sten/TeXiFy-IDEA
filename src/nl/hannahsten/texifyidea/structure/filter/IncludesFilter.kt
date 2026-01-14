@@ -12,12 +12,10 @@ import nl.hannahsten.texifyidea.structure.latex.LatexStructureViewCommandElement
  */
 class IncludesFilter : FileStructureFilter {
 
-    override fun isVisible(treeElement: TreeElement): Boolean {
-        return if (treeElement !is LatexStructureViewCommandElement) {
-            true
-        }
-        else !treeElement.isFileInclude
+    override fun isVisible(treeElement: TreeElement): Boolean = if (treeElement !is LatexStructureViewCommandElement) {
+        true
     }
+    else !treeElement.isFileInclude
 
     override fun isReverted() = true
 

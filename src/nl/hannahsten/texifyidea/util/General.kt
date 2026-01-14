@@ -17,6 +17,7 @@ val Boolean.int: Int
     get() = if (this) 1 else 0
 
 // Copied from grazie utils
+@Suppress("unused")
 fun Boolean?.orTrue() = this ?: true
 fun Boolean?.orFalse() = this ?: false
 
@@ -41,10 +42,8 @@ fun <T> runWriteCommandAction(
     commandName: String,
     vararg files: PsiFile,
     writeCommandAction: () -> T
-): T {
-    return WriteCommandAction.writeCommandAction(project, *files).withName(commandName)
-        .compute<T, RuntimeException>(writeCommandAction)
-}
+): T = WriteCommandAction.writeCommandAction(project, *files).withName(commandName)
+    .compute<T, RuntimeException>(writeCommandAction)
 
 /**
  * Converts an [IntRange] to [TextRange].
@@ -52,10 +51,12 @@ fun <T> runWriteCommandAction(
 fun IntRange.toTextRange() = TextRange(this.first, this.last + 1)
 
 /**
- * Get the length of an [IntRange].
+ * The length of an [IntRange], `length = endInclusive - start + 1`.
  */
 val IntRange.length: Int
-    get() = endInclusive - start
+    get() = endInclusive - start + 1
+
+fun IntRange.contains(other: IntRange): Boolean = this.first <= other.first && this.last >= other.last
 
 /**
  * Converts the range to a range representation with the given seperator.
@@ -67,9 +68,7 @@ fun IntRange.toRangeString(separator: String = "-") =
 /**
  * Shift the range to the right by the number of places given.
  */
-fun IntRange.shiftRight(displacement: Int): IntRange {
-    return (this.first + displacement)..(this.last + displacement)
-}
+fun IntRange.shiftRight(displacement: Int): IntRange = (this.first + displacement)..(this.last + displacement)
 
 /**
  * Converts a [TextRange] to [IntRange].

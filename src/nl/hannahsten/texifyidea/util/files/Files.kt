@@ -22,7 +22,6 @@ import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.Transferable
 import java.io.File
 import java.io.IOException
-import java.nio.charset.StandardCharsets
 import java.nio.file.Path
 import java.util.regex.Pattern
 import kotlin.io.path.pathString
@@ -51,11 +50,9 @@ object FileUtil {
      * @return The corresponding FileType instance.
      */
     @JvmStatic
-    fun fileTypeByExtension(extensionWithoutDot: String): FileType {
-        return FileMagic.fileTypes.firstOrNull {
-            it.defaultExtension == extensionWithoutDot
-        } ?: LatexFileType
-    }
+    fun fileTypeByExtension(extensionWithoutDot: String): FileType = FileMagic.fileTypes.firstOrNull {
+        it.defaultExtension == extensionWithoutDot
+    } ?: LatexFileType
 
     /**
      * Retrieves the file path relative to the root path, or `null` if the file is not a child
@@ -69,9 +66,7 @@ object FileUtil {
      * the root.
      */
     @JvmStatic
-    fun pathRelativeTo(rootPath: String, filePath: String): String? {
-        return pathRelativeTo(rootPath.toNioPathOrNull(), filePath.toNioPathOrNull())?.pathString
-    }
+    fun pathRelativeTo(rootPath: String, filePath: String): String? = pathRelativeTo(rootPath.toNioPathOrNull(), filePath.toNioPathOrNull())?.pathString
 
     fun pathRelativeTo(rootPath: Path?, filePath: Path?): Path? {
         if (rootPath == null || filePath == null) return null
@@ -108,23 +103,6 @@ fun Module.createExcludedDir(path: String) {
  * @return The PSI file matching the document, or `null` when the PSI file could not be found.
  */
 fun Document.psiFile(project: Project): PsiFile? = runReadAction { PsiDocumentManager.getInstance(project).getPsiFile(this) }
-
-/**
- * Creates a new file with a given name and given content.
- *
- * Also checks if the file already exists, and modifies the name accordingly.
- *
- * @return The created file.
- */
-fun createFile(fileName: String, contents: String): File {
-    val currentFileName = getUniqueFileName(fileName)
-
-    return File(currentFileName).apply {
-        createNewFile()
-        LocalFileSystem.getInstance().refresh(true)
-        writeText(contents, StandardCharsets.UTF_8)
-    }
-}
 
 /**
  * This writes to a file without using java.io.File
@@ -229,11 +207,11 @@ fun getUniqueFileName(fileName: String, directory: String? = null): String {
         ).exists()
     ) {
         val extension = "." + FileUtilRt.getExtension(currentFileName)
-        var stripped = currentFileName.substring(0, currentFileName.length - extension.length)
+        var stripped = currentFileName.dropLast(extension.length)
 
         val countString = count.toString()
         if (stripped.endsWith(countString)) {
-            stripped = stripped.substring(0, stripped.length - countString.length)
+            stripped = stripped.dropLast(countString.length)
         }
 
         currentFileName = stripped + (++count) + extension
@@ -253,9 +231,7 @@ fun findFileByPath(path: String): VirtualFile? {
 /**
  * Converts the absolute path to a relative path.
  */
-fun String.toRelativePath(basePath: String): String {
-    return File(basePath).toURI().relativize(File(this).toURI()).path
-}
+fun String.toRelativePath(basePath: String): String = File(basePath).toURI().relativize(File(this).toURI()).path
 
 /**
  * Extracts the list of files from the Drag and Drop Transferable, only if java file list is a supported flavour.

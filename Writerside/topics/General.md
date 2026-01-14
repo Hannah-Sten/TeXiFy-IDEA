@@ -15,6 +15,8 @@ Note you can easily fold or collapse until a certain level using the menu or sho
 
 Which elements are folded by default can be configured in <ui-path>File | Settings | Editor | General | Code Folding | LaTeX</ui-path>.
 You can also use magic comments, to define custom folding regions, or modify the default sectioning folding regions, see [Magic Comments](Editing-a-LaTeX-file.md#custom-folding-regions).
+Folding a `$ \left( ... \right) $` expression will result in `$ ( ... ) $` shown, you can disable this in code folding settings.
+The braces themselves can also fold, so for example `\left\{` will fold to `{`.
 
 ![folding](folding.png)
 

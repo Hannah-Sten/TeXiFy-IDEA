@@ -4,6 +4,7 @@ import com.intellij.codeInsight.daemon.RelatedItemLineMarkerInfo
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerProvider
 import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder
 import com.intellij.codeInsight.navigation.impl.PsiTargetPresentationRenderer
+import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.elementType
 import nl.hannahsten.texifyidea.TexifyIcons
@@ -32,12 +33,12 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
         // Only make markers when dealing with commands.
         val command = element.parentOfType(LatexCommands::class) ?: return
         val (_, filesList) = LatexProjectStructure.commandFileReferenceInfo(command) ?: return
-        val virtualFiles = filesList.flatten()
+        val virtualFiles = filesList.flatten().filter { it.isValid }
         val extension = virtualFiles.firstOrNull()?.let {
             if (it.name.endsWith("synctex.gz")) "synctex.gz" else it.extension
         }
         // Gutter requires a smaller icon per IJ SDK docs.
-        val icon = TexifyIcons.getIconFromExtension(extension, default = FILE) ?: return
+        val icon = if (extension != null) TexifyIcons.getIconFromExtension(extension, default = FileTypeManager.getInstance().getFileTypeByExtension(extension).icon ?: FILE) ?: FILE else FILE
         val psiFiles = InputFileReference.findValidPSIFiles(virtualFiles, element.project)
 
         val builder = NavigationGutterIconBuilder
@@ -52,11 +53,7 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
         result.add(builder.createLineMarkerInfo(element))
     }
 
-    override fun getName(): String {
-        return "Navigate to referenced file"
-    }
+    override fun getName(): String = "Navigate to referenced file"
 
-    override fun getIcon(): Icon {
-        return TexifyIcons.LATEX_FILE
-    }
+    override fun getIcon(): Icon = TexifyIcons.LATEX_FILE
 }

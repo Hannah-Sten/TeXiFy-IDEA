@@ -9,9 +9,7 @@ import nl.hannahsten.texifyidea.psi.BibtexEntry
  * @author Hannah Schellekens, Ernest Li
  */
 class NewBibtexEntryIndexEx : LatexCompositeStubIndex<BibtexEntry>(BibtexEntry::class.java) {
-    override fun getVersion(): Int {
-        return 12
-    }
+    override fun getVersion(): Int = 12
     override fun getKey() = BibtexEntryIndexKey.KEY
 }
 

@@ -4,6 +4,7 @@ import com.intellij.lang.ASTNode
 import com.intellij.lang.folding.FoldingBuilderEx
 import com.intellij.lang.folding.FoldingDescriptor
 import com.intellij.openapi.editor.Document
+import com.intellij.openapi.editor.FoldingGroup
 import com.intellij.openapi.progress.ProgressIndicatorProvider
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.util.TextRange
@@ -12,12 +13,14 @@ import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.endOffset
 import com.intellij.psi.util.startOffset
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment
-import nl.hannahsten.texifyidea.lang.commands.LatexMathCommand
+import nl.hannahsten.texifyidea.index.LatexDefinitionService
+import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
+import nl.hannahsten.texifyidea.lang.predefined.CommandNames
+import nl.hannahsten.texifyidea.lang.predefined.EnvironmentNames
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.endOffset
-import nl.hannahsten.texifyidea.psi.prevContextualSiblingIgnoreWhitespace
+import nl.hannahsten.texifyidea.util.parser.previousSiblingIgnoreWhitespace
 import nl.hannahsten.texifyidea.util.parser.traverseRequiredParams
 
 /**
@@ -32,7 +35,7 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
     /**
      * A map of section commands (including `\`) to their levels.
      */
-    private val sectionLevels: Map<String, Int> = CommandMagic.sectioningCommands.mapIndexed { index, command -> "\\${command.command}" to index }.toMap()
+    private val sectionLevels: Map<String, Int> = CommandMagic.sectionNameToLevel
 
     /**
      * Implements custom folding regions.
@@ -49,12 +52,12 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
     private val endRegionRegex = """%!\s*(</editor-fold>|endregion)""".toRegex()
 
     override fun buildFoldRegions(root: PsiElement, document: Document, quick: Boolean): Array<FoldingDescriptor> {
-        /*
-        We are guaranteed read access so we must not call any `runReadAction` here.
-         */
-        val visitor = LatexFoldingVisitor()
+        // We are guaranteed read access so we must not call any `runReadAction` here.
+        val lookup = LatexDefinitionService.getBundleFor(root)
+        val visitor = LatexFoldingVisitor(lookup)
         root.accept(visitor)
         visitor.endAll(root.endOffset)
+
         return visitor.descriptors.toTypedArray()
     }
 
@@ -62,52 +65,41 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
 
     override fun isCollapsedByDefault(node: ASTNode): Boolean = false
 
-    private fun foldingDescriptorSection(element: PsiElement, range: TextRange): FoldingDescriptor {
-        return foldingDescriptor(
-            element, range,
-            placeholderText = element.node.text + "...",
-            isCollapsedByDefault = LatexCodeFoldingSettings.getInstance().foldSections
-        )
-    }
+    private fun foldingDescriptorSection(element: PsiElement, range: TextRange): FoldingDescriptor = foldingDescriptor(
+        element, range,
+        placeholderText = element.node.text + "...",
+        isCollapsedByDefault = LatexCodeFoldingSettings.getInstance().foldSections
+    )
 
-    private fun foldingDescriptorRegion(element: PsiElement, range: TextRange, name: String): FoldingDescriptor {
-        return foldingDescriptor(
-            element, range,
-            placeholderText = name.ifEmpty { "..." },
-            isCollapsedByDefault = false
-        )
-    }
+    private fun foldingDescriptorRegion(element: PsiElement, range: TextRange, name: String): FoldingDescriptor = foldingDescriptor(
+        element, range,
+        placeholderText = name.ifEmpty { "..." },
+        isCollapsedByDefault = false
+    )
 
     /**
-     * A map of math commands (including `\`) to their folded symbols.
-     * The keys are the commands with a backslash, e.g. `\alpha`, and the values are the symbols, e.g. `α`.
+     * Escape special symbols in LaTeX.
      */
-    private val commandToFoldedSymbol: Map<String, String> = buildMap {
-        val escapedSymbols = listOf("%", "#", "&", "_", "$")
-        for (s in escapedSymbols) {
-            put("\\$s", s) // e.g. \% -> %
-        }
-        for (cmd in LatexMathCommand.values()) {
-            val display = cmd.display ?: continue
-            putIfAbsent(cmd.commandWithSlash, display) // e.g. \alpha -> α
-        }
+    val escapedSymbols = setOf("%", "#", "&", "_", "$")
+
+    private fun findCommandFoldedSymbol(nameWithSlash: String, lookup: LatexSemanticsLookup): String? {
+        val nameWithoutSlash = nameWithSlash.removePrefix("\\")
+        if (nameWithoutSlash in escapedSymbols) return nameWithoutSlash
+        val cmd = lookup.lookupCommand(nameWithoutSlash) ?: return null
+        return cmd.display
     }
 
-    private fun foldingDescriptorSymbol(cmdToken: PsiElement, display: String): FoldingDescriptor {
-        return foldingDescriptor(
-            cmdToken, cmdToken.textRange,
-            placeholderText = display,
-            isCollapsedByDefault = LatexCodeFoldingSettings.getInstance().foldSymbols
-        )
-    }
+    private fun foldingDescriptorSymbol(cmdToken: PsiElement, display: String): FoldingDescriptor = foldingDescriptor(
+        cmdToken, cmdToken.textRange,
+        placeholderText = display,
+        isCollapsedByDefault = LatexCodeFoldingSettings.getInstance().foldSymbols
+    )
 
-    private fun foldingDescriptorEnvironment(o: LatexEnvironment, range: TextRange): FoldingDescriptor {
-        return foldingDescriptor(
-            o, range,
-            placeholderText = "...",
-            isCollapsedByDefault = LatexCodeFoldingSettings.getInstance().foldEnvironments
-        )
-    }
+    private fun foldingDescriptorEnvironment(o: LatexEnvironment, range: TextRange): FoldingDescriptor = foldingDescriptor(
+        o, range,
+        placeholderText = "...",
+        isCollapsedByDefault = LatexCodeFoldingSettings.getInstance().foldEnvironments
+    )
 
     /**
      * Minimum length of a footnote to fold.
@@ -117,10 +109,10 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
     private fun foldingDescriptorFootnote(o: LatexCommands, range: TextRange): FoldingDescriptor {
         val parsedText = o.text.substring(1).trim()
         val placeHolderText = if (parsedText.length > minFootnoteLength) {
-            parsedText.substring(0, minFootnoteLength) + "..."
+            parsedText.take(minFootnoteLength) + "..."
         }
         else {
-            parsedText.substring(0, parsedText.length - 1)
+            parsedText.dropLast(1)
         }
         return foldingDescriptor(
             o, range,
@@ -139,7 +131,9 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
     /**
      * We use this visitor to traverse all section commands and magic comments that define regions.
      */
-    private inner class LatexFoldingVisitor : LatexRecursiveVisitor() {
+    private inner class LatexFoldingVisitor(
+        val lookup: LatexSemanticsLookup
+    ) : LatexRecursiveVisitor() {
         /*
         Rules:
 
@@ -177,7 +171,9 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
             val endOffset = prev?.endOffset ?: newSection.startOffset
             val lastRegionStart = regionStack.lastOrNull()?.start ?: -1
             while (sectionStack.size > prevLevelSize) {
-                val (lastCommand, lastLevel) = sectionStack.last()
+                val foldingEntry = sectionStack.last()
+                val lastCommand = foldingEntry.command
+                val lastLevel = foldingEntry.level
                 if (lastLevel < endLevel) {
                     break // The last command is at a lower level, stop popping
                 }
@@ -263,6 +259,7 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
 
             visitPossibleSectionCommand(element, name)
             visitPossibleSymbol(element, name)
+            visitPossibleFootnoteCommand(element, name)
 
             element.acceptChildren(this)
         }
@@ -271,7 +268,8 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
             // fold section commands
             val level = sectionLevels[name]
             // If the command is likely in a command definition or in the preamble, skip it
-            if (level != null && element.firstChild != null &&
+            if (level != null &&
+                element.firstChild != null &&
                 PsiTreeUtil.getParentOfType(element, LatexParameter::class.java) == null
             ) {
                 encounterSectionCommand(FoldingEntry(element, element.startOffset, level, name))
@@ -282,7 +280,7 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
             /*
             If the command is a math command, we add it to the stack.
              */
-            val display = commandToFoldedSymbol[name] ?: return
+            val display = findCommandFoldedSymbol(name, lookup) ?: return
             val descriptor = foldingDescriptorSymbol(element.commandToken, display)
             descriptors.add(descriptor)
         }
@@ -320,7 +318,7 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
                 return
             }
 
-            endRegionRegex.find(text)?.let { match ->
+            endRegionRegex.find(text)?.let { _ ->
                 endRegionCommand(o)
                 return
             }
@@ -335,7 +333,7 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
             }
             // We enter a new level with the environment, and we should not end previous commands
             // While this is only for the `document` command now, we reserve it here for possible future change
-            val newLevel = o.getEnvironmentName() == DefaultEnvironment.DOCUMENT.environmentName
+            val newLevel = o.getEnvironmentName() == EnvironmentNames.DOCUMENT
             if (newLevel) {
                 val originalBaseCount = prevLevelSize
                 prevLevelSize = sectionStack.size
@@ -360,6 +358,53 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
         override fun visitElement(element: PsiElement) {
             ProgressIndicatorProvider.checkCanceled()
             element.acceptChildren(this)
+        }
+
+        override fun visitLeftRight(o: LatexLeftRight) {
+            val leftDisplay = o.leftRightOpen?.text?.replace("\\", "") ?: CommandNames.LEFT
+            val rightDisplay = o.leftRightClose?.text?.replace("\\", "") ?: CommandNames.RIGHT
+
+            descriptors.add(
+                foldingDescriptor(
+                    o,
+                    range = o.textRange,
+                    placeholderText = "$leftDisplay...$rightDisplay",
+                    LatexCodeFoldingSettings.getInstance().foldLeftRightExpression
+                )
+            )
+
+            val foldingGroup = FoldingGroup.newGroup("LeftRightFoldingGroup")
+
+            // Fold \left\{ to {
+            val leftRightOpen = o.leftRightOpen
+            val left = leftRightOpen?.previousSiblingIgnoreWhitespace()
+            if (leftRightOpen != null && left?.text == CommandNames.LEFT) {
+                descriptors.add(
+                    foldingDescriptor(
+                        leftRightOpen,
+                        TextRange(left.startOffset, leftRightOpen.endOffset),
+                        placeholderText = leftDisplay,
+                        isCollapsedByDefault = LatexCodeFoldingSettings.getInstance().foldLeftRightCommands,
+                        group = foldingGroup,
+                    )
+                )
+            }
+
+            val leftRightClose = o.leftRightClose
+            val right = leftRightClose?.previousSiblingIgnoreWhitespace()
+            if (leftRightClose != null && right?.text == CommandNames.RIGHT) {
+                descriptors.add(
+                    foldingDescriptor(
+                        leftRightClose,
+                        TextRange(right.startOffset, leftRightClose.endOffset),
+                        placeholderText = rightDisplay,
+                        isCollapsedByDefault = LatexCodeFoldingSettings.getInstance().foldLeftRightCommands,
+                        group = foldingGroup,
+                    )
+                )
+            }
+
+            super.visitLeftRight(o)
         }
     }
 }

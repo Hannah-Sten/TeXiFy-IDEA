@@ -47,8 +47,8 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
 
     fun `test Missing $ inserted`() {
         val text =
-            """./main.tex:10: Missing ${'$'} inserted.<inserted text>"""
-        val expected = LatexLogMessage("Missing ${'$'} inserted.", "./main.tex", 10, ERROR)
+            """./main.tex:10: Missing $ inserted.<inserted text>"""
+        val expected = LatexLogMessage("Missing $ inserted.", "./main.tex", 10, ERROR)
         testMessageExtractor(text, expected)
     }
 
@@ -169,8 +169,8 @@ class LatexMessageExtractorTest : BasePlatformTestCase() {
     }
 
     fun `test overfull hbox in paragraph`() {
-        val text = "Overfull \\hbox (56.93071pt too wide) in paragraph at lines 13--15\\T1/phv/m/n/10 (-20) leases, cur-rently at [][]\$\\T1/cmtt/m/n/10 https : / / dev"
-        val newText = "\\T1/phv/m/n/10 (-20) leases, cur-rently at [][]\$\\T1/cmtt/m/n/10 https : / / dev"
+        val text = "Overfull \\hbox (56.93071pt too wide) in paragraph at lines 13--15\\T1/phv/m/n/10 (-20) leases, cur-rently at [][]$\\T1/cmtt/m/n/10 https : / / dev"
+        val newText = "\\T1/phv/m/n/10 (-20) leases, cur-rently at [][]$\\T1/cmtt/m/n/10 https : / / dev"
         val expected = LatexLogMessage("Overfull \\hbox (56.93071pt too wide) in paragraph at lines 13--15", "test.tex", 13, WARNING)
         testMessageExtractor(text, expected, newText)
     }

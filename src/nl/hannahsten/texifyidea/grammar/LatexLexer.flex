@@ -70,10 +70,13 @@ OPEN_BRACKET="["
 CLOSE_BRACKET="]"
 OPEN_BRACE="{"
 CLOSE_BRACE="}"
+// To support folding
+OPEN_ESCAPED_BRACE="\\{"
+CLOSE_ESCAPED_BRACE="\\}"
 OPEN_PAREN="("
 CLOSE_PAREN=")"
 
-SINGLE_WHITE_SPACE=[ \t\n\x0B\f\r]
+SINGLE_WHITE_SPACE=[ \t\n\x0B\f\r ]
 WHITE_SPACE={SINGLE_WHITE_SPACE}+
 
 // Commands
@@ -140,7 +143,7 @@ ELSE=\\else
 END_IFS=\\fi
 
 %states INLINE_MATH INLINE_MATH_LATEX DISPLAY_MATH TEXT_INSIDE_INLINE_MATH NESTED_INLINE_MATH PARTIAL_DEFINITION ENVIRONMENT_INSIDE_INLINE_MATH
-%states NEW_ENVIRONMENT_DEFINITION_NAME NEW_ENVIRONMENT_DEFINITION NEW_ENVIRONMENT_SKIP_BRACE NEW_ENVIRONMENT_DEFINITION_END NEW_DOCUMENT_ENV_DEFINITION_NAME NEW_DOCUMENT_ENV_DEFINITION_ARGS_SPEC NEW_COMMAND_DEFINITION_PARAM1 NEW_COMMAND_DEFINITION_PARAM2
+%states NEW_ENVIRONMENT_DEFINITION_NAME NEW_ENVIRONMENT_DEFINITION NEW_ENVIRONMENT_DEFINITION_END NEW_DOCUMENT_ENV_DEFINITION_NAME NEW_DOCUMENT_ENV_DEFINITION_ARGS_SPEC NEW_COMMAND_DEFINITION_PARAM1 NEW_COMMAND_DEFINITION_PARAM2
 
 // latex3 has some special syntax
 %states LATEX3
@@ -385,8 +388,6 @@ END_IFS=\\fi
 }
 
 // We are visiting a second parameter of a \newenvironment definition, so we need to keep track of braces
-// The idea is that we will skip the }{ separating the second and third parameter, so that the \begin and \end of the
-// environment to be defined will not appear in a separate group
 // Include possible verbatim begin state, because after a \begin we are in that state (and we cannot leave it because we might be needing to start a verbatim environment)
 // but we still need to count braces (specifically, the open brace after \begin)
 <NEW_ENVIRONMENT_DEFINITION,POSSIBLE_VERBATIM_BEGIN> {
@@ -394,22 +395,19 @@ END_IFS=\\fi
     {CLOSE_BRACE}      {
         newEnvironmentBracesNesting--;
         if(newEnvironmentBracesNesting == 0) {
-            yypopState(); yypushState(NEW_ENVIRONMENT_SKIP_BRACE);
-            // We could have returned normal text, but in this way the braces still match
-            return OPEN_BRACE;
+            yypopState(); yypushState(NEW_ENVIRONMENT_DEFINITION_END);
+            // Originally we used a hack here to return an open brace to allow parsing \begin..\end as an actual environment, but this made the application level definiton parsing more difficult
+            return CLOSE_BRACE;
         } else {
             return CLOSE_BRACE;
         }
     }
+    {BEGIN_TOKEN}       { return COMMAND_TOKEN; }
+    {END_TOKEN}         { return COMMAND_TOKEN; }
     // To avoid changing state and thus tripping over the not matching group }{ in the middle, catch characters here which would otherwise change state
-    "\\["               { return DISPLAY_MATH_START; }
-    "\\]"               { return DISPLAY_MATH_END; }
+    "\\["               { return NORMAL_TEXT_WORD; }
+    "\\]"               { return NORMAL_TEXT_WORD; }
     "$"                 { return NORMAL_TEXT_WORD; }
-}
-
-// Skip the next open brace of the third parameter, just as we skipped the close brace of the second
-<NEW_ENVIRONMENT_SKIP_BRACE> {
-    {OPEN_BRACE}        { yypopState(); newEnvironmentBracesNesting = 1; yypushState(NEW_ENVIRONMENT_DEFINITION_END); return CLOSE_BRACE; }
 }
 
 // In the third parameter, still skip the state-changing characters
@@ -422,8 +420,10 @@ END_IFS=\\fi
         }
         return CLOSE_BRACE;
     }
-    "\\["               { return DISPLAY_MATH_START; }
-    "\\]"               { return DISPLAY_MATH_END; }
+    {BEGIN_TOKEN}       { return COMMAND_TOKEN; }
+    {END_TOKEN}         { return COMMAND_TOKEN; }
+    "\\["               { return NORMAL_TEXT_WORD; }
+    "\\]"               { return NORMAL_TEXT_WORD; }
     "$"                 { return NORMAL_TEXT_WORD; }
 }
 
@@ -572,6 +572,8 @@ END_IFS=\\fi
 {CLOSE_BRACKET}         { return CLOSE_BRACKET; }
 {OPEN_BRACE}            { return OPEN_BRACE; }
 {CLOSE_BRACE}           { return CLOSE_BRACE; }
+{OPEN_ESCAPED_BRACE}    { return OPEN_ESCAPED_BRACE; }
+{CLOSE_ESCAPED_BRACE}   { return CLOSE_ESCAPED_BRACE; }
 {OPEN_PAREN}            { return OPEN_PAREN; }
 {CLOSE_PAREN}           { return CLOSE_PAREN; }
 {LEFT}                  { return LEFT; }

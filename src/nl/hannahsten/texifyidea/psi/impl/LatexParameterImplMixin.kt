@@ -9,15 +9,11 @@ import nl.hannahsten.texifyidea.psi.LatexParameter
 
 abstract class LatexParameterImplMixin(node: ASTNode) : ASTWrapperPsiElement(node), LatexParameter {
 
-    override fun isValidHost(): Boolean {
-        return true
-    }
+    override fun toString(): String = "Parameter"
 
-    override fun updateText(text: String): PsiLanguageInjectionHost {
-        return ElementManipulators.handleContentChange(this, text)
-    }
+    override fun isValidHost(): Boolean = true
 
-    override fun createLiteralTextEscaper(): LiteralTextEscaper<LatexParameter> {
-        return LiteralTextEscaper.createSimple(this)
-    }
+    override fun updateText(text: String): PsiLanguageInjectionHost = ElementManipulators.handleContentChange(this, text)
+
+    override fun createLiteralTextEscaper(): LiteralTextEscaper<LatexParameter> = LiteralTextEscaper.createSimple(this)
 }

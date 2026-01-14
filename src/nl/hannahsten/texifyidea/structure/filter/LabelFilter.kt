@@ -6,7 +6,7 @@ import com.intellij.ide.util.treeView.smartTree.TreeElement
 import com.intellij.openapi.actionSystem.Shortcut
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.structure.latex.LatexStructureViewCommandElement
-import nl.hannahsten.texifyidea.util.labels.getLabelDefinitionCommandsNoUpdate
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import javax.swing.Icon
 
 /**
@@ -18,7 +18,7 @@ class LabelFilter : FileStructureFilter {
         if (treeElement !is LatexStructureViewCommandElement) {
             return true
         }
-        return !getLabelDefinitionCommandsNoUpdate().contains(treeElement.commandName)
+        return !CommandMagic.labels.contains(treeElement.commandName)
     }
 
     override fun isReverted(): Boolean = true

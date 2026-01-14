@@ -22,16 +22,14 @@ class LatexPackageSubdirectoryInspection : TexifyInspectionBase() {
 
     override val inspectionId: String = "PackageSubdirectoryInspection"
 
-    override fun getShortName(): String {
-        return "LatexPackageSubdirectory"
-    }
+    override fun getShortName(): String = "LatexPackageSubdirectory"
 
     override fun getDisplayName(): String =
         "Package name does not have the correct directory"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val dir = file.containingDirectory ?: return emptyList()
-        val rootDir = file.findRootFile(useIndexCache = false).containingDirectory ?: return emptyList()
+        val rootDir = file.findRootFile().containingDirectory ?: return emptyList()
         val subDir = dir.toString().removePrefix(rootDir.toString()).removePrefix(File.separator).replace(File.separatorChar, '/')
 
         val commands = file.collectSubtreeTyped<LatexCommands> { it.name == LatexGenericRegularCommand.PROVIDESPACKAGE.commandWithSlash }
@@ -58,7 +56,7 @@ class LatexPackageSubdirectoryInspection : TexifyInspectionBase() {
         return descriptors
     }
 
-    inner class FixSubdirectoryQuickFix(private val oldDir: String, private val newDir: String) : LocalQuickFix {
+    class FixSubdirectoryQuickFix(private val oldDir: String, private val newDir: String) : LocalQuickFix {
 
         override fun getFamilyName(): String =
             "Change LaTeX command to match directory structure"

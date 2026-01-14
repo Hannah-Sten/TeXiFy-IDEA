@@ -1,24 +1,27 @@
 package nl.hannahsten.texifyidea.inspections.latex.probablebugs
 
+import com.intellij.codeInspection.ProblemDescriptor
+import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
-import nl.hannahsten.texifyidea.inspections.TexifyRegexInspection
-import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.parser.isDefinitionOrRedefinition
-import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.parser.parentOfType
-import nl.hannahsten.texifyidea.util.parser.parentsOfType
-import java.util.regex.Pattern
+import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.index.DefinitionBundle
+import nl.hannahsten.texifyidea.inspections.AbstractTexifyRegexBasedInspection
+import nl.hannahsten.texifyidea.inspections.InsightGroup
+import nl.hannahsten.texifyidea.lang.LContextSet
+import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 
-class LatexEscapeHashOutsideCommandInspection : TexifyRegexInspection(
-    inspectionDisplayName = "Unescaped # outside of command definition",
+class LatexEscapeHashOutsideCommandInspection : AbstractTexifyRegexBasedInspection(
     inspectionId = "EscapeHashOutsideCommand",
-    pattern = Pattern.compile("""(?<!\\)#"""),
-    errorMessage = { "unescaped #" },
-    quickFixName = { "escape #" },
-    replacement = { _, _ -> """\#""" }
+    regex = Regex("""(?<!\\)#"""),
+    inspectionGroup = InsightGroup.LATEX,
+    excludedContexts = setOf(LatexContexts.InsideDefinition, LatexContexts.URL)
 ) {
+    override fun errorMessage(matcher: MatchResult, context: LContextSet): String = "Unescaped #"
 
-    override fun checkContext(element: PsiElement): Boolean {
-        return super.checkContext(element) && element.parentsOfType<LatexCommands>().all { !it.isDefinitionOrRedefinition() } && element.parentOfType(LatexCommands::class)?.name !in CommandMagic.urls
-    }
+    override fun quickFixName(matcher: MatchResult, contexts: LContextSet): String = "Escape #"
+
+    override fun getReplacement(match: MatchResult, fullElementText: String, project: Project, problemDescriptor: ProblemDescriptor): String = "\\#"
+
+    override fun additionalChecks(element: PsiElement, match: MatchResult, bundle: DefinitionBundle, file: PsiFile): Boolean = !LatexPsiUtil.isInsideDefinition(element, bundle)
 }

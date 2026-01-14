@@ -74,6 +74,6 @@ open class BibtexCompletionContributor : CompletionContributor() {
                 key.text in FileMagic.bibtexFileKeys
             }
             .withLanguage(BibtexLanguage),
-        LatexFileProvider()
+        LatexFileProvider
     )
 }

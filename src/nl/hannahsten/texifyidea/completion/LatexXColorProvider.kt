@@ -1,10 +1,8 @@
 package nl.hannahsten.texifyidea.completion
 
 import com.intellij.codeInsight.completion.CompletionParameters
-import com.intellij.codeInsight.completion.CompletionProvider
 import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.lookup.LookupElementBuilder
-import com.intellij.util.ProcessingContext
 import com.intellij.util.ui.ColorIcon
 import nl.hannahsten.texifyidea.gutter.LatexElementColorProvider
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
@@ -13,9 +11,9 @@ import nl.hannahsten.texifyidea.util.magic.ColorMagic
 import nl.hannahsten.texifyidea.util.parser.getRequiredArgumentValueByName
 import java.awt.Color
 
-object LatexXColorProvider : CompletionProvider<CompletionParameters>() {
+object LatexXColorProvider : LatexContextAgnosticCompletionProvider() {
 
-    override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, result: CompletionResultSet) {
+    override fun addCompletions(parameters: CompletionParameters, result: CompletionResultSet) {
         addDefaultColors(result)
         addCustomColors(parameters, result)
     }
@@ -31,7 +29,7 @@ object LatexXColorProvider : CompletionProvider<CompletionParameters>() {
 
     private fun addCustomColors(parameters: CompletionParameters, result: CompletionResultSet) {
         val file = parameters.originalFile
-        val colorDefinitions = NewCommandsIndex.getByNames(ColorMagic.colorDefinitions, file.project)
+        val colorDefinitions = NewCommandsIndex.getByNames(ColorMagic.colorDefinitions.keys, file.project)
         for (cmd in colorDefinitions) {
             val colorName = cmd.getRequiredArgumentValueByName("name") ?: continue
             val color = LatexElementColorProvider().findColor(colorName, file)

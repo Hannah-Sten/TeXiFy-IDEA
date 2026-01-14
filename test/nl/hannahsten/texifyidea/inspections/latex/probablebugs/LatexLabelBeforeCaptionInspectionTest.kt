@@ -7,9 +7,7 @@ import org.junit.Test
 
 class LatexLabelBeforeCaptionInspectionTest : BasePlatformTestCase() {
 
-    override fun getTestDataPath(): String {
-        return "test/resources/inspections/latex/labelaftercaption"
-    }
+    override fun getTestDataPath(): String = "test/resources/inspections/latex/labelaftercaption"
 
     override fun setUp() {
         super.setUp()

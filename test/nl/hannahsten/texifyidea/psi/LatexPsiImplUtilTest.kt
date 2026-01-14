@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.psi
 
 import com.intellij.openapi.paths.WebReference
 import com.intellij.psi.PsiDocumentManager
-import com.intellij.testFramework.UsefulTestCase
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.util.parser.*
@@ -12,9 +11,7 @@ class LatexPsiImplUtilTest : BasePlatformTestCase() {
 
     private val url = "https://github.com/Hannah-Sten/TeXiFy-IDEA"
 
-    override fun getTestDataPath(): String {
-        return "test/resources/psi"
-    }
+    override fun getTestDataPath(): String = "test/resources/psi"
 
     private val optionalParameters =
         """\usepackage[backend=biber,style={alphabetic order},optionwithoutvalue]{biblatex}"""
@@ -92,13 +89,13 @@ class LatexPsiImplUtilTest : BasePlatformTestCase() {
         val urlElement = psiFile.findFirstChildOfType(LatexCommands::class)!!
         val hrefElement = psiFile.lastChildOfType(LatexCommands::class)!!
 
-        UsefulTestCase.assertContainsElements(
+        assertContainsElements(
             urlElement.extractUrlReferences(urlElement.requiredParameters().first())
                 .map { (it as WebReference).url },
             url
         )
 
-        UsefulTestCase.assertContainsElements(
+        assertContainsElements(
             hrefElement.extractUrlReferences(hrefElement.requiredParameters().first())
                 .map { (it as WebReference).url },
             url

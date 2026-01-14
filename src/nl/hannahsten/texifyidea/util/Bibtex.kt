@@ -28,11 +28,6 @@ fun BibtexEntry.tags(): Sequence<BibtexTag> = traverseTyped<BibtexTag>()
 fun BibtexEntry.keys(): Sequence<BibtexKey> = traverseTyped<BibtexKey>()
 
 /**
- * Get the first key in the entry, or `null` when there are no keys in the entry.
- */
-fun BibtexEntry.firstKey() = keys().firstOrNull()
-
-/**
  * Get all the names of all entry's keys.
  */
 fun BibtexEntry.keyNames(): Set<String> = keys().mapTo(mutableSetOf()) { it.text }
@@ -61,11 +56,6 @@ fun BibtexTag.keyName(): String? = key()?.text
  * Get the content of the BibTeX tag.
  */
 fun BibtexTag.content(): BibtexContent? = findFirstChildOfType(BibtexContent::class)
-
-/**
- * Get the name/identifier of the bibtex id.
- */
-fun BibtexId.idName(): String = text.substringEnd(1)
 
 /**
  * Evaluates the string contents and returns a nicely concatenated version.
@@ -147,7 +137,7 @@ fun BibtexDefinedString.evaluate(): String {
         return content.evaluate()
     }
 
-    return "${'$'}$stringName${'$'}"
+    return "$$stringName$"
 }
 
 /**
@@ -155,18 +145,14 @@ fun BibtexDefinedString.evaluate(): String {
  *
  * E.g. `{{T}est $\alpha$ {H}ello}` becomes `{T}est $\alpha$ {H}ello`.
  */
-fun BibtexBracedString.evaluate(): String {
-    return text.substring(1 until text.length - 1)
-}
+fun BibtexBracedString.evaluate(): String = text.substring(1 until text.length - 1)
 
 /**
  * Returns the contents of the quoted string.
  *
  * E.g. `"Test Hello"` becomes `Test Hello`.
  */
-fun BibtexQuotedString.evaluate(): String {
-    return text.substring(1 until text.length - 1)
-}
+fun BibtexQuotedString.evaluate(): String = text.substring(1 until text.length - 1)
 
 /**
  * Returns the contents of the quoted verbatim string.

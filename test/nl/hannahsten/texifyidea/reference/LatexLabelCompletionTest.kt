@@ -3,11 +3,11 @@ package nl.hannahsten.texifyidea.reference
 import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
-import org.junit.Test
+import nl.hannahsten.texifyidea.updateCommandDef
+import nl.hannahsten.texifyidea.updateFilesets
 
 class LatexLabelCompletionTest : BasePlatformTestCase() {
 
-    @Test
     fun testLabelReferenceCompletion() {
         // given
         myFixture.configureByText(
@@ -26,7 +26,7 @@ class LatexLabelCompletionTest : BasePlatformTestCase() {
             \end{document}
             """.trimIndent()
         )
-
+        myFixture.updateFilesets()
         // when
         val result = myFixture.complete(CompletionType.BASIC)
 
@@ -37,7 +37,6 @@ class LatexLabelCompletionTest : BasePlatformTestCase() {
         assertTrue(result.any { l -> l.lookupString == "sec:some-section" })
     }
 
-    @Test
     fun testCommandParameterLabelReferenceCompletion() {
         // given
         myFixture.configureByText(
@@ -49,7 +48,7 @@ class LatexLabelCompletionTest : BasePlatformTestCase() {
             \end{document}
             """.trimIndent()
         )
-
+        myFixture.updateFilesets()
         // when
         val result = myFixture.complete(CompletionType.BASIC)
 
@@ -63,6 +62,7 @@ class LatexLabelCompletionTest : BasePlatformTestCase() {
         myFixture.configureByText(
             LatexFileType,
             """
+            \usepackage{cleveref}
             \begin{document}
                 \label{blub}
                 \label{kameel}
@@ -70,6 +70,7 @@ class LatexLabelCompletionTest : BasePlatformTestCase() {
             \end{document}
             """.trimIndent()
         )
+        myFixture.updateCommandDef()
 
         // when
         val result = myFixture.complete(CompletionType.BASIC)
@@ -77,5 +78,50 @@ class LatexLabelCompletionTest : BasePlatformTestCase() {
         // then
         assertEquals(2, result.size)
         assertTrue(result.any { l -> l.lookupString == "kameel" })
+    }
+
+    fun testCustomizedLabelCommands() {
+        // given
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \newcommand{\mylabel}[1]{\label{#1}}
+            \begin{document}
+                \section{some sec}\label{sec:some-sec}
+                \section{some sec}\mylabel{sec:second-sec}
+                \ref{s<caret>}
+            \end{document}
+            """.trimIndent()
+        )
+        myFixture.updateCommandDef()
+        // when
+        val result = myFixture.complete(CompletionType.BASIC)
+
+        // then
+        assertEquals(2, result.size)
+        assertTrue(result.any { l -> l.lookupString == "sec:second-sec" })
+    }
+
+    fun testCustomizedLabelCommandsInCustomLabelReference() {
+        // given
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \newcommand{\mylabel}[1]{\label{#1}}
+            \newcommand{\myref}[1]{\ref{#1}}
+            \begin{document}
+                \section{some sec}\label{sec:some-sec}
+                \section{some sec}\mylabel{sec:second-sec}
+                \myref{s<caret>}
+            \end{document}
+            """.trimIndent()
+        )
+        myFixture.updateCommandDef()
+        // when
+        val result = myFixture.complete(CompletionType.BASIC)
+
+        // then
+        assertEquals(2, result.size)
+        assertTrue(result.any { l -> l.lookupString == "sec:second-sec" })
     }
 }

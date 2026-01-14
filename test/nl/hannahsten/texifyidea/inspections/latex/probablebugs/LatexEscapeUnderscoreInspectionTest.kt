@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.inspections.latex.probablebugs
 
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
+import nl.hannahsten.texifyidea.updateCommandDef
 
 internal class LatexEscapeUnderscoreInspectionTest : TexifyInspectionTestBase(LatexEscapeUnderscoreInspection()) {
 
@@ -175,13 +176,14 @@ internal class LatexEscapeUnderscoreInspectionTest : TexifyInspectionTestBase(La
         myFixture.configureByText(
             LatexFileType,
             """
+            \usepackage{blkarray}
             This block is not in math context.
             \begin{block}{block title}
                 a<warning descr="Escape character \ expected">_</warning> underscore
             \end{block}
             
             The block inside the equation (and thus the contents sf the equation) are in math context.
-            \begin{equation*}
+            \begin{equation}
                 \B{A} =
                 \begin{blockarray}{ccccc}
                     & 1 & 2 & & m \\
@@ -192,9 +194,10 @@ internal class LatexEscapeUnderscoreInspectionTest : TexifyInspectionTestBase(La
                     n & a_{n,1} & a_{n,2} & \cdots & a_{n,m} \\
                   \end{block}
                 \end{blockarray}
-            \end{equation*}
+            \end{equation}
             """.trimIndent()
         )
+        myFixture.updateCommandDef()
         myFixture.checkHighlighting(true, false, false, false)
     }
 }

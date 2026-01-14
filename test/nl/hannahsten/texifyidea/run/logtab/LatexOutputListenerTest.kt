@@ -134,9 +134,9 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
                                                           
         l.9     \begin{align}
                              
-        ./main.tex:10: Missing ${'$'} inserted.
+        ./main.tex:10: Missing $ inserted.
         <inserted text> 
-                        ${'$'}
+                        $
         l.10         \pi
                         
 
@@ -148,9 +148,9 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
                                                           
         l.11     \end{align}
                             
-        ./main.tex:11: Missing ${'$'} inserted.
+        ./main.tex:11: Missing $ inserted.
         <inserted text> 
-                        ${'$'}
+                        $
         l.11     \end{align}
                             
         (./lipsum.tex
@@ -214,9 +214,7 @@ class LatexOutputListenerTest : BasePlatformTestCase() {
         Process finished with exit code 12
         """.trimIndent()
 
-    override fun getTestDataPath(): String {
-        return "test/resources/run"
-    }
+    override fun getTestDataPath(): String = "test/resources/run"
 
     private fun testLog(log: String, expectedMessages: Set<LatexLogMessage> = setOf(), expectedBibMessages: Set<BibtexLogMessage> = setOf()) {
         val project = myFixture.project
@@ -779,7 +777,7 @@ ive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></home/thomas/texl
 
     fun `test undefined control sequence`() {
         val log =
-            """
+            $$"""
 
 
         (./nested/lipsum-one.tex
@@ -791,8 +789,8 @@ ive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></home/thomas/texl
 
         (/home/user/texlive/2020/texmf-dist/tex/latex/stmaryrd/Ustmry.fd)
         ./hw5.tex:79: Undefined control sequence.
-        l.79 ...ut uncovering any other vertex in ${'$'}S \cupt
-                                                           T${'$'}).
+        l.79 ...ut uncovering any other vertex in $S \cupt
+                                                           T$).
         [1{/home/user/texlive/2020/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
             """.trimIndent()
 

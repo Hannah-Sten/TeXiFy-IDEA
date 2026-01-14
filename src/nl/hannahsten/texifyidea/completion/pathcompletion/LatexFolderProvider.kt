@@ -1,18 +1,18 @@
 package nl.hannahsten.texifyidea.completion.pathcompletion
 
+import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.util.files.findRelativeSearchPathsForImportCommands
 
 /**
  * Provide base folder for autocompleting folders.
  */
-class LatexFolderProvider : LatexPathProviderBase() {
+object LatexFolderProvider : LatexContextAwarePathProviderBase() {
 
-    override fun selectScanRoots(file: PsiFile): List<VirtualFile> {
-        val searchDirs = getProjectRoots().toMutableList()
-        NewSpecialCommandsIndex.getAllFileInputsInFileset(file).forEach { command ->
+    override fun selectScanRoots(parameters: CompletionParameters): List<VirtualFile> {
+        val searchDirs = getProjectRoots(parameters).toMutableList()
+        NewSpecialCommandsIndex.getAllFileInputsInFileset(parameters.originalFile).forEach { command ->
             searchDirs.addAll(findRelativeSearchPathsForImportCommands(command))
         }
         return searchDirs

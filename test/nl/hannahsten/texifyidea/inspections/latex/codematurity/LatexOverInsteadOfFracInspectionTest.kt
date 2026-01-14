@@ -24,7 +24,7 @@ class LatexOverInsteadOfFracInspectionTest : TexifyInspectionTestBase(LatexOverI
     )
 
     fun `test quick fix in formula`() = testQuickFix(
-        before = """${'$'}x = {1\over2} + y$""",
-        after = """${'$'}x = {\frac{1}{2}} + y$""".trimMargin()
+        before = $$"""$x = {1\over2} + y$""",
+        after = $$"""$x = {\frac{1}{2}} + y$""".trimMargin()
     )
 }
