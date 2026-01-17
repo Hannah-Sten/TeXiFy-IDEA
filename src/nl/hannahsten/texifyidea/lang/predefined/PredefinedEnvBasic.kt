@@ -67,6 +67,7 @@ object PredefinedEnvBasic : PredefinedEnvironmentSet() {
         }
         "list".env(LatexContextIntro.inherit(), "label".required, "spacing".required)
     }
+
     val basicIntroMath = buildEnvironments {
         "math".env(LatexContextIntro.INLINE_MATH) { "Inline math mode." }
         "displaymath".env(LatexContexts.Math) { "Display math mode." }
@@ -269,5 +270,8 @@ object PredefinedEnvBasic : PredefinedEnvironmentSet() {
         packageOf("widetable")
         +"widetable"
         +"widetabular"
+
+        packageOf("citation-style-language")
+        +"refsection"
     }
 }

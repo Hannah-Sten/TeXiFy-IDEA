@@ -362,6 +362,23 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         val citeWithTextArg = listOf("brackettext", "parenttext")
         citeWithTextArg.forEach { it.cmd(textArg) }
         "nocite".cmd(key)
+
+        packageOf("citation-style-language")
+        val options = "options".optional
+        "cslsetup".cmd(options)
+        "addbibresource".cmd(options, "resource".required(LatexContexts.SingleBibFile))
+
+        listOf("cite", "parencite", "citep", "textcite", "citet", "footcite", "cites", "citeyearpar", "fullcite").forEach {
+            it.cmd(options, keys)
+        }
+        listOf("citeauthor", "citeyear").forEach {
+            it.cmd("key".required(LatexContexts.BibReference))
+        }
+        "nocite".cmd(keys)
+        "printbibliography".cmd(options)
+        "newrefsection".cmd(options)
+        "endrefsection".cmd()
+        "defbibheading".cmd("name".required, "title".optional, "code".required)
     }
 
     val reference = buildCommands {
