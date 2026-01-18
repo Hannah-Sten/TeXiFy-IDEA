@@ -30,6 +30,7 @@ class LatexRequiredExtensionInspectionTest : TexifyInspectionTestBase(LatexRequi
         myFixture.configureByText(
             LatexFileType,
             """
+            \documentclass{article}
             \addbibresource{test}
             """.trimIndent()
         )
@@ -42,6 +43,7 @@ class LatexRequiredExtensionInspectionTest : TexifyInspectionTestBase(LatexRequi
 
         myFixture.checkResult(
             """
+            \documentclass{article}
             \addbibresource{test.bib}
             """.trimIndent()
         )

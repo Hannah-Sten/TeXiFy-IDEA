@@ -12,14 +12,10 @@ import nl.hannahsten.texifyidea.inspections.AbstractTexifyCommandBasedInspection
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
-import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.contentText
-import nl.hannahsten.texifyidea.psi.forEachRequiredParameter
-import nl.hannahsten.texifyidea.psi.nameWithSlash
+import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.appendExtension
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.replaceString
 import nl.hannahsten.texifyidea.util.parser.startOffsetInAncestor
 import java.util.*
 
@@ -79,22 +75,18 @@ class LatexRequiredExtensionInspection : AbstractTexifyCommandBasedInspection(
             val nameWithSlash = command.nameWithSlash
             val requiredExtensions = CommandMagic.requiredExtensions[nameWithSlash] ?: return
 
-            command.forEachRequiredParameter {
-                val params = it.contentText().split(",")
-                var offset = it.startOffsetInAncestor(command)
-                for (parameter in params) {
-                    offset += 1 // account for opening brace或逗号
-                    if (requiredExtensions.any { ext -> !parameter.endsWith(ext) && !parameter.endsWith('}') }) {
-                        val replacement = requiredExtensions
-                            .find { ext -> !parameter.endsWith(ext) }
-                            ?.let { ext -> parameter.appendExtension(ext) }
-                            ?: parameter
-                        val range = TextRange(offset, offset + parameter.length)
-                        document.replaceString(range, replacement)
-                        offset -= (range.length - replacement.length)
+            command.forEachRequiredParameter { parameter ->
+                val params = parameter.contentText().split(",")
+                val replacementText = params.joinToString {
+                    if (requiredExtensions.any { ext -> !it.endsWith(ext) && !it.endsWith('}') }) {
+                        requiredExtensions.find { ext -> !it.endsWith(ext) }
+                            ?.let { ext -> it.appendExtension(ext) }
+                        ?: it
                     }
-                    offset += parameter.length
+                    else it
                 }
+                val replacementElement = LatexPsiHelper(project).createRequiredParameter(replacementText)
+                parameter.parent.node.replaceChild(parameter.node, replacementElement.node)
             }
         }
     }
