@@ -135,6 +135,13 @@ object PredefinedCmdFiles : PredefinedCommandSet() {
             }
         }
 
+        underPackage(LatexLib.CITATION_STYLE_LANGUAGE) {
+            "addbibresource".cmd("options".optional, "resource".required(LatexContexts.SingleCSLBibFile)) {
+                "Add a bibliography resource file"
+            }
+        }
+
+
         underPackage(LatexLib.STANDALONE) {
             "includestandalone".cmd(
                 "mode".optional,

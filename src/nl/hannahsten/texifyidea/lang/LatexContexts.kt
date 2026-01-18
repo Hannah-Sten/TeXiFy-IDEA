@@ -134,6 +134,10 @@ object LatexContexts {
         "files.bib", isCommaSeparated = true, supportedExtensions = setOf("bib"),
     )
 
+    val SingleCSLBibFile = SimpleFileInputContext(
+        "file.bib", isCommaSeparated = false, supportedExtensions = setOf("bib", "json", "yaml"),
+    )
+
     val Folder = SimpleLatexContext("folder")
 
     /**
