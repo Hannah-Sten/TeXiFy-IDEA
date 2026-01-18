@@ -7,10 +7,13 @@ import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
 import com.intellij.psi.createSmartPointer
+import fleet.util.letIf
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.allParentMagicComments
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
+import nl.hannahsten.texifyidea.util.includedPackagesInFileset
 
 /**
  * @author Hannah Schellekens
@@ -45,7 +48,9 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
 
         val runCommand = container.allParentMagicComments().value(DefaultMagicKeys.COMPILER)
         val runProgram = container.allParentMagicComments().value(DefaultMagicKeys.PROGRAM)
-        val command = runCommand ?: runProgram ?: return true
+        // citation-style-language package should use lualatex by default, unless overridden by magic comments above.
+        val csl = if (container.includedPackagesInFileset().contains(LatexPackage.CITATION_STYLE_LANGUAGE)) LatexCompiler.LUALATEX.name else null
+        val command = runCommand ?: runProgram ?: csl ?: return true
         val compiler = if (command.contains(' ')) {
             command.let { it.subSequence(0, it.indexOf(' ')) }.trim().toString()
         }
