@@ -5,6 +5,7 @@
 ### Added
 
 ### Fixed
+* Fix duplicate messages in log message tab after filtering
 
 ## [0.11.7] - 2026-01-09
 
