@@ -82,6 +82,7 @@ class TexifySettings : SimplePersistentStateComponent<TexifySettings.State>(Stat
         var enableTextidote by property(false)
         var textidoteOptions by string(DEFAULT_TEXTIDOTE_OPTIONS)
         var latexIndentOptions by string(null)
+        var bibtexTidyOptions by string(null)
         var automaticQuoteReplacement by enum(QuoteReplacement.NONE)
         var htmlPasteTranslator by enum(HtmlPasteTranslator.BUILTIN)
         var autoCompileOption by enum<AutoCompile>(AutoCompile.OFF)

@@ -41,6 +41,7 @@ class TexifyConfigurable : SearchableConfigurable {
     private var enableTextidote: JBCheckBox? = null
     private var textidoteOptions: RawCommandLineEditor? = null
     private var latexIndentOptions: RawCommandLineEditor? = null
+    private var bibtexTidyOptions: RawCommandLineEditor? = null
     private var automaticQuoteReplacement: ComboBox<String>? = null
     private var htmlPasteTranslator: ComboBox<String>? = null
     private var autoCompileOption: ComboBox<String>? = null
@@ -115,6 +116,7 @@ class TexifyConfigurable : SearchableConfigurable {
                 enableTextidote = addCheckbox("Enable the Textidote linter")
                 textidoteOptions = addCommandLineEditor("Textidote", TexifySettings.DEFAULT_TEXTIDOTE_OPTIONS)
                 latexIndentOptions = addCommandLineEditor("Latexindent", "")
+                bibtexTidyOptions = addCommandLineEditor("bibtex-tidy", "")
                 addSumatraPathField(this)
                 automaticQuoteReplacement = addComboBox("Smart quote substitution: ", "Off", "TeX ligatures", "TeX commands", "csquotes")
                 htmlPasteTranslator = addComboBox("HTML paste translator", "Built-in", "Pandoc", "Disabled")
@@ -227,6 +229,7 @@ class TexifyConfigurable : SearchableConfigurable {
     override fun isModified(): Boolean = booleanSettings.any { it.first.get()?.isSelected != it.second.get() } ||
         textidoteOptions?.text != (settings.textidoteOptions ?: "") ||
         latexIndentOptions?.text != (settings.latexIndentOptions ?: "") ||
+        bibtexTidyOptions?.text != (settings.bibtexTidyOptions ?: "") ||
         enumSettings.any { it.comboBox.get()?.selectedIndex != it.setting.get().ordinal } ||
         getUISumatraPath() != settings.pathToSumatra ||
         filesetExpirationTimeMs?.value != settings.filesetExpirationTimeMs
@@ -238,6 +241,7 @@ class TexifyConfigurable : SearchableConfigurable {
         val ss = settings
         ss.textidoteOptions = textidoteOptions?.text
         ss.latexIndentOptions = latexIndentOptions?.text
+        ss.bibtexTidyOptions = bibtexTidyOptions?.text
         for (setting in enumSettings) {
             setting.setValueBySelected()
         }
@@ -258,6 +262,7 @@ class TexifyConfigurable : SearchableConfigurable {
         val state = settings
         textidoteOptions?.text = state.textidoteOptions
         latexIndentOptions?.text = state.latexIndentOptions
+        bibtexTidyOptions?.text = state.bibtexTidyOptions
         for (setting in enumSettings) {
             setting.comboBox.get()?.selectedIndex = setting.setting.get().ordinal
         }
