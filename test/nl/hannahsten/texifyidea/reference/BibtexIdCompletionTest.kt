@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.reference
 
 import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import nl.hannahsten.texifyidea.documentation.LatexDocumentationProvider
 import nl.hannahsten.texifyidea.updateCommandDef
 import nl.hannahsten.texifyidea.updateFilesets
 
@@ -62,20 +63,35 @@ class BibtexIdCompletionTest : BasePlatformTestCase() {
         myFixture.checkResultByFile("${testName}_after.tex")
     }
 
-    // DocumentationManagaer was removed from the api, unclear how to test the documentation popup now
-//    fun testBibtexEntryDocumentation() {
-//        myFixture.configureByFiles("${getTestName(false)}.tex", "bibtex.bib")
-//        myFixture.updateFilesets()
-//        val element = DocumentationManager.getInstance(myFixture.project).getElementFromLookup(myFixture.editor, myFixture.file)
-//
-//        // Get the provider from the parent. Otherwise we request the documentation provider for a BibtexId element and, therefore,
-//        // receive a BibtexDocumentationProvider instead of the LatexDocumentationProvider.
-//        val provider = DocumentationManager.getProviderFromElement((myFixture.elementAtCaret.parent))
-//
-//        val documentation = provider.generateDoc(element, null)
-//        assertNotNull(documentation)
-//        assertTrue(documentation!!.contains("Code Pointer Integrity"))
-//        assertTrue(documentation.contains("Evans"))
-//        assertTrue(documentation.contains("have been known for decades"))
-//    }
+    fun testCompletionFiltersByMultipleTerms() {
+        // Test that completion filters by multiple space-separated terms
+        myFixture.configureByFiles("CompleteLatexReferences.tex", "bibtex.bib")
+        myFixture.updateCommandDef()
+        myFixture.completeBasic()
+        myFixture.type("Evans Isaac")
+
+        val result = myFixture.lookupElements?.mapNotNull { it.lookupString } ?: emptyList()
+        assertEquals(1, result.size)
+        assertTrue(result.contains("Evans2015"))
+    }
+
+    fun testBibtexReferenceDocumentation() {
+        myFixture.configureByFiles("BibtexEntryDocumentation.tex", "bibtex.bib")
+        myFixture.updateCommandDef()
+
+        // Get the element at caret and resolve to the bibtex entry
+        val reference = myFixture.getReferenceAtCaretPosition()
+        assertNotNull("Expected a reference at caret position", reference)
+        val resolved = reference!!.resolve()
+        assertNotNull("Expected reference to resolve", resolved)
+
+        // Generate documentation directly using the provider
+        val provider = LatexDocumentationProvider()
+        val documentation = provider.generateDoc(resolved!!, myFixture.elementAtCaret)
+
+        assertNotNull(documentation)
+        assertTrue(documentation!!.contains("Code Pointer Integrity"))
+        assertTrue(documentation.contains("Evans"))
+        assertTrue(documentation.contains("have been known for decades"))
+    }
 }
