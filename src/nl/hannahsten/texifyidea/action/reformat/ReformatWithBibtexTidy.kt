@@ -31,7 +31,7 @@ class ReformatWithBibtexTidy : ExternalReformatAction({ it.fileType == BibtexFil
             // We have to use shell in order to make the pipe work
             // We have to use a special string to escape all the single quotes
             val optionsStr = if (userOptions.isNotEmpty()) userOptions.joinToString(" ") + " " else ""
-            listOf("/bin/sh", "-c", "echo '${file.text.replace("'", "'\"'\"'")}' | bibtex-tidy ${optionsStr}-")
+            listOf("/bin/sh", "-c", "echo '${file.text.replace("'", "'\"'\"'")}' | bibtex-tidy $optionsStr-")
         }
     }
 
