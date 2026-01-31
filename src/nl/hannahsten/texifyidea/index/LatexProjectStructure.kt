@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.index
 import com.fasterxml.jackson.dataformat.toml.TomlMapper
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.smartReadAction
+import com.intellij.openapi.application.readAction
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.fileTypes.FileType
@@ -883,7 +883,8 @@ object LatexProjectStructure {
     private val CACHE_KEY = GenericCacheService.createKey<LatexProjectFilesets>()
 
     private suspend fun buildFilesetsSuspend(project: Project, previous: LatexProjectFilesets?): LatexProjectFilesets {
-        val newFileset = smartReadAction(project) {
+        // Don't use smartReadAction here, as it may lead to a deadlock in tests
+        val newFileset = readAction {
             performanceTracker.track {
                 buildFilesets(project)
             }
