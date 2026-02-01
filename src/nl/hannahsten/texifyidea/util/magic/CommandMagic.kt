@@ -299,7 +299,7 @@ object CommandMagic {
      * Commands that should have the given file extensions.
      */
     val requiredExtensions = CommandNames.run {
-        mapOf(ADD_BIB_RESOURCE to listOf("bib"))
+        mapOf(ADD_BIB_RESOURCE to listOf("bib", "json", "yaml"))
     }
 
     /**

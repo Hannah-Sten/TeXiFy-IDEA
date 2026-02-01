@@ -6,11 +6,14 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
+import com.intellij.openapi.vfs.resolveFromRootOrRelative
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.index.DefinitionBundle
+import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.inspections.AbstractTexifyCommandBasedInspection
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.lang.SimpleFileInputContext
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.appendExtension
@@ -38,15 +41,15 @@ class LatexRequiredExtensionInspection : AbstractTexifyCommandBasedInspection(
         isOnTheFly: Boolean,
         descriptors: MutableList<ProblemDescriptor>
     ) {
-        val nameWithSlash = command.nameWithSlash
-        val requiredExtensions = CommandMagic.requiredExtensions[nameWithSlash] ?: return
+        val requiredAnyExtension = findRequiredExtensions(command) ?: return
+
         command.forEachRequiredParameter {
             val params = it.contentText().split(",")
             var offset = it.startOffsetInAncestor(command)
             for (parameter in params) {
                 offset += 1 // account for opening brace or comma
-                val missingExtension = requiredExtensions.any { ext ->
-                    !parameter.endsWith(ext) && !parameter.endsWith('}')
+                val missingExtension = requiredAnyExtension.all { ext ->
+                    !parameter.endsWith(".$ext") && !parameter.endsWith('}')
                 }
                 if (missingExtension) {
                     descriptors.add(
@@ -74,16 +77,18 @@ class LatexRequiredExtensionInspection : AbstractTexifyCommandBasedInspection(
 
             val nameWithSlash = command.nameWithSlash
             val requiredExtensions = CommandMagic.requiredExtensions[nameWithSlash] ?: return
+            val possibleRequiredExtensions = findRequiredExtensions(command)
 
             command.forEachRequiredParameter { parameter ->
                 val params = parameter.contentText().split(",")
                 val replacementText = params.joinToString {
-                    if (requiredExtensions.any { ext -> !it.endsWith(ext) && !it.endsWith('}') }) {
-                        requiredExtensions.find { ext -> !it.endsWith(ext) }
-                            ?.let { ext -> it.appendExtension(ext) }
-                        ?: it
-                    }
-                    else it
+                    requiredExtensions.firstNotNullOfOrNull { ext ->
+                        if (!it.endsWith(".$ext") && !it.endsWith('}')) {
+                            command.containingFile.virtualFile.findFileByRelativePath("$it.$ext")
+                        }
+                        else null
+                    }?.name
+                    ?: it
                 }
                 val replacementElement = LatexPsiHelper(project).createRequiredParameter(replacementText)
                 parameter.parent.node.replaceChild(parameter.node, replacementElement.node)
@@ -91,3 +96,9 @@ class LatexRequiredExtensionInspection : AbstractTexifyCommandBasedInspection(
         }
     }
 }
+
+private fun findRequiredExtensions(command: LatexCommands): List<String>? = LatexDefinitionService.resolveCommand(command)
+    ?.arguments?.firstOrNull { it.name in setOf("bibliographyfile", "resource") }
+    ?.contextSignature?.introducedContexts
+    ?.filter { it is SimpleFileInputContext && it.isExtensionRequired }
+    ?.flatMap { (it as SimpleFileInputContext).supportedExtensions }
