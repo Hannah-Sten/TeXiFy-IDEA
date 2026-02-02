@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.run.latex.logtab.ui
 import com.intellij.icons.AllIcons
 import com.intellij.ide.IdeBundle
 import com.intellij.ide.errorTreeView.ErrorTreeElement
+import com.intellij.ide.errorTreeView.GroupingElement
 import com.intellij.ide.errorTreeView.NewErrorTreeViewPanel
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.project.DumbAware
@@ -41,14 +42,18 @@ class LatexCompileMessageTreeView(
     /**
      * Get all elements that are currently in the tree.
      *
-     * Elements are located as direct children of a file, which are direct children of the root.
+     * Elements are located as direct children of the root (in case no file is known), or
+     * as children of a file, which are direct children of the root.
      * Therefore, we only have to look one level deep to get all the messages.
      */
     private fun getAllElements(): List<ErrorTreeElement> {
         this@LatexCompileMessageTreeView.errorViewStructure.let { tree ->
-            return tree.getChildElements(tree.rootElement).flatMap {
-                tree.getChildElements(it).toList()
-            }
+            val childElements = tree.getChildElements(tree.rootElement).toList()
+            return (
+                childElements + childElements.flatMap {
+                    tree.getChildElements(it).toList()
+                }
+                ).filter { it !is GroupingElement }
         }
     }
 
