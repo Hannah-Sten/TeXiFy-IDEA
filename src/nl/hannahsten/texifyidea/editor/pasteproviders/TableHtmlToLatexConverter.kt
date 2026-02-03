@@ -1,12 +1,7 @@
 package nl.hannahsten.texifyidea.editor.pasteproviders
 
-import nl.hannahsten.texifyidea.action.wizard.table.ColumnType
-import nl.hannahsten.texifyidea.action.wizard.table.LatexTableWizardAction
-import nl.hannahsten.texifyidea.action.wizard.table.TableCreationDialogWrapper
-import nl.hannahsten.texifyidea.action.wizard.table.TableCreationTableModel
+import nl.hannahsten.texifyidea.action.wizard.table.*
 import nl.hannahsten.texifyidea.file.LatexFile
-import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.util.insertUsepackage
 import nl.hannahsten.texifyidea.util.toVector
 import org.jsoup.nodes.Element
 import java.util.*
@@ -17,15 +12,9 @@ import java.util.*
 class TableHtmlToLatexConverter : HtmlToLatexConverter {
 
     override fun convertHtmlToLatex(htmlIn: Element, file: LatexFile): String {
-        // If this is a table, try to generate LaTeX with merged headers first; otherwise fall back to the wizard
-        if (htmlIn.tagName() == "table") {
-            generateLatexWithMergedHeaders(htmlIn, file)?.let { return it }
-        }
-        // Fall back to the wizard dialog (single header row support)
-        val tableWrapper = if (htmlIn.tagName() == "table") htmlIn.toTableDialogWrapper(file) else null
         return LatexTableWizardAction().getTableTextWithDialog(
             file.project,
-            tableWrapper ?: return ""
+            htmlIn.ownerDocument()?.toTableDialogWrapper(file) ?: return ""
         )
     }
 
@@ -42,9 +31,12 @@ class TableHtmlToLatexConverter : HtmlToLatexConverter {
         // Expand table into a full grid accounting for rowspan/colspan
         val trs = table.select("tr")
         val assignments = mutableMapOf<Pair<Int, Int>, HtmlCell>()
+        // Map grid locations to colspan size, if larger than 1
+        val colspans = mutableMapOf<Pair<Int, Int>, Int>()
         var maxRowIndex = -1
         var maxColIndex = -1
 
+        val header = mutableListOf<String>()
         trs.forEachIndexed { r, tr ->
             var c = 0
             val cells = tr.select("td, th")
@@ -54,6 +46,11 @@ class TableHtmlToLatexConverter : HtmlToLatexConverter {
 
                 val rs = td.attr("rowspan").toIntOrNull()?.coerceAtLeast(1) ?: 1
                 val cs = td.attr("colspan").toIntOrNull()?.coerceAtLeast(1) ?: 1
+                // We don't support colspans in the header for now
+                if (r > 0 && cs > 1) {
+                    // - 1 because we don't count the header row for the UI
+                    colspans[Pair(r - 1, c)] = cs
+                }
                 val cell = HtmlCell(td, td.text())
 
                 for (dr in 0 until rs) {
@@ -63,6 +60,16 @@ class TableHtmlToLatexConverter : HtmlToLatexConverter {
                         assignments[Pair(rr, cc)] = cell
                         if (rr > maxRowIndex) maxRowIndex = rr
                         if (cc > maxColIndex) maxColIndex = cc
+
+                        if (r == 0) {
+                            // First row: collect header names
+                            if (dc == 0) {
+                                header.add(td.text())
+                            }
+                            else {
+                                header.add("") // placeholder for spanned columns
+                            }
+                        }
                     }
                 }
                 c += cs
@@ -79,36 +86,8 @@ class TableHtmlToLatexConverter : HtmlToLatexConverter {
 
         fun isNumeric(s: String?): Boolean = s?.trim()?.toDoubleOrNull() != null
 
-        // Heuristic to detect how many top rows are header rows:
-        // Count from top until a row looks "data-like" (majority numeric). Fallback to 1 header row.
-        val headerRowCount = run {
-            var count = 0
-            for (r in 0 until height) {
-                val values = grid[r].map { it?.text ?: "" }
-                val nonEmpty = values.count { it.isNotBlank() }
-                val numeric = values.count { isNumeric(it) }
-                val isData = nonEmpty > 0 && numeric >= (width + 1) / 2
-                if (isData) break
-                count++
-            }
-            if (count == 0) 1 else count
-        }.coerceAtMost(height)
-
-        // Build single-row header: prefer the most granular (bottom) header label per column, avoid concatenating with separators
-        val header = (0 until width).map { col ->
-            val labels = mutableListOf<String>()
-            for (r in 0 until headerRowCount) {
-                val t = grid[r][col]?.text?.trim().orEmpty()
-                if (t.isNotEmpty() && (labels.isEmpty() || labels.last() != t)) {
-                    labels.add(t)
-                }
-            }
-            // Use the last non-empty label (closest to data rows). If none, fall back to a generic name.
-            labels.lastOrNull() ?: "Column ${col + 1}"
-        }.toVector()
-
         // Build content rows from the remaining grid rows
-        val content: Vector<Vector<Any?>> = (headerRowCount until height).map { r ->
+        val content: Vector<Vector<Any?>> = (1 until height).map { r ->
             (0 until width).map { c ->
                 val cell = grid[r][c]
                 if (cell?.element != null) {
@@ -122,177 +101,21 @@ class TableHtmlToLatexConverter : HtmlToLatexConverter {
 
         // Determine column types based on expanded content
         val columnTypes = (0 until width).map { col ->
-            val allNumeric = (headerRowCount until height).all { r ->
+            val allNumeric = (1 until height).all { r ->
                 val t = grid[r][col]?.text
                 t.isNullOrBlank() || t.trim().toDoubleOrNull() != null
             }
             if (allNumeric) ColumnType.NUMBERS_COLUMN else ColumnType.TEXT_COLUMN
+        }
+
+        val columnSpanMap = object : ColumnSpanMap() {
+            override fun numberOfColumnsInSpan(row: Int, column: Int): Int = colspans[Pair(row, column)] ?: 1
         }
 
         return TableCreationDialogWrapper(
             columnTypes,
-            TableCreationTableModel(content, header)
+            TableCreationTableModel(content, header.toVector()),
+            columnSpanMap,
         )
-    }
-
-    /**
-     * Try to generate LaTeX directly with merged headers (using \multicolumn) when the table contains
-     * multiple header rows or colspan attributes. Returns null if we should fall back to the wizard.
-     */
-    private fun generateLatexWithMergedHeaders(table: Element, latexFile: LatexFile): String? {
-        // Build the expanded grid (same approach as in toTableDialogWrapper)
-        data class HtmlCell(val element: Element?, val text: String)
-
-        val trs = table.select("tr")
-        if (trs.isEmpty()) return null
-        val assignments = mutableMapOf<Pair<Int, Int>, HtmlCell>()
-        var maxRowIndex = -1
-        var maxColIndex = -1
-        var anyColOrRowSpan = false
-
-        trs.forEachIndexed { r, tr ->
-            var c = 0
-            val cells = tr.select("td, th")
-            cells.forEach { td ->
-                while (assignments.containsKey(Pair(r, c))) c++
-                val rs = td.attr("rowspan").toIntOrNull()?.coerceAtLeast(1) ?: 1
-                val cs = td.attr("colspan").toIntOrNull()?.coerceAtLeast(1) ?: 1
-                if (rs > 1 || cs > 1) anyColOrRowSpan = true
-                val cell = HtmlCell(td, td.text())
-                for (dr in 0 until rs) {
-                    for (dc in 0 until cs) {
-                        val rr = r + dr
-                        val cc = c + dc
-                        assignments[Pair(rr, cc)] = cell
-                        if (rr > maxRowIndex) maxRowIndex = rr
-                        if (cc > maxColIndex) maxColIndex = cc
-                    }
-                }
-                c += cs
-            }
-        }
-
-        val height = maxRowIndex + 1
-        val width = maxColIndex + 1
-        if (height <= 0 || width <= 0) return null
-
-        val grid: List<List<HtmlCell?>> = (0 until height).map { r ->
-            (0 until width).map { c -> assignments[Pair(r, c)] }
-        }
-
-        fun isNumeric(s: String?): Boolean = s?.trim()?.toDoubleOrNull() != null
-
-        // Heuristic for header rows: until a row is mostly numeric
-        val headerRowCount = run {
-            var count = 0
-            for (r in 0 until height) {
-                val values = grid[r].map { it?.text ?: "" }
-                val nonEmpty = values.count { it.isNotBlank() }
-                val numeric = values.count { isNumeric(it) }
-                val isData = nonEmpty > 0 && numeric >= (width + 1) / 2
-                if (isData) break
-                count++
-            }
-            if (count == 0) 1 else count
-        }.coerceAtMost(height)
-
-        // Only generate directly if there are multiple header rows or explicit colspan/rowspan
-        if (headerRowCount <= 1 && !anyColOrRowSpan) return null
-
-        // Determine alignments from data rows
-        val columnTypes = (0 until width).map { col ->
-            val allNumeric = (headerRowCount until height).all { r ->
-                val t = grid[r][col]?.text
-                t.isNullOrBlank() || t.trim().toDoubleOrNull() != null
-            }
-            if (allNumeric) ColumnType.NUMBERS_COLUMN else ColumnType.TEXT_COLUMN
-        }
-        val colSpec = columnTypes.joinToString("") { if (it == ColumnType.NUMBERS_COLUMN) "r" else "l" }
-
-        // Helper to convert an HtmlCell to LaTeX content (preserving styled text if present)
-        fun HtmlCell?.toLatex(): String = when {
-            this == null -> ""
-            this.element != null -> convertHtmlToLatex(listOf(this.element), latexFile)
-            else -> this.text
-        }
-
-        // Build header rows using multicolumn for repeated cells across the row
-        // Build header rows using multicolumn for repeated cells across the row,
-// and insert \cmidrule under non-leaf header rows (skip vertically merged cells).
-        val headerRowsLatex = buildString {
-            for (r in 0 until headerRowCount) {
-                var c = 0
-                val parts = mutableListOf<String>()
-                val spans = mutableListOf<Pair<Int, Int>>() // 1-based [start, end] for \cmidrule
-
-                while (c < width) {
-                    val cell = grid[r][c]
-                    // horizontal span: same cell repeated to the right
-                    var span = 1
-                    while (c + span < width && grid[r][c + span] === cell) span++
-
-                    val fromAbove = (r > 0) && (grid[r - 1][c] === cell) // vertically continued
-                    val toBelow = (r + 1 < height) && (grid[r + 1][c] === cell)
-
-                    val content = if (fromAbove) "" else cell.toLatex().trim()
-
-                    val piece = when {
-                        span > 1 && content.isNotEmpty() -> "\\multicolumn{$span}{c}{$content}"
-                        span > 1 && content.isEmpty() -> "\\multicolumn{$span}{c}{}" // occupy columns but print nothing
-                        span == 1 && content.isEmpty() -> "{}" // blank cell
-                        else -> content
-                    }
-                    parts.add(piece)
-
-                    // \cmidrule only for header blocks that (a) span multiple cols, (b) are not fromAbove,
-                    // and (c) are not vertically merged downward (i.e., this row is the place to draw the rule)
-                    if (span > 1 && !fromAbove && !toBelow) {
-                        val start = c + 1 // LaTeX columns are 1-based
-                        val end = c + span
-                        spans.add(start to end)
-                    }
-
-                    c += span
-                }
-
-                append(parts.joinToString(" & "))
-                append(" \\\\\n")
-
-                // draw rules only if there is a deeper header row
-                if (r < headerRowCount - 1 && spans.isNotEmpty()) {
-                    val rules = spans.joinToString(" ") { (s, e) -> "\\cmidrule(lr){$s-$e}" }
-                    append(rules).append("\n")
-                }
-            }
-        }
-
-        // Build data rows
-        val dataRowsLatex = buildString {
-            for (r in headerRowCount until height) {
-                val row = (0 until width).joinToString(" & ") { grid[r][it].toLatex() }
-                append(row).append(" \\\\\n")
-            }
-        }
-
-        // Ensure booktabs is available
-        latexFile.insertUsepackage(LatexPackage.BOOKTABS)
-
-        // Compose full table
-        val indent = ""
-        val tabIndent = "    "
-        return buildString {
-            append("\\begin{table}\n")
-            append("${indent}${tabIndent}\\centering\n")
-            append("${indent}${tabIndent}\\begin{tabular}{").append(colSpec).append("}\n")
-            append("${indent}${tabIndent}${tabIndent}\\toprule\n")
-            append(headerRowsLatex)
-            append("${indent}${tabIndent}${tabIndent}\\midrule\n")
-            append(dataRowsLatex)
-            append("${indent}${tabIndent}${tabIndent}\\bottomrule\n")
-            append("${indent}${tabIndent}\\end{tabular}\n")
-            append("${indent}${tabIndent}\\caption{}\n")
-            append("${indent}${tabIndent}\\label{tab:}\n")
-            append("${indent}\\end{table}\n")
-        }
     }
 }

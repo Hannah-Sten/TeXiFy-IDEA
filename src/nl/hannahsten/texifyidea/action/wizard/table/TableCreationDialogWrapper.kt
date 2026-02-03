@@ -11,7 +11,6 @@ import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.components.panels.VerticalLayout
 import com.intellij.ui.scale.JBUIScale
-import com.intellij.ui.table.JBTable
 import com.intellij.util.IconUtil
 import nl.hannahsten.texifyidea.util.addLabeledComponent
 import java.awt.BorderLayout
@@ -27,7 +26,8 @@ import javax.swing.*
  */
 class TableCreationDialogWrapper(
     initialColumnTypes: List<ColumnType>? = null,
-    initialTableModel: TableCreationTableModel? = null
+    initialTableModel: TableCreationTableModel? = null,
+    val columnSpanMap: ColumnSpanMap = ColumnSpanMap(),
 ) : DialogWrapper(true) {
 
     /**
@@ -43,7 +43,7 @@ class TableCreationDialogWrapper(
     /**
      * The table component that shows the table.
      */
-    private val table = JBTable(tableModel).apply {
+    private val table = ColumnSpanTable(columnSpanMap, tableModel).apply {
         addTabCreatesNewRowAction()
         addEnterCreatesNewRowAction()
     }
@@ -62,7 +62,7 @@ class TableCreationDialogWrapper(
     /**
      * Information about the table that is needed to convert it to latex.
      */
-    var tableInformation = TableInformation(tableModel, columnTypes, "", "")
+    var tableInformation = TableInformation(tableModel, columnTypes, "", "", columnSpanMap)
         private set
 
     init {
@@ -243,7 +243,8 @@ class TableCreationDialogWrapper(
             tableModel,
             columnTypes,
             txtCaption.text.trim(),
-            txtReference.text.trim()
+            txtReference.text.trim(),
+            columnSpanMap
         )
         return null
     }
