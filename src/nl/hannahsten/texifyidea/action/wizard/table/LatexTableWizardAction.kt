@@ -14,7 +14,6 @@ import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.insertUsepackage
 import nl.hannahsten.texifyidea.util.lineIndentationByOffset
 import nl.hannahsten.texifyidea.util.selectedTextEditorOrWarning
-import java.util.*
 
 /**
  * Action that shows a dialog with a table creation wizard, and inserts the table as latex at the location of the
@@ -86,19 +85,38 @@ class LatexTableWizardAction : AnAction() {
                 postfix = " \\\\\n$indent\\midrule\n"
             ) { "\\textbf{$it}" }
 
-        val rows = tableModel.dataVector.joinToString(separator = "\n", postfix = "\n$indent\\bottomrule\n") { row ->
-            (row as Vector<*>).joinToString(
-                prefix = indent,
-                separator = " & ",
-                postfix = " \\\\"
-            ) {
+        // Convert content to string
+        val contentRows = tableModel.dataVector
+        var content = ""
+        for (rowIndex in 0 until contentRows.size) {
+            var rowString = indent
+            val numberOfRows = contentRows[rowIndex].size
+            var columnIndex = 0
+            while (columnIndex < numberOfRows) {
                 // Enclose with $ if the type of this column is math.
-                val index = row.indexOf(it)
-                val encloseWith = if (columnTypes[index] == ColumnType.MATH_COLUMN) "$" else ""
-                encloseWith + it.toString() + encloseWith
+                val encloseWith = if (columnTypes[columnIndex] == ColumnType.MATH_COLUMN) "$" else ""
+                val cellContent = encloseWith + contentRows[rowIndex][columnIndex] + encloseWith
+
+                val span = columnSpanMap.numberOfColumnsInSpan(rowIndex, columnIndex)
+                if (span > 1) {
+                    rowString += "\\multicolumn{$span}{l}{$cellContent}"
+                    // Skip the spanned columns
+                    columnIndex += span - 1
+                }
+                else {
+                    rowString += cellContent
+                }
+
+                if (columnIndex < numberOfRows - 1) {
+                    rowString += " & "
+                }
+
+                columnIndex++
             }
+            content += "$rowString \\\\\n"
         }
-        return headers + rows
+        content += "$indent\\bottomrule\n"
+        return headers + content
     }
 
     /**
