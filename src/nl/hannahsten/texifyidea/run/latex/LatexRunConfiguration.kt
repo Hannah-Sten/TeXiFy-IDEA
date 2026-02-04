@@ -79,6 +79,7 @@ class LatexRunConfiguration(
         private const val MAIN_FILE = "main-file"
         private const val OUTPUT_PATH = "output-path"
         private const val AUXIL_PATH = "auxil-path"
+        private const val WORKING_DIRECTORY = "working-directory"
         private const val COMPILE_TWICE = "compile-twice"
         private const val OUTPUT_FORMAT = "output-format"
         private const val LATEX_DISTRIBUTION = "latex-distribution"
@@ -125,6 +126,8 @@ class LatexRunConfiguration(
 
     /** Path to the directory containing the auxiliary files. */
     var auxilPath = LatexOutputPath("auxil", mainFile, project)
+
+    var workingDirectory: String? = null
 
     var compileTwice = false
     var outputFormat: Format = Format.PDF
@@ -340,6 +343,8 @@ class LatexRunConfiguration(
             this.auxilPath.pathString = auxilPathString
         }
 
+        this.workingDirectory = parent.getChildText(WORKING_DIRECTORY) ?: LatexOutputPath.MAIN_FILE_STRING
+
         // Backwards compatibility
         val auxDirBoolean = parent.getChildText(AUX_DIR)
         if (auxDirBoolean != null && this.auxilPath.virtualFile == null && this.mainFile != null) {
@@ -416,6 +421,7 @@ class LatexRunConfiguration(
         parent.addContent(Element(MAIN_FILE).also { it.text = mainFile?.path ?: "" })
         parent.addContent(Element(OUTPUT_PATH).also { it.text = outputPath.virtualFile?.path ?: outputPath.pathString })
         parent.addContent(Element(AUXIL_PATH).also { it.text = auxilPath.virtualFile?.path ?: auxilPath.pathString })
+        parent.addContent(Element(WORKING_DIRECTORY).also { it.text = workingDirectory ?: LatexOutputPath.MAIN_FILE_STRING })
         parent.addContent(Element(COMPILE_TWICE).also { it.text = compileTwice.toString() })
         parent.addContent(Element(OUTPUT_FORMAT).also { it.text = outputFormat.name })
         parent.addContent(Element(LATEX_DISTRIBUTION).also { it.text = latexDistribution.name })
@@ -522,6 +528,10 @@ class LatexRunConfiguration(
      * All run configs in the chain except the LaTeX ones.
      */
     fun getAllAuxiliaryRunConfigs(): Set<RunnerAndConfigurationSettings> = bibRunConfigs + makeindexRunConfigs + externalToolRunConfigs
+
+    fun getResolvedWorkingDirectory(): String? = if (!workingDirectory.isNullOrBlank() && mainFile != null) workingDirectory?.replace(LatexOutputPath.MAIN_FILE_STRING, mainFile!!.parent.path) else mainFile?.parent?.path
+
+    fun hasDefaultWorkingDirectory(): Boolean = workingDirectory == LatexOutputPath.MAIN_FILE_STRING
 
     /**
      * Looks up the corresponding [VirtualFile] and sets [LatexRunConfiguration.mainFile].
