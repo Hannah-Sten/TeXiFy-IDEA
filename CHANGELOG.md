@@ -6,6 +6,7 @@
 * Add support for configuration of bibtex-tidy options, by @fberlakovich
 * Improve word count dialog, by @slideclimb
 * Add support for column spans to the table insertion wizard when pasting tables, by @Steve-Li-1998
+* Add run configuration option to set working directory
 
 ### Fixed
 * Fix duplicate messages in log message tab after filtering
