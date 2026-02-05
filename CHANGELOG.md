@@ -9,6 +9,7 @@
 * Add run configuration option to set working directory
 
 ### Fixed
+* Fix bug in retrieving texmfhome directory on Linux
 * Fix duplicate messages in log message tab after filtering
 
 ## [0.11.7] - 2026-01-09

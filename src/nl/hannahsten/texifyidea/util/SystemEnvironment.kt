@@ -140,7 +140,7 @@ fun getTexinputsPaths(
     (configurationTexmfhomeVariables + systemTexmfhome)
         .filterNotNull()
         .flatMap { it.split(",") }
-        .map { it.trim('\'', '/').replaceFirst("~", System.getProperty("user.home")) }
+        .map { it.trim('\'').trimEnd('/').replaceFirst("~", System.getProperty("user.home")) }
         .mapNotNull { LocalFileSystem.getInstance().findFileByPath("$it/tex") }
         .forEach { parent ->
             searchPaths.addAll(
