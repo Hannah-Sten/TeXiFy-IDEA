@@ -3,9 +3,8 @@ package nl.hannahsten.texifyidea.completion
 import com.intellij.codeInsight.lookup.CharFilter
 import com.intellij.codeInsight.lookup.Lookup
 import nl.hannahsten.texifyidea.file.LatexFile
-import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.parser.firstParentOfType
+import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil.resolveContextUpward
 
 /**
  * @author Sten Wessel
@@ -35,7 +34,6 @@ class LatexCharFilter : CharFilter() {
 
     private fun isInCiteContext(lookup: Lookup): Boolean {
         val element = lookup.psiElement ?: return false
-        val command = element.firstParentOfType(LatexCommands::class) ?: return false
-        return command.name in CommandMagic.bibliographyReference
+        return resolveContextUpward(element).contains(LatexContexts.BibReference)
     }
 }
