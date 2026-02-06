@@ -89,6 +89,12 @@ Also make sure you adhere to the code conventions below and that you document yo
 
 If you want to know more or if anything is unclear, never be afraid [to ask](#i-just-have-a-question).
 
+The basic steps to contribute to the source code are:
+
+1. Click the ['fork' button](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo) on the upper right corner of this repository to create your own copy of the project
+2. Clone the forked repository
+3. Create a branch, and push changes to your fork
+4. [Create a pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork) from the fork to this repository
 
 ## Code conventions
 - The language-of-choice is Kotlin, but Java is accepted as well.

@@ -14,6 +14,8 @@ import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.allParentMagicComments
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.util.includedPackagesInFileset
+import nl.hannahsten.texifyidea.util.files.findTectonicTomlFile
+import nl.hannahsten.texifyidea.util.files.hasTectonicTomlFile
 
 /**
  * @author Hannah Schellekens
@@ -57,6 +59,8 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
         else command
         runConfiguration.compiler = LatexCompiler.byExecutableName(compiler)
         runConfiguration.compilerArguments = command.removePrefix(compiler).trim()
+
+        runConfiguration.workingDirectory = if (runConfiguration.compiler == LatexCompiler.TECTONIC && mainFile.hasTectonicTomlFile()) mainFile.findTectonicTomlFile()!!.parent.path else LatexOutputPath.MAIN_FILE_STRING
         return true
     }
 

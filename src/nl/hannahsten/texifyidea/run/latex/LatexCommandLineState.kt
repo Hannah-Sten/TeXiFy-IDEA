@@ -35,8 +35,6 @@ import nl.hannahsten.texifyidea.run.makeindex.RunMakeindexListener
 import nl.hannahsten.texifyidea.run.pdfviewer.OpenViewerListener
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.util.*
-import nl.hannahsten.texifyidea.util.files.findTectonicTomlFile
-import nl.hannahsten.texifyidea.util.files.hasTectonicTomlFile
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
 import java.io.File
@@ -111,7 +109,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         val command: List<String> = compiler.getCommand(runConfig, environment.project)
             ?: throw ExecutionException("Compile command could not be created.")
 
-        val workingDirectoryPath = if (compiler == LatexCompiler.TECTONIC && mainFile.hasTectonicTomlFile()) mainFile.findTectonicTomlFile()!!.parent.path else mainFile.parent.path
+        val workingDirectoryPath = runConfig.getResolvedWorkingDirectory() ?: mainFile.parent.path
         val workingDirectory = Path(workingDirectoryPath)
         if (workingDirectory.exists().not()) {
             Notification("LaTeX", "Could not find working directory", "The directory containing the main file could not be found: $workingDirectoryPath", NotificationType.ERROR).notify(environment.project)

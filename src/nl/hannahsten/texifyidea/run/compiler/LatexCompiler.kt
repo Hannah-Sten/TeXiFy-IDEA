@@ -375,7 +375,12 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             }
         }
         else if (runConfig.compiler != TECTONIC || runConfig.mainFile?.hasTectonicTomlFile() != true) {
-            command.add(mainFile.name)
+            if (runConfig.hasDefaultWorkingDirectory()) {
+                command.add(mainFile.name)
+            }
+            else {
+                command.add(mainFile.path)
+            }
         }
 
         return command

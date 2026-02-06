@@ -59,6 +59,7 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
     // Not shown on non-MiKTeX systems
     private var auxilPath: LabeledComponent<ComponentWithBrowseButton<*>>? = null
 
+    private lateinit var workingDirectory: LabeledComponent<ComponentWithBrowseButton<*>>
     private var expandMacrosEnvVariables: JBCheckBox? = null
     private var compileTwice: JBCheckBox? = null
     private lateinit var outputFormat: LabeledComponent<ComboBox<Format>>
@@ -120,6 +121,8 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
         val outputPathTextField = outputPath.component as TextFieldWithBrowseButton
         // We may be editing a run configuration template, don't resolve any path
         outputPathTextField.text = runConfiguration.outputPath.virtualFile?.path ?: runConfiguration.outputPath.pathString
+
+        (workingDirectory.component as TextFieldWithBrowseButton).text = runConfiguration.workingDirectory ?: LatexOutputPath.MAIN_FILE_STRING
 
         // Reset whether to compile twice
         if (compileTwice != null) {
@@ -225,6 +228,8 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
             val auxilPathTextField = auxilPath!!.component as TextFieldWithBrowseButton
             runConfiguration.setFileAuxilPath(auxilPathTextField.text)
         }
+
+        runConfiguration.workingDirectory = (workingDirectory.component as TextFieldWithBrowseButton).text
 
         if (compileTwice != null) {
             // Only show option to configure number of compiles when applicable
@@ -337,6 +342,20 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
         panel.add(mainFile)
 
         addOutputPathField(panel)
+
+        val workingDirectoryField = TextFieldWithBrowseButton()
+        workingDirectoryField.addBrowseFolderListener(
+            TextBrowseFolderListener(
+                FileChooserDescriptor(false, true, false, false, false, false)
+                    .withTitle("Working Directory")
+                    .withRoots(
+                        *ProjectRootManager.getInstance(project)
+                            .contentRootsFromAllModules
+                    )
+            )
+        )
+        workingDirectory = LabeledComponent.create(workingDirectoryField, "Working directory")
+        panel.add(workingDirectory)
 
         compileTwice = JBCheckBox("Always compile at least twice")
         compileTwice!!.isSelected = false
