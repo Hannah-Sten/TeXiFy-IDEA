@@ -37,7 +37,8 @@ object EnvironmentMagic {
             SAGEEXAMPLE,
             LUACODE,
             LUACODE_STAR,
-            PY_CODE
+            PY_CODE,
+            PITON,
         )
     }
 

@@ -160,6 +160,9 @@ object PredefinedCmdFiles : PredefinedCommandSet() {
         underPackage(LatexLib.LISTINGS) {
             "lstinputlisting".cmd("options".optional, "filename".required(LatexContexts.SingleFile))
         }
+        underPackage("piton") {
+            "PitonInputFile".cmd("path".required(LatexContexts.SingleFile))
+        }
     }
 
     val importAbsolute = buildCommands {

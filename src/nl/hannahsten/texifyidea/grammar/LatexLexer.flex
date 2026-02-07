@@ -106,6 +106,8 @@ PLAIN_VERBATIM_COMMAND=\\verb | \\verb\* | \\path
 VERBATIM_COMMAND=\\directlua | \\luaexec | \\lstinline
  // PythonTex Python code commands
  | \\py | \\pyb | \\pyc | \\pys | \\pyv
+ // piton package
+ | \\piton
 // These can contain unescaped # and %, but braces have to be balanced
 URL_COMMAND=\\url | \\href
 

@@ -260,6 +260,9 @@ object PredefinedEnvBasic : PredefinedEnvironmentSet() {
         +"pysub"
         +"pyverbatim"
 
+        packageOf("piton")
+        +"Piton"
+
         packageOf("xcolor")
         "testcolors".env(LatexContexts.Text, "num models".optional) //
 
