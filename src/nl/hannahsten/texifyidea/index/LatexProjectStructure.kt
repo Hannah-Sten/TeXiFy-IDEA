@@ -460,6 +460,16 @@ object LatexProjectStructure {
         ) {
             for ((paths, refInfo) in elements.zip(refInfoList)) {
                 for (path in paths) {
+                    // check local package first, since LaTeX will resolve to the local package if it exists
+                    val localFile = findLocalFile(path, rootDirs)
+
+                    if (localFile != null) {
+                        processNext(localFile)
+                        refInfo.add(localFile)
+                        continue
+                    }
+
+                    // check library package if local is not present
                     val libraryInfo = LatexLibraryStructureService.getInstance(project).getLibraryInfo(path, root)
                     if (libraryInfo != null) {
                         addLibrary(libraryInfo)
@@ -478,13 +488,18 @@ object LatexProjectStructure {
             elements: List<Sequence<Path>>, refInfoList: List<MutableSet<VirtualFile>>, rootDirs: Collection<VirtualFile>,
         ) {
             processElementsWithPaths(elements, refInfoList) { path ->
-                if (path.isAbsolute) path.findVirtualFile()
-                else {
-                    val pathString = path.invariantSeparatorsPathString
-                    currentRootDir?.findFileByRelativePath(pathString) ?: rootDirs.firstNotNullOfOrNull { sourcePath ->
-                        sourcePath.findFileByRelativePath(pathString)
-                    }
-                }
+                findLocalFile(path, rootDirs)
+            }
+        }
+
+        private fun findLocalFile(
+            path: Path,
+            rootDirs: Collection<VirtualFile>
+        ): VirtualFile? = if (path.isAbsolute) path.findVirtualFile()
+        else {
+            val pathString = path.invariantSeparatorsPathString
+            currentRootDir?.findFileByRelativePath(pathString) ?: rootDirs.firstNotNullOfOrNull { sourcePath ->
+                sourcePath.findFileByRelativePath(pathString)
             }
         }
 
