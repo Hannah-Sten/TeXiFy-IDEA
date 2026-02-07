@@ -4,12 +4,10 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import nl.hannahsten.texifyidea.testutils.writeCommand
 import nl.hannahsten.texifyidea.updateCommandDef
-import nl.hannahsten.texifyidea.updateFilesets
 
 class LatexRequiredExtensionInspectionTest : TexifyInspectionTestBase(LatexRequiredExtensionInspection()) {
 
     override fun getTestDataPath(): String = "test/resources/inspections/latex/requiredextension"
-
 
     fun testWarning() {
         myFixture.configureByText(
