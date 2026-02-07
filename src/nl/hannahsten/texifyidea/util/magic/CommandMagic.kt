@@ -296,13 +296,6 @@ object CommandMagic {
     val pgfplotsLibraryInclusionCommands = CommandNames.run { setOf(USE_PGF_PLOTS_LIBRARY) }
 
     /**
-     * Commands that should have the given file extensions.
-     */
-    val requiredExtensions = CommandNames.run {
-        mapOf(ADD_BIB_RESOURCE to listOf("bib", "json", "yaml"))
-    }
-
-    /**
      * Extensions that should only be scanned for the provided include commands.
      */
     val includeAndExtensions: Map<String, Set<String>> = CommandNames.run {

@@ -4,6 +4,7 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import nl.hannahsten.texifyidea.testutils.writeCommand
 import nl.hannahsten.texifyidea.updateCommandDef
+import nl.hannahsten.texifyidea.updateFilesets
 
 class LatexRequiredExtensionInspectionTest : TexifyInspectionTestBase(LatexRequiredExtensionInspection()) {
 
@@ -45,6 +46,7 @@ class LatexRequiredExtensionInspectionTest : TexifyInspectionTestBase(LatexRequi
 
     fun testQuickfix() {
         myFixture.configureByFiles("main-broken.tex", "main.bib")
+        myFixture.updateCommandDef()
 
         val quickFixes = myFixture.getAllQuickFixes()
         assertEquals(1, quickFixes.size)
@@ -57,6 +59,7 @@ class LatexRequiredExtensionInspectionTest : TexifyInspectionTestBase(LatexRequi
 
     fun testQuickfixCitationStyleLanguageJson() {
         myFixture.configureByFiles("csl-main-broken.tex", "csl-main.json")
+        myFixture.updateCommandDef()
 
         val quickFixes = myFixture.getAllQuickFixes()
         assertEquals(1, quickFixes.size)

@@ -6,7 +6,6 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.vfs.resolveFromRootOrRelative
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.index.DefinitionBundle
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
@@ -15,11 +14,12 @@ import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.SimpleFileInputContext
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
-import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.util.appendExtension
-import nl.hannahsten.texifyidea.util.files.document
-import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexPsiHelper
+import nl.hannahsten.texifyidea.psi.contentText
+import nl.hannahsten.texifyidea.psi.forEachRequiredParameter
 import nl.hannahsten.texifyidea.util.parser.startOffsetInAncestor
+import java.io.File
 import java.util.*
 
 /**
@@ -73,21 +73,19 @@ class LatexRequiredExtensionInspection : AbstractTexifyCommandBasedInspection(
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands
-            val document = command.containingFile.document() ?: return
 
-            val nameWithSlash = command.nameWithSlash
-            val requiredExtensions = CommandMagic.requiredExtensions[nameWithSlash] ?: return
-            val possibleRequiredExtensions = findRequiredExtensions(command)
+            val requiredExtensions = findRequiredExtensions(command) ?: return
+            val directory = command.containingFile.virtualFile.parent
 
             command.forEachRequiredParameter { parameter ->
                 val params = parameter.contentText().split(",")
                 val replacementText = params.joinToString {
                     requiredExtensions.firstNotNullOfOrNull { ext ->
                         if (!it.endsWith(".$ext") && !it.endsWith('}')) {
-                            command.containingFile.virtualFile.findFileByRelativePath("$it.$ext")
+                            directory.findFileByRelativePath("$it.$ext")?.path?.removePrefix(directory.path)?.removePrefix(File.separator)
                         }
                         else null
-                    }?.name
+                    }
                     ?: it
                 }
                 val replacementElement = LatexPsiHelper(project).createRequiredParameter(replacementText)
