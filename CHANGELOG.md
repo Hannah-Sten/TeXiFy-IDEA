@@ -7,6 +7,7 @@
 * Improve word count dialog, by @slideclimb
 * Add support for column spans to the table insertion wizard when pasting tables, by @Steve-Li-1998
 * Add run configuration option to set working directory
+* Improve performance of documentation popup by caching texdoc results
 
 ### Fixed
 * Package imports now resolve to only the local package if it exists, by @jandermoreira 
