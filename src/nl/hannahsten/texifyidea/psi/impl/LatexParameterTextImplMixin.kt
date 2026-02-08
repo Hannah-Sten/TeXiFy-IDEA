@@ -6,12 +6,12 @@ import com.intellij.openapi.project.DumbService
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference
 import nl.hannahsten.texifyidea.lang.LatexContexts
-import nl.hannahsten.texifyidea.lang.commands.LatexGlossariesCommand
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.reference.BibtexIdReference
 import nl.hannahsten.texifyidea.reference.LatexGlossaryReference
 import nl.hannahsten.texifyidea.reference.LatexLabelParameterReference
 import nl.hannahsten.texifyidea.util.existsIntersection
+import nl.hannahsten.texifyidea.util.extractGlossaryLabel
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.parser.*
@@ -159,7 +159,7 @@ abstract class LatexParameterTextImplMixin(node: ASTNode) : LatexParameterText, 
             // have the glossary label as their first required parameter. This is true for all currently supported glossary
             // commands, but might change in the future.
             if (command != null) {
-                val glossaryLabel = LatexGlossariesCommand.extractGlossaryLabel(command) ?: ""
+                val glossaryLabel = extractGlossaryLabel(command) ?: ""
                 replaceInCommand(command, glossaryLabel, name)
             }
             return this

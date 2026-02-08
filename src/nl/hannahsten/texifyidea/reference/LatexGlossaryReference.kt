@@ -3,8 +3,9 @@ package nl.hannahsten.texifyidea.reference
 import com.intellij.psi.*
 import com.intellij.util.containers.toArray
 import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
-import nl.hannahsten.texifyidea.lang.commands.LatexGlossariesCommand
 import nl.hannahsten.texifyidea.psi.LatexParameterText
+import nl.hannahsten.texifyidea.util.extractGlossaryLabel
+import nl.hannahsten.texifyidea.util.extractGlossaryLabelElement
 
 /**
  * This reference allows refactoring of glossary entries. A glossary reference command (e.g. \gls) references the label
@@ -28,11 +29,11 @@ class LatexGlossaryReference(element: LatexParameterText) :
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
         val glossaryEntries = NewSpecialCommandsIndex.getAllGlossaryEntries(myElement.containingFile.originalFile)
         return glossaryEntries
-            .filter { LatexGlossariesCommand.extractGlossaryLabel(it) == myElement.name }
+            .filter { extractGlossaryLabel(it) == myElement.name }
             .toSet()
             .mapNotNull {
                 PsiElementResolveResult(
-                    LatexGlossariesCommand.extractGlossaryLabelElement(it) ?: return@mapNotNull null
+                    extractGlossaryLabelElement(it) ?: return@mapNotNull null
                 )
             }
             .toList()
