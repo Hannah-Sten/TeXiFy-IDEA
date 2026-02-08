@@ -68,7 +68,7 @@ abstract class AbstractTexifyEnvironmentBasedInspection(
             element.beginCommand.envIdentifier?.setName(newName)
             element.endCommand?.envIdentifier?.setName(newName)
             if(requiredPkg != LatexLib.BASE) {
-                PackageUtils.insertUsePackage(element.containingFile, requiredPkg)
+                PackageUtils.insertUsepackage(element.containingFile, requiredPkg)
             }
         }
     }

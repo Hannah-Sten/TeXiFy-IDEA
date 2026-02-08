@@ -47,6 +47,6 @@ class LatexParameterInfoHandler : ParameterInfoHandler<LatexCommands, LSemanticC
             context.isUIComponentEnabled = false
             return
         }
-        context.setupUIComponentPresentation(p.nameWithSlash + p.arguments.joinToString(""), 0, 0, false, false, true, context.defaultParameterColor)
+        context.setupUIComponentPresentation(p.commandWithSlash + p.arguments.joinToString(""), 0, 0, false, false, true, context.defaultParameterColor)
     }
 }

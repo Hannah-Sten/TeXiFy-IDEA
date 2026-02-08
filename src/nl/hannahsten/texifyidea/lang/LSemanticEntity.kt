@@ -73,7 +73,7 @@ class LSemanticCommand(
     description: String = "",
 
     val display: String? = null,
-    val nameWithSlash: String = "\\$name",
+    val commandWithSlash: String = "\\$name",
 ) : LSemanticEntity(name, namespace, applicableCtx, description) {
 
     override fun toString(): String = "Cmd($displayName, ctx=${applicableContextDisplay()}, arg=${arguments.joinToString("")}, description='$description')"

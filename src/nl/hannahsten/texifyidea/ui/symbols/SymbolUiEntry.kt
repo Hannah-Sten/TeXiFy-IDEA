@@ -1,8 +1,9 @@
 package nl.hannahsten.texifyidea.ui.symbols
 
 import nl.hannahsten.texifyidea.lang.Described
-import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.lang.commands.LatexCommand
+import nl.hannahsten.texifyidea.lang.LSemanticCommand
+import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.lang.LatexLib
 
 /**
  * Represents an entry in the Symbol overview tool window.
@@ -17,7 +18,7 @@ interface SymbolUiEntry : Described {
     /**
      * The underlying command of the symbol, if applicable.
      */
-    val command: LatexCommand?
+    val command: LSemanticCommand?
 
     /**
      * The latex that must be generated when the symbol gets inserted.
@@ -56,13 +57,13 @@ interface SymbolUiEntry : Described {
     /**
      * The package on which inserting the symbol is dependent.
      */
-    val dependency: LatexPackage
-        get() = command?.dependency ?: LatexPackage.DEFAULT
+    val dependency: LatexLib
+        get() = command?.dependency ?: LatexLib.BASE
 
     /**
      * Whether this is a math symbol.
      * `false` when no command is linked to the ui entry.
      */
     val isMathSymbol: Boolean
-        get() = command?.isMathMode ?: false
+        get() = command?.applicableContext?.contains(LatexContexts.Math) == true
 }

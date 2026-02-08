@@ -67,7 +67,7 @@ abstract class AbstractTexifyCommandBasedInspection(
             element.setName(newNameWithoutSlash)
             // Ensure the required package is imported
             if(requiredPkg != LatexLib.BASE) {
-                PackageUtils.insertUsePackage(element.containingFile, requiredPkg)
+                PackageUtils.insertUsepackage(element.containingFile, requiredPkg)
             }
         }
     }

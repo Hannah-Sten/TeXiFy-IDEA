@@ -67,7 +67,7 @@ class LatexEquationReferenceInspection : AbstractTexifyCommandBasedInspection(
             // delete the parentheses around the command
             doc.replaceString(range.startOffset - 1, range.endOffset + 1, "\\eqref${text.substring(4)}")
             // Ensure the amsmath package is imported
-            PackageUtils.insertUsePackage(file, LatexLib.AMSMATH)
+            PackageUtils.insertUsepackage(file, LatexLib.AMSMATH)
         }
     }
 }
