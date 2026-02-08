@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.settings.conventions
 
 import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
-import nl.hannahsten.texifyidea.lang.commands.LatexListingCommand.LSTINPUTLISTING
 import nl.hannahsten.texifyidea.lang.predefined.EnvironmentNames
 
 /**
@@ -42,7 +41,7 @@ data class TexifyConventionsScheme(
         LabelConvention(false, LabelConventionType.COMMAND, PARAGRAPH.command, "par"),
         LabelConvention(false, LabelConventionType.COMMAND, SUBPARAGRAPH.command, "subpar"),
         LabelConvention(false, LabelConventionType.COMMAND, ITEM.command, "itm"),
-        LabelConvention(true, LabelConventionType.COMMAND, LSTINPUTLISTING.command, "lst"),
+        LabelConvention(true, LabelConventionType.COMMAND, "lstinputlisting", "lst"),
         LabelConvention(true, LabelConventionType.ENVIRONMENT, EnvironmentNames.FIGURE, "fig"),
         LabelConvention(true, LabelConventionType.ENVIRONMENT, EnvironmentNames.TABLE, "tab"),
         LabelConvention(true, LabelConventionType.ENVIRONMENT, EnvironmentNames.EQUATION, "eq"),
