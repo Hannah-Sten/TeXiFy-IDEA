@@ -554,6 +554,9 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         underPackage("pythontex") {
             listOf("py", "pyb", "pyc", "pys", "pyv").forEach { it.cmd("code".required(LatexContexts.Verbatim)) }
         }
+        underPackage("piton") {
+            "piton".cmd("code".required(LatexContexts.Verbatim))
+        }
         underPackage(LatexLib.LISTINGS) {
             "lstinline".cmd("code".required(LatexContexts.Verbatim))
         }
