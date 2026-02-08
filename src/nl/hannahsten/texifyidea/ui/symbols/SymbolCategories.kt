@@ -163,7 +163,8 @@ object SymbolCategories {
                     add(
                         command,
                         latex = command.commandWithSlash + "{<caret>}".repeat(command.arguments.size),
-                        image = command.commandWithSlash + listOf("a", "b", "c", "d", "e", "f", "g", "h", "i").take(command.arguments.size).joinToString(separator = "") { "{$it}" })
+                        image = command.commandWithSlash + listOf("a", "b", "c", "d", "e", "f", "g", "h", "i").take(command.arguments.size).joinToString(separator = "") { "{$it}" }
+                    )
                 }
                 else {
                     add(command)
