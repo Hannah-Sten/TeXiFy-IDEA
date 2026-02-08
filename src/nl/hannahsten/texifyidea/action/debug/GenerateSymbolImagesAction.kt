@@ -10,9 +10,10 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import nl.hannahsten.texifyidea.ui.symbols.tools.generateSymbolImages
 
 /**
+ * Only for development purposes.
+ *
  * @author Hannah Schellekens
  */
-@Suppress("ComponentNotRegistered", "unused") // Only for development purposes.
 open class GenerateSymbolImagesAction : AnAction(
     "Generate Symbol Images",
     "(Development) Generates the symbol images for the symbol view",

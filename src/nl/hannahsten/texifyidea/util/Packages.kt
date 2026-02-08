@@ -298,9 +298,9 @@ object PackageUtils {
 /**
  * @see PackageUtils.insertUsepackage
  */
-fun PsiFile.insertUsepackage(pack: LatexPackage) = PackageUtils.insertUsepackage(this, pack)
+fun PsiFile.insertUsepackage(pack: LatexPackage) = insertUsepackage(this, pack)
 
-fun PsiFile.insertUsepackage(latexLib: LatexLib) = PackageUtils.insertUsepackage(this, latexLib)
+fun PsiFile.insertUsepackage(latexLib: LatexLib) = insertUsepackage(this, latexLib)
 
 /**
  * Find all included LaTeX packages in the file set of this file.
