@@ -42,6 +42,7 @@ class LatexPackage @JvmOverloads constructor(
         val BM = LatexPackage("bm")
         val BOOKTABS = LatexPackage("booktabs")
         val CHAPTERBIB = LatexPackage("chapterbib")
+        val CITATION_STYLE_LANGUAGE = LatexPackage("citation-style-language")
         val CLEVEREF = LatexPackage("cleveref")
         val COLOR = LatexPackage("color")
         val COMMENT = LatexPackage("comment")

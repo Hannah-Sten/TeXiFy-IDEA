@@ -53,6 +53,23 @@ object PackageMagic {
         LatexPackage.NEWTXMATH to setOf(LatexPackage.AMSSYMB, LatexPackage.STMARYRD), // Not true, but newtxmath provides roughly the same commands
     )
 
+    private val conflictingPackagesList = listOf(
+        setOf("biblatex.sty", "natbib.sty"),
+    )
+
+    val conflictingPackageMap = buildMap {
+        conflictingPackagesList.forEach { names ->
+            names.forEach { name ->
+                merge(name, names) { old, new -> (old + new).toSet() }
+            }
+        }
+
+        // citation-style-language is not compatible with other packages, but the packages itself can still be compatible with each other.
+        merge("citation-style-language.sty", setOf("babelbib.sty", "backref.sty", "bibtopic.sty", "bibunits.sty", "chapterbib.sty", "cite.sty", "citeref.sty", "inlinebib.sty", "jurabib.sty", "mcite.sty", "mciteplus.sty", "multibib.sty", "natbib.sty", "splitbib.sty")) { old, new ->
+            (old + new).toSet()
+        }
+    }
+
     /**
      * Maps argument specifiers to whether they are required (true) or
      * optional (false).

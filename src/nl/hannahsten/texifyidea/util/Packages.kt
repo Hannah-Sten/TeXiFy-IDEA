@@ -19,6 +19,7 @@ import nl.hannahsten.texifyidea.psi.nameWithSlash
 import nl.hannahsten.texifyidea.psi.traverseCommands
 import nl.hannahsten.texifyidea.util.files.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.magic.PackageMagic.conflictingPackageMap
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import kotlin.collections.forEach
 
@@ -179,17 +180,6 @@ object PackageUtils {
             return true
         }
         return insertUsePackage(file, LatexLib.Package(pack.name), pack.parameters.asList())
-    }
-
-    private val conflictingPackagesList = listOf(
-        setOf("biblatex.sty", "natbib.sty"),
-    )
-    private val conflictingPackageMap = buildMap {
-        conflictingPackagesList.forEach { names ->
-            names.forEach { name ->
-                merge(name, names) { old, new -> old + new }
-            }
-        }
     }
 
     fun insertUsePackage(file: PsiFile, lib: LatexLib, options: List<String> = emptyList()): Boolean {

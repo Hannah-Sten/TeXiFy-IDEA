@@ -30,6 +30,7 @@ interface ILFileInputContext : LatexContext
 class SimpleFileInputContext(
     name: String,
     val isCommaSeparated: Boolean = false,
+    val isExtensionRequired: Boolean = false,
     val supportedExtensions: Set<String> = emptySet(),
     val isAbsolutePathSupported: Boolean = true
 ) : SimpleLatexContext(name), ILFileInputContext
@@ -127,11 +128,15 @@ object LatexContexts {
     )
 
     val SingleBibFile = SimpleFileInputContext(
-        "file.bib", isCommaSeparated = false, supportedExtensions = setOf("bib"),
+        "file.bib", isCommaSeparated = false, isExtensionRequired = true, supportedExtensions = setOf("bib"),
     )
 
     val MultipleBibFiles = SimpleFileInputContext(
         "files.bib", isCommaSeparated = true, supportedExtensions = setOf("bib"),
+    )
+
+    val SingleCSLBibFile = SimpleFileInputContext(
+        "file.bib", isCommaSeparated = false, isExtensionRequired = true, supportedExtensions = setOf("bib", "json", "yaml"),
     )
 
     val Folder = SimpleLatexContext("folder")
