@@ -17,10 +17,13 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.psi.nameWithSlash
 import nl.hannahsten.texifyidea.psi.traverseCommands
-import nl.hannahsten.texifyidea.util.files.*
+import nl.hannahsten.texifyidea.util.PackageUtils.insertUsepackage
+import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.files.findRootFile
+import nl.hannahsten.texifyidea.util.files.isClassFile
+import nl.hannahsten.texifyidea.util.files.isStyleFile
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
-import kotlin.collections.forEach
 
 /**
  * @author Hannah Schellekens
@@ -178,7 +181,7 @@ object PackageUtils {
         if (pack.isDefault) {
             return true
         }
-        return insertUsePackage(file, LatexLib.Package(pack.name), pack.parameters.asList())
+        return insertUsepackage(file, LatexLib.Package(pack.name), pack.parameters.asList())
     }
 
     private val conflictingPackagesList = listOf(
@@ -192,7 +195,7 @@ object PackageUtils {
         }
     }
 
-    fun insertUsePackage(file: PsiFile, lib: LatexLib, options: List<String> = emptyList()): Boolean {
+    fun insertUsepackage(file: PsiFile, lib: LatexLib, options: List<String> = emptyList()): Boolean {
         if (lib.isDefault || lib.isCustom) return true
         val packName = lib.asPackageName() ?: return false
         val filesetData = LatexProjectStructure.getFilesetDataFor(file)
@@ -295,7 +298,9 @@ object PackageUtils {
 /**
  * @see PackageUtils.insertUsepackage
  */
-fun PsiFile.insertUsepackage(pack: LatexPackage) = PackageUtils.insertUsepackage(this, pack)
+fun PsiFile.insertUsepackage(pack: LatexPackage) = insertUsepackage(this, pack)
+
+fun PsiFile.insertUsepackage(latexLib: LatexLib) = insertUsepackage(this, latexLib)
 
 /**
  * Find all included LaTeX packages in the file set of this file.

@@ -14,7 +14,7 @@ import nl.hannahsten.texifyidea.lang.LArgument
 import nl.hannahsten.texifyidea.lang.LSemanticCommand
 import nl.hannahsten.texifyidea.lang.LSemanticEnv
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.insertAndMove
 import nl.hannahsten.texifyidea.util.magic.TypographyMagic
 
 /**
@@ -35,7 +35,7 @@ data class LatexCommandInsertHandler(
         val editor = context.editor
         val offset = editor.caretModel.offset
         // context.startOffset is the offset of the start of the just inserted text.
-        val commandEndOffset = context.startOffset + semantics.nameWithSlash.length
+        val commandEndOffset = context.startOffset + semantics.commandWithSlash.length
         if (commandEndOffset >= offset) return
         // Remove the command token and everything after it.
         editor.document.deleteString(commandEndOffset, offset)

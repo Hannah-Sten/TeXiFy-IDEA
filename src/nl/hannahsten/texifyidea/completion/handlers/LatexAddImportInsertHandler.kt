@@ -15,6 +15,6 @@ object LatexAddImportInsertHandler : InsertHandler<SimpleWithDefLookupElement> {
         val entity = def.entity
         val defBundle = LatexDefinitionService.getInstance(context.project).getDefBundlesMerged(context.file)
         if (defBundle.containsLibrary(entity.dependency)) return
-        PackageUtils.insertUsePackage(context.file, entity.dependency)
+        PackageUtils.insertUsepackage(context.file, entity.dependency)
     }
 }

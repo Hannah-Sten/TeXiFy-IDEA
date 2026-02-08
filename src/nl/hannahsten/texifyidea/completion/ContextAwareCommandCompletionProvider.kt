@@ -54,13 +54,13 @@ object ContextAwareCommandCompletionProvider : LatexContextAwareCompletionAdapto
 
     private fun buildCommandDisplay(cmd: LSemanticCommand): String {
         if (cmd.display == null) {
-            return cmd.nameWithSlash
+            return cmd.commandWithSlash
         }
-        return cmd.nameWithSlash + " " + cmd.display
+        return cmd.commandWithSlash + " " + cmd.display
     }
 
     private fun buildLookupString(cmd: LSemanticCommand, subArgs: List<LArgument>): String = buildString {
-        append(cmd.nameWithSlash) // The command name with a slash, e.g. \newcommand/
+        append(cmd.commandWithSlash) // The command name with a slash, e.g. \newcommand/
         subArgs.joinTo(this, separator = "") {
             when (it.type) {
                 LArgumentType.REQUIRED -> "{}"

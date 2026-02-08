@@ -96,7 +96,7 @@ class LatexVerbatimToggleIntention : TexifyIntentionBase("Convert to other verba
 
             // Check if the newly inserted verbatim depends on a package and insert the package when needed.
             findDependency(newElement)?.let {
-                PackageUtils.insertUsePackage(file, it)
+                PackageUtils.insertUsepackage(file, it)
             }
         }
     }

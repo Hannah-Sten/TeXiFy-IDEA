@@ -10,9 +10,11 @@ import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.psi.LatexNoMathContent
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.PackageUtils
 import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.lineIndentationByOffset
 import nl.hannahsten.texifyidea.util.parser.*
+import nl.hannahsten.texifyidea.util.trimRange
 
 /**
  * @author Hannah Schellekens
@@ -85,7 +87,7 @@ open class LatexGatherEquationsInspection : TexifyInspectionBase() {
             document.replaceString(startOffset, endOffset, gather)
 
             // Add import.
-            PackageUtils.insertUsePackage(file, LatexLib.AMSMATH)
+            PackageUtils.insertUsepackage(file, LatexLib.AMSMATH)
         }
 
         /**

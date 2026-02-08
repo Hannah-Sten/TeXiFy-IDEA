@@ -62,7 +62,7 @@ object CommandMagic {
     }
 
     private fun allCommandsWithContext(context: LatexContext): Map<String, LSemanticCommand> = AllPredefined.findCommandsByContext(context).associateBy {
-        it.nameWithSlash
+        it.commandWithSlash
     }
 
     /**
@@ -186,7 +186,7 @@ object CommandMagic {
     /**
      * All the commands that may define regular commands, whether it exists or not.
      */
-    val allFileIncludeCommands: Set<String> = PredefinedCmdFiles.allCommands.map { it.nameWithSlash }.toSet()
+    val allFileIncludeCommands: Set<String> = PredefinedCmdFiles.allCommands.map { it.commandWithSlash }.toSet()
 
     /**
      * All commands that (re)define new commands.

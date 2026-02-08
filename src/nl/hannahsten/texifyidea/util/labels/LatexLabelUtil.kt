@@ -135,7 +135,7 @@ object LatexLabelUtil {
         semantics: LSemanticCommand, prefix: String = "",
         project: Project, scope: GlobalSearchScope, processor: LabelProcessor
     ) {
-        val nameWithSlash = semantics.nameWithSlash
+        val nameWithSlash = semantics.commandWithSlash
         if (nameWithSlash in CommandMagic.labels) return
         if (nameWithSlash in CommandMagic.labelAsParameter) return
         NewCommandsIndex.forEachByName(nameWithSlash, project, scope) { command ->

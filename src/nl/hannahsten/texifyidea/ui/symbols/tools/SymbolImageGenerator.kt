@@ -19,21 +19,26 @@ private const val QUALITY = 100
  *
  * @author Hannah Schellekens
  */
-fun generateSymbolImages(symbolDirectory: String, skipExisting: Boolean = true) = auxDirectory(symbolDirectory) {
+fun generateSymbolImages(symbolDirectory: String, skipExisting: Boolean = true, cleanup: Boolean = true) = auxDirectory(symbolDirectory) {
     val symbols = SymbolCategories.symbolList.distinctBy { it.imagePath }
 
     symbols.forEach { symbol ->
-        println("Generating images for symbol " + symbol.command?.commandWithSlash)
+        println("Generating images for symbol " + (symbol.command?.commandWithSlash ?: symbol.fileName))
 
-        if (skipExisting &&
-            File("$symbolDirectory/${symbol.fileName}").exists() &&
-            File("$symbolDirectory/${symbol.fileName}").exists()
-        ) {
+        if (skipExisting && File("$symbolDirectory/${symbol.fileName}").exists()) {
             println("> Skipping")
             return@forEach
         }
 
         symbol.generateImages(symbolDirectory)
+    }
+
+    if (cleanup) {
+        val allPaths = symbols.flatMap { listOf("$symbolDirectory/${it.fileName}", "$symbolDirectory/${it.fileNameDark}") }
+        File(symbolDirectory).listFiles().filter { file -> file.path !in allPaths }.forEach {
+            println("Deleting ${it.path}")
+            it.delete()
+        }
     }
 }
 
@@ -61,9 +66,14 @@ private fun convertToImage(
     auxilDirectory: String = "auxil"
 ) {
     // Create pdf.
-    ProcessBuilder(
-        "pdflatex", "-job-name=texify-symbol", "-aux-directory=\"$auxilDirectory\"", latexFileName
-    ).directory(File(symbolDirectory)).start().waitFor(6, TimeUnit.SECONDS)
+    val process = ProcessBuilder(
+        "pdflatex", "-job-name=texify-symbol", "-file-line-error", "-interaction=nonstopmode", "-aux-directory=\"$auxilDirectory\"", latexFileName
+    ).directory(File(symbolDirectory)).start()
+    process.waitFor(6, TimeUnit.SECONDS)
+    if (process.exitValue() != 0) {
+        println("Failed to compile ${symbol.command?.commandWithSlash ?: symbol.fileName} to pdf. Exit code: ${process.exitValue()}")
+        return
+    }
 
     // Convert pdf to image.
     val imageName = if (theme == Theme.DARK) symbol.fileNameDark else symbol.fileName
@@ -90,6 +100,8 @@ private fun createLatexFile(symbol: SymbolUiEntry, theme: Theme, directory: Stri
  */
 private fun latex(symbol: SymbolUiEntry, theme: Theme): String {
     val latex = symbol.imageLatex.encloseWhen(prefix = "$\\displaystyle ", suffix = "$") { symbol.isMathSymbol }
+        // These don't do anything for the image, and if one is missing it is a compile error
+        .replace("\\\\left([^a-zA-Z])".toRegex(), "$1").replace("\\\\right([^a-zA-Z])".toRegex(), "$1")
     val dependency = if (symbol.dependency.isDefault) "" else "\\usepackage{${symbol.dependency.name}}\n"
 
     return """%! author = Sten Wessel

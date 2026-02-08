@@ -199,7 +199,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
             runWriteCommandAction(project) {
                 replacement.findDependencies().forEach { pkg ->
                     document?.psiFile(project)?.let { file ->
-                        PackageUtils.insertUsePackage(file, pkg)
+                        PackageUtils.insertUsepackage(file, pkg)
                     }
                 }
 
@@ -240,7 +240,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
             else candidates.firstOrNull()
 
             // Replace with found command or with standard substitution
-            replacementText = semantic?.nameWithSlash ?: findReplacement(c)
+            replacementText = semantic?.commandWithSlash ?: findReplacement(c)
 
             return replacementText?.let {
                 LatexPsiHelper(element.project).createFromText(element.text.replaceRange(descriptor.textRangeInElement.toIntRange(), it))

@@ -1,7 +1,7 @@
 package nl.hannahsten.texifyidea.ui.symbols
 
-import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.lang.commands.LatexCommand
+import nl.hannahsten.texifyidea.lang.LSemanticCommand
+import nl.hannahsten.texifyidea.lang.LatexLib
 
 /**
  * @author Hannah Schellekens
@@ -12,10 +12,10 @@ class DryUiEntry(
     override val fileName: String,
     override val imageLatex: String,
     override val isMathSymbol: Boolean,
-    override val dependency: LatexPackage = LatexPackage.DEFAULT
+    override val dependency: LatexLib = LatexLib.BASE
 ) : SymbolUiEntry {
 
-    override val command: LatexCommand? = null
+    override val command: LSemanticCommand? = null
 
     override val imagePath = "/nl/hannahsten/texifyidea/symbols/$fileName"
 }

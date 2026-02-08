@@ -65,7 +65,7 @@ class LatexDocumentationProvider : DocumentationProvider {
 
         val command = bundle?.lookupCommandPsi(element) ?: return@either null
         // Special case for package inclusion commands
-        if (command.nameWithSlash in CommandMagic.packageInclusionCommands) {
+        if (command.commandWithSlash in CommandMagic.packageInclusionCommands) {
             val pkg = element.requiredParametersText().getOrNull(0) ?: return@either null
             return runTexdoc(LatexPackage(pkg))
         }

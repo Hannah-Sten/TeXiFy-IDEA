@@ -16,7 +16,7 @@ object ColorMagic {
             cmd.arguments.any {
                 it.contextSignature.introduces(LatexContexts.ColorReference)
             }
-        }.associateBy { it.nameWithSlash }
+        }.associateBy { it.commandWithSlash }
 
     /**
      * All commands that define a new color.
@@ -24,7 +24,7 @@ object ColorMagic {
     val colorDefinitions = AllPredefined.allCommands
         .filter { it.dependency == LatexLib.XCOLOR }
         .filter { it.introduces(LatexContexts.ColorDefinition) }
-        .associateBy { it.nameWithSlash }
+        .associateBy { it.commandWithSlash }
 
     val defaultXcolors = mapOf(
         "red" to 0xff0000,
