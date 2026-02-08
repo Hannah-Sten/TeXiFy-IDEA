@@ -146,9 +146,10 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
     private fun firstRunSetup(compiler: LatexCompiler) {
         // Only at this moment we know the user really wants to run the run configuration, so only now we do the expensive check of
         // checking for bibliography commands.
-        if (runConfig.bibRunConfigs.isEmpty() && !compiler.includesBibtex
+        if (runConfig.bibRunConfigs.isEmpty() &&
+            !compiler.includesBibtex &&
             // citation-style-language package does not need a bibtex run configuration
-            && runConfig.mainFile?.psiFile(runConfig.project)?.includedPackagesInFileset()?.contains(LatexPackage.CITATION_STYLE_LANGUAGE)?.not() == true
+            runConfig.mainFile?.psiFile(runConfig.project)?.includedPackagesInFileset()?.contains(LatexPackage.CITATION_STYLE_LANGUAGE)?.not() == true
         ) {
             // Generating a bib run config involves PSI access, which requires a read action.
             runReadAction {

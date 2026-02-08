@@ -88,9 +88,8 @@ class LatexUnresolvedReferenceInspection : AbstractTexifyContextAwareInspection(
      *
      * For example, the citation-style-language package allows .json and .yaml files to be used as bibliographies.
      */
-    private fun usingNonBibBibliography(file: PsiFile): Boolean {
-        return file.includedPackagesInFileset().contains(LatexPackage.CITATION_STYLE_LANGUAGE)
-               // There are definitely cases where this isn't specific enough, but hardly anyone uses this anyway so let's keep it simple until someone complains.
-               && file.referencedFileSet().none { it.virtualFile.extension == "bib" }
-    }
+    private fun usingNonBibBibliography(file: PsiFile): Boolean =
+        file.includedPackagesInFileset().contains(LatexPackage.CITATION_STYLE_LANGUAGE) &&
+            // There are definitely cases where this isn't specific enough, but hardly anyone uses this anyway so let's keep it simple until someone complains.
+            file.referencedFileSet().none { it.virtualFile.extension == "bib" }
 }

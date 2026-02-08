@@ -85,8 +85,7 @@ class LatexRequiredExtensionInspection : AbstractTexifyCommandBasedInspection(
                             directory.findFileByRelativePath("$it.$ext")?.path?.removePrefix(directory.path)?.removePrefix(File.separator)
                         }
                         else null
-                    }
-                    ?: it
+                    } ?: it
                 }
                 val replacementElement = LatexPsiHelper(project).createRequiredParameter(replacementText)
                 parameter.parent.node.replaceChild(parameter.node, replacementElement.node)
