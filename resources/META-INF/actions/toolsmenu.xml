@@ -48,8 +48,6 @@
             <action class="nl.hannahsten.texifyidea.action.debug.ShowContextAction" id="texify.ShowContext"
                     text="Show Context"
                     description="Show the context of the current file in the TeXiFy IDEA plugin."/>
-<!--            <action class="nl.hannahsten.texifyidea.action.debug.GenerateSymbolImagesAction" id="texify.GenerateSymbolImages"-->
-<!--                    text="Generate Symbol Images" description="Generate images for all LaTeX symbols in the project for debugging purposes."/>-->
         </group>
     </actions>
 </idea-plugin>
