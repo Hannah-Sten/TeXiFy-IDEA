@@ -562,7 +562,7 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         }
     }
 
-    val colorRelatedCommands = buildCommands {
+    val colorDefinitionCommands = buildCommands {
         val colorArg = "color".required(LatexContexts.ColorReference)
         underContext(LatexContexts.Preamble) {
             val typeOpt = "type".optional
@@ -593,6 +593,10 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
                 "s-spec".required
             ) { "Define a color series" }
         }
+    }
+
+    val colorRelatedCommands = buildCommands {
+        val colorArg = "color".required(LatexContexts.ColorReference)
 
         packageOf("xcolor")
         "blendcolors".cmd("mix expr".required) { "BLENDCOLORS" }

@@ -8,7 +8,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.files.findRootFile
@@ -32,7 +31,7 @@ class LatexPackageSubdirectoryInspection : TexifyInspectionBase() {
         val rootDir = file.findRootFile().containingDirectory ?: return emptyList()
         val subDir = dir.toString().removePrefix(rootDir.toString()).removePrefix(File.separator).replace(File.separatorChar, '/')
 
-        val commands = file.collectSubtreeTyped<LatexCommands> { it.name == LatexGenericRegularCommand.PROVIDESPACKAGE.commandWithSlash }
+        val commands = file.collectSubtreeTyped<LatexCommands> { it.name == "\\providespackage" }
 
         val descriptors = mutableListOf<ProblemDescriptor>()
 

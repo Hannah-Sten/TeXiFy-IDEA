@@ -6,7 +6,6 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.predefined.EnvironmentNames
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
@@ -29,7 +28,7 @@ class LatexDocumentclassNotInRootInspection : TexifyInspectionBase() {
         // file - content - no_math_content - commands
         val documentClass = file.traverseTyped<LatexCommands>(depth = 3)
             .firstOrNull {
-                it.name == LatexGenericRegularCommand.DOCUMENTCLASS.commandWithSlash
+                it.name == "\\documentclass"
             } ?: return emptyList()
 
         val hasDocumentEnvironment = file.traverseTyped<LatexEnvironment>(depth = 3).any {

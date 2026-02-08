@@ -14,7 +14,6 @@ import com.intellij.psi.util.PsiTreeUtil
 import nl.hannahsten.texifyidea.file.*
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.predefined.CommandNames
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexTypes
@@ -37,7 +36,7 @@ class LatexStructureViewElement(private val element: PsiElement) : StructureView
     // Get document class, this can take over one second but does not change frequently, and is only used for the correct sectioning levels, so cache it
     val docClass: String
         get() {
-            return NewCommandsIndex.getByName(LatexGenericRegularCommand.DOCUMENTCLASS.commandWithSlash, element.containingFile).firstNotNullOfOrNull {
+            return NewCommandsIndex.getByName("\\documentclass", element.containingFile).firstNotNullOfOrNull {
                 it.requiredParameterText(0)
             } ?: "article"
         }

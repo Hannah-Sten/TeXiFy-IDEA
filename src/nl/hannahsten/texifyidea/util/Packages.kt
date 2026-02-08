@@ -11,7 +11,6 @@ import nl.hannahsten.texifyidea.index.LatexProjectStructure.getFilesetScopeFor
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.predefined.CommandNames
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
@@ -268,7 +267,7 @@ object PackageUtils {
      */
     fun getExplicitUsedPackagesInFileset(file: PsiFile): List<String> {
         val scope = getFilesetScopeFor(file, onlyTexFiles = true)
-        val commands = NewCommandsIndex.getByName(LatexGenericRegularCommand.USEPACKAGE.commandWithSlash, scope)
+        val commands = NewCommandsIndex.getByName("\\usepackage", scope)
         return getPackagesFromCommands(commands, mutableListOf())
     }
 
