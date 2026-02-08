@@ -36,6 +36,7 @@ object EnvironmentNames {
     const val LUACODE = "luacode"
     const val LUACODE_STAR = "luacode*"
     const val PY_CODE = "pycode"
+    const val PITON = "Piton"
     const val PLANTUML = "plantuml"
     const val SAGESILENT = "sagesilent"
     const val SAGEBLOCK = "sageblock"
