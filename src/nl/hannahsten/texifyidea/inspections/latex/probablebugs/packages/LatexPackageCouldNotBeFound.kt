@@ -25,13 +25,13 @@ class LatexPackageCouldNotBeFound : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
         val ctanPackages = PackageUtils.CTAN_PACKAGE_NAMES.map { it.lowercase(Locale.getDefault()) }
-        val customPackages = NewCommandsIndex.getByName("\\providespackage", file.project)
+        val customPackages = NewCommandsIndex.getByName("\\ProvidesPackage", file.project)
             .map { it.requiredParameterText(0) }
             .map { it?.lowercase(Locale.getDefault()) }
         val packages = ctanPackages + customPackages
 
         val commands = file.traverseTyped<LatexCommands>()
-            .filter { it.name == "\\usepackage" || it.name == "\\requirepackage" }
+            .filter { it.name == "\\usepackage" || it.name == "\\RequirePackage" }
 
         for (command in commands) {
             @Suppress("ktlint:standard:property-naming")

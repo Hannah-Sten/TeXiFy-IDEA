@@ -24,7 +24,7 @@ class LatexPackageNameDoesNotMatchFileNameInspection : TexifyInspectionBase() {
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        val commands = file.collectSubtreeTyped<LatexCommands> { it.name == "\\providespackage" }
+        val commands = file.collectSubtreeTyped<LatexCommands> { it.name == "\\ProvidesPackage" }
 
         for (command in commands) {
             val providesName = command.requiredParameterText(0)?.split("/")?.last()

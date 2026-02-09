@@ -31,7 +31,7 @@ class LatexPackageSubdirectoryInspection : TexifyInspectionBase() {
         val rootDir = file.findRootFile().containingDirectory ?: return emptyList()
         val subDir = dir.toString().removePrefix(rootDir.toString()).removePrefix(File.separator).replace(File.separatorChar, '/')
 
-        val commands = file.collectSubtreeTyped<LatexCommands> { it.name == "\\providespackage" }
+        val commands = file.collectSubtreeTyped<LatexCommands> { it.name == "\\ProvidesPackage" }
 
         val descriptors = mutableListOf<ProblemDescriptor>()
 
