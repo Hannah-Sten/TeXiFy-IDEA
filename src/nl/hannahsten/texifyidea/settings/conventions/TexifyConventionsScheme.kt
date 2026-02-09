@@ -1,7 +1,5 @@
 package nl.hannahsten.texifyidea.settings.conventions
 
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
-import nl.hannahsten.texifyidea.lang.commands.LatexListingCommand.LSTINPUTLISTING
 import nl.hannahsten.texifyidea.lang.predefined.EnvironmentNames
 
 /**
@@ -34,15 +32,15 @@ data class TexifyConventionsScheme(
      * should receive a label, but provides more fine-grained control.
      */
     var labelConventions: MutableList<LabelConvention> = mutableListOf(
-        LabelConvention(true, LabelConventionType.COMMAND, PART.command, "part"),
-        LabelConvention(true, LabelConventionType.COMMAND, CHAPTER.command, "ch"),
-        LabelConvention(true, LabelConventionType.COMMAND, SECTION.command, "sec"),
-        LabelConvention(true, LabelConventionType.COMMAND, SUBSECTION.command, "subsec"),
-        LabelConvention(false, LabelConventionType.COMMAND, SUBSUBSECTION.command, "subsubsec"),
-        LabelConvention(false, LabelConventionType.COMMAND, PARAGRAPH.command, "par"),
-        LabelConvention(false, LabelConventionType.COMMAND, SUBPARAGRAPH.command, "subpar"),
-        LabelConvention(false, LabelConventionType.COMMAND, ITEM.command, "itm"),
-        LabelConvention(true, LabelConventionType.COMMAND, LSTINPUTLISTING.command, "lst"),
+        LabelConvention(true, LabelConventionType.COMMAND, "part", "part"),
+        LabelConvention(true, LabelConventionType.COMMAND, "chapter", "ch"),
+        LabelConvention(true, LabelConventionType.COMMAND, "section", "sec"),
+        LabelConvention(true, LabelConventionType.COMMAND, "subsection", "subsec"),
+        LabelConvention(false, LabelConventionType.COMMAND, "subsubsection", "subsubsec"),
+        LabelConvention(false, LabelConventionType.COMMAND, "paragraph", "par"),
+        LabelConvention(false, LabelConventionType.COMMAND, "subparagraph", "subpar"),
+        LabelConvention(false, LabelConventionType.COMMAND, "item", "itm"),
+        LabelConvention(true, LabelConventionType.COMMAND, "lstinputlisting", "lst"),
         LabelConvention(true, LabelConventionType.ENVIRONMENT, EnvironmentNames.FIGURE, "fig"),
         LabelConvention(true, LabelConventionType.ENVIRONMENT, EnvironmentNames.TABLE, "tab"),
         LabelConvention(true, LabelConventionType.ENVIRONMENT, EnvironmentNames.EQUATION, "eq"),

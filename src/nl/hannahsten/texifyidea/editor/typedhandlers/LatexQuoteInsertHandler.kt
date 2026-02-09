@@ -8,11 +8,11 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.getOpenAndCloseQuotes
-import nl.hannahsten.texifyidea.util.parser.inVerbatim
 import nl.hannahsten.texifyidea.util.insertUsepackage
+import nl.hannahsten.texifyidea.util.parser.inVerbatim
 import kotlin.math.min
 
 /**
@@ -124,10 +124,10 @@ open class LatexQuoteInsertHandler : TypedHandlerDelegate() {
 
             // Package dependencies
             if (char == '"') {
-                file.insertUsepackage(LatexGenericRegularCommand.ENQUOTE.dependency)
+                file.insertUsepackage(LatexLib.CSQUOTES)
             }
             else {
-                file.insertUsepackage(LatexGenericRegularCommand.ENQUOTE_STAR.dependency)
+                file.insertUsepackage(LatexLib.CSQUOTES)
             }
         }
     }

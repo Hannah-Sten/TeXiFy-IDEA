@@ -9,14 +9,16 @@ import com.intellij.psi.impl.source.tree.LeafPsiElement
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.lang.LatexContexts
-import nl.hannahsten.texifyidea.lang.commands.LatexColorDefinitionCommand
-import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
+import nl.hannahsten.texifyidea.lang.predefined.PredefinedCmdGeneric
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.psi.contentText
 import nl.hannahsten.texifyidea.util.magic.ColorMagic
-import nl.hannahsten.texifyidea.util.parser.*
+import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
+import nl.hannahsten.texifyidea.util.parser.firstParentOfType
+import nl.hannahsten.texifyidea.util.parser.getOptionalArgumentValueByName
+import nl.hannahsten.texifyidea.util.parser.getRequiredArgumentValueByName
 import nl.hannahsten.texifyidea.util.toHexString
 import java.awt.Color
 import java.util.*
@@ -39,7 +41,7 @@ class LatexElementColorProvider : ElementColorProvider {
     override fun setColorTo(element: PsiElement, color: Color) {
         if (element is LeafPsiElement) {
             val command = element.firstParentOfType(LatexCommands::class)
-            val commandTemplate = LatexColorDefinitionCommand.entries.firstOrNull {
+            val commandTemplate = PredefinedCmdGeneric.colorDefinitionCommands.firstOrNull {
                 it.commandWithSlash == command?.name
             } ?: return
             val colorModel = command?.getRequiredArgumentValueByName("model-list") ?: return
@@ -55,7 +57,7 @@ class LatexElementColorProvider : ElementColorProvider {
             } ?: return
 
             val colorArgumentIndex =
-                commandTemplate.arguments.filterIsInstance<RequiredArgument>().indexOfFirst { it.name == "spec-list" }
+                commandTemplate.arguments.filter { it.isRequired }.indexOfFirst { it.name == "spec-list" }
             if (colorArgumentIndex == -1) return
 
             val newColorParameter = LatexPsiHelper(element.project).createRequiredParameter(newColorString)
@@ -99,18 +101,18 @@ class LatexElementColorProvider : ElementColorProvider {
 
         val colorDefinitionCommand = colorDefiningCommands.find { it.getRequiredArgumentValueByName("name") == colorName }
         return when (colorDefinitionCommand?.name?.substring(1)) {
-            LatexColorDefinitionCommand.COLORLET.command -> {
+            "colorlet" -> {
                 getColorFromColorParameter(file, colorDefinitionCommand.getRequiredArgumentValueByName("color"), recursionDepth)
             }
 
-            LatexColorDefinitionCommand.DEFINECOLOR.command, LatexColorDefinitionCommand.PROVIDECOLOR.command -> {
+            "definecolor", "providecolor" -> {
                 getColorFromDefineColor(
                     colorDefinitionCommand.getRequiredArgumentValueByName("model-list"),
                     colorDefinitionCommand.getRequiredArgumentValueByName("spec-list")
                 )
             }
 
-            LatexColorDefinitionCommand.DEFINECOLORSERIES.command -> {
+            "definecolorseries" -> {
                 getColorFromDefineColor(
                     colorDefinitionCommand.getOptionalArgumentValueByName("b-model") ?: colorDefinitionCommand.getRequiredArgumentValueByName("core model"),
                     colorDefinitionCommand.getRequiredArgumentValueByName("b-spec")

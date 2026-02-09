@@ -78,7 +78,7 @@ object CommandMagic {
 
     /**
      * All commands that define a glossary entry of the glossaries package (e.g. \newacronym).
-     * When adding a command, define how to get the glossary name in [nl.hannahsten.texifyidea.lang.commands.LatexGlossariesCommand.extractGlossaryName].
+     * When adding a command, define how to get the glossary name in [nl.hannahsten.texifyidea.util.extractGlossaryName].
      */
     val glossaryEntry: Map<String, LSemanticCommand> =
         allCommandsWithContext(LatexContexts.GlossaryDefinition)

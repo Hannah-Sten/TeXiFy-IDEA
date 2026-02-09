@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.util
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.elementType
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexNoMathContent
 import nl.hannahsten.texifyidea.psi.LatexParameter
@@ -17,7 +16,7 @@ import nl.hannahsten.texifyidea.util.parser.previousSiblingOfType
  */
 fun isInConditionalBranch(element: PsiElement): Boolean {
     // \ifthenelse{condition}{true}{false}
-    if (element.firstParentOfType<LatexParameter>()?.firstParentOfType<LatexCommands>()?.name == LatexGenericRegularCommand.IFTHENELSE.commandWithSlash) {
+    if (element.firstParentOfType<LatexParameter>()?.firstParentOfType<LatexCommands>()?.name == "\\ifthenelse") {
         return true
     }
 

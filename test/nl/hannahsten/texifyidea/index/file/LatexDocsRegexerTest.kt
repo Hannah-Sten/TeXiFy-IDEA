@@ -27,7 +27,7 @@ class LatexDocsRegexerTest : BasePlatformTestCase() {
     }
 
     fun testMargOarg() {
-        // Should be left alone, see LatexCommand
+        // Should be left alone
         val input = """
             |\circlearc|\oarg{N}\marg{X}\marg{Y}\marg{RAD}\marg{ANGLE1}\marg{ANGLE2}\\
         """.trimIndent()
