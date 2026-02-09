@@ -102,6 +102,7 @@ data class LatexLib(
         val BOOKTABS = Package("booktabs")
         val CHAPTERBIB = Package("chapterbib")
         val CLEVEREF = Package("cleveref")
+        val CITATION_STYLE_LANGUAGE = Package("citation-style-language")
         val COLOR = Package("color")
         val COMMENT = Package("comment")
         val CSQUOTES = Package("csquotes")

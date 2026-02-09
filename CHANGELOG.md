@@ -10,6 +10,7 @@
 * Improve performance of documentation popup by caching texdoc results
 * Add Piton environment and \piton command as verbatim 
 * Regenerate symbols for symbols tool window
+* Add basic support for the citation-style-language package, by @slideclimb
 
 ### Fixed
 * Package imports now resolve to only the local package if it exists, by @jandermoreira 

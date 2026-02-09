@@ -22,6 +22,7 @@ import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.isClassFile
 import nl.hannahsten.texifyidea.util.files.isStyleFile
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.magic.PackageMagic.conflictingPackageMap
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 
 /**
@@ -183,17 +184,6 @@ object PackageUtils {
         return insertUsepackage(file, LatexLib.Package(pack.name), pack.parameters.asList())
     }
 
-    private val conflictingPackagesList = listOf(
-        setOf("biblatex.sty", "natbib.sty"),
-    )
-    private val conflictingPackageMap = buildMap {
-        conflictingPackagesList.forEach { names ->
-            names.forEach { name ->
-                merge(name, names) { old, new -> old + new }
-            }
-        }
-    }
-
     fun insertUsepackage(file: PsiFile, lib: LatexLib, options: List<String> = emptyList()): Boolean {
         if (lib.isDefault || lib.isCustom) return true
         val packName = lib.asPackageName() ?: return false
@@ -297,9 +287,9 @@ object PackageUtils {
 /**
  * @see PackageUtils.insertUsepackage
  */
-fun PsiFile.insertUsepackage(pack: LatexPackage) = PackageUtils.insertUsepackage(this, pack)
+fun PsiFile.insertUsepackage(pack: LatexPackage) = insertUsepackage(this, pack)
 
-fun PsiFile.insertUsepackage(latexLib: LatexLib) = PackageUtils.insertUsepackage(this, latexLib)
+fun PsiFile.insertUsepackage(latexLib: LatexLib) = insertUsepackage(this, latexLib)
 
 /**
  * Find all included LaTeX packages in the file set of this file.
