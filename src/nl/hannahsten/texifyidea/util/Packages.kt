@@ -23,6 +23,7 @@ import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.isClassFile
 import nl.hannahsten.texifyidea.util.files.isStyleFile
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.magic.PackageMagic.conflictingPackageMap
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 
 /**
@@ -182,17 +183,6 @@ object PackageUtils {
             return true
         }
         return insertUsepackage(file, LatexLib.Package(pack.name), pack.parameters.asList())
-    }
-
-    private val conflictingPackagesList = listOf(
-        setOf("biblatex.sty", "natbib.sty"),
-    )
-    private val conflictingPackageMap = buildMap {
-        conflictingPackagesList.forEach { names ->
-            names.forEach { name ->
-                merge(name, names) { old, new -> old + new }
-            }
-        }
     }
 
     fun insertUsepackage(file: PsiFile, lib: LatexLib, options: List<String> = emptyList()): Boolean {
