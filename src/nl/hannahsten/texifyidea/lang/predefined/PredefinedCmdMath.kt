@@ -1,7 +1,7 @@
 package nl.hannahsten.texifyidea.lang.predefined
 
-import nl.hannahsten.texifyidea.lang.PredefinedCommandSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.lang.PredefinedCommandSet
 
 object PredefinedCmdMath : PredefinedCommandSet() {
 
@@ -47,13 +47,19 @@ object PredefinedCmdMath : PredefinedCommandSet() {
         "ddddot".cmd("a".required) { "Quadruple dots accent" }
         "dddot".cmd("a".required) { "Triple dots accent" }
         "dfrac".cmd("num".required, "den".required) { "Display fraction" }
-        "intertext".cmd("text".required) { "Intertext" }
         "overleftrightarrow".cmd("text".required) { "Over left right arrow" }
         "underleftarrow".cmd("text".required) { "Under left arrow" }
         "underleftrightarrow".cmd("text".required) { "Under left right arrow" }
         "underrightarrow".cmd("text".required) { "Under right arrow" }
         "xleftarrow".cmd("text".required) { "Above left arrow" }
         "xrightarrow".cmd("text".required) { "Above right arrow" }
+    }
+
+    // Not applicable for symbols tool window
+    val otherMathArgCommands = mathCommands {
+        packageOf("amsmath")
+        "intertext".cmd("text".required) { "Intertext" }
+        "mathgroup".cmd()
     }
 
     val fontCommands = mathCommands {

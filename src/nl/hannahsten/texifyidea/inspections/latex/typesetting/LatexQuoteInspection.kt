@@ -60,7 +60,7 @@ class LatexQuoteInspection : TexifyInspectionBase() {
     )
 
     private val fontspecCommandNames = AllPredefined.findByLib(LatexLib.FONTSPEC).mapNotNullTo(mutableSetOf()) {
-        if(it is LSemanticCommand) it.nameWithSlash else null
+        if(it is LSemanticCommand) it.commandWithSlash else null
     }
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {

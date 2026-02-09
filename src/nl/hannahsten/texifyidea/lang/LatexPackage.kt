@@ -9,6 +9,7 @@ import nl.hannahsten.texifyidea.util.files.removeFileExtension
 /**
  * @author Hannah Schellekens
  */
+@Deprecated("Use LatexLib")
 @FileModifier.SafeTypeForPreview
 class LatexPackage @JvmOverloads constructor(
     val name: String,

@@ -39,13 +39,9 @@ suspend fun runCommandNonBlocking(
     try {
         Log.debug("isEDT=${SwingUtilities.isEventDispatchThread()} Executing in ${workingDirectory ?: "current working directory"} ${GeneralCommandLine(*commands).commandLineString}")
 
-        // where/which commands occur often but do not change since the output depends on PATH, so can be cached
-        val isExecutableLocationCommand = commands.size == 2 && listOf("where", "which").contains(commands[0]) && commands.getOrNull(1).isNullOrBlank().not()
-        val cachedExecutableLocation = SystemEnvironment.executableLocationCache[commands[1]]
-        if (isExecutableLocationCommand && cachedExecutableLocation != null) {
-            Log.debug("Retrieved output of ${commands.joinToString(" ")} from cache: $cachedExecutableLocation")
-            return@withContext CommandResult(0, cachedExecutableLocation, null)
-        }
+        val (isExecutableLocationCommand, cachedResult) = getCachedResult(commands)
+
+        if (cachedResult != null) return@withContext cachedResult
 
         val processBuilder = GeneralCommandLine(*commands)
             .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE)
@@ -113,6 +109,20 @@ suspend fun runCommandNonBlocking(
     }
 }
 
+/**
+ * where/which commands occur often but do not change since the output depends on PATH, so can be cached
+ */
+private fun getCachedResult(commands: Array<out String>): Pair<Boolean, CommandResult?> {
+    val isExecutableLocationCommand = commands.size == 2 && listOf("where", "which").contains(commands[0]) && commands.getOrNull(1).isNullOrBlank().not()
+    val cachedExecutableLocation = SystemEnvironment.executableLocationCache[commands[1]]
+    val cachedResult = if (isExecutableLocationCommand && cachedExecutableLocation != null) {
+        Log.debug("Retrieved output of ${commands.joinToString(" ")} from cache: $cachedExecutableLocation")
+        CommandResult(0, cachedExecutableLocation, null)
+    }
+    else null
+    return Pair(isExecutableLocationCommand, cachedResult)
+}
+
 private fun readTextIgnoreClosedStream(reader: BufferedReader): String? = try {
     reader.readText()
 }
@@ -149,8 +159,11 @@ fun runCommandWithExitCode(
     returnExceptionMessage: Boolean = false,
     discardOutput: Boolean = false,
     inputString: String = ""
-): Pair<String?, Int> =
-    runBlocking {
+): Pair<String?, Int> {
+    // Avoid starting a coroutine if not necessary
+    getCachedResult(commands).second?.let { return Pair(it.output, it.exitCode) }
+
+    return runBlocking {
         with(
             runCommandNonBlocking(
                 *commands,
@@ -164,3 +177,4 @@ fun runCommandWithExitCode(
             Pair(output, exitCode)
         }
     }
+}

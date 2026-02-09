@@ -13,7 +13,7 @@ object PredefinedCmdPairedDelimiters : PredefinedCommandSet() {
     )
     private fun d(
         left: String, right: String, leftDisplay: String? = null, rightDisplay: String? = null, dependency: String = ""
-    ): Delimiter = Delimiter(left, right, leftDisplay, rightDisplay)
+    ): Delimiter = Delimiter(left, right, leftDisplay, rightDisplay, dependency)
 
     /**
      * The predefined paired delimiters in LaTeX.
