@@ -9,7 +9,7 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import nl.hannahsten.texifyidea.lang.LSemanticEntity
-import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
@@ -82,7 +82,7 @@ class LatexMissingImportInspection : LatexMissingImportInspectionBase("MissingIm
         override fun getFamilyName() = "Add import for package '$packName' which provides this environment"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            if (!PackageUtils.insertUsepackage(descriptor.psiElement.containingFile, LatexPackage(packName))) {
+            if (!PackageUtils.insertUsepackage(descriptor.psiElement.containingFile, LatexLib.Package(packName))) {
                 Notification(
                     "LaTeX", "Conflicting package detected",
                     "The package $packName was not inserted because a conflicting package was detected.", NotificationType.INFORMATION

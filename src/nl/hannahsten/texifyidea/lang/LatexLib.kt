@@ -167,5 +167,3 @@ data class LatexLib(
         val EXAM = Class("exam")
     }
 }
-
-fun LatexLib.toLatexPackage(): LatexPackage? = if (isPackageFile) LatexPackage(name) else null

@@ -10,8 +10,7 @@ import nl.hannahsten.texifyidea.index.DefinitionBundle
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.index.SourcedDefinition
 import nl.hannahsten.texifyidea.lang.LSemanticEntity
-import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.lang.toLatexPackage
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
 import nl.hannahsten.texifyidea.util.SystemEnvironment
@@ -27,7 +26,7 @@ import nl.hannahsten.texifyidea.util.runCommandNonBlocking
 class LatexDocumentationProvider : DocumentationProvider {
 
     object Cache {
-        val documentationUrls = mutableMapOf<LatexPackage, Either<CommandFailure, List<String>>>()
+        val documentationUrls = mutableMapOf<LatexLib, Either<CommandFailure, List<String>>>()
     }
 
     /**
@@ -67,10 +66,10 @@ class LatexDocumentationProvider : DocumentationProvider {
         // Special case for package inclusion commands
         if (command.commandWithSlash in CommandMagic.packageInclusionCommands) {
             val pkg = element.requiredParametersText().getOrNull(0) ?: return@either null
-            return runTexdoc(LatexPackage(pkg))
+            return runTexdoc(LatexLib.Package(pkg))
         }
 
-        return runTexdoc(command.dependency.toLatexPackage())
+        return runTexdoc(command.dependency)
     }
 
     /**
@@ -154,7 +153,7 @@ class LatexDocumentationProvider : DocumentationProvider {
             // Link to package docs
             originalElement ?: return@buildString
             val urlsMaybe = if (!isPackageInclusionCommand(element)) {
-                runTexdoc(lookupItem?.dependency?.toLatexPackage())
+                runTexdoc(lookupItem?.dependency)
             }
             else getUrlForElement(element, defBundle)
             val urlsText = urlsMaybe.fold(
@@ -211,13 +210,13 @@ class LatexDocumentationProvider : DocumentationProvider {
     /**
      * Find list of documentation urls.
      */
-    private fun runTexdoc(pkg: LatexPackage?): Either<CommandFailure, List<String>> = either {
+    private fun runTexdoc(pkg: LatexLib?): Either<CommandFailure, List<String>> = either {
         if (pkg == null) return@either emptyList()
 
         // mthelp can take a significant amount of time, but we cannot pre-fill the cache easily, so we request cache fill on the fly (urls are not a critical feature)
         TexifyCoroutine.runInBackground {
             // base/lt... files are documented in source2e.pdf
-            val name = if (pkg.fileName.isBlank() || (pkg.name.isBlank() && pkg.fileName.startsWith("lt"))) "source2e" else pkg.fileName
+            val name = if (pkg.name.isBlank() || (pkg.name.isBlank() && pkg.name.startsWith("lt"))) "source2e" else pkg.name
 
             val command = if (TexliveSdk.Cache.isAvailable) {
                 // -M to avoid texdoc asking to choose from the list

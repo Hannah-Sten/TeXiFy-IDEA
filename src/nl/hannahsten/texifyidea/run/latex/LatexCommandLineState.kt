@@ -23,7 +23,7 @@ import com.intellij.util.applyIf
 import nl.hannahsten.texifyidea.editor.autocompile.AutoCompileDoneListener
 import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
-import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.run.FileCleanupListener
 import nl.hannahsten.texifyidea.run.OpenCustomPdfViewerListener
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
@@ -148,7 +148,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         if (runConfig.bibRunConfigs.isEmpty() &&
             !compiler.includesBibtex &&
             // citation-style-language package does not need a bibtex run configuration
-            runConfig.mainFile?.psiFile(runConfig.project)?.includedPackagesInFileset()?.contains(LatexPackage.CITATION_STYLE_LANGUAGE)?.not() == true
+            runConfig.mainFile?.psiFile(runConfig.project)?.includedPackagesInFileset()?.contains(LatexLib.CITATION_STYLE_LANGUAGE)?.not() == true
         ) {
             // Generating a bib run config involves PSI access, which requires a read action.
             runReadAction {
@@ -212,7 +212,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
             // Some packages do handle makeindex themselves
             // Note that when you use imakeidx with the noautomatic option it won't, but we don't check for that
-            if (includedPackages.contains(LatexPackage.IMAKEIDX) && !runConfig.usesAuxilOrOutDirectory()) {
+            if (includedPackages.contains(LatexLib.IMAKEIDX) && !runConfig.usesAuxilOrOutDirectory()) {
                 isMakeindexNeeded = false
             }
         }

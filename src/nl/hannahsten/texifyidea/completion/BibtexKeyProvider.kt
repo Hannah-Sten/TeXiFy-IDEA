@@ -12,8 +12,8 @@ import nl.hannahsten.texifyidea.lang.*
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.util.and
 import nl.hannahsten.texifyidea.util.keyNames
-import nl.hannahsten.texifyidea.util.parser.parentOfType
 import nl.hannahsten.texifyidea.util.parser.forEachChildTyped
+import nl.hannahsten.texifyidea.util.parser.parentOfType
 import nl.hannahsten.texifyidea.util.tokenType
 
 /**
@@ -82,7 +82,7 @@ object BibtexKeyProvider : CompletionProvider<CompletionParameters>() {
     }
 
     private fun packageName(dependend: Dependend): String = when (val dependency = dependend.dependency) {
-        LatexPackage.DEFAULT -> ""
+        LatexLib.BASE -> ""
         else -> "  (${dependency.name})"
     }
 }

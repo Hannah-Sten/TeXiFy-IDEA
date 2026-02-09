@@ -30,8 +30,7 @@ import nl.hannahsten.texifyidea.file.StyleFileType
 import nl.hannahsten.texifyidea.index.file.LatexRegexBasedIndex
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.LatexLib
-import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SUBFILES
+import nl.hannahsten.texifyidea.lang.LatexLib.Companion.SUBFILES
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.lang.predefined.CommandNames.ADD_TO_LUATEX_PATH
 import nl.hannahsten.texifyidea.lang.predefined.CommandNames.DECLARE_GRAPHICS_EXTENSIONS
@@ -665,7 +664,7 @@ object LatexProjectStructure {
                 .mapNotNull { it.requiredParameterText(0) }
                 .flatMap { it.split(",") }
             val viaUsepackage = NewSpecialCommandsIndex.getPackageIncludes(project, file)
-                .filter { it.requiredParameterText(0) == LatexPackage.ADDTOLUATEXPATH.name }
+                .filter { it.requiredParameterText(0) == LatexLib.ADDTOLUATEXPATH.name }
                 .flatMap { it.optionalParameterTextMap().keys }
                 .flatMap { it.split(",") }
             val directories = (direct + viaUsepackage).flatMap {

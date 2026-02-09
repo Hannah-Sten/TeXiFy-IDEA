@@ -7,7 +7,7 @@ import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.text.TexifyIpsumGenerator
@@ -61,7 +61,7 @@ open class InsertDummyTextAction : AnAction() {
     private fun Editor.insertBlindtext(file: PsiFile, data: DummyTextData) {
         // Import blindtext
         WriteCommandAction.runWriteCommandAction(file.project) {
-            file.insertUsepackage(LatexPackage.BLINDTEXT)
+            file.insertUsepackage(LatexLib.BLINDTEXT)
         }
 
         // When itemize/enumerate/description is selected the level can be selected as well when larger than 1.
@@ -92,7 +92,7 @@ open class InsertDummyTextAction : AnAction() {
     private fun Editor.insertLipsum(file: PsiFile, data: DummyTextData) {
         // Import blindtext
         WriteCommandAction.runWriteCommandAction(file.project) {
-            file.insertUsepackage(LatexPackage.LIPSUM)
+            file.insertUsepackage(LatexLib.LIPSUM)
         }
 
         val star = if (data.lipsumParagraphSeparator == DummyTextData.LipsumParagraphSeparation.SPACE) "*" else ""

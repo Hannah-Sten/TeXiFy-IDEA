@@ -13,7 +13,7 @@ import nl.hannahsten.texifyidea.inspections.AbstractTexifyContextAwareInspection
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
-import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexParameter
@@ -89,7 +89,7 @@ class LatexUnresolvedReferenceInspection : AbstractTexifyContextAwareInspection(
      * For example, the citation-style-language package allows .json and .yaml files to be used as bibliographies.
      */
     private fun usingNonBibBibliography(file: PsiFile): Boolean =
-        file.includedPackagesInFileset().contains(LatexPackage.CITATION_STYLE_LANGUAGE) &&
+        file.includedPackagesInFileset().contains(LatexLib.CITATION_STYLE_LANGUAGE) &&
             // There are definitely cases where this isn't specific enough, but hardly anyone uses this anyway so let's keep it simple until someone complains.
             file.referencedFileSet().none { it.virtualFile.extension == "bib" }
 }

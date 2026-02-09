@@ -24,7 +24,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPsiElementPointer
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
-import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.allParentMagicComments
 import nl.hannahsten.texifyidea.lang.predefined.CommandNames
@@ -492,7 +492,7 @@ class LatexRunConfiguration(
         }
 
         // When chapterbib is used, every chapter has its own bibliography and needs its own run config
-        val usesChapterbib = psiFile.includedPackagesInFileset().contains(LatexPackage.CHAPTERBIB)
+        val usesChapterbib = psiFile.includedPackagesInFileset().contains(LatexLib.CHAPTERBIB)
 
         if (!usesChapterbib) {
             addBibRunConfig(defaultCompiler, mainFile, compilerFromMagicComment?.second)

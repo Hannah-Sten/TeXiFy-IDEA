@@ -6,9 +6,9 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.lang.predefined.CommandNames
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
+import nl.hannahsten.texifyidea.lang.predefined.CommandNames
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.getParameterTexts
 import nl.hannahsten.texifyidea.psi.traverseCommands
@@ -35,7 +35,7 @@ open class LatexMultipleIncludesInspection : TexifyInspectionBase() {
         // Find all explicit imported packages in the fileset
         val packagesWithDuplicate = PackageUtils.getExplicitUsedPackagesInFileset(file)
         // When using the subfiles package, there will be multiple \documentclass{subfiles} commands
-        val ignoredPackages = setOf(LatexPackage.SUBFILES.name)
+        val ignoredPackages = setOf(LatexLib.SUBFILES.name)
         val packages = mutableSetOf<String>()
         val duplicates = mutableSetOf<String>()
         packagesWithDuplicate.filterNotTo(duplicates) {

@@ -7,19 +7,19 @@ import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
-import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.util.parser.toStringMap
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
+import nl.hannahsten.texifyidea.util.parser.toStringMap
 
 /**
  * Try to find out which index program the user wants to use, based on the given options.
  * This can be multiple, if the user for example uses an index and a glossary.
  */
-fun getDefaultMakeindexPrograms(mainFile: VirtualFile?, project: Project, usedPackages: Collection<LatexPackage>): Set<MakeindexProgram> {
+fun getDefaultMakeindexPrograms(mainFile: VirtualFile?, project: Project, usedPackages: Collection<LatexLib>): Set<MakeindexProgram> {
     val indexPackageOptions = getIndexPackageOptions(mainFile, project)
     val makeindexOptions = getMakeindexOptions(mainFile, project)
 
@@ -30,7 +30,7 @@ fun getDefaultMakeindexPrograms(mainFile: VirtualFile?, project: Project, usedPa
         indexPrograms.add(makeindexProgram)
     }
 
-    if (LatexPackage.GLOSSARIES in usedPackages) {
+    if (LatexLib.GLOSSARIES in usedPackages) {
         val glossaryProgram = if (SystemEnvironment.isAvailable("perl")) {
             MakeindexProgram.MAKEGLOSSARIES
         }
@@ -39,7 +39,7 @@ fun getDefaultMakeindexPrograms(mainFile: VirtualFile?, project: Project, usedPa
         }
         indexPrograms.add(glossaryProgram)
     }
-    else if (LatexPackage.GLOSSARIESEXTRA in usedPackages && "record" in indexPackageOptions) {
+    else if (LatexLib.GLOSSARIESEXTRA in usedPackages && "record" in indexPackageOptions) {
         indexPrograms.add(MakeindexProgram.BIB2GLS)
     }
 

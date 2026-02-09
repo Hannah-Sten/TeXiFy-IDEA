@@ -8,12 +8,14 @@ import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.inspections.AbstractTexifyRegexBasedInspection
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
-import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSMATH
+import nl.hannahsten.texifyidea.lang.LatexLib.Companion.AMSMATH
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.psi.LatexNormalText
-import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.insertUsepackage
 import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
+import nl.hannahsten.texifyidea.util.replaceString
+import nl.hannahsten.texifyidea.util.toTextRange
 
 class LatexEllipsisInspection : AbstractTexifyRegexBasedInspection(
     inspectionId = "Ellipsis",

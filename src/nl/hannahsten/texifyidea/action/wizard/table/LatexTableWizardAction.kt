@@ -7,7 +7,7 @@ import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.action.insert.InsertTable
-import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.util.caretOffset
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.files.psiFile
@@ -58,7 +58,7 @@ class LatexTableWizardAction : AnAction() {
             project,
             "Insert Table",
             "LaTeX",
-            { file.psiFile(project)?.insertUsepackage(LatexPackage.BOOKTABS) },
+            { file.psiFile(project)?.insertUsepackage(LatexLib.BOOKTABS) },
             file.psiFile(project)
         )
     }

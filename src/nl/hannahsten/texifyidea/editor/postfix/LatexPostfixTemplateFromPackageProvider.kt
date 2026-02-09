@@ -4,10 +4,10 @@ import com.intellij.codeInsight.template.postfix.templates.PostfixTemplate
 import com.intellij.codeInsight.template.postfix.templates.PostfixTemplateProvider
 import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.util.insertUsepackage
 
-abstract class LatexPostfixTemplateFromPackageProvider(private val pack: LatexPackage) : PostfixTemplateProvider {
+abstract class LatexPostfixTemplateFromPackageProvider(private val pack: LatexLib) : PostfixTemplateProvider {
 
     abstract override fun getTemplates(): MutableSet<PostfixTemplate>
 
@@ -24,30 +24,30 @@ abstract class LatexPostfixTemplateFromPackageProvider(private val pack: LatexPa
 
     companion object {
 
-        fun getProvider(pack: LatexPackage?): PostfixTemplateProvider = when (pack) {
-            LatexPackage.AMSMATH -> LatexPostfixTemplateFromAmsMathProvider()
-            LatexPackage.AMSFONTS -> LatexPostfixTemplateFromAmsFontsProvider()
-            LatexPackage.BM -> LatexPostfixTemplateFromBmProvider()
+        fun getProvider(pack: LatexLib?): PostfixTemplateProvider = when (pack) {
+            LatexLib.AMSMATH -> LatexPostfixTemplateFromAmsMathProvider()
+            LatexLib.AMSFONTS -> LatexPostfixTemplateFromAmsFontsProvider()
+            LatexLib.BM -> LatexPostfixTemplateFromBmProvider()
             else -> LatexPostFixTemplateProvider()
         }
     }
 }
 
-class LatexPostfixTemplateFromAmsMathProvider : LatexPostfixTemplateFromPackageProvider(LatexPackage.AMSMATH) {
+class LatexPostfixTemplateFromAmsMathProvider : LatexPostfixTemplateFromPackageProvider(LatexLib.AMSMATH) {
 
     override fun getTemplates(): MutableSet<PostfixTemplate> = mutableSetOf(
         LatexWrapWithTextPostfixTemplate
     )
 }
 
-class LatexPostfixTemplateFromAmsFontsProvider : LatexPostfixTemplateFromPackageProvider(LatexPackage.AMSFONTS) {
+class LatexPostfixTemplateFromAmsFontsProvider : LatexPostfixTemplateFromPackageProvider(LatexLib.AMSFONTS) {
 
     override fun getTemplates(): MutableSet<PostfixTemplate> = mutableSetOf(
         LatexWrapWithMathbbPostfixTemplate
     )
 }
 
-class LatexPostfixTemplateFromBmProvider : LatexPostfixTemplateFromPackageProvider(LatexPackage.BM) {
+class LatexPostfixTemplateFromBmProvider : LatexPostfixTemplateFromPackageProvider(LatexLib.BM) {
 
     override fun getTemplates(): MutableSet<PostfixTemplate> = mutableSetOf(
         LatexWrapWithBmPostfixTemplate
