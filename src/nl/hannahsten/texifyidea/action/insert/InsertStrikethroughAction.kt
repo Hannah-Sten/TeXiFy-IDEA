@@ -5,7 +5,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
 import nl.hannahsten.texifyidea.action.InsertEditorAction
-import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.ULEM
+import nl.hannahsten.texifyidea.lang.LatexLib.Companion.ULEM
 import nl.hannahsten.texifyidea.util.insertUsepackage
 
 /**

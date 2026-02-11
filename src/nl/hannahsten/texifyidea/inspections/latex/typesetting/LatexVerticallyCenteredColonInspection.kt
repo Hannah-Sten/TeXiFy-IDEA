@@ -10,7 +10,7 @@ import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.inspections.AbstractTexifyRegexBasedInspection
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
-import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
@@ -57,7 +57,7 @@ class LatexVerticallyCenteredColonInspection : AbstractTexifyRegexBasedInspectio
     override fun doApplyFix(project: Project, descriptor: ProblemDescriptor, match: MatchResult, fullElementText: String) {
         super.doApplyFix(project, descriptor, match, fullElementText)
         val file = descriptor.psiElement.containingFile ?: return
-        file.insertUsepackage(LatexPackage.MATHTOOLS)
+        file.insertUsepackage(LatexLib.MATHTOOLS)
     }
 
     override fun prepareInspectionForFile(file: PsiFile, bundle: DefinitionBundle): Boolean {

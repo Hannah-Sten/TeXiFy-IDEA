@@ -1,9 +1,8 @@
 package nl.hannahsten.texifyidea.lang
 
 import nl.hannahsten.texifyidea.lang.BibtexDefaultEntryField.*
-import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.BIBLATEX
+import nl.hannahsten.texifyidea.lang.LatexLib.Companion.BIBLATEX
 import java.util.*
-import kotlin.collections.HashMap
 
 /**
  * All entry types in bibtex and biblatex.
@@ -15,7 +14,7 @@ enum class BibtexDefaultEntryType(
     override val description: String,
     override val required: Array<BibtexEntryField>,
     override val optional: Array<BibtexEntryField>,
-    override val dependency: LatexPackage = LatexPackage.DEFAULT
+    override val dependency: LatexLib = LatexLib.BASE
 ) : BibtexEntryType {
 
     // Regular entry types.

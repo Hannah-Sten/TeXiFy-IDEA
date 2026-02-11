@@ -6,7 +6,7 @@ import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.inspections.AbstractTexifyRegexBasedInspection
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
-import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSSYMB
+import nl.hannahsten.texifyidea.lang.LatexLib.Companion.AMSSYMB
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.util.insertUsepackage

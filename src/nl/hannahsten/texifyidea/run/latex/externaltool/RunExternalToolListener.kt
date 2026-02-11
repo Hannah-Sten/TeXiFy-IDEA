@@ -10,7 +10,7 @@ import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
-import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.run.compiler.ExternalTool
 import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
@@ -37,7 +37,7 @@ class RunExternalToolListener(
 
             val externalTools = mutableSetOf<ExternalTool>()
 
-            if (LatexPackage.PYTHONTEX in usedPackages) {
+            if (LatexLib.PYTHONTEX in usedPackages) {
                 externalTools.add(ExternalTool.PYTHONTEX)
             }
 

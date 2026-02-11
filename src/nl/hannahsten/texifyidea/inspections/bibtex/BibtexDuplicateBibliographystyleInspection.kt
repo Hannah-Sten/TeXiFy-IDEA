@@ -10,7 +10,7 @@ import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.findAtLeast
@@ -32,7 +32,7 @@ open class BibtexDuplicateBibliographystyleInspection : TexifyInspectionBase() {
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         // Chapterbib allows multiple bibliographies
-        if (file.includedPackagesInFileset().any { it == LatexPackage.CHAPTERBIB }) {
+        if (file.includedPackagesInFileset().any { it == LatexLib.CHAPTERBIB }) {
             return mutableListOf()
         }
 

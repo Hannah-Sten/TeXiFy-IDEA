@@ -5,7 +5,6 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.lang.LatexLib
-import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.lang.predefined.EnvironmentNames
 import nl.hannahsten.texifyidea.util.*
@@ -108,8 +107,8 @@ class MathEnvironmentEditor(
             )
             val file = environment.containingFile
                 ?: return@runUndoTransparentWriteAction
-            if (isAmsMathEnvironment(newEnvironmentName) && LatexPackage.AMSMATH !in file.includedPackagesInFileset()) {
-                file.insertUsepackage(LatexPackage.AMSMATH)
+            if (isAmsMathEnvironment(newEnvironmentName) && LatexLib.AMSMATH !in file.includedPackagesInFileset()) {
+                file.insertUsepackage(LatexLib.AMSMATH)
             }
         }
     }

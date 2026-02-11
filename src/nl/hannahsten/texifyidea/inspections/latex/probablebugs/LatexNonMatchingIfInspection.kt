@@ -8,7 +8,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.util.files.commandsInFile
@@ -36,7 +36,7 @@ open class LatexNonMatchingIfInspection : TexifyInspectionBase() {
         val descriptors = descriptorList()
 
         // etoolbox has many \if... commands without a \fi
-        if (file.includedPackagesInFileset().contains(LatexPackage.ETOOLBOX)) {
+        if (file.includedPackagesInFileset().contains(LatexLib.ETOOLBOX)) {
             return emptyList()
         }
 

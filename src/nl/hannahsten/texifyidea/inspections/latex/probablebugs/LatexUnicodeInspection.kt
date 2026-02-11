@@ -19,6 +19,7 @@ import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.Diacritic
 import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.psi.LatexContent
 import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
@@ -154,7 +155,11 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
             val file = descriptor.psiElement.containingFile
 
             PackageMagic.unicode.forEach { p ->
-                file.insertUsepackage(p)
+                when (p) {
+                    LatexLib.INPUTENC -> PackageUtils.insertUsepackage(file, p, listOf("utf8"))
+                    LatexLib.FONTENC -> PackageUtils.insertUsepackage(file, p, listOf("T1"))
+                    else -> file.insertUsepackage(p)
+                }
             }
         }
     }

@@ -10,7 +10,6 @@ import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.index.LatexProjectStructure.getFilesetScopeFor
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.lang.LatexLib
-import nl.hannahsten.texifyidea.lang.LatexPackage
 import nl.hannahsten.texifyidea.lang.predefined.CommandNames
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
@@ -173,17 +172,10 @@ object PackageUtils {
      * Will not insert a new statement when the package has already been included, or when a conflicting package is already included.
      *
      * @param file The file to add the usepackage statement to.
-     * @param pack The package to include.
+     * @param lib The package to include.
      *
      * @return false if the package was not inserted, because a conflicting package is already present.
      */
-    fun insertUsepackage(file: PsiFile, pack: LatexPackage): Boolean {
-        if (pack.isDefault) {
-            return true
-        }
-        return insertUsepackage(file, LatexLib.Package(pack.name), pack.parameters.asList())
-    }
-
     fun insertUsepackage(file: PsiFile, lib: LatexLib, options: List<String> = emptyList()): Boolean {
         if (lib.isDefault || lib.isCustom) return true
         val packName = lib.asPackageName() ?: return false
@@ -287,8 +279,6 @@ object PackageUtils {
 /**
  * @see PackageUtils.insertUsepackage
  */
-fun PsiFile.insertUsepackage(pack: LatexPackage) = insertUsepackage(this, pack)
-
 fun PsiFile.insertUsepackage(latexLib: LatexLib) = insertUsepackage(this, latexLib)
 
 /**
@@ -299,4 +289,4 @@ fun PsiFile.insertUsepackage(latexLib: LatexLib) = insertUsepackage(this, latexL
  *
  * @return List of all included packages, including those that are included indirectly.
  */
-fun PsiFile.includedPackagesInFileset(): Set<LatexPackage> = PackageUtils.getIncludedLibrariesInFileset(this).map { LatexPackage(it.substringBefore('.')) }.toSet()
+fun PsiFile.includedPackagesInFileset(): Set<LatexLib> = PackageUtils.getIncludedLibrariesInFileset(this).map { LatexLib.Package(it.substringBefore('.')) }.toSet()
