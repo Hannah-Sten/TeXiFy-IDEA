@@ -3,11 +3,6 @@ package nl.hannahsten.texifyidea.editor.folding
 import kotlin.text.iterator
 import com.intellij.openapi.util.Key
 
-private fun listToMap(src: String, dest: String): Map<Char, String> {
-    require(src.length == dest.length) { "Source and destination strings must have the same length" }
-    return src.indices.associate { src[it] to dest[it].toString() }
-}
-
 /**
  * Maps plain characters to styled Unicode representations for math fonts.
  */
