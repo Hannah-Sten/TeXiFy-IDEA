@@ -72,7 +72,9 @@ object PredefinedCmdMath : PredefinedCommandSet() {
             putMeta(MathStyle.META_KEY, MathStyle.CALLIGRAPHIC)
         }
 
-        "mathit".cmd(arg) { "Italic" }
+        "mathit".cmd(arg) { "Italic" }.apply {
+            putMeta(MathStyle.META_KEY, MathStyle.ITALIC)
+        }
         "mathnormal".cmd(arg) { "Normal" }
         "mathsf".cmd(arg) { "Sans-serif" }.apply {
             putMeta(MathStyle.META_KEY, MathStyle.SANS_SERIF)
@@ -101,9 +103,15 @@ object PredefinedCmdMath : PredefinedCommandSet() {
         }
 
         packageOf("bbm")
-        "mathbbm".cmd(arg) { "Blackboard bold (bbm)" }
-        "mathbbmss".cmd(arg) { "Blackboard bold sans-serif" }
-        "mathbbmtt".cmd(arg) { "Blackboard bold typewriter" }
+        "mathbbm".cmd(arg) { "Blackboard bold (bbm)" }.apply {
+            putMeta(MathStyle.META_KEY, MathStyle.BLACKBOARD_BOLD)
+        }
+        "mathbbmss".cmd(arg) { "Blackboard bold sans-serif" }.apply {
+            putMeta(MathStyle.META_KEY, MathStyle.BLACKBOARD_BOLD)
+        }
+        "mathbbmtt".cmd(arg) { "Blackboard bold typewriter" }.apply {
+            putMeta(MathStyle.META_KEY, MathStyle.BLACKBOARD_BOLD)
+        }
 
         packageOf("bm")
         "bm".cmd(arg) { "Bold math" }.apply {

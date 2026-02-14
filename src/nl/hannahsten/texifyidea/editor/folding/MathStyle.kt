@@ -175,6 +175,66 @@ enum class MathStyle(
     ),
 
     /**
+     * The italic math style, such as `\mathit`.
+     */
+    ITALIC(
+        mapOf(
+            'A' to "𝐴",
+            'B' to "𝐵",
+            'C' to "𝐶",
+            'D' to "𝐷",
+            'E' to "𝐸",
+            'F' to "𝐹",
+            'G' to "𝐺",
+            'H' to "𝐻",
+            'I' to "𝐼",
+            'J' to "𝐽",
+            'K' to "𝐾",
+            'L' to "𝐿",
+            'M' to "𝑀",
+            'N' to "𝑁",
+            'O' to "𝑂",
+            'P' to "𝑃",
+            'Q' to "𝑄",
+            'R' to "𝑅",
+            'S' to "𝑆",
+            'T' to "𝑇",
+            'U' to "𝑈",
+            'V' to "𝑉",
+            'W' to "𝑊",
+            'X' to "𝑋",
+            'Y' to "𝑌",
+            'Z' to "𝑍",
+            'a' to "𝑎",
+            'b' to "𝑏",
+            'c' to "𝑐",
+            'd' to "𝑑",
+            'e' to "𝑒",
+            'f' to "𝑓",
+            'g' to "𝑔",
+            'h' to "ℎ",
+            'i' to "𝑖",
+            'j' to "𝑗",
+            'k' to "𝑘",
+            'l' to "𝑙",
+            'm' to "𝑚",
+            'n' to "𝑛",
+            'o' to "𝑜",
+            'p' to "𝑝",
+            'q' to "𝑞",
+            'r' to "𝑟",
+            's' to "𝑠",
+            't' to "𝑡",
+            'u' to "𝑢",
+            'v' to "𝑣",
+            'w' to "𝑤",
+            'x' to "𝑥",
+            'y' to "𝑦",
+            'z' to "𝑧"
+        )
+    ),
+
+    /**
      * The blackboard bold math style, such as `\mathbb`.
      */
     BLACKBOARD_BOLD(
