@@ -15,6 +15,7 @@ class LatexCodeFoldingOptionsProvider : CodeFoldingOptionsProvider, BeanConfigur
         checkBox("Escaped symbols", settings::foldEscapedSymbols)
         checkBox("Footnotes", settings::foldFootnotes)
         checkBox("Math symbols", settings::foldMathSymbols)
+        checkBox("Math style", settings::foldMathStyle)
         checkBox("Sections", settings::foldSections)
         checkBox("Symbols", settings::foldSymbols)
         checkBox("\\left ... \\right expressions", settings::foldLeftRightExpression)

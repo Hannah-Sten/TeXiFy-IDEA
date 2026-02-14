@@ -315,7 +315,7 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
                 element,
                 TextRange(element.startOffset, firstReq.endOffset),
                 placeholderText = placeholder,
-                isCollapsedByDefault = LatexCodeFoldingSettings.getInstance().foldSymbols
+                isCollapsedByDefault = LatexCodeFoldingSettings.getInstance().foldMathStyle
             )
             descriptors.add(descriptor)
         }
