@@ -21,6 +21,7 @@ import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
 import nl.hannahsten.texifyidea.util.parser.traverse
+import nl.hannahsten.texifyidea.editor.folding.MathStyle
 
 object LatexDefinitionUtil {
 
@@ -291,13 +292,28 @@ object LatexDefinitionUtil {
         val codeElement = LatexPsiHelper.createFromText(codeRawText, project)
         val applicableContext = guessApplicableContexts(codeElement, lookup)
         if (argSignature.isEmpty()) {
-            return LSemanticCommand(name, LatexLib.CUSTOM, applicableContext, description = codeRawText, arguments = emptyList())
+            val display = deriveDisplayFromDefinition(project, lookup, codeText)
+            return LSemanticCommand(name, LatexLib.CUSTOM, applicableContext, description = codeRawText, arguments = emptyList(), display = display)
         }
         val argIntro = guessArgumentContextIntro(codeElement, argSignature.size, lookup)
         val arguments = argIntro.mapIndexed { i, argIntro ->
             LArgument("#${i + 1}", argSignature[i], argIntro)
         }
         return LSemanticCommand(name, LatexLib.CUSTOM, applicableContext, arguments, description = codeText)
+    }
+
+    private fun deriveDisplayFromDefinition(project: Project, lookup: LatexSemanticsLookup, codeText: String): String? {
+        if (codeText.isBlank()) return null
+        val trimmed = codeText.trim()
+        val psiFile = LatexPsiHelper.createFromText(trimmed, project)
+        val command = psiFile.findFirstChildTyped<LatexCommands>() ?: return null
+        if (command.text != trimmed) return null
+        val commandName = command.name?.removePrefix("\\") ?: return null
+        val semantic = lookup.lookupCommand(commandName) ?: return null
+        val style = semantic.getMeta(MathStyle.META_KEY) ?: return null
+        val firstReq = command.firstRequiredParameter() ?: return null
+        val rawText = firstReq.contentText()
+        return style.map(rawText)
     }
 
     private fun guessApplicableContexts(definitionElement: PsiElement?, lookup: LatexSemanticsLookup): LContextSet? {
