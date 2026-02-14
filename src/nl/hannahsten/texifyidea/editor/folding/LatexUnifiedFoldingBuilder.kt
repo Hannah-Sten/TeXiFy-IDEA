@@ -260,6 +260,7 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
             visitPossibleSectionCommand(element, name)
             visitPossibleSymbol(element, name)
             visitPossibleFootnoteCommand(element, name)
+            visitPossibleMathStyleCommand(element, name)
 
             element.acceptChildren(this)
         }
@@ -300,6 +301,22 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
                     descriptors.add(descriptor)
                 }
             }
+        }
+
+        private fun visitPossibleMathStyleCommand(element: LatexCommands, name: String) {
+            val command = lookup.lookupCommand(name.removePrefix("\\")) ?: return
+            val style = command.getMeta(MathStyle.META_KEY) ?: return
+            val firstReq = element.firstRequiredParameter() ?: return
+            val rawText = firstReq.contentText()
+
+            val placeholder = style.map(rawText) ?: return // If the text cannot be mapped to the math style, we do not fold it
+            val descriptor = foldingDescriptor(
+                element,
+                TextRange(element.startOffset, firstReq.endOffset),
+                placeholderText = placeholder,
+                isCollapsedByDefault = LatexCodeFoldingSettings.getInstance().foldSymbols
+            )
+            descriptors.add(descriptor)
         }
 
         override fun visitMagicComment(o: LatexMagicComment) {

@@ -58,4 +58,11 @@ class LatexFoldingTest : BasePlatformTestCase() {
     fun testLeftRightFolding() {
         myFixture.testFolding("$testDataPath/left-right.tex")
     }
+
+    fun testMathStyleFolding() {
+        // Unicode issues on windows
+        if (!SystemInfo.isWindows) {
+            myFixture.testFolding("$testDataPath/math-style.tex")
+        }
+    }
 }
