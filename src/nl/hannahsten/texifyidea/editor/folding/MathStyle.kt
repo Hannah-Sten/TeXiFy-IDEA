@@ -236,6 +236,8 @@ enum class MathStyle(
 
     /**
      * The blackboard bold math style, such as `\mathbb`.
+     *
+     * A common usage is `\mathbb{R}` for the set of real numbers, which is rendered as `ℝ`.
      */
     BLACKBOARD_BOLD(
         mapOf(
