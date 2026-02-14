@@ -18,7 +18,8 @@ object PackageMagic {
     /**
      * All unicode enabling packages.
      */
-    val unicode = hashSetOf(
+    // Keep deterministic order for quick-fix insertion and tests.
+    val unicode = linkedSetOf(
         LatexLib.INPUTENC, // Actually only with utf8 option
         LatexLib.FONTENC, // Actually only with T1 option
     )
