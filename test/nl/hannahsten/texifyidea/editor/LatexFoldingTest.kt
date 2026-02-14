@@ -65,4 +65,11 @@ class LatexFoldingTest : BasePlatformTestCase() {
             myFixture.testFolding("$testDataPath/math-style.tex")
         }
     }
+
+    fun testCommandDeclarationMathStyleFolding() {
+        // Unicode issues on windows
+        if (!SystemInfo.isWindows) {
+            myFixture.testFolding("$testDataPath/command-declaration-math-style.tex")
+        }
+    }
 }

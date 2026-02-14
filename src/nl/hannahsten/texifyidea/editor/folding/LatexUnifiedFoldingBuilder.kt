@@ -165,6 +165,7 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
 
         private fun shouldFoldInCurrentContext(): Boolean = LatexContexts.CommandDeclaration !in state
 
+        // Tracks nested document-level transitions so section folding boundaries can be restored after exiting.
         private val documentLevelStack = ArrayDeque<Int>()
 
         fun traverse(root: PsiElement) {
