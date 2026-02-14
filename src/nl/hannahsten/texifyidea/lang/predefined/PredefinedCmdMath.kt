@@ -65,11 +65,13 @@ object PredefinedCmdMath : PredefinedCommandSet() {
 
     val fontCommands = mathCommands {
         val arg = "text".required
-        "mathbf".cmd(arg) { "Bold" }
+        "mathbf".cmd(arg) { "Bold" }.apply {
+            putMeta(MathStyle.META_KEY, MathStyle.BOLD)
+        }
         "mathcal".cmd(arg) { "Calligraphic" }.apply {
             putMeta(MathStyle.META_KEY, MathStyle.CALLIGRAPHIC)
         }
-        "mathds".cmd(arg) { "Double-struck" }
+
         "mathit".cmd(arg) { "Italic" }
         "mathnormal".cmd(arg) { "Normal" }
         "mathsf".cmd(arg) { "Sans-serif" }
@@ -77,12 +79,28 @@ object PredefinedCmdMath : PredefinedCommandSet() {
         "mathscr".cmd(arg) { "Script" }
         "mathtt".cmd(arg) { "Typewriter" }
 
-        packageOf("amsfonts")
+        packageOf("amsmath")
+        "boldsymbol".cmd(arg) { "Bold symbols" }.apply {
+            putMeta(MathStyle.META_KEY, MathStyle.BOLD)
+        }
 
-        "mathbb".cmd(arg) { "Blackboard bold" }
+        packageOf("amsfonts")
+        "mathbb".cmd(arg) { "Blackboard bold" }.apply {
+            putMeta(MathStyle.META_KEY, MathStyle.BLACKBOARD_BOLD)
+        }
         "mathfrak".cmd(arg) { "Fraktur" }
 
+        packageOf("bbm")
+        "mathbbm".cmd(arg) { "Blackboard bold (bbm)" }
+        "mathbbmss".cmd(arg) { "Blackboard bold sans-serif" }
+        "mathbbmtt".cmd(arg) { "Blackboard bold typewriter" }
+
         packageOf("bm")
-        "bm".cmd(arg) { "Bold math" }
+        "bm".cmd(arg) { "Bold math" }.apply {
+            putMeta(MathStyle.META_KEY, MathStyle.BOLD)
+        }
+
+        packageOf("dsfont")
+        "mathds".cmd(arg) { "Double-struck" }
     }
 }

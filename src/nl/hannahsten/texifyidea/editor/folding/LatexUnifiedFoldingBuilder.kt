@@ -278,9 +278,7 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
         }
 
         private fun visitPossibleSymbol(element: LatexCommands, name: String) {
-            /*
-            If the command is a math command, we add it to the stack.
-             */
+            // fold symbols such as \dots, \alpha, etc.
             val display = findCommandFoldedSymbol(name, lookup) ?: return
             val descriptor = foldingDescriptorSymbol(element.commandToken, display)
             descriptors.add(descriptor)
@@ -303,6 +301,9 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
             }
         }
 
+        /**
+         * Fold math style commands such as `\mathbb{R}` to `ℝ`.
+         */
         private fun visitPossibleMathStyleCommand(element: LatexCommands, name: String) {
             val command = lookup.lookupCommand(name.removePrefix("\\")) ?: return
             val style = command.getMeta(MathStyle.META_KEY) ?: return
