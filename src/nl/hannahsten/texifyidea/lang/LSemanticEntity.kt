@@ -68,6 +68,12 @@ sealed class LSemanticEntity(
         val holder = metaHolder ?: UserDataHolderBase().also { metaHolder = it }
         holder.putUserData(key, value)
     }
+
+    fun copyMetaTo(other: LSemanticEntity) {
+        val thisHolder = this.metaHolder ?: return
+        val otherHolder = other.metaHolder ?: UserDataHolderBase().also { other.metaHolder = it }
+        thisHolder.copyUserDataTo(otherHolder)
+    }
 }
 
 class LSemanticCommand(

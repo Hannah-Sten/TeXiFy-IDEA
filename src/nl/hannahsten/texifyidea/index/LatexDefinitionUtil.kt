@@ -151,7 +151,7 @@ object LatexDefinitionUtil {
 
         // let us use the index to find the command definitions
         val defCommands = NewSpecialCommandsIndex.getAllDefinitions(project, virtualFile)
-        val source = if(virtualFile.fileType == LatexFileType) DefinitionSource.UserDefined else DefinitionSource.LibraryScan
+        val source = if (virtualFile.fileType == LatexFileType) DefinitionSource.UserDefined else DefinitionSource.LibraryScan
         for (defCommand in defCommands) {
             val defCmdName = defCommand.nameWithoutSlash ?: continue
             val semantics = when (defCmdName) {
@@ -280,9 +280,11 @@ object LatexDefinitionUtil {
             if (originalSemantic != null) {
                 // use the original command semantics
                 val description = "Alias for ${originalSemantic.displayName}"
-                return LSemanticCommand(
+                val semantics = LSemanticCommand(
                     name, LatexLib.CUSTOM, originalSemantic.applicableContext, originalSemantic.arguments, description, originalSemantic.display
                 )
+                originalSemantic.copyMetaTo(semantics) // also remember to copy meta info
+                return semantics
             }
         }
 
@@ -466,7 +468,9 @@ object LatexDefinitionUtil {
         return LSemanticCommand(
             oldCmd.name, oldCmd.dependency,
             ctx, arg, description, display
-        )
+        ).also {
+            mergeMetaTo(it, oldCmd, newCmd, isOldPredefined)
+        }
     }
 
     private fun mergeEnvDefinition(oldEnv: LSemanticEnv, newEnv: LSemanticEnv, isOldPredefined: Boolean): LSemanticEnv {
@@ -477,7 +481,15 @@ object LatexDefinitionUtil {
         return LSemanticEnv(
             oldEnv.name, oldEnv.dependency,
             ctx, arg, innerIntro, description
-        )
+        ).also {
+            mergeMetaTo(it, oldEnv, newEnv, isOldPredefined)
+        }
+    }
+
+    private fun mergeMetaTo(created: LSemanticEntity, old: LSemanticEntity, new: LSemanticEntity, isOldPredefined: Boolean) {
+        // currently, we just copy all meta info, but in the future we may want to be more careful about merging meta info
+        old.copyMetaTo(created)
+        new.copyMetaTo(created)
     }
 
     /**
