@@ -80,8 +80,12 @@ object PredefinedCmdMath : PredefinedCommandSet() {
         "mathrm".cmd(arg) { "Roman" }.apply {
             putMeta(MathStyle.META_KEY, MathStyle.ROMAN)
         }
-        "mathscr".cmd(arg) { "Script" }
-        "mathtt".cmd(arg) { "Typewriter" }
+        "mathscr".cmd(arg) { "Script" }.apply {
+            putMeta(MathStyle.META_KEY, MathStyle.SCRIPT)
+        }
+        "mathtt".cmd(arg) { "Typewriter" }.apply {
+            putMeta(MathStyle.META_KEY, MathStyle.MONOSPACE)
+        }
 
         packageOf("amsmath")
         "boldsymbol".cmd(arg) { "Bold symbols" }.apply {
@@ -92,7 +96,9 @@ object PredefinedCmdMath : PredefinedCommandSet() {
         "mathbb".cmd(arg) { "Blackboard bold" }.apply {
             putMeta(MathStyle.META_KEY, MathStyle.BLACKBOARD_BOLD)
         }
-        "mathfrak".cmd(arg) { "Fraktur" }
+        "mathfrak".cmd(arg) { "Fraktur" }.apply {
+            putMeta(MathStyle.META_KEY, MathStyle.FRAKTUR)
+        }
 
         packageOf("bbm")
         "mathbbm".cmd(arg) { "Blackboard bold (bbm)" }
