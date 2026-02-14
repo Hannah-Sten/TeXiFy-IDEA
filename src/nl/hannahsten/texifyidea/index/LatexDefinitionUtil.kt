@@ -21,6 +21,7 @@ import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
 import nl.hannahsten.texifyidea.util.parser.traverse
+import nl.hannahsten.texifyidea.editor.folding.MathStyle
 
 object LatexDefinitionUtil {
 
@@ -151,7 +152,7 @@ object LatexDefinitionUtil {
 
         // let us use the index to find the command definitions
         val defCommands = NewSpecialCommandsIndex.getAllDefinitions(project, virtualFile)
-        val source = if(virtualFile.fileType == LatexFileType) DefinitionSource.UserDefined else DefinitionSource.LibraryScan
+        val source = if (virtualFile.fileType == LatexFileType) DefinitionSource.UserDefined else DefinitionSource.LibraryScan
         for (defCommand in defCommands) {
             val defCmdName = defCommand.nameWithoutSlash ?: continue
             val semantics = when (defCmdName) {
@@ -280,22 +281,39 @@ object LatexDefinitionUtil {
             if (originalSemantic != null) {
                 // use the original command semantics
                 val description = "Alias for ${originalSemantic.displayName}"
-                return LSemanticCommand(
+                val semantics = LSemanticCommand(
                     name, LatexLib.CUSTOM, originalSemantic.applicableContext, originalSemantic.arguments, description, originalSemantic.display
                 )
+                originalSemantic.copyMetaTo(semantics) // also remember to copy meta info
+                return semantics
             }
         }
 
         val codeElement = LatexPsiHelper.createFromText(codeRawText, project)
         val applicableContext = guessApplicableContexts(codeElement, lookup)
         if (argSignature.isEmpty()) {
-            return LSemanticCommand(name, LatexLib.CUSTOM, applicableContext, description = codeRawText, arguments = emptyList())
+            val display = deriveDisplayFromDefinition(project, lookup, codeText)
+            return LSemanticCommand(name, LatexLib.CUSTOM, applicableContext, description = codeRawText, arguments = emptyList(), display = display)
         }
         val argIntro = guessArgumentContextIntro(codeElement, argSignature.size, lookup)
         val arguments = argIntro.mapIndexed { i, argIntro ->
             LArgument("#${i + 1}", argSignature[i], argIntro)
         }
         return LSemanticCommand(name, LatexLib.CUSTOM, applicableContext, arguments, description = codeText)
+    }
+
+    private fun deriveDisplayFromDefinition(project: Project, lookup: LatexSemanticsLookup, codeText: String): String? {
+        if (codeText.isBlank()) return null
+        val trimmed = codeText.trim()
+        val psiFile = LatexPsiHelper.createFromText(trimmed, project)
+        val command = psiFile.findFirstChildTyped<LatexCommands>() ?: return null
+        if (command.text != trimmed) return null
+        val commandName = command.name?.removePrefix("\\") ?: return null
+        val semantic = lookup.lookupCommand(commandName) ?: return null
+        val style = semantic.getMeta(MathStyle.META_KEY) ?: return null
+        val firstReq = command.firstRequiredParameter() ?: return null
+        val rawText = firstReq.contentText()
+        return style.map(rawText)
     }
 
     private fun guessApplicableContexts(definitionElement: PsiElement?, lookup: LatexSemanticsLookup): LContextSet? {
@@ -466,7 +484,9 @@ object LatexDefinitionUtil {
         return LSemanticCommand(
             oldCmd.name, oldCmd.dependency,
             ctx, arg, description, display
-        )
+        ).also {
+            mergeMetaTo(it, oldCmd, newCmd, isOldPredefined)
+        }
     }
 
     private fun mergeEnvDefinition(oldEnv: LSemanticEnv, newEnv: LSemanticEnv, isOldPredefined: Boolean): LSemanticEnv {
@@ -477,7 +497,15 @@ object LatexDefinitionUtil {
         return LSemanticEnv(
             oldEnv.name, oldEnv.dependency,
             ctx, arg, innerIntro, description
-        )
+        ).also {
+            mergeMetaTo(it, oldEnv, newEnv, isOldPredefined)
+        }
+    }
+
+    private fun mergeMetaTo(created: LSemanticEntity, old: LSemanticEntity, new: LSemanticEntity, isOldPredefined: Boolean) {
+        // currently, we just copy all meta info, but in the future we may want to be more careful about merging meta info
+        old.copyMetaTo(created)
+        new.copyMetaTo(created)
     }
 
     /**

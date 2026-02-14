@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.lang.predefined
 
+import nl.hannahsten.texifyidea.editor.folding.MathStyle
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.PredefinedCommandSet
 
@@ -64,22 +65,60 @@ object PredefinedCmdMath : PredefinedCommandSet() {
 
     val fontCommands = mathCommands {
         val arg = "text".required
-        "mathbf".cmd(arg) { "Bold" }
-        "mathcal".cmd(arg) { "Calligraphic" }
-        "mathds".cmd(arg) { "Double-struck" }
-        "mathit".cmd(arg) { "Italic" }
+        "mathbf".cmd(arg) { "Bold" }.apply {
+            putMeta(MathStyle.META_KEY, MathStyle.BOLD)
+        }
+        "mathcal".cmd(arg) { "Calligraphic" }.apply {
+            putMeta(MathStyle.META_KEY, MathStyle.CALLIGRAPHIC)
+        }
+
+        "mathit".cmd(arg) { "Italic" }.apply {
+            putMeta(MathStyle.META_KEY, MathStyle.ITALIC)
+        }
         "mathnormal".cmd(arg) { "Normal" }
-        "mathsf".cmd(arg) { "Sans-serif" }
-        "mathrm".cmd(arg) { "Roman" }
-        "mathscr".cmd(arg) { "Script" }
-        "mathtt".cmd(arg) { "Typewriter" }
+        "mathsf".cmd(arg) { "Sans-serif" }.apply {
+            putMeta(MathStyle.META_KEY, MathStyle.SANS_SERIF)
+        }
+        "mathrm".cmd(arg) { "Roman" }.apply {
+            putMeta(MathStyle.META_KEY, MathStyle.ROMAN)
+        }
+        "mathscr".cmd(arg) { "Script" }.apply {
+            putMeta(MathStyle.META_KEY, MathStyle.SCRIPT)
+        }
+        "mathtt".cmd(arg) { "Typewriter" }.apply {
+            putMeta(MathStyle.META_KEY, MathStyle.MONOSPACE)
+        }
+
+        packageOf("amsmath")
+        "boldsymbol".cmd(arg) { "Bold symbols" }.apply {
+            putMeta(MathStyle.META_KEY, MathStyle.BOLD)
+        }
 
         packageOf("amsfonts")
+        "mathbb".cmd(arg) { "Blackboard bold" }.apply {
+            putMeta(MathStyle.META_KEY, MathStyle.BLACKBOARD_BOLD)
+        }
+        "mathfrak".cmd(arg) { "Fraktur" }.apply {
+            putMeta(MathStyle.META_KEY, MathStyle.FRAKTUR)
+        }
 
-        "mathbb".cmd(arg) { "Blackboard bold" }
-        "mathfrak".cmd(arg) { "Fraktur" }
+        packageOf("bbm")
+        "mathbbm".cmd(arg) { "Blackboard bold (bbm)" }.apply {
+            putMeta(MathStyle.META_KEY, MathStyle.BLACKBOARD_BOLD)
+        }
+        "mathbbmss".cmd(arg) { "Blackboard bold sans-serif" }.apply {
+            putMeta(MathStyle.META_KEY, MathStyle.BLACKBOARD_BOLD)
+        }
+        "mathbbmtt".cmd(arg) { "Blackboard bold typewriter" }.apply {
+            putMeta(MathStyle.META_KEY, MathStyle.BLACKBOARD_BOLD)
+        }
 
         packageOf("bm")
-        "bm".cmd(arg) { "Bold math" }
+        "bm".cmd(arg) { "Bold math" }.apply {
+            putMeta(MathStyle.META_KEY, MathStyle.BOLD)
+        }
+
+        packageOf("dsfont")
+        "mathds".cmd(arg) { "Double-struck" }
     }
 }

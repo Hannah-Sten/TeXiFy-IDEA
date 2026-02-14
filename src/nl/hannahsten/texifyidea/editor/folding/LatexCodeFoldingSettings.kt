@@ -19,6 +19,7 @@ class LatexCodeFoldingSettings : PersistentStateComponent<LatexCodeFoldingSettin
     var foldEscapedSymbols = true
     var foldFootnotes = true
     var foldMathSymbols = true
+    var foldMathStyle = true
     var foldSections = false
     var foldSymbols = true
     var foldLeftRightExpression = true
