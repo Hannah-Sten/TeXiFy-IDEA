@@ -31,7 +31,7 @@ sealed class LSemanticEntity(
 ) {
 
     val displayName: String
-        get() = if (dependency.isCustom) "'$name'" else if (dependency.isCustom) "'$name'(base)" else "'$name'($dependency)"
+        get() = if (dependency.isCustom) "'$name'" else if (dependency.isDefault) "'$name'(base)" else "'$name'($dependency)"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -62,9 +62,9 @@ sealed class LSemanticEntity(
     // Meta info is stored via UserDataHolderBase; not part of equals/hashCode.
     private var metaHolder: UserDataHolderBase? = null
 
-    fun <T : Any?> getMeta(key: Key<T>): T? = metaHolder?.getUserData(key)
+    fun <T> getMeta(key: Key<T>): T? = metaHolder?.getUserData(key)
 
-    fun <T : Any?> putMeta(key: Key<T>, value: T?) {
+    fun <T> putMeta(key: Key<T>, value: T?) {
         val holder = metaHolder ?: UserDataHolderBase().also { metaHolder = it }
         holder.putUserData(key, value)
     }
