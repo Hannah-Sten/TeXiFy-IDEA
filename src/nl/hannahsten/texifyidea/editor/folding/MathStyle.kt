@@ -1,7 +1,7 @@
 package nl.hannahsten.texifyidea.editor.folding
 
 import kotlin.text.iterator
-
+import com.intellij.openapi.util.Key
 /**
  * Maps plain characters to styled Unicode representations for math fonts.
  */
@@ -45,5 +45,12 @@ enum class MathStyle(
         for (char in text) {
             append(mapping[char] ?: return text)
         }
+    }
+
+    companion object {
+        /**
+         * The key used to store the math style in semantic entities.
+         */
+        val META_KEY: Key<MathStyle> = Key.create("MathStyle")
     }
 }

@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.lang.predefined
 
+import nl.hannahsten.texifyidea.editor.folding.MathStyle
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.PredefinedCommandSet
 
@@ -65,7 +66,9 @@ object PredefinedCmdMath : PredefinedCommandSet() {
     val fontCommands = mathCommands {
         val arg = "text".required
         "mathbf".cmd(arg) { "Bold" }
-        "mathcal".cmd(arg) { "Calligraphic" }
+        "mathcal".cmd(arg) { "Calligraphic" }.apply {
+            putMeta(MathStyle.META_KEY, MathStyle.CALLIGRAPHIC)
+        }
         "mathds".cmd(arg) { "Double-struck" }
         "mathit".cmd(arg) { "Italic" }
         "mathnormal".cmd(arg) { "Normal" }
