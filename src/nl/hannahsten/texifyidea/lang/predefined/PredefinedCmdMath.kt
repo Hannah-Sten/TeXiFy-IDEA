@@ -74,8 +74,12 @@ object PredefinedCmdMath : PredefinedCommandSet() {
 
         "mathit".cmd(arg) { "Italic" }
         "mathnormal".cmd(arg) { "Normal" }
-        "mathsf".cmd(arg) { "Sans-serif" }
-        "mathrm".cmd(arg) { "Roman" }
+        "mathsf".cmd(arg) { "Sans-serif" }.apply {
+            putMeta(MathStyle.META_KEY, MathStyle.SANS_SERIF)
+        }
+        "mathrm".cmd(arg) { "Roman" }.apply {
+            putMeta(MathStyle.META_KEY, MathStyle.ROMAN)
+        }
         "mathscr".cmd(arg) { "Script" }
         "mathtt".cmd(arg) { "Typewriter" }
 

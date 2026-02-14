@@ -9,6 +9,10 @@ import com.intellij.openapi.util.Key
 enum class MathStyle(
     private val mapping: Map<Char, String>
 ) {
+
+    /**
+     * The calligraphic math style, such as `\mathcal`.
+     */
     CALLIGRAPHIC(
         mapOf(
             'A' to "𝒜",
@@ -39,6 +43,10 @@ enum class MathStyle(
             'Z' to "𝒵"
         )
     ),
+
+    /**
+     * The bold math style, such as `\mathbf`.
+     */
     BOLD(
         mapOf(
             'A' to "𝐀",
@@ -105,6 +113,10 @@ enum class MathStyle(
             '9' to "𝟗"
         )
     ),
+
+    /**
+     * The blackboard bold math style, such as `\mathbb`.
+     */
     BLACKBOARD_BOLD(
         mapOf(
             'A' to "𝔸",
@@ -170,6 +182,24 @@ enum class MathStyle(
             '8' to "𝟠",
             '9' to "𝟡"
         )
+    ),
+
+    /**
+     * The Roman math style, which does not change the characters at all for better readability.
+     * For example `L_{\mathrm{max}}` can be shown as `L_{max}`.
+     * It is used for `\mathrm` and `\textup` math styles.
+     */
+    ROMAN(
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890".associateWith { it.toString() }
+    ),
+
+    /**
+     * The sans-serif math style, such as `\mathsf`.
+     *
+     * Rendered as plain characters for better readability, similar to the Roman math style.
+     */
+    SANS_SERIF(
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890".associateWith { it.toString() }
     );
 
     fun canMapAll(text: String): Boolean = text.isNotEmpty() && text.all { mapping.containsKey(it) }
@@ -190,6 +220,8 @@ enum class MathStyle(
     companion object {
         /**
          * The key used to store the math style in semantic entities.
+         * If present at the metadata of a semantic command, it indicates that the command is a math style command such as `\mathrm` or `\mathcal`,
+         * and the value indicates which math style it applies.
          */
         val META_KEY: Key<MathStyle> = Key.create("MathStyle")
     }
