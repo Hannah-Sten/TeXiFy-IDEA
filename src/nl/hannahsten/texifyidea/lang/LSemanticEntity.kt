@@ -2,6 +2,9 @@
 
 package nl.hannahsten.texifyidea.lang
 
+import com.intellij.openapi.util.UserDataHolderBase
+import com.intellij.openapi.util.Key
+
 import nl.hannahsten.texifyidea.lang.LatexContextIntro.Inherit
 
 /**
@@ -26,14 +29,15 @@ sealed class LSemanticEntity(
     val applicableContext: LContextSet? = null,
     var description: String = ""
 ) {
+
     val displayName: String
-        get() = if (dependency.isCustom) "'$name'" else if(dependency.isCustom) "'$name'(base)" else "'$name'($dependency)"
+        get() = if (dependency.isCustom) "'$name'" else if (dependency.isDefault) "'$name'(base)" else "'$name'($dependency)"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is LSemanticEntity) return false
 
-        if(this::class != other::class) return false
+        if (this::class != other::class) return false
 
         if (name != other.name) return false
         if (dependency != other.dependency) return false
@@ -53,6 +57,22 @@ sealed class LSemanticEntity(
     fun applicableContextDisplay(): String {
         return if (applicableContext == null) "*"
         else "<${applicableContext.joinToString("|") { it.display }}>" // they are union
+    }
+
+    // Meta info is stored via UserDataHolderBase; not part of equals/hashCode.
+    private var metaHolder: UserDataHolderBase? = null
+
+    fun <T> getMeta(key: Key<T>): T? = metaHolder?.getUserData(key)
+
+    fun <T> putMeta(key: Key<T>, value: T?) {
+        val holder = metaHolder ?: UserDataHolderBase().also { metaHolder = it }
+        holder.putUserData(key, value)
+    }
+
+    fun copyMetaTo(other: LSemanticEntity) {
+        val thisHolder = this.metaHolder ?: return
+        val otherHolder = other.metaHolder ?: UserDataHolderBase().also { other.metaHolder = it }
+        thisHolder.copyUserDataTo(otherHolder)
     }
 }
 

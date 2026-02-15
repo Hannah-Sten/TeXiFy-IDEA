@@ -3,27 +3,6 @@ package nl.hannahsten.texifyidea.psi
 import com.intellij.openapi.progress.ProgressIndicatorProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiRecursiveElementVisitor
-import com.intellij.psi.PsiRecursiveVisitor
-import com.intellij.psi.PsiWhiteSpace
-
-/**
- * A visitor that ignores all text elements.
- */
-abstract class LatexRecursiveVisitor : LatexVisitor(), PsiRecursiveVisitor {
-
-    override fun visitNormalText(o: LatexNormalText) {
-        return
-    }
-
-    override fun visitWhiteSpace(space: PsiWhiteSpace) {
-        return
-    }
-
-    override fun visitElement(element: PsiElement) {
-        ProgressIndicatorProvider.checkCanceled()
-        element.acceptChildren(this)
-    }
-}
 
 /**
  * Defines a recursive walker for PSI elements, allowing for custom traversal behavior.
