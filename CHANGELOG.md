@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Fold math style commands such as \mathbb, \mathcal, etc., by @Ezrnest
 * Add support for configuration of bibtex-tidy options, by @fberlakovich
 * Improve word count dialog, by @slideclimb
 * Add support for column spans to the table insertion wizard when pasting tables, by @Steve-Li-1998
