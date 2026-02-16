@@ -14,7 +14,7 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
 
         symbol("LaTeX", "LaTeX")
         symbol("LaTeXe", "LaTeX2ε")
-        "\\".cmd("margin".optional) { "Linebreak" }
+        "\\".cmd("margin".optional(LatexContexts.Dimension)) { "Linebreak" }
         symbol("AA", "Å")
         symbol("AE", "Æ")
         +"Huge"
@@ -37,7 +37,6 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         "addcontentsline".cmd("file".required, "type".required, textArg) { "Add an entry to a contents file (for example toc, lof, lot)." }
         +"appendix"
         "author".cmd("name".required) { "Set the document author." }
-        +"baselineskip"
         +"baselinestretch"
         +"bf"
         +"bfseries"
@@ -52,8 +51,6 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
 
         +"cleardoublepage"
         +"clearpage"
-        +"columnsep "
-        +"columnwidth"
         "contentsline".cmd("type".required, textArg, "page".required) { "Write a line directly to a contents file." }
         "contentsname".cmd("name".required) { "Set the title used for the table of contents." }
 
@@ -63,9 +60,8 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         +"em"
         "emph".cmd(textArg) { "Emphasize text." }
 
-        "enlargethispage".cmd("size".required) { "Increase the available space on the current page." }
-        "enlargethispage*".cmd("size".required) { "Increase the available space on the current page, including stretchable space." }
-        +"evensidemargin"
+        "enlargethispage".cmd("size".required(LatexContexts.Dimension)) { "Increase the available space on the current page." }
+        "enlargethispage*".cmd("size".required(LatexContexts.Dimension)) { "Increase the available space on the current page, including stretchable space." }
 
         +"family"
         "fbox".cmd(textArg) { "Draw a frame around text." }
@@ -78,13 +74,13 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         "fontfamily".cmd("family".required) { "Select a font family." }
         "fontseries".cmd("series".required) { "Select a font series (for example bold)." }
         "fontshape".cmd("shape".required) { "Select a font shape (for example italic)." }
-        "fontsize".cmd("size".required, "skip".required) { "Set the font size and line spacing." }
+        "fontsize".cmd("size".required(LatexContexts.Dimension), "skip".required(LatexContexts.Dimension)) { "Set the font size and line spacing." }
         "footnote".cmd("number".optional, textArg) { "Insert a footnote." }
         +"footnotemark"
         +"footnotesize"
         "footnotetext".cmd("number".optional, textArg) { "Insert footnote text without a marker in the main text." }
         "frame".cmd(textArg) { "Frame content." }
-        "framebox".cmd("width".optional, "pos".optional, "text".optional) { "Create a framed box, optionally with width and alignment." }
+        "framebox".cmd("width".optional(LatexContexts.Dimension), "pos".optional, "text".optional) { "Create a framed box, optionally with width and alignment." }
 
         "glossary".cmd(textArg) { "Add a glossary entry." }
         "glossaryentry".cmd(textArg, "pagenum".required) { "Define a glossary entry with page information." }
@@ -92,8 +88,8 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         +"hfill"
         +"hrule"
         +"hrulefill"
-        "hspace".cmd("length".required) { "Insert horizontal space." }
-        "hspace*".cmd("length".required) { "Insert horizontal space that is kept at line breaks." }
+        "hspace".cmd("length".required(LatexContexts.Dimension)) { "Insert horizontal space." }
+        "hspace*".cmd("length".required(LatexContexts.Dimension)) { "Insert horizontal space that is kept at line breaks." }
         +"hss"
         +"huge"
         "hyphenation".cmd("words".required) { "Declare hyphenation patterns for words." }
@@ -111,8 +107,7 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         +"lefteqn"
         +"lfseries"
         "linebreak".cmd("number".optional) { "Request a line break." }
-        "linethickness".cmd("dimension".required) { "Set line thickness for picture-mode drawing commands." }
-        +"linewidth"
+        "linethickness".cmd("dimension".required(LatexContexts.Dimension)) { "Set line thickness for picture-mode drawing commands." }
         "listfigurename".cmd("name".required) { "Set the title used for the list of figures." }
         +"listfiles"
         +"listoffigures"
@@ -143,7 +138,6 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         +"normalfont"
         +"normalsize"
         "oarg".cmd("arg".required) { "Typeset an optional argument placeholder in documentation." }
-        +"oddsidemargin"
 
         "oldstylenums".cmd("number".required) { "Typeset numbers using old-style numerals." }
         +"onecolumn"
@@ -153,16 +147,11 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         "pagenumbering".cmd("numstyle".required) { "Set page numbering style." }
 
         "pagestyle".cmd("style".required) { "Set the page style for subsequent pages." }
-        +"pagetotal"
-        +"paperheight"
-        +"paperwidth"
         "paragraph".cmd("shorttitle".optional, titleArg) { "Create a paragraph heading." }
         "paragraph*".cmd(titleArg) { "Create an unnumbered paragraph heading." }
         +"paragraphmark"
-        "parbox".cmd("pos".optional, "width".required, textArg) { "Create a paragraph box of fixed width." }
+        "parbox".cmd("pos".optional, "width".required(LatexContexts.Dimension), textArg) { "Create a paragraph box of fixed width." }
         "parg".cmd("arg".required) { "Typeset a delimited argument placeholder in documentation." }
-        +"parindent"
-        +"parskip"
         "part".cmd("shorttitle".optional, titleArg) { "Create a part heading." }
         "part*".cmd(titleArg) { "Create an unnumbered part heading." }
         "partname".cmd("name".required) { "Set the label used for parts." }
@@ -171,13 +160,12 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         +"printindex"
 
         +"righthyphenmin"
-        +"rightmargin"
         +"rightmark"
         +"rm"
         +"rmfamily"
         "roman".cmd("counter".required) { "Format a counter value as lowercase Roman numerals." }
 
-        "rule".cmd("line".optional, "width".required, "thickness".required) { "Draw a rule with the given width and thickness." }
+        "rule".cmd("line".optional(LatexContexts.Dimension), "width".required(LatexContexts.Dimension), "thickness".required(LatexContexts.Dimension)) { "Draw a rule with the given width and thickness." }
         +"samepage"
         "sbox".cmd("cmd".required, "length".required) { "Store content in a box register." }
         +"sc"
@@ -187,7 +175,7 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         "section*".cmd(titleArg) { "Create an unnumbered section heading." }
         +"selectfont"
         "setcounter".cmd("countername".required, "value".required) { "Set a counter to a specific value." }
-        "setlength".cmd("cmd".required, "length".required) { "Set a length register." }
+        "setlength".cmd("cmd".required, "length".required(LatexContexts.Dimension)) { "Set a length register." }
         +"sf"
         +"sffamily"
         "shortstack".cmd("pos".optional, textArg) { "Stack short lines vertically." }
@@ -213,7 +201,6 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         "subsubsectionmark".cmd("code".required) { "Define how subsubsection marks appear in running headers." }
         "suppressfloats".cmd("placement".optional(LatexContexts.Position)) { "Prevent floats from being placed in the specified area." }
         "symbol".cmd("n".required) { "Typeset the character with the given symbol number." }
-        +"tabcolsep"
         "tablename".cmd("name".required) { "Set the label used for tables." }
         +"tableofcontents"
 
@@ -221,7 +208,6 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
 
         "textcircled".cmd("a".required) { "Draw a circle around text." }
 
-        +"textheight"
         "textit".cmd(textArg) { "Typeset text in italic." }
 
         "textlf".cmd(textArg) { "Typeset text in light font weight." }
@@ -242,7 +228,6 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
 
         "textup".cmd(textArg) { "Typeset text in upright shape." }
 
-        +"textwidth"
         "thanks".cmd("to".required) { "Add a footnote-style acknowledgment, typically in the title block." }
         +"thicklines"
         +"thinlines"
@@ -251,21 +236,18 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         +"tiny"
         "title".cmd(textArg) { "Set the document title." }
         +"today"
-        +"topmargin"
         +"tt"
         +"ttfamily"
         "twocolumn".cmd("text".optional) { "Switch to two-column layout." }
         +"unboldmath"
         "underline".cmd(textArg) { "Underline text." }
-        +"unitlength"
         "uppercase".cmd(textArg) { "Convert text to uppercase." }
         +"upshape"
         "usepgfplotslibrary".cmd("libraries".required) { "Load PGFPlots libraries." }
         "usetikzlibrary".cmd("libraries".required) { "Load TikZ libraries." }
         +"vline"
-        "vspace".cmd("length".required) { "Insert vertical space." }
-        "vspace*".cmd("length".required) { "Insert vertical space that is kept at page breaks." }
-        +"width"
+        "vspace".cmd("length".required(LatexContexts.Dimension)) { "Insert vertical space." }
+        "vspace*".cmd("length".required(LatexContexts.Dimension)) { "Insert vertical space that is kept at page breaks." }
 
         packageOf("biblatex")
         +"printbibliography"
@@ -311,17 +293,17 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
     val booktabs = buildCommands {
         underPackage("booktabs") {
             underContext(LatexContexts.Tabular) {
-                "toprule".cmd("width".optional(LatexContexts.Literal)) {
+                "toprule".cmd("width".optional(LatexContexts.Dimension)) {
                     "Draw the top rule of a formal table."
                 }
-                "midrule".cmd("width".optional(LatexContexts.Literal)) {
+                "midrule".cmd("width".optional(LatexContexts.Dimension)) {
                     "Draw a rule between table header and body (or between body sections)."
                 }
-                "bottomrule".cmd("width".optional(LatexContexts.Literal)) {
+                "bottomrule".cmd("width".optional(LatexContexts.Dimension)) {
                     "Draw the bottom rule of a formal table."
                 }
                 "cmidrule".cmd(
-                    "width".optional(LatexContexts.Literal),
+                    "width".optional(LatexContexts.Dimension),
                     "trim".optional(LatexContexts.Literal),
                     "span".required(LatexContexts.Literal)
                 ) {
@@ -330,13 +312,13 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
                 "morecmidrules".cmd {
                     "Allow another row of cmidrules after the current one."
                 }
-                "addlinespace".cmd("width".optional(LatexContexts.Literal)) {
+                "addlinespace".cmd("width".optional(LatexContexts.Dimension)) {
                     "Insert extra vertical space between table rows."
                 }
                 "specialrule".cmd(
-                    "width".required(LatexContexts.Literal),
-                    "above".required(LatexContexts.Literal),
-                    "below".required(LatexContexts.Literal)
+                    "width".required(LatexContexts.Dimension),
+                    "above".required(LatexContexts.Dimension),
+                    "below".required(LatexContexts.Dimension)
                 ) {
                     "Draw a rule with explicit thickness and spacing above/below."
                 }
@@ -837,7 +819,7 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
             "subcaptionbox".cmd(
                 "short heading".optional(LatexContexts.Text),
                 "heading".required(LatexContexts.Text),
-                "width".optional(LatexContexts.Literal),
+                "width".optional(LatexContexts.Dimension),
                 "inner-pos".optional(LatexContexts.Position),
                 "contents".required(LatexContexts.Text)
             ) {
@@ -866,6 +848,28 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
                     "Define how sub-caption references are formatted."
                 }
             }
+        }
+    }
+
+    val lengthRegisters = buildCommands {
+        underContext(LatexContexts.Dimension) {
+            +"baselineskip"
+            +"columnsep"
+            +"columnwidth"
+            +"evensidemargin"
+            +"linewidth"
+            +"oddsidemargin"
+            +"pagetotal"
+            +"paperheight"
+            +"paperwidth"
+            +"parindent"
+            +"parskip"
+            +"rightmargin"
+            +"tabcolsep"
+            +"textheight"
+            +"textwidth"
+            +"topmargin"
+            +"unitlength"
         }
     }
 }

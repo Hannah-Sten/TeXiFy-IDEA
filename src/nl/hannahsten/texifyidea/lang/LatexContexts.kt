@@ -110,6 +110,11 @@ object LatexContexts {
     val Position = SimpleLatexContext("position")
 
     /**
+     * TeX dimensions/lengths, such as `0.5\textwidth`, `2em`, or `3pt`.
+     */
+    val Dimension = SimpleLatexContext("dimension")
+
+    /**
      * Plain text content, such as in `\text{...}`.
      */
     val Text = SimpleLatexContext("text")
