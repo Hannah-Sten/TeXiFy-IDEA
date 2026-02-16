@@ -34,6 +34,7 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         "Roman".cmd("counter".required) { "CAPITAL_ROMAN" }
 
         "addtocounter".cmd("countername".required, "value".required) { "ADDTOCOUNTER" }
+        "addcontentsline".cmd("file".required, "type".required, textArg) { "Add an entry to a contents file" }
         +"appendix"
         "author".cmd("name".required) { "AUTHOR" }
         +"baselineskip"
@@ -429,6 +430,7 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
             "autoref".cmd(labelArg) { "AUTOREF" }
             "fullref".cmd(labelArg) { "FULLREF" }
             "hyperref".cmd("options".optional, labelArg) { "HYPERREF" }
+            "phantomsection".cmd()
 
             val urlArg = required("url", LatexContexts.URL)
             "href".cmd(urlArg, textArg) { "HREF" }
