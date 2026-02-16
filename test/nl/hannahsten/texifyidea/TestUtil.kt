@@ -5,7 +5,7 @@ import com.intellij.testFramework.common.timeoutRunBlocking
 
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
-import nl.hannahsten.texifyidea.index.LatexProjectStructure
+import nl.hannahsten.texifyidea.index.projectstructure.LatexProjectStructure
 import kotlin.time.Duration.Companion.seconds
 
 fun CodeInsightTestFixture.updateFilesets() {

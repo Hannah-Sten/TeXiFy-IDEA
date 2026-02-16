@@ -2,7 +2,7 @@ package nl.hannahsten.texifyidea.util.files
 
 import com.intellij.openapi.vfs.findPsiFile
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.index.LatexProjectStructure
+import nl.hannahsten.texifyidea.index.projectstructure.LatexProjectStructure
 import nl.hannahsten.texifyidea.psi.LatexCommands
 
 /**

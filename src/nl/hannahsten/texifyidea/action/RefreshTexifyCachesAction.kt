@@ -5,7 +5,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.index.LatexLibraryDefinitionService
-import nl.hannahsten.texifyidea.index.LatexLibraryStructureService
+import nl.hannahsten.texifyidea.index.projectstructure.LatexLibraryStructureService
 
 class RefreshTexifyCachesAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {

@@ -6,7 +6,7 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.index.DefinitionBundle
-import nl.hannahsten.texifyidea.index.pathOrNull
+import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
 import nl.hannahsten.texifyidea.inspections.AbstractTexifyCommandBasedInspection
 import nl.hannahsten.texifyidea.inspections.createDescriptor
 import nl.hannahsten.texifyidea.lang.LContextSet

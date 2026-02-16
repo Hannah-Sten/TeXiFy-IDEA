@@ -5,7 +5,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.index.pathOrNull
+import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.settings.sdk.SdkPath
 import nl.hannahsten.texifyidea.settings.sdk.TectonicSdk
@@ -173,7 +173,7 @@ object LatexPackageLocation : AbstractBlockingCacheService<SdkPath, Map<String, 
      * This is useful when the SDK path has already been resolved and cached by the caller.
      *
      * @param name Package name with extension.
-     * @param sdkPath The pre-resolved SDK path (from [resolveSdkPath] or [LatexSdkUtil.resolveSdkPath]).
+     * @param sdkPath The pre-resolved SDK path (from [LatexSdkUtil.resolveSdkPath]).
      * @param project The current project.
      */
     fun getPackageLocationBySdkPath(name: String, sdkPath: SdkPath, project: Project): Path? {

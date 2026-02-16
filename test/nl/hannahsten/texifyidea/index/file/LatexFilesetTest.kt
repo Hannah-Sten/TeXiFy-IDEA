@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.index.file
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import nl.hannahsten.texifyidea.index.LatexProjectStructure
+import nl.hannahsten.texifyidea.index.projectstructure.LatexProjectStructure
 import nl.hannahsten.texifyidea.updateFilesets
 
 class LatexFilesetTest : BasePlatformTestCase() {

@@ -5,8 +5,8 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.index.NewBibtexEntryIndex
+import nl.hannahsten.texifyidea.index.projectstructure.LatexProjectStructure
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.BibtexEntry

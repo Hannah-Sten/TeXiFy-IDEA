@@ -7,6 +7,9 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.search.GlobalSearchScope
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.index.*
+import nl.hannahsten.texifyidea.index.projectstructure.FilesetData
+import nl.hannahsten.texifyidea.index.projectstructure.LatexProjectStructure
+import nl.hannahsten.texifyidea.index.projectstructure.restrictedByFileTypes
 import nl.hannahsten.texifyidea.lang.*
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic

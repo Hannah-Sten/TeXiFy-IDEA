@@ -9,10 +9,12 @@ import com.intellij.openapi.vfs.toNioPathOrNull
 import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.intellij.platform.util.progress.forEachWithProgress
 import com.intellij.util.indexing.IndexableSetContributor
-import nl.hannahsten.texifyidea.index.LatexProjectStructure
+import nl.hannahsten.texifyidea.index.projectstructure.LatexProjectStructure
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.Log
+import nl.hannahsten.texifyidea.util.TexifyCoroutine
+import nl.hannahsten.texifyidea.util.getTexinputsPaths
 import org.codehaus.plexus.archiver.ArchiverException
 import org.codehaus.plexus.archiver.tar.TarBZip2UnArchiver
 import org.codehaus.plexus.archiver.tar.TarXZUnArchiver
@@ -20,7 +22,7 @@ import kotlin.io.path.isWritable
 import kotlin.io.path.listDirectoryEntries
 
 /**
- * Specify the paths that have to be indexed for the [LatexExternalCommandIndexEx].
+ * Specify the paths that have to be indexed for the commands defined in packages.
  */
 class LatexIndexableSetContributor : IndexableSetContributor() {
 

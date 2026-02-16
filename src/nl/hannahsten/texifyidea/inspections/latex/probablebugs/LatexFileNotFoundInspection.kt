@@ -10,7 +10,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.createSmartPointer
 import nl.hannahsten.texifyidea.index.DefinitionBundle
-import nl.hannahsten.texifyidea.index.LatexProjectStructure
+import nl.hannahsten.texifyidea.index.projectstructure.LatexProjectStructure
 import nl.hannahsten.texifyidea.inspections.AbstractTexifyCommandBasedInspection
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LatexContexts

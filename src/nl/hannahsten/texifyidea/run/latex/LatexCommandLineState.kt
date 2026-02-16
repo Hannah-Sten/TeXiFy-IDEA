@@ -21,8 +21,8 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.platform.ide.progress.runWithModalProgressBlocking
 import com.intellij.util.applyIf
 import nl.hannahsten.texifyidea.editor.autocompile.AutoCompileDoneListener
-import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
+import nl.hannahsten.texifyidea.index.projectstructure.LatexProjectStructure
 import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.run.FileCleanupListener
 import nl.hannahsten.texifyidea.run.OpenCustomPdfViewerListener

@@ -7,6 +7,7 @@ import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.stubs.StubIndexKey
 import com.intellij.util.Processor
 import com.intellij.util.indexing.IdFilter
+import nl.hannahsten.texifyidea.index.projectstructure.LatexProjectStructure
 import nl.hannahsten.texifyidea.lang.predefined.PredefinedCmdDefinitions
 import nl.hannahsten.texifyidea.lang.predefined.PredefinedCmdFiles
 import nl.hannahsten.texifyidea.psi.LatexCommands

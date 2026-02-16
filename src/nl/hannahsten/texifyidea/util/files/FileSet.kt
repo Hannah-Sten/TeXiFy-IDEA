@@ -4,7 +4,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.findFile
 import com.intellij.openapi.vfs.findPsiFile
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.index.LatexProjectStructure
+import nl.hannahsten.texifyidea.index.projectstructure.LatexProjectStructure
 
 /**
  * A toml file can be in any parent directory.
