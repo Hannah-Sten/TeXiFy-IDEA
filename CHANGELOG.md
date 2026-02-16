@@ -14,6 +14,7 @@
 * Add basic support for the citation-style-language package, by @slideclimb
 
 ### Fixed
+* Don't override command highlighting in label definitions
 * Package imports now resolve to only the local package if it exists, by @jandermoreira 
 * Fix bug in retrieving texmfhome directory on Linux
 * Fix duplicate messages in log message tab after filtering

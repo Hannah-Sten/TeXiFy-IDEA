@@ -3,11 +3,13 @@ package nl.hannahsten.texifyidea.highlighting
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
+import com.intellij.lang.tree.util.children
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
+import com.intellij.psi.util.childrenOfType
 import com.intellij.psi.util.elementType
 import com.intellij.psi.util.endOffset
 import com.intellij.psi.util.startOffset
@@ -17,10 +19,11 @@ import nl.hannahsten.texifyidea.index.SourcedDefinition.DefinitionSource
 import nl.hannahsten.texifyidea.lang.LSemanticCommand
 import nl.hannahsten.texifyidea.lang.LatexContextIntro
 import nl.hannahsten.texifyidea.lang.LatexContexts
-import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.util.parser.*
-import nl.hannahsten.texifyidea.util.shrink
 import nl.hannahsten.texifyidea.lang.predefined.CommandNames
+import nl.hannahsten.texifyidea.psi.*
+import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
+import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
+import nl.hannahsten.texifyidea.util.shrink
 
 /**
  * Provide syntax highlighting for composite elements.
@@ -232,10 +235,15 @@ open class LatexAnnotator : Annotator {
         LatexPsiUtil.processArgumentsWithNonNullSemantics(command, semantics) { param, arg ->
             val intro = arg.contextSignature
             getStyleFromContextSignature(intro)?.let { style ->
-                annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-                    .range(param.textRange.shrink(1))
-                    .textAttributes(style)
-                    .create()
+                param.findFirstChildTyped<LatexRequiredParamContent>()?.childrenOfType<LatexParameterText>()?.forEach { content ->
+                    // Avoid overriding command highlighting
+                    content.node.children().filter { it.elementType == LatexTypes.NORMAL_TEXT_WORD }.forEach { text ->
+                        annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                            .range(text.textRange)
+                            .textAttributes(style)
+                            .create()
+                    }
+                }
             }
         }
     }
