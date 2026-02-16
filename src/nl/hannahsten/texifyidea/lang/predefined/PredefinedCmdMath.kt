@@ -123,4 +123,47 @@ object PredefinedCmdMath : PredefinedCommandSet() {
         packageOf("dsfont")
         "mathds".cmd(arg) { "Double-struck" }
     }
+
+    val unicodeMathStyleCommands = mathCommands {
+        val arg = "text".required
+
+        underPackage("unicode-math") {
+            "symup".cmd(arg) { "Upright mathematical alphabet (unicode-math)." }.apply {
+                putMeta(MathStyle.META_KEY, MathStyle.ROMAN)
+            }
+            "symit".cmd(arg) { "Italic mathematical alphabet (unicode-math)." }.apply {
+                putMeta(MathStyle.META_KEY, MathStyle.ITALIC)
+            }
+            "symbf".cmd(arg) { "Bold mathematical alphabet (unicode-math)." }.apply {
+                putMeta(MathStyle.META_KEY, MathStyle.BOLD)
+            }
+            "symcal".cmd(arg) { "Calligraphic mathematical alphabet (unicode-math)." }.apply {
+                putMeta(MathStyle.META_KEY, MathStyle.CALLIGRAPHIC)
+            }
+            "symbb".cmd(arg) { "Blackboard bold mathematical alphabet (unicode-math)." }.apply {
+                putMeta(MathStyle.META_KEY, MathStyle.BLACKBOARD_BOLD)
+            }
+            "symscr".cmd(arg) { "Script mathematical alphabet (unicode-math)." }.apply {
+                putMeta(MathStyle.META_KEY, MathStyle.SCRIPT)
+            }
+            "symfrak".cmd(arg) { "Fraktur mathematical alphabet (unicode-math)." }.apply {
+                putMeta(MathStyle.META_KEY, MathStyle.FRAKTUR)
+            }
+            "symsf".cmd(arg) { "Sans-serif mathematical alphabet (unicode-math)." }.apply {
+                putMeta(MathStyle.META_KEY, MathStyle.SANS_SERIF)
+            }
+            "symtt".cmd(arg) { "Monospace mathematical alphabet (unicode-math)." }.apply {
+                putMeta(MathStyle.META_KEY, MathStyle.MONOSPACE)
+            }
+
+            // Keep semantics for bold variants; no precise MathStyle mapping exists yet.
+            "symbfit".cmd(arg) { "Bold italic mathematical alphabet (unicode-math)." }
+            "symbcal".cmd(arg) { "Bold calligraphic mathematical alphabet (unicode-math)." }
+            "symbfscr".cmd(arg) { "Bold script mathematical alphabet (unicode-math)." }
+            "symbffrak".cmd(arg) { "Bold fraktur mathematical alphabet (unicode-math)." }
+            "symbfsfup".cmd(arg) { "Bold upright sans-serif mathematical alphabet (unicode-math)." }
+            "symbfsfit".cmd(arg) { "Bold italic sans-serif mathematical alphabet (unicode-math)." }
+            "symbftt".cmd(arg) { "Bold monospace mathematical alphabet (unicode-math)." }
+        }
+    }
 }
