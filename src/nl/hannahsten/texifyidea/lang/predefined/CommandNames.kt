@@ -68,6 +68,7 @@ object CommandNames {
     const val BIBLIOGRAPHY = "\\bibliography"
     const val ADD_BIB_RESOURCE = "\\addbibresource"
     const val EXTERNAL_DOCUMENT = "\\externaldocument"
+    const val Z_EXTERNAL_DOCUMENT = "\\zexternaldocument"
     const val SVG_PATH = "\\svgpath"
     const val GRAPHICS_PATH = "\\graphicspath"
     const val INCLUDE_FROM = "\\includefrom"
