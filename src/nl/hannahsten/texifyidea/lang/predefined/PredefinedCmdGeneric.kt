@@ -535,6 +535,15 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         underPackage("acro") {
             val options = "options".optional
             val acroRef = "id".required(setOf(LatexContexts.Text, LatexContexts.GlossaryReference))
+            val acroDef = "id".required(setOf(LatexContexts.Text, LatexContexts.GlossaryDefinition))
+            val setupOptions = "options".required
+
+            underContext(LatexContexts.Preamble) {
+                "DeclareAcronym".cmd(acroDef, setupOptions) { "Declare an acronym entry." }
+            }
+
+            "acsetup".cmd(setupOptions) { "Configure acro package options." }
+
             fun registerAcroCommands(commands: List<String>, description: String) {
                 commands.forEach { cmd ->
                     cmd.cmd(options, acroRef) { description }
@@ -543,6 +552,8 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
             }
 
             underContext(LatexContexts.Text) {
+                "printacronyms".cmd(options) { "Print the list of acronyms." }
+
                 // First-use template
                 registerAcroCommands(
                     listOf("ac", "acp", "iac", "Ac", "Acp", "Iac"),
