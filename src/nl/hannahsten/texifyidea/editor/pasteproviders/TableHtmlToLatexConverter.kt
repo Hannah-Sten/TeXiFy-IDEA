@@ -84,8 +84,6 @@ class TableHtmlToLatexConverter : HtmlToLatexConverter {
             (0 until width).map { c -> assignments[Pair(r, c)] }
         }
 
-        fun isNumeric(s: String?): Boolean = s?.trim()?.toDoubleOrNull() != null
-
         // Build content rows from the remaining grid rows
         val content: Vector<Vector<Any?>> = (1 until height).map { r ->
             (0 until width).map { c ->

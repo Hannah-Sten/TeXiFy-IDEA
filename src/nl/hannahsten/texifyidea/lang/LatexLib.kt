@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.lang
 /**
  * Represents a LaTeX library, which can be a package, a class, the base LaTeX installation or nothing but custom code.
  */
+@Suppress("unused")
 data class LatexLib(
     /**
      * The name without the suffix.

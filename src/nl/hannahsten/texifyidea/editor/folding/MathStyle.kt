@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.editor.folding
 
-import kotlin.text.iterator
 import com.intellij.openapi.util.Key
 
 /**
@@ -479,8 +478,6 @@ enum class MathStyle(
             '9' to "𝟿"
         )
     );
-
-    fun canMapAll(text: String): Boolean = text.isNotEmpty() && text.all { mapping.containsKey(it) }
 
     /**
      * Maps the given text to its styled representation using the mapping of this math style.

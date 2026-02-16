@@ -1,3 +1,5 @@
+@file:Suppress("unused", "unused", "unused", "unused", "unused")
+
 package nl.hannahsten.texifyidea.util
 
 import java.util.*
@@ -30,17 +32,6 @@ fun <T> mutableMapOfArray(args: Array<out T>): MutableMap<T, T> {
 
     return map
 }
-
-/**
- * Puts some into a mutable map.
- *
- * The format is `key0, value0, key1, value1, ...`. This means that there must always be an even amount of elements.
- *
- * @return A map mapping `keyN` to `valueN` (see description above). When there are no elements, an empty map will be
- *          returned
- * @throws IllegalArgumentException When there is an odd amount of elements in the array.
- */
-fun <T> mapOfVarargs(vararg args: T): Map<T, T> = mutableMapOfArray(args)
 
 /**
  * Gets a random element from the list using the given random object.

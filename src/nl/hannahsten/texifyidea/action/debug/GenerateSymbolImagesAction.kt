@@ -14,7 +14,7 @@ import nl.hannahsten.texifyidea.ui.symbols.tools.generateSymbolImages
  *
  * @author Hannah Schellekens
  */
-@Suppress("ComponentNotRegistered")
+@Suppress("ComponentNotRegistered", "unused")
 open class GenerateSymbolImagesAction : AnAction(
     "Generate Symbol Images",
     "(Development) Generates the symbol images for the symbol view",

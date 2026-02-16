@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.util.magic
 
 import nl.hannahsten.texifyidea.inspections.latex.codestyle.LatexLineBreakInspection
+import nl.hannahsten.texifyidea.util.magic.PatternMagic.abbreviation
 import java.util.regex.Pattern
 
 typealias RegexPattern = Pattern
@@ -9,8 +10,6 @@ typealias RegexPattern = Pattern
  * @author Hannah Schellekens
  */
 object PatternMagic {
-
-    val ellipsis = Regex("""(?<!\.)(\.\.\.)(?!\.)""")
 
     /**
      * This is the only correct way of using en dashes.
