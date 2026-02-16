@@ -13,6 +13,7 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.jetbrains.rd.util.reflection.threadLocal
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.index.DefinitionBundle
 import nl.hannahsten.texifyidea.inspections.AbstractTexifyContextAwareInspection
@@ -60,6 +61,8 @@ class LatexUnicodeInspection : AbstractTexifyContextAwareInspection(
     inspectionId = "Unicode"
 ) {
 
+    private var unicodeEnabledLocal: Boolean? by threadLocal { null }
+
     object Util {
         internal val BASE_PATTERN = Pattern.compile("^\\p{ASCII}*")
 
@@ -93,6 +96,11 @@ class LatexUnicodeInspection : AbstractTexifyContextAwareInspection(
     @Nls
     override fun getDisplayName(): String = "Unsupported non-ASCII character"
 
+    override fun prepareInspectionForFile(file: PsiFile, bundle: DefinitionBundle): Boolean {
+        unicodeEnabledLocal = Util.unicodeEnabled(file)
+        return true
+    }
+
     override fun inspectElement(
         element: PsiElement,
         contexts: LContextSet,
@@ -106,7 +114,7 @@ class LatexUnicodeInspection : AbstractTexifyContextAwareInspection(
             return
         }
 
-        val hasUnicode = Util.unicodeEnabled(file)
+        val hasUnicode = unicodeEnabledLocal ?: Util.unicodeEnabled(file)
         val matcher = PatternMagic.nonAscii.matcher(element.text)
         while (matcher.find()) {
             val inMathMode = LatexContexts.Math in contexts
