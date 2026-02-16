@@ -1,4 +1,4 @@
-@file:Suppress("unused", "unused", "unused", "unused", "unused")
+@file:Suppress("unused")
 
 package nl.hannahsten.texifyidea.util
 
