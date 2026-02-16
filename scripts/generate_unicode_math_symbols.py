@@ -16,6 +16,16 @@ LINE_RE = re.compile(
 
 SYMBOL_OR_CMD_RE = re.compile(r'symbol\("([^"]+)"|"([^"]+)"\.cmd')
 
+ARG_REQUIRED_CLASSES = {
+    "mathaccent",
+    "mathaccentwide",
+    "mathbotaccentwide",
+    "mathaccentoverlay",
+    "mathbotaccent",
+    "mathover",
+    "mathunder",
+}
+
 
 def run_kpsewhich() -> Path:
     result = subprocess.run(
@@ -70,10 +80,7 @@ def to_display(cp_hex: str):
 
 
 def to_val_name(math_class: str) -> str:
-    # mathalpha -> unicodeMathMathalphaSymbols
-    parts = re.findall(r"[A-Za-z0-9]+", math_class)
-    camel = "".join(p[:1].upper() + p[1:] for p in parts)
-    return f"unicodeMath{camel}Symbols"
+    return math_class
 
 
 def load_existing_names() -> set[str]:
@@ -124,6 +131,7 @@ def main() -> int:
     lines: list[str] = []
     lines.append("package nl.hannahsten.texifyidea.lang.predefined")
     lines.append("")
+    lines.append("import nl.hannahsten.texifyidea.lang.LArgument")
     lines.append("import nl.hannahsten.texifyidea.lang.PredefinedCommandSet")
     lines.append("")
     lines.append("/**")
@@ -132,19 +140,31 @@ def main() -> int:
     lines.append(" */")
     lines.append("object PredefinedCmdUnicodeMathSymbols : PredefinedCommandSet() {")
     lines.append("")
+    lines.append('    val arg = LArgument.required("arg")')
+    lines.append("")
 
     for math_class, entries in class_to_entries.items():
         val_name = to_val_name(math_class)
+        requires_arg = math_class in ARG_REQUIRED_CLASSES
         lines.append(f"    val {val_name} = mathCommands {{")
         lines.append('        underPackage("unicode-math") {')
         for name, display, description in entries:
             desc_esc = kotlin_escape(description)
-            if display is None:
-                lines.append(f'            symbol("{kotlin_escape(name)}", null, "{desc_esc}")')
+            name_esc = kotlin_escape(name)
+            if requires_arg:
+                if display is None:
+                    lines.append(f'            "{name_esc}".cmd(arg) {{ "{desc_esc}" }}')
+                else:
+                    lines.append(
+                        f'            "{name_esc}".cmd(arg, display = "{kotlin_escape(display)}") {{ "{desc_esc}" }}'
+                    )
             else:
-                lines.append(
-                    f'            symbol("{kotlin_escape(name)}", "{kotlin_escape(display)}", "{desc_esc}")'
-                )
+                if display is None:
+                    lines.append(f'            symbol("{name_esc}", null, "{desc_esc}")')
+                else:
+                    lines.append(
+                        f'            symbol("{name_esc}", "{kotlin_escape(display)}", "{desc_esc}")'
+                    )
         lines.append("        }")
         lines.append("    }")
         lines.append("")

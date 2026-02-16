@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.lang.predefined
 
+import nl.hannahsten.texifyidea.lang.LArgument
 import nl.hannahsten.texifyidea.lang.PredefinedCommandSet
 
 /**
@@ -8,7 +9,9 @@ import nl.hannahsten.texifyidea.lang.PredefinedCommandSet
  */
 object PredefinedCmdUnicodeMathSymbols : PredefinedCommandSet() {
 
-    val unicodeMathMathcloseSymbols = mathCommands {
+    val arg = LArgument.required("arg")
+
+    val mathclose = mathCommands {
         underPackage("unicode-math") {
             symbol("mathexclam", "!", "exclamation mark")
             symbol("rparen", ")", "right parenthesis")
@@ -43,7 +46,7 @@ object PredefinedCmdUnicodeMathSymbols : PredefinedCommandSet() {
         }
     }
 
-    val unicodeMathMathordSymbols = mathCommands {
+    val mathord = mathCommands {
         underPackage("unicode-math") {
             symbol("mathoctothorpe", "#", "number sign")
             symbol("mathdollar", "\$", "dollar sign")
@@ -503,7 +506,7 @@ object PredefinedCmdUnicodeMathSymbols : PredefinedCommandSet() {
         }
     }
 
-    val unicodeMathMathopenSymbols = mathCommands {
+    val mathopen = mathCommands {
         underPackage("unicode-math") {
             symbol("lparen", "(", "left parenthesis")
             symbol("lbrack", "[", "left square bracket")
@@ -541,7 +544,7 @@ object PredefinedCmdUnicodeMathSymbols : PredefinedCommandSet() {
         }
     }
 
-    val unicodeMathMathbinSymbols = mathCommands {
+    val mathbin = mathCommands {
         underPackage("unicode-math") {
             symbol("mathplus", "+", "plus sign b:")
             symbol("pm", "±", "plus-or-minus sign")
@@ -721,7 +724,7 @@ object PredefinedCmdUnicodeMathSymbols : PredefinedCommandSet() {
         }
     }
 
-    val unicodeMathMathpunctSymbols = mathCommands {
+    val mathpunct = mathCommands {
         underPackage("unicode-math") {
             symbol("mathcomma", ",", "comma")
             symbol("mathcolon", ":", "colon")
@@ -729,7 +732,7 @@ object PredefinedCmdUnicodeMathSymbols : PredefinedCommandSet() {
         }
     }
 
-    val unicodeMathMathrelSymbols = mathCommands {
+    val mathrel = mathCommands {
         underPackage("unicode-math") {
             symbol("less", "<", "less-than sign r:")
             symbol("equal", "=", "equals sign r:")
@@ -1328,7 +1331,7 @@ object PredefinedCmdUnicodeMathSymbols : PredefinedCommandSet() {
         }
     }
 
-    val unicodeMathMathfenceSymbols = mathCommands {
+    val mathfence = mathCommands {
         underPackage("unicode-math") {
             symbol("vert", "|", "vertical bar")
             symbol("Vert", "‖", "double vertical bar")
@@ -1336,7 +1339,7 @@ object PredefinedCmdUnicodeMathSymbols : PredefinedCommandSet() {
         }
     }
 
-    val unicodeMathMathalphaSymbols = mathCommands {
+    val mathalpha = mathCommands {
         underPackage("unicode-math") {
             symbol("matheth", "ð", "eth")
             symbol("mupAlpha", "Α", "capital alpha, greek")
@@ -2384,76 +2387,76 @@ object PredefinedCmdUnicodeMathSymbols : PredefinedCommandSet() {
         }
     }
 
-    val unicodeMathMathaccentSymbols = mathCommands {
+    val mathaccent = mathCommands {
         underPackage("unicode-math") {
-            symbol("grave", "̀", "grave accent")
-            symbol("acute", "́", "acute accent")
-            symbol("hat", "̂", "circumflex accent")
-            symbol("tilde", "̃", "tilde")
-            symbol("bar", "̄", "macron")
-            symbol("overbar", "̅", "overbar embellishment")
-            symbol("breve", "̆", "breve")
-            symbol("dot", "̇", "dot above")
-            symbol("ddot", "̈", "dieresis")
-            symbol("ovhook", "̉", "combining hook above")
-            symbol("ocirc", "̊", "ring")
-            symbol("check", "̌", "caron")
-            symbol("candra", "̐", "candrabindu (non-spacing)")
-            symbol("oturnedcomma", "̒", "combining turned comma above")
-            symbol("ocommatopright", "̕", "combining comma above right")
-            symbol("droang", "̚", "left angle above (non-spacing)")
-            symbol("leftharpoonaccent", "⃐", "combining left harpoon above")
-            symbol("rightharpoonaccent", "⃑", "combining right harpoon above")
-            symbol("vertoverlay", "⃒", "combining long vertical line overlay")
-            symbol("vec", "⃗", "combining right arrow above")
-            symbol("dddot", "⃛", "combining three dots above")
-            symbol("ddddot", "⃜", "combining four dots above")
-            symbol("annuity", "⃧", "combining annuity symbol")
-            symbol("widebridgeabove", "⃩", "combining wide bridge above")
-            symbol("asteraccent", "⃰", "combining asterisk above")
+            "grave".cmd(arg, display = "̀") { "grave accent" }
+            "acute".cmd(arg, display = "́") { "acute accent" }
+            "hat".cmd(arg, display = "̂") { "circumflex accent" }
+            "tilde".cmd(arg, display = "̃") { "tilde" }
+            "bar".cmd(arg, display = "̄") { "macron" }
+            "overbar".cmd(arg, display = "̅") { "overbar embellishment" }
+            "breve".cmd(arg, display = "̆") { "breve" }
+            "dot".cmd(arg, display = "̇") { "dot above" }
+            "ddot".cmd(arg, display = "̈") { "dieresis" }
+            "ovhook".cmd(arg, display = "̉") { "combining hook above" }
+            "ocirc".cmd(arg, display = "̊") { "ring" }
+            "check".cmd(arg, display = "̌") { "caron" }
+            "candra".cmd(arg, display = "̐") { "candrabindu (non-spacing)" }
+            "oturnedcomma".cmd(arg, display = "̒") { "combining turned comma above" }
+            "ocommatopright".cmd(arg, display = "̕") { "combining comma above right" }
+            "droang".cmd(arg, display = "̚") { "left angle above (non-spacing)" }
+            "leftharpoonaccent".cmd(arg, display = "⃐") { "combining left harpoon above" }
+            "rightharpoonaccent".cmd(arg, display = "⃑") { "combining right harpoon above" }
+            "vertoverlay".cmd(arg, display = "⃒") { "combining long vertical line overlay" }
+            "vec".cmd(arg, display = "⃗") { "combining right arrow above" }
+            "dddot".cmd(arg, display = "⃛") { "combining three dots above" }
+            "ddddot".cmd(arg, display = "⃜") { "combining four dots above" }
+            "annuity".cmd(arg, display = "⃧") { "combining annuity symbol" }
+            "widebridgeabove".cmd(arg, display = "⃩") { "combining wide bridge above" }
+            "asteraccent".cmd(arg, display = "⃰") { "combining asterisk above" }
         }
     }
 
-    val unicodeMathMathaccentwideSymbols = mathCommands {
+    val mathaccentwide = mathCommands {
         underPackage("unicode-math") {
-            symbol("widehat", "̂", "circumflex accent")
-            symbol("widetilde", "̃", "tilde")
-            symbol("wideoverbar", "̅", "stretchy overbar embellishment")
-            symbol("widebreve", "̆", "stretchy breve")
-            symbol("widecheck", "̌", "stretchy caron")
-            symbol("overleftharpoon", "⃐", "combining left harpoon above")
-            symbol("overrightharpoon", "⃑", "combining right harpoon above")
-            symbol("overleftarrow", "⃖", "combining left arrow above")
-            symbol("overrightarrow", "⃗", "combining left arrow above")
-            symbol("overleftrightarrow", "⃡", "combining left right arrow above")
+            "widehat".cmd(arg, display = "̂") { "circumflex accent" }
+            "widetilde".cmd(arg, display = "̃") { "tilde" }
+            "wideoverbar".cmd(arg, display = "̅") { "stretchy overbar embellishment" }
+            "widebreve".cmd(arg, display = "̆") { "stretchy breve" }
+            "widecheck".cmd(arg, display = "̌") { "stretchy caron" }
+            "overleftharpoon".cmd(arg, display = "⃐") { "combining left harpoon above" }
+            "overrightharpoon".cmd(arg, display = "⃑") { "combining right harpoon above" }
+            "overleftarrow".cmd(arg, display = "⃖") { "combining left arrow above" }
+            "overrightarrow".cmd(arg, display = "⃗") { "combining left arrow above" }
+            "overleftrightarrow".cmd(arg, display = "⃡") { "combining left right arrow above" }
         }
     }
 
-    val unicodeMathMathbotaccentwideSymbols = mathCommands {
+    val mathbotaccentwide = mathCommands {
         underPackage("unicode-math") {
-            symbol("wideutilde", "̰", "under tilde accent (multiple characters and non-spacing)")
-            symbol("mathunderbar", "̲", "combining low line")
-            symbol("underleftrightarrow", "͍", "underleftrightarrow accent")
-            symbol("underrightharpoondown", "⃬", "combining rightwards harpoon with barb downwards")
-            symbol("underleftharpoondown", "⃭", "combining leftwards harpoon with barb downwards")
-            symbol("underleftarrow", "⃮", "combining left arrow below")
-            symbol("underrightarrow", "⃯", "combining right arrow below")
+            "wideutilde".cmd(arg, display = "̰") { "under tilde accent (multiple characters and non-spacing)" }
+            "mathunderbar".cmd(arg, display = "̲") { "combining low line" }
+            "underleftrightarrow".cmd(arg, display = "͍") { "underleftrightarrow accent" }
+            "underrightharpoondown".cmd(arg, display = "⃬") { "combining rightwards harpoon with barb downwards" }
+            "underleftharpoondown".cmd(arg, display = "⃭") { "combining leftwards harpoon with barb downwards" }
+            "underleftarrow".cmd(arg, display = "⃮") { "combining left arrow below" }
+            "underrightarrow".cmd(arg, display = "⃯") { "combining right arrow below" }
         }
     }
 
-    val unicodeMathMathaccentoverlaySymbols = mathCommands {
+    val mathaccentoverlay = mathCommands {
         underPackage("unicode-math") {
-            symbol("notaccent", "̸", "combining long solidus overlay")
+            "notaccent".cmd(arg, display = "̸") { "combining long solidus overlay" }
         }
     }
 
-    val unicodeMathMathbotaccentSymbols = mathCommands {
+    val mathbotaccent = mathCommands {
         underPackage("unicode-math") {
-            symbol("threeunderdot", "⃨", "combining triple underdot")
+            "threeunderdot".cmd(arg, display = "⃨") { "combining triple underdot" }
         }
     }
 
-    val unicodeMathMathopSymbols = mathCommands {
+    val mathop = mathCommands {
         underPackage("unicode-math") {
             symbol("Bbbsum", "⅀", "double-struck n-ary summation")
             symbol("prod", "∏", "product operator")
@@ -2520,19 +2523,19 @@ object PredefinedCmdUnicodeMathSymbols : PredefinedCommandSet() {
         }
     }
 
-    val unicodeMathMathoverSymbols = mathCommands {
+    val mathover = mathCommands {
         underPackage("unicode-math") {
-            symbol("overbracket", "⎴", "top square bracket")
-            symbol("overparen", "⏜", "top parenthesis (mathematical use)")
-            symbol("overbrace", "⏞", "top curly bracket (mathematical use)")
+            "overbracket".cmd(arg, display = "⎴") { "top square bracket" }
+            "overparen".cmd(arg, display = "⏜") { "top parenthesis (mathematical use)" }
+            "overbrace".cmd(arg, display = "⏞") { "top curly bracket (mathematical use)" }
         }
     }
 
-    val unicodeMathMathunderSymbols = mathCommands {
+    val mathunder = mathCommands {
         underPackage("unicode-math") {
-            symbol("underbracket", "⎵", "bottom square bracket")
-            symbol("underparen", "⏝", "bottom parenthesis (mathematical use)")
-            symbol("underbrace", "⏟", "bottom curly bracket (mathematical use)")
+            "underbracket".cmd(arg, display = "⎵") { "bottom square bracket" }
+            "underparen".cmd(arg, display = "⏝") { "bottom parenthesis (mathematical use)" }
+            "underbrace".cmd(arg, display = "⏟") { "bottom curly bracket (mathematical use)" }
         }
     }
 }
