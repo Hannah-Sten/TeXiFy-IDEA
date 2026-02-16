@@ -308,6 +308,42 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         "setsansfont".cmd("font".required, "font features".optional) { "Set the sans-serif font." }
     }
 
+    val booktabs = buildCommands {
+        underPackage("booktabs") {
+            underContext(LatexContexts.Tabular) {
+                "toprule".cmd("width".optional(LatexContexts.Literal)) {
+                    "Draw the top rule of a formal table."
+                }
+                "midrule".cmd("width".optional(LatexContexts.Literal)) {
+                    "Draw a rule between table header and body (or between body sections)."
+                }
+                "bottomrule".cmd("width".optional(LatexContexts.Literal)) {
+                    "Draw the bottom rule of a formal table."
+                }
+                "cmidrule".cmd(
+                    "width".optional(LatexContexts.Literal),
+                    "trim".optional(LatexContexts.Literal),
+                    "span".required(LatexContexts.Literal)
+                ) {
+                    "Draw a partial horizontal rule spanning selected columns."
+                }
+                "morecmidrules".cmd {
+                    "Allow another row of cmidrules after the current one."
+                }
+                "addlinespace".cmd("width".optional(LatexContexts.Literal)) {
+                    "Insert extra vertical space between table rows."
+                }
+                "specialrule".cmd(
+                    "width".required(LatexContexts.Literal),
+                    "above".required(LatexContexts.Literal),
+                    "below".required(LatexContexts.Literal)
+                ) {
+                    "Draw a rule with explicit thickness and spacing above/below."
+                }
+            }
+        }
+    }
+
     val citation = textCommands {
         val before = "before".optional
         val after = "after".optional
