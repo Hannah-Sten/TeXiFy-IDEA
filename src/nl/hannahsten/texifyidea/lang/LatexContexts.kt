@@ -105,6 +105,16 @@ object LatexContexts {
     val Literal = SimpleLatexContext("literal")
 
     /**
+     * Placement/position specifiers, such as `[htbp]`, `[t]`, `[b]`, or `[c]`.
+     */
+    val Position = SimpleLatexContext("position")
+
+    /**
+     * TeX dimensions/lengths, such as `0.5\textwidth`, `2em`, or `3pt`.
+     */
+    val Dimension = SimpleLatexContext("dimension")
+
+    /**
      * Plain text content, such as in `\text{...}`.
      */
     val Text = SimpleLatexContext("text")

@@ -32,6 +32,7 @@ object ContextAwareCompletionProviderDispatcher : LatexContextAwareCompletionAda
             GlossaryReference to LatexGlossariesCompletionProvider,
             ListType to LatexListTypeProvider,
             ColorReference to LatexXColorProvider,
+            Dimension to LatexDimensionUnitProvider,
             MintedFuntimeLand to LatexMintedTypeProvider,
         )
     }

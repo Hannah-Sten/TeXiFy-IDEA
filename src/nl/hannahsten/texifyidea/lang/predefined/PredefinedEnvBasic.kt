@@ -3,7 +3,9 @@ package nl.hannahsten.texifyidea.lang.predefined
 import nl.hannahsten.texifyidea.lang.LatexContextIntro
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.LatexContexts.Alignable
+import nl.hannahsten.texifyidea.lang.LatexContexts.Dimension
 import nl.hannahsten.texifyidea.lang.LatexContexts.Literal
+import nl.hannahsten.texifyidea.lang.LatexContexts.Position
 import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.PredefinedEnvironmentSet
 
@@ -185,7 +187,7 @@ object PredefinedEnvBasic : PredefinedEnvironmentSet() {
     }
 
     val figuresAndTable = buildEnvironments {
-        val placement = "placement".optional(Literal)
+        val placement = "placement".optional(Position)
         "figure".env(LatexContexts.Figure, placement) {
             "A figure environment."
         }
@@ -197,14 +199,14 @@ object PredefinedEnvBasic : PredefinedEnvironmentSet() {
         "table*".env(+LatexContexts.Table, placement)
 
         val cols = "cols".required(Literal)
-        val pos = "pos".optional(Literal)
-        val width = "width".optional(Literal)
+        val pos = "pos".optional(Position)
+        val width = "width".optional(Dimension)
         "tabular".env(+LatexContexts.Tabular, pos, cols) {
             "A basic table."
         }
         "tabular*".env(+LatexContexts.Tabular, width, pos, cols)
         "tabularx".env(+LatexContexts.Tabular, width, cols)
-        "tabulary".env(+LatexContexts.Tabular, "length".required(Literal), "pream".optional(Literal))
+        "tabulary".env(+LatexContexts.Tabular, "length".required(Dimension), "pream".optional(Literal))
         "longtable".env(LatexContexts.Table, cols)
 
         underPackage("tabularray") {
@@ -218,10 +220,25 @@ object PredefinedEnvBasic : PredefinedEnvironmentSet() {
                 "A block array environment."
             }
         }
+
+        underPackage("subcaption") {
+            "subfigure".env(+LatexContexts.Figure, "position".optional(Position), "width".required(Dimension)) {
+                "A sub-figure environment."
+            }
+            "subtable".env(+LatexContexts.Table, "position".optional(Position), "width".required(Dimension)) {
+                "A sub-table environment."
+            }
+            "subcaptionblock".env(LatexContexts.Text, "width".required(Dimension)) {
+                "A block container for sub-captions."
+            }
+            "subcaptiongroup".env(LatexContexts.Text) {
+                "A grouping environment for related sub-captions."
+            }
+        }
     }
 
     val formatting = buildEnvironments {
-        "minipage".env(LatexContexts.Text, "position".optional(Literal), "width".required(Literal)) {
+        "minipage".env(LatexContexts.Text, "position".optional(Position), "width".required(Dimension)) {
             "A minipage environment."
         }
     }

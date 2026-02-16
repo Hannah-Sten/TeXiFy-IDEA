@@ -74,6 +74,15 @@ object LatexGlossariesCompletionProvider : LatexContextAgnosticCompletionProvide
                     buildLookupElement(command, acronym, "", fullName)
                 }
 
+                CommandNames.DECLARE_ACRONYM -> {
+                    val label = command.requiredParametersText().getOrNull(0) ?: continue
+                    val options = command.requiredParameters().getOrNull(1)?.strictKeyValPairList ?: continue
+                    val optionsMap = getOptionsMap(options)
+                    val short = optionsMap.getOrDefault("short", "")
+                    val long = optionsMap.getOrDefault("long", "")
+                    buildLookupElement(command, label, short, long)
+                }
+
                 else -> continue
             }
             lookupItems.add(element)
