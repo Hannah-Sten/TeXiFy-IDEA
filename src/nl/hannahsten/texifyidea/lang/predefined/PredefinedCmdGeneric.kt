@@ -480,54 +480,57 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
     }
 
     val glossaries = buildCommands {
-        packageOf("glossaries")
+        underPackage("glossaries") {
+            val options = "options".optional
+            val label = "label".required(setOf(LatexContexts.Text, LatexContexts.GlossaryReference))
+            val insert = "insert".optional
 
-        val options = "options".optional
-        val label = "label".required(setOf(LatexContexts.Text, LatexContexts.GlossaryReference))
-        val insert = "insert".optional
+            underContext(LatexContexts.Preamble) {
+                val nameDef = "name".required(setOf(LatexContexts.Text, LatexContexts.GlossaryDefinition))
+//              "loadglsentries".cmd("glossariesfile".required(LatexContexts.SingleFile))
+                "longnewglossaryentry".cmd(nameDef, "options".required, "description".required)
+                "newabbreviation".cmd(options, nameDef, "short".required, "long".required)
+                "newacronym".cmd(options, nameDef, "short".required, "long".required)
+                "newglossaryentry".cmd(nameDef, "options".required)
+            }
 
-        underContext(LatexContexts.Preamble) {
-            val nameDef = "name".required(setOf(LatexContexts.Text, LatexContexts.GlossaryDefinition))
-//            "loadglsentries".cmd("glossariesfile".required(LatexContexts.SingleFile))
-            "longnewglossaryentry".cmd(nameDef, "options".required, "description".required)
-            "newabbreviation".cmd(options, nameDef, "short".required, "long".required)
-            "newacronym".cmd(options, nameDef, "short".required, "long".required)
-            "newglossaryentry".cmd(nameDef, "options".required)
+            underContext(LatexContexts.Text) {
+                listOf(
+                    "GLS", "GLSdesc", "GLSfirst", "GLSfirstplural", "GLSname", "GLSplural", "GLSsymbol", "GLStext",
+                    "GLSuseri", "GLSuserii", "GLSuseriii", "GLSuseriv", "GLSuserv", "GLSuservi",
+                    "Gls", "Glsdesc", "Glsfirst", "Glsfirstplural", "Glsname", "Glspl",
+                    "Glsplural", "Glssymbol", "Glstext", "Glsuseri", "Glsuserii", "Glsuseriii", "Glsuseriv",
+                    "Glsuserv", "Glsuservi", "gls", "glsdesc", "glsfirst", "glsfirstplural",
+                    "glsname", "glspl", "glsplural", "glssymbol", "glstext", "glsuseri",
+                    "glsuserii", "glsuseriii", "glsuseriv", "glsuserv", "glsuservi"
+                ).forEach { it.cmd(options, label, insert) }
+                listOf("Glsdisp", "Glslink", "glsdisp", "glslink").forEach {
+                    it.cmd(options, label, "text".optional)
+                }
+            }
         }
 
-        applicableIn(LatexContexts.Text)
-        listOf(
-            "GLS", "GLSdesc", "GLSfirst", "GLSfirstplural", "GLSname", "GLSplural", "GLSsymbol", "GLStext",
-            "GLSuseri", "GLSuserii", "GLSuseriii", "GLSuseriv", "GLSuserv", "GLSuservi",
-            "Gls", "Glsdesc", "Glsfirst", "Glsfirstplural", "Glsname", "Glspl",
-            "Glsplural", "Glssymbol", "Glstext", "Glsuseri", "Glsuserii", "Glsuseriii", "Glsuseriv",
-            "Glsuserv", "Glsuservi", "gls", "glsdesc", "glsfirst", "glsfirstplural",
-            "glsname", "glspl", "glsplural", "glssymbol", "glstext", "glsuseri",
-            "glsuserii", "glsuseriii", "glsuseriv", "glsuserv", "glsuservi"
-        ).forEach { it.cmd(options, label, insert) }
-        listOf("Glsdisp", "Glslink", "glsdisp", "glslink").forEach {
-            it.cmd(options, label, "text".optional)
+        underPackage("acronym") {
+            val linebreakPenalty = "linebreak penalty".optional
+            val acronymDef = "acronym".required(setOf(LatexContexts.Text, LatexContexts.GlossaryDefinition))
+            val acronymRef = "acronym".required(setOf(LatexContexts.Text, LatexContexts.GlossaryReference))
+
+            underContext(LatexContexts.Preamble) {
+                "acro".cmd(acronymDef, "short name".optional, "full name".required)
+                "acrodef".cmd(acronymDef, "short name".optional, "full name".required)
+                "newacro".cmd(acronymDef, "short name".optional, "full name".required)
+            }
+
+            underContext(LatexContexts.Text) {
+                arrayOf(
+                    "Ac", "Ac*", "Acf", "Acf*", "Acfi", "Acfi*", "Acfip", "Acfip*", "Acfp", "Acfp*",
+                    "Acl", "Acl*", "Aclp", "Aclp*", "Aclu", "Aclu*", "Acp", "Acp*", "Iac", "Iac*",
+                    "ac", "ac*", "acf", "acf*", "acfi", "acfi*", "acfip", "acfip*", "acfp", "acfp*",
+                    "acl", "acl*", "aclp", "aclp*", "aclu", "aclu*", "acp", "acp*", "acs", "acs*",
+                    "acsp", "acsp*", "acsu", "acsu*", "iac", "iac*"
+                ).forEach { it.cmd(linebreakPenalty, acronymRef) }
+            }
         }
-
-        packageOf("acronym")
-        val linebreakPenalty = "linebreak penalty".optional
-
-        val acronymDef = "acronym".required(setOf(LatexContexts.Text, LatexContexts.GlossaryDefinition))
-        val acronymRef = "acronym".required(setOf(LatexContexts.Text, LatexContexts.GlossaryReference))
-        underContext(LatexContexts.Preamble) {
-            "acro".cmd(acronymDef, "short name".optional, "full name".required)
-            "acrodef".cmd(acronymDef, "short name".optional, "full name".required)
-            "newacro".cmd(acronymDef, "short name".optional, "full name".required)
-        }
-
-        applicableIn(LatexContexts.Text)
-        arrayOf(
-            "Ac", "Ac*", "Acf", "Acf*", "Acfi", "Acfi*", "Acfip", "Acfip*", "Acfp", "Acfp*",
-            "Acl", "Acl*", "Aclp", "Aclp*", "Aclu", "Aclu*", "Acp", "Acp*", "Iac", "Iac*",
-            "ac", "ac*", "acf", "acf*", "acfi", "acfi*", "acfip", "acfip*", "acfp", "acfp*",
-            "acl", "acl*", "aclp", "aclp*", "aclu", "aclu*", "acp", "acp*", "acs", "acs*",
-            "acsp", "acsp*", "acsu", "acsu*", "iac", "iac*"
-        ).forEach { it.cmd(linebreakPenalty, acronymRef) }
 
         underPackage("acro") {
             val options = "options".optional
@@ -539,41 +542,43 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
                 }
             }
 
-            // First-use template
-            registerAcroCommands(
-                listOf("ac", "acp", "iac", "Ac", "Acp", "Iac"),
-                "Typeset an acronym."
-            )
+            underContext(LatexContexts.Text) {
+                // First-use template
+                registerAcroCommands(
+                    listOf("ac", "acp", "iac", "Ac", "Acp", "Iac"),
+                    "Typeset an acronym with the first-use form."
+                )
 
-            // Short form
-            registerAcroCommands(
-                listOf("acs", "acsp", "iacs", "Acs", "Acsp", "Iacs"),
-                "Typeset the short form of an acronym."
-            )
+                // Short form
+                registerAcroCommands(
+                    listOf("acs", "acsp", "iacs", "Acs", "Acsp", "Iacs"),
+                    "Typeset the short form of an acronym."
+                )
 
-            // Long form
-            registerAcroCommands(
-                listOf("acl", "aclp", "iacl", "Acl", "Aclp", "Iacl"),
-                "Typeset the long form of an acronym."
-            )
+                // Long form
+                registerAcroCommands(
+                    listOf("acl", "aclp", "iacl", "Acl", "Aclp", "Iacl"),
+                    "Typeset the long form of an acronym."
+                )
 
-            // Alternative form
-            registerAcroCommands(
-                listOf("aca", "acap", "iaca", "Aca", "Acap", "Iaca"),
-                "Typeset the alternative form of an acronym."
-            )
+                // Alternative form
+                registerAcroCommands(
+                    listOf("aca", "acap", "iaca", "Aca", "Acap", "Iaca"),
+                    "Typeset the alternative form of an acronym."
+                )
 
-            // Full form
-            registerAcroCommands(
-                listOf("acf", "acfp", "iacf", "Acf", "Acfp", "Iacf"),
-                "Typeset the full form of an acronym."
-            )
+                // Full form
+                registerAcroCommands(
+                    listOf("acf", "acfp", "iacf", "Acf", "Acfp", "Iacf"),
+                    "Typeset the full form of an acronym."
+                )
 
-            // Show data without usage side-effects
-            registerAcroCommands(
-                listOf("acshow"),
-                "Show acronym information without marking it as used."
-            )
+                // Show data without usage side-effects
+                registerAcroCommands(
+                    listOf("acshow"),
+                    "Show acronym information without marking it as used."
+                )
+            }
         }
     }
 
