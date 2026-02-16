@@ -11,6 +11,7 @@ import com.intellij.util.Processor
 import com.intellij.util.Processors
 import com.intellij.util.concurrency.annotations.RequiresReadLock
 import com.intellij.util.indexing.IdFilter
+import nl.hannahsten.texifyidea.index.projectstructure.LatexProjectStructure
 import nl.hannahsten.texifyidea.util.contentSearchScope
 
 /**

@@ -40,54 +40,18 @@ object PackageMagic {
 
     val glossaryNames = glossary.map { it.name }.toSet()
 
-    /**
-     * Maps packages to the packages it loads.
-     * This list is just there as a sort of default for those users who do not have LaTeX packages installed for example.
-     */
-    val packagesLoadingOtherPackages: Map<LatexLib, Set<LatexLib>> = mapOf(
-        LatexLib.AMSSYMB to setOf(LatexLib.AMSFONTS),
-        LatexLib.MATHTOOLS to setOf(LatexLib.AMSMATH),
-        LatexLib.GRAPHICX to setOf(LatexLib.GRAPHICS),
-        LatexLib.XCOLOR to setOf(LatexLib.COLOR),
-        LatexLib.PDFCOMMENT to setOf(LatexLib.HYPERREF),
-        LatexLib.ALGORITHM2E to setOf(LatexLib.ALGPSEUDOCODE), // Not true, but algorithm2e provides roughly the same commands
-        LatexLib.NEWTXMATH to setOf(LatexLib.AMSSYMB, LatexLib.STMARYRD), // Not true, but newtxmath provides roughly the same commands
-    )
-
-    private val conflictingPackagesList = listOf(
-        setOf("biblatex.sty", "natbib.sty"),
+    // Some packages load other packages only when some package option is provided
+    val packagesLoadedWithOptions = mapOf(
+        Pair(LatexLib.BIBLATEX, "natbib") to LatexLib.NATBIB // Not directly true, but biblatex will provide natbib-like commands
     )
 
     val conflictingPackageMap = buildMap {
-        conflictingPackagesList.forEach { names ->
-            names.forEach { name ->
-                merge(name, names) { old, new -> (old + new).toSet() }
-            }
-        }
-
         // citation-style-language is not compatible with other packages, but the packages itself can still be compatible with each other.
         merge("citation-style-language.sty", setOf("babelbib.sty", "backref.sty", "bibtopic.sty", "bibunits.sty", "chapterbib.sty", "cite.sty", "citeref.sty", "inlinebib.sty", "jurabib.sty", "mcite.sty", "mciteplus.sty", "multibib.sty", "natbib.sty", "splitbib.sty")) { old, new ->
             (old + new).toSet()
         }
+        merge("biblatex.sty", setOf("babelbib.sty", "backref.sty", "bibtopic.sty", "bibunits.sty", "chapterbib.sty", "cite.sty", "citeref.sty", "inlinebib.sty", "jurabib.sty", "mcite.sty", "mciteplus.sty", "multibib.sty", "natbib.sty", "splitbib.sty", "titlesec.sty", "ucs.sty", "etextools.sty")) { old, new ->
+            (old + new).toSet()
+        }
     }
-
-    /**
-     * Maps argument specifiers to whether they are required (true) or
-     * optional (false).
-     */
-    val xparseParamSpecifiers = mapOf(
-        'm' to true,
-        'r' to true,
-        'R' to true,
-        'v' to true,
-        'b' to true,
-        'o' to false,
-        'd' to false,
-        'O' to false,
-        'D' to false,
-        's' to false,
-        't' to false,
-        'e' to false,
-        'E' to false
-    )
 }

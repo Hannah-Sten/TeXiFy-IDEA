@@ -7,6 +7,7 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 import nl.hannahsten.texifyidea.testutils.writeCommand
 import nl.hannahsten.texifyidea.updateCommandDef
+import nl.hannahsten.texifyidea.updateFilesets
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 
 class LatexMissingImportInspectionTest : TexifyInspectionTestBase(LatexMissingImportInspection()) {
@@ -122,6 +123,18 @@ class LatexMissingImportInspectionTest : TexifyInspectionTestBase(LatexMissingIm
         )
         myFixture.configureByFiles("sub1/sub2/two.tex", "sub1/one.tex")
         myFixture.updateCommandDef()
+        myFixture.checkHighlighting()
+    }
+
+    fun testNatbib() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \usepackage[backend=biber, natbib=true]{biblatex}
+            \citet{knuth1990}
+            """.trimIndent()
+        )
+        myFixture.updateFilesets()
         myFixture.checkHighlighting()
     }
 }

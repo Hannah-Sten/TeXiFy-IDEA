@@ -10,7 +10,7 @@ import com.intellij.refactoring.inline.InlineOptions
 import com.intellij.testFramework.LightPlatformCodeInsightTestCase
 import com.intellij.testFramework.common.timeoutRunBlocking
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.index.LatexProjectStructure
+import nl.hannahsten.texifyidea.index.projectstructure.LatexProjectStructure
 import nl.hannahsten.texifyidea.refactoring.inlinecommand.LatexInlineCommandHandler.Util.getReference
 import nl.hannahsten.texifyidea.refactoring.inlinefile.LatexInlineFileHandler.Util.canInlineLatexElement
 import nl.hannahsten.texifyidea.refactoring.inlinefile.LatexInlineFileHandler.Util.resolveInlineFile

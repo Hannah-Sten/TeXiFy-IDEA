@@ -8,9 +8,11 @@ import com.intellij.psi.SmartPointerManager
 import com.intellij.psi.stubs.PsiFileStub
 import com.intellij.psi.stubs.StubElement
 import com.intellij.psi.util.elementType
+import nl.hannahsten.texifyidea.editor.folding.MathStyle
 import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.index.SourcedDefinition.DefinitionSource
+import nl.hannahsten.texifyidea.index.projectstructure.LatexLibraryInfo
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
 import nl.hannahsten.texifyidea.index.stub.requiredParamAt
 import nl.hannahsten.texifyidea.lang.*
@@ -21,7 +23,6 @@ import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
 import nl.hannahsten.texifyidea.util.parser.traverse
-import nl.hannahsten.texifyidea.editor.folding.MathStyle
 
 object LatexDefinitionUtil {
 

@@ -1,11 +1,9 @@
-package nl.hannahsten.texifyidea.index
+package nl.hannahsten.texifyidea.index.projectstructure
 
 import com.fasterxml.jackson.dataformat.toml.TomlMapper
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.readAction
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.components.service
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
@@ -24,10 +22,9 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import nl.hannahsten.texifyidea.action.debug.SimplePerformanceTracker
 import nl.hannahsten.texifyidea.completion.pathcompletion.LatexGraphicsPathProvider.getGraphicsPaths
-import nl.hannahsten.texifyidea.file.ClassFileType
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.file.StyleFileType
-import nl.hannahsten.texifyidea.index.file.LatexRegexBasedIndex
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
+import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.LatexLib.Companion.SUBFILES
@@ -39,291 +36,19 @@ import nl.hannahsten.texifyidea.lang.predefined.CommandNames.EXTERNAL_DOCUMENT
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.nameWithSlash
 import nl.hannahsten.texifyidea.settings.TexifySettings
-import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
-import nl.hannahsten.texifyidea.settings.sdk.SdkPath
 import nl.hannahsten.texifyidea.util.*
-import nl.hannahsten.texifyidea.util.files.LatexPackageLocation
 import nl.hannahsten.texifyidea.util.files.allChildDirectories
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import java.io.File
 import java.nio.file.InvalidPathException
 import java.nio.file.Path
-import java.util.*
 import kotlin.io.path.Path
 import kotlin.io.path.invariantSeparatorsPathString
 import kotlin.io.path.name
 import kotlin.io.path.pathString
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
-
-// May be modified in the future
-/**
- * A fileset is a set of files that are related to each other, e.g. a main file and its included files (including itself).
- * One file can belong to multiple filesets, e.g. if it is included in multiple main files.
- *
- * When resolving subfiles, we must use the relative path from the root file rather than the file that contains the input command.
- */
-data class Fileset(
-    val root: VirtualFile,
-    /**
-     * The files in the fileset
-     */
-    val files: SequencedSet<VirtualFile>,
-    val libraries: Set<String>,
-    val allFileScope: GlobalSearchScope,
-    val externalDocumentInfo: List<ExternalDocumentInfo>
-) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as Fileset
-
-        if (root != other.root) return false
-        if (files != other.files) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = root.hashCode()
-        result = 31 * result + files.hashCode()
-        return result
-    }
-
-    fun texFileScope(project: Project): GlobalSearchScope = allFileScope.restrictedByFileTypes(LatexFileType).intersectWith(project.contentSearchScope)
-}
-
-data class ExternalDocumentInfo(
-    val labelPrefix: String,
-    val files: Set<VirtualFile>,
-)
-
-/**
- * Integrated descriptions of all filesets that are related to a specific file.
- */
-data class FilesetData(
-    val filesets: Set<Fileset>,
-    /**
-     * The union of all files in the related [filesets].
-     */
-    val relatedFiles: Set<VirtualFile>,
-    /**
-     * The scope that contains all files in [relatedFiles].
-     */
-    val filesetScope: GlobalSearchScope,
-
-    val libraries: Set<String>,
-
-    val externalDocumentInfo: List<ExternalDocumentInfo>
-) {
-    override fun equals(other: Any?): Boolean {
-        // filesets uniquely determine the rest of the data
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as FilesetData
-
-        return filesets == other.filesets
-    }
-
-    override fun hashCode(): Int = filesets.hashCode()
-}
-
-/**
- * Describes the filesets of a project, containing all filesets and a mapping from files to their fileset data.
- */
-data class LatexProjectFilesets(
-    val filesets: Set<Fileset>,
-    val mapping: Map<VirtualFile, FilesetData>,
-) {
-    fun getData(file: VirtualFile): FilesetData? = mapping[file]
-
-    override fun equals(other: Any?): Boolean {
-        // we only need to compare the filesets, as they uniquely determine the mapping
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as LatexProjectFilesets
-
-        return filesets == other.filesets
-    }
-
-    override fun hashCode(): Int = filesets.hashCode()
-}
-
-class LatexLibraryInfo(
-    val name: LatexLib,
-    val location: VirtualFile,
-    val files: Set<VirtualFile>,
-    /**
-     * The set of package names that are directly included in this package, without transitive dependencies and this package itself.
-     */
-    val directDependencies: Set<String>,
-    /**
-     * The set of all package names that are included in this package, including transitive dependencies and this package itself.
-     */
-    val allIncludedPackageNames: Set<String>,
-) {
-
-    @Suppress("unused")
-    val isPackage: Boolean
-        get() = name.isPackageFile
-
-    @Suppress("unused")
-    val isClass: Boolean
-        get() = name.isClassFile
-
-    override fun toString(): String = "PackageInfo(name='$name', location=${location.path}, files=${files.size})"
-}
-
-/**
- * Cache key for library structure information, combining SDK path and package file name.
- * This ensures different LaTeX distributions in different modules get separate caches.
- *
- * @property sdkPath The SDK home path or resolved kpsewhich path (see [nl.hannahsten.texifyidea.settings.sdk.SdkPath])
- * @property nameWithExt The package file name with extension (e.g., "amsmath.sty")
- */
-data class LibStructureCacheKey(val sdkPath: SdkPath, val nameWithExt: String)
-
-/**
- * Provides methods to build and manage the structure of LaTeX libraries (.sty and .cls files).
- *
- * The cache is keyed by [LibStructureCacheKey] to support different LaTeX distributions
- * in different modules. For example, `LibStructureCacheKey("/usr/local/texlive/2024", "amsmath.sty")`.
- *
- * @author Ezrnest
- */
-@Service(Service.Level.PROJECT)
-class LatexLibraryStructureService(
-    private val project: Project
-) : AbstractBlockingCacheService<LibStructureCacheKey, LatexLibraryInfo?>() {
-    companion object {
-        val performanceTracker = SimplePerformanceTracker()
-
-        private val libraryCommandNameToExt: Map<String, String> = mapOf(
-            "\\usepackage" to ".sty",
-            "\\RequirePackage" to ".sty",
-            "\\documentclass" to ".cls",
-            "\\LoadClass" to ".cls"
-        )
-
-        // never expire unless invalidated manually
-        private val LIBRARY_FILESET_EXPIRATION_TIME = Duration.INFINITE
-
-        fun getInstance(project: Project): LatexLibraryStructureService = project.service()
-    }
-
-    override fun computeValue(key: LibStructureCacheKey, oldValue: LatexLibraryInfo?): LatexLibraryInfo? {
-        val (sdkPath, nameWithExt) = key
-        return performanceTracker.track {
-            computePackageFilesetsRecur(sdkPath, nameWithExt, mutableSetOf())
-        }
-    }
-
-    @Suppress("unused")
-    private fun getLibraryName(current: VirtualFile, project: Project): String {
-        val fileName = current.name
-        if (current.fileType == StyleFileType) {
-            val name = NewCommandsIndex.getByName("\\ProvidesPackage", project, current).firstNotNullOfOrNull {
-                it.requiredParameterText(0)
-            } ?: return fileName
-            return "$name.sty"
-        }
-        if (current.fileType == ClassFileType) {
-            val name = NewCommandsIndex.getByName("\\ProvidesClass", project, current).firstNotNullOfOrNull {
-                it.requiredParameterText(0)
-            } ?: return fileName
-            return "$name.cls"
-        }
-        return fileName
-    }
-
-    private fun computePackageFilesetsRecur(sdkPath: SdkPath, nameWithExt: String, processing: MutableSet<String>): LatexLibraryInfo? {
-        if (!processing.add(nameWithExt)) return null // Prevent infinite recursion
-        val cacheKey = LibStructureCacheKey(sdkPath, nameWithExt)
-        getUpToDateValueOrNull(cacheKey, LIBRARY_FILESET_EXPIRATION_TIME)?.let {
-            return it // Return cached value if available
-        }
-
-        val path = LatexPackageLocation.getPackageLocationBySdkPath(nameWithExt, sdkPath, project) ?: run {
-            Log.info("LatexLibrary not found!! $nameWithExt")
-            return null
-        }
-        val file = LocalFileSystem.getInstance().findFileByNioFile(path) ?: return null
-        val allFiles = mutableSetOf(file)
-        val allPackages = mutableSetOf(nameWithExt)
-        val directDependencies = mutableSetOf<String>()
-        val commands = NewSpecialCommandsIndex.getPackageIncludes(project, file)
-        for (command in commands) {
-            val packageText = command.requiredParameterText(0) ?: continue
-            val ext = libraryCommandNameToExt[command.name] ?: continue
-            val refTexts = mutableListOf<String>()
-            val refInfos = mutableListOf<Set<VirtualFile>>()
-            for (text in packageText.split(',')) {
-                val trimmed = text.trim()
-                if (trimmed.isEmpty()) continue
-                val name = trimmed + ext
-                directDependencies.add(name)
-                if (name in allPackages) continue // prevent infinite recursion
-                val info = computePackageFilesetsRecur(sdkPath, name, processing)
-                info?.let {
-                    refTexts.add(trimmed)
-                    refInfos.add(setOf(it.location))
-                    allFiles.addAll(it.files)
-                    allPackages.addAll(it.allIncludedPackageNames)
-                }
-            }
-            command.putUserData(
-                LatexProjectStructure.userDataKeyFileReference,
-                CacheValueTimed(refTexts to refInfos)
-            )
-        }
-        val otherPackages = LatexRegexBasedIndex.getPackageInclusions(file, project)
-        otherPackages.forEach {
-            val name = "$it.sty"
-            directDependencies.add(name)
-            if (name in allPackages) return@forEach
-            val info = computePackageFilesetsRecur(sdkPath, name, processing)
-            info?.let {
-                allFiles.addAll(info.files)
-                allPackages.addAll(info.allIncludedPackageNames)
-            }
-        }
-        val info = LatexLibraryInfo(LatexLib.fromFileName(nameWithExt), file, allFiles, directDependencies, allPackages)
-        putValue(cacheKey, info)
-        Log.info("LatexLibrary Loaded: $nameWithExt (SDK: $sdkPath)")
-        return info
-    }
-
-    /**
-     * Get library info for a package, using the SDK resolved from the given file context.
-     *
-     * @param nameWithExt Package name with extension, e.g. "amsmath.sty"
-     * @param contextFile The file context to determine which SDK to use
-     */
-    fun getLibraryInfo(nameWithExt: String, contextFile: VirtualFile?): LatexLibraryInfo? {
-        val sdkPath = LatexSdkUtil.resolveSdkPath(contextFile, project) ?: return null
-        return getOrComputeNow(LibStructureCacheKey(sdkPath, nameWithExt), LIBRARY_FILESET_EXPIRATION_TIME)
-    }
-
-    fun getLibraryInfo(lib: LatexLib, contextFile: VirtualFile? = null): LatexLibraryInfo? {
-        val fileName = lib.toFileName() ?: return null
-        return getLibraryInfo(fileName, contextFile)
-    }
-
-    fun getLibraryInfo(path: Path, contextFile: VirtualFile? = null): LatexLibraryInfo? {
-        if (path.nameCount != 1) return null
-        return getLibraryInfo(path.fileName.pathString, contextFile)
-    }
-
-    fun invalidateLibraryCache() {
-        clearAllCache()
-    }
-
-    fun librarySize(): Int = caches.size
-}
 
 /**
  * Provides methods to build and manage the fileset structure for LaTeX files.

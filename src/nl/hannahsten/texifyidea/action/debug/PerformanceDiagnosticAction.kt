@@ -8,7 +8,11 @@ import com.intellij.openapi.ui.DialogBuilder
 import kotlinx.html.*
 import kotlinx.html.stream.createHTML
 import nl.hannahsten.texifyidea.completion.LatexContextAwareCompletionAdaptor
-import nl.hannahsten.texifyidea.index.*
+import nl.hannahsten.texifyidea.index.LatexDefinitionService
+import nl.hannahsten.texifyidea.index.LatexLibraryDefinitionService
+import nl.hannahsten.texifyidea.index.projectstructure.LatexLibraryStructureService
+import nl.hannahsten.texifyidea.index.projectstructure.LatexProjectFilesets
+import nl.hannahsten.texifyidea.index.projectstructure.LatexProjectStructure
 import nl.hannahsten.texifyidea.inspections.AbstractTexifyContextAwareInspection
 import java.lang.management.ManagementFactory
 import java.util.concurrent.atomic.AtomicInteger

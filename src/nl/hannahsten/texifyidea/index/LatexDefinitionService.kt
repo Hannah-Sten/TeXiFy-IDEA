@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 import nl.hannahsten.texifyidea.action.debug.SimplePerformanceTracker
 import nl.hannahsten.texifyidea.index.SourcedDefinition.DefinitionSource
 import nl.hannahsten.texifyidea.index.file.LatexRegexBasedIndex
+import nl.hannahsten.texifyidea.index.projectstructure.*
 import nl.hannahsten.texifyidea.lang.*
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.lang.predefined.PredefinedPrimitives
