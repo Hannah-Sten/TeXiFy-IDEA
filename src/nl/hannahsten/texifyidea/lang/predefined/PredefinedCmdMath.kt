@@ -159,9 +159,6 @@ object PredefinedCmdMath : PredefinedCommandSet() {
             "symbfit".cmd(arg) { "Bold italic mathematical alphabet (unicode-math)." }.apply {
                 putMeta(MathStyle.META_KEY, MathStyle.BOLD_ITALIC)
             }
-            "symbcal".cmd(arg) { "Bold calligraphic mathematical alphabet (unicode-math)." }.apply {
-                putMeta(MathStyle.META_KEY, MathStyle.BOLD_SCRIPT)
-            }
             "symbfscr".cmd(arg) { "Bold script mathematical alphabet (unicode-math)." }.apply {
                 putMeta(MathStyle.META_KEY, MathStyle.BOLD_SCRIPT)
             }
@@ -173,9 +170,6 @@ object PredefinedCmdMath : PredefinedCommandSet() {
             }
             "symbfsfit".cmd(arg) { "Bold italic sans-serif mathematical alphabet (unicode-math)." }.apply {
                 putMeta(MathStyle.META_KEY, MathStyle.BOLD_SANS_SERIF_ITALIC)
-            }
-            "symbftt".cmd(arg) { "Bold monospace mathematical alphabet (unicode-math)." }.apply {
-                putMeta(MathStyle.META_KEY, MathStyle.BOLD_MONOSPACE)
             }
         }
     }
