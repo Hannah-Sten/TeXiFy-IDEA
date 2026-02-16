@@ -6,6 +6,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.readAction
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.project.DumbService
+import com.intellij.openapi.project.IndexNotReadyException
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectFileIndex
 import com.intellij.openapi.util.Key
@@ -227,20 +228,33 @@ object LatexProjectStructure {
 
     private val CACHE_KEY = GenericCacheService.createKey<LatexProjectFilesets>()
 
+    private fun fallbackFilesets(previous: LatexProjectFilesets?): LatexProjectFilesets = previous ?: LatexProjectFilesets(emptySet(), emptyMap())
+
     private suspend fun buildFilesetsSuspend(project: Project, previous: LatexProjectFilesets?): LatexProjectFilesets {
+        if (DumbService.isDumb(project)) return fallbackFilesets(previous)
+
         // Don't use smartReadAction here, as it may lead to a deadlock in tests
-        val newFileset = readAction {
-            performanceTracker.track {
-                buildFilesets(project)
+        val newFileset = try {
+            readAction {
+                if (DumbService.isDumb(project)) return@readAction null
+                performanceTracker.track {
+                    buildFilesets(project)
+                }
             }
         }
-        if (!ApplicationManager.getApplication().isUnitTestMode && newFileset != previous) {
+        catch (_: IndexNotReadyException) {
+            Log.debug("Skipping fileset rebuild because project index is not ready")
+            null
+        }
+
+        val result = newFileset ?: fallbackFilesets(previous)
+        if (!ApplicationManager.getApplication().isUnitTestMode && newFileset != null && newFileset != previous) {
             // refresh the inspections
             DaemonCodeAnalyzer.getInstance(project).restart()
             // there will be an exception if we try to restart the daemon in unit tests
             // see FileStatusMap.CHANGES_NOT_ALLOWED_DURING_HIGHLIGHTING
         }
-        return newFileset
+        return result
     }
 
     /**
