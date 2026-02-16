@@ -130,8 +130,26 @@ class LatexMissingImportInspectionTest : TexifyInspectionTestBase(LatexMissingIm
         myFixture.configureByText(
             LatexFileType,
             """
+            \documentclass{article}
             \usepackage[backend=biber, natbib=true]{biblatex}
-            \citet{knuth1990}
+            \begin{document}
+                \citet{knuth1990}
+            \end{document}
+            """.trimIndent()
+        )
+        myFixture.updateFilesets()
+        myFixture.checkHighlighting()
+    }
+
+    fun testNoNatbib() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \documentclass{article}
+            \usepackage[backend=biber, natbib=false]{biblatex}
+            \begin{document}
+                <error descr="Command requires any of the packages: natbib, citation-style-language">\citet</error>{knuth1990}
+            \end{document}
             """.trimIndent()
         )
         myFixture.updateFilesets()

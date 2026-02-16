@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Add support for packages 'loading' other packages via package options
 * Fold math style commands such as \mathbb, \mathcal, etc., by @Ezrnest
 * Add support for configuration of bibtex-tidy options, by @fberlakovich
 * Improve word count dialog, by @slideclimb

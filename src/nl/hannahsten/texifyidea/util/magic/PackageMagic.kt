@@ -42,7 +42,7 @@ object PackageMagic {
 
     // Some packages load other packages only when some package option is provided
     val packagesLoadedWithOptions = mapOf(
-        Pair(LatexLib.BIBLATEX, "natbib") to LatexLib.NATBIB // Not directly true, but biblatex will provide natbib-like commands
+        LatexLib.BIBLATEX to mapOf("natbib" to LatexLib.NATBIB) // Not directly true, but biblatex will provide natbib-like commands
     )
 
     val conflictingPackageMap = buildMap {
