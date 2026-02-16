@@ -2,6 +2,24 @@ package nl.hannahsten.texifyidea.editor.folding
 
 import com.intellij.openapi.util.Key
 
+private fun codePointString(codePoint: Int): String = String(Character.toChars(codePoint))
+
+private fun mathAlphaNumericMapping(
+    uppercaseStart: Int,
+    lowercaseStart: Int,
+    digitStart: Int
+): Map<Char, String> {
+    val mapping = LinkedHashMap<Char, String>(62)
+    for (i in 0 until 26) {
+        mapping[('A'.code + i).toChar()] = codePointString(uppercaseStart + i)
+        mapping[('a'.code + i).toChar()] = codePointString(lowercaseStart + i)
+    }
+    for (i in 0 until 10) {
+        mapping[('0'.code + i).toChar()] = codePointString(digitStart + i)
+    }
+    return mapping
+}
+
 /**
  * Maps plain characters to styled Unicode representations for math fonts.
  */
@@ -196,6 +214,72 @@ enum class MathStyle(
             '7' to "𝟕",
             '8' to "𝟖",
             '9' to "𝟗"
+        )
+    ),
+
+    /**
+     * The bold italic math style, such as `\symbfit` in `unicode-math`.
+     */
+    BOLD_ITALIC(
+        mathAlphaNumericMapping(
+            uppercaseStart = 0x1D468,
+            lowercaseStart = 0x1D482,
+            digitStart = 0x1D7CE
+        )
+    ),
+
+    /**
+     * The bold script math style, such as `\symbcal` and `\symbfscr` in `unicode-math`.
+     */
+    BOLD_SCRIPT(
+        mathAlphaNumericMapping(
+            uppercaseStart = 0x1D4D0,
+            lowercaseStart = 0x1D4EA,
+            digitStart = 0x1D7CE
+        )
+    ),
+
+    /**
+     * The bold fraktur math style, such as `\symbffrak` in `unicode-math`.
+     */
+    BOLD_FRAKTUR(
+        mathAlphaNumericMapping(
+            uppercaseStart = 0x1D56C,
+            lowercaseStart = 0x1D586,
+            digitStart = 0x1D7CE
+        )
+    ),
+
+    /**
+     * The bold upright sans-serif math style, such as `\symbfsfup` in `unicode-math`.
+     */
+    BOLD_SANS_SERIF_UPRIGHT(
+        mathAlphaNumericMapping(
+            uppercaseStart = 0x1D5D4,
+            lowercaseStart = 0x1D5EE,
+            digitStart = 0x1D7EC
+        )
+    ),
+
+    /**
+     * The bold italic sans-serif math style, such as `\symbfsfit` in `unicode-math`.
+     */
+    BOLD_SANS_SERIF_ITALIC(
+        mathAlphaNumericMapping(
+            uppercaseStart = 0x1D63C,
+            lowercaseStart = 0x1D656,
+            digitStart = 0x1D7EC
+        )
+    ),
+
+    /**
+     * The bold monospace math style, such as `\symbftt` in `unicode-math`.
+     */
+    BOLD_MONOSPACE(
+        mathAlphaNumericMapping(
+            uppercaseStart = 0x1D670,
+            lowercaseStart = 0x1D68A,
+            digitStart = 0x1D7F6
         )
     ),
 

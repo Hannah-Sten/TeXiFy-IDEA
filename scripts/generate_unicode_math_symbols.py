@@ -118,7 +118,7 @@ def main() -> int:
                 conflict_with_existing += 1
 
             display = to_display(cp_hex)
-            description = f"unicode-math: {desc.strip()}"
+            description = f"{desc.strip()}"
             class_to_entries.setdefault(math_class, []).append((name, display, description))
 
     lines: list[str] = []

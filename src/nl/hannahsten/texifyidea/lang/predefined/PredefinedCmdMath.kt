@@ -156,14 +156,27 @@ object PredefinedCmdMath : PredefinedCommandSet() {
                 putMeta(MathStyle.META_KEY, MathStyle.MONOSPACE)
             }
 
-            // Keep semantics for bold variants; no precise MathStyle mapping exists yet.
-            "symbfit".cmd(arg) { "Bold italic mathematical alphabet (unicode-math)." }
-            "symbcal".cmd(arg) { "Bold calligraphic mathematical alphabet (unicode-math)." }
-            "symbfscr".cmd(arg) { "Bold script mathematical alphabet (unicode-math)." }
-            "symbffrak".cmd(arg) { "Bold fraktur mathematical alphabet (unicode-math)." }
-            "symbfsfup".cmd(arg) { "Bold upright sans-serif mathematical alphabet (unicode-math)." }
-            "symbfsfit".cmd(arg) { "Bold italic sans-serif mathematical alphabet (unicode-math)." }
-            "symbftt".cmd(arg) { "Bold monospace mathematical alphabet (unicode-math)." }
+            "symbfit".cmd(arg) { "Bold italic mathematical alphabet (unicode-math)." }.apply {
+                putMeta(MathStyle.META_KEY, MathStyle.BOLD_ITALIC)
+            }
+            "symbcal".cmd(arg) { "Bold calligraphic mathematical alphabet (unicode-math)." }.apply {
+                putMeta(MathStyle.META_KEY, MathStyle.BOLD_SCRIPT)
+            }
+            "symbfscr".cmd(arg) { "Bold script mathematical alphabet (unicode-math)." }.apply {
+                putMeta(MathStyle.META_KEY, MathStyle.BOLD_SCRIPT)
+            }
+            "symbffrak".cmd(arg) { "Bold fraktur mathematical alphabet (unicode-math)." }.apply {
+                putMeta(MathStyle.META_KEY, MathStyle.BOLD_FRAKTUR)
+            }
+            "symbfsfup".cmd(arg) { "Bold upright sans-serif mathematical alphabet (unicode-math)." }.apply {
+                putMeta(MathStyle.META_KEY, MathStyle.BOLD_SANS_SERIF_UPRIGHT)
+            }
+            "symbfsfit".cmd(arg) { "Bold italic sans-serif mathematical alphabet (unicode-math)." }.apply {
+                putMeta(MathStyle.META_KEY, MathStyle.BOLD_SANS_SERIF_ITALIC)
+            }
+            "symbftt".cmd(arg) { "Bold monospace mathematical alphabet (unicode-math)." }.apply {
+                putMeta(MathStyle.META_KEY, MathStyle.BOLD_MONOSPACE)
+            }
         }
     }
 }
