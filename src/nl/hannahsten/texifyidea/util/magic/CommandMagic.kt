@@ -114,7 +114,7 @@ object CommandMagic {
      *
      * Consider migrating to context-aware approach, using [nl.hannahsten.texifyidea.index.LatexDefinitionService].
      */
-    val labels = CommandNames.run { setOf(LABEL) }
+    val labels = CommandNames.run { setOf(LABEL, Z_LABEL) }
 
     /**
      * All math operators without a leading slash.
@@ -279,6 +279,7 @@ object CommandMagic {
             INCLUDE_GRAPHICS to FileMagic.graphicFileExtensions.map { ".$it" }, // https://tex.stackexchange.com/a/1075/98850
             USE_PACKAGE to listOf(".sty"),
             EXTERNAL_DOCUMENT to listOf(".tex"),
+            Z_EXTERNAL_DOCUMENT to listOf(".tex"),
             TIKZ_FIG to listOf("tikz"),
             C_TIKZ_FIG to listOf("tikz"),
         )
@@ -294,6 +295,9 @@ object CommandMagic {
     val tikzLibraryInclusionCommands = CommandNames.run { setOf(USE_TIKZ_LIBRARY) }
 
     val pgfplotsLibraryInclusionCommands = CommandNames.run { setOf(USE_PGF_PLOTS_LIBRARY) }
+
+    /** Commands that import labels from external TeX documents. */
+    val externalDocumentCommands = CommandNames.run { setOf(EXTERNAL_DOCUMENT, Z_EXTERNAL_DOCUMENT) }
 
     /**
      * Extensions that should only be scanned for the provided include commands.
@@ -311,7 +315,8 @@ object CommandMagic {
             USE_PACKAGE to hashSetOf("sty"),
             DOCUMENT_CLASS to hashSetOf("cls"),
             LOAD_CLASS to hashSetOf("cls"),
-            EXTERNAL_DOCUMENT to hashSetOf("tex")
+            EXTERNAL_DOCUMENT to hashSetOf("tex"),
+            Z_EXTERNAL_DOCUMENT to hashSetOf("tex")
         )
     }
 

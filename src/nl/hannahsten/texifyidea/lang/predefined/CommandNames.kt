@@ -68,6 +68,7 @@ object CommandNames {
     const val BIBLIOGRAPHY = "\\bibliography"
     const val ADD_BIB_RESOURCE = "\\addbibresource"
     const val EXTERNAL_DOCUMENT = "\\externaldocument"
+    const val Z_EXTERNAL_DOCUMENT = "\\zexternaldocument"
     const val SVG_PATH = "\\svgpath"
     const val GRAPHICS_PATH = "\\graphicspath"
     const val INCLUDE_FROM = "\\includefrom"
@@ -89,6 +90,7 @@ object CommandNames {
     const val BEGIN = "\\begin"
     const val END = "\\end"
     const val LABEL = "\\label"
+    const val Z_LABEL = "\\zlabel"
     const val PARAGRAPH = "\\paragraph"
     const val SUB_PARAGRAPH = "\\subparagraph"
     const val PART = "\\part"
@@ -184,4 +186,5 @@ object CommandNames {
     const val ACRO = "\\acro"
     const val NEW_ACRO = "\\newacro"
     const val ACRO_DEF = "\\acrodef"
+    const val DECLARE_ACRONYM = "\\DeclareAcronym"
 }

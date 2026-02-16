@@ -27,7 +27,12 @@ fun extractGlossaryLabelElement(command: LatexCommands): PsiElement? {
 
 private val glossaryEntryCommands: Set<String> = setOf(CommandNames.NEW_GLOSSARY_ENTRY, CommandNames.LONG_NEW_GLOSSARY_ENTRY)
 private val acronymEntryCommands: Set<String> = setOf(CommandNames.NEW_ACRONYM, CommandNames.NEW_ABBREVIATION)
-private val acroEntryCommands: Set<String> = setOf(CommandNames.NEW_ACRO, CommandNames.ACRO, CommandNames.ACRO_DEF)
+private val acroEntryCommands: Set<String> = setOf(
+    CommandNames.NEW_ACRO,
+    CommandNames.ACRO,
+    CommandNames.ACRO_DEF,
+    CommandNames.DECLARE_ACRONYM
+)
 
 /**
  * Find the name, which is the text that will appear in the document, from the given glossary entry definition.

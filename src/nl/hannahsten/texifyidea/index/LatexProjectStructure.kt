@@ -36,7 +36,6 @@ import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.lang.predefined.CommandNames.ADD_TO_LUATEX_PATH
 import nl.hannahsten.texifyidea.lang.predefined.CommandNames.DECLARE_GRAPHICS_EXTENSIONS
 import nl.hannahsten.texifyidea.lang.predefined.CommandNames.DOCUMENT_CLASS
-import nl.hannahsten.texifyidea.lang.predefined.CommandNames.EXTERNAL_DOCUMENT
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.nameWithSlash
 import nl.hannahsten.texifyidea.settings.TexifySettings
@@ -405,8 +404,9 @@ object LatexProjectStructure {
         var luatexPaths: Set<VirtualFile> = emptySet()
 
         private fun extractExternalDocumentInfoInFileset(allFilesScope: GlobalSearchScope): List<ExternalDocumentInfo> {
-            val externalDocumentCommands = NewCommandsIndex.getByName(
-                EXTERNAL_DOCUMENT,
+            val externalDocumentCommands = NewCommandsIndex.getByNames(
+                CommandMagic.externalDocumentCommands,
+                project,
                 allFilesScope.restrictedByFileTypes(LatexFileType)
             )
             if (externalDocumentCommands.isEmpty()) return emptyList()
@@ -618,7 +618,7 @@ object LatexProjectStructure {
                 // For bibliography files, we can search in the bib input paths
                 processFilesUnderRootDirs(pathWithExts, refInfos, info.bibInputPaths)
             }
-            if (commandName == EXTERNAL_DOCUMENT) {
+            if (commandName in CommandMagic.externalDocumentCommands) {
                 // \externaldocument uses the .aux file in the output directory, we are only interested in the source file,
                 // but it can be anywhere (because no relative path will be given, as in the output directory everything will be on the same level).
                 // This does not count for building the file set, because the external document is not actually in the fileset, only the label definitions are,
