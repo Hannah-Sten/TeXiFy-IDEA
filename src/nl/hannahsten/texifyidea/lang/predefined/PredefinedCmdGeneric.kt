@@ -31,12 +31,12 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
 
         // special characters
 
-        "Roman".cmd("counter".required) { "CAPITAL_ROMAN" }
+        "Roman".cmd("counter".required) { "Format a counter value as uppercase Roman numerals." }
 
-        "addtocounter".cmd("countername".required, "value".required) { "ADDTOCOUNTER" }
-        "addcontentsline".cmd("file".required, "type".required, textArg) { "Add an entry to a contents file" }
+        "addtocounter".cmd("countername".required, "value".required) { "Add a value to a counter." }
+        "addcontentsline".cmd("file".required, "type".required, textArg) { "Add an entry to a contents file (for example toc, lof, lot)." }
         +"appendix"
-        "author".cmd("name".required) { "AUTHOR" }
+        "author".cmd("name".required) { "Set the document author." }
         +"baselineskip"
         +"baselinestretch"
         +"bf"
@@ -45,128 +45,128 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
 
         +"bigskip"
         +"boldmath"
-        "caption".cmd("shorttext".optional, textArg) { "CAPTION" }
-        "captionof".cmd("float type".required, "list entry".optional, "heading".required) { "CAPTIONOF" }
-        "chapter".cmd("shorttitle".optional, titleArg) { "CHAPTER" }
-        "chapter*".cmd(titleArg) { "CHAPTER_STAR" }
+        "caption".cmd("shorttext".optional, textArg) { "Set a caption for a float." }
+        "captionof".cmd("float type".required, "list entry".optional, "heading".required) { "Set a caption outside a float environment." }
+        "chapter".cmd("shorttitle".optional, titleArg) { "Create a chapter heading." }
+        "chapter*".cmd(titleArg) { "Create an unnumbered chapter heading." }
 
         +"cleardoublepage"
         +"clearpage"
         +"columnsep "
         +"columnwidth"
-        "contentsline".cmd("type".required, textArg, "page".required) { "CONTENTSLINE" }
-        "contentsname".cmd("name".required) { "CONTENTSNAME" }
+        "contentsline".cmd("type".required, textArg, "page".required) { "Write a line directly to a contents file." }
+        "contentsname".cmd("name".required) { "Set the title used for the table of contents." }
 
-        "date".cmd(textArg) { "DATE" }
+        "date".cmd(textArg) { "Set the document date." }
 
         +"dotfill"
         +"em"
-        "emph".cmd(textArg) { "EMPH" }
+        "emph".cmd(textArg) { "Emphasize text." }
 
-        "enlargethispage".cmd("size".required) { "ENLARGETHISPAGE" }
-        "enlargethispage*".cmd("size".required) { "ENLARGETHISPAGE_STAR" }
+        "enlargethispage".cmd("size".required) { "Increase the available space on the current page." }
+        "enlargethispage*".cmd("size".required) { "Increase the available space on the current page, including stretchable space." }
         +"evensidemargin"
 
         +"family"
-        "fbox".cmd(textArg) { "FBOX" }
-        "figurename".cmd("name".required) { "FIGURENAME" }
+        "fbox".cmd(textArg) { "Draw a frame around text." }
+        "figurename".cmd("name".required) { "Set the label used for figures." }
 
         +"flushbottom"
         +"flushleft"
         +"flushright"
-        "fontencoding".cmd("enc".required) { "FONTENCODING" }
-        "fontfamily".cmd("family".required) { "FONTFAMILY" }
-        "fontseries".cmd("series".required) { "FONTSERIES" }
-        "fontshape".cmd("shape".required) { "FONTSHAPE" }
-        "fontsize".cmd("size".required, "skip".required) { "FONTSIZE" }
-        "footnote".cmd("number".optional, textArg) { "FOOTNOTE" }
+        "fontencoding".cmd("enc".required) { "Select a font encoding." }
+        "fontfamily".cmd("family".required) { "Select a font family." }
+        "fontseries".cmd("series".required) { "Select a font series (for example bold)." }
+        "fontshape".cmd("shape".required) { "Select a font shape (for example italic)." }
+        "fontsize".cmd("size".required, "skip".required) { "Set the font size and line spacing." }
+        "footnote".cmd("number".optional, textArg) { "Insert a footnote." }
         +"footnotemark"
         +"footnotesize"
-        "footnotetext".cmd("number".optional, textArg) { "FOOTNOTETEXT" }
-        "frame".cmd(textArg) { "FRAME" }
-        "framebox".cmd("width".optional, "pos".optional, "text".optional) { "FRAMEBOX" }
+        "footnotetext".cmd("number".optional, textArg) { "Insert footnote text without a marker in the main text." }
+        "frame".cmd(textArg) { "Frame content." }
+        "framebox".cmd("width".optional, "pos".optional, "text".optional) { "Create a framed box, optionally with width and alignment." }
 
-        "glossary".cmd(textArg) { "GLOSSARY" }
-        "glossaryentry".cmd(textArg, "pagenum".required) { "GLOSSARYENTRY" }
+        "glossary".cmd(textArg) { "Add a glossary entry." }
+        "glossaryentry".cmd(textArg, "pagenum".required) { "Define a glossary entry with page information." }
 
         +"hfill"
         +"hrule"
         +"hrulefill"
-        "hspace".cmd("length".required) { "HSPACE" }
-        "hspace*".cmd("length".required) { "HSPACE_STAR" }
+        "hspace".cmd("length".required) { "Insert horizontal space." }
+        "hspace*".cmd("length".required) { "Insert horizontal space that is kept at line breaks." }
         +"hss"
         +"huge"
-        "hyphenation".cmd("words".required) { "HYPHENATION" }
+        "hyphenation".cmd("words".required) { "Declare hyphenation patterns for words." }
 
-        "ifthenelse".cmd("test".required, "then clause".required, "else clause".required) { "IFTHENELSE" }
+        "ifthenelse".cmd("test".required, "then clause".required, "else clause".required) { "Evaluate a condition and choose between two branches." }
 
-        "indexname".cmd("name".required) { "INDEXNAME" }
+        "indexname".cmd("name".required) { "Set the title used for the index." }
         +"indexspace"
-        "intex".cmd("entry".required) { "INDEX" }
+        "intex".cmd("entry".required) { "Add an index entry." }
         +"it"
-        "item".cmd("label".optional(LatexContexts.Text)) { "ITEM" }
+        "item".cmd("label".optional(LatexContexts.Text)) { "Start a list item." }
         +"itshape"
 
         +"large"
         +"lefteqn"
         +"lfseries"
-        "linebreak".cmd("number".optional) { "LINEBREAK" }
-        "linethickness".cmd("dimension".required) { "LINETHICKNESS" }
+        "linebreak".cmd("number".optional) { "Request a line break." }
+        "linethickness".cmd("dimension".required) { "Set line thickness for picture-mode drawing commands." }
         +"linewidth"
-        "listfigurename".cmd("name".required) { "LISTFIGURENAME" }
+        "listfigurename".cmd("name".required) { "Set the title used for the list of figures." }
         +"listfiles"
         +"listoffigures"
         +"listoftables"
-        "listtablename".cmd("name".required) { "LISTTABLENAME" }
-        "lowercase".cmd(textArg) { "LOWERCASE" }
+        "listtablename".cmd("name".required) { "Set the title used for the list of tables." }
+        "lowercase".cmd(textArg) { "Convert text to lowercase." }
 
         +"makeglossary"
         +"makeindex"
         +"makelabel"
-        "makelabels".cmd("number".required) { "MAKELABELS" }
+        "makelabels".cmd("number".required) { "Configure label creation." }
         +"maketitle"
-        "marg".cmd("arg".required) { "MARG" }
-        "mbox".cmd(textArg) { "MBOX" }
+        "marg".cmd("arg".required) { "Typeset an argument placeholder in documentation." }
+        "mbox".cmd(textArg) { "Keep content together in horizontal mode." }
         +"mdseries"
         +"medskip"
-        "meta".cmd("arg".required) { "META" }
-        "multicolumn".cmd("cols".required, "pos".required, textArg) { "MULTICOLUMN" }
+        "meta".cmd("arg".required) { "Typeset a meta-variable placeholder in documentation." }
+        "multicolumn".cmd("cols".required, "pos".required, textArg) { "Span multiple columns in a table." }
         +"newlabel"
-        "newlength".cmd("length".required) { "NEWLENGTH" }
+        "newlength".cmd("length".required) { "Define a new length register." }
         +"newline"
         +"newpage"
-        "nocite".cmd("keys".required) { "NOCITE" }
+        "nocite".cmd("keys".required) { "Add bibliography entries without citing them in the text." }
         +"nofiles"
-        "nolinebreak".cmd("number".optional) { "NOLINEBREAK" }
+        "nolinebreak".cmd("number".optional) { "Discourage a line break at this point." }
         +"nonumber"
-        "nopagebreak".cmd("number".optional) { "NOPAGEBREAK" }
+        "nopagebreak".cmd("number".optional) { "Discourage a page break at this point." }
         +"normalfont"
         +"normalsize"
-        "oarg".cmd("arg".required) { "OARG" }
+        "oarg".cmd("arg".required) { "Typeset an optional argument placeholder in documentation." }
         +"oddsidemargin"
 
-        "oldstylenums".cmd("number".required) { "OLDSTYLEENUMS" }
+        "oldstylenums".cmd("number".required) { "Typeset numbers using old-style numerals." }
         +"onecolumn"
-        "onlyifstandalone".cmd("code".required) { "ONLYIFSTANDALONE" }
-        "pagebreak".cmd("number".optional) { "PAGEBREAK" }
+        "onlyifstandalone".cmd("code".required) { "Execute code only when compiling as a standalone document." }
+        "pagebreak".cmd("number".optional) { "Request a page break." }
         +"pagename"
-        "pagenumbering".cmd("numstyle".required) { "PAGENUMBERING" }
+        "pagenumbering".cmd("numstyle".required) { "Set page numbering style." }
 
-        "pagestyle".cmd("style".required) { "PAGESTYLE" }
+        "pagestyle".cmd("style".required) { "Set the page style for subsequent pages." }
         +"pagetotal"
         +"paperheight"
         +"paperwidth"
-        "paragraph".cmd("shorttitle".optional, titleArg) { "PARAGRAPH" }
-        "paragraph*".cmd(titleArg) { "PARAGRAPH_STAR" }
+        "paragraph".cmd("shorttitle".optional, titleArg) { "Create a paragraph heading." }
+        "paragraph*".cmd(titleArg) { "Create an unnumbered paragraph heading." }
         +"paragraphmark"
-        "parbox".cmd("pos".optional, "width".required, textArg) { "PARBOX" }
-        "parg".cmd("arg".required) { "PARG" }
+        "parbox".cmd("pos".optional, "width".required, textArg) { "Create a paragraph box of fixed width." }
+        "parg".cmd("arg".required) { "Typeset a delimited argument placeholder in documentation." }
         +"parindent"
         +"parskip"
-        "part".cmd("shorttitle".optional, titleArg) { "PART" }
-        "part*".cmd(titleArg) { "PART_STAR" }
-        "partname".cmd("name".required) { "PARTNAME" }
-        "pdfinfo".cmd("info".required) { "PDFINFO" }
+        "part".cmd("shorttitle".optional, titleArg) { "Create a part heading." }
+        "part*".cmd(titleArg) { "Create an unnumbered part heading." }
+        "partname".cmd("name".required) { "Set the label used for parts." }
+        "pdfinfo".cmd("info".required) { "Set PDF metadata entries." }
 
         +"printindex"
 
@@ -175,103 +175,103 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         +"rightmark"
         +"rm"
         +"rmfamily"
-        "roman".cmd("counter".required) { "ROMAN" }
+        "roman".cmd("counter".required) { "Format a counter value as lowercase Roman numerals." }
 
-        "rule".cmd("line".optional, "width".required, "thickness".required) { "RULE" }
+        "rule".cmd("line".optional, "width".required, "thickness".required) { "Draw a rule with the given width and thickness." }
         +"samepage"
-        "sbox".cmd("cmd".required, "length".required) { "SBOX" }
+        "sbox".cmd("cmd".required, "length".required) { "Store content in a box register." }
         +"sc"
         +"scriptsize"
         +"scshape"
-        "section".cmd("shorttitle".optional, titleArg) { "SECTION" }
-        "section*".cmd(titleArg) { "SECTION_STAR" }
+        "section".cmd("shorttitle".optional, titleArg) { "Create a section heading." }
+        "section*".cmd(titleArg) { "Create an unnumbered section heading." }
         +"selectfont"
-        "setcounter".cmd("countername".required, "value".required) { "SETCOUNTER" }
-        "setlength".cmd("cmd".required, "length".required) { "SETLENGTH" }
+        "setcounter".cmd("countername".required, "value".required) { "Set a counter to a specific value." }
+        "setlength".cmd("cmd".required, "length".required) { "Set a length register." }
         +"sf"
         +"sffamily"
-        "shortstack".cmd("pos".optional, textArg) { "SHORTSTACK" }
+        "shortstack".cmd("pos".optional, textArg) { "Stack short lines vertically." }
         +"sl"
         +"slshape"
         +"small"
         +"smallskip"
         +"smash"
         +"space"
-        "stepcounter".cmd("counter".required) { "STEPCOUNTER" }
+        "stepcounter".cmd("counter".required) { "Increment a counter by one." }
         +"stop"
-        "stretch".cmd("factor".required) { "STRETCH" }
+        "stretch".cmd("factor".required) { "Create stretchable horizontal space with a factor." }
         +"subitem"
-        "subparagraph".cmd("shorttitle".optional, titleArg) { "SUBPARAGRAPH" }
-        "subparagraph*".cmd(titleArg) { "SUBPARAGRAPH_STAR" }
-        "subparagraphmark".cmd("code".required) { "SUBPARAGRAPHMARK" }
-        "subsection".cmd("shorttitle".optional, titleArg) { "SUBSECTION" }
-        "subsection*".cmd(titleArg) { "SUBSECTION_STAR" }
-        "subsectionmark".cmd("code".required) { "SUBSECTIONMARK" }
+        "subparagraph".cmd("shorttitle".optional, titleArg) { "Create a subparagraph heading." }
+        "subparagraph*".cmd(titleArg) { "Create an unnumbered subparagraph heading." }
+        "subparagraphmark".cmd("code".required) { "Define how subparagraph marks appear in running headers." }
+        "subsection".cmd("shorttitle".optional, titleArg) { "Create a subsection heading." }
+        "subsection*".cmd(titleArg) { "Create an unnumbered subsection heading." }
+        "subsectionmark".cmd("code".required) { "Define how subsection marks appear in running headers." }
         +"subsubitem"
-        "subsubsection".cmd("shorttitle".optional, titleArg) { "SUBSUBSECTION" }
-        "subsubsection*".cmd(titleArg) { "SUBSUBSECTION_STAR" }
-        "subsubsectionmark".cmd("code".required) { "SUBSUBSECTIONMARK" }
-        "suppressfloats".cmd("placement".optional) { "SUPPRESSFLOATS" }
-        "symbol".cmd("n".required) { "SYMBOL" }
+        "subsubsection".cmd("shorttitle".optional, titleArg) { "Create a subsubsection heading." }
+        "subsubsection*".cmd(titleArg) { "Create an unnumbered subsubsection heading." }
+        "subsubsectionmark".cmd("code".required) { "Define how subsubsection marks appear in running headers." }
+        "suppressfloats".cmd("placement".optional) { "Prevent floats from being placed in the specified area." }
+        "symbol".cmd("n".required) { "Typeset the character with the given symbol number." }
         +"tabcolsep"
-        "tablename".cmd("name".required) { "TABLENAME" }
+        "tablename".cmd("name".required) { "Set the label used for tables." }
         +"tableofcontents"
 
-        "textbf".cmd(textArg) { "TEXTBF" }
+        "textbf".cmd(textArg) { "Typeset text in boldface." }
 
-        "textcircled".cmd("a".required) { "CIRCLED_TEXT" }
+        "textcircled".cmd("a".required) { "Draw a circle around text." }
 
         +"textheight"
-        "textit".cmd(textArg) { "TEXTIT" }
+        "textit".cmd(textArg) { "Typeset text in italic." }
 
-        "textlf".cmd(textArg) { "TEXTLF" }
-        "textmd".cmd(textArg) { "TEXTMD" }
+        "textlf".cmd(textArg) { "Typeset text in light font weight." }
+        "textmd".cmd(textArg) { "Typeset text in medium font weight." }
         +"textnormal"
         +"textparagraph"
 
-        "textrm".cmd(textArg) { "TEXTRM" }
-        "textsc".cmd("textsc".required) { "TEXTSC" }
+        "textrm".cmd(textArg) { "Typeset text in roman family." }
+        "textsc".cmd("textsc".required) { "Typeset text in small caps." }
 
-        "textsf".cmd(textArg) { "TEXTSF" }
-        "textsl".cmd(textArg) { "TEXTSL" }
+        "textsf".cmd(textArg) { "Typeset text in sans-serif family." }
+        "textsl".cmd(textArg) { "Typeset text in slanted shape." }
 
-        "textsubscript".cmd(textArg) { "TEXTSUBSCRIPT" }
-        "textsuperscript".cmd(textArg) { "TEXTSUPERSCRIPT" }
+        "textsubscript".cmd(textArg) { "Typeset text as subscript." }
+        "textsuperscript".cmd(textArg) { "Typeset text as superscript." }
 
-        "texttt".cmd(textArg) { "TEXTTT" }
+        "texttt".cmd(textArg) { "Typeset text in monospaced family." }
 
-        "textup".cmd(textArg) { "TEXTUP" }
+        "textup".cmd(textArg) { "Typeset text in upright shape." }
 
         +"textwidth"
-        "thanks".cmd("to".required) { "THANKS" }
+        "thanks".cmd("to".required) { "Add a footnote-style acknowledgment, typically in the title block." }
         +"thicklines"
         +"thinlines"
-        "thispagestyle".cmd("style".required) { "THISPAGESTYLE" }
+        "thispagestyle".cmd("style".required) { "Set the page style for the current page only." }
         +"time"
         +"tiny"
-        "title".cmd(textArg) { "TITLE" }
+        "title".cmd(textArg) { "Set the document title." }
         +"today"
         +"topmargin"
         +"tt"
         +"ttfamily"
-        "twocolumn".cmd("text".optional) { "TWOCOLUMN" }
+        "twocolumn".cmd("text".optional) { "Switch to two-column layout." }
         +"unboldmath"
-        "underline".cmd(textArg) { "UNDERLINE" }
+        "underline".cmd(textArg) { "Underline text." }
         +"unitlength"
-        "uppercase".cmd(textArg) { "UPPERCASE" }
+        "uppercase".cmd(textArg) { "Convert text to uppercase." }
         +"upshape"
-        "usepgfplotslibrary".cmd("libraries".required) { "USEPGFPLOTSLIBRARY" }
-        "usetikzlibrary".cmd("libraries".required) { "USETIKZLIBRARY" }
+        "usepgfplotslibrary".cmd("libraries".required) { "Load PGFPlots libraries." }
+        "usetikzlibrary".cmd("libraries".required) { "Load TikZ libraries." }
         +"vline"
-        "vspace".cmd("length".required) { "VSPACE" }
-        "vspace*".cmd("length".required) { "VSPACE_STAR" }
+        "vspace".cmd("length".required) { "Insert vertical space." }
+        "vspace*".cmd("length".required) { "Insert vertical space that is kept at page breaks." }
         +"width"
 
         packageOf("biblatex")
         +"printbibliography"
 
         packageOf("amsmath")
-        "eqref".cmd(labelArg) { "EQREF" }
+        "eqref".cmd(labelArg) { "Reference an equation number in parentheses." }
 
         packageOf("csquotes")
         +"enquote"
@@ -293,19 +293,19 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         +"qedhere"
 
         packageOf("ulem")
-        "sout".cmd("strikethroughtext".required) { "SOUT" }
+        "sout".cmd("strikethroughtext".required) { "Strike out text." }
 
         packageOf("ntheorem")
-        "thref".cmd(labelArg) { "THREF" }
+        "thref".cmd(labelArg) { "Reference a theorem-like environment label." }
 
         packageOf("fontspec")
-        "addfontfeature".cmd("font features".required) { "ADDFONTFEATURE" }
-        "addfontfeatures".cmd("font features".required) { "ADDFONTFEATURES" }
-        "defaultfontfeatures".cmd("font names".optional, "font features".required) { "DEFAULTFONTFEATURES" }
-        "fontspec".cmd("font".required, "font features".optional) { "FONTSPEC_CMD" }
-        "setmainfont".cmd("font".required, "font features".optional) { "SETMAINFONT" }
-        "setmonofont".cmd("font".required, "font features".optional) { "SETMONOFONT" }
-        "setsansfont".cmd("font".required, "font features".optional) { "SETSANSFONT" }
+        "addfontfeature".cmd("font features".required) { "Add font features to the current font selection." }
+        "addfontfeatures".cmd("font features".required) { "Add multiple font features to the current font selection." }
+        "defaultfontfeatures".cmd("font names".optional, "font features".required) { "Set default font features." }
+        "fontspec".cmd("font".required, "font features".optional) { "Select a font and optional features (fontspec)." }
+        "setmainfont".cmd("font".required, "font features".optional) { "Set the main text font." }
+        "setmonofont".cmd("font".required, "font features".optional) { "Set the monospaced font." }
+        "setsansfont".cmd("font".required, "font features".optional) { "Set the sans-serif font." }
     }
 
     val citation = textCommands {
@@ -426,15 +426,15 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         }
 
         underPackage("hyperref") {
-            "Autoref".cmd(labelArg) { "AUTOREF_CAPITAL" }
-            "autoref".cmd(labelArg) { "AUTOREF" }
-            "fullref".cmd(labelArg) { "FULLREF" }
-            "hyperref".cmd("options".optional, labelArg) { "HYPERREF" }
-            "phantomsection".cmd()
+            "Autoref".cmd(labelArg) { "Reference a label with an automatically chosen, capitalized prefix." }
+            "autoref".cmd(labelArg) { "Reference a label with an automatically chosen prefix." }
+            "fullref".cmd(labelArg) { "Create a full reference (for example name and number) to a label." }
+            "hyperref".cmd("options".optional, labelArg) { "Create a hyperlink to a label." }
+            "phantomsection".cmd { "Create an invisible hyperlink anchor at the current position." }
 
             val urlArg = required("url", LatexContexts.URL)
-            "href".cmd(urlArg, textArg) { "HREF" }
-            "url".cmd(urlArg) { "URL" }
+            "href".cmd(urlArg, textArg) { "Insert a hyperlink with custom link text." }
+            "url".cmd(urlArg) { "Typeset and link a URL." }
         }
 
         underPackage("varioref") {
