@@ -528,6 +528,53 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
             "acl", "acl*", "aclp", "aclp*", "aclu", "aclu*", "acp", "acp*", "acs", "acs*",
             "acsp", "acsp*", "acsu", "acsu*", "iac", "iac*"
         ).forEach { it.cmd(linebreakPenalty, acronymRef) }
+
+        underPackage("acro") {
+            val options = "options".optional
+            val acroRef = "id".required(setOf(LatexContexts.Text, LatexContexts.GlossaryReference))
+            fun registerAcroCommands(commands: List<String>, description: String) {
+                commands.forEach { cmd ->
+                    cmd.cmd(options, acroRef) { description }
+                    "$cmd*".cmd(options, acroRef) { description }
+                }
+            }
+
+            // First-use template
+            registerAcroCommands(
+                listOf("ac", "acp", "iac", "Ac", "Acp", "Iac"),
+                "Typeset an acronym."
+            )
+
+            // Short form
+            registerAcroCommands(
+                listOf("acs", "acsp", "iacs", "Acs", "Acsp", "Iacs"),
+                "Typeset the short form of an acronym."
+            )
+
+            // Long form
+            registerAcroCommands(
+                listOf("acl", "aclp", "iacl", "Acl", "Aclp", "Iacl"),
+                "Typeset the long form of an acronym."
+            )
+
+            // Alternative form
+            registerAcroCommands(
+                listOf("aca", "acap", "iaca", "Aca", "Acap", "Iaca"),
+                "Typeset the alternative form of an acronym."
+            )
+
+            // Full form
+            registerAcroCommands(
+                listOf("acf", "acfp", "iacf", "Acf", "Acfp", "Iacf"),
+                "Typeset the full form of an acronym."
+            )
+
+            // Show data without usage side-effects
+            registerAcroCommands(
+                listOf("acshow"),
+                "Show acronym information without marking it as used."
+            )
+        }
     }
 
     val tcolorboxDefinitionCommands = buildCommands {
