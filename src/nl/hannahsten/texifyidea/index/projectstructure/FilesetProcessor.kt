@@ -59,8 +59,9 @@ class FilesetProcessor(
     var luatexPaths: Set<VirtualFile> = emptySet()
 
     private fun extractExternalDocumentInfoInFileset(allFilesScope: GlobalSearchScope): List<ExternalDocumentInfo> {
-        val externalDocumentCommands = NewCommandsIndex.getByName(
-            CommandNames.EXTERNAL_DOCUMENT,
+        val externalDocumentCommands = NewCommandsIndex.getByNames(
+            CommandMagic.externalDocumentCommands,
+            project,
             allFilesScope.restrictedByFileTypes(LatexFileType)
         )
         if (externalDocumentCommands.isEmpty()) return emptyList()
@@ -292,7 +293,7 @@ class FilesetProcessor(
             // For bibliography files, we can search in the bib input paths
             processFilesUnderRootDirs(pathWithExts, refInfos, info.bibInputPaths)
         }
-        if (commandName == CommandNames.EXTERNAL_DOCUMENT) {
+        if (commandName in CommandMagic.externalDocumentCommands) {
             // \externaldocument uses the .aux file in the output directory, we are only interested in the source file,
             // but it can be anywhere (because no relative path will be given, as in the output directory everything will be on the same level).
             // This does not count for building the file set, because the external document is not actually in the fileset, only the label definitions are
