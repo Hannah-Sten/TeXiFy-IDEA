@@ -1,10 +1,10 @@
-
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.grammarkit.tasks.GenerateLexerTask
 import org.jetbrains.grammarkit.tasks.GenerateParserTask
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
+import org.jetbrains.kotlin.gradle.dsl.JvmDefaultMode
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 fun properties(key: String) = project.findProperty(key).toString()
@@ -71,7 +71,7 @@ val kotlinJvmTarget = JvmTarget.fromTarget(targetVersion)
 tasks.compileKotlin {
     compilerOptions {
         jvmTarget.set(kotlinJvmTarget)
-        freeCompilerArgs = listOf("-Xjvm-default=all")
+        jvmDefault.set(JvmDefaultMode.ENABLE)
     }
 }
 
@@ -79,7 +79,7 @@ tasks.compileKotlin {
 tasks.compileTestKotlin {
     compilerOptions {
         jvmTarget.set(kotlinJvmTarget)
-        freeCompilerArgs = listOf("-Xjvm-default=all")
+        jvmDefault.set(JvmDefaultMode.ENABLE)
     }
 }
 
