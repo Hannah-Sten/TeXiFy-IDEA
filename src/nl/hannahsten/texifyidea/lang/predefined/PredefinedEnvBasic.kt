@@ -4,6 +4,7 @@ import nl.hannahsten.texifyidea.lang.LatexContextIntro
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.LatexContexts.Alignable
 import nl.hannahsten.texifyidea.lang.LatexContexts.Literal
+import nl.hannahsten.texifyidea.lang.LatexContexts.Position
 import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.PredefinedEnvironmentSet
 
@@ -185,7 +186,7 @@ object PredefinedEnvBasic : PredefinedEnvironmentSet() {
     }
 
     val figuresAndTable = buildEnvironments {
-        val placement = "placement".optional(Literal)
+        val placement = "placement".optional(Position)
         "figure".env(LatexContexts.Figure, placement) {
             "A figure environment."
         }
@@ -197,7 +198,7 @@ object PredefinedEnvBasic : PredefinedEnvironmentSet() {
         "table*".env(+LatexContexts.Table, placement)
 
         val cols = "cols".required(Literal)
-        val pos = "pos".optional(Literal)
+        val pos = "pos".optional(Position)
         val width = "width".optional(Literal)
         "tabular".env(+LatexContexts.Tabular, pos, cols) {
             "A basic table."
@@ -218,10 +219,25 @@ object PredefinedEnvBasic : PredefinedEnvironmentSet() {
                 "A block array environment."
             }
         }
+
+        underPackage("subcaption") {
+            "subfigure".env(+LatexContexts.Figure, "position".optional(Position), "width".required(Literal)) {
+                "A sub-figure environment."
+            }
+            "subtable".env(+LatexContexts.Table, "position".optional(Position), "width".required(Literal)) {
+                "A sub-table environment."
+            }
+            "subcaptionblock".env(LatexContexts.Text, "width".required(Literal)) {
+                "A block container for sub-captions."
+            }
+            "subcaptiongroup".env(LatexContexts.Text) {
+                "A grouping environment for related sub-captions."
+            }
+        }
     }
 
     val formatting = buildEnvironments {
-        "minipage".env(LatexContexts.Text, "position".optional(Literal), "width".required(Literal)) {
+        "minipage".env(LatexContexts.Text, "position".optional(Position), "width".required(Literal)) {
             "A minipage environment."
         }
     }

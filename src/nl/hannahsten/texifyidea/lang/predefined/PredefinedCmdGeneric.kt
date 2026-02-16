@@ -211,7 +211,7 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         "subsubsection".cmd("shorttitle".optional, titleArg) { "Create a subsubsection heading." }
         "subsubsection*".cmd(titleArg) { "Create an unnumbered subsubsection heading." }
         "subsubsectionmark".cmd("code".required) { "Define how subsubsection marks appear in running headers." }
-        "suppressfloats".cmd("placement".optional) { "Prevent floats from being placed in the specified area." }
+        "suppressfloats".cmd("placement".optional(LatexContexts.Position)) { "Prevent floats from being placed in the specified area." }
         "symbol".cmd("n".required) { "Typeset the character with the given symbol number." }
         +"tabcolsep"
         "tablename".cmd("name".required) { "Set the label used for tables." }
@@ -776,5 +776,60 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         +"normalcolor"
         "pagecolor".cmd(colorArg) { "PAGECOLOR" }
         "textcolor".cmd(colorArg, textArg)
+    }
+
+    val captionRelated = buildCommands {
+        underPackage("caption") {
+            "captionsetup".cmd("type".optional(LatexContexts.Literal), "options".required(LatexContexts.Literal)) {
+                "Configure caption formatting globally or for a specific float type."
+            }
+            "captionof".cmd("float type".required(LatexContexts.Literal), "list entry".optional(LatexContexts.Text), "heading".required(LatexContexts.Text)) {
+                "Set a caption outside a float environment."
+            }
+            "captionlistentry".cmd("type".optional(LatexContexts.Literal), "entry".required(LatexContexts.Text)) {
+                "Insert an entry into a caption list without creating a float."
+            }
+            "ContinuedFloat".cmd("name".optional(LatexContexts.Literal)) {
+                "Continue numbering from a previous float."
+            }
+        }
+
+        underPackage("subcaption") {
+            "subcaption".cmd("heading".required(LatexContexts.Text)) {
+                "Set a caption for a sub-float."
+            }
+            "subcaptionbox".cmd(
+                "short heading".optional(LatexContexts.Text),
+                "heading".required(LatexContexts.Text),
+                "width".optional(LatexContexts.Literal),
+                "inner-pos".optional(LatexContexts.Position),
+                "contents".required(LatexContexts.Text)
+            ) {
+                "Create a boxed sub-caption with content."
+            }
+            "subref".cmd(labelArg) {
+                "Reference a sub-caption label."
+            }
+            "subref*".cmd(labelArg) {
+                "Reference a sub-caption label without hyperlink."
+            }
+            "phantomsubcaption".cmd {
+                "Step the sub-caption counter without typesetting a caption."
+            }
+            underContext(LatexContexts.Preamble) {
+                "subcaptionsetup".cmd("options".required(LatexContexts.Literal)) {
+                    "Configure sub-caption defaults."
+                }
+                "subcaptionlistentry".cmd("entry".required(LatexContexts.Text)) {
+                    "Insert an entry into the sub-caption list."
+                }
+                "subrefformat".cmd(
+                    "labelformat".required(LatexContexts.Literal),
+                    "format".required(setOf(LatexContexts.Text, LatexContexts.InsideDefinition))
+                ) {
+                    "Define how sub-caption references are formatted."
+                }
+            }
+        }
     }
 }
