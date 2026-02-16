@@ -401,28 +401,91 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         }
 
         underPackage("cleveref") {
-            "Cpageref".cmd(labelArg) { "CPAGEREF_CAPITAL" }
-            "Cpagerefrange".cmd(label1, label2) { "CPAGEREFRANGE_CAPITAL" }
-            "Cref".cmd(labelArg) { "CREF_CAPITAL" }
-            "cpageref".cmd(labelArg) { "CPAGEREF" }
-            "cpagerefrange".cmd(label1, label2) { "CPAGEREFRANGE" }
-            "cref".cmd(labelArg) { "CREF" }
-            "crefrange".cmd(label1, label2) { "CREFRANGE" }
-            "labelcpageref".cmd(labelArg) { "LABELCPAGEREF" }
-            "labelcref".cmd(labelArg) { "LABELCREF" }
-            "lcnamecref".cmd(labelArg) { "LCNAMECREF" }
-            "lcnamecrefs".cmd(labelArg) { "LCNAMECREFS" }
-            "nameCref".cmd(labelArg) { "NAMECREF_CAPITAL" }
-            "nameCrefs".cmd(labelArg) { "NAMECREFS_CAPITAL" }
-            "namecref".cmd(labelArg) { "NAMECREF" }
-            "namecrefs".cmd(labelArg) { "NAMECREFS" }
+            "cref".cmd(labelArg) { "Reference a label with an automatically chosen type name." }
+            "Cpageref".cmd(labelArg) { "Reference the page of a label with a capitalized prefix." }
+            "Cpagerefrange".cmd(label1, label2) { "Reference a page range between two labels with a capitalized prefix." }
+            "Cref".cmd(labelArg) { "Reference a label with an automatically chosen, capitalized type name." }
+            "cpageref".cmd(labelArg) { "Reference the page of a label with an automatically chosen prefix." }
+            "cpagerefrange".cmd(label1, label2) { "Reference a page range between two labels with an automatically chosen prefix." }
+            "crefrange".cmd(label1, label2) { "Reference a range between two labels with an automatically chosen type name." }
+            "labelcpageref".cmd(labelArg) { "Print the formatted label text used by cpageref for a label." }
+            "labelcref".cmd(labelArg) { "Print the formatted label text used by cref for a label." }
+            "lcnamecref".cmd(labelArg) { "Print the lowercase singular type name for a label." }
+            "lcnamecrefs".cmd(labelArg) { "Print the lowercase plural type name for a label." }
+            "nameCref".cmd(labelArg) { "Print the capitalized singular type name for a label." }
+            "nameCrefs".cmd(labelArg) { "Print the capitalized plural type name for a label." }
+            "namecref".cmd(labelArg) { "Print the singular type name for a label." }
+            "namecrefs".cmd(labelArg) { "Print the plural type name for a label." }
         }
 
         underPackage("zref-clever") {
-            "zcref".cmd("options".optional, labelArg) { "ZCREF" }
-            "zcref*".cmd("options".optional, labelArg) { "ZCREF_STAR" }
-            "zcpageref".cmd("options".optional, labelArg) { "ZCPAGEREF" }
-            "zcpageref*".cmd("options".optional, labelArg) { "ZCPAGEREF_STAR" }
+            "zcref".cmd("options".optional, labelArg) { "Reference a zref label with an automatically chosen type name." }
+            "zcref*".cmd("options".optional, labelArg) { "Reference a zref label with an automatically chosen type name (starred variant)." }
+            "zcpageref".cmd("options".optional, labelArg) { "Reference the page of a zref label with zref-clever formatting." }
+            "zcpageref*".cmd("options".optional, labelArg) { "Reference the page of a zref label with zref-clever formatting (starred variant)." }
+        }
+
+        underPackage("zref") {
+            val zrefProps = "properties".optional(LatexContexts.Literal)
+            val zrefSetup = "options".required(LatexContexts.Literal)
+            "zlabel".cmd("label".required(LatexContexts.LabelDefinition)) { "Define a zref label with extended properties." }
+            "zref".cmd(zrefProps, labelArg) { "Reference a zref label with optional property selection." }
+            "zpageref".cmd(labelArg) { "Reference the page number of a zref label." }
+            "zrefused".cmd(labelArg) { "Mark a zref label as used." }
+            "zxrsetup".cmd(zrefSetup) { "Configure zref cross-document reference behavior." }
+        }
+
+        underPackage("zref-xr") {
+            val prefix = "prefix".optional(LatexContexts.Literal)
+            val externalDocument = "external-document".required(LatexContexts.SingleFile)
+            val url = "url".optional(LatexContexts.URL)
+            "zexternaldocument".cmd(prefix, externalDocument, url) { "Import zref labels from an external document." }
+            "zexternaldocument*".cmd(prefix, externalDocument, url) { "Import zref labels from an external document (starred variant)." }
+        }
+
+        underPackage("zref-titleref") {
+            "ztitleref".cmd(labelArg) { "Reference the title associated with a zref label." }
+            "ztitlerefsetup".cmd("options".required(LatexContexts.Literal)) { "Configure title references provided by zref." }
+        }
+
+        underPackage("zref-savepos") {
+            val zrefDef = "label".required(LatexContexts.LabelDefinition)
+            "zsavepos".cmd(zrefDef) { "Save the current position under a zref label." }
+            "zsaveposx".cmd(zrefDef) { "Save the current horizontal position under a zref label." }
+            "zsaveposy".cmd(zrefDef) { "Save the current vertical position under a zref label." }
+            "zposx".cmd(labelArg) { "Get saved horizontal position from a zref label." }
+            "zposy".cmd(labelArg) { "Get saved vertical position from a zref label." }
+        }
+
+        underPackage("zref-perpage") {
+            "zmakeperpage".cmd("reset".optional(LatexContexts.Literal), "counter".required(LatexContexts.Literal)) {
+                "Reset a counter on each page (zref-perpage)."
+            }
+            "zunmakeperpage".cmd("counter".required(LatexContexts.Literal)) {
+                "Disable per-page reset for a counter (zref-perpage)."
+            }
+        }
+
+        underPackage("zref-nextpage") {
+            "znextpage".cmd { "Trigger zref next-page tracking for the current location." }
+            "znextpagesetup".cmd(
+                "first".required(LatexContexts.Literal),
+                "middle".required(LatexContexts.Literal),
+                "last".required(LatexContexts.Literal)
+            ) { "Configure formatting used by zref-nextpage." }
+        }
+
+        underPackage("zref-totpages") {
+            "ztotpages".cmd { "Print the total number of pages recorded by zref." }
+        }
+
+        underPackage("zref-thepage") {
+            "zthepage".cmd("abspage".required(LatexContexts.Numeric)) { "Convert absolute page number to formatted page representation." }
+        }
+
+        underPackage("zref-lastpage") {
+            "ziflastpage".cmd(labelArg, "then".required, "else".required) { "Branch based on whether a label is on the last page." }
+            "zref@iflastpage".cmd(labelArg, "then".required, "else".required) { "Internal-style conditional for zref-lastpage." }
         }
 
         underPackage("hyperref") {

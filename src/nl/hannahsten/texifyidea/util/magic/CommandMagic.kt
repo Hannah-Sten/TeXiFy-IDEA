@@ -114,7 +114,7 @@ object CommandMagic {
      *
      * Consider migrating to context-aware approach, using [nl.hannahsten.texifyidea.index.LatexDefinitionService].
      */
-    val labels = CommandNames.run { setOf(LABEL) }
+    val labels = CommandNames.run { setOf(LABEL, Z_LABEL) }
 
     /**
      * All math operators without a leading slash.

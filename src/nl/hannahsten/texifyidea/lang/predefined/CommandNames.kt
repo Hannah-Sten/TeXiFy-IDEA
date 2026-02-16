@@ -89,6 +89,7 @@ object CommandNames {
     const val BEGIN = "\\begin"
     const val END = "\\end"
     const val LABEL = "\\label"
+    const val Z_LABEL = "\\zlabel"
     const val PARAGRAPH = "\\paragraph"
     const val SUB_PARAGRAPH = "\\subparagraph"
     const val PART = "\\part"
