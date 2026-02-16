@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package nl.hannahsten.texifyidea.lang.predefined
 
 import nl.hannahsten.texifyidea.lang.LArgument.Companion.required

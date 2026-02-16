@@ -7,4 +7,5 @@ class NewMagicCommentIndexEx : LatexCompositeStubIndex<LatexMagicComment>(LatexM
     override fun getKey() = LatexStubIndexKeys.MAGIC_COMMENTS_KEY
 }
 
+@Suppress("unused") // todo why is this not used?
 val NewMagicCommentIndex = NewMagicCommentIndexEx()

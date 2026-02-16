@@ -69,9 +69,6 @@ class SectionNumbering(private val documentClass: DocumentClass) {
         BOOK(1),
         ARTICLE(2);
 
-        val className: String
-            get() = name.lowercase(Locale.getDefault())
-
         companion object {
 
             fun getClassByName(name: String): DocumentClass = if (BOOK.name == name) {

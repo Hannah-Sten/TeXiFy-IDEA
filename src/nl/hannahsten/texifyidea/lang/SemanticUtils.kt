@@ -4,6 +4,7 @@ fun LSemanticCommand.introduces(candidate: LatexContext): Boolean = arguments.an
     it.contextSignature.introduces(candidate)
 }
 
+@Suppress("unused")
 fun LSemanticCommand.introducesAny(candidates: LContextSet): Boolean = arguments.any {
     it.contextSignature.introducesAny(candidates)
 }
