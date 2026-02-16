@@ -8,6 +8,7 @@ private fun mathAlphabetMapping(
     uppercaseStart: Int? = null,
     lowercaseStart: Int? = null,
     digitStart: Int? = null,
+    plainDigits: Boolean = false,
     overrides: Map<Char, String> = emptyMap()
 ): Map<Char, String> {
     val mapping = LinkedHashMap<Char, String>(62)
@@ -24,6 +25,12 @@ private fun mathAlphabetMapping(
     digitStart?.let {
         for (i in 0 until 10) {
             mapping[('0'.code + i).toChar()] = codePointString(it + i)
+        }
+    }
+    if (plainDigits) {
+        for (i in 0 until 10) {
+            val digit = ('0'.code + i).toChar()
+            mapping.putIfAbsent(digit, digit.toString())
         }
     }
     mapping.putAll(overrides)
@@ -43,7 +50,8 @@ enum class MathStyle(
     CALLIGRAPHIC(
         mathAlphabetMapping(
             uppercaseStart = 0x1D4D0,
-            lowercaseStart = 0x1D4EA
+            lowercaseStart = 0x1D4EA,
+            plainDigits = true
         )
     ),
 
@@ -103,7 +111,17 @@ enum class MathStyle(
             'w' to "𝓌",
             'x' to "𝓍",
             'y' to "𝓎",
-            'z' to "𝓏"
+            'z' to "𝓏",
+            '0' to "0",
+            '1' to "1",
+            '2' to "2",
+            '3' to "3",
+            '4' to "4",
+            '5' to "5",
+            '6' to "6",
+            '7' to "7",
+            '8' to "8",
+            '9' to "9"
         )
     ),
 
@@ -191,6 +209,7 @@ enum class MathStyle(
         mathAlphabetMapping(
             uppercaseStart = 0x1D434,
             lowercaseStart = 0x1D44E,
+            plainDigits = true,
             overrides = mapOf(
                 'h' to "ℎ"
             )
@@ -226,6 +245,7 @@ enum class MathStyle(
         mathAlphabetMapping(
             uppercaseStart = 0x1D504,
             lowercaseStart = 0x1D51E,
+            plainDigits = true,
             overrides = mapOf(
                 'C' to "ℭ",
                 'H' to "ℌ",
