@@ -175,8 +175,8 @@ class LatexUnicodeInspectionQuickFix : LatexUnicodeInspectionTest() {
     fun `test escape unicode quick fix math command`() {
         setUnicodeSupport(false)
 
-        // ℂ cannot be converted.
-        testNamedQuickFix($$"$ℂ$", $$"$ℂ$", "Escape Unicode character", 1)
+        // ℂ can be actually converted to \BbbC with unicode-math
+        testNamedQuickFix($$"$ℂ$", "\\usepackage{unicode-math}\$\\BbbC\$", "Escape Unicode character", 1)
     }
 }
 
