@@ -4,7 +4,7 @@ import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.Messages
+import com.intellij.util.io.awaitExit
 import nl.hannahsten.texifyidea.util.runInBackgroundWithoutProgress
 import kotlin.io.path.Path
 
@@ -13,24 +13,6 @@ object LatexmkCleanUtil {
     enum class Mode(val flag: String, val label: String) {
         CLEAN("-c", "Clean auxiliary files"),
         CLEAN_ALL("-C", "Clean all generated files"),
-    }
-
-    fun promptMode(project: Project): Mode? {
-        val result = Messages.showYesNoCancelDialog(
-            project,
-            "Choose latexmk clean mode.\nYes = -c (auxiliary files), No = -C (all generated files).",
-            "Clean With latexmk",
-            "Use -c",
-            "Use -C",
-            "Cancel",
-            null,
-        )
-
-        return when (result) {
-            Messages.YES -> Mode.CLEAN
-            Messages.NO -> Mode.CLEAN_ALL
-            else -> null
-        }
     }
 
     fun run(project: Project, runConfig: LatexmkRunConfiguration, mode: Mode) {
@@ -58,7 +40,7 @@ object LatexmkCleanUtil {
                     .start()
 
                 process.inputReader().readText()
-                val exitCode = process.waitFor()
+                val exitCode = process.awaitExit()
 
                 if (exitCode == 0) {
                     Notification("LaTeX", "latexmk clean completed", "Finished ${mode.label.lowercase()} for ${mainFile.name}.", NotificationType.INFORMATION).notify(project)

@@ -136,7 +136,7 @@ class LatexmkSettingsEditor(private var project: Project) : SettingsEditor<Latex
                 TextBrowseFolderListener(
                     FileChooserDescriptor(true, false, false, false, false, false)
                         .withFileFilter { it.nameWithoutExtension == "latexmk" }
-                        .withTitle("Choose latexmk executable")
+                        .withTitle("Choose Latexmk Executable")
                 )
             )
             isEnabled = false

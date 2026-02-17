@@ -10,9 +10,6 @@
             <action class="nl.hannahsten.texifyidea.action.DeleteGeneratedFiles" id="texify.ClearGeneratedFiles"
                     text="Delete All Output Files">
             </action>
-            <action class="nl.hannahsten.texifyidea.action.CleanWithLatexmkAction" id="texify.CleanWithLatexmk"
-                    text="Clean with latexmk...">
-            </action>
 
             <separator/>
             <!-- Show equation preview -->

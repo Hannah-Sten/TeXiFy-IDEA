@@ -48,8 +48,7 @@ class DeleteGeneratedFiles : AnAction() {
 
         val selectedRunConfig = project.selectedRunConfig()
         if (selectedRunConfig is LatexmkRunConfiguration) {
-            val mode = LatexmkCleanUtil.promptMode(project) ?: return
-            LatexmkCleanUtil.run(project, selectedRunConfig, mode)
+            LatexmkCleanUtil.run(project, selectedRunConfig, LatexmkCleanUtil.Mode.CLEAN_ALL)
             return
         }
 
