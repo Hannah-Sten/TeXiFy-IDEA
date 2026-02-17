@@ -51,7 +51,7 @@ object PredefinedCmdUnicodeMathSymbols : PredefinedCommandSet() {
     val mathord = mathCommands {
         underPackage("unicode-math") {
             symbol("mathoctothorpe", "#", "number sign")
-            symbol("mathdollar", "\$", "dollar sign")
+            symbol("mathdollar", "$", "dollar sign")
             symbol("mathpercent", "%", "percent sign")
             symbol("mathampersand", "&", "ampersand")
             symbol("mathperiod", ".", "full stop, period")
