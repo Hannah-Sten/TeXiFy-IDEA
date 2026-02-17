@@ -10,7 +10,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.psi.PsiManager
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexCompilationRunConfiguration
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.selectedRunConfig
@@ -51,13 +51,13 @@ object ZathuraViewer : SystemPdfViewer("Zathura", "zathura") {
         // If so, guess the main file (pdf) of that run config as the pdf.
         val runConfig = project.selectedRunConfig() ?: return null
         return if (runConfig.mainFile?.psiFile(project)?.referencedFileSet()?.contains(sourcePsiFile) == true) {
-            // outputFilePath contains the file name and pdf extension (already). We don't have to add it.
-            runConfig.outputFilePath
+            // getOutputFilePath() contains the file name and pdf extension already.
+            runConfig.getOutputFilePath()
         }
         // If not, search for a run configuration that compiles the root file of the current file,
         // and use the output path that is specified there.
         else {
-            runConfigThatCompilesFile(sourceVirtualFile, project)?.outputFilePath ?: return null
+            runConfigThatCompilesFile(sourceVirtualFile, project)?.getOutputFilePath() ?: return null
         }
     }
 
@@ -65,9 +65,9 @@ object ZathuraViewer : SystemPdfViewer("Zathura", "zathura") {
      * Get the run config that compiles the virtualFile, i.e.,
      * the run configuration that has [virtualFile] as its main file.
      */
-    private fun runConfigThatCompilesFile(virtualFile: VirtualFile, project: Project): LatexRunConfiguration? =
+    private fun runConfigThatCompilesFile(virtualFile: VirtualFile, project: Project): LatexCompilationRunConfiguration? =
         (RunManagerImpl.getInstanceImpl(project) as RunManager)
             .allConfigurationsList
-            .filterIsInstance<LatexRunConfiguration>()
+            .filterIsInstance<LatexCompilationRunConfiguration>()
             .firstOrNull { it.mainFile == virtualFile }
 }

@@ -6,7 +6,7 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexCompilationRunConfiguration
 import java.io.File
 import kotlin.io.path.Path
 
@@ -88,7 +88,7 @@ object LatexmkRcFileFinder {
         return null
     }
 
-    fun isLatexmkRcFilePresent(runConfig: LatexRunConfiguration): Boolean {
+    fun isLatexmkRcFilePresent(runConfig: LatexCompilationRunConfiguration): Boolean {
         val isPresent = isSystemLatexmkRcFilePresent || isLocalLatexmkRcFilePresent(runConfig.compilerArguments, runConfig.getResolvedWorkingDirectory())
 
         // The first time, by default don't override what's in the latexmkrc (but avoid resetting the user chosen output format)
@@ -107,7 +107,7 @@ object LatexmkRcFileFinder {
      * Get the first TEXINPUTS we can find in latexmkrc files.
      * Cached because searching involves quite some system calls, and it's a rarely used feature.
      */
-    fun getTexinputsVariable(directory: VirtualFile, runConfig: LatexRunConfiguration?, project: Project): String? = if (usesLatexmkrc == false) {
+    fun getTexinputsVariable(directory: VirtualFile, runConfig: LatexCompilationRunConfiguration?, project: Project): String? = if (usesLatexmkrc == false) {
         null
     }
     else {
@@ -123,7 +123,7 @@ object LatexmkRcFileFinder {
      *
      * @param runConfig Run configuration to check for working directory and arguments.
      */
-    private fun getTexinputsVariableNoCache(directory: VirtualFile, runConfig: LatexRunConfiguration?, project: Project): String? {
+    private fun getTexinputsVariableNoCache(directory: VirtualFile, runConfig: LatexCompilationRunConfiguration?, project: Project): String? {
         // Cache system file
         (systemLatexmkRcFile ?: getSystemLatexmkRcFile().also { systemLatexmkRcFile = it })?.let {
             return getTexinputs(it)

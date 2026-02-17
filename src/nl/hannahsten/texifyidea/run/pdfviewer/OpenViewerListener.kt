@@ -7,14 +7,14 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.action.ForwardSearchAction
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexCompilationRunConfiguration
 
 /**
  * Execute a forward search with the selected viewer after the compilation is done.
  */
 class OpenViewerListener(
     private val viewer: PdfViewer,
-    val runConfig: LatexRunConfiguration,
+    val runConfig: LatexCompilationRunConfiguration,
     private val sourceFilePath: String,
     val line: Int,
     val project: Project,
@@ -26,9 +26,9 @@ class OpenViewerListener(
         if (event.exitCode == 0) {
             try {
                 // ensure the viewer is open, especially for Sumatra
-                viewer.openFile(runConfig.outputFilePath, project, focusAllowed = focusAllowed)
+                viewer.openFile(runConfig.getOutputFilePath(), project, focusAllowed = focusAllowed)
                 viewer.forwardSearch(
-                    outputPath = runConfig.outputFilePath,
+                    outputPath = runConfig.getOutputFilePath(),
                     sourceFilePath = sourceFilePath,
                     line = line,
                     project = project,

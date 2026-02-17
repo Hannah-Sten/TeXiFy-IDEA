@@ -12,7 +12,7 @@ import com.intellij.task.ProjectTask
 import com.intellij.task.ProjectTaskContext
 import com.intellij.task.ProjectTaskRunner
 import nl.hannahsten.texifyidea.modules.LatexModuleType
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexCompilationRunConfiguration
 import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
@@ -30,7 +30,7 @@ class LatexProjectTaskRunner : ProjectTaskRunner() {
             (
                 ModuleType.get(projectTask.module).id == LatexModuleType.ID
                     ||
-                    RunManager.getInstance(projectTask.module.project).allConfigurationsList.let { it.all { config -> config is LatexRunConfiguration } && it.isNotEmpty() }
+                    RunManager.getInstance(projectTask.module.project).allConfigurationsList.let { it.all { config -> config is LatexCompilationRunConfiguration } && it.isNotEmpty() }
                 )
     }
 

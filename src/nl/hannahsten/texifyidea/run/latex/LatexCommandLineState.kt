@@ -105,7 +105,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
     private fun createHandler(mainFile: VirtualFile, compiler: LatexCompiler): KillableProcessHandler {
         // Make sure to create the command after generating the bib run config (which might change the output path)
-        val command: List<String> = compiler.getCommand(runConfig, environment.project)
+        val command: List<String> = LatexCommandBuilder.build(runConfig, environment.project)
             ?: throw ExecutionException("Compile command could not be created.")
 
         val workingDirectoryPath = runConfig.getResolvedWorkingDirectory() ?: mainFile.parent.path

@@ -6,7 +6,6 @@ import com.intellij.execution.configurations.ConfigurationFactory
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
-import com.intellij.psi.createSmartPointer
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
 import nl.hannahsten.texifyidea.run.latex.LatexOutputPath
@@ -31,7 +30,6 @@ class LatexmkRunConfigurationProducer : LazyRunConfigurationProducer<LatexmkRunC
         }
 
         runConfiguration.mainFile = mainFile
-        runConfiguration.psiFile = container.createSmartPointer()
         runConfiguration.setSuggestedName()
         runConfiguration.outputPath = runConfiguration.outputPath.clone()
         runConfiguration.auxilPath = runConfiguration.auxilPath.clone()
