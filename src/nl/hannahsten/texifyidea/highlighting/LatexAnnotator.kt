@@ -9,7 +9,6 @@ import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
-import com.intellij.psi.util.childrenOfType
 import com.intellij.psi.util.elementType
 import com.intellij.psi.util.endOffset
 import com.intellij.psi.util.startOffset
@@ -24,6 +23,7 @@ import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
 import nl.hannahsten.texifyidea.util.shrink
+import nl.hannahsten.texifyidea.util.parser.forEachDirectChildTyped
 
 /**
  * Provide syntax highlighting for composite elements.
@@ -235,7 +235,7 @@ open class LatexAnnotator : Annotator {
         LatexPsiUtil.processArgumentsWithNonNullSemantics(command, semantics) { param, arg ->
             val intro = arg.contextSignature
             getStyleFromContextSignature(intro)?.let { style ->
-                param.findFirstChildTyped<LatexRequiredParamContent>()?.childrenOfType<LatexParameterText>()?.forEach { content ->
+                param.findFirstChildTyped<LatexRequiredParamContent>()?.forEachDirectChildTyped<LatexParameterText> { content ->
                     // Avoid overriding command highlighting
                     content.node.children().filter { it.elementType == LatexTypes.NORMAL_TEXT_WORD }.forEach { text ->
                         annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
