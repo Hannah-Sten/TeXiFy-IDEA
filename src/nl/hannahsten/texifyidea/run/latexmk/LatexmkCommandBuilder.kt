@@ -99,6 +99,64 @@ object LatexmkCommandBuilder {
         return command
     }
 
+    fun buildCleanCommand(runConfig: LatexmkRunConfiguration, cleanAll: Boolean): List<String>? {
+        val mainFile = runConfig.mainFile ?: return null
+        val distribution = runConfig.getLatexDistributionType()
+
+        val outputPath = when (distribution) {
+            LatexDistributionType.DOCKER_MIKTEX -> "/miktex/out"
+            LatexDistributionType.DOCKER_TEXLIVE -> "/out"
+            else -> (runConfig.outputPath.getAndCreatePath() ?: mainFile.parent).path.toWslPathIfNeeded(distribution)
+        }
+
+        val auxilPath = when (distribution) {
+            LatexDistributionType.DOCKER_MIKTEX -> "/miktex/auxil"
+            LatexDistributionType.DOCKER_TEXLIVE -> null
+            else -> runConfig.auxilPath.getAndCreatePath()?.path?.toWslPathIfNeeded(distribution)
+        }
+
+        val executable = runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(
+            LatexCompiler.LATEXMK.executableName,
+            runConfig.project,
+            runConfig.getLatexSdk(),
+            distribution,
+        )
+        val command = mutableListOf(executable)
+
+        val compilerArguments = runConfig.compilerArguments
+        if (!compilerArguments.isNullOrBlank()) {
+            command += ParametersListUtil.parse(compilerArguments)
+        }
+
+        command.add("-output-directory=$outputPath")
+        if (auxilPath != null && distribution.isMiktex(runConfig.project)) {
+            command.add("-aux-directory=$auxilPath")
+        }
+        command.add(if (cleanAll) "-C" else "-c")
+
+        if (distribution == LatexDistributionType.WSL_TEXLIVE) {
+            val wslCommand = buildString {
+                append(GeneralCommandLine(command).commandLineString)
+                append(' ')
+                append(mainFile.path.toWslPathIfNeeded(distribution))
+            }
+            return mutableListOf(*SystemEnvironment.wslCommand, wslCommand)
+        }
+
+        if (distribution.isDocker()) {
+            createDockerCommand(runConfig, auxilPath, outputPath, mainFile, command)
+        }
+
+        if (runConfig.hasDefaultWorkingDirectory()) {
+            command.add(mainFile.name)
+        }
+        else {
+            command.add(mainFile.path)
+        }
+
+        return command
+    }
+
     private fun createDockerCommand(
         runConfig: LatexCompilationRunConfiguration,
         dockerAuxilDir: String?,

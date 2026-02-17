@@ -13,7 +13,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.run.compiler.ExternalTool
 import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexChainedCompilationRunConfiguration
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.includedPackagesInFileset
 
@@ -21,7 +21,7 @@ import nl.hannahsten.texifyidea.util.includedPackagesInFileset
  * Run the external tool.
  */
 class RunExternalToolListener(
-    private val latexRunConfig: LatexRunConfiguration,
+    private val latexRunConfig: LatexChainedCompilationRunConfiguration,
     private val environment: ExecutionEnvironment,
 ) : ProcessListener {
 

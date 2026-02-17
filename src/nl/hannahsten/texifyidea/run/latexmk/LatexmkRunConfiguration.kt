@@ -3,7 +3,6 @@ package nl.hannahsten.texifyidea.run.latexmk
 import com.intellij.diagnostic.logging.LogConsoleManagerBase
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.Executor
-import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.execution.configurations.AdditionalTabComponentManager
 import com.intellij.execution.configurations.ConfigurationFactory
@@ -35,7 +34,6 @@ import nl.hannahsten.texifyidea.settings.sdk.LatexSdk
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.files.findVirtualFileByAbsoluteOrRelativePath
 import org.jdom.Element
-import java.io.File
 import java.util.Locale
 
 class LatexmkRunConfiguration(
@@ -93,23 +91,13 @@ class LatexmkRunConfiguration(
 
     override var workingDirectory: String? = null
 
-    override var compileTwice = false
     override var outputFormat: LatexCompiler.Format = LatexCompiler.Format.DEFAULT
 
     override var latexDistribution: LatexDistributionType = LatexDistributionType.MODULE_SDK
 
-    override var isLastRunConfig = false
-    override var isFirstRunConfig = true
     override var hasBeenRun = false
     override var requireFocus = true
     override var isAutoCompiling = false
-
-    override var bibRunConfigs: Set<RunnerAndConfigurationSettings> = emptySet()
-    override var makeindexRunConfigs: Set<RunnerAndConfigurationSettings> = emptySet()
-    override var externalToolRunConfigs: Set<RunnerAndConfigurationSettings> = emptySet()
-
-    override val filesToCleanUp = mutableListOf<File>()
-    override val filesToCleanUpIfEmpty = mutableSetOf<File>()
 
     override val compilationCapabilities = LatexCompilationCapabilities(
         handlesBib = true,
@@ -154,7 +142,6 @@ class LatexmkRunConfiguration(
     @Throws(ExecutionException::class)
     override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState {
         compiler = LatexCompiler.LATEXMK
-        compileTwice = false
         outputFormat = LatexCompiler.Format.DEFAULT
         compilerArguments = buildLatexmkArguments()
         return LatexmkCommandLineState(environment, this)
@@ -238,8 +225,6 @@ class LatexmkRunConfiguration(
         parent.addContent(Element(CITATION_TOOL).also { it.text = citationTool.name })
         parent.addContent(Element(EXTRA_ARGUMENTS).also { it.text = extraArguments ?: "" })
     }
-
-    override fun getAllAuxiliaryRunConfigs(): Set<RunnerAndConfigurationSettings> = emptySet()
 
     override fun getResolvedWorkingDirectory(): String? = if (!workingDirectory.isNullOrBlank() && mainFile != null) {
         workingDirectory?.replace(LatexOutputPath.MAIN_FILE_STRING, mainFile!!.parent.path)
@@ -348,10 +333,6 @@ class LatexmkRunConfiguration(
         val usesAuxilDir = auxilPath.getAndCreatePath() != mainFile?.parent
         val usesOutDir = outputPath.getAndCreatePath() != mainFile?.parent
         return usesAuxilDir || usesOutDir
-    }
-
-    override fun generateBibRunConfig() {
-        // latexmk handles bibliography itself.
     }
 
     override fun clone(): RunConfiguration {

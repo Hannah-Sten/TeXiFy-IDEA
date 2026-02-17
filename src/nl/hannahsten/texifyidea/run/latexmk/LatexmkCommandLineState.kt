@@ -18,11 +18,11 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.platform.ide.progress.runWithModalProgressBlocking
 import com.intellij.util.applyIf
 import nl.hannahsten.texifyidea.editor.autocompile.AutoCompileDoneListener
-import nl.hannahsten.texifyidea.run.FileCleanupListener
 import nl.hannahsten.texifyidea.run.OpenCustomPdfViewerListener
 import nl.hannahsten.texifyidea.run.latex.LatexCommandBuilder
 import nl.hannahsten.texifyidea.run.latex.LatexCompilationPipeline
 import nl.hannahsten.texifyidea.run.latex.LatexCompilationRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexExecutionContext
 import nl.hannahsten.texifyidea.run.pdfviewer.OpenViewerListener
 import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.files.psiFile
@@ -40,22 +40,21 @@ class LatexmkCommandLineState(
     @Throws(ExecutionException::class)
     override fun startProcess(): ProcessHandler {
         val mainFile = runConfig.mainFile ?: throw ExecutionException("Main file is not specified.")
+        val context = LatexExecutionContext()
 
-        pipeline.prepare(runConfig, environment)
-        val command = pipeline.buildCommand(runConfig, environment)
+        pipeline.prepare(runConfig, environment, context)
+        val command = pipeline.buildCommand(runConfig, environment, context)
 
         val handler = createHandler(mainFile, command)
         runConfig.hasBeenRun = true
 
-        pipeline.scheduleAuxRuns(runConfig, handler, environment)
-        pipeline.scheduleViewer(runConfig, handler, environment)
+        pipeline.finalize(runConfig, handler, environment, context)
 
         if (runConfig.isAutoCompiling) {
             handler.addProcessListener(AutoCompileDoneListener())
             runConfig.isAutoCompiling = false
         }
 
-        pipeline.scheduleCleanup(runConfig, handler)
         return handler
     }
 
@@ -95,7 +94,7 @@ class LatexmkCommandLineState(
 
 private class LatexmkPipeline : LatexCompilationPipeline {
 
-    override fun prepare(runConfig: LatexCompilationRunConfiguration, environment: ExecutionEnvironment) {
+    override fun prepare(runConfig: LatexCompilationRunConfiguration, environment: ExecutionEnvironment, context: LatexExecutionContext) {
         ProgressManager.getInstance().runProcessWithProgressSynchronously(
             {
                 if (runConfig.outputPath.virtualFile == null || !runConfig.outputPath.virtualFile!!.exists()) {
@@ -106,24 +105,13 @@ private class LatexmkPipeline : LatexCompilationPipeline {
             false,
             runConfig.project,
         )
-
-        val createdOutputDirectories = if (!runConfig.getLatexDistributionType().isMiktex(runConfig.project)) {
-            runConfig.outputPath.updateOutputSubDirs()
-        }
-        else {
-            setOf()
-        }
-        runConfig.filesToCleanUpIfEmpty.addAll(createdOutputDirectories)
     }
 
-    override fun buildCommand(runConfig: LatexCompilationRunConfiguration, environment: ExecutionEnvironment): List<String> = LatexCommandBuilder.build(runConfig, environment.project)
-        ?: throw ExecutionException("Compile command could not be created.")
+    override fun buildCommand(runConfig: LatexCompilationRunConfiguration, environment: ExecutionEnvironment, context: LatexExecutionContext): List<String> =
+        LatexCommandBuilder.build(runConfig, environment.project)
+            ?: throw ExecutionException("Compile command could not be created.")
 
-    override fun scheduleAuxRuns(runConfig: LatexCompilationRunConfiguration, handler: KillableProcessHandler, environment: ExecutionEnvironment) {
-        // latexmk handles bib and index tools itself.
-    }
-
-    override fun scheduleViewer(runConfig: LatexCompilationRunConfiguration, handler: KillableProcessHandler, environment: ExecutionEnvironment) {
+    override fun finalize(runConfig: LatexCompilationRunConfiguration, handler: KillableProcessHandler, environment: ExecutionEnvironment, context: LatexExecutionContext) {
         if (runConfig.isAutoCompiling) return
 
         if (!runConfig.viewerCommand.isNullOrEmpty()) {
@@ -146,9 +134,5 @@ private class LatexmkPipeline : LatexCompilationPipeline {
         val pdfViewer = runConfig.pdfViewer ?: return
         val currentPsiFile = runConfig.mainFile?.psiFile(environment.project) ?: return
         handler.addProcessListener(OpenViewerListener(pdfViewer, runConfig, currentPsiFile.virtualFile.path, 1, environment.project, runConfig.requireFocus))
-    }
-
-    override fun scheduleCleanup(runConfig: LatexCompilationRunConfiguration, handler: KillableProcessHandler) {
-        handler.addProcessListener(FileCleanupListener(runConfig.filesToCleanUp, runConfig.filesToCleanUpIfEmpty))
     }
 }

@@ -13,7 +13,7 @@ import com.intellij.openapi.util.io.FileUtil
 import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
 import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexChainedCompilationRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.getDefaultMakeindexPrograms
 import nl.hannahsten.texifyidea.run.latex.getMakeindexOptions
 import nl.hannahsten.texifyidea.util.appendExtension
@@ -28,7 +28,7 @@ import java.io.IOException
  * Run makeindex and then latex again (twice).
  */
 class RunMakeindexListener(
-    private val latexRunConfig: LatexRunConfiguration,
+    private val latexRunConfig: LatexChainedCompilationRunConfiguration,
     private val environment: ExecutionEnvironment,
     private val filesToCleanUp: MutableList<File>
 ) : ProcessListener {

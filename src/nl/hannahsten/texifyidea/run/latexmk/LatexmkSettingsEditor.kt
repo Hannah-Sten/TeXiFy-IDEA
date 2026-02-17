@@ -92,10 +92,7 @@ class LatexmkSettingsEditor(private var project: Project) : SettingsEditor<Latex
     @Throws(ConfigurationException::class)
     override fun applyEditorTo(runConfiguration: LatexmkRunConfiguration) {
         runConfiguration.compiler = nl.hannahsten.texifyidea.run.compiler.LatexCompiler.LATEXMK
-        runConfiguration.compileTwice = false
         runConfiguration.outputFormat = nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format.DEFAULT
-        runConfiguration.bibRunConfigs = emptySet()
-        runConfiguration.makeindexRunConfigs = emptySet()
 
         runConfiguration.compilerPath = if (enableCompilerPath.isSelected) compilerPath.text else null
         runConfiguration.engineMode = engineMode.component.selectedItem as? LatexmkEngineMode ?: LatexmkEngineMode.PDFLATEX

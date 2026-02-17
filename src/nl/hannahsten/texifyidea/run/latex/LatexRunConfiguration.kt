@@ -63,7 +63,7 @@ open class LatexRunConfiguration(
     project: Project,
     factory: ConfigurationFactory,
     name: String
-) : RunConfigurationBase<LatexCommandLineState>(project, factory, name), LocatableConfiguration, LatexCompilationRunConfiguration {
+) : RunConfigurationBase<LatexCommandLineState>(project, factory, name), LocatableConfiguration, LatexCompilationRunConfiguration, LatexChainedCompilationRunConfiguration {
 
     companion object {
 
@@ -195,11 +195,6 @@ open class LatexRunConfiguration(
                 externalToolRunConfigIds.add(it.uniqueID)
             }
         }
-
-    // In order to propagate information about which files need to be cleaned up at the end between one run of the run config
-    // (for example makeindex) and the last run, we save this information temporarily here while the run configuration is running.
-    override val filesToCleanUp = mutableListOf<File>()
-    override val filesToCleanUpIfEmpty = mutableSetOf<File>()
 
     override val compilationCapabilities = LatexCompilationCapabilities(
         handlesBib = false,

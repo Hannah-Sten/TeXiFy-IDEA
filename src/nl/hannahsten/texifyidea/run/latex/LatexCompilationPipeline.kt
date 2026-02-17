@@ -5,13 +5,9 @@ import com.intellij.execution.runners.ExecutionEnvironment
 
 interface LatexCompilationPipeline {
 
-    fun prepare(runConfig: LatexCompilationRunConfiguration, environment: ExecutionEnvironment)
+    fun prepare(runConfig: LatexCompilationRunConfiguration, environment: ExecutionEnvironment, context: LatexExecutionContext)
 
-    fun buildCommand(runConfig: LatexCompilationRunConfiguration, environment: ExecutionEnvironment): List<String>
+    fun buildCommand(runConfig: LatexCompilationRunConfiguration, environment: ExecutionEnvironment, context: LatexExecutionContext): List<String>
 
-    fun scheduleAuxRuns(runConfig: LatexCompilationRunConfiguration, handler: KillableProcessHandler, environment: ExecutionEnvironment)
-
-    fun scheduleViewer(runConfig: LatexCompilationRunConfiguration, handler: KillableProcessHandler, environment: ExecutionEnvironment)
-
-    fun scheduleCleanup(runConfig: LatexCompilationRunConfiguration, handler: KillableProcessHandler)
+    fun finalize(runConfig: LatexCompilationRunConfiguration, handler: KillableProcessHandler, environment: ExecutionEnvironment, context: LatexExecutionContext)
 }

@@ -10,8 +10,11 @@ import com.intellij.openapi.ui.showOkCancelDialog
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.openapi.vfs.InvalidVirtualFileAccessException
 import com.intellij.openapi.vfs.LocalFileSystem
+import nl.hannahsten.texifyidea.run.latexmk.LatexmkCleanUtil
+import nl.hannahsten.texifyidea.run.latexmk.LatexmkRunConfiguration
 import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
+import nl.hannahsten.texifyidea.util.selectedRunConfig
 import nl.hannahsten.texifyidea.util.magic.FileMagic
 import nl.hannahsten.texifyidea.util.runWriteAction
 import java.io.File
@@ -42,6 +45,13 @@ class DeleteGeneratedFiles : AnAction() {
     private fun deleteFiles(e: AnActionEvent) {
         val project = getEventProject(e) ?: return
         val basePath = project.basePath ?: return
+
+        val selectedRunConfig = project.selectedRunConfig()
+        if (selectedRunConfig is LatexmkRunConfiguration) {
+            val mode = LatexmkCleanUtil.promptMode(project) ?: return
+            LatexmkCleanUtil.run(project, selectedRunConfig, mode)
+            return
+        }
 
         // Custom output folders
         val customOutput = project.getLatexRunConfigurations()
