@@ -16,25 +16,6 @@ import nl.hannahsten.texifyidea.util.magic.PackageMagic
 
 class LatexmkRunConfigurationProducer : LazyRunConfigurationProducer<LatexmkRunConfiguration>() {
 
-    private fun preferredEngineForPackages(packages: Set<LatexLib>): LatexmkEngineMode? {
-        if (packages.any { it in PackageMagic.unicodePreferredEnginesPackages }) {
-            return LatexmkEngineMode.XELATEX
-        }
-        return null
-    }
-
-    private fun engineFromMagicCommand(command: String?): LatexmkEngineMode? {
-        if (command.isNullOrBlank()) return null
-        val executable = command.substringBefore(' ').trim().lowercase()
-        return when (executable) {
-            "pdflatex", "pdflatex.exe", "pdflatex.bin", "pdflatex.cmd" -> LatexmkEngineMode.PDFLATEX
-            "xelatex", "xelatex.exe", "xelatex.bin", "xelatex.cmd" -> LatexmkEngineMode.XELATEX
-            "lualatex", "lualatex.exe", "lualatex.bin", "lualatex.cmd" -> LatexmkEngineMode.LUALATEX
-            "latex", "latex.exe", "latex.bin", "latex.cmd" -> LatexmkEngineMode.LATEX
-            else -> null
-        }
-    }
-
     override fun getConfigurationFactory(): ConfigurationFactory = LatexConfigurationFactory(latexmkRunConfigurationType())
 
     override fun setupConfigurationFromContext(
@@ -77,5 +58,24 @@ class LatexmkRunConfigurationProducer : LazyRunConfigurationProducer<LatexmkRunC
         val psiFile = context.dataContext.getData(PlatformDataKeys.PSI_FILE) ?: return false
         val currentFile = psiFile.virtualFile ?: return false
         return mainFile?.path == currentFile.path
+    }
+}
+
+internal fun preferredEngineForPackages(packages: Set<LatexLib>): LatexmkEngineMode? {
+    if (packages.any { it in PackageMagic.unicodePreferredEnginesPackages }) {
+        return LatexmkEngineMode.LUALATEX
+    }
+    return null
+}
+
+internal fun engineFromMagicCommand(command: String?): LatexmkEngineMode? {
+    if (command.isNullOrBlank()) return null
+    val executable = command.substringBefore(' ').trim().lowercase()
+    return when (executable) {
+        "pdflatex", "pdflatex.exe", "pdflatex.bin", "pdflatex.cmd" -> LatexmkEngineMode.PDFLATEX
+        "xelatex", "xelatex.exe", "xelatex.bin", "xelatex.cmd" -> LatexmkEngineMode.XELATEX
+        "lualatex", "lualatex.exe", "lualatex.bin", "lualatex.cmd" -> LatexmkEngineMode.LUALATEX
+        "latex", "latex.exe", "latex.bin", "latex.cmd" -> LatexmkEngineMode.LATEX
+        else -> null
     }
 }

@@ -258,7 +258,7 @@ class LatexmkRunConfiguration(
 
     override fun isGeneratedName(): Boolean {
         val file = mainFile ?: return false
-        return getName() == "${file.nameWithoutExtension} (latexmk)"
+        return name == "${file.nameWithoutExtension} (latexmk)"
     }
 
     fun setDefaultPdfViewer() {

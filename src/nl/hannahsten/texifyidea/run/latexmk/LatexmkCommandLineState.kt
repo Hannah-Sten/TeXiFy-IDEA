@@ -19,8 +19,6 @@ import com.intellij.platform.ide.progress.runWithModalProgressBlocking
 import com.intellij.util.applyIf
 import nl.hannahsten.texifyidea.editor.autocompile.AutoCompileDoneListener
 import nl.hannahsten.texifyidea.run.OpenCustomPdfViewerListener
-import nl.hannahsten.texifyidea.run.latex.LatexCompilationPipeline
-import nl.hannahsten.texifyidea.run.latex.LatexCompilationRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexExecutionContext
 import nl.hannahsten.texifyidea.run.pdfviewer.OpenViewerListener
 import nl.hannahsten.texifyidea.util.Log
@@ -33,7 +31,6 @@ class LatexmkCommandLineState(
     private val runConfig: LatexmkRunConfiguration,
 ) : CommandLineState(environment) {
 
-    private val pipeline: LatexCompilationPipeline = LatexmkPipeline()
     private val programParamsConfigurator = ProgramParametersConfigurator()
 
     @Throws(ExecutionException::class)
@@ -41,13 +38,13 @@ class LatexmkCommandLineState(
         val mainFile = runConfig.mainFile ?: throw ExecutionException("Main file is not specified.")
         val context = LatexExecutionContext()
 
-        pipeline.prepare(runConfig, environment, context)
-        val command = pipeline.buildCommand(runConfig, environment, context)
+        prepare(context)
+        val command = buildCommand(context)
 
         val handler = createHandler(mainFile, command)
         runConfig.hasBeenRun = true
 
-        pipeline.finalize(runConfig, handler, environment, context)
+        finalize(handler, context)
 
         if (runConfig.isAutoCompiling) {
             handler.addProcessListener(AutoCompileDoneListener())
@@ -55,6 +52,47 @@ class LatexmkCommandLineState(
         }
 
         return handler
+    }
+
+    private fun prepare(context: LatexExecutionContext) {
+        ProgressManager.getInstance().runProcessWithProgressSynchronously(
+            {
+                LatexmkPathResolver.ensureDirectories(runConfig)
+            },
+            "Creating Output Directories...",
+            false,
+            runConfig.project,
+        )
+    }
+
+    @Throws(ExecutionException::class)
+    private fun buildCommand(context: LatexExecutionContext): List<String> =
+        LatexmkCommandBuilder.buildCommand(runConfig, environment.project)
+            ?: throw ExecutionException("Compile command could not be created.")
+
+    private fun finalize(handler: KillableProcessHandler, context: LatexExecutionContext) {
+        if (runConfig.isAutoCompiling) return
+
+        if (!runConfig.viewerCommand.isNullOrEmpty()) {
+            val commandList = runConfig.viewerCommand!!.split(" ").toMutableList()
+            val containsPlaceholder = commandList.contains("{pdf}")
+            if (containsPlaceholder) {
+                for (i in commandList.indices) {
+                    if (commandList[i].contains("{pdf}")) {
+                        commandList[i] = commandList[i].replace("{pdf}", runConfig.getOutputFilePath())
+                    }
+                }
+            }
+            else {
+                commandList += runConfig.getOutputFilePath()
+            }
+            handler.addProcessListener(OpenCustomPdfViewerListener(commandList.toTypedArray(), runConfig = runConfig))
+            return
+        }
+
+        val pdfViewer = runConfig.pdfViewer ?: return
+        val currentPsiFile = runConfig.mainFile?.psiFile(environment.project) ?: return
+        handler.addProcessListener(OpenViewerListener(pdfViewer, runConfig, currentPsiFile.virtualFile.path, 1, environment.project, runConfig.requireFocus))
     }
 
     private fun createHandler(mainFile: VirtualFile, command: List<String>): KillableProcessHandler {
@@ -87,53 +125,5 @@ class LatexmkCommandLineState(
         }
         ProcessTerminatedListener.attach(handler, environment.project)
         return handler
-    }
-}
-
-private class LatexmkPipeline : LatexCompilationPipeline {
-
-    override fun prepare(runConfig: LatexCompilationRunConfiguration, environment: ExecutionEnvironment, context: LatexExecutionContext) {
-        ProgressManager.getInstance().runProcessWithProgressSynchronously(
-            {
-                if (runConfig is LatexmkRunConfiguration) {
-                    LatexmkPathResolver.ensureDirectories(runConfig)
-                }
-            },
-            "Creating Output Directories...",
-            false,
-            runConfig.project,
-        )
-    }
-
-    override fun buildCommand(runConfig: LatexCompilationRunConfiguration, environment: ExecutionEnvironment, context: LatexExecutionContext): List<String> {
-        val latexmkRunConfig = runConfig as? LatexmkRunConfiguration
-            ?: throw ExecutionException("Latexmk pipeline expects LatexmkRunConfiguration.")
-        return LatexmkCommandBuilder.buildCommand(latexmkRunConfig, environment.project)
-            ?: throw ExecutionException("Compile command could not be created.")
-    }
-
-    override fun finalize(runConfig: LatexCompilationRunConfiguration, handler: KillableProcessHandler, environment: ExecutionEnvironment, context: LatexExecutionContext) {
-        if (runConfig.isAutoCompiling) return
-
-        if (!runConfig.viewerCommand.isNullOrEmpty()) {
-            val commandList = runConfig.viewerCommand!!.split(" ").toMutableList()
-            val containsPlaceholder = commandList.contains("{pdf}")
-            if (containsPlaceholder) {
-                for (i in commandList.indices) {
-                    if (commandList[i].contains("{pdf}")) {
-                        commandList[i] = commandList[i].replace("{pdf}", runConfig.getOutputFilePath())
-                    }
-                }
-            }
-            else {
-                commandList += runConfig.getOutputFilePath()
-            }
-            handler.addProcessListener(OpenCustomPdfViewerListener(commandList.toTypedArray(), runConfig = runConfig))
-            return
-        }
-
-        val pdfViewer = runConfig.pdfViewer ?: return
-        val currentPsiFile = runConfig.mainFile?.psiFile(environment.project) ?: return
-        handler.addProcessListener(OpenViewerListener(pdfViewer, runConfig, currentPsiFile.virtualFile.path, 1, environment.project, runConfig.requireFocus))
     }
 }

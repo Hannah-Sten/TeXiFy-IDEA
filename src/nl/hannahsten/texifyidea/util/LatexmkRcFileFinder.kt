@@ -5,7 +5,6 @@ import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
-import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.LatexCompilationRunConfiguration
 import java.io.File
 import java.nio.file.Files
@@ -104,15 +103,15 @@ object LatexmkRcFileFinder {
         return LocalFileSystem.getInstance().findFileByPath(path.toString())
     }
 
-    fun isLatexmkRcFilePresent(runConfig: LatexCompilationRunConfiguration): Boolean {
-        val isPresent = isSystemLatexmkRcFilePresent || isLocalLatexmkRcFilePresent(runConfig.compilerArguments, runConfig.getResolvedWorkingDirectory())
+    fun hasLatexmkRc(compilerArguments: String?, workingDirectory: Path?): Boolean =
+        isSystemLatexmkRcFilePresent || isLocalLatexmkRcFilePresent(compilerArguments, workingDirectory)
 
-        // The first time, by default don't override what's in the latexmkrc (but avoid resetting the user chosen output format)
-        if (isPresent && !runConfig.hasBeenRun) {
-            runConfig.outputFormat = LatexCompiler.Format.DEFAULT
-        }
-        return isPresent
-    }
+    @Deprecated(
+        message = "Use hasLatexmkRc(compilerArguments, workingDirectory).",
+        replaceWith = ReplaceWith("hasLatexmkRc(runConfig.compilerArguments, runConfig.getResolvedWorkingDirectory())"),
+    )
+    fun isLatexmkRcFilePresent(runConfig: LatexCompilationRunConfiguration): Boolean =
+        hasLatexmkRc(runConfig.compilerArguments, runConfig.getResolvedWorkingDirectory())
 
     /**
      * Get TEXINPUTS from latexmkrc.

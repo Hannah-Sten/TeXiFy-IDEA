@@ -82,4 +82,21 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
         val engine = engineFromMagicCommand("xelatex -synctex=1")
         assertEquals(LatexmkEngineMode.XELATEX, engine)
     }
+
+    fun testUnicodeEngineCompatibilityUsesLatexmkEngineMode() {
+        val runConfig = LatexmkRunConfiguration(
+            myFixture.project,
+            LatexConfigurationFactory(LatexmkRunConfigurationType()),
+            "Latexmk"
+        )
+
+        runConfig.engineMode = LatexmkEngineMode.LUALATEX
+        assertEquals(true, unicodeEngineCompatibility(runConfig))
+
+        runConfig.engineMode = LatexmkEngineMode.PDFLATEX
+        assertEquals(false, unicodeEngineCompatibility(runConfig))
+
+        runConfig.engineMode = LatexmkEngineMode.CUSTOM_COMMAND
+        assertEquals(null, unicodeEngineCompatibility(runConfig))
+    }
 }

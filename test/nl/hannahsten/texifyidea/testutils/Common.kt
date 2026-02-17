@@ -4,6 +4,7 @@ import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
 import com.intellij.testFramework.fixtures.IdeaProjectTestFixture
 import io.mockk.every
+import io.mockk.mockk
 import io.mockk.mockkConstructor
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
@@ -45,14 +46,15 @@ fun IdeaProjectTestFixture.updateConvention(action: (settings: TexifyConventions
  */
 fun setUnicodeSupport(project: Project, enabled: Boolean = true) {
     mockkStatic("nl.hannahsten.texifyidea.util.ProjectsKt")
+    val runConfig = mockk<LatexRunConfiguration>()
+    every { project.selectedRunConfig() } returns runConfig
     if (enabled) {
-        mockkStatic(LatexRunConfiguration::class)
         // Unicode is always supported in lualatex.
-        every { project.selectedRunConfig()?.compiler } returns LatexCompiler.LUALATEX
+        every { runConfig.compiler } returns LatexCompiler.LUALATEX
     }
     else {
         // Unicode is not supported on pdflatex on texlive <= 2017.
-        every { project.selectedRunConfig()?.compiler } returns LatexCompiler.PDFLATEX
+        every { runConfig.compiler } returns LatexCompiler.PDFLATEX
         mockkObject(TexliveSdk.Cache)
         every { TexliveSdk.Cache.version } returns 2017
         mockkConstructor(MiktexWindowsSdk::class)

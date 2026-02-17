@@ -26,7 +26,7 @@ object LatexmkCommandBuilder {
 
     fun buildStructuredArguments(runConfig: LatexmkRunConfiguration): String {
         val arguments = mutableListOf<String>()
-        val hasRcFile = LatexmkRcFileFinder.isLatexmkRcFilePresent(runConfig)
+        val hasRcFile = LatexmkRcFileFinder.hasLatexmkRc(runConfig.compilerArguments, runConfig.getResolvedWorkingDirectory())
 
         val hasExplicitStructuredOptions =
             runConfig.engineMode != LatexmkEngineMode.PDFLATEX ||
