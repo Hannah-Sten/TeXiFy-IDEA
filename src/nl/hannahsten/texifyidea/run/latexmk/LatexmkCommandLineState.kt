@@ -100,6 +100,9 @@ private class LatexmkPipeline : LatexCompilationPipeline {
                 if (runConfig.outputPath.virtualFile == null || !runConfig.outputPath.virtualFile!!.exists()) {
                     runConfig.outputPath.getAndCreatePath()
                 }
+                if (runConfig.auxilPath.virtualFile == null || !runConfig.auxilPath.virtualFile!!.exists()) {
+                    runConfig.auxilPath.getAndCreatePath(force = true)
+                }
             },
             "Creating Output Directories...",
             false,

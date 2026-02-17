@@ -17,6 +17,12 @@ import nl.hannahsten.texifyidea.util.runCommand
 
 object LatexmkCommandBuilder {
 
+    private data class LatexmkDirectories(
+        val outputPath: String,
+        val auxilPath: String?,
+        val shouldPassAuxilPath: Boolean,
+    )
+
     fun buildStructuredArguments(runConfig: LatexmkRunConfiguration): String {
         val arguments = mutableListOf<String>()
         val hasRcFile = LatexmkRcFileFinder.isLatexmkRcFilePresent(runConfig)
@@ -41,22 +47,11 @@ object LatexmkCommandBuilder {
     fun buildCommand(runConfig: LatexmkRunConfiguration, project: Project): List<String>? {
         val mainFile = runConfig.mainFile ?: return null
         val distribution = runConfig.getLatexDistributionType()
-
-        val outputPath = when (distribution) {
-            LatexDistributionType.DOCKER_MIKTEX -> "/miktex/out"
-            LatexDistributionType.DOCKER_TEXLIVE -> "/out"
-            else -> (runConfig.outputPath.getAndCreatePath() ?: mainFile.parent).path.toWslPathIfNeeded(distribution)
-        }
-
-        val auxilPath = when (distribution) {
-            LatexDistributionType.DOCKER_MIKTEX -> "/miktex/auxil"
-            LatexDistributionType.DOCKER_TEXLIVE -> null
-            else -> runConfig.auxilPath.getAndCreatePath()?.path?.toWslPathIfNeeded(distribution)
-        }
+        val directories = resolveLatexmkDirectories(runConfig, mainFile, distribution)
 
         val executable = runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(
             LatexCompiler.LATEXMK.executableName,
-            runConfig.project,
+            project,
             runConfig.getLatexSdk(),
             distribution,
         )
@@ -67,9 +62,9 @@ object LatexmkCommandBuilder {
             command += ParametersListUtil.parse(compilerArguments)
         }
 
-        command.add("-output-directory=$outputPath")
-        if (auxilPath != null && distribution.isMiktex(runConfig.project)) {
-            command.add("-aux-directory=$auxilPath")
+        command.add("-outdir=${directories.outputPath}")
+        if (directories.shouldPassAuxilPath) {
+            command.add("-auxdir=${directories.auxilPath}")
         }
 
         if (distribution == LatexDistributionType.WSL_TEXLIVE) {
@@ -82,7 +77,7 @@ object LatexmkCommandBuilder {
         }
 
         if (distribution.isDocker()) {
-            createDockerCommand(runConfig, auxilPath, outputPath, mainFile, command)
+            createDockerCommand(runConfig, directories.auxilPath, directories.outputPath, mainFile, command)
         }
 
         if (runConfig.beforeRunCommand?.isNotBlank() == true) {
@@ -102,18 +97,7 @@ object LatexmkCommandBuilder {
     fun buildCleanCommand(runConfig: LatexmkRunConfiguration, cleanAll: Boolean): List<String>? {
         val mainFile = runConfig.mainFile ?: return null
         val distribution = runConfig.getLatexDistributionType()
-
-        val outputPath = when (distribution) {
-            LatexDistributionType.DOCKER_MIKTEX -> "/miktex/out"
-            LatexDistributionType.DOCKER_TEXLIVE -> "/out"
-            else -> (runConfig.outputPath.getAndCreatePath() ?: mainFile.parent).path.toWslPathIfNeeded(distribution)
-        }
-
-        val auxilPath = when (distribution) {
-            LatexDistributionType.DOCKER_MIKTEX -> "/miktex/auxil"
-            LatexDistributionType.DOCKER_TEXLIVE -> null
-            else -> runConfig.auxilPath.getAndCreatePath()?.path?.toWslPathIfNeeded(distribution)
-        }
+        val directories = resolveLatexmkDirectories(runConfig, mainFile, distribution)
 
         val executable = runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(
             LatexCompiler.LATEXMK.executableName,
@@ -128,9 +112,9 @@ object LatexmkCommandBuilder {
             command += ParametersListUtil.parse(compilerArguments)
         }
 
-        command.add("-output-directory=$outputPath")
-        if (auxilPath != null && distribution.isMiktex(runConfig.project)) {
-            command.add("-aux-directory=$auxilPath")
+        command.add("-outdir=${directories.outputPath}")
+        if (directories.shouldPassAuxilPath) {
+            command.add("-auxdir=${directories.auxilPath}")
         }
         command.add(if (cleanAll) "-C" else "-c")
 
@@ -144,7 +128,7 @@ object LatexmkCommandBuilder {
         }
 
         if (distribution.isDocker()) {
-            createDockerCommand(runConfig, auxilPath, outputPath, mainFile, command)
+            createDockerCommand(runConfig, directories.auxilPath, directories.outputPath, mainFile, command)
         }
 
         if (runConfig.hasDefaultWorkingDirectory()) {
@@ -155,6 +139,30 @@ object LatexmkCommandBuilder {
         }
 
         return command
+    }
+
+    private fun resolveLatexmkDirectories(
+        runConfig: LatexmkRunConfiguration,
+        mainFile: VirtualFile,
+        distribution: LatexDistributionType,
+    ): LatexmkDirectories {
+        val outputPath = when (distribution) {
+            LatexDistributionType.DOCKER_MIKTEX -> "/miktex/out"
+            LatexDistributionType.DOCKER_TEXLIVE -> "/out"
+            else -> (runConfig.outputPath.getAndCreatePath() ?: mainFile.parent).path.toWslPathIfNeeded(distribution)
+        }
+
+        val auxilPath = when (distribution) {
+            LatexDistributionType.DOCKER_MIKTEX -> "/miktex/auxil"
+            LatexDistributionType.DOCKER_TEXLIVE -> "/auxil"
+            else -> runConfig.auxilPath.getAndCreatePath(force = true)?.path?.toWslPathIfNeeded(distribution)
+        }
+
+        return LatexmkDirectories(
+            outputPath = outputPath,
+            auxilPath = auxilPath,
+            shouldPassAuxilPath = auxilPath != null && auxilPath != outputPath,
+        )
     }
 
     private fun createDockerCommand(
@@ -198,7 +206,7 @@ object LatexmkCommandBuilder {
         }
 
         if (dockerAuxilDir != null) {
-            val auxPath = runConfig.auxilPath.getAndCreatePath()
+            val auxPath = runConfig.auxilPath.getAndCreatePath(force = true)
             if (auxPath?.path != null && auxPath != mainFile.parent) {
                 parameterList.addAll(listOf("-v", "${auxPath.path}:$dockerAuxilDir"))
             }

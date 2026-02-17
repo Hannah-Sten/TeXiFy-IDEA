@@ -24,7 +24,6 @@ import nl.hannahsten.texifyidea.run.latex.ui.LatexDistributionComboBoxRenderer
 import nl.hannahsten.texifyidea.run.latex.ui.LatexDistributionSelection
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.SumatraViewer
-import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import java.awt.Cursor
 import java.awt.event.ItemEvent
 import java.awt.event.MouseAdapter
@@ -188,18 +187,16 @@ class LatexmkSettingsEditor(private var project: Project) : SettingsEditor<Latex
         mainFile = LabeledComponent.create(mainFileField, "Main file to compile")
         panel.add(mainFile)
 
-        if (LatexSdkUtil.isMiktexAvailable) {
-            val auxField = TextFieldWithBrowseButton()
-            auxField.addBrowseFolderListener(
-                TextBrowseFolderListener(
-                    FileChooserDescriptor(false, true, false, false, false, false)
-                        .withTitle("Auxiliary Files Directory")
-                        .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules)
-                )
+        val auxField = TextFieldWithBrowseButton()
+        auxField.addBrowseFolderListener(
+            TextBrowseFolderListener(
+                FileChooserDescriptor(false, true, false, false, false, false)
+                    .withTitle("Auxiliary Files Directory")
+                    .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules)
             )
-            auxilPath = LabeledComponent.create(auxField, "Directory for auxiliary files")
-            panel.add(auxilPath)
-        }
+        )
+        auxilPath = LabeledComponent.create(auxField, "Directory for auxiliary files (omit or set equal to output directory to disable separate -auxdir)")
+        panel.add(auxilPath)
 
         val outputPathField = TextFieldWithBrowseButton()
         outputPathField.addBrowseFolderListener(

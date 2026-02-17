@@ -226,15 +226,6 @@ class LatexmkRunConfiguration(
         parent.addContent(Element(EXTRA_ARGUMENTS).also { it.text = extraArguments ?: "" })
     }
 
-    override fun getResolvedWorkingDirectory(): String? = if (!workingDirectory.isNullOrBlank() && mainFile != null) {
-        workingDirectory?.replace(LatexOutputPath.MAIN_FILE_STRING, mainFile!!.parent.path)
-    }
-    else {
-        mainFile?.parent?.path
-    }
-
-    override fun hasDefaultWorkingDirectory(): Boolean = workingDirectory == LatexOutputPath.MAIN_FILE_STRING
-
     override fun setMainFile(mainFilePath: String) {
         if (mainFilePath.isBlank()) {
             mainFile = null
@@ -322,15 +313,10 @@ class LatexmkRunConfiguration(
         }
     }
 
-    override fun getAuxilDirectory(): VirtualFile? = if (getLatexDistributionType().isMiktex(project, mainFile)) {
-        auxilPath.getAndCreatePath() ?: outputPath.getAndCreatePath()
-    }
-    else {
-        outputPath.getAndCreatePath()
-    }
+    override fun getAuxilDirectory(): VirtualFile? = auxilPath.getAndCreatePath(force = true) ?: outputPath.getAndCreatePath()
 
     override fun usesAuxilOrOutDirectory(): Boolean {
-        val usesAuxilDir = auxilPath.getAndCreatePath() != mainFile?.parent
+        val usesAuxilDir = auxilPath.getAndCreatePath(force = true) != mainFile?.parent
         val usesOutDir = outputPath.getAndCreatePath() != mainFile?.parent
         return usesAuxilDir || usesOutDir
     }

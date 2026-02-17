@@ -42,9 +42,9 @@ class LatexOutputPath(private val variant: String, var mainFile: VirtualFile?, p
     /**
      * Get the output path based on the values of [virtualFile] and [pathString], create it if it does not exist.
      */
-    fun getAndCreatePath(): VirtualFile? {
+    fun getAndCreatePath(force: Boolean = false): VirtualFile? {
         // No auxil directory should be present/created when there's no MiKTeX around, assuming that TeX Live does not support this
-        if (!LatexSdkUtil.isMiktexAvailable && variant == "auxil") {
+        if (!force && !LatexSdkUtil.isMiktexAvailable && variant == "auxil") {
             return null
         }
 

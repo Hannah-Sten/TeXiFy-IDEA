@@ -34,9 +34,15 @@ interface LatexCompilationRunConfiguration : RunConfiguration {
 
     val compilationCapabilities: LatexCompilationCapabilities
 
-    fun getResolvedWorkingDirectory(): String?
+    fun getResolvedWorkingDirectory(): String? =
+        if (!workingDirectory.isNullOrBlank() && mainFile != null) {
+            workingDirectory?.replace(LatexOutputPath.MAIN_FILE_STRING, mainFile!!.parent.path)
+        }
+        else {
+            mainFile?.parent?.path
+        }
 
-    fun hasDefaultWorkingDirectory(): Boolean
+    fun hasDefaultWorkingDirectory(): Boolean = workingDirectory == LatexOutputPath.MAIN_FILE_STRING
 
     fun setMainFile(mainFilePath: String)
 
