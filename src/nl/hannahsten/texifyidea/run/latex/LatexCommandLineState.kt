@@ -39,7 +39,7 @@ import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.includedPackagesInFileset
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
 import nl.hannahsten.texifyidea.util.selectedTextEditor
-import kotlin.io.path.Path
+import java.nio.file.Path
 import kotlin.io.path.exists
 
 /**
@@ -76,11 +76,10 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
     }
 
     private fun createHandler(mainFile: VirtualFile, command: List<String>): KillableProcessHandler {
-        val workingDirectoryPath = runConfig.getResolvedWorkingDirectory() ?: mainFile.parent.path
-        val workingDirectory = Path(workingDirectoryPath)
+        val workingDirectory = runConfig.getResolvedWorkingDirectory() ?: Path.of(mainFile.parent.path)
         if (workingDirectory.exists().not()) {
-            Notification("LaTeX", "Could not find working directory", "The directory containing the main file could not be found: $workingDirectoryPath", NotificationType.ERROR).notify(environment.project)
-            throw ExecutionException("Could not find working directory $workingDirectoryPath for file $mainFile")
+            Notification("LaTeX", "Could not find working directory", "The directory containing the main file could not be found: $workingDirectory", NotificationType.ERROR).notify(environment.project)
+            throw ExecutionException("Could not find working directory $workingDirectory for file $mainFile")
         }
 
         val envVariables = runConfig.environmentVariables.envs.applyIf(runConfig.expandMacrosEnvVariables) {

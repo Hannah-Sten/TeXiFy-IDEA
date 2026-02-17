@@ -37,7 +37,7 @@ class LatexOutputPath(private val variant: String, var mainFile: VirtualFile?, p
     // Acts as a sort of cache
     var virtualFile: VirtualFile? = null
 
-    var pathString: String = "$PROJECT_DIR_STRING/$variant"
+    var pathString: String = if (variant == "out") MAIN_FILE_STRING else "$PROJECT_DIR_STRING/$variant"
 
     /**
      * Get the output path based on the values of [virtualFile] and [pathString], create it if it does not exist.
@@ -50,7 +50,7 @@ class LatexOutputPath(private val variant: String, var mainFile: VirtualFile?, p
 
         // Just to be sure, avoid using jetbrains /bin path as output
         if (pathString.isBlank()) {
-            pathString = "$PROJECT_DIR_STRING/$variant"
+            pathString = if (variant == "out") MAIN_FILE_STRING else "$PROJECT_DIR_STRING/$variant"
         }
 
         // Caching of the result

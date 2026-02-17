@@ -6,6 +6,7 @@ import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
+import java.nio.file.Path
 
 /**
  * Contract shared by LaTeX-like run configurations.
@@ -29,7 +30,7 @@ interface LatexCompilationRunConfiguration : RunConfiguration {
     var auxilPath: LatexOutputPath
 
     /** Process working directory (cwd) used to resolve relative paths; independent from output/aux directories. */
-    var workingDirectory: String?
+    var workingDirectory: Path?
     var outputFormat: LatexCompiler.Format
     var latexDistribution: LatexDistributionType
     var hasBeenRun: Boolean
@@ -40,15 +41,9 @@ interface LatexCompilationRunConfiguration : RunConfiguration {
 
     val compilationCapabilities: LatexCompilationCapabilities
 
-    fun getResolvedWorkingDirectory(): String? =
-        if (!workingDirectory.isNullOrBlank() && mainFile != null) {
-            workingDirectory?.replace(LatexOutputPath.MAIN_FILE_STRING, mainFile!!.parent.path)
-        }
-        else {
-            mainFile?.parent?.path
-        }
+    fun getResolvedWorkingDirectory(): Path? = workingDirectory ?: mainFile?.parent?.path?.let { Path.of(it) }
 
-    fun hasDefaultWorkingDirectory(): Boolean = workingDirectory == LatexOutputPath.MAIN_FILE_STRING
+    fun hasDefaultWorkingDirectory(): Boolean = workingDirectory == null
 
     fun setMainFile(mainFilePath: String)
 

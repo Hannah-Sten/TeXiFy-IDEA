@@ -9,15 +9,17 @@ import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.ui.ComboBox
-import com.intellij.openapi.ui.ComponentWithBrowseButton
 import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.openapi.ui.TextBrowseFolderListener
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.ui.VerticalFlowLayout
+import com.intellij.openapi.util.SystemInfo
+import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.SeparatorComponent
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBTextField
+import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexOutputPath
 import nl.hannahsten.texifyidea.run.latex.ui.LatexDistributionComboBoxRenderer
@@ -35,55 +37,59 @@ import javax.swing.JPanel
 class LatexmkSettingsEditor(private var project: Project) : SettingsEditor<LatexmkRunConfiguration>() {
 
     private lateinit var panel: JPanel
+
     private lateinit var enableCompilerPath: JBCheckBox
-    private lateinit var compilerPath: TextFieldWithBrowseButton
-    private lateinit var engineMode: LabeledComponent<ComboBox<LatexmkEngineMode>>
-    private lateinit var customEngineCommand: LabeledComponent<JBTextField>
-    private lateinit var citationTool: LabeledComponent<ComboBox<LatexmkCitationTool>>
-    private lateinit var outputFormat: LabeledComponent<ComboBox<LatexmkOutputFormat>>
-    private lateinit var extraArguments: LabeledComponent<RawCommandLineEditor>
+    private lateinit var compilerPathField: TextFieldWithBrowseButton
+
+    private lateinit var engineModeCombo: ComboBox<LatexmkEngineMode>
+    private lateinit var customEngineCommandField: JBTextField
+    private lateinit var citationToolCombo: ComboBox<LatexmkCitationTool>
+    private lateinit var outputFormatCombo: ComboBox<LatexmkOutputFormat>
+    private lateinit var extraArgumentsField: RawCommandLineEditor
+
     private lateinit var environmentVariables: EnvironmentVariablesComponent
-    private lateinit var beforeRunCommand: LabeledComponent<RawCommandLineEditor>
-    private lateinit var mainFile: LabeledComponent<ComponentWithBrowseButton<*>>
-    private lateinit var outputPath: LabeledComponent<ComponentWithBrowseButton<*>>
-    private var auxilPath: LabeledComponent<ComponentWithBrowseButton<*>>? = null
-    private lateinit var workingDirectory: LabeledComponent<ComponentWithBrowseButton<*>>
-    private lateinit var latexDistribution: LabeledComponent<ComboBox<LatexDistributionSelection>>
-    private lateinit var pdfViewer: LabeledComponent<ComboBox<PdfViewer?>>
+    private lateinit var beforeRunCommandField: RawCommandLineEditor
+
+    private lateinit var mainFileField: TextFieldWithBrowseButton
+    private lateinit var outputPathField: TextFieldWithBrowseButton
+    private lateinit var auxilPathField: TextFieldWithBrowseButton
+    private lateinit var workingDirectoryField: TextFieldWithBrowseButton
+
+    private lateinit var latexDistributionCombo: ComboBox<LatexDistributionSelection>
+    private lateinit var pdfViewerCombo: ComboBox<PdfViewer?>
+
     private lateinit var requireFocus: JBCheckBox
     private lateinit var enableViewerCommand: JBCheckBox
-    private lateinit var viewerCommand: JBTextField
+    private lateinit var viewerCommandField: JBTextField
 
     override fun resetEditorFrom(runConfiguration: LatexmkRunConfiguration) {
         enableCompilerPath.isSelected = runConfiguration.compilerPath != null
-        compilerPath.text = runConfiguration.compilerPath ?: ""
+        compilerPathField.text = runConfiguration.compilerPath ?: ""
 
-        engineMode.component.selectedItem = runConfiguration.engineMode
-        customEngineCommand.component.text = runConfiguration.customEngineCommand ?: ""
-        customEngineCommand.component.isEnabled = runConfiguration.engineMode == LatexmkEngineMode.CUSTOM_COMMAND
+        engineModeCombo.selectedItem = runConfiguration.engineMode
+        customEngineCommandField.text = runConfiguration.customEngineCommand ?: ""
+        customEngineCommandField.isEnabled = runConfiguration.engineMode == LatexmkEngineMode.CUSTOM_COMMAND
 
-        citationTool.component.selectedItem = runConfiguration.citationTool
-        outputFormat.component.selectedItem = runConfiguration.latexmkOutputFormat
-        extraArguments.component.text = runConfiguration.extraArguments ?: ""
+        citationToolCombo.selectedItem = runConfiguration.citationTool
+        outputFormatCombo.selectedItem = runConfiguration.latexmkOutputFormat
+        extraArgumentsField.text = runConfiguration.extraArguments ?: ""
 
         environmentVariables.envData = runConfiguration.environmentVariables
-        beforeRunCommand.component.text = runConfiguration.beforeRunCommand ?: ""
+        beforeRunCommandField.text = runConfiguration.beforeRunCommand ?: ""
 
-        (mainFile.component as TextFieldWithBrowseButton).text = runConfiguration.mainFile?.path ?: ""
-        (outputPath.component as TextFieldWithBrowseButton).text = runConfiguration.outputPath.virtualFile?.path ?: runConfiguration.outputPath.pathString
-        auxilPath?.let {
-            (it.component as TextFieldWithBrowseButton).text = runConfiguration.auxilPath.virtualFile?.path ?: runConfiguration.auxilPath.pathString
-        }
-        (workingDirectory.component as TextFieldWithBrowseButton).text = runConfiguration.workingDirectory ?: LatexOutputPath.MAIN_FILE_STRING
+        mainFileField.text = runConfiguration.mainFile?.path ?: ""
+        outputPathField.text = runConfiguration.outputPath.virtualFile?.path ?: runConfiguration.outputPath.pathString
+        auxilPathField.text = runConfiguration.auxilPath.virtualFile?.path ?: runConfiguration.auxilPath.pathString
+        workingDirectoryField.text = runConfiguration.workingDirectory?.toString() ?: LatexOutputPath.MAIN_FILE_STRING
 
-        latexDistribution.component.selectedItem = LatexDistributionSelection.fromDistributionType(runConfiguration.latexDistribution)
+        latexDistributionCombo.selectedItem = LatexDistributionSelection.fromDistributionType(runConfiguration.latexDistribution)
 
-        pdfViewer.component.selectedItem = runConfiguration.pdfViewer
+        pdfViewerCombo.selectedItem = runConfiguration.pdfViewer
         requireFocus.isSelected = runConfiguration.requireFocus
         requireFocus.isVisible = runConfiguration.pdfViewer?.let { it.isForwardSearchSupported && it.isFocusSupported } ?: false
 
         enableViewerCommand.isSelected = runConfiguration.viewerCommand != null
-        viewerCommand.text = runConfiguration.viewerCommand ?: ""
+        viewerCommandField.text = runConfiguration.viewerCommand ?: ""
 
         project = runConfiguration.project
     }
@@ -93,29 +99,33 @@ class LatexmkSettingsEditor(private var project: Project) : SettingsEditor<Latex
         runConfiguration.compiler = nl.hannahsten.texifyidea.run.compiler.LatexCompiler.LATEXMK
         runConfiguration.outputFormat = nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format.DEFAULT
 
-        runConfiguration.compilerPath = if (enableCompilerPath.isSelected) compilerPath.text else null
-        runConfiguration.engineMode = engineMode.component.selectedItem as? LatexmkEngineMode ?: LatexmkEngineMode.PDFLATEX
-        runConfiguration.customEngineCommand = customEngineCommand.component.text
-        runConfiguration.citationTool = citationTool.component.selectedItem as? LatexmkCitationTool ?: LatexmkCitationTool.AUTO
-        runConfiguration.latexmkOutputFormat = outputFormat.component.selectedItem as? LatexmkOutputFormat ?: LatexmkOutputFormat.DEFAULT
-        runConfiguration.extraArguments = extraArguments.component.text
+        runConfiguration.compilerPath = if (enableCompilerPath.isSelected) compilerPathField.text else null
+        runConfiguration.engineMode = engineModeCombo.selectedItem as? LatexmkEngineMode ?: LatexmkEngineMode.PDFLATEX
+        runConfiguration.customEngineCommand = customEngineCommandField.text
+        runConfiguration.citationTool = citationToolCombo.selectedItem as? LatexmkCitationTool ?: LatexmkCitationTool.AUTO
+        runConfiguration.latexmkOutputFormat = outputFormatCombo.selectedItem as? LatexmkOutputFormat ?: LatexmkOutputFormat.DEFAULT
+        runConfiguration.extraArguments = extraArgumentsField.text
 
         runConfiguration.environmentVariables = environmentVariables.envData
-        runConfiguration.beforeRunCommand = beforeRunCommand.component.text
+        runConfiguration.beforeRunCommand = beforeRunCommandField.text
 
-        runConfiguration.setMainFile((mainFile.component as TextFieldWithBrowseButton).text)
-        runConfiguration.setFileOutputPath((outputPath.component as TextFieldWithBrowseButton).text)
-        auxilPath?.let {
-            runConfiguration.setFileAuxilPath((it.component as TextFieldWithBrowseButton).text)
+        runConfiguration.setMainFile(mainFileField.text)
+        runConfiguration.setFileOutputPath(outputPathField.text)
+        runConfiguration.setFileAuxilPath(auxilPathField.text)
+
+        val workingDirText = workingDirectoryField.text
+        runConfiguration.workingDirectory = when {
+            workingDirText.isBlank() || workingDirText == LatexOutputPath.MAIN_FILE_STRING -> null
+            else -> pathOrNull(workingDirText)
         }
-        runConfiguration.workingDirectory = (workingDirectory.component as TextFieldWithBrowseButton).text
 
-        runConfiguration.latexDistribution = (latexDistribution.component.selectedItem as? LatexDistributionSelection)?.distributionType
-            ?: LatexDistributionType.MODULE_SDK
+        runConfiguration.latexDistribution =
+            (latexDistributionCombo.selectedItem as? LatexDistributionSelection)?.distributionType
+                ?: LatexDistributionType.MODULE_SDK
 
-        runConfiguration.pdfViewer = pdfViewer.component.selectedItem as? PdfViewer ?: PdfViewer.firstAvailableViewer
+        runConfiguration.pdfViewer = pdfViewerCombo.selectedItem as? PdfViewer ?: PdfViewer.firstAvailableViewer
         runConfiguration.requireFocus = requireFocus.isSelected
-        runConfiguration.viewerCommand = if (enableViewerCommand.isSelected) viewerCommand.text else null
+        runConfiguration.viewerCommand = if (enableViewerCommand.isSelected) viewerCommandField.text else null
     }
 
     override fun createEditor(): JComponent {
@@ -124,13 +134,32 @@ class LatexmkSettingsEditor(private var project: Project) : SettingsEditor<Latex
     }
 
     private fun createUIComponents() {
-        panel = JPanel()
-        panel.layout = VerticalFlowLayout(VerticalFlowLayout.TOP)
+        panel = JPanel().apply {
+            layout = VerticalFlowLayout(VerticalFlowLayout.TOP)
+        }
 
+        addCompilerSection()
+        addLatexmkOptionsSection()
+        addEnvironmentSection()
+        addPathsSection()
+        addViewerSection()
+    }
+
+    private fun addEnvironmentSection() {
+        environmentVariables = EnvironmentVariablesComponent()
+        panel.add(environmentVariables)
+
+        beforeRunCommandField = RawCommandLineEditor()
+        panel.add(LabeledComponent.create(beforeRunCommandField, "LaTeX code to run before compiling the main file"))
+
+        panel.add(SeparatorComponent())
+    }
+
+    private fun addCompilerSection() {
         enableCompilerPath = JBCheckBox("Select custom latexmk executable path")
         panel.add(enableCompilerPath)
 
-        compilerPath = TextFieldWithBrowseButton().apply {
+        compilerPathField = TextFieldWithBrowseButton().apply {
             addBrowseFolderListener(
                 TextBrowseFolderListener(
                     FileChooserDescriptor(true, false, false, false, false, false)
@@ -145,106 +174,117 @@ class LatexmkSettingsEditor(private var project: Project) : SettingsEditor<Latex
                 }
             }
         }
-        enableCompilerPath.addItemListener { compilerPath.isEnabled = it.stateChange == ItemEvent.SELECTED }
-        panel.add(compilerPath)
 
-        engineMode = LabeledComponent.create(ComboBox(LatexmkEngineMode.entries.toTypedArray()), "Engine")
-        panel.add(engineMode)
+        enableCompilerPath.addItemListener { compilerPathField.isEnabled = it.stateChange == ItemEvent.SELECTED }
+        panel.add(compilerPathField)
+    }
 
-        customEngineCommand = LabeledComponent.create(JBTextField(), "Custom engine command")
-        customEngineCommand.component.isEnabled = false
-        engineMode.component.addItemListener {
-            customEngineCommand.component.isEnabled = it.stateChange == ItemEvent.SELECTED && engineMode.component.selectedItem == LatexmkEngineMode.CUSTOM_COMMAND
+    private fun addLatexmkOptionsSection() {
+        engineModeCombo = ComboBox(LatexmkEngineMode.entries.toTypedArray())
+        panel.add(LabeledComponent.create(engineModeCombo, "Engine"))
+
+        customEngineCommandField = JBTextField().apply { isEnabled = false }
+        engineModeCombo.addItemListener {
+            customEngineCommandField.isEnabled =
+                it.stateChange == ItemEvent.SELECTED &&
+                engineModeCombo.selectedItem == LatexmkEngineMode.CUSTOM_COMMAND
         }
-        panel.add(customEngineCommand)
+        panel.add(LabeledComponent.create(customEngineCommandField, "Custom engine command"))
 
-        citationTool = LabeledComponent.create(ComboBox(LatexmkCitationTool.entries.toTypedArray()), "Citation tool")
-        panel.add(citationTool)
+        citationToolCombo = ComboBox(LatexmkCitationTool.entries.toTypedArray())
+        panel.add(LabeledComponent.create(citationToolCombo, "Citation tool"))
 
-        outputFormat = LabeledComponent.create(ComboBox(LatexmkOutputFormat.entries.toTypedArray()), "Output format")
-        panel.add(outputFormat)
+        outputFormatCombo = ComboBox(LatexmkOutputFormat.entries.toTypedArray())
+        panel.add(LabeledComponent.create(outputFormatCombo, "Output format"))
 
-        extraArguments = LabeledComponent.create(RawCommandLineEditor(), "Additional latexmk arguments")
-        panel.add(extraArguments)
+        extraArgumentsField = RawCommandLineEditor()
+        panel.add(LabeledComponent.create(extraArgumentsField, "Additional latexmk arguments"))
+    }
 
-        environmentVariables = EnvironmentVariablesComponent()
-        panel.add(environmentVariables)
-
-        beforeRunCommand = LabeledComponent.create(RawCommandLineEditor(), "LaTeX code to run before compiling the main file")
-        panel.add(beforeRunCommand)
-
-        panel.add(SeparatorComponent())
-
-        val mainFileField = TextFieldWithBrowseButton()
-        mainFileField.addBrowseFolderListener(
-            TextBrowseFolderListener(
-                FileChooserDescriptorFactory.createSingleFileDescriptor()
-                    .withTitle("Choose a File to Compile")
-                    .withExtensionFilter("tex")
-                    .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules.toSet().toTypedArray())
+    private fun addPathsSection() {
+        mainFileField = TextFieldWithBrowseButton().apply {
+            addBrowseFolderListener(
+                TextBrowseFolderListener(
+                    FileChooserDescriptorFactory.createSingleFileDescriptor()
+                        .withTitle("Choose a File to Compile")
+                        .withExtensionFilter("tex")
+                        .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules.toSet().toTypedArray())
+                )
             )
-        )
-        mainFile = LabeledComponent.create(mainFileField, "Main file to compile")
-        panel.add(mainFile)
+        }
+        panel.add(LabeledComponent.create(mainFileField, "Main file to compile"))
 
-        val auxField = TextFieldWithBrowseButton()
-        auxField.addBrowseFolderListener(
-            TextBrowseFolderListener(
-                FileChooserDescriptor(false, true, false, false, false, false)
-                    .withTitle("Auxiliary Files Directory")
-                    .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules)
+        auxilPathField = TextFieldWithBrowseButton().apply {
+            addBrowseFolderListener(
+                TextBrowseFolderListener(
+                    FileChooserDescriptor(false, true, false, false, false, false)
+                        .withTitle("Auxiliary Files Directory")
+                        .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules)
+                )
             )
+        }
+        panel.add(
+            LabeledComponent.create(
+                auxilPathField,
+                "Auxiliary files directory (intermediate files; omit or set equal to output directory to skip separate -auxdir)",
+            ),
         )
-        auxilPath = LabeledComponent.create(auxField, "Auxiliary files directory (intermediate files; omit or set equal to output directory to skip separate -auxdir)")
-        panel.add(auxilPath)
 
-        val outputPathField = TextFieldWithBrowseButton()
-        outputPathField.addBrowseFolderListener(
-            TextBrowseFolderListener(
-                FileChooserDescriptor(false, true, false, false, false, false)
-                    .withTitle("Output Files Directory")
-                    .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules)
+        outputPathField = TextFieldWithBrowseButton().apply {
+            addBrowseFolderListener(
+                TextBrowseFolderListener(
+                    FileChooserDescriptor(false, true, false, false, false, false)
+                        .withTitle("Output Files Directory")
+                        .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules)
+                )
             )
+        }
+        panel.add(
+            LabeledComponent.create(
+                outputPathField,
+                "Output directory (final files like pdf), placeholders: ${LatexOutputPath.MAIN_FILE_STRING}, ${LatexOutputPath.PROJECT_DIR_STRING}",
+            ),
         )
-        outputPath = LabeledComponent.create(outputPathField, "Output directory (final files like pdf), placeholders: ${LatexOutputPath.MAIN_FILE_STRING}, ${LatexOutputPath.PROJECT_DIR_STRING}")
-        panel.add(outputPath)
 
-        val workingDirectoryField = TextFieldWithBrowseButton()
-        workingDirectoryField.addBrowseFolderListener(
-            TextBrowseFolderListener(
-                FileChooserDescriptor(false, true, false, false, false, false)
-                    .withTitle("Working Directory")
-                    .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules)
+        workingDirectoryField = TextFieldWithBrowseButton().apply {
+            addBrowseFolderListener(
+                TextBrowseFolderListener(
+                    FileChooserDescriptor(false, true, false, false, false, false)
+                        .withTitle("Working Directory")
+                        .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules)
+                )
             )
-        )
-        workingDirectory = LabeledComponent.create(workingDirectoryField, "Working directory (process cwd, used for relative paths)")
-        panel.add(workingDirectory)
+        }
+        panel.add(LabeledComponent.create(workingDirectoryField, "Working directory (process cwd, used for relative paths)"))
 
         val distributionSelections = LatexDistributionSelection.getAvailableSelections(project).toTypedArray()
-        val distributionComboBox = ComboBox(distributionSelections)
-        distributionComboBox.renderer = LatexDistributionComboBoxRenderer(project) {
-            val path = (mainFile.component as TextFieldWithBrowseButton).text
-            if (path.isNotBlank()) com.intellij.openapi.vfs.LocalFileSystem.getInstance().findFileByPath(path) else null
+        latexDistributionCombo = ComboBox(distributionSelections)
+        latexDistributionCombo.renderer = LatexDistributionComboBoxRenderer(project) {
+            val path = mainFileField.text
+            if (path.isNotBlank()) LocalFileSystem.getInstance().findFileByPath(path) else null
         }
         @Suppress("DialogTitleCapitalization")
-        latexDistribution = LabeledComponent.create(distributionComboBox, "LaTeX Distribution")
-        panel.add(latexDistribution)
+        panel.add(LabeledComponent.create(latexDistributionCombo, "LaTeX Distribution"))
+    }
 
-        val viewerField = ComboBox(PdfViewer.availableViewers.toTypedArray())
-        pdfViewer = LabeledComponent.create(viewerField, "PDF viewer")
-        pdfViewer.component.addActionListener {
-            requireFocus.isVisible = (pdfViewer.component.selectedItem as? PdfViewer)?.let { it.isForwardSearchSupported && it.isFocusSupported } ?: false
+    private fun addViewerSection() {
+        pdfViewerCombo = ComboBox(PdfViewer.availableViewers.toTypedArray())
+        pdfViewerCombo.addActionListener {
+            requireFocus.isVisible =
+                (pdfViewerCombo.selectedItem as? PdfViewer)?.let { it.isForwardSearchSupported && it.isFocusSupported } ?: false
         }
-        panel.add(pdfViewer)
+        panel.add(LabeledComponent.create(pdfViewerCombo, "PDF viewer"))
 
-        requireFocus = JBCheckBox("Allow PDF viewer to focus after compilation")
-        requireFocus.isSelected = true
+        requireFocus = JBCheckBox("Allow PDF viewer to focus after compilation").apply {
+            isSelected = true
+        }
         panel.add(requireFocus)
 
-        if (com.intellij.openapi.util.SystemInfo.isWindows && !SumatraViewer.isAvailable()) {
+        if (SystemInfo.isWindows && !SumatraViewer.isAvailable()) {
             val label = JLabel(
-                "<html>Failed to detect SumatraPDF. If installed, add it manually in <a href=''>TeXiFy Settings</a>.</html>"
+                "<html>Failed to detect SumatraPDF. If installed, add it manually in <a href=''>TeXiFy Settings</a>.</html>",
             ).apply { cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR) }
+
             label.addMouseListener(object : MouseAdapter() {
                 override fun mouseClicked(e: MouseEvent) {
                     ShowSettingsUtil.getInstance().showSettingsDialog(project, "TexifyConfigurable")
@@ -256,7 +296,7 @@ class LatexmkSettingsEditor(private var project: Project) : SettingsEditor<Latex
         enableViewerCommand = JBCheckBox("Select custom PDF viewer command, using {pdf} if not the last argument")
         panel.add(enableViewerCommand)
 
-        viewerCommand = JBTextField().apply {
+        viewerCommandField = JBTextField().apply {
             isEnabled = false
             addPropertyChangeListener("enabled") {
                 if (!(it.newValue as Boolean)) {
@@ -264,7 +304,8 @@ class LatexmkSettingsEditor(private var project: Project) : SettingsEditor<Latex
                 }
             }
         }
-        enableViewerCommand.addItemListener { viewerCommand.isEnabled = it.stateChange == ItemEvent.SELECTED }
-        panel.add(viewerCommand)
+
+        enableViewerCommand.addItemListener { viewerCommandField.isEnabled = it.stateChange == ItemEvent.SELECTED }
+        panel.add(viewerCommandField)
     }
 }

@@ -24,6 +24,7 @@ import com.intellij.openapi.util.WriteExternalException
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
+import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
 import nl.hannahsten.texifyidea.run.latex.LatexCompilationCapabilities
 import nl.hannahsten.texifyidea.run.latex.LatexCompilationRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
@@ -32,8 +33,8 @@ import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogTabComponent
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdk
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
-import nl.hannahsten.texifyidea.util.files.findVirtualFileByAbsoluteOrRelativePath
 import org.jdom.Element
+import java.nio.file.Path
 import java.util.Locale
 
 class LatexmkRunConfiguration(
@@ -89,7 +90,7 @@ class LatexmkRunConfiguration(
     override var outputPath = LatexOutputPath("out", mainFile, project)
     override var auxilPath = LatexOutputPath("auxil", mainFile, project)
 
-    override var workingDirectory: String? = null
+    override var workingDirectory: Path? = null
 
     override var outputFormat: LatexCompiler.Format = LatexCompiler.Format.DEFAULT
 
@@ -186,7 +187,13 @@ class LatexmkRunConfiguration(
             auxilPath.pathString = it
         }
 
-        workingDirectory = parent.getChildText(WORKING_DIRECTORY) ?: LatexOutputPath.MAIN_FILE_STRING
+        workingDirectory = parent.getChildText(WORKING_DIRECTORY)?.let { workingDirectoryText ->
+            when {
+                workingDirectoryText.isBlank() -> null
+                workingDirectoryText == LatexOutputPath.MAIN_FILE_STRING -> null
+                else -> pathOrNull(workingDirectoryText)
+            }
+        }
         latexDistribution = LatexDistributionType.valueOfIgnoreCase(parent.getChildText(LATEX_DISTRIBUTION))
 
         hasBeenRun = parent.getChildText(HAS_BEEN_RUN)?.toBoolean() ?: false
@@ -215,7 +222,7 @@ class LatexmkRunConfiguration(
         parent.addContent(Element(MAIN_FILE).also { it.text = mainFile?.path ?: "" })
         parent.addContent(Element(OUTPUT_PATH).also { it.text = outputPath.virtualFile?.path ?: outputPath.pathString })
         parent.addContent(Element(AUXIL_PATH).also { it.text = auxilPath.virtualFile?.path ?: auxilPath.pathString })
-        parent.addContent(Element(WORKING_DIRECTORY).also { it.text = workingDirectory ?: LatexOutputPath.MAIN_FILE_STRING })
+        parent.addContent(Element(WORKING_DIRECTORY).also { it.text = workingDirectory?.toString() ?: LatexOutputPath.MAIN_FILE_STRING })
         parent.addContent(Element(LATEX_DISTRIBUTION).also { it.text = latexDistribution.name })
         parent.addContent(Element(HAS_BEEN_RUN).also { it.text = hasBeenRun.toString() })
 
@@ -250,18 +257,14 @@ class LatexmkRunConfiguration(
 
     override fun setFileOutputPath(fileOutputPath: String) {
         if (fileOutputPath.isBlank()) return
-        outputPath.virtualFile = findVirtualFileByAbsoluteOrRelativePath(fileOutputPath, project)
-        if (outputPath.virtualFile == null) {
-            outputPath.pathString = fileOutputPath
-        }
+        outputPath.virtualFile = null
+        outputPath.pathString = fileOutputPath
     }
 
     override fun setFileAuxilPath(fileAuxilPath: String) {
         if (fileAuxilPath.isBlank()) return
-        auxilPath.virtualFile = findVirtualFileByAbsoluteOrRelativePath(fileAuxilPath, project)
-        if (auxilPath.virtualFile == null) {
-            auxilPath.pathString = fileAuxilPath
-        }
+        auxilPath.virtualFile = null
+        auxilPath.pathString = fileAuxilPath
     }
 
     override fun setSuggestedName() {

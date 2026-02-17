@@ -8,22 +8,24 @@ import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.LatexCompilationRunConfiguration
 import java.io.File
-import kotlin.io.path.Path
+import java.nio.file.Files
+import java.nio.file.Path
+import kotlin.io.path.Path as KtPath
 
 /**
  * Try to find a latexmkrc file (see the latexmk man page).
  */
 object LatexmkRcFileFinder {
 
-    private val isSystemLatexmkRcFilePresent: Boolean by lazy { getSystemLatexmkRcFile() != null }
+    private val isSystemLatexmkRcFilePresent: Boolean by lazy { getSystemLatexmkRcPath() != null }
 
     private var usesLatexmkrc: Boolean? = null
 
     private var systemLatexmkRcFile: VirtualFile? = null
 
-    // Note: this cannot be a lazy val because then if there is any exception, the stacktrace will not be shown but be hidden by a NoClassDefFoundError. This way, we will have an ExceptionInInitializerError which will have the original stacktrace as well.
-    private fun getSystemLatexmkRcFile(): VirtualFile? {
+    private fun systemLatexmkRcCandidates(): List<String> {
         val paths = mutableListOf<String?>()
+
         // 1
         if (SystemInfo.isLinux) {
             paths += listOf(
@@ -44,35 +46,39 @@ object LatexmkRcFileFinder {
 
         // 2
         paths += listOf(
-            System.getenv("XDG_CONFIG_HOME")?.let { Path(it, "latexmk", "latexmkrc").toString() },
-            System.getenv("HOME")?.let { Path(it, ".latexmkrc").toString() },
-            System.getenv("USERPROFILE")?.let { Path(it, ".latexmkrc").toString() },
-            System.getenv("HOME")?.let { Path(it, ".config", ".latexmkrc").toString() },
+            System.getenv("XDG_CONFIG_HOME")?.let { KtPath(it, "latexmk", "latexmkrc").toString() },
+            System.getenv("HOME")?.let { KtPath(it, ".latexmkrc").toString() },
+            System.getenv("USERPROFILE")?.let { KtPath(it, ".latexmkrc").toString() },
+            System.getenv("HOME")?.let { KtPath(it, ".config", ".latexmkrc").toString() },
         )
 
-        paths.filterNotNull()
-            .forEach {
-                LocalFileSystem.getInstance().findFileByIoFile(File(it))?.let { file ->
-                    return file
-                }
-            }
+        return paths.filterNotNull()
+    }
+
+    private fun getSystemLatexmkRcPath(): Path? =
+        systemLatexmkRcCandidates()
+            .asSequence()
+            .mapNotNull { runCatching { Path.of(it) }.getOrNull() }
+            .firstOrNull { Files.exists(it) }
+
+    // Note: this cannot be a lazy val because then if there is any exception, the stacktrace will not be shown but be hidden by a NoClassDefFoundError. This way, we will have an ExceptionInInitializerError which will have the original stacktrace as well.
+    private fun getSystemLatexmkRcFile(): VirtualFile? {
+        val path = getSystemLatexmkRcPath() ?: return null
+        LocalFileSystem.getInstance().findFileByIoFile(File(path.toString()))?.let { file ->
+            return file
+        }
 
         return null
     }
 
-    private fun isLocalLatexmkRcFilePresent(compilerArguments: String?, workingDir: String?) = getLocalLatexmkRcFile(compilerArguments, workingDir) != null
-
-    /**
-     * Get the first latexmkrc file we can find locally (in the project).
-     */
-    private fun getLocalLatexmkRcFile(compilerArguments: String?, workingDir: String?): VirtualFile? {
+    private fun getLocalLatexmkRcPath(compilerArguments: String?, workingDir: Path?): Path? {
         // 3
         if (workingDir != null) {
             listOf(
-                workingDir + File.separator + "latexmkrc",
-                workingDir + File.separator + ".latexmkrc"
+                workingDir.resolve("latexmkrc"),
+                workingDir.resolve(".latexmkrc")
             ).forEach {
-                LocalFileSystem.getInstance().findFileByPath(it)?.let { file -> return file }
+                if (Files.exists(it)) return it
             }
         }
 
@@ -80,12 +86,22 @@ object LatexmkRcFileFinder {
         if (compilerArguments != null) {
             val arguments = compilerArguments.splitWhitespace().dropWhile { it.isBlank() }
             if (arguments.contains("-r") && arguments.last() != "-r") {
-                val path = arguments[arguments.indexOf("-r") + 1]
-                LocalFileSystem.getInstance().findFileByPath(path)?.let { file -> return file }
+                val path = runCatching { Path.of(arguments[arguments.indexOf("-r") + 1]) }.getOrNull() ?: return null
+                if (Files.exists(path)) return path
             }
         }
 
         return null
+    }
+
+    private fun isLocalLatexmkRcFilePresent(compilerArguments: String?, workingDir: Path?) = getLocalLatexmkRcPath(compilerArguments, workingDir) != null
+
+    /**
+     * Get the first latexmkrc file we can find locally (in the project).
+     */
+    private fun getLocalLatexmkRcFile(compilerArguments: String?, workingDir: Path?): VirtualFile? {
+        val path = getLocalLatexmkRcPath(compilerArguments, workingDir) ?: return null
+        return LocalFileSystem.getInstance().findFileByPath(path.toString())
     }
 
     fun isLatexmkRcFilePresent(runConfig: LatexCompilationRunConfiguration): Boolean {
@@ -130,7 +146,7 @@ object LatexmkRcFileFinder {
         }
 
         if (runConfig != null) {
-            getLocalLatexmkRcFile(runConfig.compilerArguments, runConfig.mainFile?.parent?.path)?.let { return getTexinputs(it) }
+            getLocalLatexmkRcFile(runConfig.compilerArguments, runConfig.mainFile?.parent?.path?.let { Path.of(it) })?.let { return getTexinputs(it) }
         }
         if (!directory.isValid) return null
         // File could be anywhere if run configurations are not used, but searching the whole project could be too expensive

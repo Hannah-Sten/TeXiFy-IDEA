@@ -24,6 +24,7 @@ import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.PDFLATEX
+import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
 import nl.hannahsten.texifyidea.run.latex.LatexCommandLineOptionsCache
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexOutputPath
@@ -122,7 +123,7 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
         // We may be editing a run configuration template, don't resolve any path
         outputPathTextField.text = runConfiguration.outputPath.virtualFile?.path ?: runConfiguration.outputPath.pathString
 
-        (workingDirectory.component as TextFieldWithBrowseButton).text = runConfiguration.workingDirectory ?: LatexOutputPath.MAIN_FILE_STRING
+        (workingDirectory.component as TextFieldWithBrowseButton).text = runConfiguration.workingDirectory?.toString() ?: LatexOutputPath.MAIN_FILE_STRING
 
         // Reset whether to compile twice
         if (compileTwice != null) {
@@ -229,7 +230,11 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
             runConfiguration.setFileAuxilPath(auxilPathTextField.text)
         }
 
-        runConfiguration.workingDirectory = (workingDirectory.component as TextFieldWithBrowseButton).text
+        val workingDirText = (workingDirectory.component as TextFieldWithBrowseButton).text
+        runConfiguration.workingDirectory = when {
+            workingDirText.isBlank() || workingDirText == LatexOutputPath.MAIN_FILE_STRING -> null
+            else -> pathOrNull(workingDirText)
+        }
 
         if (compileTwice != null) {
             // Only show option to configure number of compiles when applicable

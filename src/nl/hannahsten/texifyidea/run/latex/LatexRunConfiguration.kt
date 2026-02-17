@@ -35,6 +35,7 @@ import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
 import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
+import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogTabComponent
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
@@ -43,7 +44,6 @@ import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdk
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.files.findFile
-import nl.hannahsten.texifyidea.util.files.findVirtualFileByAbsoluteOrRelativePath
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.includedPackagesInFileset
 import nl.hannahsten.texifyidea.util.parser.hasBibliography
@@ -52,8 +52,8 @@ import nl.hannahsten.texifyidea.util.runInBackgroundNonBlocking
 import org.jdom.Element
 import java.io.File
 import java.nio.file.InvalidPathException
+import java.nio.file.Path
 import java.util.*
-import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
 
 /**
@@ -127,7 +127,7 @@ open class LatexRunConfiguration(
     /** Path to the directory containing the auxiliary files. */
     override var auxilPath = LatexOutputPath("auxil", mainFile, project)
 
-    override var workingDirectory: String? = null
+    override var workingDirectory: Path? = null
 
     override var compileTwice = false
     override var outputFormat: Format = Format.PDF
@@ -290,7 +290,7 @@ open class LatexRunConfiguration(
                     return@runInBackgroundNonBlocking
                 }
                 val path = try {
-                    Path(folder).resolve("SumatraPDF.exe")
+                    Path.of(folder).resolve("SumatraPDF.exe")
                 }
                 catch (e: InvalidPathException) {
                     return@runInBackgroundNonBlocking
@@ -346,7 +346,13 @@ open class LatexRunConfiguration(
             this.auxilPath.pathString = auxilPathString
         }
 
-        this.workingDirectory = parent.getChildText(WORKING_DIRECTORY) ?: LatexOutputPath.MAIN_FILE_STRING
+        this.workingDirectory = parent.getChildText(WORKING_DIRECTORY)?.let { workingDirectoryText ->
+            when {
+                workingDirectoryText.isBlank() -> null
+                workingDirectoryText == LatexOutputPath.MAIN_FILE_STRING -> null
+                else -> pathOrNull(workingDirectoryText)
+            }
+        }
 
         // Backwards compatibility
         val auxDirBoolean = parent.getChildText(AUX_DIR)
@@ -424,7 +430,7 @@ open class LatexRunConfiguration(
         parent.addContent(Element(MAIN_FILE).also { it.text = mainFile?.path ?: "" })
         parent.addContent(Element(OUTPUT_PATH).also { it.text = outputPath.virtualFile?.path ?: outputPath.pathString })
         parent.addContent(Element(AUXIL_PATH).also { it.text = auxilPath.virtualFile?.path ?: auxilPath.pathString })
-        parent.addContent(Element(WORKING_DIRECTORY).also { it.text = workingDirectory ?: LatexOutputPath.MAIN_FILE_STRING })
+        parent.addContent(Element(WORKING_DIRECTORY).also { it.text = workingDirectory?.toString() ?: LatexOutputPath.MAIN_FILE_STRING })
         parent.addContent(Element(COMPILE_TWICE).also { it.text = compileTwice.toString() })
         parent.addContent(Element(OUTPUT_FORMAT).also { it.text = outputFormat.name })
         parent.addContent(Element(LATEX_DISTRIBUTION).also { it.text = latexDistribution.name })
@@ -661,11 +667,8 @@ open class LatexRunConfiguration(
      */
     override fun setFileOutputPath(fileOutputPath: String) {
         if (fileOutputPath.isBlank()) return
-        this.outputPath.virtualFile = findVirtualFileByAbsoluteOrRelativePath(fileOutputPath, project)
-        // If not possible to resolve directly, we might resolve it later
-        if (this.outputPath.virtualFile == null) {
-            this.outputPath.pathString = fileOutputPath
-        }
+        this.outputPath.virtualFile = null
+        this.outputPath.pathString = fileOutputPath
     }
 
     /**
@@ -673,11 +676,8 @@ open class LatexRunConfiguration(
      */
     override fun setFileAuxilPath(fileAuxilPath: String) {
         if (fileAuxilPath.isBlank()) return
-        this.auxilPath.virtualFile = findVirtualFileByAbsoluteOrRelativePath(fileAuxilPath, project)
-        // If not possible to resolve directly, we might resolve it later
-        if (this.auxilPath.virtualFile == null) {
-            this.auxilPath.pathString = fileAuxilPath
-        }
+        this.auxilPath.virtualFile = null
+        this.auxilPath.pathString = fileAuxilPath
     }
 
     /**

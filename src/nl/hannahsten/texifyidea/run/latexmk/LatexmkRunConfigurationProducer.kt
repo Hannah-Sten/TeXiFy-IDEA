@@ -8,7 +8,6 @@ import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
-import nl.hannahsten.texifyidea.run.latex.LatexOutputPath
 
 class LatexmkRunConfigurationProducer : LazyRunConfigurationProducer<LatexmkRunConfiguration>() {
 
@@ -33,7 +32,7 @@ class LatexmkRunConfigurationProducer : LazyRunConfigurationProducer<LatexmkRunC
         runConfiguration.setSuggestedName()
         runConfiguration.outputPath = runConfiguration.outputPath.clone()
         runConfiguration.auxilPath = runConfiguration.auxilPath.clone()
-        runConfiguration.workingDirectory = LatexOutputPath.MAIN_FILE_STRING
+        runConfiguration.workingDirectory = null
         runConfiguration.compiler = nl.hannahsten.texifyidea.run.compiler.LatexCompiler.LATEXMK
         return true
     }

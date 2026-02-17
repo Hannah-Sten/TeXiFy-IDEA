@@ -6,7 +6,7 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
 import com.intellij.util.io.awaitExit
 import nl.hannahsten.texifyidea.util.runInBackgroundWithoutProgress
-import kotlin.io.path.Path
+import java.nio.file.Path
 
 object LatexmkCleanUtil {
 
@@ -29,11 +29,11 @@ object LatexmkCleanUtil {
         }
 
         runInBackgroundWithoutProgress {
-            val workingDirectoryPath = runConfig.getResolvedWorkingDirectory() ?: mainFile.parent.path
+            val workingDirectoryPath = runConfig.getResolvedWorkingDirectory() ?: Path.of(mainFile.parent.path)
 
             runCatching {
                 val process = GeneralCommandLine(command)
-                    .withWorkingDirectory(Path(workingDirectoryPath))
+                    .withWorkingDirectory(workingDirectoryPath)
                     .withEnvironment(runConfig.environmentVariables.envs)
                     .toProcessBuilder()
                     .redirectErrorStream(true)
