@@ -36,7 +36,7 @@ class LatexmkRunConfigurationProducer : LazyRunConfigurationProducer<LatexmkRunC
         runConfiguration.mainFile = mainFile
         runConfiguration.setSuggestedName()
         runConfiguration.outputPathRaw = LatexmkPathResolver.MAIN_FILE_PARENT_PLACEHOLDER
-        runConfiguration.auxilPathRaw = "${LatexmkPathResolver.PROJECT_DIR_PLACEHOLDER}/aux"
+        runConfiguration.auxilPathRaw = ""
         runConfiguration.workingDirectory = null
         runConfiguration.compiler = nl.hannahsten.texifyidea.run.compiler.LatexCompiler.LATEXMK
 

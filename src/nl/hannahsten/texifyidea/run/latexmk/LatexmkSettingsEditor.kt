@@ -137,7 +137,6 @@ class LatexmkSettingsEditor(private var project: Project) : SettingsEditor<Latex
         addMainFileSection()
         addLatexmkCompileSection()
         addViewerSection()
-        addDistributionSection()
         addDirectorySection()
         addAdvancedSection()
     }
@@ -257,6 +256,7 @@ class LatexmkSettingsEditor(private var project: Project) : SettingsEditor<Latex
 
     private fun addAdvancedSection() {
         panel.add(SeparatorComponent())
+        addDistributionSection()
         addCompilerSection()
 
         extraArgumentsField = RawCommandLineEditor()

@@ -71,6 +71,16 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
         assertEquals("-synctex=1", runConfig.extraArguments)
     }
 
+    fun testDefaultAuxDirectoryIsEmpty() {
+        val runConfig = LatexmkRunConfiguration(
+            myFixture.project,
+            LatexConfigurationFactory(LatexmkRunConfigurationType()),
+            "Latexmk"
+        )
+
+        assertEquals("", runConfig.auxilPathRaw)
+    }
+
     fun testDefaultCompileModeIsPdfLatexPdf() {
         val runConfig = LatexmkRunConfiguration(
             myFixture.project,

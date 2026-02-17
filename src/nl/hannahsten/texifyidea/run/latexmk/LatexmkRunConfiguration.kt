@@ -83,7 +83,7 @@ class LatexmkRunConfiguration(
 
     override var mainFile: VirtualFile? = null
     var outputPathRaw: String = LatexmkPathResolver.MAIN_FILE_PARENT_PLACEHOLDER
-    var auxilPathRaw: String = "${LatexmkPathResolver.PROJECT_DIR_PLACEHOLDER}/auxil"
+    var auxilPathRaw: String = ""
 
     override var workingDirectory: Path? = null
 
@@ -178,7 +178,7 @@ class LatexmkRunConfiguration(
         setMainFile(parent.getChildText(MAIN_FILE) ?: "")
 
         outputPathRaw = parent.getChildText(OUTPUT_PATH).takeUnless { it.isNullOrBlank() } ?: LatexmkPathResolver.MAIN_FILE_PARENT_PLACEHOLDER
-        auxilPathRaw = parent.getChildText(AUXIL_PATH) ?: "${LatexmkPathResolver.PROJECT_DIR_PLACEHOLDER}/auxil"
+        auxilPathRaw = parent.getChildText(AUXIL_PATH) ?: ""
 
         workingDirectory = parent.getChildText(WORKING_DIRECTORY)?.let { workingDirectoryText ->
             when {
