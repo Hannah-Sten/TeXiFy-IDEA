@@ -354,7 +354,7 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
                     )
             )
         )
-        workingDirectory = LabeledComponent.create(workingDirectoryField, "Working directory")
+        workingDirectory = LabeledComponent.create(workingDirectoryField, "Working directory (process cwd, used for relative paths)")
         panel.add(workingDirectory)
 
         compileTwice = JBCheckBox("Always compile at least twice")
@@ -406,7 +406,7 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
                         )
                 )
             )
-            auxilPath = LabeledComponent.create(auxilPathField, "Directory for auxiliary files")
+            auxilPath = LabeledComponent.create(auxilPathField, "Auxiliary files directory (intermediate files like .aux/.log/.toc)")
             panel.add(auxilPath)
         }
 
@@ -421,7 +421,7 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
                     )
             )
         )
-        outputPath = LabeledComponent.create(outputPathField, "Directory for output files, you can use ${LatexOutputPath.MAIN_FILE_STRING} or ${LatexOutputPath.PROJECT_DIR_STRING} as placeholders:")
+        outputPath = LabeledComponent.create(outputPathField, "Output directory (final files like pdf), placeholders: ${LatexOutputPath.MAIN_FILE_STRING}, ${LatexOutputPath.PROJECT_DIR_STRING}")
         panel.add(outputPath)
     }
 

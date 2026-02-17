@@ -195,7 +195,7 @@ class LatexmkSettingsEditor(private var project: Project) : SettingsEditor<Latex
                     .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules)
             )
         )
-        auxilPath = LabeledComponent.create(auxField, "Directory for auxiliary files (omit or set equal to output directory to disable separate -auxdir)")
+        auxilPath = LabeledComponent.create(auxField, "Auxiliary files directory (intermediate files; omit or set equal to output directory to skip separate -auxdir)")
         panel.add(auxilPath)
 
         val outputPathField = TextFieldWithBrowseButton()
@@ -206,7 +206,7 @@ class LatexmkSettingsEditor(private var project: Project) : SettingsEditor<Latex
                     .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules)
             )
         )
-        outputPath = LabeledComponent.create(outputPathField, "Directory for output files, placeholders: ${LatexOutputPath.MAIN_FILE_STRING}, ${LatexOutputPath.PROJECT_DIR_STRING}")
+        outputPath = LabeledComponent.create(outputPathField, "Output directory (final files like pdf), placeholders: ${LatexOutputPath.MAIN_FILE_STRING}, ${LatexOutputPath.PROJECT_DIR_STRING}")
         panel.add(outputPath)
 
         val workingDirectoryField = TextFieldWithBrowseButton()
@@ -217,7 +217,7 @@ class LatexmkSettingsEditor(private var project: Project) : SettingsEditor<Latex
                     .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules)
             )
         )
-        workingDirectory = LabeledComponent.create(workingDirectoryField, "Working directory")
+        workingDirectory = LabeledComponent.create(workingDirectoryField, "Working directory (process cwd, used for relative paths)")
         panel.add(workingDirectory)
 
         val distributionSelections = LatexDistributionSelection.getAvailableSelections(project).toTypedArray()

@@ -532,10 +532,6 @@ open class LatexRunConfiguration(
      */
     override fun getAllAuxiliaryRunConfigs(): Set<RunnerAndConfigurationSettings> = bibRunConfigs + makeindexRunConfigs + externalToolRunConfigs
 
-    override fun getResolvedWorkingDirectory(): String? = if (!workingDirectory.isNullOrBlank() && mainFile != null) workingDirectory?.replace(LatexOutputPath.MAIN_FILE_STRING, mainFile!!.parent.path) else mainFile?.parent?.path
-
-    override fun hasDefaultWorkingDirectory(): Boolean = workingDirectory == LatexOutputPath.MAIN_FILE_STRING
-
     /**
      * Looks up the corresponding [VirtualFile] and sets [LatexRunConfiguration.mainFile].
      *
