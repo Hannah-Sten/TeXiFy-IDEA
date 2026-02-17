@@ -127,14 +127,15 @@ class FilesetProcessor(
                 // check library package if local is not present
                 addSingleLibrary(path, refInfo)
 
+                val loadedPackages = PackageMagic.packagesLoadedWithOptions[LatexLib.Package(path.nameWithoutExtension)]
                 // sideloading packages
-                PackageMagic.packagesLoadedWithOptions[LatexLib.Package(path.nameWithoutExtension)]?.let { loadedPackages ->
+                if (!loadedPackages.isNullOrEmpty()) {
                     // This is expensive, but since we only do this for every \usepackage{biblatex} the performance impact is hopefully limited
-                    val options = command.getOptionalParameterMap().mapKeys { it.key.text }.mapValues { it.value?.text }
-                    loadedPackages.map { entry ->
+                    val options = command.optionalParameterTextMap()
+                    loadedPackages.forEach { (key, value) ->
                         // Can be specified as key without value or key=true, but key=false disables the option
-                        if (options.contains(entry.key) && options[entry.key] != "false") {
-                            addSingleLibrary(Path(entry.value.name + ".sty"), refInfo)
+                        if (options.contains(key) && options[key] != "false") {
+                            addSingleLibrary(Path(value.name + ".sty"), refInfo)
                         }
                     }
                 }
