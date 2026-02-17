@@ -61,4 +61,14 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
         assertTrue(arguments.contains("-pdf"))
         assertTrue(arguments.contains("-interaction=nonstopmode"))
     }
+
+    fun testDefaultExtraArgumentsAreSynctex() {
+        val runConfig = LatexmkRunConfiguration(
+            myFixture.project,
+            LatexConfigurationFactory(LatexmkRunConfigurationType()),
+            "Latexmk"
+        )
+
+        assertEquals("-synctex=1", runConfig.extraArguments)
+    }
 }

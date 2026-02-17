@@ -63,6 +63,7 @@ class LatexmkRunConfiguration(
         private const val LATEXMK_OUTPUT_FORMAT = "latexmk-output-format"
         private const val CITATION_TOOL = "citation-tool"
         private const val EXTRA_ARGUMENTS = "extra-arguments"
+        private const val DEFAULT_EXTRA_ARGUMENTS = "-synctex=1"
     }
 
     override var compiler: LatexCompiler? = LatexCompiler.LATEXMK
@@ -108,11 +109,11 @@ class LatexmkRunConfiguration(
             field = value?.trim()?.ifEmpty { null }
         }
 
-    var latexmkOutputFormat: LatexmkOutputFormat = LatexmkOutputFormat.DEFAULT
+    var latexmkOutputFormat: LatexmkOutputFormat = LatexmkOutputFormat.PDF
 
     var citationTool: LatexmkCitationTool = LatexmkCitationTool.AUTO
 
-    var extraArguments: String? = null
+    var extraArguments: String? = DEFAULT_EXTRA_ARGUMENTS
         set(value) {
             field = value?.trim()?.ifEmpty { null }
         }
@@ -186,9 +187,9 @@ class LatexmkRunConfiguration(
 
         engineMode = parent.getChildText(ENGINE_MODE)?.let { runCatching { LatexmkEngineMode.valueOf(it) }.getOrNull() } ?: LatexmkEngineMode.PDFLATEX
         customEngineCommand = parent.getChildText(CUSTOM_ENGINE_COMMAND)
-        latexmkOutputFormat = parent.getChildText(LATEXMK_OUTPUT_FORMAT)?.let { runCatching { LatexmkOutputFormat.valueOf(it) }.getOrNull() } ?: LatexmkOutputFormat.DEFAULT
+        latexmkOutputFormat = parent.getChildText(LATEXMK_OUTPUT_FORMAT)?.let { runCatching { LatexmkOutputFormat.valueOf(it) }.getOrNull() } ?: LatexmkOutputFormat.PDF
         citationTool = parent.getChildText(CITATION_TOOL)?.let { runCatching { LatexmkCitationTool.valueOf(it) }.getOrNull() } ?: LatexmkCitationTool.AUTO
-        extraArguments = parent.getChildText(EXTRA_ARGUMENTS)
+        extraArguments = parent.getChildText(EXTRA_ARGUMENTS) ?: DEFAULT_EXTRA_ARGUMENTS
     }
 
     @Throws(WriteExternalException::class)
@@ -269,7 +270,7 @@ class LatexmkRunConfiguration(
     }
 
     fun setDefaultOutputFormat() {
-        latexmkOutputFormat = LatexmkOutputFormat.DEFAULT
+        latexmkOutputFormat = LatexmkOutputFormat.PDF
     }
 
     override fun getLatexSdk(): Sdk? = when (latexDistribution) {

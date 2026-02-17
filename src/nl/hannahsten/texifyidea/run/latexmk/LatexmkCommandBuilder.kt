@@ -62,6 +62,8 @@ object LatexmkCommandBuilder {
         if (!compilerArguments.isNullOrBlank()) {
             command += ParametersListUtil.parse(compilerArguments)
         }
+        command.add("-interaction=nonstopmode")
+        command.add("-file-line-error")
 
         command.add("-outdir=${directories.outputPath}")
         if (directories.shouldPassAuxilPath) {

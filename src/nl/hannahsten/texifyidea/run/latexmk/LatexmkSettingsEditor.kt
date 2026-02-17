@@ -102,7 +102,7 @@ class LatexmkSettingsEditor(private var project: Project) : SettingsEditor<Latex
         runConfiguration.engineMode = engineModeCombo.selectedItem as? LatexmkEngineMode ?: LatexmkEngineMode.PDFLATEX
         runConfiguration.customEngineCommand = customEngineCommandField.text
         runConfiguration.citationTool = citationToolCombo.selectedItem as? LatexmkCitationTool ?: LatexmkCitationTool.AUTO
-        runConfiguration.latexmkOutputFormat = outputFormatCombo.selectedItem as? LatexmkOutputFormat ?: LatexmkOutputFormat.DEFAULT
+        runConfiguration.latexmkOutputFormat = outputFormatCombo.selectedItem as? LatexmkOutputFormat ?: LatexmkOutputFormat.PDF
         runConfiguration.extraArguments = extraArgumentsField.text
 
         runConfiguration.environmentVariables = environmentVariables.envData
@@ -137,21 +137,12 @@ class LatexmkSettingsEditor(private var project: Project) : SettingsEditor<Latex
             layout = VerticalFlowLayout(VerticalFlowLayout.TOP)
         }
 
-        addCompilerSection()
-        addLatexmkOptionsSection()
-        addEnvironmentSection()
-        addPathsSection()
+        addMainFileSection()
+        addLatexmkCompileSection()
         addViewerSection()
-    }
-
-    private fun addEnvironmentSection() {
-        environmentVariables = EnvironmentVariablesComponent()
-        panel.add(environmentVariables)
-
-        beforeRunCommandField = RawCommandLineEditor()
-        panel.add(LabeledComponent.create(beforeRunCommandField, "LaTeX code to run before compiling the main file"))
-
-        panel.add(SeparatorComponent())
+        addDistributionSection()
+        addDirectorySection()
+        addAdvancedSection()
     }
 
     private fun addCompilerSection() {
@@ -178,7 +169,21 @@ class LatexmkSettingsEditor(private var project: Project) : SettingsEditor<Latex
         panel.add(compilerPathField)
     }
 
-    private fun addLatexmkOptionsSection() {
+    private fun addMainFileSection() {
+        mainFileField = TextFieldWithBrowseButton().apply {
+            addBrowseFolderListener(
+                TextBrowseFolderListener(
+                    FileChooserDescriptorFactory.createSingleFileDescriptor()
+                        .withTitle("Choose a File to Compile")
+                        .withExtensionFilter("tex")
+                        .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules.toSet().toTypedArray())
+                )
+            )
+        }
+        panel.add(LabeledComponent.create(mainFileField, "Main file to compile"))
+    }
+
+    private fun addLatexmkCompileSection() {
         engineModeCombo = ComboBox(LatexmkEngineMode.entries.toTypedArray())
         panel.add(LabeledComponent.create(engineModeCombo, "Engine"))
 
@@ -195,24 +200,20 @@ class LatexmkSettingsEditor(private var project: Project) : SettingsEditor<Latex
 
         outputFormatCombo = ComboBox(LatexmkOutputFormat.entries.toTypedArray())
         panel.add(LabeledComponent.create(outputFormatCombo, "Output format"))
-
-        extraArgumentsField = RawCommandLineEditor()
-        panel.add(LabeledComponent.create(extraArgumentsField, "Additional latexmk arguments"))
     }
 
-    private fun addPathsSection() {
-        mainFileField = TextFieldWithBrowseButton().apply {
-            addBrowseFolderListener(
-                TextBrowseFolderListener(
-                    FileChooserDescriptorFactory.createSingleFileDescriptor()
-                        .withTitle("Choose a File to Compile")
-                        .withExtensionFilter("tex")
-                        .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules.toSet().toTypedArray())
-                )
-            )
+    private fun addDistributionSection() {
+        val distributionSelections = LatexDistributionSelection.getAvailableSelections(project).toTypedArray()
+        latexDistributionCombo = ComboBox(distributionSelections)
+        latexDistributionCombo.renderer = LatexDistributionComboBoxRenderer(project) {
+            val path = mainFileField.text
+            if (path.isNotBlank()) LocalFileSystem.getInstance().findFileByPath(path) else null
         }
-        panel.add(LabeledComponent.create(mainFileField, "Main file to compile"))
+        @Suppress("DialogTitleCapitalization")
+        panel.add(LabeledComponent.create(latexDistributionCombo, "LaTeX Distribution"))
+    }
 
+    private fun addDirectorySection() {
         outputPathField = TextFieldWithBrowseButton().apply {
             addBrowseFolderListener(
                 TextBrowseFolderListener(
@@ -255,15 +256,20 @@ class LatexmkSettingsEditor(private var project: Project) : SettingsEditor<Latex
             )
         }
         panel.add(LabeledComponent.create(workingDirectoryField, "Working directory (process cwd, used for relative paths)"))
+    }
 
-        val distributionSelections = LatexDistributionSelection.getAvailableSelections(project).toTypedArray()
-        latexDistributionCombo = ComboBox(distributionSelections)
-        latexDistributionCombo.renderer = LatexDistributionComboBoxRenderer(project) {
-            val path = mainFileField.text
-            if (path.isNotBlank()) LocalFileSystem.getInstance().findFileByPath(path) else null
-        }
-        @Suppress("DialogTitleCapitalization")
-        panel.add(LabeledComponent.create(latexDistributionCombo, "LaTeX Distribution"))
+    private fun addAdvancedSection() {
+        panel.add(SeparatorComponent())
+        addCompilerSection()
+
+        extraArgumentsField = RawCommandLineEditor()
+        panel.add(LabeledComponent.create(extraArgumentsField, "Additional latexmk arguments"))
+
+        environmentVariables = EnvironmentVariablesComponent()
+        panel.add(environmentVariables)
+
+        beforeRunCommandField = RawCommandLineEditor()
+        panel.add(LabeledComponent.create(beforeRunCommandField, "LaTeX code to run before compiling the main file"))
     }
 
     private fun addViewerSection() {

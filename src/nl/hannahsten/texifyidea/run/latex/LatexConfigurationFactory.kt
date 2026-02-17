@@ -36,6 +36,7 @@ class LatexConfigurationFactory(type: ConfigurationType) : ConfigurationFactory(
             compiler = LatexCompiler.LATEXMK
             setDefaultPdfViewer()
             outputFormat = Format.DEFAULT
+            setDefaultOutputFormat()
             outputPathRaw = nl.hannahsten.texifyidea.run.latexmk.LatexmkPathResolver.MAIN_FILE_PARENT_PLACEHOLDER
             setSuggestedName()
             setDefaultLatexDistribution()

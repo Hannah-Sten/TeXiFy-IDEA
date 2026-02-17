@@ -15,6 +15,8 @@ class LatexmkCommandBuilderTest : BasePlatformTestCase() {
         val runConfig = createRunConfig(mainFile.virtualFile, outDir, auxDir, LatexDistributionType.TEXLIVE)
         val command = LatexmkCommandBuilder.buildCommand(runConfig, project) ?: error("No command generated")
 
+        assertTrue(command.any { it == "-interaction=nonstopmode" })
+        assertTrue(command.any { it == "-file-line-error" })
         assertTrue(command.any { it == "-outdir=${outDir.path}" })
         assertTrue(command.any { it == "-auxdir=${auxDir.path}" })
     }
