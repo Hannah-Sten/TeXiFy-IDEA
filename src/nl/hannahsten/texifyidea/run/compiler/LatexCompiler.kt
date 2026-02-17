@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.run.compiler
 
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.openapi.module.ModuleUtil
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.rootManager
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.execution.ParametersListUtil
@@ -116,7 +117,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
                 )
             )
 
-            val isLatexmkRcFilePresent = LatexmkRcFileFinder.hasLatexmkRc(runConfig.compilerArguments, runConfig.getResolvedWorkingDirectory())
+            val isLatexmkRcFilePresent = LatexmkRcFileFinder.isLatexmkRcFilePresent(runConfig)
 
             // If it is present, assume that it will handle everything (command line options would overwrite latexmkrc options)
             if (!isLatexmkRcFilePresent) {
@@ -281,8 +282,10 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
      *
      * @param runConfig
      *          The run configuration object to get the command for.
+     * @param project
+     *          The current project.
      */
-    fun getCommand(runConfig: LatexRunConfiguration): List<String>? {
+    fun getCommand(runConfig: LatexRunConfiguration, project: Project): List<String>? {
         val mainFile = runConfig.mainFile ?: return null
         // Getting the content root is an expensive operation (See WorkspaceFileIndexDataImpl#ensureIsUpToDate), and since it probably won't change often we reuse a cached value
         val moduleRoot = runConfig.outputPath.getMainFileContentRoot(runConfig.mainFile)

@@ -24,7 +24,6 @@ import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.PDFLATEX
-import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
 import nl.hannahsten.texifyidea.run.latex.LatexCommandLineOptionsCache
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexOutputPath
@@ -38,6 +37,7 @@ import java.awt.Cursor
 import java.awt.event.ItemEvent
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
+import java.nio.file.Path
 import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JPanel
@@ -230,11 +230,7 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
             runConfiguration.setFileAuxilPath(auxilPathTextField.text)
         }
 
-        val workingDirText = (workingDirectory.component as TextFieldWithBrowseButton).text
-        runConfiguration.workingDirectory = when {
-            workingDirText.isBlank() || workingDirText == LatexOutputPath.MAIN_FILE_STRING -> null
-            else -> pathOrNull(workingDirText)
-        }
+        runConfiguration.workingDirectory = Path.of((workingDirectory.component as TextFieldWithBrowseButton).text)
 
         if (compileTwice != null) {
             // Only show option to configure number of compiles when applicable
@@ -359,7 +355,7 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
                     )
             )
         )
-        workingDirectory = LabeledComponent.create(workingDirectoryField, "Working directory (process cwd, used for relative paths)")
+        workingDirectory = LabeledComponent.create(workingDirectoryField, "Working directory")
         panel.add(workingDirectory)
 
         compileTwice = JBCheckBox("Always compile at least twice")
@@ -411,7 +407,7 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
                         )
                 )
             )
-            auxilPath = LabeledComponent.create(auxilPathField, "Auxiliary files directory (intermediate files like .aux/.log/.toc)")
+            auxilPath = LabeledComponent.create(auxilPathField, "Directory for auxiliary files")
             panel.add(auxilPath)
         }
 
@@ -426,7 +422,7 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
                     )
             )
         )
-        outputPath = LabeledComponent.create(outputPathField, "Output directory (final files like pdf), placeholders: ${LatexOutputPath.MAIN_FILE_STRING}, ${LatexOutputPath.PROJECT_DIR_STRING}")
+        outputPath = LabeledComponent.create(outputPathField, "Directory for output files, you can use ${LatexOutputPath.MAIN_FILE_STRING} or ${LatexOutputPath.PROJECT_DIR_STRING} as placeholders:")
         panel.add(outputPath)
     }
 

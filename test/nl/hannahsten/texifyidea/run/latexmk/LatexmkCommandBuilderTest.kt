@@ -62,6 +62,15 @@ class LatexmkCommandBuilderTest : BasePlatformTestCase() {
         assertTrue(cleanAll.any { it == "-C" })
     }
 
+    fun testDockerTexliveUsesWorkdirWhenOutputIsMainParent() {
+        val mainFile = myFixture.addFileToProject("main.tex", "\\documentclass{article}")
+
+        val runConfig = createRunConfig(mainFile.virtualFile, mainFile.virtualFile.parent, mainFile.virtualFile.parent, LatexDistributionType.DOCKER_TEXLIVE)
+        val command = LatexmkCommandBuilder.buildCommand(runConfig, project) ?: error("No command generated")
+
+        assertTrue(command.any { it == "-outdir=/workdir" })
+    }
+
     private fun createRunConfig(
         mainFile: VirtualFile,
         outputDir: VirtualFile,

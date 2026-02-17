@@ -64,7 +64,7 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
             Path.of(mainFile.findTectonicTomlFile()!!.parent.path)
         }
         else {
-            null
+            Path.of(LatexOutputPath.MAIN_FILE_STRING)
         }
         return true
     }

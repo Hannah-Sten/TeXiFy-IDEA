@@ -20,7 +20,6 @@ enum class LatexmkCitationTool(private val displayName: String) {
 }
 
 enum class LatexmkOutputFormat(private val displayName: String, val extension: String) {
-    DEFAULT("Default", "pdf"),
     PDF("PDF", "pdf"),
     DVI("DVI", "dvi"),
     PS("PostScript", "ps"),

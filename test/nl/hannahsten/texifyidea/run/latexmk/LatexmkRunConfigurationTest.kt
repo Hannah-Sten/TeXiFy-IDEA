@@ -73,6 +73,16 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
         assertEquals("-synctex=1", runConfig.extraArguments)
     }
 
+    fun testDefaultOutputFormatIsPdf() {
+        val runConfig = LatexmkRunConfiguration(
+            myFixture.project,
+            LatexConfigurationFactory(LatexmkRunConfigurationType()),
+            "Latexmk"
+        )
+
+        assertEquals(LatexmkOutputFormat.PDF, runConfig.latexmkOutputFormat)
+    }
+
     fun testPreferredEngineFromPackagesFallsBackToLuaLatex() {
         val preferred = preferredEngineForPackages(setOf(LatexLib.FONTSPEC))
         assertEquals(LatexmkEngineMode.LUALATEX, preferred)

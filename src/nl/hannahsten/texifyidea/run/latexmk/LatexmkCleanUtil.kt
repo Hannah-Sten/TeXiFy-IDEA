@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.run.latexmk
 
 import com.intellij.execution.configurations.GeneralCommandLine
+import com.intellij.execution.util.ProgramParametersConfigurator
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
@@ -30,11 +31,20 @@ object LatexmkCleanUtil {
 
         runInBackgroundWithoutProgress {
             val workingDirectoryPath = runConfig.getResolvedWorkingDirectory() ?: Path.of(mainFile.parent.path)
+            val envVariables = runConfig.environmentVariables.envs.let { envs ->
+                if (!runConfig.expandMacrosEnvVariables) {
+                    envs
+                }
+                else {
+                    val configurator = ProgramParametersConfigurator()
+                    envs.mapValues { configurator.expandPathAndMacros(it.value, null, project) }
+                }
+            }
 
             runCatching {
                 val process = GeneralCommandLine(command)
                     .withWorkingDirectory(workingDirectoryPath)
-                    .withEnvironment(runConfig.environmentVariables.envs)
+                    .withEnvironment(envVariables)
                     .toProcessBuilder()
                     .redirectErrorStream(true)
                     .start()

@@ -30,7 +30,7 @@ object LatexmkCommandBuilder {
 
         val hasExplicitStructuredOptions =
             runConfig.engineMode != LatexmkEngineMode.PDFLATEX ||
-                runConfig.latexmkOutputFormat != LatexmkOutputFormat.DEFAULT ||
+                runConfig.latexmkOutputFormat != LatexmkOutputFormat.PDF ||
                 runConfig.citationTool != LatexmkCitationTool.AUTO ||
                 !runConfig.customEngineCommand.isNullOrBlank()
 
@@ -171,14 +171,22 @@ object LatexmkCommandBuilder {
         val shouldPassAux = resolved?.shouldPassAuxilDir == true
 
         val outputPath = when (distribution) {
-            LatexDistributionType.DOCKER_MIKTEX -> "/miktex/out"
-            LatexDistributionType.DOCKER_TEXLIVE -> "/out"
+            LatexDistributionType.DOCKER_MIKTEX -> if (resolvedOut == mainFile.parent.path) "/miktex/work" else "/miktex/out"
+            LatexDistributionType.DOCKER_TEXLIVE -> if (resolvedOut == mainFile.parent.path) "/workdir" else "/out"
             else -> resolvedOut.toWslPathIfNeeded(distribution)
         }
 
         val auxilPath = when (distribution) {
-            LatexDistributionType.DOCKER_MIKTEX -> if (shouldPassAux) "/miktex/auxil" else null
-            LatexDistributionType.DOCKER_TEXLIVE -> if (shouldPassAux) "/auxil" else null
+            LatexDistributionType.DOCKER_MIKTEX -> {
+                if (!shouldPassAux) null
+                else if (resolvedAux == mainFile.parent.path) "/miktex/work"
+                else "/miktex/auxil"
+            }
+            LatexDistributionType.DOCKER_TEXLIVE -> {
+                if (!shouldPassAux) null
+                else if (resolvedAux == mainFile.parent.path) "/workdir"
+                else "/auxil"
+            }
             else -> if (shouldPassAux) resolvedAux?.toWslPathIfNeeded(distribution) else null
         }
 
@@ -254,7 +262,6 @@ private fun LatexmkEngineMode.toLatexmkFlags(customEngineCommand: String?): List
 }
 
 private fun LatexmkOutputFormat.toLatexmkFlags(): List<String> = when (this) {
-    LatexmkOutputFormat.DEFAULT -> emptyList()
     LatexmkOutputFormat.PDF -> listOf("-pdf")
     LatexmkOutputFormat.DVI -> listOf("-dvi")
     LatexmkOutputFormat.PS -> listOf("-ps")

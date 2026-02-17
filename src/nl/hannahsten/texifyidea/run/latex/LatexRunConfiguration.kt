@@ -35,7 +35,6 @@ import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
 import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
-import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogTabComponent
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
@@ -44,6 +43,7 @@ import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdk
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.files.findFile
+import nl.hannahsten.texifyidea.util.files.findVirtualFileByAbsoluteOrRelativePath
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.includedPackagesInFileset
 import nl.hannahsten.texifyidea.util.parser.hasBibliography
@@ -127,7 +127,7 @@ open class LatexRunConfiguration(
     /** Path to the directory containing the auxiliary files. */
     var auxilPath = LatexOutputPath("auxil", mainFile, project)
 
-    override var workingDirectory: Path? = null
+    override var workingDirectory: Path? = Path.of(LatexOutputPath.MAIN_FILE_STRING)
 
     override var compileTwice = false
     override var outputFormat: Format = Format.PDF
@@ -203,6 +203,11 @@ open class LatexRunConfiguration(
         supportsAuxDir = true,
         supportsOutputFormatSet = true,
     )
+
+    // In order to propagate information about which files need to be cleaned up at the end between one run of the run config
+    // (for example makeindex) and the last run, we save this information temporarily here while the run configuration is running.
+    val filesToCleanUp = mutableListOf<File>()
+    val filesToCleanUpIfEmpty = mutableSetOf<File>()
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = LatexSettingsEditor(project)
 
@@ -346,13 +351,7 @@ open class LatexRunConfiguration(
             this.auxilPath.pathString = auxilPathString
         }
 
-        this.workingDirectory = parent.getChildText(WORKING_DIRECTORY)?.let { workingDirectoryText ->
-            when {
-                workingDirectoryText.isBlank() -> null
-                workingDirectoryText == LatexOutputPath.MAIN_FILE_STRING -> null
-                else -> pathOrNull(workingDirectoryText)
-            }
-        }
+        this.workingDirectory = parent.getChildText(WORKING_DIRECTORY)?.let { Path.of(it) } ?: Path.of(LatexOutputPath.MAIN_FILE_STRING)
 
         // Backwards compatibility
         val auxDirBoolean = parent.getChildText(AUX_DIR)
@@ -538,6 +537,15 @@ open class LatexRunConfiguration(
      */
     override fun getAllAuxiliaryRunConfigs(): Set<RunnerAndConfigurationSettings> = bibRunConfigs + makeindexRunConfigs + externalToolRunConfigs
 
+    override fun getResolvedWorkingDirectory(): Path? = if (workingDirectory != null && mainFile != null) {
+        Path.of(workingDirectory.toString().replace(LatexOutputPath.MAIN_FILE_STRING, mainFile!!.parent.path))
+    }
+    else {
+        mainFile?.parent?.path?.let { Path.of(it) }
+    }
+
+    override fun hasDefaultWorkingDirectory(): Boolean = workingDirectory?.toString() == LatexOutputPath.MAIN_FILE_STRING
+
     /**
      * Looks up the corresponding [VirtualFile] and sets [LatexRunConfiguration.mainFile].
      *
@@ -669,8 +677,11 @@ open class LatexRunConfiguration(
      */
     override fun setFileOutputPath(fileOutputPath: String) {
         if (fileOutputPath.isBlank()) return
-        this.outputPath.virtualFile = null
-        this.outputPath.pathString = fileOutputPath
+        this.outputPath.virtualFile = findVirtualFileByAbsoluteOrRelativePath(fileOutputPath, project)
+        // If not possible to resolve directly, we might resolve it later
+        if (this.outputPath.virtualFile == null) {
+            this.outputPath.pathString = fileOutputPath
+        }
     }
 
     /**
@@ -678,8 +689,11 @@ open class LatexRunConfiguration(
      */
     override fun setFileAuxilPath(fileAuxilPath: String) {
         if (fileAuxilPath.isBlank()) return
-        this.auxilPath.virtualFile = null
-        this.auxilPath.pathString = fileAuxilPath
+        this.auxilPath.virtualFile = findVirtualFileByAbsoluteOrRelativePath(fileAuxilPath, project)
+        // If not possible to resolve directly, we might resolve it later
+        if (this.auxilPath.virtualFile == null) {
+            this.auxilPath.pathString = fileAuxilPath
+        }
     }
 
     /**

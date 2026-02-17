@@ -37,20 +37,20 @@ class LatexOutputPath(private val variant: String, var mainFile: VirtualFile?, p
     // Acts as a sort of cache
     var virtualFile: VirtualFile? = null
 
-    var pathString: String = if (variant == "out") MAIN_FILE_STRING else "$PROJECT_DIR_STRING/$variant"
+    var pathString: String = "$PROJECT_DIR_STRING/$variant"
 
     /**
      * Get the output path based on the values of [virtualFile] and [pathString], create it if it does not exist.
      */
-    fun getAndCreatePath(force: Boolean = false): VirtualFile? {
+    fun getAndCreatePath(): VirtualFile? {
         // No auxil directory should be present/created when there's no MiKTeX around, assuming that TeX Live does not support this
-        if (!force && !LatexSdkUtil.isMiktexAvailable && variant == "auxil") {
+        if (!LatexSdkUtil.isMiktexAvailable && variant == "auxil") {
             return null
         }
 
         // Just to be sure, avoid using jetbrains /bin path as output
         if (pathString.isBlank()) {
-            pathString = if (variant == "out") MAIN_FILE_STRING else "$PROJECT_DIR_STRING/$variant"
+            pathString = "$PROJECT_DIR_STRING/$variant"
         }
 
         // Caching of the result
