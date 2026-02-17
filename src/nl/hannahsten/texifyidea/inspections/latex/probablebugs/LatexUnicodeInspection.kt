@@ -248,7 +248,7 @@ class LatexUnicodeInspection : AbstractTexifyContextAwareInspection(
             val c = try {
                 descriptor.textRangeInElement.substring(element.text)
             }
-            catch (e: IndexOutOfBoundsException) {
+            catch (_: IndexOutOfBoundsException) {
                 return null
             }
 

@@ -292,7 +292,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         override fun buildCommand(runConfig: LatexCompilationRunConfiguration, environment: ExecutionEnvironment, context: LatexExecutionContext): List<String> {
             val compiler = this@LatexCommandLineState.runConfig.compiler
                 ?: throw ExecutionException("No valid compiler specified.")
-            return compiler.getCommand(this@LatexCommandLineState.runConfig, environment.project)
+            return compiler.getCommand(this@LatexCommandLineState.runConfig)
                 ?: throw ExecutionException("Compile command could not be created.")
         }
 

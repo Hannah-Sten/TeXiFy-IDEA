@@ -36,15 +36,15 @@ class LatexmkCommandLineState(
     @Throws(ExecutionException::class)
     override fun startProcess(): ProcessHandler {
         val mainFile = runConfig.mainFile ?: throw ExecutionException("Main file is not specified.")
-        val context = LatexExecutionContext()
+        LatexExecutionContext()
 
-        prepare(context)
-        val command = buildCommand(context)
+        prepare()
+        val command = buildCommand()
 
         val handler = createHandler(mainFile, command)
         runConfig.hasBeenRun = true
 
-        finalize(handler, context)
+        finalize(handler)
 
         if (runConfig.isAutoCompiling) {
             handler.addProcessListener(AutoCompileDoneListener())
@@ -54,7 +54,7 @@ class LatexmkCommandLineState(
         return handler
     }
 
-    private fun prepare(context: LatexExecutionContext) {
+    private fun prepare() {
         ProgressManager.getInstance().runProcessWithProgressSynchronously(
             {
                 LatexmkPathResolver.ensureDirectories(runConfig)
@@ -66,11 +66,11 @@ class LatexmkCommandLineState(
     }
 
     @Throws(ExecutionException::class)
-    private fun buildCommand(context: LatexExecutionContext): List<String> =
+    private fun buildCommand(): List<String> =
         LatexmkCommandBuilder.buildCommand(runConfig, environment.project)
             ?: throw ExecutionException("Compile command could not be created.")
 
-    private fun finalize(handler: KillableProcessHandler, context: LatexExecutionContext) {
+    private fun finalize(handler: KillableProcessHandler) {
         if (runConfig.isAutoCompiling) return
 
         if (!runConfig.viewerCommand.isNullOrEmpty()) {

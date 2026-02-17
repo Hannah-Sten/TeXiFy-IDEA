@@ -16,6 +16,7 @@ import nl.hannahsten.texifyidea.settings.sdk.MiktexWindowsSdk
 import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
 import nl.hannahsten.texifyidea.util.selectedRunConfig
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
+import org.codehaus.groovy.runtime.DefaultGroovyMethods.every
 
 /**
  * Execute the given action as write command.
