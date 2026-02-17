@@ -7,6 +7,10 @@ import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
 import nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfigurationType
+import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
+import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
+import nl.hannahsten.texifyidea.run.latexmk.LatexmkRunConfiguration
+import nl.hannahsten.texifyidea.run.latexmk.LatexmkRunConfigurationType
 import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfiguration
 import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType
 
@@ -25,6 +29,13 @@ class LatexConfigurationFactory(type: ConfigurationType) : ConfigurationFactory(
             setDefaultCompiler()
             setDefaultPdfViewer()
             setDefaultOutputFormat()
+            setSuggestedName()
+            setDefaultLatexDistribution()
+        }
+        is LatexmkRunConfigurationType -> LatexmkRunConfiguration(project, this, "Latexmk").apply {
+            compiler = LatexCompiler.LATEXMK
+            setDefaultPdfViewer()
+            outputFormat = Format.DEFAULT
             setSuggestedName()
             setDefaultLatexDistribution()
         }

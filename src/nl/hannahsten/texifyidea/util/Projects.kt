@@ -25,6 +25,7 @@ import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationType
+import nl.hannahsten.texifyidea.run.latexmk.LatexmkRunConfigurationType
 import nl.hannahsten.texifyidea.util.files.allChildFiles
 
 /**
@@ -122,7 +123,9 @@ fun Project?.selectedRunConfig(): LatexRunConfiguration? = this?.let {
  * Get the run configuration of the template.
  */
 fun Project?.latexTemplateRunConfig(): LatexRunConfiguration? = this?.let {
-    RunManager.getInstance(it).getConfigurationTemplate(LatexConfigurationFactory(LatexRunConfigurationType())).configuration as? LatexRunConfiguration
+    val runManager = RunManager.getInstance(it)
+    (runManager.getConfigurationTemplate(LatexConfigurationFactory(LatexmkRunConfigurationType())).configuration as? LatexRunConfiguration)
+        ?: (runManager.getConfigurationTemplate(LatexConfigurationFactory(LatexRunConfigurationType())).configuration as? LatexRunConfiguration)
 }
 
 /**

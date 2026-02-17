@@ -59,7 +59,7 @@ import kotlin.io.path.absolutePathString
 /**
  * @author Hannah Schellekens, Sten Wessel
  */
-class LatexRunConfiguration(
+open class LatexRunConfiguration(
     project: Project,
     factory: ConfigurationFactory,
     name: String
