@@ -192,17 +192,6 @@ enum class MathStyle(
     ),
 
     /**
-     * The bold monospace math style, such as `\symbftt` in `unicode-math`.
-     */
-    BOLD_MONOSPACE(
-        mathAlphabetMapping(
-            uppercaseStart = 0x1D670,
-            lowercaseStart = 0x1D68A,
-            digitStart = 0x1D7F6
-        )
-    ),
-
-    /**
      * The italic math style, such as `\mathit`.
      */
     ITALIC(

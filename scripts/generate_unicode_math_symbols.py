@@ -129,6 +129,7 @@ def main() -> int:
             class_to_entries.setdefault(math_class, []).append((name, display, description))
 
     lines: list[str] = []
+    lines.append('@file:Suppress("unused")')
     lines.append("package nl.hannahsten.texifyidea.lang.predefined")
     lines.append("")
     lines.append("import nl.hannahsten.texifyidea.lang.LArgument")
