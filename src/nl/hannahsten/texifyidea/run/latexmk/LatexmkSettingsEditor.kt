@@ -40,10 +40,9 @@ class LatexmkSettingsEditor(private var project: Project) : SettingsEditor<Latex
     private lateinit var enableCompilerPath: JBCheckBox
     private lateinit var compilerPathField: TextFieldWithBrowseButton
 
-    private lateinit var engineModeCombo: ComboBox<LatexmkEngineMode>
+    private lateinit var compileModeCombo: ComboBox<LatexmkCompileMode>
     private lateinit var customEngineCommandField: JBTextField
     private lateinit var citationToolCombo: ComboBox<LatexmkCitationTool>
-    private lateinit var outputFormatCombo: ComboBox<LatexmkOutputFormat>
     private lateinit var extraArgumentsField: RawCommandLineEditor
 
     private lateinit var environmentVariables: EnvironmentVariablesComponent
@@ -65,12 +64,11 @@ class LatexmkSettingsEditor(private var project: Project) : SettingsEditor<Latex
         enableCompilerPath.isSelected = runConfiguration.compilerPath != null
         compilerPathField.text = runConfiguration.compilerPath ?: ""
 
-        engineModeCombo.selectedItem = runConfiguration.engineMode
+        compileModeCombo.selectedItem = runConfiguration.compileMode
         customEngineCommandField.text = runConfiguration.customEngineCommand ?: ""
-        customEngineCommandField.isEnabled = runConfiguration.engineMode == LatexmkEngineMode.CUSTOM_COMMAND
+        customEngineCommandField.isEnabled = runConfiguration.compileMode == LatexmkCompileMode.CUSTOM
 
         citationToolCombo.selectedItem = runConfiguration.citationTool
-        outputFormatCombo.selectedItem = runConfiguration.latexmkOutputFormat
         extraArgumentsField.text = runConfiguration.extraArguments ?: ""
 
         environmentVariables.envData = runConfiguration.environmentVariables
@@ -99,10 +97,9 @@ class LatexmkSettingsEditor(private var project: Project) : SettingsEditor<Latex
         runConfiguration.outputFormat = nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format.DEFAULT
 
         runConfiguration.compilerPath = if (enableCompilerPath.isSelected) compilerPathField.text else null
-        runConfiguration.engineMode = engineModeCombo.selectedItem as? LatexmkEngineMode ?: LatexmkEngineMode.PDFLATEX
+        runConfiguration.compileMode = compileModeCombo.selectedItem as? LatexmkCompileMode ?: LatexmkCompileMode.PDFLATEX_PDF
         runConfiguration.customEngineCommand = customEngineCommandField.text
         runConfiguration.citationTool = citationToolCombo.selectedItem as? LatexmkCitationTool ?: LatexmkCitationTool.AUTO
-        runConfiguration.latexmkOutputFormat = outputFormatCombo.selectedItem as? LatexmkOutputFormat ?: LatexmkOutputFormat.PDF
         runConfiguration.extraArguments = extraArgumentsField.text
 
         runConfiguration.environmentVariables = environmentVariables.envData
@@ -184,22 +181,22 @@ class LatexmkSettingsEditor(private var project: Project) : SettingsEditor<Latex
     }
 
     private fun addLatexmkCompileSection() {
-        engineModeCombo = ComboBox(LatexmkEngineMode.entries.toTypedArray())
-        panel.add(LabeledComponent.create(engineModeCombo, "Engine"))
+        compileModeCombo = ComboBox(LatexmkCompileMode.entries.toTypedArray())
+        panel.add(LabeledComponent.create(compileModeCombo, "Compile mode"))
 
         customEngineCommandField = JBTextField().apply { isEnabled = false }
-        engineModeCombo.addItemListener {
+        compileModeCombo.addItemListener {
             customEngineCommandField.isEnabled =
                 it.stateChange == ItemEvent.SELECTED &&
-                engineModeCombo.selectedItem == LatexmkEngineMode.CUSTOM_COMMAND
+                compileModeCombo.selectedItem == LatexmkCompileMode.CUSTOM
+            if (!customEngineCommandField.isEnabled) {
+                customEngineCommandField.text = ""
+            }
         }
         panel.add(LabeledComponent.create(customEngineCommandField, "Custom engine command"))
 
         citationToolCombo = ComboBox(LatexmkCitationTool.entries.toTypedArray())
         panel.add(LabeledComponent.create(citationToolCombo, "Citation tool"))
-
-        outputFormatCombo = ComboBox(LatexmkOutputFormat.entries.toTypedArray())
-        panel.add(LabeledComponent.create(outputFormatCombo, "Output format"))
     }
 
     private fun addDistributionSection() {

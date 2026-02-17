@@ -29,14 +29,12 @@ object LatexmkCommandBuilder {
         val hasRcFile = LatexmkRcFileFinder.hasLatexmkRc(runConfig.compilerArguments, runConfig.getResolvedWorkingDirectory())
 
         val hasExplicitStructuredOptions =
-            runConfig.engineMode != LatexmkEngineMode.PDFLATEX ||
-                runConfig.latexmkOutputFormat != LatexmkOutputFormat.PDF ||
+            runConfig.compileMode != LatexmkCompileMode.PDFLATEX_PDF ||
                 runConfig.citationTool != LatexmkCitationTool.AUTO ||
                 !runConfig.customEngineCommand.isNullOrBlank()
 
         if (!hasRcFile || hasExplicitStructuredOptions) {
-            arguments += runConfig.engineMode.toLatexmkFlags(runConfig.customEngineCommand)
-            arguments += runConfig.latexmkOutputFormat.toLatexmkFlags()
+            arguments += runConfig.compileMode.toLatexmkFlags(runConfig.customEngineCommand)
             arguments += runConfig.citationTool.toLatexmkFlags()
         }
 
@@ -250,22 +248,17 @@ object LatexmkCommandBuilder {
     }
 }
 
-private fun LatexmkEngineMode.toLatexmkFlags(customEngineCommand: String?): List<String> = when (this) {
-    LatexmkEngineMode.PDFLATEX -> listOf("-pdf")
-    LatexmkEngineMode.XELATEX -> listOf("-xelatex")
-    LatexmkEngineMode.LUALATEX -> listOf("-lualatex")
-    LatexmkEngineMode.LATEX -> listOf("-latex")
-    LatexmkEngineMode.CUSTOM_COMMAND -> customEngineCommand?.let {
+private fun LatexmkCompileMode.toLatexmkFlags(customEngineCommand: String?): List<String> = when (this) {
+    LatexmkCompileMode.PDFLATEX_PDF -> listOf("-pdf")
+    LatexmkCompileMode.LUALATEX_PDF -> listOf("-lualatex")
+    LatexmkCompileMode.XELATEX_PDF -> listOf("-xelatex")
+    LatexmkCompileMode.LATEX_DVI -> listOf("-latex", "-dvi")
+    LatexmkCompileMode.XELATEX_XDV -> listOf("-xelatex", "-xdv")
+    LatexmkCompileMode.LATEX_PS -> listOf("-latex", "-ps")
+    LatexmkCompileMode.CUSTOM -> customEngineCommand?.let {
         val escaped = it.replace("\"", "\\\"")
         listOf("-pdflatex=\"$escaped\"")
     } ?: emptyList()
-}
-
-private fun LatexmkOutputFormat.toLatexmkFlags(): List<String> = when (this) {
-    LatexmkOutputFormat.PDF -> listOf("-pdf")
-    LatexmkOutputFormat.DVI -> listOf("-dvi")
-    LatexmkOutputFormat.PS -> listOf("-ps")
-    LatexmkOutputFormat.XDV -> listOf("-xdv")
 }
 
 private fun LatexmkCitationTool.toLatexmkFlags(): List<String> = when (this) {

@@ -7,6 +7,52 @@ import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 
 class LatexmkCommandBuilderTest : BasePlatformTestCase() {
 
+    fun testBuildStructuredArgumentsForEachCompileMode() {
+        val runConfig = LatexmkRunConfiguration(
+            project,
+            LatexConfigurationFactory(LatexmkRunConfigurationType()),
+            "Latexmk",
+        ).apply {
+            citationTool = LatexmkCitationTool.AUTO
+            extraArguments = null
+        }
+
+        runConfig.compileMode = LatexmkCompileMode.PDFLATEX_PDF
+        assertEquals("-pdf", runConfig.buildLatexmkArguments())
+
+        runConfig.compileMode = LatexmkCompileMode.LUALATEX_PDF
+        assertEquals("-lualatex", runConfig.buildLatexmkArguments())
+
+        runConfig.compileMode = LatexmkCompileMode.XELATEX_PDF
+        assertEquals("-xelatex", runConfig.buildLatexmkArguments())
+
+        runConfig.compileMode = LatexmkCompileMode.LATEX_DVI
+        assertEquals("-latex -dvi", runConfig.buildLatexmkArguments())
+
+        runConfig.compileMode = LatexmkCompileMode.XELATEX_XDV
+        assertEquals("-xelatex -xdv", runConfig.buildLatexmkArguments())
+
+        runConfig.compileMode = LatexmkCompileMode.LATEX_PS
+        assertEquals("-latex -ps", runConfig.buildLatexmkArguments())
+    }
+
+    fun testBuildStructuredArgumentsForCustomMode() {
+        val runConfig = LatexmkRunConfiguration(
+            project,
+            LatexConfigurationFactory(LatexmkRunConfigurationType()),
+            "Latexmk",
+        ).apply {
+            compileMode = LatexmkCompileMode.CUSTOM
+            customEngineCommand = "lualatex %O %S"
+            citationTool = LatexmkCitationTool.AUTO
+            extraArguments = null
+        }
+
+        val args = runConfig.buildLatexmkArguments()
+        assertTrue(args.contains("-pdflatex="))
+        assertTrue(args.contains("lualatex %O %S"))
+    }
+
     fun testBuildCommandAddsOutdirAndAuxdirWhenSeparated() {
         val mainFile = myFixture.addFileToProject("main.tex", "\\documentclass{article}")
         val outDir = myFixture.addFileToProject("out/.keep", "").virtualFile.parent

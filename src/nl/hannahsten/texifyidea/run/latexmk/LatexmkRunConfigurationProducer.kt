@@ -44,9 +44,9 @@ class LatexmkRunConfigurationProducer : LazyRunConfigurationProducer<LatexmkRunC
 
         val runCommand = magicComments.value(DefaultMagicKeys.COMPILER)
         val runProgram = magicComments.value(DefaultMagicKeys.PROGRAM)
-        val magicEngine = engineFromMagicCommand(runCommand ?: runProgram)
-        val packageEngine = preferredEngineForPackages(container.includedPackagesInFileset())
-        runConfiguration.engineMode = magicEngine ?: packageEngine ?: LatexmkEngineMode.PDFLATEX
+        val magicMode = compileModeFromMagicCommand(runCommand ?: runProgram)
+        val packageMode = preferredCompileModeForPackages(container.includedPackagesInFileset())
+        runConfiguration.compileMode = magicMode ?: packageMode ?: LatexmkCompileMode.PDFLATEX_PDF
         return true
     }
 
@@ -61,21 +61,21 @@ class LatexmkRunConfigurationProducer : LazyRunConfigurationProducer<LatexmkRunC
     }
 }
 
-internal fun preferredEngineForPackages(packages: Set<LatexLib>): LatexmkEngineMode? {
+internal fun preferredCompileModeForPackages(packages: Set<LatexLib>): LatexmkCompileMode? {
     if (packages.any { it in PackageMagic.unicodePreferredEnginesPackages }) {
-        return LatexmkEngineMode.LUALATEX
+        return LatexmkCompileMode.LUALATEX_PDF
     }
     return null
 }
 
-internal fun engineFromMagicCommand(command: String?): LatexmkEngineMode? {
+internal fun compileModeFromMagicCommand(command: String?): LatexmkCompileMode? {
     if (command.isNullOrBlank()) return null
     val executable = command.substringBefore(' ').trim().lowercase()
     return when (executable) {
-        "pdflatex", "pdflatex.exe", "pdflatex.bin", "pdflatex.cmd" -> LatexmkEngineMode.PDFLATEX
-        "xelatex", "xelatex.exe", "xelatex.bin", "xelatex.cmd" -> LatexmkEngineMode.XELATEX
-        "lualatex", "lualatex.exe", "lualatex.bin", "lualatex.cmd" -> LatexmkEngineMode.LUALATEX
-        "latex", "latex.exe", "latex.bin", "latex.cmd" -> LatexmkEngineMode.LATEX
+        "pdflatex", "pdflatex.exe", "pdflatex.bin", "pdflatex.cmd" -> LatexmkCompileMode.PDFLATEX_PDF
+        "xelatex", "xelatex.exe", "xelatex.bin", "xelatex.cmd" -> LatexmkCompileMode.XELATEX_PDF
+        "lualatex", "lualatex.exe", "lualatex.bin", "lualatex.cmd" -> LatexmkCompileMode.LUALATEX_PDF
+        "latex", "latex.exe", "latex.bin", "latex.cmd" -> LatexmkCompileMode.LATEX_DVI
         else -> null
     }
 }
