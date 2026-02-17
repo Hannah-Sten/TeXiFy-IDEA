@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.run.latexmk
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
 import org.jdom.Element
 import org.jdom.Namespace
@@ -70,5 +71,15 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
         )
 
         assertEquals("-synctex=1", runConfig.extraArguments)
+    }
+
+    fun testPreferredEngineFromPackagesFallsBackToLuaLatex() {
+        val preferred = preferredEngineForPackages(setOf(LatexLib.FONTSPEC))
+        assertEquals(LatexmkEngineMode.LUALATEX, preferred)
+    }
+
+    fun testMagicCompilerOverridesWithRecognizedEngine() {
+        val engine = engineFromMagicCommand("xelatex -synctex=1")
+        assertEquals(LatexmkEngineMode.XELATEX, engine)
     }
 }

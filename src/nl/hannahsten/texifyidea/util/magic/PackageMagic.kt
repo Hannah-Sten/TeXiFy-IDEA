@@ -54,4 +54,14 @@ object PackageMagic {
             (old + new).toSet()
         }
     }
+
+    /**
+     * Packages that generally require a Unicode-capable engine (LuaLaTeX/XeLaTeX) over pdfLaTeX.
+     */
+    val unicodePreferredEnginesPackages = setOf(
+        LatexLib.CITATION_STYLE_LANGUAGE,
+        LatexLib.FONTSPEC,
+        LatexLib.Package("unicode-math"),
+        LatexLib.Package("polyglossia"),
+    )
 }

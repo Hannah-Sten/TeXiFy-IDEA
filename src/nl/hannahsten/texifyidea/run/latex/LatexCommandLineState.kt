@@ -289,8 +289,12 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             context.emptyDirsToCleanup.addAll(createdOutputDirectories)
         }
 
-        override fun buildCommand(runConfig: LatexCompilationRunConfiguration, environment: ExecutionEnvironment, context: LatexExecutionContext): List<String> = LatexCommandBuilder.build(this@LatexCommandLineState.runConfig, environment.project)
-            ?: throw ExecutionException("Compile command could not be created.")
+        override fun buildCommand(runConfig: LatexCompilationRunConfiguration, environment: ExecutionEnvironment, context: LatexExecutionContext): List<String> {
+            val compiler = this@LatexCommandLineState.runConfig.compiler
+                ?: throw ExecutionException("No valid compiler specified.")
+            return compiler.getCommand(this@LatexCommandLineState.runConfig, environment.project)
+                ?: throw ExecutionException("Compile command could not be created.")
+        }
 
         override fun finalize(runConfig: LatexCompilationRunConfiguration, handler: KillableProcessHandler, environment: ExecutionEnvironment, context: LatexExecutionContext) {
             val mainFile = this@LatexCommandLineState.runConfig.mainFile ?: return

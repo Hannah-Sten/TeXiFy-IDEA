@@ -7,9 +7,33 @@ import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.lang.LatexLib
+import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
+import nl.hannahsten.texifyidea.lang.magic.allParentMagicComments
 import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
+import nl.hannahsten.texifyidea.util.includedPackagesInFileset
+import nl.hannahsten.texifyidea.util.magic.PackageMagic
 
 class LatexmkRunConfigurationProducer : LazyRunConfigurationProducer<LatexmkRunConfiguration>() {
+
+    private fun preferredEngineForPackages(packages: Set<LatexLib>): LatexmkEngineMode? {
+        if (packages.any { it in PackageMagic.unicodePreferredEnginesPackages }) {
+            return LatexmkEngineMode.XELATEX
+        }
+        return null
+    }
+
+    private fun engineFromMagicCommand(command: String?): LatexmkEngineMode? {
+        if (command.isNullOrBlank()) return null
+        val executable = command.substringBefore(' ').trim().lowercase()
+        return when (executable) {
+            "pdflatex", "pdflatex.exe", "pdflatex.bin", "pdflatex.cmd" -> LatexmkEngineMode.PDFLATEX
+            "xelatex", "xelatex.exe", "xelatex.bin", "xelatex.cmd" -> LatexmkEngineMode.XELATEX
+            "lualatex", "lualatex.exe", "lualatex.bin", "lualatex.cmd" -> LatexmkEngineMode.LUALATEX
+            "latex", "latex.exe", "latex.bin", "latex.cmd" -> LatexmkEngineMode.LATEX
+            else -> null
+        }
+    }
 
     override fun getConfigurationFactory(): ConfigurationFactory = LatexConfigurationFactory(latexmkRunConfigurationType())
 
@@ -34,6 +58,14 @@ class LatexmkRunConfigurationProducer : LazyRunConfigurationProducer<LatexmkRunC
         runConfiguration.auxilPathRaw = "${LatexmkPathResolver.PROJECT_DIR_PLACEHOLDER}/aux"
         runConfiguration.workingDirectory = null
         runConfiguration.compiler = nl.hannahsten.texifyidea.run.compiler.LatexCompiler.LATEXMK
+
+        val magicComments = container.allParentMagicComments()
+
+        val runCommand = magicComments.value(DefaultMagicKeys.COMPILER)
+        val runProgram = magicComments.value(DefaultMagicKeys.PROGRAM)
+        val magicEngine = engineFromMagicCommand(runCommand ?: runProgram)
+        val packageEngine = preferredEngineForPackages(container.includedPackagesInFileset())
+        runConfiguration.engineMode = magicEngine ?: packageEngine ?: LatexmkEngineMode.PDFLATEX
         return true
     }
 

@@ -19,7 +19,6 @@ import com.intellij.platform.ide.progress.runWithModalProgressBlocking
 import com.intellij.util.applyIf
 import nl.hannahsten.texifyidea.editor.autocompile.AutoCompileDoneListener
 import nl.hannahsten.texifyidea.run.OpenCustomPdfViewerListener
-import nl.hannahsten.texifyidea.run.latex.LatexCommandBuilder
 import nl.hannahsten.texifyidea.run.latex.LatexCompilationPipeline
 import nl.hannahsten.texifyidea.run.latex.LatexCompilationRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexExecutionContext
@@ -106,9 +105,12 @@ private class LatexmkPipeline : LatexCompilationPipeline {
         )
     }
 
-    override fun buildCommand(runConfig: LatexCompilationRunConfiguration, environment: ExecutionEnvironment, context: LatexExecutionContext): List<String> =
-        LatexCommandBuilder.build(runConfig, environment.project)
+    override fun buildCommand(runConfig: LatexCompilationRunConfiguration, environment: ExecutionEnvironment, context: LatexExecutionContext): List<String> {
+        val latexmkRunConfig = runConfig as? LatexmkRunConfiguration
+            ?: throw ExecutionException("Latexmk pipeline expects LatexmkRunConfiguration.")
+        return LatexmkCommandBuilder.buildCommand(latexmkRunConfig, environment.project)
             ?: throw ExecutionException("Compile command could not be created.")
+    }
 
     override fun finalize(runConfig: LatexCompilationRunConfiguration, handler: KillableProcessHandler, environment: ExecutionEnvironment, context: LatexExecutionContext) {
         if (runConfig.isAutoCompiling) return
