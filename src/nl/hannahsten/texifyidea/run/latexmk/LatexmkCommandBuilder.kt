@@ -185,7 +185,7 @@ object LatexmkCommandBuilder {
         return LatexmkDirectories(
             outputPath = outputPath,
             auxilPath = auxilPath,
-            shouldPassAuxilPath = auxilPath != null && auxilPath != outputPath && shouldPassAux,
+            shouldPassAuxilPath = auxilPath != null && auxilPath != outputPath,
             hostOutputPath = resolvedOut,
             hostAuxilPath = if (shouldPassAux) resolvedAux else null,
         )

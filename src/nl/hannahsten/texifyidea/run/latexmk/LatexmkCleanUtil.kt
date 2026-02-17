@@ -10,21 +10,21 @@ import java.nio.file.Path
 
 object LatexmkCleanUtil {
 
-    enum class Mode(val flag: String, val label: String) {
-        CLEAN("-c", "Clean auxiliary files"),
-        CLEAN_ALL("-C", "Clean all generated files"),
+    enum class Mode(val label: String) {
+        CLEAN("Clean auxiliary files"),
+        CLEAN_ALL("Clean all generated files"),
     }
 
     fun run(project: Project, runConfig: LatexmkRunConfiguration, mode: Mode) {
         val mainFile = runConfig.mainFile
         if (mainFile == null) {
-            Notification("LaTeX", "latexmk clean failed", "No main file is configured.", NotificationType.ERROR).notify(project)
+            Notification("LaTeX", "Latexmk clean failed", "No main file is configured.", NotificationType.ERROR).notify(project)
             return
         }
 
         val command = LatexmkCommandBuilder.buildCleanCommand(runConfig, mode == Mode.CLEAN_ALL)
         if (command == null) {
-            Notification("LaTeX", "latexmk clean failed", "Could not build latexmk clean command.", NotificationType.ERROR).notify(project)
+            Notification("LaTeX", "Latexmk clean failed", "Could not build latexmk clean command.", NotificationType.ERROR).notify(project)
             return
         }
 
@@ -43,13 +43,13 @@ object LatexmkCleanUtil {
                 val exitCode = process.awaitExit()
 
                 if (exitCode == 0) {
-                    Notification("LaTeX", "latexmk clean completed", "Finished ${mode.label.lowercase()} for ${mainFile.name}.", NotificationType.INFORMATION).notify(project)
+                    Notification("LaTeX", "Latexmk clean completed", "Finished ${mode.label.lowercase()} for ${mainFile.name}.", NotificationType.INFORMATION).notify(project)
                 }
                 else {
-                    Notification("LaTeX", "latexmk clean failed", "latexmk exited with code $exitCode.", NotificationType.ERROR).notify(project)
+                    Notification("LaTeX", "Latexmk clean failed", "latexmk exited with code $exitCode.", NotificationType.ERROR).notify(project)
                 }
             }.onFailure {
-                Notification("LaTeX", "latexmk clean failed", it.message ?: "Unknown error.", NotificationType.ERROR).notify(project)
+                Notification("LaTeX", "Latexmk clean failed", it.message ?: "Unknown error.", NotificationType.ERROR).notify(project)
             }
         }
     }

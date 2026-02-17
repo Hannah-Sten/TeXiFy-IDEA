@@ -260,7 +260,7 @@ open class LatexRunConfiguration(
         try {
             this.compiler = LatexCompiler.valueOf(compilerName)
         }
-        catch (e: IllegalArgumentException) {
+        catch (_: IllegalArgumentException) {
             this.compiler = null
         }
 
@@ -292,7 +292,7 @@ open class LatexRunConfiguration(
                 val path = try {
                     Path.of(folder).resolve("SumatraPDF.exe")
                 }
-                catch (e: InvalidPathException) {
+                catch (_: InvalidPathException) {
                     return@runInBackgroundNonBlocking
                     // If the path is invalid, we just ignore it
                 }
