@@ -34,7 +34,7 @@ class LatexmkRcFileFinderTest : BasePlatformTestCase() {
             workingDirectory = Files.createTempDirectory("texify-latexmkrc-deprecated")
         }
 
-        LatexmkRcFileFinder.isLatexmkRcFilePresent(runConfig)
+        LatexmkRcFileFinder.hasLatexmkRc(runConfig.compilerArguments, runConfig.getResolvedWorkingDirectory())
 
         assertEquals(LatexCompiler.Format.PDF, runConfig.outputFormat)
     }

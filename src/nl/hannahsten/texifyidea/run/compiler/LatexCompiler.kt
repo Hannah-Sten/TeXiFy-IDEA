@@ -117,7 +117,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
                 )
             )
 
-            val isLatexmkRcFilePresent = LatexmkRcFileFinder.isLatexmkRcFilePresent(runConfig)
+            val isLatexmkRcFilePresent = LatexmkRcFileFinder.hasLatexmkRc(runConfig.compilerArguments, runConfig.getResolvedWorkingDirectory())
 
             // If it is present, assume that it will handle everything (command line options would overwrite latexmkrc options)
             if (!isLatexmkRcFilePresent) {

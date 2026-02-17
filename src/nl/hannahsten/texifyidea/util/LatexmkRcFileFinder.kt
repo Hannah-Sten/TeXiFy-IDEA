@@ -106,13 +106,6 @@ object LatexmkRcFileFinder {
     fun hasLatexmkRc(compilerArguments: String?, workingDirectory: Path?): Boolean =
         isSystemLatexmkRcFilePresent || isLocalLatexmkRcFilePresent(compilerArguments, workingDirectory)
 
-    @Deprecated(
-        message = "Use hasLatexmkRc(compilerArguments, workingDirectory).",
-        replaceWith = ReplaceWith("hasLatexmkRc(runConfig.compilerArguments, runConfig.getResolvedWorkingDirectory())"),
-    )
-    fun isLatexmkRcFilePresent(runConfig: LatexCompilationRunConfiguration): Boolean =
-        hasLatexmkRc(runConfig.compilerArguments, runConfig.getResolvedWorkingDirectory())
-
     /**
      * Get TEXINPUTS from latexmkrc.
      */
