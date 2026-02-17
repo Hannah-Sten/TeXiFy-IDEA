@@ -88,6 +88,7 @@ class TexifySettings : SimplePersistentStateComponent<TexifySettings.State>(Stat
         var autoCompileOption by enum<AutoCompile>(AutoCompile.OFF)
         var pathToSumatra by string(null)
         var hasApprovedDetexify by property(false)
+        var suppressIgnoredMasksPrompt by property(false)
         var filesetExpirationTimeMs by property(DEFAULT_FILESET_EXPIRATION_TIME_MS)
         var completionMode by enum(CompletionMode.SMART)
     }
