@@ -19,6 +19,8 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
         runConfig.latexmkOutputFormat = LatexmkOutputFormat.PS
         runConfig.citationTool = LatexmkCitationTool.BIBER
         runConfig.extraArguments = "-silent -halt-on-error"
+        runConfig.outputPathRaw = "{mainFileParent}"
+        runConfig.auxilPathRaw = "{projectDir}/aux"
 
         val element = Element("configuration", Namespace.getNamespace("", ""))
         runConfig.writeExternal(element)
@@ -35,6 +37,8 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
         assertEquals(LatexmkOutputFormat.PS, restored.latexmkOutputFormat)
         assertEquals(LatexmkCitationTool.BIBER, restored.citationTool)
         assertEquals("-silent -halt-on-error", restored.extraArguments)
+        assertEquals("{mainFileParent}", restored.outputPathRaw)
+        assertEquals("{projectDir}/aux", restored.auxilPathRaw)
     }
 
     fun testStructuredArgsAndExtraArgs() {

@@ -6,7 +6,6 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Companion.toWslPathIfNeeded
-import nl.hannahsten.texifyidea.run.latex.LatexCompilationRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.settings.sdk.DockerSdk
 import nl.hannahsten.texifyidea.settings.sdk.DockerSdkAdditionalData
@@ -21,6 +20,8 @@ object LatexmkCommandBuilder {
         val outputPath: String,
         val auxilPath: String?,
         val shouldPassAuxilPath: Boolean,
+        val hostOutputPath: String?,
+        val hostAuxilPath: String?,
     )
 
     fun buildStructuredArguments(runConfig: LatexmkRunConfiguration): String {
@@ -77,7 +78,15 @@ object LatexmkCommandBuilder {
         }
 
         if (distribution.isDocker()) {
-            createDockerCommand(runConfig, directories.auxilPath, directories.outputPath, mainFile, command)
+            createDockerCommand(
+                runConfig,
+                directories.hostAuxilPath,
+                directories.hostOutputPath,
+                directories.auxilPath,
+                directories.outputPath,
+                mainFile,
+                command,
+            )
         }
 
         if (runConfig.beforeRunCommand?.isNotBlank() == true) {
@@ -128,7 +137,15 @@ object LatexmkCommandBuilder {
         }
 
         if (distribution.isDocker()) {
-            createDockerCommand(runConfig, directories.auxilPath, directories.outputPath, mainFile, command)
+            createDockerCommand(
+                runConfig,
+                directories.hostAuxilPath,
+                directories.hostOutputPath,
+                directories.auxilPath,
+                directories.outputPath,
+                mainFile,
+                command,
+            )
         }
 
         if (runConfig.hasDefaultWorkingDirectory()) {
@@ -146,27 +163,36 @@ object LatexmkCommandBuilder {
         mainFile: VirtualFile,
         distribution: LatexDistributionType,
     ): LatexmkDirectories {
+        val resolved = LatexmkPathResolver.resolveOutAuxPair(runConfig)
+        val resolvedOut = resolved?.outputDir?.toString() ?: mainFile.parent.path
+        val resolvedAux = resolved?.auxilDir?.toString()
+        val shouldPassAux = resolved?.shouldPassAuxilDir == true
+
         val outputPath = when (distribution) {
             LatexDistributionType.DOCKER_MIKTEX -> "/miktex/out"
             LatexDistributionType.DOCKER_TEXLIVE -> "/out"
-            else -> (runConfig.outputPath.getAndCreatePath() ?: mainFile.parent).path.toWslPathIfNeeded(distribution)
+            else -> resolvedOut.toWslPathIfNeeded(distribution)
         }
 
         val auxilPath = when (distribution) {
-            LatexDistributionType.DOCKER_MIKTEX -> "/miktex/auxil"
-            LatexDistributionType.DOCKER_TEXLIVE -> "/auxil"
-            else -> runConfig.auxilPath.getAndCreatePath(force = true)?.path?.toWslPathIfNeeded(distribution)
+            LatexDistributionType.DOCKER_MIKTEX -> if (shouldPassAux) "/miktex/auxil" else null
+            LatexDistributionType.DOCKER_TEXLIVE -> if (shouldPassAux) "/auxil" else null
+            else -> if (shouldPassAux) resolvedAux?.toWslPathIfNeeded(distribution) else null
         }
 
         return LatexmkDirectories(
             outputPath = outputPath,
             auxilPath = auxilPath,
-            shouldPassAuxilPath = auxilPath != null && auxilPath != outputPath,
+            shouldPassAuxilPath = auxilPath != null && auxilPath != outputPath && shouldPassAux,
+            hostOutputPath = resolvedOut,
+            hostAuxilPath = if (shouldPassAux) resolvedAux else null,
         )
     }
 
     private fun createDockerCommand(
-        runConfig: LatexCompilationRunConfiguration,
+        runConfig: LatexmkRunConfiguration,
+        hostAuxilDir: String?,
+        hostOutputDir: String?,
         dockerAuxilDir: String?,
         dockerOutputDir: String?,
         mainFile: VirtualFile,
@@ -198,18 +224,12 @@ object LatexmkCommandBuilder {
             )
         }
 
-        if (dockerOutputDir != null) {
-            val outPath = runConfig.outputPath.getAndCreatePath()
-            if (outPath?.path != null && outPath != mainFile.parent) {
-                parameterList.addAll(listOf("-v", "${outPath.path}:$dockerOutputDir"))
-            }
+        if (dockerOutputDir != null && hostOutputDir != null && hostOutputDir != mainFile.parent.path) {
+            parameterList.addAll(listOf("-v", "$hostOutputDir:$dockerOutputDir"))
         }
 
-        if (dockerAuxilDir != null) {
-            val auxPath = runConfig.auxilPath.getAndCreatePath(force = true)
-            if (auxPath?.path != null && auxPath != mainFile.parent) {
-                parameterList.addAll(listOf("-v", "${auxPath.path}:$dockerAuxilDir"))
-            }
+        if (dockerAuxilDir != null && hostAuxilDir != null && hostAuxilDir != mainFile.parent.path) {
+            parameterList.addAll(listOf("-v", "$hostAuxilDir:$dockerAuxilDir"))
         }
 
         val sdkImage = (sdk?.sdkAdditionalData as? DockerSdkAdditionalData)?.imageName

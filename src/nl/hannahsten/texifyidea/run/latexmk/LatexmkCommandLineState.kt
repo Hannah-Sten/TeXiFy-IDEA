@@ -96,11 +96,8 @@ private class LatexmkPipeline : LatexCompilationPipeline {
     override fun prepare(runConfig: LatexCompilationRunConfiguration, environment: ExecutionEnvironment, context: LatexExecutionContext) {
         ProgressManager.getInstance().runProcessWithProgressSynchronously(
             {
-                if (runConfig.outputPath.virtualFile == null || !runConfig.outputPath.virtualFile!!.exists()) {
-                    runConfig.outputPath.getAndCreatePath()
-                }
-                if (runConfig.auxilPath.virtualFile == null || !runConfig.auxilPath.virtualFile!!.exists()) {
-                    runConfig.auxilPath.getAndCreatePath(force = true)
+                if (runConfig is LatexmkRunConfiguration) {
+                    LatexmkPathResolver.ensureDirectories(runConfig)
                 }
             },
             "Creating Output Directories...",

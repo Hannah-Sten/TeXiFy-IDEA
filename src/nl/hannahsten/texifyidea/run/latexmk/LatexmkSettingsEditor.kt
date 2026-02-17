@@ -21,7 +21,6 @@ import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBTextField
 import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
-import nl.hannahsten.texifyidea.run.latex.LatexOutputPath
 import nl.hannahsten.texifyidea.run.latex.ui.LatexDistributionComboBoxRenderer
 import nl.hannahsten.texifyidea.run.latex.ui.LatexDistributionSelection
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
@@ -78,9 +77,9 @@ class LatexmkSettingsEditor(private var project: Project) : SettingsEditor<Latex
         beforeRunCommandField.text = runConfiguration.beforeRunCommand ?: ""
 
         mainFileField.text = runConfiguration.mainFile?.path ?: ""
-        outputPathField.text = runConfiguration.outputPath.virtualFile?.path ?: runConfiguration.outputPath.pathString
-        auxilPathField.text = runConfiguration.auxilPath.virtualFile?.path ?: runConfiguration.auxilPath.pathString
-        workingDirectoryField.text = runConfiguration.workingDirectory?.toString() ?: LatexOutputPath.MAIN_FILE_STRING
+        outputPathField.text = runConfiguration.outputPathRaw
+        auxilPathField.text = runConfiguration.auxilPathRaw
+        workingDirectoryField.text = runConfiguration.workingDirectory?.toString() ?: LatexmkPathResolver.MAIN_FILE_PARENT_PLACEHOLDER
 
         latexDistributionCombo.selectedItem = LatexDistributionSelection.fromDistributionType(runConfiguration.latexDistribution)
 
@@ -115,7 +114,7 @@ class LatexmkSettingsEditor(private var project: Project) : SettingsEditor<Latex
 
         val workingDirText = workingDirectoryField.text
         runConfiguration.workingDirectory = when {
-            workingDirText.isBlank() || workingDirText == LatexOutputPath.MAIN_FILE_STRING -> null
+            workingDirText.isBlank() || workingDirText == LatexmkPathResolver.MAIN_FILE_PARENT_PLACEHOLDER -> null
             else -> pathOrNull(workingDirText)
         }
 
@@ -214,6 +213,22 @@ class LatexmkSettingsEditor(private var project: Project) : SettingsEditor<Latex
         }
         panel.add(LabeledComponent.create(mainFileField, "Main file to compile"))
 
+        outputPathField = TextFieldWithBrowseButton().apply {
+            addBrowseFolderListener(
+                TextBrowseFolderListener(
+                    FileChooserDescriptor(false, true, false, false, false, false)
+                        .withTitle("Output Files Directory")
+                        .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules)
+                )
+            )
+        }
+        panel.add(
+            LabeledComponent.create(
+                outputPathField,
+                "Output directory (final files like pdf), placeholders: ${LatexmkPathResolver.MAIN_FILE_PARENT_PLACEHOLDER}, ${LatexmkPathResolver.PROJECT_DIR_PLACEHOLDER}",
+            ),
+        )
+
         auxilPathField = TextFieldWithBrowseButton().apply {
             addBrowseFolderListener(
                 TextBrowseFolderListener(
@@ -227,22 +242,6 @@ class LatexmkSettingsEditor(private var project: Project) : SettingsEditor<Latex
             LabeledComponent.create(
                 auxilPathField,
                 "Auxiliary files directory (intermediate files; omit or set equal to output directory to skip separate -auxdir)",
-            ),
-        )
-
-        outputPathField = TextFieldWithBrowseButton().apply {
-            addBrowseFolderListener(
-                TextBrowseFolderListener(
-                    FileChooserDescriptor(false, true, false, false, false, false)
-                        .withTitle("Output Files Directory")
-                        .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules)
-                )
-            )
-        }
-        panel.add(
-            LabeledComponent.create(
-                outputPathField,
-                "Output directory (final files like pdf), placeholders: ${LatexOutputPath.MAIN_FILE_STRING}, ${LatexOutputPath.PROJECT_DIR_STRING}",
             ),
         )
 

@@ -122,10 +122,10 @@ open class LatexRunConfiguration(
     var psiFile: SmartPsiElementPointer<PsiFile>? = null
 
     /** Path to the directory containing the output files. */
-    override var outputPath = LatexOutputPath("out", mainFile, project)
+    var outputPath = LatexOutputPath("out", mainFile, project)
 
     /** Path to the directory containing the auxiliary files. */
-    override var auxilPath = LatexOutputPath("auxil", mainFile, project)
+    var auxilPath = LatexOutputPath("auxil", mainFile, project)
 
     override var workingDirectory: Path? = null
 
@@ -639,6 +639,8 @@ open class LatexRunConfiguration(
     else {
         outputPath.getAndCreatePath()
     }
+
+    override fun getOutputDirectory(): VirtualFile? = outputPath.getAndCreatePath()
 
     override fun setSuggestedName() {
         suggestedName()?.let { name = it }

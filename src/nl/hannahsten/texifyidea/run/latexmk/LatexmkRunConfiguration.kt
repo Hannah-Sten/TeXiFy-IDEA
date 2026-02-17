@@ -28,7 +28,6 @@ import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
 import nl.hannahsten.texifyidea.run.latex.LatexCompilationCapabilities
 import nl.hannahsten.texifyidea.run.latex.LatexCompilationRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
-import nl.hannahsten.texifyidea.run.latex.LatexOutputPath
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogTabComponent
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdk
@@ -81,14 +80,8 @@ class LatexmkRunConfiguration(
     override var beforeRunCommand: String? = null
 
     override var mainFile: VirtualFile? = null
-        set(value) {
-            field = value
-            outputPath.mainFile = value
-            auxilPath.mainFile = value
-        }
-
-    override var outputPath = LatexOutputPath("out", mainFile, project)
-    override var auxilPath = LatexOutputPath("auxil", mainFile, project)
+    var outputPathRaw: String = LatexmkPathResolver.MAIN_FILE_PARENT_PLACEHOLDER
+    var auxilPathRaw: String = "${LatexmkPathResolver.PROJECT_DIR_PLACEHOLDER}/auxil"
 
     override var workingDirectory: Path? = null
 
@@ -149,9 +142,9 @@ class LatexmkRunConfiguration(
     }
 
     override fun getOutputFilePath(): String {
-        val outputDir = outputPath.getAndCreatePath() ?: mainFile?.parent
+        val outputDir = LatexmkPathResolver.resolveOutputDir(this)?.toString() ?: mainFile?.parent?.path
         val extension = latexmkOutputFormat.extension.lowercase(Locale.getDefault())
-        return "${outputDir?.path}/${mainFile?.nameWithoutExtension ?: "main"}.$extension"
+        return "$outputDir/${mainFile?.nameWithoutExtension ?: "main"}.$extension"
     }
 
     fun buildLatexmkArguments(): String = LatexmkCommandBuilder.buildStructuredArguments(this)
@@ -177,20 +170,13 @@ class LatexmkRunConfiguration(
 
         setMainFile(parent.getChildText(MAIN_FILE) ?: "")
 
-        parent.getChildText(OUTPUT_PATH)?.let {
-            outputPath = LatexOutputPath("out", mainFile, project)
-            outputPath.pathString = it
-        }
-
-        parent.getChildText(AUXIL_PATH)?.let {
-            auxilPath = LatexOutputPath("auxil", mainFile, project)
-            auxilPath.pathString = it
-        }
+        outputPathRaw = parent.getChildText(OUTPUT_PATH).takeUnless { it.isNullOrBlank() } ?: LatexmkPathResolver.MAIN_FILE_PARENT_PLACEHOLDER
+        auxilPathRaw = parent.getChildText(AUXIL_PATH) ?: "${LatexmkPathResolver.PROJECT_DIR_PLACEHOLDER}/auxil"
 
         workingDirectory = parent.getChildText(WORKING_DIRECTORY)?.let { workingDirectoryText ->
             when {
                 workingDirectoryText.isBlank() -> null
-                workingDirectoryText == LatexOutputPath.MAIN_FILE_STRING -> null
+                workingDirectoryText == LatexmkPathResolver.MAIN_FILE_PARENT_PLACEHOLDER -> null
                 else -> pathOrNull(workingDirectoryText)
             }
         }
@@ -220,9 +206,9 @@ class LatexmkRunConfiguration(
         parent.addContent(Element(EXPAND_MACROS_IN_ENVIRONMENT_VARIABLES).also { it.text = expandMacrosEnvVariables.toString() })
         parent.addContent(Element(BEFORE_RUN_COMMAND).also { it.text = beforeRunCommand ?: "" })
         parent.addContent(Element(MAIN_FILE).also { it.text = mainFile?.path ?: "" })
-        parent.addContent(Element(OUTPUT_PATH).also { it.text = outputPath.virtualFile?.path ?: outputPath.pathString })
-        parent.addContent(Element(AUXIL_PATH).also { it.text = auxilPath.virtualFile?.path ?: auxilPath.pathString })
-        parent.addContent(Element(WORKING_DIRECTORY).also { it.text = workingDirectory?.toString() ?: LatexOutputPath.MAIN_FILE_STRING })
+        parent.addContent(Element(OUTPUT_PATH).also { it.text = outputPathRaw })
+        parent.addContent(Element(AUXIL_PATH).also { it.text = auxilPathRaw })
+        parent.addContent(Element(WORKING_DIRECTORY).also { it.text = workingDirectory?.toString() ?: LatexmkPathResolver.MAIN_FILE_PARENT_PLACEHOLDER })
         parent.addContent(Element(LATEX_DISTRIBUTION).also { it.text = latexDistribution.name })
         parent.addContent(Element(HAS_BEEN_RUN).also { it.text = hasBeenRun.toString() })
 
@@ -256,15 +242,11 @@ class LatexmkRunConfiguration(
     }
 
     override fun setFileOutputPath(fileOutputPath: String) {
-        if (fileOutputPath.isBlank()) return
-        outputPath.virtualFile = null
-        outputPath.pathString = fileOutputPath
+        outputPathRaw = fileOutputPath.takeUnless { it.isBlank() } ?: LatexmkPathResolver.MAIN_FILE_PARENT_PLACEHOLDER
     }
 
     override fun setFileAuxilPath(fileAuxilPath: String) {
-        if (fileAuxilPath.isBlank()) return
-        auxilPath.virtualFile = null
-        auxilPath.pathString = fileAuxilPath
+        auxilPathRaw = fileAuxilPath
     }
 
     override fun setSuggestedName() {
@@ -316,19 +298,22 @@ class LatexmkRunConfiguration(
         }
     }
 
-    override fun getAuxilDirectory(): VirtualFile? = auxilPath.getAndCreatePath(force = true) ?: outputPath.getAndCreatePath()
+    override fun getOutputDirectory(): VirtualFile? = LatexmkPathResolver.toVirtualFile(LatexmkPathResolver.resolveOutputDir(this))
+
+    override fun getAuxilDirectory(): VirtualFile? {
+        val outputDir = LatexmkPathResolver.resolveOutputDir(this)
+        val auxilDir = LatexmkPathResolver.resolveAuxDir(this) ?: outputDir
+        return LatexmkPathResolver.toVirtualFile(auxilDir)
+    }
 
     override fun usesAuxilOrOutDirectory(): Boolean {
-        val usesAuxilDir = auxilPath.getAndCreatePath(force = true) != mainFile?.parent
-        val usesOutDir = outputPath.getAndCreatePath() != mainFile?.parent
+        val mainParent = mainFile?.parent?.path ?: return false
+        val outputPath = LatexmkPathResolver.resolveOutputDir(this)?.toString()
+        val auxilPath = LatexmkPathResolver.resolveAuxDir(this)?.toString() ?: outputPath
+        val usesAuxilDir = auxilPath != null && auxilPath != mainParent
+        val usesOutDir = outputPath != null && outputPath != mainParent
         return usesAuxilDir || usesOutDir
     }
 
-    override fun clone(): RunConfiguration {
-        return super.clone().also {
-            val runConfiguration = it as? LatexmkRunConfiguration ?: return@also
-            runConfiguration.outputPath = outputPath.clone()
-            runConfiguration.auxilPath = auxilPath.clone()
-        }
-    }
+    override fun clone(): RunConfiguration = super.clone()
 }

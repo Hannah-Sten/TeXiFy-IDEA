@@ -23,12 +23,6 @@ interface LatexCompilationRunConfiguration : RunConfiguration {
     var beforeRunCommand: String?
     var mainFile: VirtualFile?
 
-    /** Final output directory (e.g. pdf); maps to outdir/output-directory flags. */
-    var outputPath: LatexOutputPath
-
-    /** Auxiliary/intermediate files directory (e.g. aux/log/toc); may be separate from outputPath. */
-    var auxilPath: LatexOutputPath
-
     /** Process working directory (cwd) used to resolve relative paths; independent from output/aux directories. */
     var workingDirectory: Path?
     var outputFormat: LatexCompiler.Format
@@ -56,6 +50,8 @@ interface LatexCompilationRunConfiguration : RunConfiguration {
     fun getLatexSdk(): Sdk?
 
     fun getLatexDistributionType(): LatexDistributionType
+
+    fun getOutputDirectory(): VirtualFile?
 
     fun getAuxilDirectory(): VirtualFile?
 

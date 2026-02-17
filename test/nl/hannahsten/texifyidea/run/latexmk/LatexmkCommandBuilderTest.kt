@@ -71,8 +71,8 @@ class LatexmkCommandBuilderTest : BasePlatformTestCase() {
         "Latexmk",
     ).apply {
         this.mainFile = mainFile
-        this.outputPath.virtualFile = outputDir
-        this.auxilPath.virtualFile = auxDir
+        this.outputPathRaw = outputDir.path
+        this.auxilPathRaw = auxDir.path
         this.latexDistribution = distributionType
     }
 }
