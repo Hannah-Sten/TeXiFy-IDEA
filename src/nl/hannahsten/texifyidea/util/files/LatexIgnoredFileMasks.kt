@@ -29,6 +29,7 @@ object LatexIgnoredFileMasks {
         "*.gls",
         "*.ist",
         "*.xdy",
+        "*.xdv",
     )
 
     fun getCurrentMasks(): LinkedHashSet<String> = parseMasks(FileTypeManagerEx.getInstanceEx().ignoredFilesList)
