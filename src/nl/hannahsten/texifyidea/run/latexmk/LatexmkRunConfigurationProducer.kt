@@ -14,6 +14,7 @@ import nl.hannahsten.texifyidea.lang.magic.allParentMagicComments
 import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
 import nl.hannahsten.texifyidea.util.includedPackagesInFileset
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
+import nl.hannahsten.texifyidea.util.files.documentClass
 
 class LatexmkRunConfigurationProducer : LazyRunConfigurationProducer<LatexmkRunConfiguration>() {
 
@@ -46,7 +47,10 @@ class LatexmkRunConfigurationProducer : LazyRunConfigurationProducer<LatexmkRunC
         val runCommand = magicComments.value(DefaultMagicKeys.COMPILER)
         val runProgram = magicComments.value(DefaultMagicKeys.PROGRAM)
         val magicMode = compileModeFromMagicCommand(runCommand ?: runProgram)
-        val packageMode = preferredCompileModeForPackages(container.includedPackagesInFileset())
+        val libraries = container.includedPackagesInFileset().toMutableSet().apply {
+            container.documentClass()?.let { add(LatexLib.Class(it)) }
+        }
+        val packageMode = preferredCompileModeForPackages(libraries)
         runConfiguration.compileMode = magicMode ?: packageMode ?: LatexmkCompileMode.PDFLATEX_PDF
         return true
     }
@@ -63,7 +67,10 @@ class LatexmkRunConfigurationProducer : LazyRunConfigurationProducer<LatexmkRunC
 }
 
 internal fun preferredCompileModeForPackages(packages: Set<LatexLib>): LatexmkCompileMode? {
-    if (packages.any { it in PackageMagic.unicodePreferredEnginesPackages }) {
+    if (packages.any { it in PackageMagic.unicodePreferredXeEngineLibraries }) {
+        return LatexmkCompileMode.XELATEX_PDF
+    }
+    if (packages.any { it in PackageMagic.unicodePreferredLuaEngineLibraries }) {
         return LatexmkCompileMode.LUALATEX_PDF
     }
     return null

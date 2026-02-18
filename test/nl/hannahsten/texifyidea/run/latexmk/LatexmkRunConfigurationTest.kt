@@ -98,6 +98,31 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
         assertEquals(LatexmkCompileMode.LUALATEX_PDF, preferred)
     }
 
+    fun testPreferredModeFromPackagesUsesXeLatexForXeCjk() {
+        val preferred = preferredCompileModeForPackages(setOf(LatexLib.Package("xecjk")))
+        assertEquals(LatexmkCompileMode.XELATEX_PDF, preferred)
+    }
+
+    fun testPreferredModeFromPackagesUsesXeLatexForCtexBeamerClass() {
+        val preferred = preferredCompileModeForPackages(setOf(LatexLib.Class("ctexbeamer")))
+        assertEquals(LatexmkCompileMode.XELATEX_PDF, preferred)
+    }
+
+    fun testPreferredModeFromPackagesUsesLuaLatexForLuaTexJa() {
+        val preferred = preferredCompileModeForPackages(setOf(LatexLib.Package("luatexja")))
+        assertEquals(LatexmkCompileMode.LUALATEX_PDF, preferred)
+    }
+
+    fun testPreferredModeFromPackagesPrefersXeLatexWhenBothXeAndLuaLibrariesArePresent() {
+        val preferred = preferredCompileModeForPackages(
+            setOf(
+                LatexLib.FONTSPEC,
+                LatexLib.Package("xecjk"),
+            )
+        )
+        assertEquals(LatexmkCompileMode.XELATEX_PDF, preferred)
+    }
+
     fun testMagicCompilerOverridesWithRecognizedMode() {
         val mode = compileModeFromMagicCommand("xelatex -synctex=1")
         assertEquals(LatexmkCompileMode.XELATEX_PDF, mode)
@@ -203,14 +228,14 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
         }
     }
 
-    fun testRunConfigurationsXmlRegistersLatexmkProducerOnly() {
+    fun testRunConfigurationsXmlRegistersLatexAndLatexmkProducers() {
         val xml = Files.readString(Path.of("resources/META-INF/extensions/run-configurations.xml"))
         val latexmkProducer = "nl.hannahsten.texifyidea.run.latexmk.LatexmkRunConfigurationProducer"
         val latexProducer = "nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer"
         val latexConfigurationType = "nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationType"
 
         assertTrue(xml.contains(latexmkProducer))
-        assertFalse(xml.contains(latexProducer))
+        assertTrue(xml.contains(latexProducer))
         assertTrue(xml.contains(latexConfigurationType))
     }
 }

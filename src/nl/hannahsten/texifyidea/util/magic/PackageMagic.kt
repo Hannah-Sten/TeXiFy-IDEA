@@ -56,12 +56,28 @@ object PackageMagic {
     }
 
     /**
-     * Packages that generally require a Unicode-capable engine (LuaLaTeX/XeLaTeX) over pdfLaTeX.
+     * Libraries that are generally better served by XeLaTeX.
      */
-    val unicodePreferredEnginesPackages = setOf(
+    val unicodePreferredXeEngineLibraries = setOf(
+        LatexLib.Package("ctex"),
+        LatexLib.Package("xecjk"),
+        LatexLib.Class("ctexart"),
+        LatexLib.Class("ctexrep"),
+        LatexLib.Class("ctexbook"),
+        LatexLib.Class("ctexbeamer"),
+    )
+
+    /**
+     * Libraries that are generally better served by LuaLaTeX.
+     */
+    val unicodePreferredLuaEngineLibraries = setOf(
         LatexLib.CITATION_STYLE_LANGUAGE,
         LatexLib.FONTSPEC,
         LatexLib.Package("unicode-math"),
         LatexLib.Package("polyglossia"),
+        LatexLib.Package("luatexja"),
+        LatexLib.Package("luatexja-fontspec"),
+        LatexLib.Package("luatexja-preset"),
+        LatexLib.Package("zxjatype"),
     )
 }
