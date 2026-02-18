@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.editor
 
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import nl.hannahsten.texifyidea.testFoldingWithDefinitions
 
 /**
  * Note that folding builders need to implement DumbAware.
@@ -69,7 +70,20 @@ class LatexFoldingTest : BasePlatformTestCase() {
     fun testCommandDeclarationMathStyleFolding() {
         // Unicode issues on windows
         if (!SystemInfo.isWindows) {
-            myFixture.testFolding("$testDataPath/command-declaration-math-style.tex")
+            myFixture.testFoldingWithDefinitions(
+                """
+                <fold text='\usepackage{...}'>\usepackage{unicode-math}</fold>
+                \newcommand{\caL}{<fold text='𝓛'>\mathcal{L}</fold>}
+                \newcommand{\bm}{{<fold text='𝐦'>\mathbf{m}</fold>}}
+                \newcommand{\mr}{\mathrm}
+                
+                $<fold text='𝓛'>\mathcal{L}</fold>$
+                $<fold text='𝐦'>\bm</fold>$
+                $<fold text='𝐀'>\symbf{A}</fold>$
+                $<fold text='A'>\mr{A}</fold>$
+                """,
+                fileName = "command-declaration-math-style.tex"
+            )
         }
     }
 }

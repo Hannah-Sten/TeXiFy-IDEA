@@ -308,13 +308,20 @@ object LatexDefinitionUtil {
         val trimmed = codeText.trim()
         val psiFile = LatexPsiHelper.createFromText(trimmed, project)
         val command = psiFile.findFirstChildTyped<LatexCommands>() ?: return null
-        if (command.text != trimmed) return null
+        if (!isCommandOnlyWrappedByBraces(trimmed, command)) return null
         val commandName = command.name?.removePrefix("\\") ?: return null
         val semantic = lookup.lookupCommand(commandName) ?: return null
         val style = semantic.getMeta(MathStyle.META_KEY) ?: return null
         val firstReq = command.firstRequiredParameter() ?: return null
         val rawText = firstReq.contentText()
         return style.map(rawText)
+    }
+
+    private fun isCommandOnlyWrappedByBraces(fullText: String, command: LatexCommands): Boolean {
+        val range = command.textRange
+        if (range.startOffset < 0 || range.endOffset > fullText.length) return false
+        val outside = fullText.substring(0, range.startOffset) + fullText.substring(range.endOffset)
+        return outside.all { it.isWhitespace() || it == '{' || it == '}' }
     }
 
     private fun guessApplicableContexts(definitionElement: PsiElement?, lookup: LatexSemanticsLookup): LContextSet? {
@@ -443,6 +450,7 @@ object LatexDefinitionUtil {
         return buildEnvironmentSemantics(envName, beginElement, endElement, argSignature, defCommand, lookup, project)
     }
 
+    @Suppress("unused")
     private fun buildEnvironmentSemantics(
         envName: String, beginElement: PsiElement?, endElement: PsiElement?,
         argTypeList: List<LArgumentType>,
@@ -503,6 +511,7 @@ object LatexDefinitionUtil {
         }
     }
 
+    @Suppress("unused")
     private fun mergeMetaTo(created: LSemanticEntity, old: LSemanticEntity, new: LSemanticEntity, isOldPredefined: Boolean) {
         // currently, we just copy all meta info, but in the future we may want to be more careful about merging meta info
         old.copyMetaTo(created)
