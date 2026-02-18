@@ -3,10 +3,19 @@
 package nl.hannahsten.texifyidea.lang.predefined
 
 import nl.hannahsten.texifyidea.editor.folding.MathStyle
+import nl.hannahsten.texifyidea.lang.DSLLatexBuilderScope
+import nl.hannahsten.texifyidea.lang.LArgument
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.PredefinedCommandSet
 
 object PredefinedCmdMath : PredefinedCommandSet() {
+
+    private inline fun DSLLatexBuilderScope.styleCmd(
+        name: String, arg: LArgument, style: MathStyle,
+        description: () -> String
+    ) = command(name, listOf(arg), description(), display = null).apply {
+        putMeta(MathStyle.META_KEY, style)
+    }
 
     val textMathCommands = buildCommands {
         packageOf("amsmath")
@@ -67,110 +76,75 @@ object PredefinedCmdMath : PredefinedCommandSet() {
 
     val fontCommands = mathCommands {
         val arg = "text".required
-        "mathbf".cmd(arg) { "Bold" }.apply {
-            putMeta(MathStyle.META_KEY, MathStyle.BOLD)
-        }
-        "mathcal".cmd(arg) { "Calligraphic" }.apply {
-            putMeta(MathStyle.META_KEY, MathStyle.CALLIGRAPHIC)
-        }
+        styleCmd("mathbf", arg, MathStyle.BOLD) { "Bold" }
+        styleCmd("mathcal", arg, MathStyle.CALLIGRAPHIC) { "Calligraphic" }
 
-        "mathit".cmd(arg) { "Italic" }.apply {
-            putMeta(MathStyle.META_KEY, MathStyle.ITALIC)
-        }
+        styleCmd("mathit", arg, MathStyle.ITALIC) { "Italic" }
         "mathnormal".cmd(arg) { "Normal" }
-        "mathsf".cmd(arg) { "Sans-serif" }.apply {
-            putMeta(MathStyle.META_KEY, MathStyle.SANS_SERIF)
-        }
-        "mathrm".cmd(arg) { "Roman" }.apply {
-            putMeta(MathStyle.META_KEY, MathStyle.ROMAN)
-        }
-        "mathscr".cmd(arg) { "Script" }.apply {
-            putMeta(MathStyle.META_KEY, MathStyle.SCRIPT)
-        }
-        "mathtt".cmd(arg) { "Typewriter" }.apply {
-            putMeta(MathStyle.META_KEY, MathStyle.MONOSPACE)
-        }
+        styleCmd("mathsf", arg, MathStyle.SANS_SERIF) { "Sans-serif" }
+        styleCmd("mathrm", arg, MathStyle.ROMAN) { "Roman" }
+        styleCmd("mathscr", arg, MathStyle.SCRIPT) { "Script" }
+        styleCmd("mathtt", arg, MathStyle.MONOSPACE) { "Typewriter" }
 
         packageOf("amsmath")
-        "boldsymbol".cmd(arg) { "Bold symbols" }.apply {
-            putMeta(MathStyle.META_KEY, MathStyle.BOLD)
-        }
+        styleCmd("boldsymbol", arg, MathStyle.BOLD) { "Bold symbols" }
 
         packageOf("amsfonts")
-        "mathbb".cmd(arg) { "Blackboard bold" }.apply {
-            putMeta(MathStyle.META_KEY, MathStyle.BLACKBOARD_BOLD)
-        }
-        "mathfrak".cmd(arg) { "Fraktur" }.apply {
-            putMeta(MathStyle.META_KEY, MathStyle.FRAKTUR)
-        }
+        styleCmd("mathbb", arg, MathStyle.BLACKBOARD_BOLD) { "Blackboard bold" }
+        styleCmd("mathfrak", arg, MathStyle.FRAKTUR) { "Fraktur" }
 
         packageOf("bbm")
-        "mathbbm".cmd(arg) { "Blackboard bold (bbm)" }.apply {
-            putMeta(MathStyle.META_KEY, MathStyle.BLACKBOARD_BOLD)
-        }
-        "mathbbmss".cmd(arg) { "Blackboard bold sans-serif" }.apply {
-            putMeta(MathStyle.META_KEY, MathStyle.BLACKBOARD_BOLD)
-        }
-        "mathbbmtt".cmd(arg) { "Blackboard bold typewriter" }.apply {
-            putMeta(MathStyle.META_KEY, MathStyle.BLACKBOARD_BOLD)
-        }
+        styleCmd("mathbbm", arg, MathStyle.BLACKBOARD_BOLD) { "Blackboard bold (bbm)" }
+        styleCmd("mathbbmss", arg, MathStyle.BLACKBOARD_BOLD) { "Blackboard bold sans-serif" }
+        styleCmd("mathbbmtt", arg, MathStyle.BLACKBOARD_BOLD) { "Blackboard bold typewriter" }
 
         packageOf("bm")
-        "bm".cmd(arg) { "Bold math" }.apply {
-            putMeta(MathStyle.META_KEY, MathStyle.BOLD)
-        }
+        styleCmd("bm", arg, MathStyle.BOLD) { "Bold math" }
 
         packageOf("dsfont")
         "mathds".cmd(arg) { "Double-struck" }
+
+        underPackage("unicode-math") {
+            styleCmd("mathup", arg, MathStyle.ROMAN) { "Upright mathematical alphabet (unicode-math compatibility)." }
+            styleCmd("mathbfup", arg, MathStyle.BOLD) { "Bold upright mathematical alphabet (unicode-math compatibility)." }
+            styleCmd("mathbfit", arg, MathStyle.BOLD_ITALIC) { "Bold italic mathematical alphabet (unicode-math compatibility)." }
+            styleCmd("mathsfup", arg, MathStyle.SANS_SERIF) { "Sans-serif upright mathematical alphabet (unicode-math compatibility)." }
+            styleCmd("mathsfit", arg, MathStyle.SANS_SERIF) { "Sans-serif italic mathematical alphabet (unicode-math compatibility)." }
+            styleCmd("mathbfsfup", arg, MathStyle.BOLD_SANS_SERIF_UPRIGHT) { "Bold upright sans-serif mathematical alphabet (unicode-math compatibility)." }
+            styleCmd("mathbfsfit", arg, MathStyle.BOLD_SANS_SERIF_ITALIC) { "Bold italic sans-serif mathematical alphabet (unicode-math compatibility)." }
+            styleCmd("mathbfsf", arg, MathStyle.BOLD_SANS_SERIF_UPRIGHT) { "Bold sans-serif mathematical alphabet (unicode-math compatibility)." }
+            styleCmd("mathbfcal", arg, MathStyle.BOLD_SCRIPT) { "Bold calligraphic mathematical alphabet (unicode-math compatibility)." }
+            styleCmd("mathbbit", arg, MathStyle.BLACKBOARD_BOLD) { "Blackboard bold italic mathematical alphabet (unicode-math compatibility)." }
+        }
     }
 
     val unicodeMathStyleCommands = mathCommands {
         val arg = "text".required
 
         underPackage("unicode-math") {
-            "symup".cmd(arg) { "Upright mathematical alphabet (unicode-math)." }.apply {
-                putMeta(MathStyle.META_KEY, MathStyle.ROMAN)
-            }
-            "symit".cmd(arg) { "Italic mathematical alphabet (unicode-math)." }.apply {
-                putMeta(MathStyle.META_KEY, MathStyle.ITALIC)
-            }
-            "symbf".cmd(arg) { "Bold mathematical alphabet (unicode-math)." }.apply {
-                putMeta(MathStyle.META_KEY, MathStyle.BOLD)
-            }
-            "symcal".cmd(arg) { "Calligraphic mathematical alphabet (unicode-math)." }.apply {
-                putMeta(MathStyle.META_KEY, MathStyle.CALLIGRAPHIC)
-            }
-            "symbb".cmd(arg) { "Blackboard bold mathematical alphabet (unicode-math)." }.apply {
-                putMeta(MathStyle.META_KEY, MathStyle.BLACKBOARD_BOLD)
-            }
-            "symscr".cmd(arg) { "Script mathematical alphabet (unicode-math)." }.apply {
-                putMeta(MathStyle.META_KEY, MathStyle.SCRIPT)
-            }
-            "symfrak".cmd(arg) { "Fraktur mathematical alphabet (unicode-math)." }.apply {
-                putMeta(MathStyle.META_KEY, MathStyle.FRAKTUR)
-            }
-            "symsf".cmd(arg) { "Sans-serif mathematical alphabet (unicode-math)." }.apply {
-                putMeta(MathStyle.META_KEY, MathStyle.SANS_SERIF)
-            }
-            "symtt".cmd(arg) { "Monospace mathematical alphabet (unicode-math)." }.apply {
-                putMeta(MathStyle.META_KEY, MathStyle.MONOSPACE)
-            }
+            styleCmd("symup", arg, MathStyle.ROMAN) { "Upright mathematical alphabet (unicode-math)." }
+            styleCmd("symrm", arg, MathStyle.ROMAN) { "Roman upright mathematical alphabet (unicode-math)." }
+            styleCmd("symit", arg, MathStyle.ITALIC) { "Italic mathematical alphabet (unicode-math)." }
+            styleCmd("symbf", arg, MathStyle.BOLD) { "Bold mathematical alphabet (unicode-math)." }
+            styleCmd("symbfup", arg, MathStyle.BOLD) { "Bold upright mathematical alphabet (unicode-math)." }
+            styleCmd("symcal", arg, MathStyle.CALLIGRAPHIC) { "Calligraphic mathematical alphabet (unicode-math)." }
+            styleCmd("symbfcal", arg, MathStyle.BOLD_SCRIPT) { "Bold calligraphic mathematical alphabet (unicode-math)." }
+            styleCmd("symbb", arg, MathStyle.BLACKBOARD_BOLD) { "Blackboard bold mathematical alphabet (unicode-math)." }
+            styleCmd("symbbit", arg, MathStyle.BLACKBOARD_BOLD) { "Blackboard bold italic mathematical alphabet (unicode-math)." }
+            styleCmd("symscr", arg, MathStyle.SCRIPT) { "Script mathematical alphabet (unicode-math)." }
+            styleCmd("symfrak", arg, MathStyle.FRAKTUR) { "Fraktur mathematical alphabet (unicode-math)." }
+            styleCmd("symsf", arg, MathStyle.SANS_SERIF) { "Sans-serif mathematical alphabet (unicode-math)." }
+            styleCmd("symsfup", arg, MathStyle.SANS_SERIF) { "Sans-serif upright mathematical alphabet (unicode-math)." }
+            styleCmd("symsfit", arg, MathStyle.SANS_SERIF) { "Sans-serif italic mathematical alphabet (unicode-math)." }
+            styleCmd("symtt", arg, MathStyle.MONOSPACE) { "Monospace mathematical alphabet (unicode-math)." }
 
-            "symbfit".cmd(arg) { "Bold italic mathematical alphabet (unicode-math)." }.apply {
-                putMeta(MathStyle.META_KEY, MathStyle.BOLD_ITALIC)
-            }
-            "symbfscr".cmd(arg) { "Bold script mathematical alphabet (unicode-math)." }.apply {
-                putMeta(MathStyle.META_KEY, MathStyle.BOLD_SCRIPT)
-            }
-            "symbffrak".cmd(arg) { "Bold fraktur mathematical alphabet (unicode-math)." }.apply {
-                putMeta(MathStyle.META_KEY, MathStyle.BOLD_FRAKTUR)
-            }
-            "symbfsfup".cmd(arg) { "Bold upright sans-serif mathematical alphabet (unicode-math)." }.apply {
-                putMeta(MathStyle.META_KEY, MathStyle.BOLD_SANS_SERIF_UPRIGHT)
-            }
-            "symbfsfit".cmd(arg) { "Bold italic sans-serif mathematical alphabet (unicode-math)." }.apply {
-                putMeta(MathStyle.META_KEY, MathStyle.BOLD_SANS_SERIF_ITALIC)
-            }
+            styleCmd("symbfit", arg, MathStyle.BOLD_ITALIC) { "Bold italic mathematical alphabet (unicode-math)." }
+            styleCmd("symbfscr", arg, MathStyle.BOLD_SCRIPT) { "Bold script mathematical alphabet (unicode-math)." }
+            styleCmd("symbffrak", arg, MathStyle.BOLD_FRAKTUR) { "Bold fraktur mathematical alphabet (unicode-math)." }
+            styleCmd("symbfsfup", arg, MathStyle.BOLD_SANS_SERIF_UPRIGHT) { "Bold upright sans-serif mathematical alphabet (unicode-math)." }
+            styleCmd("symbfsfit", arg, MathStyle.BOLD_SANS_SERIF_ITALIC) { "Bold italic sans-serif mathematical alphabet (unicode-math)." }
+            styleCmd("symbfsf", arg, MathStyle.BOLD_SANS_SERIF_UPRIGHT) { "Bold sans-serif mathematical alphabet (unicode-math)." }
+            styleCmd("symnormal", arg, MathStyle.ROMAN) { "Normal mathematical alphabet (unicode-math)." }
         }
     }
 }
