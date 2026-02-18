@@ -76,35 +76,47 @@ object PredefinedCmdMath : PredefinedCommandSet() {
 
     val fontCommands = mathCommands {
         val arg = "text".required
-        styleCmd("mathbf", arg, MathStyle.BOLD) { "Bold" }
-        styleCmd("mathcal", arg, MathStyle.CALLIGRAPHIC) { "Calligraphic" }
+        underBase {
+            styleCmd("mathbf", arg, MathStyle.BOLD) { "Bold" }
+            styleCmd("mathcal", arg, MathStyle.CALLIGRAPHIC) { "Calligraphic" }
+            styleCmd("mathit", arg, MathStyle.ITALIC) { "Italic" }
+            styleCmd("mathnormal", arg, MathStyle.NORMAL) { "Normal" }
+            styleCmd("mathsf", arg, MathStyle.SANS_SERIF) { "Sans-serif" }
+            styleCmd("mathrm", arg, MathStyle.ROMAN) { "Roman" }
+            styleCmd("mathscr", arg, MathStyle.SCRIPT) { "Script" }
+            styleCmd("mathtt", arg, MathStyle.MONOSPACE) { "Typewriter" }
+        }
 
-        styleCmd("mathit", arg, MathStyle.ITALIC) { "Italic" }
-        styleCmd("mathnormal", arg, MathStyle.NORMAL) { "Normal" }
-        styleCmd("mathsf", arg, MathStyle.SANS_SERIF) { "Sans-serif" }
-        styleCmd("mathrm", arg, MathStyle.ROMAN) { "Roman" }
-        styleCmd("mathscr", arg, MathStyle.SCRIPT) { "Script" }
-        styleCmd("mathtt", arg, MathStyle.MONOSPACE) { "Typewriter" }
+        underPackage("amsmath") {
+            styleCmd("boldsymbol", arg, MathStyle.BOLD) { "Bold symbols" }
+        }
 
-        packageOf("amsmath")
-        styleCmd("boldsymbol", arg, MathStyle.BOLD) { "Bold symbols" }
+        underPackage("amsfonts") {
+            styleCmd("mathbb", arg, MathStyle.BLACKBOARD_BOLD) { "Blackboard bold" }
+            styleCmd("mathfrak", arg, MathStyle.FRAKTUR) { "Fraktur" }
+        }
 
-        packageOf("amsfonts")
-        styleCmd("mathbb", arg, MathStyle.BLACKBOARD_BOLD) { "Blackboard bold" }
-        styleCmd("mathfrak", arg, MathStyle.FRAKTUR) { "Fraktur" }
+        underPackage("bbm") {
+            styleCmd("mathbbm", arg, MathStyle.BLACKBOARD_BOLD) { "Blackboard bold (bbm)" }
+            styleCmd("mathbbmss", arg, MathStyle.BLACKBOARD_BOLD) { "Blackboard bold sans-serif" }
+            styleCmd("mathbbmtt", arg, MathStyle.BLACKBOARD_BOLD) { "Blackboard bold typewriter" }
+        }
 
-        packageOf("bbm")
-        styleCmd("mathbbm", arg, MathStyle.BLACKBOARD_BOLD) { "Blackboard bold (bbm)" }
-        styleCmd("mathbbmss", arg, MathStyle.BLACKBOARD_BOLD) { "Blackboard bold sans-serif" }
-        styleCmd("mathbbmtt", arg, MathStyle.BLACKBOARD_BOLD) { "Blackboard bold typewriter" }
+        underPackage("bm") {
+            styleCmd("bm", arg, MathStyle.BOLD) { "Bold math" }
+        }
 
-        packageOf("bm")
-        styleCmd("bm", arg, MathStyle.BOLD) { "Bold math" }
-
-        packageOf("dsfont")
-        "mathds".cmd(arg) { "Double-struck" }
+        underPackage("dsfont") {
+            "mathds".cmd(arg) { "Double-struck" }
+        }
 
         underPackage("unicode-math") {
+            styleCmd("mathbb", arg, MathStyle.BLACKBOARD_BOLD) { "Blackboard bold mathematical alphabet (unicode-math compatibility)." }
+            styleCmd("mathbbit", arg, MathStyle.BLACKBOARD_BOLD) { "Blackboard bold italic mathematical alphabet (unicode-math compatibility)." }
+            styleCmd("mathbfscr", arg, MathStyle.BOLD_SCRIPT) { "Bold script mathematical alphabet (unicode-math compatibility)." }
+            styleCmd("mathbfcal", arg, MathStyle.BOLD_SCRIPT) { "Bold calligraphic mathematical alphabet (unicode-math compatibility)." }
+            styleCmd("mathfrak", arg, MathStyle.FRAKTUR) { "Fraktur mathematical alphabet (unicode-math compatibility)." }
+            styleCmd("mathbffrak", arg, MathStyle.BOLD_FRAKTUR) { "Bold fraktur mathematical alphabet (unicode-math compatibility)." }
             styleCmd("mathup", arg, MathStyle.ROMAN) { "Upright mathematical alphabet (unicode-math compatibility)." }
             styleCmd("mathbfup", arg, MathStyle.BOLD) { "Bold upright mathematical alphabet (unicode-math compatibility)." }
             styleCmd("mathbfit", arg, MathStyle.BOLD_ITALIC) { "Bold italic mathematical alphabet (unicode-math compatibility)." }
@@ -113,8 +125,6 @@ object PredefinedCmdMath : PredefinedCommandSet() {
             styleCmd("mathbfsfup", arg, MathStyle.BOLD_SANS_SERIF_UPRIGHT) { "Bold upright sans-serif mathematical alphabet (unicode-math compatibility)." }
             styleCmd("mathbfsfit", arg, MathStyle.BOLD_SANS_SERIF_ITALIC) { "Bold italic sans-serif mathematical alphabet (unicode-math compatibility)." }
             styleCmd("mathbfsf", arg, MathStyle.BOLD_SANS_SERIF_UPRIGHT) { "Bold sans-serif mathematical alphabet (unicode-math compatibility)." }
-            styleCmd("mathbfcal", arg, MathStyle.BOLD_SCRIPT) { "Bold calligraphic mathematical alphabet (unicode-math compatibility)." }
-            styleCmd("mathbbit", arg, MathStyle.BLACKBOARD_BOLD) { "Blackboard bold italic mathematical alphabet (unicode-math compatibility)." }
         }
     }
 
@@ -145,6 +155,7 @@ object PredefinedCmdMath : PredefinedCommandSet() {
             styleCmd("symbfsfit", arg, MathStyle.BOLD_SANS_SERIF_ITALIC) { "Bold italic sans-serif mathematical alphabet (unicode-math)." }
             styleCmd("symbfsf", arg, MathStyle.BOLD_SANS_SERIF_UPRIGHT) { "Bold sans-serif mathematical alphabet (unicode-math)." }
             styleCmd("symnormal", arg, MathStyle.NORMAL) { "Normal mathematical alphabet (unicode-math)." }
+            styleCmd("symliteral", arg, MathStyle.NORMAL) { "Literal mathematical alphabet (unicode-math)." }
         }
     }
 }
