@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.run.latexmk
 import com.intellij.execution.actions.ConfigurationContext
 import com.intellij.execution.actions.LazyRunConfigurationProducer
 import com.intellij.execution.configurations.ConfigurationFactory
+import com.intellij.util.execution.ParametersListUtil
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
@@ -70,12 +71,47 @@ internal fun preferredCompileModeForPackages(packages: Set<LatexLib>): LatexmkCo
 
 internal fun compileModeFromMagicCommand(command: String?): LatexmkCompileMode? {
     if (command.isNullOrBlank()) return null
-    val executable = command.substringBefore(' ').trim().lowercase()
+    val parsed = ParametersListUtil.parse(command).filter { it.isNotBlank() }
+    if (parsed.isEmpty()) return null
+
+    val executable = parsed.first().normalizedExecutable()
+    val flags = parsed.drop(1).map { it.lowercase() }
+
     return when (executable) {
-        "pdflatex", "pdflatex.exe", "pdflatex.bin", "pdflatex.cmd" -> LatexmkCompileMode.PDFLATEX_PDF
-        "xelatex", "xelatex.exe", "xelatex.bin", "xelatex.cmd" -> LatexmkCompileMode.XELATEX_PDF
-        "lualatex", "lualatex.exe", "lualatex.bin", "lualatex.cmd" -> LatexmkCompileMode.LUALATEX_PDF
-        "latex", "latex.exe", "latex.bin", "latex.cmd" -> LatexmkCompileMode.LATEX_DVI
+        "latexmk" -> compileModeFromLatexmkFlags(flags)
+        "pdflatex" -> LatexmkCompileMode.PDFLATEX_PDF
+        "xelatex" -> LatexmkCompileMode.XELATEX_PDF
+        "lualatex" -> LatexmkCompileMode.LUALATEX_PDF
+        "latex" -> LatexmkCompileMode.LATEX_DVI
+        "tectonic", "arara" -> null
         else -> null
     }
+}
+
+private fun compileModeFromLatexmkFlags(flags: List<String>): LatexmkCompileMode {
+    if (flags.any { it == "-pdflatex" || it.startsWith("-pdflatex=") }) {
+        return LatexmkCompileMode.CUSTOM
+    }
+    if (flags.contains("-lualatex")) {
+        return LatexmkCompileMode.LUALATEX_PDF
+    }
+    if (flags.contains("-xelatex")) {
+        return if (flags.contains("-xdv")) LatexmkCompileMode.XELATEX_XDV else LatexmkCompileMode.XELATEX_PDF
+    }
+    if (flags.contains("-latex")) {
+        if (flags.contains("-ps")) return LatexmkCompileMode.LATEX_PS
+        if (flags.contains("-dvi")) return LatexmkCompileMode.LATEX_DVI
+    }
+
+    return LatexmkCompileMode.PDFLATEX_PDF
+}
+
+private fun String.normalizedExecutable(): String {
+    val fileName = substringAfterLast('/').substringAfterLast('\\')
+    return fileName
+        .lowercase()
+        .removeSuffix(".exe")
+        .removeSuffix(".cmd")
+        .removeSuffix(".bin")
+        .removeSuffix(".bat")
 }
