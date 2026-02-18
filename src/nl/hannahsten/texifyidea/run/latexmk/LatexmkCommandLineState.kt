@@ -19,7 +19,6 @@ import com.intellij.platform.ide.progress.runWithModalProgressBlocking
 import com.intellij.util.applyIf
 import nl.hannahsten.texifyidea.editor.autocompile.AutoCompileDoneListener
 import nl.hannahsten.texifyidea.run.OpenCustomPdfViewerListener
-import nl.hannahsten.texifyidea.run.latex.LatexExecutionContext
 import nl.hannahsten.texifyidea.run.pdfviewer.OpenViewerListener
 import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.files.psiFile
@@ -36,7 +35,6 @@ class LatexmkCommandLineState(
     @Throws(ExecutionException::class)
     override fun startProcess(): ProcessHandler {
         val mainFile = runConfig.mainFile ?: throw ExecutionException("Main file is not specified.")
-        LatexExecutionContext()
 
         prepare()
         val command = buildCommand()
