@@ -246,6 +246,15 @@ enum class MathStyle(
     ),
 
     /**
+     * The normal math style, such as `\mathnormal` and `\symnormal`.
+     *
+     * Rendered as plain characters for better readability.
+     */
+    NORMAL(
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890".associateWith { it.toString() }
+    ),
+
+    /**
      * The Roman math style, which does not change the characters at all for better readability.
      * For example `L_{\mathrm{max}}` can be shown as `L_{max}`.
      * It is used for `\mathrm` and `\textup` math styles.

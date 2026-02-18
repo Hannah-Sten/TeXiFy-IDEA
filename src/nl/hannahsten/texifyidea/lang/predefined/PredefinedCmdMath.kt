@@ -80,7 +80,7 @@ object PredefinedCmdMath : PredefinedCommandSet() {
         styleCmd("mathcal", arg, MathStyle.CALLIGRAPHIC) { "Calligraphic" }
 
         styleCmd("mathit", arg, MathStyle.ITALIC) { "Italic" }
-        "mathnormal".cmd(arg) { "Normal" }
+        styleCmd("mathnormal", arg, MathStyle.NORMAL) { "Normal" }
         styleCmd("mathsf", arg, MathStyle.SANS_SERIF) { "Sans-serif" }
         styleCmd("mathrm", arg, MathStyle.ROMAN) { "Roman" }
         styleCmd("mathscr", arg, MathStyle.SCRIPT) { "Script" }
@@ -144,7 +144,7 @@ object PredefinedCmdMath : PredefinedCommandSet() {
             styleCmd("symbfsfup", arg, MathStyle.BOLD_SANS_SERIF_UPRIGHT) { "Bold upright sans-serif mathematical alphabet (unicode-math)." }
             styleCmd("symbfsfit", arg, MathStyle.BOLD_SANS_SERIF_ITALIC) { "Bold italic sans-serif mathematical alphabet (unicode-math)." }
             styleCmd("symbfsf", arg, MathStyle.BOLD_SANS_SERIF_UPRIGHT) { "Bold sans-serif mathematical alphabet (unicode-math)." }
-            styleCmd("symnormal", arg, MathStyle.ROMAN) { "Normal mathematical alphabet (unicode-math)." }
+            styleCmd("symnormal", arg, MathStyle.NORMAL) { "Normal mathematical alphabet (unicode-math)." }
         }
     }
 }
