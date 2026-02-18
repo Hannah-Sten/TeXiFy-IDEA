@@ -71,6 +71,7 @@ class LatexBibinputsRelativePathInspection : TexifyInspectionBase() {
             // Fix BIBINPUTS
             project
                 .getLatexRunConfigurations()
+                .asSequence()
                 .filterIsInstance<LatexChainedCompilationRunConfiguration>()
                 .filter { it.mainFile == descriptor.psiElement.containingFile.findRootFile().virtualFile }
                 .flatMap { it.bibRunConfigs }

@@ -162,6 +162,7 @@ fun PsiFile.definitions(): Collection<LatexCommands> = NewSpecialCommandsIndex.g
  */
 fun PsiFile.getBibtexRunConfigurations() = project
     .getLatexRunConfigurations()
+    .asSequence()
     .filterIsInstance<LatexChainedCompilationRunConfiguration>()
     .filter { it.mainFile == findRootFile().virtualFile }
     .flatMap { it.bibRunConfigs }
