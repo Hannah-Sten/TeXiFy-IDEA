@@ -43,74 +43,38 @@ object LatexmkCommandBuilder {
         return ParametersListUtil.join(arguments)
     }
 
-    fun buildCommand(runConfig: LatexmkRunConfiguration, project: Project): List<String>? {
-        val mainFile = runConfig.mainFile ?: return null
-        val distribution = runConfig.getLatexDistributionType()
-        val directories = resolveLatexmkDirectories(runConfig, mainFile, distribution)
-
-        val executable = runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(
-            LatexCompiler.LATEXMK.executableName,
-            project,
-            runConfig.getLatexSdk(),
-            distribution,
-        )
-        val command = mutableListOf(executable)
-
-        val compilerArguments = runConfig.compilerArguments
-        if (!compilerArguments.isNullOrBlank()) {
-            command += ParametersListUtil.parse(compilerArguments)
-        }
-        command.add("-interaction=nonstopmode")
-        command.add("-file-line-error")
-
-        command.add("-outdir=${directories.outputPath}")
-        if (directories.shouldPassAuxilPath) {
-            command.add("-auxdir=${directories.auxilPath}")
-        }
-
-        if (distribution == LatexDistributionType.WSL_TEXLIVE) {
-            val wslCommand = buildString {
-                append(GeneralCommandLine(command).commandLineString)
-                append(' ')
-                append(mainFile.path.toWslPathIfNeeded(distribution))
+    fun buildCommand(runConfig: LatexmkRunConfiguration, project: Project): List<String>? = buildLatexmkCommand(
+        runConfig = runConfig,
+        project = project,
+        additionalArguments = { command, _ ->
+            command.add("-interaction=nonstopmode")
+            command.add("-file-line-error")
+            if (runConfig.beforeRunCommand?.isNotBlank() == true) {
+                command.add("-usepretex=${runConfig.beforeRunCommand}")
             }
-            return mutableListOf(*SystemEnvironment.wslCommand, wslCommand)
         }
+    )
 
-        if (distribution.isDocker()) {
-            createDockerCommand(
-                runConfig,
-                directories.hostAuxilPath,
-                directories.hostOutputPath,
-                directories.auxilPath,
-                directories.outputPath,
-                mainFile,
-                command,
-            )
-        }
+    fun buildCleanCommand(runConfig: LatexmkRunConfiguration, cleanAll: Boolean): List<String>? = buildLatexmkCommand(
+        runConfig = runConfig,
+        project = null,
+        additionalArguments = { _, _ -> },
+        cleanMode = if (cleanAll) "-C" else "-c"
+    )
 
-        if (runConfig.beforeRunCommand?.isNotBlank() == true) {
-            command.add("-usepretex=${runConfig.beforeRunCommand}")
-        }
-
-        if (runConfig.hasDefaultWorkingDirectory()) {
-            command.add(mainFile.name)
-        }
-        else {
-            command.add(mainFile.path)
-        }
-
-        return command
-    }
-
-    fun buildCleanCommand(runConfig: LatexmkRunConfiguration, cleanAll: Boolean): List<String>? {
+    private fun buildLatexmkCommand(
+        runConfig: LatexmkRunConfiguration,
+        project: Project?,
+        additionalArguments: (MutableList<String>, VirtualFile) -> Unit,
+        cleanMode: String? = null,
+    ): List<String>? {
         val mainFile = runConfig.mainFile ?: return null
         val distribution = runConfig.getLatexDistributionType()
         val directories = resolveLatexmkDirectories(runConfig, mainFile, distribution)
 
         val executable = runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(
             LatexCompiler.LATEXMK.executableName,
-            runConfig.project,
+            project ?: runConfig.project,
             runConfig.getLatexSdk(),
             distribution,
         )
@@ -125,7 +89,12 @@ object LatexmkCommandBuilder {
         if (directories.shouldPassAuxilPath) {
             command.add("-auxdir=${directories.auxilPath}")
         }
-        command.add(if (cleanAll) "-C" else "-c")
+
+        if (cleanMode != null) {
+            command.add(cleanMode)
+        }
+
+        additionalArguments(command, mainFile)
 
         if (distribution == LatexDistributionType.WSL_TEXLIVE) {
             val wslCommand = buildString {
