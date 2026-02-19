@@ -437,7 +437,7 @@ object LatexDefinitionUtil {
         val hasOptionalArg = contents.getNthOptionalArg(1) != null
         val beginElement = codeElement.getNthRequiredParameter(1)
         val endElement = codeElement.getNthRequiredParameter(2)
-        return buildEnvironmentSemantics(envName, beginElement, endElement, buildRegularArgSignature(numArg, hasOptionalArg), defCommand, lookup, project)
+        return buildEnvironmentSemantics(envName, beginElement, endElement, buildRegularArgSignature(numArg, hasOptionalArg), lookup)
     }
 
     private fun parseArgSpecEnvironmentDef(defCommand: LatexCommands, contents: List<Pair<LArgumentType, String>>, lookup: LatexSemanticsLookup, project: Project): LSemanticEnv? {
@@ -447,13 +447,13 @@ object LatexDefinitionUtil {
         val argSignature = buildArgSpecSignature(contents.getNthRequiredArg(1))
         val beginElement = codeElement.getNthRequiredParameter(2)
         val endElement = codeElement.getNthRequiredParameter(3)
-        return buildEnvironmentSemantics(envName, beginElement, endElement, argSignature, defCommand, lookup, project)
+        return buildEnvironmentSemantics(envName, beginElement, endElement, argSignature, lookup)
     }
 
     private fun buildEnvironmentSemantics(
         envName: String, beginElement: PsiElement?, endElement: PsiElement?,
         argTypeList: List<LArgumentType>,
-        @Suppress("unused") defCommand: LatexCommands, lookup: LatexSemanticsLookup, @Suppress("unused") project: Project
+        lookup: LatexSemanticsLookup
     ): LSemanticEnv {
         if (beginElement == null || endElement == null) return LSemanticEnv(envName, LatexLib.CUSTOM)
         val applicableContexts = guessApplicableContexts(beginElement, lookup)
@@ -493,7 +493,7 @@ object LatexDefinitionUtil {
             oldCmd.name, oldCmd.dependency,
             ctx, arg, description, display
         ).also {
-            mergeMetaTo(it, oldCmd, newCmd, isOldPredefined)
+            mergeMetaTo(it, oldCmd, newCmd)
         }
     }
 
@@ -506,11 +506,11 @@ object LatexDefinitionUtil {
             oldEnv.name, oldEnv.dependency,
             ctx, arg, innerIntro, description
         ).also {
-            mergeMetaTo(it, oldEnv, newEnv, isOldPredefined)
+            mergeMetaTo(it, oldEnv, newEnv)
         }
     }
 
-    private fun mergeMetaTo(created: LSemanticEntity, old: LSemanticEntity, new: LSemanticEntity, @Suppress("unused") isOldPredefined: Boolean) {
+    private fun mergeMetaTo(created: LSemanticEntity, old: LSemanticEntity, new: LSemanticEntity) {
         // currently, we just copy all meta info, but in the future we may want to be more careful about merging meta info
         old.copyMetaTo(created)
         new.copyMetaTo(created)
