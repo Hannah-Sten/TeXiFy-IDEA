@@ -450,11 +450,10 @@ object LatexDefinitionUtil {
         return buildEnvironmentSemantics(envName, beginElement, endElement, argSignature, defCommand, lookup, project)
     }
 
-    @Suppress("unused")
     private fun buildEnvironmentSemantics(
         envName: String, beginElement: PsiElement?, endElement: PsiElement?,
         argTypeList: List<LArgumentType>,
-        defCommand: LatexCommands, lookup: LatexSemanticsLookup, project: Project
+        @Suppress("unused") defCommand: LatexCommands, lookup: LatexSemanticsLookup, @Suppress("unused") project: Project
     ): LSemanticEnv {
         if (beginElement == null || endElement == null) return LSemanticEnv(envName, LatexLib.CUSTOM)
         val applicableContexts = guessApplicableContexts(beginElement, lookup)
@@ -511,8 +510,7 @@ object LatexDefinitionUtil {
         }
     }
 
-    @Suppress("unused")
-    private fun mergeMetaTo(created: LSemanticEntity, old: LSemanticEntity, new: LSemanticEntity, isOldPredefined: Boolean) {
+    private fun mergeMetaTo(created: LSemanticEntity, old: LSemanticEntity, new: LSemanticEntity, @Suppress("unused") isOldPredefined: Boolean) {
         // currently, we just copy all meta info, but in the future we may want to be more careful about merging meta info
         old.copyMetaTo(created)
         new.copyMetaTo(created)

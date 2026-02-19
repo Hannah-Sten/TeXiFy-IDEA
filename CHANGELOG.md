@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Add support for unicode-math, by @Ezrnest
 * Add support for the acro and zref packages, by @Ezrnest
 * Add support for autocompletion of dimensions and positions, e.g. in \vspace, by @Ezrnest
 * Add support for packages 'loading' other packages via package options
