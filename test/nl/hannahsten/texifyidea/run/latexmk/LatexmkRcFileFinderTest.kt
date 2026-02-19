@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.run.latexmk
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
 import nl.hannahsten.texifyidea.util.LatexmkRcFileFinder
 import java.nio.file.Files
@@ -30,12 +29,9 @@ class LatexmkRcFileFinderTest : BasePlatformTestCase() {
             LatexConfigurationFactory(LatexmkRunConfigurationType()),
             "Latexmk",
         ).apply {
-            outputFormat = LatexCompiler.Format.PDF
             workingDirectory = Files.createTempDirectory("texify-latexmkrc-deprecated")
         }
 
         LatexmkRcFileFinder.hasLatexmkRc(runConfig.compilerArguments, runConfig.getResolvedWorkingDirectory())
-
-        assertEquals(LatexCompiler.Format.PDF, runConfig.outputFormat)
     }
 }

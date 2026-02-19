@@ -24,7 +24,6 @@ import com.intellij.openapi.util.WriteExternalException
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
-import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.LatexCompilationRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogTabComponent
@@ -85,8 +84,6 @@ class LatexmkRunConfiguration(
 
     var workingDirectory: Path? = null
 
-    var outputFormat: LatexCompiler.Format = LatexCompiler.Format.DEFAULT
-
     var latexDistribution: LatexDistributionType = LatexDistributionType.MODULE_SDK
 
     var hasBeenRun = false
@@ -132,7 +129,6 @@ class LatexmkRunConfiguration(
 
     @Throws(ExecutionException::class)
     override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState {
-        outputFormat = LatexCompiler.Format.DEFAULT
         compilerArguments = buildLatexmkArguments()
         return LatexmkCommandLineState(environment, this)
     }
