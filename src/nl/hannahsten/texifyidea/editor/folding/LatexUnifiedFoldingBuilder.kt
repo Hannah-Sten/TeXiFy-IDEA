@@ -83,7 +83,16 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
      */
     val escapedSymbols = setOf("%", "#", "&", "_", "$")
 
+    private fun isDisplayFoldableSymbolBySemantics(nameWithSlash: String, lookup: LatexSemanticsLookup): Boolean {
+        val nameWithoutSlash = nameWithSlash.removePrefix("\\")
+        if (nameWithoutSlash in escapedSymbols) return true
+        val cmd = lookup.lookupCommand(nameWithoutSlash) ?: return false
+        if (cmd.arguments.isNotEmpty()) return false
+        return cmd.display != null
+    }
+
     private fun findCommandFoldedSymbol(nameWithSlash: String, lookup: LatexSemanticsLookup): String? {
+        if (!isDisplayFoldableSymbolBySemantics(nameWithSlash, lookup)) return null
         val nameWithoutSlash = nameWithSlash.removePrefix("\\")
         if (nameWithoutSlash in escapedSymbols) return nameWithoutSlash
         val cmd = lookup.lookupCommand(nameWithoutSlash) ?: return null
@@ -317,7 +326,8 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
         }
 
         private fun visitPossibleSymbol(element: LatexCommands, name: String) {
-            // fold symbols such as \dots, \alpha, etc.
+            // Fold symbols such as \dots, \alpha, etc.
+            // Commands with semantic arguments are intentionally skipped for display folding.
             val display = findCommandFoldedSymbol(name, lookup) ?: return
             val descriptor = foldingDescriptorSymbol(element.commandToken, display)
             descriptors.add(descriptor)

@@ -23,6 +23,7 @@ object AllPredefined : CachedLatexSemanticsLookup() {
         PredefinedCmdMath,
         PredefinedCmdPairedDelimiters,
         PredefinedCmdMathSymbols,
+        PredefinedCmdUnicodeMathSymbols,
         PredefinedCmdTextSymbols,
         PredefinedEnvBasic,
         MorePackages

@@ -3,7 +3,6 @@ package nl.hannahsten.texifyidea.action.debug
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogBuilder
 import kotlinx.html.*
 import kotlinx.html.stream.createHTML
@@ -15,6 +14,7 @@ import nl.hannahsten.texifyidea.index.projectstructure.LatexProjectFilesets
 import nl.hannahsten.texifyidea.index.projectstructure.LatexProjectStructure
 import nl.hannahsten.texifyidea.inspections.AbstractTexifyContextAwareInspection
 import java.lang.management.ManagementFactory
+import java.util.Locale
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicLong
 import javax.swing.JLabel
@@ -56,6 +56,15 @@ class PerformanceDiagnosticAction : AnAction() {
         name, tracker.countOfBuilds, tracker.totalTimeCost, additionalInfo
     )
 
+    private fun formatDurationMillis(milliseconds: Long): String = milliseconds.milliseconds.toString()
+
+    private fun formatRuns(count: Int): String = if (count < 100000) {
+        count.toString()
+    }
+    else {
+        String.format(Locale.US, "%.4E", count.toDouble())
+    }
+
     private fun buildFilesetInfo(projectFilesets: LatexProjectFilesets?): String = buildString {
         if (projectFilesets == null) {
             appendLine("No fileset found")
@@ -66,7 +75,7 @@ class PerformanceDiagnosticAction : AnAction() {
         appendLine("Expiration: ${LatexProjectStructure.expirationTime}")
     }
 
-    private fun buildCustomDefinitionsInfo(project: Project): String = """
+    private fun buildCustomDefinitionsInfo(): String = """
             Expiration: ${LatexDefinitionService.expirationTime}
     """.trimIndent()
 
@@ -85,7 +94,7 @@ class PerformanceDiagnosticAction : AnAction() {
                 buildFilesetInfo(projectFilesets)
             ),
             performance("Package Definitions", LatexLibraryDefinitionService.performanceTracker),
-            performance("Custom Definitions", LatexDefinitionService.performanceTracker, buildCustomDefinitionsInfo(project)),
+            performance("Custom Definitions", LatexDefinitionService.performanceTracker, buildCustomDefinitionsInfo()),
             performance("Completion Lookup", LatexContextAwareCompletionAdaptor.performanceTracker),
             performance("Ctx-aware Inspections", AbstractTexifyContextAwareInspection.performanceTracker)
         )
@@ -97,24 +106,24 @@ class PerformanceDiagnosticAction : AnAction() {
                 table {
                     tr {
                         td { +"Name" }
-                        td { +"CPU Time (ms)" }
+                        td { +"CPU Time" }
                         td { +"% of Total Uptime" }
                         td { +"Runs" }
-                        td { +"Average Time (ms)" }
+                        td { +"Average Time" }
                         td { +"Additional Info" }
                     }
                     for (data in tableData) {
                         tr {
                             td { +data.name }
-                            td { +(data.totalTime.toString()) }
+                            td { +formatDurationMillis(data.totalTime) }
                             td {
                                 val percent = (data.totalTime.toDouble() / totalRunningTime * 100).toInt()
                                 +"$percent%"
                             }
-                            td { +(data.count.toString()) }
+                            td { +formatRuns(data.count) }
                             td {
                                 if (data.count > 0) {
-                                    +(data.totalTime / data.count).toString()
+                                    +formatDurationMillis(data.totalTime / data.count)
                                 }
                                 else {
                                     +"N/A"

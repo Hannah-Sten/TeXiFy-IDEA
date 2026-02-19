@@ -13,16 +13,17 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import com.intellij.psi.util.PsiTreeUtil
+import com.jetbrains.rd.util.reflection.threadLocal
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.index.DefinitionBundle
+import nl.hannahsten.texifyidea.inspections.AbstractTexifyContextAwareInspection
 import nl.hannahsten.texifyidea.inspections.InsightGroup
-import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.Diacritic
+import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.psi.LatexContent
-import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
@@ -55,7 +56,12 @@ import java.util.regex.Pattern
  *
  * @author Sten Wessel
  */
-class LatexUnicodeInspection : TexifyInspectionBase() {
+class LatexUnicodeInspection : AbstractTexifyContextAwareInspection(
+    inspectionGroup = InsightGroup.LATEX,
+    inspectionId = "Unicode"
+) {
+
+    private var unicodeEnabledLocal: Boolean? by threadLocal { null }
 
     object Util {
         internal val BASE_PATTERN = Pattern.compile("^\\p{ASCII}*")
@@ -87,52 +93,64 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
         }
     }
 
-    override val inspectionGroup = InsightGroup.LATEX
-
     @Nls
     override fun getDisplayName(): String = "Unsupported non-ASCII character"
 
-    override val inspectionId = "Unicode"
+    override fun prepareInspectionForFile(file: PsiFile, bundle: DefinitionBundle): Boolean {
+        unicodeEnabledLocal = Util.unicodeEnabled(file)
+        return true
+    }
 
-    override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        val hasUnicode = Util.unicodeEnabled(file)
+    override fun inspectElement(
+        element: PsiElement,
+        contexts: LContextSet,
+        bundle: DefinitionBundle,
+        file: PsiFile,
+        manager: InspectionManager,
+        isOnTheFly: Boolean,
+        descriptors: MutableList<ProblemDescriptor>
+    ) {
+        if (element !is LatexNormalText) {
+            return
+        }
 
-        val descriptors = descriptorList()
+        val hasUnicode = unicodeEnabledLocal ?: Util.unicodeEnabled(file)
+        val matcher = PatternMagic.nonAscii.matcher(element.text)
+        while (matcher.find()) {
+            val inMathMode = LatexContexts.Math in contexts
 
-        val texts = PsiTreeUtil.findChildrenOfType(file, LatexNormalText::class.java)
-        for (text in texts) {
-            val matcher = PatternMagic.nonAscii.matcher(text.text)
-            while (matcher.find()) {
-                val inMathMode = PsiTreeUtil.getParentOfType(text, LatexMathEnvironment::class.java) != null
+            if (!inMathMode && hasUnicode) {
+                // Unicode is supported, characters are legal
+                continue
+            }
 
-                if (!inMathMode && hasUnicode) {
-                    // Unicode is supported, characters are legal
-                    continue
-                }
-
-                val fix = if (inMathMode) {
-                    null
-                }
-                else {
-                    InsertUnicodePackageFix()
-                }
-                val fixes = listOfNotNull(fix).toTypedArray()
-
+            val escapeFix = EscapeUnicodeFix(inMathMode)
+            if (inMathMode) {
                 descriptors.add(
                     manager.createProblemDescriptor(
-                        text,
+                        element,
                         TextRange(matcher.start(), matcher.end()),
                         "Unsupported non-ASCII character",
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                        isOntheFly,
-                        EscapeUnicodeFix(inMathMode),
-                        *fixes
+                        isOnTheFly,
+                        escapeFix
+                    )
+                )
+            }
+            else {
+                descriptors.add(
+                    manager.createProblemDescriptor(
+                        element,
+                        TextRange(matcher.start(), matcher.end()),
+                        "Unsupported non-ASCII character",
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                        isOnTheFly,
+                        escapeFix,
+                        InsertUnicodePackageFix()
                     )
                 )
             }
         }
-
-        return descriptors
     }
 
     /**

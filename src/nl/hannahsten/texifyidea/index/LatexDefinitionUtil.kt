@@ -308,13 +308,20 @@ object LatexDefinitionUtil {
         val trimmed = codeText.trim()
         val psiFile = LatexPsiHelper.createFromText(trimmed, project)
         val command = psiFile.findFirstChildTyped<LatexCommands>() ?: return null
-        if (command.text != trimmed) return null
+        if (!isCommandOnlyWrappedByBraces(trimmed, command)) return null
         val commandName = command.name?.removePrefix("\\") ?: return null
         val semantic = lookup.lookupCommand(commandName) ?: return null
         val style = semantic.getMeta(MathStyle.META_KEY) ?: return null
         val firstReq = command.firstRequiredParameter() ?: return null
         val rawText = firstReq.contentText()
         return style.map(rawText)
+    }
+
+    private fun isCommandOnlyWrappedByBraces(fullText: String, command: LatexCommands): Boolean {
+        val range = command.textRange
+        if (range.startOffset < 0 || range.endOffset > fullText.length) return false
+        val outside = fullText.substring(0, range.startOffset) + fullText.substring(range.endOffset)
+        return outside.all { it.isWhitespace() || it == '{' || it == '}' }
     }
 
     private fun guessApplicableContexts(definitionElement: PsiElement?, lookup: LatexSemanticsLookup): LContextSet? {
@@ -430,7 +437,7 @@ object LatexDefinitionUtil {
         val hasOptionalArg = contents.getNthOptionalArg(1) != null
         val beginElement = codeElement.getNthRequiredParameter(1)
         val endElement = codeElement.getNthRequiredParameter(2)
-        return buildEnvironmentSemantics(envName, beginElement, endElement, buildRegularArgSignature(numArg, hasOptionalArg), defCommand, lookup, project)
+        return buildEnvironmentSemantics(envName, beginElement, endElement, buildRegularArgSignature(numArg, hasOptionalArg), lookup)
     }
 
     private fun parseArgSpecEnvironmentDef(defCommand: LatexCommands, contents: List<Pair<LArgumentType, String>>, lookup: LatexSemanticsLookup, project: Project): LSemanticEnv? {
@@ -440,13 +447,13 @@ object LatexDefinitionUtil {
         val argSignature = buildArgSpecSignature(contents.getNthRequiredArg(1))
         val beginElement = codeElement.getNthRequiredParameter(2)
         val endElement = codeElement.getNthRequiredParameter(3)
-        return buildEnvironmentSemantics(envName, beginElement, endElement, argSignature, defCommand, lookup, project)
+        return buildEnvironmentSemantics(envName, beginElement, endElement, argSignature, lookup)
     }
 
     private fun buildEnvironmentSemantics(
         envName: String, beginElement: PsiElement?, endElement: PsiElement?,
         argTypeList: List<LArgumentType>,
-        defCommand: LatexCommands, lookup: LatexSemanticsLookup, project: Project
+        lookup: LatexSemanticsLookup
     ): LSemanticEnv {
         if (beginElement == null || endElement == null) return LSemanticEnv(envName, LatexLib.CUSTOM)
         val applicableContexts = guessApplicableContexts(beginElement, lookup)
@@ -486,7 +493,7 @@ object LatexDefinitionUtil {
             oldCmd.name, oldCmd.dependency,
             ctx, arg, description, display
         ).also {
-            mergeMetaTo(it, oldCmd, newCmd, isOldPredefined)
+            mergeMetaTo(it, oldCmd, newCmd)
         }
     }
 
@@ -499,11 +506,11 @@ object LatexDefinitionUtil {
             oldEnv.name, oldEnv.dependency,
             ctx, arg, innerIntro, description
         ).also {
-            mergeMetaTo(it, oldEnv, newEnv, isOldPredefined)
+            mergeMetaTo(it, oldEnv, newEnv)
         }
     }
 
-    private fun mergeMetaTo(created: LSemanticEntity, old: LSemanticEntity, new: LSemanticEntity, isOldPredefined: Boolean) {
+    private fun mergeMetaTo(created: LSemanticEntity, old: LSemanticEntity, new: LSemanticEntity) {
         // currently, we just copy all meta info, but in the future we may want to be more careful about merging meta info
         old.copyMetaTo(created)
         new.copyMetaTo(created)

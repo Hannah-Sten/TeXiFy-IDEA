@@ -10,11 +10,10 @@ import nl.hannahsten.texifyidea.lang.predefined.CommandNames
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexRequiredParam
 import nl.hannahsten.texifyidea.psi.LatexStrictKeyValPair
-import nl.hannahsten.texifyidea.util.parser.toStringMap
 
 object LatexGlossariesCompletionProvider : LatexContextAgnosticCompletionProvider() {
 
-    private fun getOptionsMap(pairs: List<LatexStrictKeyValPair>): LinkedHashMap<String, String> = pairs.associate { pair -> Pair(pair.keyValKey, pair.keyValValue) }.toStringMap()
+    private fun getOptionsMap(pairs: List<LatexStrictKeyValPair>): Map<String, String> = pairs.associate { pair -> pair.keyValKey.text to (pair.keyValValue?.text ?: "") }
 
     private fun prettyPrintParameter(param: LatexRequiredParam): String = if (param.requiredParamContentList.isNotEmpty()) {
         param.requiredParamContentList.joinToString { c -> c.text }

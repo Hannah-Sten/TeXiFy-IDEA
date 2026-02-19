@@ -2,6 +2,41 @@ package nl.hannahsten.texifyidea.editor.folding
 
 import com.intellij.openapi.util.Key
 
+private fun codePointString(codePoint: Int): String = String(Character.toChars(codePoint))
+
+private fun mathAlphabetMapping(
+    uppercaseStart: Int? = null,
+    lowercaseStart: Int? = null,
+    digitStart: Int? = null,
+    plainDigits: Boolean = false,
+    overrides: Map<Char, String> = emptyMap()
+): Map<Char, String> {
+    val mapping = LinkedHashMap<Char, String>(62)
+    uppercaseStart?.let {
+        for (i in 0 until 26) {
+            mapping[('A'.code + i).toChar()] = codePointString(it + i)
+        }
+    }
+    lowercaseStart?.let {
+        for (i in 0 until 26) {
+            mapping[('a'.code + i).toChar()] = codePointString(it + i)
+        }
+    }
+    digitStart?.let {
+        for (i in 0 until 10) {
+            mapping[('0'.code + i).toChar()] = codePointString(it + i)
+        }
+    }
+    if (plainDigits) {
+        for (i in 0 until 10) {
+            val digit = ('0'.code + i).toChar()
+            mapping.putIfAbsent(digit, digit.toString())
+        }
+    }
+    mapping.putAll(overrides)
+    return mapping
+}
+
 /**
  * Maps plain characters to styled Unicode representations for math fonts.
  */
@@ -13,59 +48,10 @@ enum class MathStyle(
      * The calligraphic math style, such as `\mathcal`.
      */
     CALLIGRAPHIC(
-        mapOf(
-            'A' to "𝓐",
-            'B' to "𝓑",
-            'C' to "𝓒",
-            'D' to "𝓓",
-            'E' to "𝓔",
-            'F' to "𝓕",
-            'G' to "𝓖",
-            'H' to "𝓗",
-            'I' to "𝓘",
-            'J' to "𝓙",
-            'K' to "𝓚",
-            'L' to "𝓛",
-            'M' to "𝓜",
-            'N' to "𝓝",
-            'O' to "𝓞",
-            'P' to "𝓟",
-            'Q' to "𝓠",
-            'R' to "𝓡",
-            'S' to "𝓢",
-            'T' to "𝓣",
-            'U' to "𝓤",
-            'V' to "𝓥",
-            'W' to "𝓦",
-            'X' to "𝓧",
-            'Y' to "𝓨",
-            'Z' to "𝓩",
-            'a' to "𝓪",
-            'b' to "𝓫",
-            'c' to "𝓬",
-            'd' to "𝓭",
-            'e' to "𝓮",
-            'f' to "𝓯",
-            'g' to "𝓰",
-            'h' to "𝓱",
-            'i' to "𝓲",
-            'j' to "𝓳",
-            'k' to "𝓴",
-            'l' to "𝓵",
-            'm' to "𝓶",
-            'n' to "𝓷",
-            'o' to "𝓸",
-            'p' to "𝓹",
-            'q' to "𝓺",
-            'r' to "𝓻",
-            's' to "𝓼",
-            't' to "𝓽",
-            'u' to "𝓾",
-            'v' to "𝓿",
-            'w' to "𝔀",
-            'x' to "𝔁",
-            'y' to "𝔂",
-            'z' to "𝔃"
+        mathAlphabetMapping(
+            uppercaseStart = 0x1D4D0,
+            lowercaseStart = 0x1D4EA,
+            plainDigits = true
         )
     ),
 
@@ -104,9 +90,9 @@ enum class MathStyle(
             'b' to "𝒷",
             'c' to "𝒸",
             'd' to "𝒹",
-            'e' to "𝒺",
+            'e' to "ℯ",
             'f' to "𝒻",
-            'g' to "𝒼",
+            'g' to "ℊ",
             'h' to "𝒽",
             'i' to "𝒾",
             'j' to "𝒿",
@@ -114,7 +100,7 @@ enum class MathStyle(
             'l' to "𝓁",
             'm' to "𝓂",
             'n' to "𝓃",
-            'o' to "𝓄",
+            'o' to "ℴ",
             'p' to "𝓅",
             'q' to "𝓆",
             'r' to "𝓇",
@@ -125,7 +111,17 @@ enum class MathStyle(
             'w' to "𝓌",
             'x' to "𝓍",
             'y' to "𝓎",
-            'z' to "𝓏"
+            'z' to "𝓏",
+            '0' to "0",
+            '1' to "1",
+            '2' to "2",
+            '3' to "3",
+            '4' to "4",
+            '5' to "5",
+            '6' to "6",
+            '7' to "7",
+            '8' to "8",
+            '9' to "9"
         )
     ),
 
@@ -133,69 +129,65 @@ enum class MathStyle(
      * The bold math style, such as `\mathbf`.
      */
     BOLD(
-        mapOf(
-            'A' to "𝐀",
-            'B' to "𝐁",
-            'C' to "𝐂",
-            'D' to "𝐃",
-            'E' to "𝐄",
-            'F' to "𝐅",
-            'G' to "𝐆",
-            'H' to "𝐇",
-            'I' to "𝐈",
-            'J' to "𝐉",
-            'K' to "𝐊",
-            'L' to "𝐋",
-            'M' to "𝐌",
-            'N' to "𝐍",
-            'O' to "𝐎",
-            'P' to "𝐏",
-            'Q' to "𝐐",
-            'R' to "𝐑",
-            'S' to "𝐒",
-            'T' to "𝐓",
-            'U' to "𝐔",
-            'V' to "𝐕",
-            'W' to "𝐖",
-            'X' to "𝐗",
-            'Y' to "𝐘",
-            'Z' to "𝐙",
-            'a' to "𝐚",
-            'b' to "𝐛",
-            'c' to "𝐜",
-            'd' to "𝐝",
-            'e' to "𝐞",
-            'f' to "𝐟",
-            'g' to "𝐠",
-            'h' to "𝐡",
-            'i' to "𝐢",
-            'j' to "𝐣",
-            'k' to "𝐤",
-            'l' to "𝐥",
-            'm' to "𝐦",
-            'n' to "𝐧",
-            'o' to "𝐨",
-            'p' to "𝐩",
-            'q' to "𝐪",
-            'r' to "𝐫",
-            's' to "𝐬",
-            't' to "𝐭",
-            'u' to "𝐮",
-            'v' to "𝐯",
-            'w' to "𝐰",
-            'x' to "𝐱",
-            'y' to "𝐲",
-            'z' to "𝐳",
-            '0' to "𝟎",
-            '1' to "𝟏",
-            '2' to "𝟐",
-            '3' to "𝟑",
-            '4' to "𝟒",
-            '5' to "𝟓",
-            '6' to "𝟔",
-            '7' to "𝟕",
-            '8' to "𝟖",
-            '9' to "𝟗"
+        mathAlphabetMapping(
+            uppercaseStart = 0x1D400,
+            lowercaseStart = 0x1D41A,
+            digitStart = 0x1D7CE
+        )
+    ),
+
+    /**
+     * The bold italic math style, such as `\symbfit` in `unicode-math`.
+     */
+    BOLD_ITALIC(
+        mathAlphabetMapping(
+            uppercaseStart = 0x1D468,
+            lowercaseStart = 0x1D482,
+            digitStart = 0x1D7CE
+        )
+    ),
+
+    /**
+     * The bold script math style, such as `\symbcal` and `\symbfscr` in `unicode-math`.
+     */
+    BOLD_SCRIPT(
+        mathAlphabetMapping(
+            uppercaseStart = 0x1D4D0,
+            lowercaseStart = 0x1D4EA,
+            digitStart = 0x1D7CE
+        )
+    ),
+
+    /**
+     * The bold fraktur math style, such as `\symbffrak` in `unicode-math`.
+     */
+    BOLD_FRAKTUR(
+        mathAlphabetMapping(
+            uppercaseStart = 0x1D56C,
+            lowercaseStart = 0x1D586,
+            digitStart = 0x1D7CE
+        )
+    ),
+
+    /**
+     * The bold upright sans-serif math style, such as `\symbfsfup` in `unicode-math`.
+     */
+    BOLD_SANS_SERIF_UPRIGHT(
+        mathAlphabetMapping(
+            uppercaseStart = 0x1D5D4,
+            lowercaseStart = 0x1D5EE,
+            digitStart = 0x1D7EC
+        )
+    ),
+
+    /**
+     * The bold italic sans-serif math style, such as `\symbfsfit` in `unicode-math`.
+     */
+    BOLD_SANS_SERIF_ITALIC(
+        mathAlphabetMapping(
+            uppercaseStart = 0x1D63C,
+            lowercaseStart = 0x1D656,
+            digitStart = 0x1D7EC
         )
     ),
 
@@ -203,59 +195,13 @@ enum class MathStyle(
      * The italic math style, such as `\mathit`.
      */
     ITALIC(
-        mapOf(
-            'A' to "𝐴",
-            'B' to "𝐵",
-            'C' to "𝐶",
-            'D' to "𝐷",
-            'E' to "𝐸",
-            'F' to "𝐹",
-            'G' to "𝐺",
-            'H' to "𝐻",
-            'I' to "𝐼",
-            'J' to "𝐽",
-            'K' to "𝐾",
-            'L' to "𝐿",
-            'M' to "𝑀",
-            'N' to "𝑁",
-            'O' to "𝑂",
-            'P' to "𝑃",
-            'Q' to "𝑄",
-            'R' to "𝑅",
-            'S' to "𝑆",
-            'T' to "𝑇",
-            'U' to "𝑈",
-            'V' to "𝑉",
-            'W' to "𝑊",
-            'X' to "𝑋",
-            'Y' to "𝑌",
-            'Z' to "𝑍",
-            'a' to "𝑎",
-            'b' to "𝑏",
-            'c' to "𝑐",
-            'd' to "𝑑",
-            'e' to "𝑒",
-            'f' to "𝑓",
-            'g' to "𝑔",
-            'h' to "ℎ",
-            'i' to "𝑖",
-            'j' to "𝑗",
-            'k' to "𝑘",
-            'l' to "𝑙",
-            'm' to "𝑚",
-            'n' to "𝑛",
-            'o' to "𝑜",
-            'p' to "𝑝",
-            'q' to "𝑞",
-            'r' to "𝑟",
-            's' to "𝑠",
-            't' to "𝑡",
-            'u' to "𝑢",
-            'v' to "𝑣",
-            'w' to "𝑤",
-            'x' to "𝑥",
-            'y' to "𝑦",
-            'z' to "𝑧"
+        mathAlphabetMapping(
+            uppercaseStart = 0x1D434,
+            lowercaseStart = 0x1D44E,
+            plainDigits = true,
+            overrides = mapOf(
+                'h' to "ℎ"
+            )
         )
     ),
 
@@ -265,69 +211,19 @@ enum class MathStyle(
      * A common usage is `\mathbb{R}` for the set of real numbers, which is rendered as `ℝ`.
      */
     BLACKBOARD_BOLD(
-        mapOf(
-            'A' to "𝔸",
-            'B' to "𝔹",
-            'C' to "ℂ",
-            'D' to "𝔻",
-            'E' to "𝔼",
-            'F' to "𝔽",
-            'G' to "𝔾",
-            'H' to "ℍ",
-            'I' to "𝕀",
-            'J' to "𝕁",
-            'K' to "𝕂",
-            'L' to "𝕃",
-            'M' to "𝕄",
-            'N' to "ℕ",
-            'O' to "𝕆",
-            'P' to "ℙ",
-            'Q' to "ℚ",
-            'R' to "ℝ",
-            'S' to "𝕊",
-            'T' to "𝕋",
-            'U' to "𝕌",
-            'V' to "𝕍",
-            'W' to "𝕎",
-            'X' to "𝕏",
-            'Y' to "𝕐",
-            'Z' to "ℤ",
-            'a' to "𝕒",
-            'b' to "𝕓",
-            'c' to "𝕔",
-            'd' to "𝕕",
-            'e' to "𝕖",
-            'f' to "𝕗",
-            'g' to "𝕘",
-            'h' to "𝕙",
-            'i' to "𝕚",
-            'j' to "𝕛",
-            'k' to "𝕜",
-            'l' to "𝕝",
-            'm' to "𝕞",
-            'n' to "𝕟",
-            'o' to "𝕠",
-            'p' to "𝕡",
-            'q' to "𝕢",
-            'r' to "𝕣",
-            's' to "𝕤",
-            't' to "𝕥",
-            'u' to "𝕦",
-            'v' to "𝕧",
-            'w' to "𝕨",
-            'x' to "𝕩",
-            'y' to "𝕪",
-            'z' to "𝕫",
-            '0' to "𝟘",
-            '1' to "𝟙",
-            '2' to "𝟚",
-            '3' to "𝟛",
-            '4' to "𝟜",
-            '5' to "𝟝",
-            '6' to "𝟞",
-            '7' to "𝟟",
-            '8' to "𝟠",
-            '9' to "𝟡"
+        mathAlphabetMapping(
+            uppercaseStart = 0x1D538,
+            lowercaseStart = 0x1D552,
+            digitStart = 0x1D7D8,
+            overrides = mapOf(
+                'C' to "ℂ",
+                'H' to "ℍ",
+                'N' to "ℕ",
+                'P' to "ℙ",
+                'Q' to "ℚ",
+                'R' to "ℝ",
+                'Z' to "ℤ"
+            )
         )
     ),
 
@@ -335,60 +231,27 @@ enum class MathStyle(
      * The fraktur math style, such as `\mathfrak`.
      */
     FRAKTUR(
-        mapOf(
-            'A' to "𝔄",
-            'B' to "𝔅",
-            'C' to "ℭ",
-            'D' to "𝔇",
-            'E' to "𝔈",
-            'F' to "𝔉",
-            'G' to "𝔊",
-            'H' to "ℌ",
-            'I' to "ℑ",
-            'J' to "𝔍",
-            'K' to "𝔎",
-            'L' to "𝔏",
-            'M' to "𝔐",
-            'N' to "𝔑",
-            'O' to "𝔒",
-            'P' to "𝔓",
-            'Q' to "𝔔",
-            'R' to "ℜ",
-            'S' to "𝔖",
-            'T' to "𝔗",
-            'U' to "𝔘",
-            'V' to "𝔙",
-            'W' to "𝔚",
-            'X' to "𝔛",
-            'Y' to "𝔜",
-            'Z' to "ℨ",
-            'a' to "𝔞",
-            'b' to "𝔟",
-            'c' to "𝔠",
-            'd' to "𝔡",
-            'e' to "𝔢",
-            'f' to "𝔣",
-            'g' to "𝔤",
-            'h' to "𝔥",
-            'i' to "𝔦",
-            'j' to "𝔧",
-            'k' to "𝔨",
-            'l' to "𝔩",
-            'm' to "𝔪",
-            'n' to "𝔫",
-            'o' to "𝔬",
-            'p' to "𝔭",
-            'q' to "𝔮",
-            'r' to "𝔯",
-            's' to "𝔰",
-            't' to "𝔱",
-            'u' to "𝔲",
-            'v' to "𝔳",
-            'w' to "𝔴",
-            'x' to "𝔵",
-            'y' to "𝔶",
-            'z' to "𝔷"
+        mathAlphabetMapping(
+            uppercaseStart = 0x1D504,
+            lowercaseStart = 0x1D51E,
+            plainDigits = true,
+            overrides = mapOf(
+                'C' to "ℭ",
+                'H' to "ℌ",
+                'I' to "ℑ",
+                'R' to "ℜ",
+                'Z' to "ℨ"
+            )
         )
+    ),
+
+    /**
+     * The normal math style, such as `\mathnormal` and `\symnormal`.
+     *
+     * Rendered as plain characters for better readability.
+     */
+    NORMAL(
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890".associateWith { it.toString() }
     ),
 
     /**
@@ -413,69 +276,10 @@ enum class MathStyle(
      * The monospace math style, such as `\mathtt`.
      */
     MONOSPACE(
-        mapOf(
-            'A' to "𝙰",
-            'B' to "𝙱",
-            'C' to "𝙲",
-            'D' to "𝙳",
-            'E' to "𝙴",
-            'F' to "𝙵",
-            'G' to "𝙶",
-            'H' to "𝙷",
-            'I' to "𝙸",
-            'J' to "𝙹",
-            'K' to "𝙺",
-            'L' to "𝙻",
-            'M' to "𝙼",
-            'N' to "𝙽",
-            'O' to "𝙾",
-            'P' to "𝙿",
-            'Q' to "𝚀",
-            'R' to "𝚁",
-            'S' to "𝚂",
-            'T' to "𝚃",
-            'U' to "𝚄",
-            'V' to "𝚅",
-            'W' to "𝚆",
-            'X' to "𝚇",
-            'Y' to "𝚈",
-            'Z' to "𝚉",
-            'a' to "𝚊",
-            'b' to "𝚋",
-            'c' to "𝚌",
-            'd' to "𝚍",
-            'e' to "𝚎",
-            'f' to "𝚏",
-            'g' to "𝚐",
-            'h' to "𝚑",
-            'i' to "𝚒",
-            'j' to "𝚓",
-            'k' to "𝚔",
-            'l' to "𝚕",
-            'm' to "𝚖",
-            'n' to "𝚗",
-            'o' to "𝚘",
-            'p' to "𝚙",
-            'q' to "𝚚",
-            'r' to "𝚛",
-            's' to "𝚜",
-            't' to "𝚝",
-            'u' to "𝚞",
-            'v' to "𝚟",
-            'w' to "𝚠",
-            'x' to "𝚡",
-            'y' to "𝚢",
-            'z' to "𝚣",
-            '0' to "𝟶",
-            '1' to "𝟷",
-            '2' to "𝟸",
-            '3' to "𝟹",
-            '4' to "𝟺",
-            '5' to "𝟻",
-            '6' to "𝟼",
-            '7' to "𝟽",
-            '8' to "𝟾",
-            '9' to "𝟿"
+        mathAlphabetMapping(
+            uppercaseStart = 0x1D670,
+            lowercaseStart = 0x1D68A,
+            digitStart = 0x1D7F6
         )
     );
 
