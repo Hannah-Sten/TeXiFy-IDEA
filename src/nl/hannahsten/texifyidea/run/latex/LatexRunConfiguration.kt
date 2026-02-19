@@ -52,18 +52,18 @@ import nl.hannahsten.texifyidea.util.runInBackgroundNonBlocking
 import org.jdom.Element
 import java.io.File
 import java.nio.file.InvalidPathException
-import java.nio.file.Path
 import java.util.*
+import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
 
 /**
  * @author Hannah Schellekens, Sten Wessel
  */
-open class LatexRunConfiguration(
+class LatexRunConfiguration(
     project: Project,
     factory: ConfigurationFactory,
     name: String
-) : RunConfigurationBase<LatexCommandLineState>(project, factory, name), LocatableConfiguration, LatexCompilationRunConfiguration, LatexChainedCompilationRunConfiguration {
+) : RunConfigurationBase<LatexCommandLineState>(project, factory, name), LocatableConfiguration, LatexCompilationRunConfiguration {
 
     companion object {
 
@@ -93,10 +93,10 @@ open class LatexRunConfiguration(
         private const val OUT_DIR = "out-dir"
     }
 
-    override var compiler: LatexCompiler? = null
+    var compiler: LatexCompiler? = null
     override var compilerPath: String? = null
     override var pdfViewer: PdfViewer? = null
-    override var viewerCommand: String? = null
+    var viewerCommand: String? = null
 
     override var compilerArguments: String? = null
         set(compilerArguments) {
@@ -106,9 +106,9 @@ open class LatexRunConfiguration(
             }
         }
 
-    override var expandMacrosEnvVariables = false
+    var expandMacrosEnvVariables = false
     override var environmentVariables: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT
-    override var beforeRunCommand: String? = null
+    var beforeRunCommand: String? = null
 
     override var mainFile: VirtualFile? = null
         set(value) {
@@ -127,10 +127,10 @@ open class LatexRunConfiguration(
     /** Path to the directory containing the auxiliary files. */
     var auxilPath = LatexOutputPath("auxil", mainFile, project)
 
-    override var workingDirectory: Path? = Path.of(LatexOutputPath.MAIN_FILE_STRING)
+    var workingDirectory: String? = null
 
-    override var compileTwice = false
-    override var outputFormat: Format = Format.PDF
+    var compileTwice = false
+    var outputFormat: Format = Format.PDF
 
     /**
      * The LaTeX distribution to use for this run configuration.
@@ -145,23 +145,23 @@ open class LatexRunConfiguration(
      * specific SDK version, configure it as the project SDK or module SDK and select
      * PROJECT_SDK or MODULE_SDK.
      */
-    override var latexDistribution: LatexDistributionType = LatexDistributionType.MODULE_SDK
+    var latexDistribution: LatexDistributionType = LatexDistributionType.MODULE_SDK
 
     /** Whether this run configuration is the last one in the chain of run configurations (e.g. latex, bibtex, latex, latex). */
-    override var isLastRunConfig = false
-    override var isFirstRunConfig = true
+    var isLastRunConfig = false
+    var isFirstRunConfig = true
 
     // Whether the run configuration has already been run or not, since it has been created
-    override var hasBeenRun = false
+    var hasBeenRun = false
 
     /** Whether the pdf viewer should claim focus after compilation. */
-    override var requireFocus = true
+    var requireFocus = true
 
     /** Whether the run configuration is currently auto-compiling.     */
     override var isAutoCompiling = false
 
     private var bibRunConfigIds = mutableSetOf<String>()
-    override var bibRunConfigs: Set<RunnerAndConfigurationSettings>
+    var bibRunConfigs: Set<RunnerAndConfigurationSettings>
         get() = bibRunConfigIds.mapNotNull {
             RunManagerImpl.getInstanceImpl(project).getConfigurationById(it)
         }.toSet()
@@ -173,7 +173,7 @@ open class LatexRunConfiguration(
         }
 
     private var makeindexRunConfigIds = mutableSetOf<String>()
-    override var makeindexRunConfigs: Set<RunnerAndConfigurationSettings>
+    var makeindexRunConfigs: Set<RunnerAndConfigurationSettings>
         get() = makeindexRunConfigIds.mapNotNull {
             RunManagerImpl.getInstanceImpl(project).getConfigurationById(it)
         }.toSet()
@@ -185,7 +185,7 @@ open class LatexRunConfiguration(
         }
 
     private var externalToolRunConfigIds = mutableSetOf<String>()
-    override var externalToolRunConfigs: Set<RunnerAndConfigurationSettings>
+    var externalToolRunConfigs: Set<RunnerAndConfigurationSettings>
         get() = externalToolRunConfigIds.mapNotNull {
             RunManagerImpl.getInstanceImpl(project).getConfigurationById(it)
         }.toSet()
@@ -195,14 +195,6 @@ open class LatexRunConfiguration(
                 externalToolRunConfigIds.add(it.uniqueID)
             }
         }
-
-    override val compilationCapabilities = LatexCompilationCapabilities(
-        handlesBib = false,
-        handlesMakeindex = false,
-        handlesCompileCount = false,
-        supportsAuxDir = true,
-        supportsOutputFormatSet = true,
-    )
 
     // In order to propagate information about which files need to be cleaned up at the end between one run of the run config
     // (for example makeindex) and the last run, we save this information temporarily here while the run configuration is running.
@@ -265,7 +257,7 @@ open class LatexRunConfiguration(
         try {
             this.compiler = LatexCompiler.valueOf(compilerName)
         }
-        catch (_: IllegalArgumentException) {
+        catch (e: IllegalArgumentException) {
             this.compiler = null
         }
 
@@ -295,9 +287,9 @@ open class LatexRunConfiguration(
                     return@runInBackgroundNonBlocking
                 }
                 val path = try {
-                    Path.of(folder).resolve("SumatraPDF.exe")
+                    Path(folder).resolve("SumatraPDF.exe")
                 }
-                catch (_: InvalidPathException) {
+                catch (e: InvalidPathException) {
                     return@runInBackgroundNonBlocking
                     // If the path is invalid, we just ignore it
                 }
@@ -351,7 +343,7 @@ open class LatexRunConfiguration(
             this.auxilPath.pathString = auxilPathString
         }
 
-        this.workingDirectory = parent.getChildText(WORKING_DIRECTORY)?.let { Path.of(it) } ?: Path.of(LatexOutputPath.MAIN_FILE_STRING)
+        this.workingDirectory = parent.getChildText(WORKING_DIRECTORY) ?: LatexOutputPath.MAIN_FILE_STRING
 
         // Backwards compatibility
         val auxDirBoolean = parent.getChildText(AUX_DIR)
@@ -429,7 +421,7 @@ open class LatexRunConfiguration(
         parent.addContent(Element(MAIN_FILE).also { it.text = mainFile?.path ?: "" })
         parent.addContent(Element(OUTPUT_PATH).also { it.text = outputPath.virtualFile?.path ?: outputPath.pathString })
         parent.addContent(Element(AUXIL_PATH).also { it.text = auxilPath.virtualFile?.path ?: auxilPath.pathString })
-        parent.addContent(Element(WORKING_DIRECTORY).also { it.text = workingDirectory?.toString() ?: LatexOutputPath.MAIN_FILE_STRING })
+        parent.addContent(Element(WORKING_DIRECTORY).also { it.text = workingDirectory ?: LatexOutputPath.MAIN_FILE_STRING })
         parent.addContent(Element(COMPILE_TWICE).also { it.text = compileTwice.toString() })
         parent.addContent(Element(OUTPUT_FORMAT).also { it.text = outputFormat.name })
         parent.addContent(Element(LATEX_DISTRIBUTION).also { it.text = latexDistribution.name })
@@ -475,7 +467,7 @@ open class LatexRunConfiguration(
     /**
      * Generate a Bibtex run configuration, after trying to guess whether the user wants to use bibtex or biber as compiler.
      */
-    override fun generateBibRunConfig() {
+    internal fun generateBibRunConfig() {
         val psiFile = this.psiFile?.element ?: return // Do not auto-generate a bib run config when there is no psi file
         // Get a pair of Bib compiler and compiler arguments.
         val compilerFromMagicComment: Pair<BibliographyCompiler, String>? by lazy {
@@ -535,16 +527,19 @@ open class LatexRunConfiguration(
     /**
      * All run configs in the chain except the LaTeX ones.
      */
-    override fun getAllAuxiliaryRunConfigs(): Set<RunnerAndConfigurationSettings> = bibRunConfigs + makeindexRunConfigs + externalToolRunConfigs
+    fun getAllAuxiliaryRunConfigs(): Set<RunnerAndConfigurationSettings> = bibRunConfigs + makeindexRunConfigs + externalToolRunConfigs
 
-    override fun getResolvedWorkingDirectory(): Path? = if (workingDirectory != null && mainFile != null) {
-        Path.of(workingDirectory.toString().replace(LatexOutputPath.MAIN_FILE_STRING, mainFile!!.parent.path))
-    }
-    else {
-        mainFile?.parent?.path?.let { Path.of(it) }
+    override fun getResolvedWorkingDirectory(): java.nio.file.Path? {
+        val pathString = if (!workingDirectory.isNullOrBlank() && mainFile != null) {
+            workingDirectory?.replace(LatexOutputPath.MAIN_FILE_STRING, mainFile!!.parent.path)
+        }
+        else {
+            mainFile?.parent?.path
+        }
+        return pathString?.let { java.nio.file.Path.of(it) }
     }
 
-    override fun hasDefaultWorkingDirectory(): Boolean = workingDirectory?.toString() == LatexOutputPath.MAIN_FILE_STRING
+    override fun hasDefaultWorkingDirectory(): Boolean = workingDirectory == LatexOutputPath.MAIN_FILE_STRING
 
     /**
      * Looks up the corresponding [VirtualFile] and sets [LatexRunConfiguration.mainFile].
@@ -552,7 +547,7 @@ open class LatexRunConfiguration(
      * See [readExternal]: NOTE: do not use runReadAction here as it may cause deadlock when other threads try to get run configurations from a write lock
      *
      */
-    override fun setMainFile(mainFilePath: String) {
+    fun setMainFile(mainFilePath: String) {
         if (mainFilePath.isBlank()) {
             this.mainFile = null
             return
@@ -601,7 +596,7 @@ open class LatexRunConfiguration(
     /**
      * Resolve module and project SDK to a LaTeX SDK if possible, otherwise return null.
      */
-    override fun getLatexSdk(): Sdk? = when (latexDistribution) {
+    fun getLatexSdk(): Sdk? = when (latexDistribution) {
         LatexDistributionType.MODULE_SDK -> {
             val sdk = mainFile?.let { LatexSdkUtil.getLatexSdkForFile(it, project) }
                 ?: LatexSdkUtil.getLatexProjectSdk(project)
@@ -623,7 +618,7 @@ open class LatexRunConfiguration(
      * For concrete distribution types: returns the type directly.
      * Returns TEXLIVE as fallback when no SDK is configured.
      */
-    override fun getLatexDistributionType(): LatexDistributionType {
+    fun getLatexDistributionType(): LatexDistributionType {
         val sdk = getLatexSdk()
         val type = (sdk?.sdkType as? LatexSdk?)?.getLatexDistributionType(sdk) ?: latexDistribution
         // It could be, user has selected module/project SDK but it's not valid, in that case use default
@@ -650,7 +645,7 @@ open class LatexRunConfiguration(
 
     override fun getOutputDirectory(): VirtualFile? = outputPath.getAndCreatePath()
 
-    override fun setSuggestedName() {
+    fun setSuggestedName() {
         suggestedName()?.let { name = it }
     }
 
@@ -687,7 +682,7 @@ open class LatexRunConfiguration(
     /**
      * Set [auxilPath]
      */
-    override fun setFileAuxilPath(fileAuxilPath: String) {
+    fun setFileAuxilPath(fileAuxilPath: String) {
         if (fileAuxilPath.isBlank()) return
         this.auxilPath.virtualFile = findVirtualFileByAbsoluteOrRelativePath(fileAuxilPath, project)
         // If not possible to resolve directly, we might resolve it later
@@ -699,7 +694,7 @@ open class LatexRunConfiguration(
     /**
      * Whether an auxil or out directory is used, i.e. whether not both are set to the directory of the main file
      */
-    override fun usesAuxilOrOutDirectory(): Boolean {
+    fun usesAuxilOrOutDirectory(): Boolean {
         val usesAuxilDir = auxilPath.getAndCreatePath() != mainFile?.parent
         val usesOutDir = outputPath.getAndCreatePath() != mainFile?.parent
 

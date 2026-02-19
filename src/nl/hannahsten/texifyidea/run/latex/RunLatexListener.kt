@@ -13,7 +13,7 @@ import com.intellij.openapi.util.Key
  * @author Thomas Schouten
  */
 class RunLatexListener(
-    private val runConfig: LatexChainedCompilationRunConfiguration,
+    private val runConfig: LatexRunConfiguration,
     private val environment: ExecutionEnvironment
 ) : ProcessListener {
 

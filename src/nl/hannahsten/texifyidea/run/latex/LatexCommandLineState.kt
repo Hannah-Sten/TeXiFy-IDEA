@@ -37,7 +37,7 @@ import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
 import java.io.File
-import kotlin.io.path.Path
+import java.nio.file.Path
 import kotlin.io.path.exists
 
 /**
@@ -108,7 +108,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         val command: List<String> = compiler.getCommand(runConfig, environment.project)
             ?: throw ExecutionException("Compile command could not be created.")
 
-        val workingDirectory = runConfig.getResolvedWorkingDirectory() ?: Path(mainFile.parent.path)
+        val workingDirectory = runConfig.getResolvedWorkingDirectory() ?: Path.of(mainFile.parent.path)
         if (workingDirectory.exists().not()) {
             Notification("LaTeX", "Could not find working directory", "The directory containing the main file could not be found: $workingDirectory", NotificationType.ERROR).notify(environment.project)
             throw ExecutionException("Could not find working directory $workingDirectory for file $mainFile")

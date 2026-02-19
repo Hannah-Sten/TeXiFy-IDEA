@@ -37,7 +37,6 @@ import java.awt.Cursor
 import java.awt.event.ItemEvent
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
-import java.nio.file.Path
 import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JPanel
@@ -123,7 +122,7 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
         // We may be editing a run configuration template, don't resolve any path
         outputPathTextField.text = runConfiguration.outputPath.virtualFile?.path ?: runConfiguration.outputPath.pathString
 
-        (workingDirectory.component as TextFieldWithBrowseButton).text = runConfiguration.workingDirectory?.toString() ?: LatexOutputPath.MAIN_FILE_STRING
+        (workingDirectory.component as TextFieldWithBrowseButton).text = runConfiguration.workingDirectory ?: LatexOutputPath.MAIN_FILE_STRING
 
         // Reset whether to compile twice
         if (compileTwice != null) {
@@ -230,7 +229,7 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
             runConfiguration.setFileAuxilPath(auxilPathTextField.text)
         }
 
-        runConfiguration.workingDirectory = Path.of((workingDirectory.component as TextFieldWithBrowseButton).text)
+        runConfiguration.workingDirectory = (workingDirectory.component as TextFieldWithBrowseButton).text
 
         if (compileTwice != null) {
             // Only show option to configure number of compiles when applicable

@@ -13,7 +13,7 @@ import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.predefined.CommandNames
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
-import nl.hannahsten.texifyidea.run.latex.LatexChainedCompilationRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.findRootFile
 import nl.hannahsten.texifyidea.util.files.getBibtexRunConfigurations
@@ -72,7 +72,7 @@ class LatexBibinputsRelativePathInspection : TexifyInspectionBase() {
             project
                 .getLatexRunConfigurations()
                 .asSequence()
-                .filterIsInstance<LatexChainedCompilationRunConfiguration>()
+                .filterIsInstance<LatexRunConfiguration>()
                 .filter { it.mainFile == descriptor.psiElement.containingFile.findRootFile().virtualFile }
                 .flatMap { it.bibRunConfigs }
                 .map { it.configuration }

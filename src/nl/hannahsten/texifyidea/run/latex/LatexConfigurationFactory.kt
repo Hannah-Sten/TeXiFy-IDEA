@@ -5,10 +5,11 @@ import com.intellij.execution.configurations.ConfigurationType
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
-import nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfiguration
-import nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfigurationType
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
+import nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfigurationType
+import nl.hannahsten.texifyidea.run.latexmk.LatexmkPathResolver
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkRunConfiguration
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkRunConfigurationType
 import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfiguration
@@ -37,7 +38,7 @@ class LatexConfigurationFactory(type: ConfigurationType) : ConfigurationFactory(
             setDefaultPdfViewer()
             outputFormat = Format.DEFAULT
             setDefaultOutputFormat()
-            outputPathRaw = nl.hannahsten.texifyidea.run.latexmk.LatexmkPathResolver.MAIN_FILE_PARENT_PLACEHOLDER
+            outputPathRaw = LatexmkPathResolver.MAIN_FILE_PARENT_PLACEHOLDER
             setSuggestedName()
             setDefaultLatexDistribution()
         }

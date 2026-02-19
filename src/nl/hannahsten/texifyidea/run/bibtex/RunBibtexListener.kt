@@ -7,14 +7,14 @@ import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.util.Key
-import nl.hannahsten.texifyidea.run.latex.LatexChainedCompilationRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 
 /**
  * @author Sten Wessel
  */
 class RunBibtexListener(
     private val bibtexSettings: RunnerAndConfigurationSettings,
-    private val latexConfiguration: LatexChainedCompilationRunConfiguration,
+    private val latexConfiguration: LatexRunConfiguration,
     private val environment: ExecutionEnvironment,
     private val runLatexAfterwards: Boolean = true
 ) : ProcessListener {

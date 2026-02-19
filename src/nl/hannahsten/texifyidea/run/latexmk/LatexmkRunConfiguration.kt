@@ -23,9 +23,8 @@ import com.intellij.openapi.util.InvalidDataException
 import com.intellij.openapi.util.WriteExternalException
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
-import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
-import nl.hannahsten.texifyidea.run.latex.LatexCompilationCapabilities
+import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.LatexCompilationRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogTabComponent
@@ -67,41 +66,33 @@ class LatexmkRunConfiguration(
         private const val DEFAULT_EXTRA_ARGUMENTS = "-synctex=1"
     }
 
-    override var compiler: LatexCompiler? = LatexCompiler.LATEXMK
+    var compiler: LatexCompiler? = LatexCompiler.LATEXMK
     override var compilerPath: String? = null
     override var pdfViewer: PdfViewer? = null
-    override var viewerCommand: String? = null
+    var viewerCommand: String? = null
 
     override var compilerArguments: String? = null
         set(value) {
             field = value?.trim()?.ifEmpty { null }
         }
 
-    override var expandMacrosEnvVariables = false
+    var expandMacrosEnvVariables = false
     override var environmentVariables: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT
-    override var beforeRunCommand: String? = null
+    var beforeRunCommand: String? = null
 
     override var mainFile: VirtualFile? = null
     var outputPathRaw: String = LatexmkPathResolver.MAIN_FILE_PARENT_PLACEHOLDER
     var auxilPathRaw: String = ""
 
-    override var workingDirectory: Path? = null
+    var workingDirectory: Path? = null
 
-    override var outputFormat: LatexCompiler.Format = LatexCompiler.Format.DEFAULT
+    var outputFormat: LatexCompiler.Format = LatexCompiler.Format.DEFAULT
 
-    override var latexDistribution: LatexDistributionType = LatexDistributionType.MODULE_SDK
+    var latexDistribution: LatexDistributionType = LatexDistributionType.MODULE_SDK
 
-    override var hasBeenRun = false
-    override var requireFocus = true
+    var hasBeenRun = false
+    var requireFocus = true
     override var isAutoCompiling = false
-
-    override val compilationCapabilities = LatexCompilationCapabilities(
-        handlesBib = true,
-        handlesMakeindex = true,
-        handlesCompileCount = true,
-        supportsAuxDir = true,
-        supportsOutputFormatSet = true,
-    )
 
     var compileMode: LatexmkCompileMode = LatexmkCompileMode.PDFLATEX_PDF
         set(value) {
@@ -153,6 +144,8 @@ class LatexmkRunConfiguration(
         val extension = compileMode.extension.lowercase(Locale.getDefault())
         return "$outputDir/${mainFile?.nameWithoutExtension ?: "main"}.$extension"
     }
+
+    override fun getResolvedWorkingDirectory(): Path? = workingDirectory ?: mainFile?.parent?.path?.let { Path.of(it) }
 
     fun buildLatexmkArguments(): String = LatexmkCommandBuilder.buildStructuredArguments(this)
 
@@ -230,7 +223,7 @@ class LatexmkRunConfiguration(
         parent.addContent(Element(EXTRA_ARGUMENTS).also { it.text = extraArguments ?: "" })
     }
 
-    override fun setMainFile(mainFilePath: String) {
+    fun setMainFile(mainFilePath: String) {
         if (mainFilePath.isBlank()) {
             mainFile = null
             return
@@ -256,11 +249,11 @@ class LatexmkRunConfiguration(
         outputPathRaw = fileOutputPath.takeUnless { it.isBlank() } ?: LatexmkPathResolver.MAIN_FILE_PARENT_PLACEHOLDER
     }
 
-    override fun setFileAuxilPath(fileAuxilPath: String) {
+    fun setFileAuxilPath(fileAuxilPath: String) {
         auxilPathRaw = fileAuxilPath
     }
 
-    override fun setSuggestedName() {
+    fun setSuggestedName() {
         suggestedName()?.let { name = it }
     }
 
@@ -283,7 +276,9 @@ class LatexmkRunConfiguration(
         compileMode = LatexmkCompileMode.PDFLATEX_PDF
     }
 
-    override fun getLatexSdk(): Sdk? = when (latexDistribution) {
+    override fun hasDefaultWorkingDirectory(): Boolean = workingDirectory == null
+
+    fun getLatexSdk(): Sdk? = when (latexDistribution) {
         LatexDistributionType.MODULE_SDK -> {
             val sdk = mainFile?.let { LatexSdkUtil.getLatexSdkForFile(it, project) }
                 ?: LatexSdkUtil.getLatexProjectSdk(project)
@@ -298,7 +293,7 @@ class LatexmkRunConfiguration(
         else -> null
     }
 
-    override fun getLatexDistributionType(): LatexDistributionType {
+    fun getLatexDistributionType(): LatexDistributionType {
         val sdk = getLatexSdk()
         val type = (sdk?.sdkType as? LatexSdk?)?.getLatexDistributionType(sdk) ?: latexDistribution
         return if (type == LatexDistributionType.MODULE_SDK || type == LatexDistributionType.PROJECT_SDK) {
@@ -317,7 +312,7 @@ class LatexmkRunConfiguration(
         return LatexmkPathResolver.toVirtualFile(auxilDir)
     }
 
-    override fun usesAuxilOrOutDirectory(): Boolean {
+    fun usesAuxilOrOutDirectory(): Boolean {
         val mainParent = mainFile?.parent?.path ?: return false
         val outputPath = LatexmkPathResolver.resolveOutputDir(this)?.toString()
         val auxilPath = LatexmkPathResolver.resolveAuxDir(this)?.toString() ?: outputPath

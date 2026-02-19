@@ -15,7 +15,6 @@ import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.util.files.findTectonicTomlFile
 import nl.hannahsten.texifyidea.util.files.hasTectonicTomlFile
 import nl.hannahsten.texifyidea.util.includedPackagesInFileset
-import java.nio.file.Path
 
 /**
  * @author Hannah Schellekens
@@ -60,12 +59,7 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
         runConfiguration.compiler = LatexCompiler.byExecutableName(compiler)
         runConfiguration.compilerArguments = command.removePrefix(compiler).trim()
 
-        runConfiguration.workingDirectory = if (runConfiguration.compiler == LatexCompiler.TECTONIC && mainFile.hasTectonicTomlFile()) {
-            Path.of(mainFile.findTectonicTomlFile()!!.parent.path)
-        }
-        else {
-            Path.of(LatexOutputPath.MAIN_FILE_STRING)
-        }
+        runConfiguration.workingDirectory = if (runConfiguration.compiler == LatexCompiler.TECTONIC && mainFile.hasTectonicTomlFile()) mainFile.findTectonicTomlFile()!!.parent.path else LatexOutputPath.MAIN_FILE_STRING
         return true
     }
 
