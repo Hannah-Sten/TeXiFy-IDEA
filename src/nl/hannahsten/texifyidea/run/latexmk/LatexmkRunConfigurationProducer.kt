@@ -67,10 +67,10 @@ class LatexmkRunConfigurationProducer : LazyRunConfigurationProducer<LatexmkRunC
 }
 
 internal fun preferredCompileModeForPackages(packages: Set<LatexLib>): LatexmkCompileMode? {
-    if (packages.any { it in PackageMagic.unicodePreferredXeEngineLibraries }) {
+    if (packages.any { it in PackageMagic.preferredXeEngineLibraries }) {
         return LatexmkCompileMode.XELATEX_PDF
     }
-    if (packages.any { it in PackageMagic.unicodePreferredLuaEngineLibraries }) {
+    if (packages.any { it in PackageMagic.preferredLuaEngineLibraries }) {
         return LatexmkCompileMode.LUALATEX_PDF
     }
     return null

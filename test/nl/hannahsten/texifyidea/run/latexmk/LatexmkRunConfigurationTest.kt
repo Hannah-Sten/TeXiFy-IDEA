@@ -108,6 +108,11 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
         assertEquals(LatexmkCompileMode.XELATEX_PDF, preferred)
     }
 
+    fun testPreferredModeFromPackagesUsesXeLatexForCtexBeamerWhenClassComesFromFilesetLibrary() {
+        val preferred = preferredCompileModeForPackages(setOf(LatexLib.fromFileName("ctexbeamer.cls")))
+        assertEquals(LatexmkCompileMode.XELATEX_PDF, preferred)
+    }
+
     fun testPreferredModeFromPackagesUsesLuaLatexForLuaTexJa() {
         val preferred = preferredCompileModeForPackages(setOf(LatexLib.Package("luatexja")))
         assertEquals(LatexmkCompileMode.LUALATEX_PDF, preferred)

@@ -289,4 +289,7 @@ fun PsiFile.insertUsepackage(latexLib: LatexLib) = insertUsepackage(this, latexL
  *
  * @return List of all included packages, including those that are included indirectly.
  */
-fun PsiFile.includedPackagesInFileset(): Set<LatexLib> = PackageUtils.getIncludedLibrariesInFileset(this).map { LatexLib.Package(it.substringBefore('.')) }.toSet()
+fun PsiFile.includedPackagesInFileset(): Set<LatexLib> = PackageUtils.getIncludedLibrariesInFileset(this).map { library ->
+    // fileset libraries are expected as `*.sty`/`*.cls`; keep old package fallback for unknown entries.
+    LatexLib.fromFileName(library).takeUnless { it.isCustom } ?: LatexLib.Package(library.substringBefore('.'))
+}.toSet()

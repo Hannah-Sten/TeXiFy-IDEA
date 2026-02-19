@@ -58,7 +58,7 @@ object PackageMagic {
     /**
      * Libraries that are generally better served by XeLaTeX.
      */
-    val unicodePreferredXeEngineLibraries = setOf(
+    val preferredXeEngineLibraries = setOf(
         LatexLib.Package("ctex"),
         LatexLib.Package("xecjk"),
         LatexLib.Class("ctexart"),
@@ -70,7 +70,7 @@ object PackageMagic {
     /**
      * Libraries that are generally better served by LuaLaTeX.
      */
-    val unicodePreferredLuaEngineLibraries = setOf(
+    val preferredLuaEngineLibraries = setOf(
         LatexLib.CITATION_STYLE_LANGUAGE,
         LatexLib.FONTSPEC,
         LatexLib.Package("unicode-math"),
