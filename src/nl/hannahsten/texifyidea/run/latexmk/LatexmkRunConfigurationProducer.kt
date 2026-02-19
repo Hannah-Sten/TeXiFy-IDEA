@@ -40,7 +40,6 @@ class LatexmkRunConfigurationProducer : LazyRunConfigurationProducer<LatexmkRunC
         runConfiguration.outputPathRaw = LatexmkPathResolver.MAIN_FILE_PARENT_PLACEHOLDER
         runConfiguration.auxilPathRaw = ""
         runConfiguration.workingDirectory = null
-        runConfiguration.compiler = nl.hannahsten.texifyidea.run.compiler.LatexCompiler.LATEXMK
 
         val magicComments = container.allParentMagicComments()
 

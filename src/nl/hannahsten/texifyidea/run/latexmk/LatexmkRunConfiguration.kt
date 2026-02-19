@@ -66,7 +66,6 @@ class LatexmkRunConfiguration(
         private const val DEFAULT_EXTRA_ARGUMENTS = "-synctex=1"
     }
 
-    var compiler: LatexCompiler? = LatexCompiler.LATEXMK
     override var compilerPath: String? = null
     override var pdfViewer: PdfViewer? = null
     var viewerCommand: String? = null
@@ -133,7 +132,6 @@ class LatexmkRunConfiguration(
 
     @Throws(ExecutionException::class)
     override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState {
-        compiler = LatexCompiler.LATEXMK
         outputFormat = LatexCompiler.Format.DEFAULT
         compilerArguments = buildLatexmkArguments()
         return LatexmkCommandLineState(environment, this)

@@ -93,7 +93,6 @@ class LatexmkSettingsEditor(private var project: Project) : SettingsEditor<Latex
 
     @Throws(ConfigurationException::class)
     override fun applyEditorTo(runConfiguration: LatexmkRunConfiguration) {
-        runConfiguration.compiler = nl.hannahsten.texifyidea.run.compiler.LatexCompiler.LATEXMK
         runConfiguration.outputFormat = nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format.DEFAULT
 
         runConfiguration.compilerPath = if (enableCompilerPath.isSelected) compilerPathField.text else null
