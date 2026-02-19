@@ -306,15 +306,6 @@ class LatexmkRunConfiguration(
         return LatexmkPathResolver.toVirtualFile(auxilDir)
     }
 
-    fun usesAuxilOrOutDirectory(): Boolean {
-        val mainParent = mainFile?.parent?.path ?: return false
-        val outputPath = LatexmkPathResolver.resolveOutputDir(this)?.toString()
-        val auxilPath = LatexmkPathResolver.resolveAuxDir(this)?.toString() ?: outputPath
-        val usesAuxilDir = auxilPath != null && auxilPath != mainParent
-        val usesOutDir = outputPath != null && outputPath != mainParent
-        return usesAuxilDir || usesOutDir
-    }
-
     override fun clone(): RunConfiguration = super.clone()
 
     private fun mapLegacyCompileMode(parent: Element): Result<LatexmkCompileMode> {
