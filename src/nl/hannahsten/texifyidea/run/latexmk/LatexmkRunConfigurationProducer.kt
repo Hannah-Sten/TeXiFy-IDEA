@@ -11,10 +11,17 @@ import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.allParentMagicComments
+import nl.hannahsten.texifyidea.lang.predefined.CommandNames
+import nl.hannahsten.texifyidea.lang.predefined.EnvironmentNames
+import nl.hannahsten.texifyidea.psi.LatexBeginCommand
+import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.environmentName
+import nl.hannahsten.texifyidea.psi.nameWithSlash
 import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
 import nl.hannahsten.texifyidea.util.includedPackagesInFileset
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
 import nl.hannahsten.texifyidea.util.files.documentClass
+import nl.hannahsten.texifyidea.util.parser.traverse
 
 class LatexmkRunConfigurationProducer : LazyRunConfigurationProducer<LatexmkRunConfiguration>() {
 
@@ -34,6 +41,15 @@ class LatexmkRunConfigurationProducer : LazyRunConfigurationProducer<LatexmkRunC
         if (extension == null || !extension.equals(texExtension, ignoreCase = true)) {
             return false
         }
+        var documentClass: String? = null
+        val hasDocumentClassOrBegin = container.traverse(4).any {
+            if(it is LatexCommands && it.nameWithSlash == CommandNames.DOCUMENT_CLASS) {
+                documentClass = it.requiredParameterText(0)
+                return@any true
+            }
+            it is LatexBeginCommand && it.environmentName() == EnvironmentNames.DOCUMENT
+        }
+        if(!hasDocumentClassOrBegin) return false
 
         runConfiguration.mainFile = mainFile
         runConfiguration.setSuggestedName()
@@ -47,7 +63,7 @@ class LatexmkRunConfigurationProducer : LazyRunConfigurationProducer<LatexmkRunC
         val runProgram = magicComments.value(DefaultMagicKeys.PROGRAM)
         val magicMode = compileModeFromMagicCommand(runCommand ?: runProgram)
         val libraries = container.includedPackagesInFileset().toMutableSet().apply {
-            container.documentClass()?.let { add(LatexLib.Class(it)) }
+            documentClass?.let { add(LatexLib.Class(it)) }
         }
         val packageMode = preferredCompileModeForPackages(libraries)
         runConfiguration.compileMode = magicMode ?: packageMode ?: LatexmkCompileMode.PDFLATEX_PDF
