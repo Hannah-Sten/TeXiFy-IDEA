@@ -92,7 +92,7 @@ fun Project.containsFileOfType(type: FileType): Boolean {
         else {
             throw e
         }
-    } catch (e: IndexNotReadyException) {
+    } catch (_: IndexNotReadyException) {
         return false
     }
 }
@@ -167,7 +167,7 @@ fun Project.hasLatexModule(): Boolean {
         ModuleManager.getInstance(this).modules
             .any { ModuleType.get(it).id == LatexModuleType.ID }
     }
-    catch (e: AlreadyDisposedException) {
+    catch (_: AlreadyDisposedException) {
         false
     }
 }
