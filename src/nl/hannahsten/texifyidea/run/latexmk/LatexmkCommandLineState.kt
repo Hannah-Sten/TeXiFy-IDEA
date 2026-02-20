@@ -21,7 +21,6 @@ import nl.hannahsten.texifyidea.editor.autocompile.AutoCompileDoneListener
 import nl.hannahsten.texifyidea.run.OpenCustomPdfViewerListener
 import nl.hannahsten.texifyidea.run.pdfviewer.OpenViewerListener
 import nl.hannahsten.texifyidea.util.Log
-import nl.hannahsten.texifyidea.util.files.psiFile
 import java.nio.file.Path
 import kotlin.io.path.exists
 
@@ -89,8 +88,8 @@ class LatexmkCommandLineState(
         }
 
         val pdfViewer = runConfig.pdfViewer ?: return
-        val currentPsiFile = runConfig.mainFile?.psiFile(environment.project) ?: return
-        handler.addProcessListener(OpenViewerListener(pdfViewer, runConfig, currentPsiFile.virtualFile.path, 1, environment.project, runConfig.requireFocus))
+        val sourcePath = runConfig.resolveMainFileIfNeeded()?.path ?: return
+        handler.addProcessListener(OpenViewerListener(pdfViewer, runConfig, sourcePath, 1, environment.project, runConfig.requireFocus))
     }
 
     private fun createHandler(mainFile: VirtualFile, command: List<String>): KillableProcessHandler {
