@@ -3,7 +3,6 @@ package nl.hannahsten.texifyidea.run.compiler.latex
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.openapi.module.ModuleUtil
 import com.intellij.openapi.project.rootManager
-import com.intellij.openapi.projectRoots.ProjectJdkTable
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.execution.ParametersListUtil
@@ -14,6 +13,7 @@ import nl.hannahsten.texifyidea.run.step.LatexCompileStep
 import nl.hannahsten.texifyidea.run.ui.LatexDistributionType
 import nl.hannahsten.texifyidea.settings.sdk.DockerSdk
 import nl.hannahsten.texifyidea.settings.sdk.DockerSdkAdditionalData
+import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.magic.CompilerMagic
 import nl.hannahsten.texifyidea.util.runCommand
 
@@ -113,7 +113,12 @@ abstract class SupportedLatexCompiler(
             command[command.size - 1] = command.last() + " ${mainFile.path.toPath(runConfig)}"
         }
         else {
-            command.add(mainFile.name)
+            if (runConfig.hasDefaultWorkingDirectory()) {
+                command.add(mainFile.name)
+            }
+            else {
+                command.add(mainFile.path)
+            }
         }
 
         return command
@@ -125,7 +130,7 @@ abstract class SupportedLatexCompiler(
         "docker volume create --name miktex".runCommand()
 
         // Find the sdk corresponding to the type the user has selected in the run config
-        val sdk = ProjectJdkTable.getInstance().allJdks.firstOrNull { it.sdkType is DockerSdk }
+        val sdk = LatexSdkUtil.getAllLatexSdks().firstOrNull { it.sdkType is DockerSdk }
 
         val parameterList = mutableListOf(
             if (sdk == null) "docker" else (sdk.sdkType as DockerSdk).getExecutableName("docker", sdk.homePath!!),

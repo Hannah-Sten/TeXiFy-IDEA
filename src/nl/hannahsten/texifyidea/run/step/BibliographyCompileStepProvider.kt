@@ -53,6 +53,8 @@ object BibliographyCompileStepProvider : StepProvider {
 
         if (runConfiguration.options.compiler?.includesBibtex == true) return emptyList()
 
+        // todo if (runConfig.mainFile?.psiFile(runConfig.project)?.includedPackagesInFileset()?.contains(LatexPackage.CITATION_STYLE_LANGUAGE)) return emptyList()
+
         val step = createStep(runConfiguration)
         // If no suitable compiler could be found, assume bibtex is not needed
         if ((step as BibliographyCompileStep).state.compiler == null) return emptyList()
