@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.run.latexmk
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import com.intellij.openapi.application.ApplicationManager
 import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
 import com.intellij.execution.configurations.RuntimeConfigurationError
@@ -242,5 +243,81 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
         assertTrue(xml.contains(latexmkProducer))
         assertTrue(xml.contains(latexProducer))
         assertTrue(xml.contains(latexConfigurationType))
+    }
+
+    fun testSetMainFileOnEdtStoresPathWithoutResolving() {
+        val runConfig = LatexmkRunConfiguration(
+            myFixture.project,
+            LatexConfigurationFactory(LatexmkRunConfigurationType()),
+            "Latexmk",
+        )
+
+        ApplicationManager.getApplication().invokeAndWait {
+            runConfig.setMainFile("src/main.tex")
+        }
+
+        assertNull(runConfig.mainFile)
+        assertEquals("src/main.tex", runConfig.getMainFilePath())
+    }
+
+    fun testResolveMainFileIfNeededResolvesFromStoredPath() {
+        val file = myFixture.addFileToProject("src/main.tex", "\\documentclass{article}").virtualFile
+        val runConfig = LatexmkRunConfiguration(
+            myFixture.project,
+            LatexConfigurationFactory(LatexmkRunConfigurationType()),
+            "Latexmk",
+        )
+
+        ApplicationManager.getApplication().invokeAndWait {
+            runConfig.setMainFile("src/main.tex")
+        }
+
+        assertNull(runConfig.mainFile)
+        assertEquals(file.path, runConfig.resolveMainFileIfNeeded()?.path)
+    }
+
+    fun testWriteExternalKeepsStoredMainFilePathWhenUnresolved() {
+        val runConfig = LatexmkRunConfiguration(
+            myFixture.project,
+            LatexConfigurationFactory(LatexmkRunConfigurationType()),
+            "Latexmk",
+        )
+        ApplicationManager.getApplication().invokeAndWait {
+            runConfig.setMainFile("src/main.tex")
+        }
+
+        val element = Element("configuration", Namespace.getNamespace("", ""))
+        runConfig.writeExternal(element)
+
+        val parent = element.getChild("texify-latexmk")
+        assertEquals("src/main.tex", parent.getChildText("main-file"))
+    }
+
+    fun testCheckConfigurationAcceptsStoredTexPathWhenUnresolved() {
+        val runConfig = LatexmkRunConfiguration(
+            myFixture.project,
+            LatexConfigurationFactory(LatexmkRunConfigurationType()),
+            "Latexmk",
+        )
+        ApplicationManager.getApplication().invokeAndWait {
+            runConfig.setMainFile("src/main.tex")
+        }
+
+        runConfig.checkConfiguration()
+    }
+
+    fun testCheckConfigurationRejectsStoredNonTexPathWhenUnresolved() {
+        val runConfig = LatexmkRunConfiguration(
+            myFixture.project,
+            LatexConfigurationFactory(LatexmkRunConfigurationType()),
+            "Latexmk",
+        )
+        ApplicationManager.getApplication().invokeAndWait {
+            runConfig.setMainFile("src/main.txt")
+        }
+
+        assertThrows(RuntimeConfigurationError::class.java) {
+            runConfig.checkConfiguration()
+        }
     }
 }

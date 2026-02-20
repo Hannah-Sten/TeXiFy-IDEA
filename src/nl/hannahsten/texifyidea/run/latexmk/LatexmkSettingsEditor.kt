@@ -74,7 +74,7 @@ class LatexmkSettingsEditor(private var project: Project) : SettingsEditor<Latex
         environmentVariables.envData = runConfiguration.environmentVariables
         beforeRunCommandField.text = runConfiguration.beforeRunCommand ?: ""
 
-        mainFileField.text = runConfiguration.mainFile?.path ?: ""
+        mainFileField.text = runConfiguration.getMainFilePath()
         outputPathField.text = runConfiguration.outputPathRaw
         auxilPathField.text = runConfiguration.auxilPathRaw
         workingDirectoryField.text = runConfiguration.workingDirectory?.toString() ?: LatexmkPathResolver.MAIN_FILE_PARENT_PLACEHOLDER

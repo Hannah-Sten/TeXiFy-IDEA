@@ -68,7 +68,7 @@ object LatexmkCommandBuilder {
         additionalArguments: (MutableList<String>, VirtualFile) -> Unit,
         cleanMode: String? = null,
     ): List<String>? {
-        val mainFile = runConfig.mainFile ?: return null
+        val mainFile = runConfig.resolveMainFileIfNeeded() ?: return null
         val distribution = runConfig.getLatexDistributionType()
         val directories = resolveLatexmkDirectories(runConfig, mainFile, distribution)
 

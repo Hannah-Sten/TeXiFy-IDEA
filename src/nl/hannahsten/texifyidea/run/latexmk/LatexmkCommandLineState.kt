@@ -34,7 +34,7 @@ class LatexmkCommandLineState(
 
     @Throws(ExecutionException::class)
     override fun startProcess(): ProcessHandler {
-        val mainFile = runConfig.mainFile ?: throw ExecutionException("Main file is not specified.")
+        val mainFile = runConfig.resolveMainFileIfNeeded() ?: throw ExecutionException("Main file is not specified.")
 
         prepare()
         val command = buildCommand()

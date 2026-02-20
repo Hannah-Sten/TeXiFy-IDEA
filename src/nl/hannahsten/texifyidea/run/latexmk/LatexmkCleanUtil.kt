@@ -17,7 +17,7 @@ object LatexmkCleanUtil {
     }
 
     fun run(project: Project, runConfig: LatexmkRunConfiguration, mode: Mode) {
-        val mainFile = runConfig.mainFile
+        val mainFile = runConfig.resolveMainFileIfNeeded()
         if (mainFile == null) {
             Notification("LaTeX", "Latexmk clean failed", "No main file is configured.", NotificationType.ERROR).notify(project)
             return

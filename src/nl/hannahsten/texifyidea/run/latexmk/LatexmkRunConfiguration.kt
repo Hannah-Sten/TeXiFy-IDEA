@@ -15,6 +15,7 @@ import com.intellij.execution.configurations.RuntimeConfigurationException
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.icons.AllIcons
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.Sdk
@@ -78,7 +79,15 @@ class LatexmkRunConfiguration(
     override var environmentVariables: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT
     var beforeRunCommand: String? = null
 
+    private var mainFilePath: String = ""
+
     override var mainFile: VirtualFile? = null
+        set(value) {
+            field = value
+            if (value != null) {
+                mainFilePath = value.path
+            }
+        }
     var outputPathRaw: String = LatexmkPathResolver.MAIN_FILE_PARENT_PLACEHOLDER
     var auxilPathRaw: String = ""
 
@@ -122,13 +131,17 @@ class LatexmkRunConfiguration(
     @Throws(RuntimeConfigurationException::class)
     override fun checkConfiguration() {
         legacyMigrationError?.let { throw RuntimeConfigurationError(it) }
-        if (mainFile == null) {
+        if (mainFile == null && mainFilePath.isBlank()) {
+            throw RuntimeConfigurationError("Run configuration is invalid: no valid main LaTeX file selected")
+        }
+        if (mainFile == null && !mainFilePath.endsWith(".tex", ignoreCase = true)) {
             throw RuntimeConfigurationError("Run configuration is invalid: no valid main LaTeX file selected")
         }
     }
 
     @Throws(ExecutionException::class)
     override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState {
+        resolveMainFileIfNeeded()
         compilerArguments = buildLatexmkArguments()
         return LatexmkCommandLineState(environment, this)
     }
@@ -204,7 +217,7 @@ class LatexmkRunConfiguration(
         environmentVariables.writeExternal(parent)
         parent.addContent(Element(EXPAND_MACROS_IN_ENVIRONMENT_VARIABLES).also { it.text = expandMacrosEnvVariables.toString() })
         parent.addContent(Element(BEFORE_RUN_COMMAND).also { it.text = beforeRunCommand ?: "" })
-        parent.addContent(Element(MAIN_FILE).also { it.text = mainFile?.path ?: "" })
+        parent.addContent(Element(MAIN_FILE).also { it.text = mainFile?.path ?: mainFilePath })
         parent.addContent(Element(OUTPUT_PATH).also { it.text = outputPathRaw })
         parent.addContent(Element(AUXIL_PATH).also { it.text = auxilPathRaw })
         parent.addContent(Element(WORKING_DIRECTORY).also { it.text = workingDirectory?.toString() ?: LatexmkPathResolver.MAIN_FILE_PARENT_PLACEHOLDER })
@@ -219,24 +232,51 @@ class LatexmkRunConfiguration(
 
     fun setMainFile(mainFilePath: String) {
         if (mainFilePath.isBlank()) {
+            this.mainFilePath = ""
             mainFile = null
             return
         }
+        this.mainFilePath = mainFilePath
+
+        val fileSystem = LocalFileSystem.getInstance()
+        if (ApplicationManager.getApplication().isDispatchThread) {
+            val cachedFile = fileSystem.findFileByPathIfCached(mainFilePath)
+            if (cachedFile?.extension == "tex") {
+                mainFile = cachedFile
+            }
+            else if (mainFile?.path != mainFilePath) {
+                mainFile = null
+            }
+            return
+        }
+
+        mainFile = resolveMainFile(mainFilePath)
+    }
+
+    fun getMainFilePath(): String = mainFile?.path ?: mainFilePath
+
+    fun resolveMainFileIfNeeded(): VirtualFile? {
+        if (mainFile != null || mainFilePath.isBlank()) {
+            return mainFile
+        }
+        mainFile = resolveMainFile(mainFilePath)
+        return mainFile
+    }
+
+    private fun resolveMainFile(mainFilePath: String): VirtualFile? {
         val fileSystem = LocalFileSystem.getInstance()
         val found = fileSystem.findFileByPath(mainFilePath)
         if (found?.extension == "tex") {
-            mainFile = found
-            return
+            return found
         }
         val contentRoots = ProjectRootManager.getInstance(project).contentRoots
         for (contentRoot in contentRoots) {
             val file = contentRoot.findFileByRelativePath(mainFilePath)
             if (file?.extension == "tex") {
-                mainFile = file
-                return
+                return file
             }
         }
-        mainFile = null
+        return null
     }
 
     override fun setFileOutputPath(fileOutputPath: String) {
