@@ -2,24 +2,14 @@ package nl.hannahsten.texifyidea.run.latex
 
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.configurations.CommandLineState
-import com.intellij.execution.configurations.GeneralCommandLine
-import com.intellij.execution.impl.ExecutionManagerImpl
 import com.intellij.execution.process.KillableProcessHandler
 import com.intellij.execution.process.ProcessHandler
-import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.util.ProgramParametersConfigurator
-import com.intellij.notification.Notification
-import com.intellij.notification.NotificationType
-import com.intellij.openapi.actionSystem.CommonDataKeys
-import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.DumbService
-import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.platform.ide.progress.runWithModalProgressBlocking
-import com.intellij.util.applyIf
 import nl.hannahsten.texifyidea.editor.autocompile.AutoCompileDoneListener
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.index.projectstructure.LatexProjectStructure
@@ -28,6 +18,7 @@ import nl.hannahsten.texifyidea.run.FileCleanupListener
 import nl.hannahsten.texifyidea.run.OpenCustomPdfViewerListener
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.bibtex.RunBibtexListener
+import nl.hannahsten.texifyidea.run.common.createCompilationHandler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.externaltool.RunExternalToolListener
 import nl.hannahsten.texifyidea.run.makeindex.RunMakeindexListener
@@ -37,8 +28,6 @@ import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
 import java.io.File
-import java.nio.file.Path
-import kotlin.io.path.exists
 
 /**
  * Run the run configuration: start the compile process and initiate forward search (when applicable).
@@ -108,34 +97,15 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         val command: List<String> = compiler.getCommand(runConfig, environment.project)
             ?: throw ExecutionException("Compile command could not be created.")
 
-        val workingDirectory = runConfig.getResolvedWorkingDirectory() ?: Path.of(mainFile.parent.path)
-        if (workingDirectory.exists().not()) {
-            Notification("LaTeX", "Could not find working directory", "The directory containing the main file could not be found: $workingDirectory", NotificationType.ERROR).notify(environment.project)
-            throw ExecutionException("Could not find working directory $workingDirectory for file $mainFile")
-        }
-
-        val envVariables = runConfig.environmentVariables.envs.applyIf(runConfig.expandMacrosEnvVariables) {
-            ExecutionManagerImpl.withEnvironmentDataContext(SimpleDataContext.getSimpleContext(CommonDataKeys.VIRTUAL_FILE, mainFile, environment.dataContext)).use {
-                mapValues { programParamsConfigurator.expandPathAndMacros(it.value, null, runConfig.project) }
-            }
-        }
-
-        // Windows has a maximum length of a command, possibly 32k characters (#3956), so we log this info in the exception
-        if (SystemInfo.isWindows && command.sumOf { it.length } > 10_000) {
-            throw ExecutionException("The following command was too long to run: ${command.joinToString(" ")}")
-        }
-        val commandLine = GeneralCommandLine(command).withWorkingDirectory(workingDirectory)
-            .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE)
-            .withEnvironment(envVariables)
-        Log.debug("Executing ${commandLine.commandLineString} in $workingDirectory")
-        val handler = runWithModalProgressBlocking(environment.project, "Creating command line process...") {
-            KillableProcessHandler(commandLine)
-        }
-
-        // Reports exit code to run output window when command is terminated
-        ProcessTerminatedListener.attach(handler, environment.project)
-
-        return handler
+        return createCompilationHandler(
+            environment = environment,
+            mainFile = mainFile,
+            command = command,
+            workingDirectory = runConfig.getResolvedWorkingDirectory(),
+            expandMacrosEnvVariables = runConfig.expandMacrosEnvVariables,
+            envs = runConfig.environmentVariables.envs,
+            expandEnvValue = { value -> programParamsConfigurator.expandPathAndMacros(value, null, runConfig.project) ?: value },
+        )
     }
 
     /**

@@ -35,6 +35,9 @@ import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
 import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
+import nl.hannahsten.texifyidea.run.common.addTextChild
+import nl.hannahsten.texifyidea.run.common.getOrCreateAndClearParent
+import nl.hannahsten.texifyidea.run.common.writeCommonCompilationFields
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogTabComponent
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
@@ -257,7 +260,7 @@ class LatexRunConfiguration(
         try {
             this.compiler = LatexCompiler.valueOf(compilerName)
         }
-        catch (e: IllegalArgumentException) {
+        catch (_: IllegalArgumentException) {
             this.compiler = null
         }
 
@@ -289,7 +292,7 @@ class LatexRunConfiguration(
                 val path = try {
                     Path(folder).resolve("SumatraPDF.exe")
                 }
-                catch (e: InvalidPathException) {
+                catch (_: InvalidPathException) {
                     return@runInBackgroundNonBlocking
                     // If the path is invalid, we just ignore it
                 }
@@ -397,37 +400,29 @@ class LatexRunConfiguration(
     override fun writeExternal(element: Element) {
         super<RunConfigurationBase>.writeExternal(element)
 
-        var parent: Element? = element.getChild(TEXIFY_PARENT)
-
-        // Create a new parent when there is no parent present.
-        if (parent == null) {
-            parent = Element(TEXIFY_PARENT)
-            element.addContent(parent)
-        }
-        else {
-            // Otherwise overwrite (remove + write).
-            parent.removeContent()
-        }
-
-        parent.addContent(Element(COMPILER).also { it.text = compiler?.name ?: "" })
-        parent.addContent(Element(COMPILER_PATH).also { it.text = compilerPath ?: "" })
-        parent.addContent(Element(PDF_VIEWER).also { it.text = pdfViewer?.name ?: "" })
-        parent.addContent(Element(REQUIRE_FOCUS).also { it.text = requireFocus.toString() })
-        parent.addContent(Element(VIEWER_COMMAND).also { it.text = viewerCommand ?: "" })
-        parent.addContent(Element(COMPILER_ARGUMENTS).also { it.text = this.compilerArguments ?: "" })
-        this.environmentVariables.writeExternal(parent)
-        parent.addContent(Element(EXPAND_MACROS_IN_ENVIRONMENT_VARIABLES).also { it.text = expandMacrosEnvVariables.toString() })
-        parent.addContent(Element(BEFORE_RUN_COMMAND).also { it.text = this.beforeRunCommand ?: "" })
-        parent.addContent(Element(MAIN_FILE).also { it.text = mainFile?.path ?: "" })
-        parent.addContent(Element(OUTPUT_PATH).also { it.text = outputPath.virtualFile?.path ?: outputPath.pathString })
-        parent.addContent(Element(AUXIL_PATH).also { it.text = auxilPath.virtualFile?.path ?: auxilPath.pathString })
-        parent.addContent(Element(WORKING_DIRECTORY).also { it.text = workingDirectory ?: LatexOutputPath.MAIN_FILE_STRING })
-        parent.addContent(Element(COMPILE_TWICE).also { it.text = compileTwice.toString() })
-        parent.addContent(Element(OUTPUT_FORMAT).also { it.text = outputFormat.name })
-        parent.addContent(Element(LATEX_DISTRIBUTION).also { it.text = latexDistribution.name })
-        parent.addContent(Element(HAS_BEEN_RUN).also { it.text = hasBeenRun.toString() })
-        parent.addContent(Element(BIB_RUN_CONFIG).also { it.text = bibRunConfigIds.toString() })
-        parent.addContent(Element(MAKEINDEX_RUN_CONFIG).also { it.text = makeindexRunConfigIds.toString() })
+        val parent = getOrCreateAndClearParent(element, TEXIFY_PARENT)
+        parent.addTextChild(COMPILER, compiler?.name ?: "")
+        parent.addTextChild(COMPILER_ARGUMENTS, this.compilerArguments ?: "")
+        writeCommonCompilationFields(
+            parent = parent,
+            compilerPath = compilerPath,
+            pdfViewerName = pdfViewer?.name,
+            requireFocus = requireFocus,
+            viewerCommand = viewerCommand,
+            writeEnvironmentVariables = this.environmentVariables::writeExternal,
+            expandMacrosEnvVariables = expandMacrosEnvVariables,
+            beforeRunCommand = this.beforeRunCommand,
+            mainFilePath = mainFile?.path ?: "",
+            workingDirectory = workingDirectory ?: LatexOutputPath.MAIN_FILE_STRING,
+            latexDistribution = latexDistribution.name,
+            hasBeenRun = hasBeenRun,
+        )
+        parent.addTextChild(OUTPUT_PATH, outputPath.virtualFile?.path ?: outputPath.pathString)
+        parent.addTextChild(AUXIL_PATH, auxilPath.virtualFile?.path ?: auxilPath.pathString)
+        parent.addTextChild(COMPILE_TWICE, compileTwice.toString())
+        parent.addTextChild(OUTPUT_FORMAT, outputFormat.name)
+        parent.addTextChild(BIB_RUN_CONFIG, bibRunConfigIds.toString())
+        parent.addTextChild(MAKEINDEX_RUN_CONFIG, makeindexRunConfigIds.toString())
     }
 
     /**

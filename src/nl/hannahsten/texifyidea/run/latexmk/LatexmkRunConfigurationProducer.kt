@@ -3,11 +3,9 @@ package nl.hannahsten.texifyidea.run.latexmk
 import com.intellij.execution.actions.ConfigurationContext
 import com.intellij.execution.actions.LazyRunConfigurationProducer
 import com.intellij.execution.configurations.ConfigurationFactory
-import com.intellij.util.execution.ParametersListUtil
-import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
-import nl.hannahsten.texifyidea.file.LatexFileType
+import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.allParentMagicComments
@@ -17,6 +15,9 @@ import nl.hannahsten.texifyidea.psi.LatexBeginCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.environmentName
 import nl.hannahsten.texifyidea.psi.nameWithSlash
+import nl.hannahsten.texifyidea.run.common.isSameContextFile
+import nl.hannahsten.texifyidea.run.common.isTexFile
+import nl.hannahsten.texifyidea.run.common.resolveLatexContextFile
 import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.includedPackagesInFileset
@@ -36,13 +37,8 @@ class LatexmkRunConfigurationProducer : LazyRunConfigurationProducer<LatexmkRunC
             return false
         }
 
-        val location = context.location ?: return false
-        val container = location.psiElement.containingFile ?: return false
-        val mainFile = container.virtualFile ?: return false
-
-        val extension = mainFile.extension
-        val texExtension = LatexFileType.defaultExtension
-        if (extension == null || !extension.equals(texExtension, ignoreCase = true)) {
+        val (container, mainFile) = resolveLatexContextFile(context) ?: return false
+        if (!isTexFile(mainFile)) {
             return false
         }
         var documentClass: String? = null
@@ -77,12 +73,7 @@ class LatexmkRunConfigurationProducer : LazyRunConfigurationProducer<LatexmkRunC
     override fun isConfigurationFromContext(
         runConfiguration: LatexmkRunConfiguration,
         context: ConfigurationContext
-    ): Boolean {
-        val mainFile = runConfiguration.mainFile
-        val psiFile = context.dataContext.getData(PlatformDataKeys.PSI_FILE) ?: return false
-        val currentFile = psiFile.virtualFile ?: return false
-        return mainFile?.path == currentFile.path
-    }
+    ): Boolean = isSameContextFile(runConfiguration.mainFile, context)
 }
 
 internal fun isLatexmkRunConfigurationEnabled(mode: TexifySettings.RunConfigLatexmkMode): Boolean =

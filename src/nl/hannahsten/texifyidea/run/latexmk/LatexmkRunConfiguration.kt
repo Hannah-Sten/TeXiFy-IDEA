@@ -27,6 +27,9 @@ import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
 import nl.hannahsten.texifyidea.run.latex.LatexCompilationRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
+import nl.hannahsten.texifyidea.run.common.addTextChild
+import nl.hannahsten.texifyidea.run.common.getOrCreateAndClearParent
+import nl.hannahsten.texifyidea.run.common.writeCommonCompilationFields
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogTabComponent
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdk
@@ -98,9 +101,6 @@ class LatexmkRunConfiguration(
     override var isAutoCompiling = false
 
     var compileMode: LatexmkCompileMode = LatexmkCompileMode.PDFLATEX_PDF
-        set(value) {
-            field = value
-        }
 
     var customEngineCommand: String? = null
         set(value) {
@@ -197,27 +197,27 @@ class LatexmkRunConfiguration(
     override fun writeExternal(element: Element) {
         super<RunConfigurationBase>.writeExternal(element)
 
-        val parent = element.getChild(PARENT) ?: Element(PARENT).also { element.addContent(it) }
-        parent.removeContent()
-
-        parent.addContent(Element(COMPILER_PATH).also { it.text = compilerPath ?: "" })
-        parent.addContent(Element(PDF_VIEWER).also { it.text = pdfViewer?.name ?: "" })
-        parent.addContent(Element(REQUIRE_FOCUS).also { it.text = requireFocus.toString() })
-        parent.addContent(Element(VIEWER_COMMAND).also { it.text = viewerCommand ?: "" })
-        environmentVariables.writeExternal(parent)
-        parent.addContent(Element(EXPAND_MACROS_IN_ENVIRONMENT_VARIABLES).also { it.text = expandMacrosEnvVariables.toString() })
-        parent.addContent(Element(BEFORE_RUN_COMMAND).also { it.text = beforeRunCommand ?: "" })
-        parent.addContent(Element(MAIN_FILE).also { it.text = mainFile?.path ?: mainFilePath })
-        parent.addContent(Element(OUTPUT_PATH).also { it.text = outputPathRaw })
-        parent.addContent(Element(AUXIL_PATH).also { it.text = auxilPathRaw })
-        parent.addContent(Element(WORKING_DIRECTORY).also { it.text = workingDirectory?.toString() ?: LatexmkPathResolver.MAIN_FILE_PARENT_PLACEHOLDER })
-        parent.addContent(Element(LATEX_DISTRIBUTION).also { it.text = latexDistribution.name })
-        parent.addContent(Element(HAS_BEEN_RUN).also { it.text = hasBeenRun.toString() })
-
-        parent.addContent(Element(COMPILE_MODE).also { it.text = compileMode.name })
-        parent.addContent(Element(CUSTOM_ENGINE_COMMAND).also { it.text = customEngineCommand ?: "" })
-        parent.addContent(Element(CITATION_TOOL).also { it.text = citationTool.name })
-        parent.addContent(Element(EXTRA_ARGUMENTS).also { it.text = extraArguments ?: "" })
+        val parent = getOrCreateAndClearParent(element, PARENT)
+        writeCommonCompilationFields(
+            parent = parent,
+            compilerPath = compilerPath,
+            pdfViewerName = pdfViewer?.name,
+            requireFocus = requireFocus,
+            viewerCommand = viewerCommand,
+            writeEnvironmentVariables = environmentVariables::writeExternal,
+            expandMacrosEnvVariables = expandMacrosEnvVariables,
+            beforeRunCommand = beforeRunCommand,
+            mainFilePath = mainFile?.path ?: mainFilePath,
+            workingDirectory = workingDirectory?.toString() ?: LatexmkPathResolver.MAIN_FILE_PARENT_PLACEHOLDER,
+            latexDistribution = latexDistribution.name,
+            hasBeenRun = hasBeenRun,
+        )
+        parent.addTextChild(OUTPUT_PATH, outputPathRaw)
+        parent.addTextChild(AUXIL_PATH, auxilPathRaw)
+        parent.addTextChild(COMPILE_MODE, compileMode.name)
+        parent.addTextChild(CUSTOM_ENGINE_COMMAND, customEngineCommand ?: "")
+        parent.addTextChild(CITATION_TOOL, citationTool.name)
+        parent.addTextChild(EXTRA_ARGUMENTS, extraArguments ?: "")
     }
 
     fun setMainFile(mainFilePath: String) {
