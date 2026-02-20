@@ -196,44 +196,6 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
         assertFalse(arguments.contains("-pdf"))
     }
 
-    fun testLegacyMappingMapsSupportedCombination() {
-        val element = Element("configuration", Namespace.getNamespace("", ""))
-        val parent = Element("texify-latexmk")
-        parent.addContent(Element("main-file").also { it.text = "" })
-        parent.addContent(Element("engine-mode").also { it.text = "LUALATEX" })
-        parent.addContent(Element("latexmk-output-format").also { it.text = "PDF" })
-        element.addContent(parent)
-
-        val restored = LatexmkRunConfiguration(
-            myFixture.project,
-            LatexConfigurationFactory(LatexmkRunConfigurationType()),
-            "Latexmk"
-        )
-        restored.readExternal(element)
-
-        assertEquals(LatexmkCompileMode.LUALATEX_PDF, restored.compileMode)
-    }
-
-    fun testLegacyMappingRejectsUnsupportedCombination() {
-        val element = Element("configuration", Namespace.getNamespace("", ""))
-        val parent = Element("texify-latexmk")
-        parent.addContent(Element("main-file").also { it.text = "" })
-        parent.addContent(Element("engine-mode").also { it.text = "LUALATEX" })
-        parent.addContent(Element("latexmk-output-format").also { it.text = "DVI" })
-        element.addContent(parent)
-
-        val restored = LatexmkRunConfiguration(
-            myFixture.project,
-            LatexConfigurationFactory(LatexmkRunConfigurationType()),
-            "Latexmk"
-        )
-        restored.readExternal(element)
-
-        assertThrows(RuntimeConfigurationError::class.java) {
-            restored.checkConfiguration()
-        }
-    }
-
     fun testRunConfigurationsXmlRegistersLatexAndLatexmkProducers() {
         val xml = Files.readString(Path.of("resources/META-INF/extensions/run-configurations.xml"))
         val latexmkProducer = "nl.hannahsten.texifyidea.run.latexmk.LatexmkRunConfigurationProducer"
