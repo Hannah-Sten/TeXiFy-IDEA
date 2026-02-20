@@ -107,7 +107,7 @@ object LatexmkCommandBuilder {
 
         if (distribution.isDocker()) {
             createDockerCommand(
-                runConfig,
+                distribution,
                 directories.hostAuxilPath,
                 directories.hostOutputPath,
                 directories.auxilPath,
@@ -167,7 +167,7 @@ object LatexmkCommandBuilder {
     }
 
     private fun createDockerCommand(
-        runConfig: LatexmkRunConfiguration,
+        distribution: LatexDistributionType,
         hostAuxilDir: String?,
         hostOutputDir: String?,
         dockerAuxilDir: String?,
@@ -175,7 +175,7 @@ object LatexmkCommandBuilder {
         mainFile: VirtualFile,
         command: MutableList<String>,
     ) {
-        val isMiktex = runConfig.getLatexDistributionType() == LatexDistributionType.DOCKER_MIKTEX
+        val isMiktex = distribution == LatexDistributionType.DOCKER_MIKTEX
 
         if (isMiktex) {
             "docker volume create --name miktex".runCommand()

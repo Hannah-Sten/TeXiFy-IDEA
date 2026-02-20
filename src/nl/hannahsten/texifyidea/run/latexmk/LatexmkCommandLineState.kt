@@ -9,10 +9,13 @@ import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.util.ProgramParametersConfigurator
+import com.intellij.util.execution.ParametersListUtil
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
+import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.platform.ide.progress.runWithModalProgressBlocking
@@ -20,7 +23,11 @@ import com.intellij.util.applyIf
 import nl.hannahsten.texifyidea.editor.autocompile.AutoCompileDoneListener
 import nl.hannahsten.texifyidea.run.OpenCustomPdfViewerListener
 import nl.hannahsten.texifyidea.run.pdfviewer.OpenViewerListener
+import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.util.Log
+import nl.hannahsten.texifyidea.util.caretOffset
+import nl.hannahsten.texifyidea.util.focusedTextEditor
+import nl.hannahsten.texifyidea.util.selectedTextEditor
 import java.nio.file.Path
 import kotlin.io.path.exists
 
@@ -71,7 +78,7 @@ class LatexmkCommandLineState(
         if (runConfig.isAutoCompiling) return
 
         if (!runConfig.viewerCommand.isNullOrEmpty()) {
-            val commandList = runConfig.viewerCommand!!.split(" ").toMutableList()
+            val commandList = ParametersListUtil.parse(runConfig.viewerCommand!!).toMutableList()
             val containsPlaceholder = commandList.contains("{pdf}")
             if (containsPlaceholder) {
                 for (i in commandList.indices) {
@@ -88,8 +95,27 @@ class LatexmkCommandLineState(
         }
 
         val pdfViewer = runConfig.pdfViewer ?: return
-        val sourcePath = runConfig.resolveMainFileIfNeeded()?.path ?: return
-        handler.addProcessListener(OpenViewerListener(pdfViewer, runConfig, sourcePath, 1, environment.project, runConfig.requireFocus))
+        scheduleForwardSearchAfterCompile(pdfViewer, handler)
+    }
+
+    private fun scheduleForwardSearchAfterCompile(viewer: PdfViewer, handler: ProcessHandler) {
+        val editor = findForwardSearchEditor()
+        val line = resolveForwardSearchLine(editor)
+        val sourcePath = resolveForwardSearchSourcePath(editor) ?: return
+
+        handler.addProcessListener(OpenViewerListener(viewer, runConfig, sourcePath, line, environment.project, runConfig.requireFocus))
+    }
+
+    private fun findForwardSearchEditor() =
+        environment.project.focusedTextEditor()?.editor ?: environment.project.selectedTextEditor()?.editor
+
+    private fun resolveForwardSearchLine(editor: Editor?): Int =
+        editor?.document?.getLineNumber(editor.caretOffset())?.plus(1) ?: 1
+
+    private fun resolveForwardSearchSourcePath(editor: Editor?): String? {
+        val fallbackPath = runConfig.resolveMainFileIfNeeded()?.path
+        val editorPath = editor?.document?.let { FileDocumentManager.getInstance().getFile(it)?.path }
+        return editorPath ?: fallbackPath
     }
 
     private fun createHandler(mainFile: VirtualFile, command: List<String>): KillableProcessHandler {
