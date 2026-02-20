@@ -16,7 +16,6 @@ import com.intellij.util.xmlb.annotations.Attribute
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.ui.LatexCompileSequenceComponent
-import javax.swing.JButton
 
 /**
  * todo clean up this mess and duplicate code
@@ -31,7 +30,7 @@ class CommandLineStep internal constructor(
 
     override val name = "Command Line step"
 
-    override fun getDescription(): String = super.getDescription() + state.commandLine?.let {" (${it.split(" ", limit = 2).first()})"}
+    override fun getDescription(): String = super.getDescription() + state.commandLine?.let { " (${it.split(" ", limit = 2).first()})" }
 
     class State : BaseState() {
         @get:Attribute
@@ -51,9 +50,7 @@ class CommandLineStep internal constructor(
         return this.state.commandLine?.split(" ") ?: throw TeXception("Step $name has no command") // todo BAD
     }
 
-    override fun getWorkingDirectory(): String? {
-        return state.workingDirectory
-    }
+    override fun getWorkingDirectory(): String? = state.workingDirectory
 
     override fun getEnvironmentVariables() = EnvironmentVariablesData.create(state.envs, state.isPassParentEnvs)
 
@@ -105,7 +102,6 @@ class CommandLineStep internal constructor(
             state.envs = environmentVariables.envData.envs
             state.isPassParentEnvs = environmentVariables.isPassParentEnvs
         }
-
     }
 
     override fun getState() = state

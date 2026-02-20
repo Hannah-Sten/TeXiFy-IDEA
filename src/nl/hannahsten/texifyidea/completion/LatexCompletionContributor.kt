@@ -11,12 +11,10 @@ import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import nl.hannahsten.texifyidea.inspections.ALL_TEXIFY_INSPECTIONS
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.util.*
-import nl.hannahsten.texifyidea.util.magic.ColorMagic
-import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.CommentMagic
-import nl.hannahsten.texifyidea.util.parser.*
 import nl.hannahsten.texifyidea.util.magic.CompilerMagic
+import nl.hannahsten.texifyidea.util.parser.containsMagicComment
+import nl.hannahsten.texifyidea.util.parser.withPattern
 import java.util.*
 
 /**

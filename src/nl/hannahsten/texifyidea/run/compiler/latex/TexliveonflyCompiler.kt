@@ -19,7 +19,7 @@ object TexliveonflyCompiler : SupportedLatexCompiler("Texliveonfly", "texliveonf
             LatexSdkUtil.getExecutableName(
                 executableName,
                 runConfig.project,
-                runConfig.options.getLatexDistribution(runConfig.project)
+                latexDistributionType = runConfig.options.getLatexDistribution(runConfig.project)
             )
         )
 

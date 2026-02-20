@@ -46,9 +46,7 @@ abstract class LatexCompiler : Compiler<LatexCompileStep> {
             else -> ""
         }
 
-        override fun fromString(value: String): LatexCompiler {
-            return SupportedLatexCompiler.byExecutableName(value) ?: CustomLatexCompiler(value)
-        }
+        override fun fromString(value: String): LatexCompiler = SupportedLatexCompiler.byExecutableName(value) ?: CustomLatexCompiler(value)
     }
 
     /**
@@ -65,11 +63,9 @@ abstract class LatexCompiler : Compiler<LatexCompileStep> {
 
         companion object {
 
-            fun byNameIgnoreCase(name: String?): OutputFormat {
-                return values().firstOrNull {
-                    it.name.equals(name, ignoreCase = true)
-                } ?: PDF
-            }
+            fun byNameIgnoreCase(name: String?): OutputFormat = values().firstOrNull {
+                it.name.equals(name, ignoreCase = true)
+            } ?: PDF
         }
     }
 }

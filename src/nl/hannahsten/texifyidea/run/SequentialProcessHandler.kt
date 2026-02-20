@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.run
 
 import com.intellij.execution.KillableProcess
-import com.intellij.execution.process.*
 import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessHandler
@@ -56,13 +55,9 @@ class SequentialProcessHandler(private val processes: List<ProcessHandler>) : Pr
         currentProcess?.detachProcess()
     }
 
-    override fun detachIsDefault(): Boolean {
-        return false
-    }
+    override fun detachIsDefault(): Boolean = false
 
-    override fun getProcessInput(): OutputStream? {
-        return null
-    }
+    override fun getProcessInput(): OutputStream? = null
 
     override fun canKillProcess() = (currentProcess as? KillableProcess?)?.canKillProcess() ?: false
 

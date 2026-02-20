@@ -10,7 +10,7 @@ import nl.hannahsten.texifyidea.run.ui.compiler.ExecutableEditor
 /**
  * Some UI properties common to multiple steps.
  */
-internal fun <E: Executable> setDefaultLayout(editor: ExecutableEditor<*, E>, selected: E?) {
+internal fun <E : Executable> setDefaultLayout(editor: ExecutableEditor<*, E>, selected: E?) {
     editor.apply {
         CommonParameterFragments.setMonospaced(component)
         minimumSize = JBDimension(200, 30)
@@ -21,12 +21,10 @@ internal fun <E: Executable> setDefaultLayout(editor: ExecutableEditor<*, E>, se
     }
 }
 
-internal fun createParametersTextField(type: String, arguments: String?): ExpandableTextField {
-    return ExpandableTextField().apply {
-        emptyText.text = "$type arguments"
-        MacrosDialog.addMacroSupport(this, MacrosDialog.Filters.ALL) { false }
-        CommonParameterFragments.setMonospaced(this)
+internal fun createParametersTextField(type: String, arguments: String?): ExpandableTextField = ExpandableTextField().apply {
+    emptyText.text = "$type arguments"
+    MacrosDialog.addMacroSupport(this, MacrosDialog.Filters.ALL) { false }
+    CommonParameterFragments.setMonospaced(this)
 
-        text = arguments
-    }
+    text = arguments
 }

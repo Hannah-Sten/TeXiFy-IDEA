@@ -155,7 +155,6 @@ class RunMakeindexListener(
      * @return List of files that should be cleaned up.
      */
     private fun copyIndexOutputFiles(baseFileName: String, indexFileExtensions: Set<String>) {
-
         val mainFile = latexRunConfig.options.mainFile.resolve() ?: return
         val auxilDir = latexRunConfig.getAuxilDirectory() ?: return
         val sourceDir = auxilDir.path + '/'

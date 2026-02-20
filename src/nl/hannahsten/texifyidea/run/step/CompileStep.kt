@@ -38,7 +38,6 @@ abstract class CompileStep : Step {
 
         val workingDirectory = Path(workingDirectoryPath)
 
-
         if (workingDirectory.exists().not()) {
             Notification("LaTeX", "Could not find working directory", "The directory containing the main file could not be found: $workingDirectoryPath", NotificationType.ERROR).notify(configuration.project)
             throw ExecutionException("Could not find working directory $workingDirectoryPath")
@@ -54,7 +53,7 @@ abstract class CompileStep : Step {
 
         // todo expand macros
         @Suppress("UnstableApiUsage")
-        val envVariables = envVariablesWithMacro//.applyIf(runConfig.expandMacrosEnvVariables) {
+        val envVariables = envVariablesWithMacro // .applyIf(runConfig.expandMacrosEnvVariables) {
 //            ExecutionManagerImpl.withEnvironmentDataContext(SimpleDataContext.getSimpleContext(CommonDataKeys.VIRTUAL_FILE, mainFile, environment.dataContext)).use {
 //                mapValues { programParamsConfigurator.expandPathAndMacros(it.value, null, runConfig.project) }
 //            }

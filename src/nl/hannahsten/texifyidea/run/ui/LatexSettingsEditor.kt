@@ -54,28 +54,32 @@ class LatexSettingsEditor(settings: LatexRunConfiguration) : RunConfigurationFra
         fragments.add(CommonLatexFragments.createWorkingDirectoryFragment(latexGroupName, 0, project))
 
         // Output path
-        fragments.add(CommonLatexFragments.createOutputPathFragment(
-            latexGroupName,
-            0,
-            project,
-            "output",
-            reset = { s -> s.options.outputPath.pathWithMacro ?: "" }, // todo LatexRunConfigurationAbstractOutputPathOption.getDefault("out", project).pathWithMacro!! },
-            apply = { s, option -> s.options.outputPath = option },
-            isDefault = { s -> s?.options?.outputPath?.isDefault("out") },
-            mySettings
-        ))
+        fragments.add(
+            CommonLatexFragments.createOutputPathFragment(
+                latexGroupName,
+                0,
+                project,
+                "output",
+                reset = { s -> s.options.outputPath.pathWithMacro ?: "" }, // todo LatexRunConfigurationAbstractOutputPathOption.getDefault("out", project).pathWithMacro!! },
+                apply = { s, option -> s.options.outputPath = option },
+                isDefault = { s -> s?.options?.outputPath?.isDefault("out") },
+                mySettings
+            )
+        )
 
         // Path for auxiliary output files
-        fragments.add(CommonLatexFragments.createOutputPathFragment(
-            latexGroupName,
-            0,
-            project,
-            "auxiliary",
-            reset = { s -> s.options.auxilPath.pathWithMacro ?: LatexRunConfigurationAbstractOutputPathOption.getDefault("auxil", project).pathWithMacro!! },
-            apply = { s, option -> s.options.auxilPath = option },
-            isDefault = { s -> s?.options?.auxilPath?.isDefault("auxil") },
-            mySettings
-        ))
+        fragments.add(
+            CommonLatexFragments.createOutputPathFragment(
+                latexGroupName,
+                0,
+                project,
+                "auxiliary",
+                reset = { s -> s.options.auxilPath.pathWithMacro ?: LatexRunConfigurationAbstractOutputPathOption.getDefault("auxil", project).pathWithMacro!! },
+                apply = { s, option -> s.options.auxilPath = option },
+                isDefault = { s -> s?.options?.auxilPath?.isDefault("auxil") },
+                mySettings
+            )
+        )
 
         // Output format
         fragments.add(CommonLatexFragments.createOutputFormatFragment(latexGroupName, 0, mySettings))

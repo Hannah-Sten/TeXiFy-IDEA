@@ -70,13 +70,9 @@ class LatexRunConfiguration(
         return LatexRunConfigurationOptions::class.java
     }
 
-    public override fun getOptions(): LatexRunConfigurationOptions {
-        return super.getOptions() as LatexRunConfigurationOptions
-    }
+    public override fun getOptions(): LatexRunConfigurationOptions = super.getOptions() as LatexRunConfigurationOptions
 
-    override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> {
-        return LatexSettingsEditor(this)
-    }
+    override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = LatexSettingsEditor(this)
 
     @Throws(RuntimeConfigurationException::class)
     override fun checkConfiguration() {
@@ -93,9 +89,7 @@ class LatexRunConfiguration(
     }
 
     @Throws(ExecutionException::class)
-    override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState {
-        return LatexRunState(this, environment)
-    }
+    override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState = LatexRunState(this, environment)
 
     // NOTE: do not use runReadAction here as it may cause deadlock when other threads try to get run configurations from a write lock
     @Throws(InvalidDataException::class)
@@ -171,13 +165,11 @@ class LatexRunConfiguration(
      *
      * @return The auxil folder when MiKTeX used, or else the out folder.
      */
-    fun getAuxilDirectory(): VirtualFile? {
-        return if (options.latexDistribution.isMiktex(project)) {
-            options.auxilPath.getOrCreateOutputPath(options.mainFile.resolve(), project)
-        }
-        else {
-            options.outputPath.getOrCreateOutputPath(options.mainFile.resolve(), project)
-        }
+    fun getAuxilDirectory(): VirtualFile? = if (options.latexDistribution.isMiktex(project)) {
+        options.auxilPath.getOrCreateOutputPath(options.mainFile.resolve(), project)
+    }
+    else {
+        options.outputPath.getOrCreateOutputPath(options.mainFile.resolve(), project)
     }
 
     fun setSuggestedName() {
@@ -213,21 +205,17 @@ class LatexRunConfiguration(
         }
     }
 
-    override fun suggestedName(): String? {
-        return if (options.mainFile.resolve() == null) {
-            null
-        }
-        else {
-            options.mainFile.resolve()!!.nameWithoutExtension
-        }
+    override fun suggestedName(): String? = if (options.mainFile.resolve() == null) {
+        null
+    }
+    else {
+        options.mainFile.resolve()!!.nameWithoutExtension
     }
 
-    override fun toString(): String {
-        return "LatexRunConfiguration{" + "compiler=" + options.compiler +
-                ", mainFile=" + options.mainFile.resolve() +
-                ", outputFormat=" + options.outputFormat +
-                '}'.toString()
-    }
+    override fun toString(): String = "LatexRunConfiguration{" + "compiler=" + options.compiler +
+        ", mainFile=" + options.mainFile.resolve() +
+        ", outputFormat=" + options.outputFormat +
+        '}'.toString()
 
     // equals() is final and cannot be overridden
     fun myEquals(other: Any?): Boolean {

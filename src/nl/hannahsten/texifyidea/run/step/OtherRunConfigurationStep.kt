@@ -21,7 +21,6 @@ import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.ui.LatexCompileSequenceComponent
 import nl.hannahsten.texifyidea.run.ui.console.LatexExecutionConsole
 import java.io.OutputStream
-import javax.swing.JButton
 
 /**
  * Run any other run configuration as a step.
@@ -99,16 +98,12 @@ class OtherRunConfigurationStep internal constructor(
         return OtherRunConfigurationProcessHandler(id, console, settings, this)
     }
 
-    override fun clone(): Step {
-        return OtherRunConfigurationStep(provider, configuration).also {
-            it.loadState(TypeNameTarget())
-            it.state.copyFrom(this.state)
-        }
+    override fun clone(): Step = OtherRunConfigurationStep(provider, configuration).also {
+        it.loadState(TypeNameTarget())
+        it.state.copyFrom(this.state)
     }
 
-    override fun getState(): TypeNameTarget {
-        return this.state
-    }
+    override fun getState(): TypeNameTarget = this.state
 
     override fun loadState(state: TypeNameTarget) {
         this.state = state
@@ -142,7 +137,6 @@ class OtherRunConfigurationProcessHandler(val id: String, val console: LatexExec
                 }
 
                 override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {}
-
             })
         }
             ?: throw TeXception("Could not get run executor")

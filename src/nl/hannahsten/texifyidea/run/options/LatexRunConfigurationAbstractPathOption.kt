@@ -46,9 +46,7 @@ abstract class LatexRunConfigurationAbstractPathOption(open val pathWithMacro: S
 
     class Converter : com.intellij.util.xmlb.Converter<LatexRunConfigurationAbstractPathOption>() {
 
-        override fun toString(value: LatexRunConfigurationAbstractPathOption): String {
-            return LatexPathConverterUtil.toString(value)
-        }
+        override fun toString(value: LatexRunConfigurationAbstractPathOption): String = LatexPathConverterUtil.toString(value)
 
         override fun fromString(value: String): LatexRunConfigurationAbstractPathOption {
             val (resolvedPath, pathWithMacro) = LatexPathConverterUtil.fromString(value)

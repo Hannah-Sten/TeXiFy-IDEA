@@ -107,24 +107,18 @@ class ExecutableEditor<in S : SupportedExecutable, E : Executable>(label: String
         }
     }
 
-    fun getSelectedExecutable(): E? {
-        return when (val selected = comboBoxModel.selectedItem) {
-            is BuiltinExecutableItem -> selected.executable as? E
-            is CustomExecutableItem -> selected.executable as? E
-            else -> null
-        }
+    fun getSelectedExecutable(): E? = when (val selected = comboBoxModel.selectedItem) {
+        is BuiltinExecutableItem -> selected.executable as? E
+        is CustomExecutableItem -> selected.executable as? E
+        else -> null
     }
 
-    private fun findSupportedExecutable(executable: SupportedExecutable): BuiltinExecutableItem? {
-        return comboBoxModel.items.asSequence()
-            .mapNotNull { it as? BuiltinExecutableItem }
-            .firstOrNull { it.executable == executable }
-    }
+    private fun findSupportedExecutable(executable: SupportedExecutable): BuiltinExecutableItem? = comboBoxModel.items.asSequence()
+        .mapNotNull { it as? BuiltinExecutableItem }
+        .firstOrNull { it.executable == executable }
 
-    private fun findOrCreateCustomExecutable(executable: CustomExecutable): CustomExecutableItem {
-        return comboBoxModel.items.asSequence()
-            .mapNotNull { it as? CustomExecutableItem }
-            .firstOrNull { it.executable.executablePath == executable.executablePath }
-            ?: CustomExecutableItem(executable).also { comboBoxModel.add(it) }
-    }
+    private fun findOrCreateCustomExecutable(executable: CustomExecutable): CustomExecutableItem = comboBoxModel.items.asSequence()
+        .mapNotNull { it as? CustomExecutableItem }
+        .firstOrNull { it.executable.executablePath == executable.executablePath }
+        ?: CustomExecutableItem(executable).also { comboBoxModel.add(it) }
 }

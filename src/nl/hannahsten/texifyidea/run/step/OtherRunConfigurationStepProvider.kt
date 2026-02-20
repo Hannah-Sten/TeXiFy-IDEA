@@ -14,7 +14,5 @@ object OtherRunConfigurationStepProvider : StepProvider {
 
     override fun createStep(configuration: LatexRunConfiguration) = OtherRunConfigurationStep(this, configuration)
 
-    override fun createIfRequired(runConfiguration: LatexRunConfiguration): List<Step> {
-        return listOf(createStep(runConfiguration))
-    }
+    override fun createIfRequired(runConfiguration: LatexRunConfiguration): List<Step> = listOf(createStep(runConfiguration))
 }

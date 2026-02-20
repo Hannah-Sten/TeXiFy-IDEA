@@ -12,39 +12,40 @@ object XelatexCompiler : SupportedLatexCompiler("XeLaTeX", "xelatex") {
 
     override val outputFormats = arrayOf(OutputFormat.PDF, OutputFormat.XDV)
 
-        override fun createCommand(
-            runConfig: LatexRunConfiguration,
-            auxilPath: String?,
-            outputPath: String?,
-            moduleRoot: VirtualFile?,
-            moduleRoots: Array<VirtualFile>
-        ): MutableList<String> {
-            val command = mutableListOf(LatexSdkUtil.getExecutableName(
+    override fun createCommand(
+        runConfig: LatexRunConfiguration,
+        auxilPath: String?,
+        outputPath: String?,
+        moduleRoot: VirtualFile?,
+        moduleRoots: Array<VirtualFile>
+    ): MutableList<String> {
+        val command = mutableListOf(
+            LatexSdkUtil.getExecutableName(
                 executableName,
                 runConfig.project,
-                runConfig.options.getLatexDistribution(runConfig.project)
+                latexDistributionType = runConfig.options.getLatexDistribution(runConfig.project)
             )
-            )
+        )
 
         // As usual, available command line options can be viewed with xelatex --help
         // On TeX Live, installing collection-xetex should be sufficient to get xelatex
 
-            if (runConfig.options.outputFormat == OutputFormat.XDV) {
-                command.add("-no-pdf")
-            }
+        if (runConfig.options.outputFormat == OutputFormat.XDV) {
+            command.add("-no-pdf")
+        }
 
         command.add("-output-directory=$outputPath")
 
-        if (auxilPath != null && runConfig.options.getLatexDistribution(runConfig.project).isMiktex(runConfig.project)) {
+        if (auxilPath != null && runConfig.options.getLatexDistribution(runConfig.project)?.isMiktex(runConfig.project) == true) {
             command.add("-aux-directory=$auxilPath")
         }
 
         // Prepend root paths to the input search path
-            if (runConfig.options.getLatexDistribution(runConfig.project).isMiktex(runConfig.project)) {
-                moduleRoots.forEach {
-                    command.add("-include-directory=${it.path}")
-                }
+        if (runConfig.options.getLatexDistribution(runConfig.project)?.isMiktex(runConfig.project) == true) {
+            moduleRoots.forEach {
+                command.add("-include-directory=${it.path}")
             }
+        }
 
         return command
     }

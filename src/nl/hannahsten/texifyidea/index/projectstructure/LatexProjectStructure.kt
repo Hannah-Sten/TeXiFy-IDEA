@@ -63,7 +63,8 @@ object LatexProjectStructure {
             .mapNotNullTo(rootFiles) { it.containingFile.virtualFile }
 
         project.getLatexRunConfigurations().forEach {
-            it.mainFile?.let { mainFile -> rootFiles.add(mainFile) }
+            it.options.mainFile?.let { mainFile -> rootFiles.add(mainFile.resolve()!!) }
+            it.options.mainFile?.let { mainFile -> rootFiles.add(mainFile.resolve()!!) }
         }
         FilenameIndex.getVirtualFilesByName("main.tex", true, project.contentSearchScope)
             .filter { it.isValid }
@@ -82,12 +83,12 @@ object LatexProjectStructure {
     fun Path.findVirtualFile(): VirtualFile? = LocalFileSystem.getInstance().findFileByNioFile(this)
 
     private fun makePreparation(project: Project): ProjectInfo {
-        // Get all bibtex input paths from the run configurations
-        val bibInputPaths = project.getBibtexRunConfigurations().mapNotNull { config ->
-            (config.environmentVariables.envs["BIBINPUTS"])?.let {
-                LocalFileSystem.getInstance().findFileByPath(it)
-            }
-        }.toMutableSet()
+        // dodo Get all bibtex input paths from the run configurations
+//        val bibInputPaths = project.getBibtexRunConfigurations().mapNotNull { config ->
+//            (config.environmentVariables.envs["BIBINPUTS"])?.let {
+//                LocalFileSystem.getInstance().findFileByPath(it)
+//            }
+//        }.toMutableSet()
         val texInputPaths = getTexinputsPaths(project, emptySet()).mapNotNull { LocalFileSystem.getInstance().findFileByPath(it) }.toMutableSet()
 
         /*
@@ -100,7 +101,7 @@ object LatexProjectStructure {
          */
 
         return ProjectInfo(
-            project, texInputPaths, bibInputPaths
+            project, texInputPaths, emptySet()
         )
     }
 

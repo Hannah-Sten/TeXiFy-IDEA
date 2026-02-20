@@ -4,7 +4,6 @@ import com.intellij.ide.DataManager
 import com.intellij.ide.macro.MacroManager
 import com.intellij.ide.macro.ProjectFileDirMacro
 import com.intellij.openapi.actionSystem.CommonDataKeys
-import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.LangDataKeys
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext

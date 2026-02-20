@@ -27,7 +27,7 @@ class LatexOutputPath(private val variant: String, var mainFile: VirtualFile?, p
     companion object {
 
         // todo add main file macro
-        const val mainFileString = "{mainFileParent}"
+        const val MAIN_FILE_STRING = "{mainFileParent}"
     }
 
     fun clone(): LatexOutputPath = LatexOutputPath(variant, mainFile, project).apply { if (this@LatexOutputPath.pathString.isNotBlank()) this.pathString = this@LatexOutputPath.pathString }

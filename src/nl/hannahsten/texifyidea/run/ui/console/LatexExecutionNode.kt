@@ -65,16 +65,14 @@ class LatexExecutionNode(project: Project, val stepId: String? = null, val paren
         SUCCEEDED(ICON_SUCCESS),
         SKIPPED(ICON_SKIPPED),
         WARNING(ICON_WARNING),
-        FAILED(ICON_ERROR);
+        FAILED(ICON_ERROR)
     }
 
-    override fun getNavigatable(): Navigatable {
-        return if (line != null) {
-            OpenFileDescriptor(project!!, file!!, line!!)
-        }
-        else {
-            OpenFileDescriptor(project!!, file!!)
-        }
+    override fun getNavigatable(): Navigatable = if (line != null) {
+        OpenFileDescriptor(project!!, file!!, line!!)
+    }
+    else {
+        OpenFileDescriptor(project!!, file!!)
     }
 
     override fun toString() = (if (stepId != null) "$stepId: " else "") + description

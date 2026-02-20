@@ -8,12 +8,10 @@ import com.intellij.util.xmlb.annotations.OptionTag
 import com.intellij.util.xmlb.annotations.XMap
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.format
-import kotlinx.datetime.format.DateTimeFormat
 import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.latex.PdflatexCompiler
 import nl.hannahsten.texifyidea.run.ui.LatexDistributionType
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
-import java.time.format.DateTimeFormatter
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KMutableProperty0
 import kotlin.reflect.KProperty
@@ -58,10 +56,10 @@ class LatexRunConfigurationOptions : LocatableRunConfigurationOptions() {
     internal var latexDistribution by enum(LatexDistributionType.PROJECT_SDK)
 
     fun setDefaultDistribution(project: Project) {
-        latexDistribution = LatexSdkUtil.getDefaultLatexDistributionType(project)
+        latexDistribution = LatexSdkUtil.getLatexDistributionType(project)!!
     }
 
-    fun getLatexDistribution(project: Project) = LatexSdkUtil.getLatexDistributionType(latexDistribution, project)
+    fun getLatexDistribution(project: Project) = LatexSdkUtil.getLatexDistributionType(project)
 
     /**
      * Keep track of when this configuration was last run. Set to null when it has never been run.
@@ -87,12 +85,10 @@ class LatexRunConfigurationOptions : LocatableRunConfigurationOptions() {
     var auxilPath by property(LatexRunConfigurationOutputPathOption()) { it.isDefault("auxil") }
 }
 
-fun <U, T> transformed(stored: KMutableProperty0<T>, transform: (T) -> T): ReadWriteProperty<U, T> {
-    return object : ReadWriteProperty<U, T> {
-        override fun getValue(thisRef: U, property: KProperty<*>) = stored.getValue(thisRef, property)
+fun <U, T> transformed(stored: KMutableProperty0<T>, transform: (T) -> T): ReadWriteProperty<U, T> = object : ReadWriteProperty<U, T> {
+    override fun getValue(thisRef: U, property: KProperty<*>) = stored.getValue(thisRef, property)
 
-        override fun setValue(thisRef: U, property: KProperty<*>, value: T) {
-            stored.setValue(thisRef, property, transform(value))
-        }
+    override fun setValue(thisRef: U, property: KProperty<*>, value: T) {
+        stored.setValue(thisRef, property, transform(value))
     }
 }

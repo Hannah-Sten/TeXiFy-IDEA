@@ -17,7 +17,7 @@ class StartEvinceInverseSearchListener : ProjectActivity, DumbAware {
     override suspend fun execute(project: Project) {
         if (!SystemInfo.isWindows) {
             if (
-                project.selectedRunConfig()?.compileSteps?.filterIsInstance<PdfViewerStep>()?.any { it.state.pdfViewer is EvinceViewer } == true || (project.selectedRunConfig() == null && project.latexTemplateRunConfig()?.compileSteps?.filterIsInstance<PdfViewerStep>()?.any {it.state.pdfViewer is EvinceViewer } == true)
+                project.selectedRunConfig()?.compileSteps?.filterIsInstance<PdfViewerStep>()?.any { it.state.pdfViewer is EvinceViewer } == true || (project.selectedRunConfig() == null && project.latexTemplateRunConfig()?.compileSteps?.filterIsInstance<PdfViewerStep>()?.any { it.state.pdfViewer is EvinceViewer } == true)
             ) {
 //                EvinceInverseSearchListener.start(project)  //  todo evince inverse search
             }

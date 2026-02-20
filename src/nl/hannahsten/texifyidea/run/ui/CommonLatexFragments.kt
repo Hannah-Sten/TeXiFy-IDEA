@@ -8,9 +8,7 @@ import com.intellij.execution.ui.FragmentedSettingsUtil
 import com.intellij.execution.ui.RunConfigurationEditorFragment
 import com.intellij.execution.ui.SettingsEditorFragment
 import com.intellij.ide.macro.MacrosDialog
-import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
-import com.intellij.openapi.fileChooser.FileTypeDescriptor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.LabeledComponent
@@ -250,8 +248,10 @@ object CommonLatexFragments {
 
         MacrosDialog.addMacroSupport(outputDirectoryField.textField as ExtendableTextField, MacrosDialog.Filters.DIRECTORY_PATH) { false }
 
-        val field = LabeledComponent.create(outputDirectoryField,
-            "&${type.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }} directory:")
+        val field = LabeledComponent.create(
+            outputDirectoryField,
+            "&${type.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }} directory:"
+        )
         field.labelLocation = BorderLayout.WEST
 
         // Don't show when not applicable (non-MiKTeX)

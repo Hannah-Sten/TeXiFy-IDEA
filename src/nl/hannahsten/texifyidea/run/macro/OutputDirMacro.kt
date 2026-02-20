@@ -1,8 +1,6 @@
 package nl.hannahsten.texifyidea.run.macro
 
-import com.intellij.ide.macro.FileDirMacro
 import com.intellij.ide.macro.Macro
-import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataContext
 
 /**

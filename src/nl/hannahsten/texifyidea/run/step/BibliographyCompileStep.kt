@@ -23,7 +23,6 @@ import nl.hannahsten.texifyidea.run.compiler.bibtex.SupportedBibliographyCompile
 import nl.hannahsten.texifyidea.run.ui.LatexCompileSequenceComponent
 import nl.hannahsten.texifyidea.run.ui.compiler.ExecutableEditor
 import nl.hannahsten.texifyidea.util.magic.CompilerMagic
-import javax.swing.JButton
 
 class BibliographyCompileStep internal constructor(
     override val provider: StepProvider,

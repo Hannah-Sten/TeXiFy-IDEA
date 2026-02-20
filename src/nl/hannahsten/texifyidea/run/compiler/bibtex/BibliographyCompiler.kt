@@ -16,18 +16,15 @@ sealed class BibliographyCompiler : Compiler<BibliographyCompileStep> {
             is CustomBibliographyCompiler -> value.executablePath
         }
 
-        override fun fromString(value: String): BibliographyCompiler {
-            return SupportedBibliographyCompiler.byExecutableName(value) ?: CustomBibliographyCompiler(value)
-        }
+        override fun fromString(value: String): BibliographyCompiler = SupportedBibliographyCompiler.byExecutableName(value) ?: CustomBibliographyCompiler(value)
     }
 }
 
-class CustomBibliographyCompiler(override val executablePath: String) : BibliographyCompiler(),
-                                                                        CustomCompiler<BibliographyCompileStep> {
+class CustomBibliographyCompiler(override val executablePath: String) :
+    BibliographyCompiler(),
+    CustomCompiler<BibliographyCompileStep> {
 
-    override fun getCommand(step: BibliographyCompileStep): List<String> {
-        return listOf(executablePath, step.state.mainFileName ?: throw TeXception("Step ${step.name} has no main file"))
-    }
+    override fun getCommand(step: BibliographyCompileStep): List<String> = listOf(executablePath, step.state.mainFileName ?: throw TeXception("Step ${step.name} has no main file"))
 }
 
 abstract class SupportedBibliographyCompiler(override val displayName: String, override val executableName: String) : BibliographyCompiler(), SupportedCompiler<BibliographyCompileStep> {

@@ -12,6 +12,7 @@ import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.components.BaseState
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.fileChooser.FileTypeDescriptor
+import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.ui.TextBrowseFolderListener
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.ui.components.dialog
@@ -35,15 +36,14 @@ import nl.hannahsten.texifyidea.run.ui.LatexCompileSequenceComponent
 import nl.hannahsten.texifyidea.run.ui.compiler.ExecutableEditor
 import nl.hannahsten.texifyidea.run.ui.console.LatexExecutionConsole
 import nl.hannahsten.texifyidea.util.caretOffset
-import nl.hannahsten.texifyidea.util.currentTextEditor
-import nl.hannahsten.texifyidea.util.files.isRoot
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
+import nl.hannahsten.texifyidea.util.focusedTextEditor
 import nl.hannahsten.texifyidea.util.parser.parentsOfType
+import nl.hannahsten.texifyidea.util.selectedTextEditor
 import java.io.File
 import java.io.OutputStream
 import java.util.*
-import javax.swing.JButton
 
 class PdfViewerStep internal constructor(
     override val provider: StepProvider, override var configuration: LatexRunConfiguration
@@ -94,9 +94,7 @@ class PdfViewerStep internal constructor(
         val defaultPdfViewer = PdfViewer.availableViewers.firstOrNull()
     }
 
-    override fun isValid(): Boolean {
-        return state.pdfViewer != null
-    }
+    override fun isValid(): Boolean = state.pdfViewer != null
 
     override fun configure(context: DataContext, button: LatexCompileSequenceComponent.StepButton) {
         val viewerEditor = ExecutableEditor<SupportedPdfViewer, PdfViewer>("PDF Viewer", PdfViewer.availableViewers.filter { it is SupportedPdfViewer } as Iterable<SupportedPdfViewer>) { CustomPdfViewer(it) }
@@ -176,44 +174,41 @@ class PdfViewerStep internal constructor(
         }
     }
 
-    override fun execute(id: String, console: LatexExecutionConsole): ProcessHandler {
-        return object : ProcessHandler() {
-            override fun destroyProcessImpl() = notifyProcessTerminated(0)
+    override fun execute(id: String, console: LatexExecutionConsole): ProcessHandler = object : ProcessHandler() {
+        override fun destroyProcessImpl() = notifyProcessTerminated(0)
 
-            override fun detachProcessImpl() = notifyProcessDetached()
+        override fun detachProcessImpl() = notifyProcessDetached()
 
-            override fun detachIsDefault(): Boolean = false
+        override fun detachIsDefault(): Boolean = false
 
-            override fun getProcessInput(): OutputStream? = null
+        override fun getProcessInput(): OutputStream? = null
 
-            override fun startNotify() {
-                super.startNotify()
-                console.startStep(id, this@PdfViewerStep, this)
+        override fun startNotify() {
+            super.startNotify()
+            console.startStep(id, this@PdfViewerStep, this)
 
-                runReadAction {
+            runReadAction {
+                // This has both .psiFile calls which need to run in read action or EDT, and long-running operations which cannot run in EDT, so it has to be a read action.
+                val forwardSearch = try {
+                    openViewer()
+                }
+                catch (e: TeXception) {
+                    { throw e }
+                }
 
-                    // This has both .psiFile calls which need to run in read action or EDT, and long-running operations which cannot run in EDT, so it has to be a read action.
-                    val forwardSearch = try {
-                        openViewer()
-                    }
-                    catch (e: TeXception) {
-                        { throw e }
-                    }
-
-                    runInEdt {
-                        val exit =
-                            try {
-                                // The forward search itselfs needs to run in EDT because of a synchronous refresh
-                                forwardSearch()
-                            }
-                            catch (e: TeXception) {
-                                this.notifyTextAvailable(e.message ?: "", STDERR)
-                                -1
-                            }
-                        // Next step should wait for the pdf to open, as it may require the pdf
-                        super.notifyProcessTerminated(exit)
-                        console.finishStep(id, exit)
-                    }
+                runInEdt {
+                    val exit =
+                        try {
+                            // The forward search itselfs needs to run in EDT because of a synchronous refresh
+                            forwardSearch()
+                        }
+                        catch (e: TeXception) {
+                            this.notifyTextAvailable(e.message ?: "", STDERR)
+                            -1
+                        }
+                    // Next step should wait for the pdf to open, as it may require the pdf
+                    super.notifyProcessTerminated(exit)
+                    console.finishStep(id, exit)
                 }
             }
         }
@@ -221,9 +216,9 @@ class PdfViewerStep internal constructor(
 
     private fun openViewer(): () -> Int {
         val project = configuration.project
-        val currentEditor = configuration.project.currentTextEditor()
+        val currentEditor = configuration.project.focusedTextEditor()?.editor ?: configuration.project.selectedTextEditor()?.editor
         val pdfViewer = state.pdfViewer
-        val texFile = configuration.project.currentTextEditor()?.file
+        val texFile = currentEditor?.virtualFile
         val pdfFile = state.pdfFilePath.resolvedPath ?: throw TeXception("pdf not specified")
 
         // Needs to run on EDT
@@ -242,15 +237,15 @@ class PdfViewerStep internal constructor(
         // Do not forward search if we are editing the preamble
         val isEditingPreamble = true == psiFile?.run {
             // Only applicable for root files (or files included in the preamble, but we don't check that yet)
-            if (!isRoot()) return@run false
-            val offset = currentEditor?.editor?.caretOffset() ?: return@run false
+            // todo if (!isRoot()) return@run false
+            val offset = currentEditor?.caretOffset() ?: return@run false
             // Check if cursor is not in document environment
             findElementAt(offset)?.parentsOfType<LatexEnvironment>()?.any { it.getEnvironmentName() == "document" } == false
         }
 
         // Forward search if the file currently open in the editor belongs to the file set of the main file that we are compiling.
         return if (texFile != null && belongsToFileset && currentEditor != null && !isEditingPreamble) {
-            { ForwardSearchAction(pdfViewer).forwardSearch(texFile, project, pdfFile, currentEditor) }
+            { ForwardSearchAction(pdfViewer).forwardSearch(texFile, project, pdfFile, currentEditor as TextEditor?) }
         }
         // If the file does not belong to the compiled file set, forward search to the first line of the main file.
         else {

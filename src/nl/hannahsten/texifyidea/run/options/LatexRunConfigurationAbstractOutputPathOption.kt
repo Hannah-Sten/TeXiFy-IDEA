@@ -44,13 +44,9 @@ abstract class LatexRunConfigurationAbstractOutputPathOption(override val pathWi
         }
     }
 
-    override fun isDefault(): Boolean {
-        return pathWithMacro == null && resolvedPath == null
-    }
+    override fun isDefault(): Boolean = pathWithMacro == null && resolvedPath == null
 
-    fun isDefault(variant: String): Boolean {
-        return pathWithMacro == getDefault(variant, null).pathWithMacro
-    }
+    fun isDefault(variant: String): Boolean = pathWithMacro == getDefault(variant, null).pathWithMacro
 
     /**
      * Get path to output file (e.g. pdf)
@@ -87,9 +83,7 @@ abstract class LatexRunConfigurationAbstractOutputPathOption(override val pathWi
     /**
      * If the output path is the same as the directory the main file is in.
      */
-    fun isMainFileParent(mainFile: VirtualFile?, project: Project): Boolean {
-        return getOrCreateOutputPath(mainFile, project) == mainFile?.parent
-    }
+    fun isMainFileParent(mainFile: VirtualFile?, project: Project): Boolean = getOrCreateOutputPath(mainFile, project) == mainFile?.parent
 
     /**
      * Copy subdirectories of the source directory to the output directory for includes to work in non-MiKTeX systems
@@ -117,9 +111,7 @@ abstract class LatexRunConfigurationAbstractOutputPathOption(override val pathWi
 
     class Converter : com.intellij.util.xmlb.Converter<LatexRunConfigurationAbstractOutputPathOption>() {
 
-        override fun toString(value: LatexRunConfigurationAbstractOutputPathOption): String {
-            return LatexPathConverterUtil.toString(value)
-        }
+        override fun toString(value: LatexRunConfigurationAbstractOutputPathOption): String = LatexPathConverterUtil.toString(value)
 
         override fun fromString(value: String): LatexRunConfigurationAbstractOutputPathOption {
             val (resolvedPath, pathWithMacro) = LatexPathConverterUtil.fromString(value)

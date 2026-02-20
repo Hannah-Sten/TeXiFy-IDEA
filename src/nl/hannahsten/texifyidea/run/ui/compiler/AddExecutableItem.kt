@@ -1,7 +1,5 @@
 package nl.hannahsten.texifyidea.run.ui.compiler
 
-import nl.hannahsten.texifyidea.run.executable.Executable
-
 /**
  * LaTeX compiler selector item which allows the user to select a custom executable.
  *

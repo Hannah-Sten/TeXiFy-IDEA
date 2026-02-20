@@ -79,8 +79,9 @@ class LatexUnicodeInspection : AbstractTexifyContextAwareInspection(
             // TeX Live 2018 is UTF-8 by default and loads inputenc automatically
             val compilerCompat = file.project.selectedRunConfig()?.let { it.options.compiler }
             if (compilerCompat?.supportsUnicode == true ||
-                TexliveSdk.Cache.version >= 2018  ||
-                MiktexWindowsSdk().getVersion(null) >= DefaultArtifactVersion("2.9.7350")) {
+                TexliveSdk.Cache.version >= 2018 ||
+                MiktexWindowsSdk().getVersion(null) >= DefaultArtifactVersion("2.9.7350")
+            ) {
                 return true
             }
 

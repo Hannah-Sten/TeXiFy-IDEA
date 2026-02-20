@@ -118,22 +118,21 @@ interface ExternalPdfViewer : PdfViewer
 
 class PdfViewerConverter : com.intellij.util.xmlb.Converter<PdfViewer>() {
 
-        override fun toString(value: PdfViewer) = value.name
+    override fun toString(value: PdfViewer) = value.name
 
-        override fun fromString(value: String): PdfViewer = PdfViewer.availableViewers.first() // todo
+    override fun fromString(value: String): PdfViewer = PdfViewer.availableViewers.first() // todo
 //            ExternalPdfViewers.getExternalPdfViewers().firstOrNull { it.name == value }
 //                ?: InternalPdfViewer.valueOf(value)
 //                ?: if (File(value).exists()) CustomPdfViewer(value) else null
 //                ?: availablePdfViewers().firstOrNull()
 //                ?: Evince()
-    }
-//}
+}
+// }
 
-///**
+// /**
 // * Define functions that handle all external pdf viewers one by one.
 // */
-//object ExternalPdfViewers {
+// object ExternalPdfViewers {
 //
 //    fun getExternalPdfViewers(): List<ExternalPdfViewer> = EP_NAME.extensionList
-//}
-
+// }

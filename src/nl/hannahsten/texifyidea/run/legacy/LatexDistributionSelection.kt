@@ -2,7 +2,7 @@ package nl.hannahsten.texifyidea.run.latex.ui
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
+import nl.hannahsten.texifyidea.run.ui.LatexDistributionType
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 
 /**

@@ -18,5 +18,4 @@ object LatexCompileStepProvider : StepProvider {
         // todo whether we need to add even more steps, depends on requirements of other steps?
         return listOf(createStep(runConfiguration))
     }
-
 }

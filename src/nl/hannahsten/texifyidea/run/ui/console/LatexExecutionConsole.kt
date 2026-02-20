@@ -14,22 +14,17 @@ import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.execution.ui.ExecutionConsole
 import com.intellij.ide.IdeBundle
 import com.intellij.ide.OccurenceNavigator
-import com.intellij.ide.errorTreeView.ErrorTreeNodeDescriptor
-import com.intellij.ide.errorTreeView.NavigatableErrorTreeElement
 import com.intellij.ide.util.treeView.AbstractTreeStructure
 import com.intellij.ide.util.treeView.NodeDescriptor
 import com.intellij.openapi.actionSystem.AnAction
-import com.intellij.openapi.actionSystem.CommonDataKeys
-import com.intellij.openapi.actionSystem.DataProvider
 import com.intellij.openapi.application.runInEdt
-import com.intellij.ui.*
-import com.intellij.ui.render.RenderingHelper
+import com.intellij.ui.AutoScrollToSourceHandler
+import com.intellij.ui.OnePixelSplitter
+import com.intellij.ui.ScrollPaneFactory
+import com.intellij.ui.SideBorder
 import com.intellij.ui.tree.AsyncTreeModel
 import com.intellij.ui.tree.StructureTreeModel
 import com.intellij.ui.treeStructure.Tree
-import com.intellij.util.EditSourceOnDoubleClickHandler
-import com.intellij.util.EditSourceOnEnterKeyHandler
-import com.intellij.util.ui.tree.TreeUtil
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.step.Step
 import nl.hannahsten.texifyidea.util.files.findVirtualFileByAbsoluteOrRelativePath
@@ -38,8 +33,6 @@ import java.awt.CardLayout
 import java.util.function.Predicate
 import javax.swing.JComponent
 import javax.swing.JPanel
-import javax.swing.tree.DefaultMutableTreeNode
-import javax.swing.tree.TreePath
 
 /**
  * The tool window which shows the log messages and output log.
@@ -101,12 +94,14 @@ class LatexExecutionConsole(runConfig: LatexRunConfiguration) : ConsoleView, Occ
         autoScrollToSourceHandler.install(tree)
 
         // When selecting a step in the tree, the matching console output should show
-        tree.selectionModel.addTreeSelectionListener(LatexExecutionTreeSelectionListener(tree) { node ->
-            node.stepId?.let {
-                // Select the card which should show on top, based on its step id
-                (consolePanel.layout as CardLayout).show(consolePanel, it)
+        tree.selectionModel.addTreeSelectionListener(
+            LatexExecutionTreeSelectionListener(tree) { node ->
+                node.stepId?.let {
+                    // Select the card which should show on top, based on its step id
+                    (consolePanel.layout as CardLayout).show(consolePanel, it)
+                }
             }
-        })
+        )
     }
 
     fun start() {
@@ -134,7 +129,7 @@ class LatexExecutionConsole(runConfig: LatexRunConfiguration) : ConsoleView, Occ
         val (step, node, console) = steps[id] ?: return
         // todo should we really reuse the 'step' node for messages?
         // todo shouldn't this be parent=node?
-        LatexExecutionNode(project, node.stepId, parent=rootNode).apply {
+        LatexExecutionNode(project, node.stepId, parent = rootNode).apply {
             description = event.message
             state = when (event.kind) {
                 MessageEvent.Kind.WARNING -> LatexExecutionNode.State.WARNING

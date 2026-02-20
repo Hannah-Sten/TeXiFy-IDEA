@@ -40,22 +40,24 @@ open class BibtexCommandLineState(
         val compilerCommand = "todo" // compiler.getCommand(runConfig, environment.project)?.toMutableList() ?: throw ExecutionException("Compile command could not be created.")
 
         // See LatexCompiler#getCommand
-        val command: String = (if (runConfig.getLatexDistributionType() == LatexDistributionType.WSL_TEXLIVE) {
-            var wslCommand = GeneralCommandLine(compilerCommand).commandLineString
+        val command: String = (
+            if (runConfig.getLatexDistributionType() == LatexDistributionType.WSL_TEXLIVE) {
+                var wslCommand = GeneralCommandLine(compilerCommand).commandLineString
 
-            // Custom compiler arguments specified by the user
-            runConfig.compilerArguments?.let { arguments ->
-                ParametersListUtil.parse(arguments)
-                    .forEach { wslCommand += " $it" }
+                // Custom compiler arguments specified by the user
+                runConfig.compilerArguments?.let { arguments ->
+                    ParametersListUtil.parse(arguments)
+                        .forEach { wslCommand += " $it" }
+                }
+
+                wslCommand += " ${runConfig.bibWorkingDir?.path?.toWslPathIfNeeded(runConfig.getLatexDistributionType())}"
+
+                mutableListOf(*SystemEnvironment.wslCommand, wslCommand)
             }
-
-            wslCommand += " ${runConfig.bibWorkingDir?.path?.toWslPathIfNeeded(runConfig.getLatexDistributionType())}"
-
-            mutableListOf(*SystemEnvironment.wslCommand, wslCommand)
-        }
-        else {
-            compilerCommand
-        }) as String
+            else {
+                compilerCommand
+            }
+            ) as String
 
         // The working directory is as specified by the user in the working directory.
         // The fallback (if null or empty) directory is the directory of the main file.

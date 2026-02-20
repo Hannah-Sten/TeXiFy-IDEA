@@ -26,8 +26,9 @@ import javax.swing.JTextField
  *
  * @author Sten Wessel
  */
-class VirtualFileEditorWithBrowse(label: String?, message: String?, private val project: Project) : LabeledComponent<TextFieldWithBrowseButton>(),
-                                                                                                  PanelWithAnchor {
+class VirtualFileEditorWithBrowse(label: String?, message: String?, private val project: Project) :
+    LabeledComponent<TextFieldWithBrowseButton>(),
+    PanelWithAnchor {
 
     private var _selected: VirtualFile? = null
 
@@ -38,11 +39,13 @@ class VirtualFileEditorWithBrowse(label: String?, message: String?, private val 
         get() = _selected
         set(value) {
             _selected = value
-            textField.setText(value?.let { it ->
-                project.guessProjectDir()?.let { r ->
-                    VcsFileUtil.relativePath(r, it)
-                } ?: it.path
-            })
+            textField.setText(
+                value?.let { it ->
+                    project.guessProjectDir()?.let { r ->
+                        VcsFileUtil.relativePath(r, it)
+                    } ?: it.path
+                }
+            )
         }
 
     private val textField = TextFieldWithBrowseButton()
@@ -77,12 +80,10 @@ class VirtualFileEditorWithBrowse(label: String?, message: String?, private val 
             description,
             project,
             fileChooserDescriptor.withRoots(
-              *ProjectRootManager.getInstance(project).contentRootsFromAllModules.distinct().toTypedArray()
+                *ProjectRootManager.getInstance(project).contentRootsFromAllModules.distinct().toTypedArray()
             ),
             object : TextComponentAccessor<JTextField> {
-                override fun getText(component: JTextField): String {
-                    return selected?.path ?: ""
-                }
+                override fun getText(component: JTextField): String = selected?.path ?: ""
 
                 override fun setText(component: JTextField, text: String) {
                     selected = LocalFileSystem.getInstance().findFileByPath(text)

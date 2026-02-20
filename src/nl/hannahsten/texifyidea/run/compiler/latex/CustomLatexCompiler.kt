@@ -4,7 +4,8 @@ import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.compiler.CustomCompiler
 import nl.hannahsten.texifyidea.run.step.LatexCompileStep
 
-class CustomLatexCompiler(override val executablePath: String) : LatexCompiler(),
+class CustomLatexCompiler(override val executablePath: String) :
+    LatexCompiler(),
     CustomCompiler<LatexCompileStep> {
 
     override fun getCommand(step: LatexCompileStep): List<String> {

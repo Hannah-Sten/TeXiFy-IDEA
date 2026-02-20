@@ -26,7 +26,7 @@ object LatexmkCompiler : SupportedLatexCompiler("Latexmk", "latexmk") {
         val command = mutableListOf(
             LatexSdkUtil.getExecutableName(
                 executableName, runConfig.project,
-                runConfig.options.getLatexDistribution(runConfig.project)
+                latexDistributionType = runConfig.options.getLatexDistribution(runConfig.project)
             )
         )
 
@@ -47,7 +47,7 @@ object LatexmkCompiler : SupportedLatexCompiler("Latexmk", "latexmk") {
 
         command.add("-output-directory=$outputPath")
 
-        if (auxilPath != null && runConfig.options.getLatexDistribution(runConfig.project).isMiktex(runConfig.project)) {
+        if (auxilPath != null && runConfig.options.getLatexDistribution(runConfig.project)!!.isMiktex(runConfig.project)) {
             command.add("-aux-directory=$auxilPath")
         }
 

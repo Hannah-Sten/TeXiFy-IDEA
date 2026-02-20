@@ -17,7 +17,6 @@ import nl.hannahsten.texifyidea.settings.sdk.DockerSdkAdditionalData
 import nl.hannahsten.texifyidea.util.magic.CompilerMagic
 import nl.hannahsten.texifyidea.util.runCommand
 
-
 /**
  *
  * When adding compilers as a subclass, be sure to add it to [CompilerMagic.latexCompilerByExecutableName].
@@ -77,7 +76,7 @@ abstract class SupportedLatexCompiler(
         }
 
         // Make sure the output path is valid todo make sure it always exists
-        if (!runConfig.options.getLatexDistribution(runConfig.project).isMiktex(runConfig.project)) {
+        if (runConfig.options.getLatexDistribution(runConfig.project)?.isMiktex(runConfig.project) != true) {
             runConfig.options.outputPath.updateOutputSubDirs(mainFile, project)
         }
 

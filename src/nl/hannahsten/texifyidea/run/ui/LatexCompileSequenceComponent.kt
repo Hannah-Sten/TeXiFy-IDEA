@@ -38,7 +38,8 @@ import javax.swing.*
  */
 class LatexCompileSequenceComponent(parentDisposable: Disposable) :
     JPanel(WrapLayout(FlowLayout.LEADING, 0, JBUI.scale(FragmentedSettingsBuilder.TAG_VGAP))),
-      DnDTarget, Disposable {
+    DnDTarget,
+    Disposable {
 
     private val dropFirst = JLabel(AllIcons.General.DropPlace).apply {
         border = JBUI.Borders.empty()
@@ -192,13 +193,11 @@ class LatexCompileSequenceComponent(parentDisposable: Disposable) :
         return if (buttonToReplace == event.attachedObject) null else buttonToReplace
     }
 
-    private fun findDropButton(replaceButton: IndexedValue<StepButton>, event: DnDEvent): StepButton? {
-        return if (replaceButton.index > steps.indexOf(event.attachedObject)) {
-            replaceButton.value
-        }
-        else {
-            steps.withIndex().findLast { (i, it) -> it.isVisible && i < replaceButton.index }?.value
-        }
+    private fun findDropButton(replaceButton: IndexedValue<StepButton>, event: DnDEvent): StepButton? = if (replaceButton.index > steps.indexOf(event.attachedObject)) {
+        replaceButton.value
+    }
+    else {
+        steps.withIndex().findLast { (i, it) -> it.isVisible && i < replaceButton.index }?.value
     }
 
     override fun dispose() {

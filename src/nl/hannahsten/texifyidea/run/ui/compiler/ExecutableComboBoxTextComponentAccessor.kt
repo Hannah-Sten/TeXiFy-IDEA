@@ -11,7 +11,6 @@ class ExecutableComboBoxTextComponentAccessor(val compilerCreator: (String) -> C
     override fun getText(component: ComboBox<ExecutableComboBoxItem>) = component.item?.presentableText ?: ""
 
     override fun setText(component: ComboBox<ExecutableComboBoxItem>, text: String) {
-
         val item = CustomExecutableItem(compilerCreator(FileUtil.toSystemIndependentName(text)))
         (component.model as SortedComboBoxModel<ExecutableComboBoxItem>).add(item)
         component.item = item

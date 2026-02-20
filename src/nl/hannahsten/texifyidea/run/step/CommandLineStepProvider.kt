@@ -11,9 +11,7 @@ object CommandLineStepProvider : StepProvider {
 
     override val id = "commandline"
 
-    override fun createStep(configuration: LatexRunConfiguration): Step {
-        return CommandLineStep(this, configuration)
-    }
+    override fun createStep(configuration: LatexRunConfiguration): Step = CommandLineStep(this, configuration)
 
     override fun createIfRequired(runConfiguration: LatexRunConfiguration): List<Step> {
         // Optional step

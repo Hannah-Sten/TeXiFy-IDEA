@@ -5,10 +5,10 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.rd.framework.base.deepClonePolymorphic
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
-import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.allParentMagicComments
+import nl.hannahsten.texifyidea.lang.predefined.CommandNames
 import nl.hannahsten.texifyidea.psi.traverseCommands
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.compiler.bibtex.BiberCompiler
@@ -20,7 +20,6 @@ import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.includedPackagesInFileset
 import nl.hannahsten.texifyidea.util.magic.CompilerMagic
-import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.hasBibliography
 import nl.hannahsten.texifyidea.util.parser.usesBiber
 import java.io.File
@@ -99,19 +98,19 @@ object BibliographyCompileStepProvider : StepProvider {
         val psiFile = runConfig.options.mainFile.resolve()?.psiFile(runConfig.project) ?: return emptyList()
 
         // When chapterbib is used, every chapter has its own bibliography and needs its own run config
-        val usesChapterbib = psiFile.includedPackagesInFileset().contains(LatexPackage.CHAPTERBIB)
+        val usesChapterbib = psiFile.includedPackagesInFileset().contains(LatexLib.CHAPTERBIB)
 
         if (!usesChapterbib) return emptyList()
 
         val steps = mutableListOf<BibliographyCompileStep>()
 
-        val allBibliographyCommands = NewCommandsIndex.getByNameInFileSet(LatexGenericRegularCommand.BIBLIOGRAPHY.cmd, psiFile)
+        val allBibliographyCommands = NewCommandsIndex.getByNameInFileSet(CommandNames.BIBLIOGRAPHY, psiFile)
 
         // We know that there can only be one bibliography per top-level \include,
         // however not all of them may contain a bibliography, and the ones
         // that do have one can have it in any included file
         psiFile.traverseCommands()
-            .filter { it.name == LatexGenericRegularCommand.INCLUDE.cmd }
+            .filter { it.name == CommandNames.INCLUDE }
             .flatMap { command -> command.requiredParameters() }
             .forEach { filename ->
                 // Find all the files of this chapter, then check if any of the bibliography commands appears in a file in this chapter
@@ -161,10 +160,7 @@ object BibliographyCompileStepProvider : StepProvider {
         }
     }
 
-    private fun guessWorkingDirectory(runConfig: LatexRunConfiguration): VirtualFile? {
-        return runConfig.getAuxilDirectory()
-            ?: runConfig.options.mainFile.resolve()?.parent
-            ?: runConfig.project.guessProjectDir()
-    }
-
+    private fun guessWorkingDirectory(runConfig: LatexRunConfiguration): VirtualFile? = runConfig.getAuxilDirectory()
+        ?: runConfig.options.mainFile.resolve()?.parent
+        ?: runConfig.project.guessProjectDir()
 }

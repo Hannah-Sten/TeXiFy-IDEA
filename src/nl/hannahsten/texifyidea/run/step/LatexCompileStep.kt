@@ -5,7 +5,6 @@ import com.intellij.openapi.actionSystem.DataContext
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.ui.LatexCompileSequenceComponent
-import javax.swing.JButton
 
 class LatexCompileStep internal constructor(
     override val provider: StepProvider,
@@ -23,7 +22,5 @@ class LatexCompileStep internal constructor(
 
     override fun getEnvironmentVariables() = EnvironmentVariablesData.create(configuration.envs, configuration.isPassParentEnvs)
 
-    override fun clone(): Step {
-        return LatexCompileStep(provider, configuration)
-    }
+    override fun clone(): Step = LatexCompileStep(provider, configuration)
 }

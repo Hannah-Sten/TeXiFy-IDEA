@@ -15,7 +15,5 @@ class MainFileDirMacro : Macro() {
 
     override fun getDescription() = "The directory which contains the main LaTeX file"
 
-    override fun expand(dataContext: DataContext): String? {
-        return FileDirMacro().expand(dataContext)
-    }
+    override fun expand(dataContext: DataContext): String? = FileDirMacro().expand(dataContext)
 }

@@ -2,9 +2,7 @@ package nl.hannahsten.texifyidea.run.ui.compiler
 
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.util.PathUtil
-import nl.hannahsten.texifyidea.run.compiler.CustomCompiler
 import nl.hannahsten.texifyidea.run.executable.CustomExecutable
-import nl.hannahsten.texifyidea.run.step.CompileStep
 
 /**
  * executable selector item that was created by the user (through first selecting [AddExecutableItem]).
