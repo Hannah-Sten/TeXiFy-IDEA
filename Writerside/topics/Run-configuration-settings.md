@@ -34,6 +34,8 @@ An example for compiling with lualatex that needs `--shell-escape` and biber:
 
 ***Note:*** These magic comments only take affect when creating a new run configuration (using <shortcut>Ctrl</shortcut> + <shortcut>Shift</shortcut> + <shortcut>F10</shortcut> or using the gutter icon).
 They have no effect on already existing run configurations, which can be edited using Edit Configurations dialog.
+Also note that creation/recommendation of LaTeX vs Latexmk run configurations can be restricted globally in
+[Run configuration mode](TeXiFy-settings.md#run-configuration-mode).
 
 ## LaTeX compilers
 
@@ -97,6 +99,84 @@ It also has automatic compilation using `tectonic -X watch`.
 There is some basic support for a `Tectonic.toml` file, including inspection support (missing imports, for example) for multiple inputs in the toml file (Tectonic 0.15.1 or later).
 
 The documentation can be found at [https://tectonic-typesetting.github.io/book/latest/](https://tectonic-typesetting.github.io/book/latest/)
+
+## Latexmk run configuration {id="latexmk-run-configuration"}
+
+TeXiFy supports a dedicated `Latexmk` run configuration type.
+Use this when you want latexmk-specific options directly, instead of configuring latexmk through the classic LaTeX run configuration compiler dropdown.
+
+### Compile mode
+
+Compile mode selects the main latexmk engine/output combination.
+
+| Compile mode   | latexmk flags     | Typical use               |
+|----------------|-------------------|---------------------------|
+| `PDFLATEX_PDF` | `-pdf`            | Default pdfLaTeX workflow |
+| `LUALATEX_PDF` | `-lualatex`       | LuaLaTeX based pdf output |
+| `XELATEX_PDF`  | `-xelatex`        | XeLaTeX based pdf output  |
+| `XELATEX_XDV`  | `-xelatex -xdv`   | XeLaTeX XDV output        |
+| `LATEX_DVI`    | `-latex -dvi`     | DVI workflow              |
+| `LATEX_PS`     | `-latex -ps`      | PostScript workflow       |
+| `CUSTOM`       | `-pdflatex="..."` | Custom engine command     |
+
+When `CUSTOM` is selected, use **Custom engine command** to provide the command that latexmk should call.
+
+### Citation tool
+
+Citation tool controls how latexmk handles bibliography processing.
+
+| Citation tool | latexmk flags | Typical use                         |
+|---------------|---------------|-------------------------------------|
+| `AUTO`        | (none)        | Let latexmk decide automatically    |
+| `BIBTEX`      | `-bibtex`     | Force BibTeX                        |
+| `BIBER`       | `-use-biber`  | Force Biber                         |
+| `DISABLED`    | `-bibtex-`    | Disable bibliography tool execution |
+
+### Additional latexmk arguments
+
+Use this field for extra latexmk flags (for example `-pvc`, `-silent`, or custom diagnostic flags).
+These arguments are appended after the structured options from **Compile mode** and **Citation tool**.
+
+### Output / auxiliary / working directory
+
+Latexmk run configuration has dedicated directory fields:
+
+* **Output directory** for final files such as pdf.
+* **Auxiliary files directory** for intermediate files.
+* **Working directory** for process cwd and relative path resolution.
+
+You can use `{mainFileParent}` and `{projectDir}` placeholders in directory fields.
+If auxiliary directory is empty, or resolves to the same directory as output directory, TeXiFy does not pass a separate `-auxdir`.
+
+### LaTeX Distribution
+
+Latexmk run configuration supports the same distribution selection model as other run configurations:
+local distributions, Dockerized distributions, and TeX Live from WSL when available.
+
+### PDF viewer and focus
+
+You can choose the PDF viewer and whether the viewer is allowed to take focus after compilation, the same way as in other TeXiFy run configurations.
+Custom viewer commands are also supported.
+
+### Before-run LaTeX code
+
+You can inject LaTeX code before compiling the main file.
+This is useful for build-time toggles in templates and multi-variant documents.
+
+### Custom latexmk executable path
+
+You can set a custom path to the `latexmk` executable for this run configuration.
+This is useful when latexmk is not discoverable via your regular environment path.
+
+### Cleaning generated files with Latexmk
+
+When the selected run configuration is a Latexmk run configuration, TeXiFy uses latexmk clean commands for cleanup actions:
+
+* **Delete Auxiliary Files** uses latexmk clean mode (`-c`).
+* **Delete Generated Files** uses latexmk clean-all mode (`-C`).
+
+This keeps cleanup behaviour consistent with the directories and options from the selected Latexmk run configuration.
+
 
 ## BibTeX compilers
 
@@ -203,6 +283,9 @@ Select a LaTeX file.
 
 ## Set a custom path for auxiliary files
 
+This section primarily describes the classic **LaTeX run configuration** behaviour.
+For dedicated Latexmk directory behaviour, see [Latexmk run configuration](#latexmk-run-configuration).
+
 When using MiKTeX, this path will be passed to the `-aux-directory` flag for pdflatex, and similar for other compilers which support an auxiliary directory.
 
 By default, TeXiFy will put output files (pdf) in an `out` directory, and auxiliary files (aux, log, etc.) in an `auxil` directory to keep your project clean.
@@ -225,6 +308,9 @@ You can tell this to minted by using `\usepackage[outputdir=../auxil]{minted}`.
 
 
 ## Set a custom path for output files
+
+This section primarily describes the classic **LaTeX run configuration** behaviour.
+For dedicated Latexmk directory behaviour, see [Latexmk run configuration](#latexmk-run-configuration).
 
 This path will be passed to the `-output-directory` for pdflatex, and similar for other compilers which support an output directory.
 
@@ -317,4 +403,3 @@ They will be run appropriately inbetween LaTeX runs.
 
 Use this to run anything before the run configuration.
 See [https://www.jetbrains.com/help/idea/run-debug-configurations-dialog.html#before-launch-options](https://www.jetbrains.com/help/idea/run-debug-configurations-dialog.html#before-launch-options)
-

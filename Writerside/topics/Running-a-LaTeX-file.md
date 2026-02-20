@@ -17,12 +17,18 @@ To run all run configurations in the project, you can use the `Build Project` bu
 
 ## Template run configurations
 
-For the LaTeX run configuration you can change the default template.
-This means you can choose for example your favourite compiler or pdf viewer in the template, and it will be used when a new run configuration is created.
+You can change the default template for both **LaTeX** and **Latexmk** run configurations.
+This means you can choose for example your preferred compiler settings or pdf viewer in the template, and it will be used when a new run configuration is created.
 Note that choosing a main file to compile in the template generally is not useful because it will be different for each new run config, and when creating a run config from context (like when using the gutter icon next to `\begin{document}`), it will be overwritten anyway.
 In principle, all other settings in the run configuration you can configure in the template.
 This includes the output path, using the `{mainFileParent}` and `{projectDir}` placeholders which will be resolved when the run configuration is created.
 See the [Output path section](Run-configuration-settings.md#set-a-custom-path-for-output-files) below.
+
+Run configuration creation/recommendation is controlled by [Run configuration mode](TeXiFy-settings.md#run-configuration-mode):
+
+* `Run/LaTeX + Bib only`: only create/recommend LaTeX run configurations.
+* `Latexmk only`: only create/recommend Latexmk run configurations.
+* `Both`: both types are available (default, with Latexmk preferred when creating from context).
 
 You can change the template on two levels, project and global level.
 
@@ -31,7 +37,7 @@ You can change the template on two levels, project and global level.
 When changing this template, only new run configurations created in that project will be affected.
 
 Open the Run/Debug Configurations by clicking on the dropdown at the top and selecting Edit Configurations.
-Then go to Templates, select LaTeX and edit it.
+Then go to Templates, select LaTeX or Latexmk and edit it.
 For more information, see [https://www.jetbrains.com/help/idea/changing-default-run-debug-configurations.html](https://www.jetbrains.com/help/idea/changing-default-run-debug-configurations.html)
 
 ### Changing the run configuration template for new projects
@@ -39,6 +45,7 @@ For more information, see [https://www.jetbrains.com/help/idea/changing-default-
 When changing this template, all new run configurations created in any new project will be affected.
 
 Go to <ui-path>File | Other Settings | Run configuration Templates for New Projects</ui-path> and select LaTeX.
+You can also configure the Latexmk template there.
 
 ## Log messages
 

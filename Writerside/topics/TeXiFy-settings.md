@@ -166,6 +166,21 @@ _Since b0.6.8_
 
 See [Support for automatic compilation](Running-a-LaTeX-file.md#automatic-compilation).
 
+## Run configuration mode
+Choose what type of run configurations TeXiFy should automatically create or recommend from context:
+
+* `Run/LaTeX + Bib only`: only create/recommend the classic LaTeX run configuration flow (LaTeX + BibTeX/Biber run configs when needed).
+* `Latexmk only`: only create/recommend Latexmk run configurations.
+* `Both`: allow both (default).
+
+This setting affects only creating/recommending new run configurations and template preference.
+It does not modify or remove existing run configurations.
+
+See also:
+
+* [Latexmk run configuration](Run-configuration-settings.md#latexmk-run-configuration)
+* [Template run configurations](Running-a-LaTeX-file.md#template-run-configurations)
+
 ## Fileset refresh period
 _Since b0.11.0_
 
@@ -200,4 +215,3 @@ In addition, you can configure the preferred prefix for a label, e.g., `fig:` fo
 ![Added Label](https://user-images.githubusercontent.com/7955528/153943754-176325aa-cd3c-4efb-8ec6-0b561d8ac3dc.png)
 
 See [Label conventions inspection](Code-style-issues.md#label-conventions) and [Missing labels inspection](Code-style-issues.md#missing-labels).
-
