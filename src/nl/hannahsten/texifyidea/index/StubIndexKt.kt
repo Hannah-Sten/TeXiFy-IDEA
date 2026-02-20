@@ -24,9 +24,7 @@ object StubIndexKt {
         project: Project,
         scope: GlobalSearchScope,
         crossinline action: (Psi) -> Boolean
-    ): Boolean {
-        return traverseElements(indexKey, key, project, scope, Psi::class.java, action)
-    }
+    ): Boolean = traverseElements(indexKey, key, project, scope, Psi::class.java, action)
 
     /**
      * Traverse all elements in the given [indexKey] for the specified [key] and apply the action to each element.
@@ -39,10 +37,8 @@ object StubIndexKt {
         scope: GlobalSearchScope,
         clazz: Class<Psi>,
         crossinline action: (Psi) -> Boolean
-    ): Boolean {
-        return StubIndex.getInstance().processElements(indexKey, key, project, scope, clazz) { element ->
-            action(element)
-        }
+    ): Boolean = StubIndex.getInstance().processElements(indexKey, key, project, scope, clazz) { element ->
+        action(element)
     }
 
     /**
@@ -52,22 +48,19 @@ object StubIndexKt {
     inline fun <Key : Any, Psi : PsiElement> traverseKeys(
         indexKey: StubIndexKey<Key, Psi>,
         project: Project, scope: GlobalSearchScope, crossinline action: (Key) -> Boolean
-    ): Boolean {
-        return StubIndex.getInstance().processAllKeys(indexKey, { key ->
-            action(key)
-        }, scope)
-    }
+    ): Boolean = StubIndex.getInstance().processAllKeys(indexKey, { key ->
+        action(key)
+    }, scope)
 
+    @Suppress("unused")
     inline fun <Key : Any, Psi : PsiElement> traverseKeys(
         indexKey: StubIndexKey<Key, Psi>,
         project: Project, scope: GlobalSearchScope,
         clazz: Class<Psi>,
         crossinline action: (Key) -> Boolean
-    ): Boolean {
-        return StubIndex.getInstance().processAllKeys(indexKey, { key ->
-            action(key)
-        }, scope)
-    }
+    ): Boolean = StubIndex.getInstance().processAllKeys(indexKey, { key ->
+        action(key)
+    }, scope)
 
     @RequiresReadLock
     inline fun <Key : Any, reified Psi : PsiElement> traverseAllElements(
@@ -75,9 +68,7 @@ object StubIndexKt {
         project: Project,
         scope: GlobalSearchScope,
         crossinline action: (Psi) -> Boolean
-    ): Boolean {
-        return traverseAllElements(indexKey, project, scope, Psi::class.java, action)
-    }
+    ): Boolean = traverseAllElements(indexKey, project, scope, Psi::class.java, action)
 
     @RequiresReadLock
     inline fun <Key : Any, Psi : PsiElement> traverseAllElements(
@@ -86,10 +77,8 @@ object StubIndexKt {
         scope: GlobalSearchScope,
         clazz: Class<Psi>,
         crossinline action: (Psi) -> Boolean
-    ): Boolean {
-        return traverseKeys(indexKey, project, scope) { key ->
-            traverseElements(indexKey, key, project, scope, clazz, action)
-        }
+    ): Boolean = traverseKeys(indexKey, project, scope) { key ->
+        traverseElements(indexKey, key, project, scope, clazz, action)
     }
 
     @RequiresReadLock
@@ -109,6 +98,7 @@ object StubIndexKt {
     /**
      * Traverse all elements in the given [indexKey] for the specified [key] and apply the action to each element.
      */
+    @Suppress("unused")
     @RequiresReadLock
     inline fun <Key : Any, Psi : PsiElement> forEachElement(
         indexKey: StubIndexKey<Key, Psi>,
@@ -124,6 +114,7 @@ object StubIndexKt {
         }
     }
 
+    @Suppress("unused")
     @RequiresReadLock
     inline fun <Key : Any, reified Psi : PsiElement> forEachAllElements(
         indexKey: StubIndexKey<Key, Psi>,
@@ -137,6 +128,7 @@ object StubIndexKt {
         }
     }
 
+    @Suppress("unused")
     @RequiresReadLock
     inline fun <Key : Any, Psi : PsiElement> forEachAllElements(
         indexKey: StubIndexKey<Key, Psi>,

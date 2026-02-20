@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.completion.pathcompletion
 import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.lookup.LookupElementBuilder
+import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
@@ -95,16 +96,7 @@ abstract class LatexContextAwarePathProviderBase : LatexContextAwareCompletionAd
         // full path (on the local file system) to the project directory, but in tests this will be just "src/"
         // causing LocalFileSystem.findByPath to always return null.
         projectDir.findFileByRelativePath(pathOffset)?.let { baseDir ->
-            if (searchFolders()) {
-                addFolderNavigations(pathOffset, resultSet)
-                getContents(baseDir, true).forEach {
-                    addDirectoryCompletion(pathOffset, it, resultSet)
-                }
-            }
-
-            if (searchFiles()) getContents(baseDir, false).forEach {
-                addFileCompletion(pathOffset, it, validExtensions, resultSet)
-            }
+            addPathCompletions(pathOffset, resultSet, baseDir, validExtensions)
         }
     }
 
@@ -114,16 +106,25 @@ abstract class LatexContextAwarePathProviderBase : LatexContextAwareCompletionAd
     private fun addAbsolutePathCompletion(baseDir: String, validExtensions: Set<String>?, resultSet: CompletionResultSet) {
         if (baseDir.isBlank()) return
         LocalFileSystem.getInstance().refreshAndFindFileByPath(baseDir)?.let { dirFile ->
-            if (searchFolders()) {
-                addFolderNavigations(baseDir, resultSet)
-                getContents(dirFile, true).forEach {
-                    addDirectoryCompletion(baseDir, it, resultSet)
-                }
-            }
+            addPathCompletions(baseDir, resultSet, dirFile, validExtensions)
+        }
+    }
 
-            if (searchFiles()) getContents(dirFile, false).forEach {
-                addFileCompletion(baseDir, it, validExtensions, resultSet)
+    private fun addPathCompletions(
+        pathOffset: String,
+        resultSet: CompletionResultSet,
+        baseDir: VirtualFile,
+        validExtensions: Set<String>?
+    ) {
+        if (searchFolders()) {
+            addFolderNavigations(pathOffset, resultSet)
+            getContents(baseDir, true).forEach {
+                addDirectoryCompletion(pathOffset, it, resultSet)
             }
+        }
+
+        if (searchFiles()) getContents(baseDir, false).forEach {
+            addFileCompletion(pathOffset, it, validExtensions, resultSet)
         }
     }
 
@@ -162,15 +163,17 @@ abstract class LatexContextAwarePathProviderBase : LatexContextAwareCompletionAd
      */
     private fun addFileCompletion(baseDir: String, foundFile: VirtualFile, validExtensions: Set<String>?, resultSet: CompletionResultSet) {
         // Some commands like \input accept any file extension (supportsExtension), but showing only .tex files is probably a better user experience.
+        val extension = foundFile.extension
         if (!validExtensions.isNullOrEmpty() && validExtensions.first().isNotEmpty()) {
-            if (validExtensions.contains(foundFile.extension).not()) return
+            if (validExtensions.contains(extension).not()) return
         }
 
-        val icon = TexifyIcons.getIconFromExtension(foundFile.extension, default = FILE)
+        val default = if (extension != null) FileTypeManager.getInstance().getFileTypeByExtension(extension).icon ?: FILE else FILE
+        val icon = TexifyIcons.getIconFromExtension(extension, default = default)
         resultSet.addElement(
             LookupElementBuilder.create(baseDir + foundFile.name)
                 .withPresentableText(foundFile.nameWithoutExtension)
-                .withTailText(".${foundFile.extension}", true)
+                .withTailText(".$extension", true)
                 .withInsertHandler(
                     CompositeHandler(
                         LatexReferenceInsertHandler(),
@@ -264,7 +267,5 @@ abstract class LatexContextAwarePathProviderBase : LatexContextAwareCompletionAd
     /**
      * search in given path for subfiles or directories
      */
-    private fun getContents(base: VirtualFile?, directory: Boolean): List<VirtualFile> {
-        return base?.children?.filter { it.isDirectory == directory } ?: mutableListOf()
-    }
+    private fun getContents(base: VirtualFile?, directory: Boolean): List<VirtualFile> = base?.children?.filter { it.isDirectory == directory } ?: mutableListOf()
 }

@@ -10,7 +10,9 @@ data class LatexLogMessage(val message: String, val fileName: String? = null, va
     fun toTreeViewString(): String {
         val typeString = type.toString().lowercase(Locale.getDefault()).capitalizeFirst()
         val lineString = if (line >= 0) "line ($line)" else ""
-        return "$typeString:$lineString $message"
+        // Should match ErrorTreeElement.fullString()
+        val exportTextPrefix = if (file != null) "$typeString:$lineString" else ""
+        return "$exportTextPrefix $message"
     }
 }
 

@@ -1,11 +1,6 @@
 package nl.hannahsten.texifyidea.index.file
 
-import com.intellij.util.indexing.DataIndexer
-import com.intellij.util.indexing.DefaultFileTypeSpecificInputFilter
-import com.intellij.util.indexing.FileBasedIndex
-import com.intellij.util.indexing.FileBasedIndexExtension
-import com.intellij.util.indexing.FileContent
-import com.intellij.util.indexing.ID
+import com.intellij.util.indexing.*
 import com.intellij.util.io.DataExternalizer
 import com.intellij.util.io.EnumeratorStringDescriptor
 import com.intellij.util.io.IOUtil
@@ -82,14 +77,12 @@ object LatexDtxDefinitionDataIndexer : DataIndexer<String, List<LatexSimpleDefin
      */
     const val MAX_CHARS = 100000
 
-    private fun String.truncate(maxLength: Int, fileName: String): String {
-        return if (this.length > maxLength) {
-            Log.warn(("Truncating in $fileName: ${this.take(50)}"))
-            this.take(maxLength)
-        }
-        else {
-            this
-        }
+    private fun String.truncate(maxLength: Int, fileName: String): String = if (this.length > maxLength) {
+        Log.warn(("Truncating in $fileName: ${this.take(50)}"))
+        this.take(maxLength)
+    }
+    else {
+        this
     }
 
     private fun parseDtxLines(fileName: String, lines: Sequence<String>): DtxDoc {
@@ -186,7 +179,7 @@ object LatexDtxDefinitionDataIndexer : DataIndexer<String, List<LatexSimpleDefin
         return describeBlocks
     }
 
-    private fun parseArguments(params: String?): List<LArgument> {
+    fun parseArguments(params: String?): List<LArgument> {
         if (params == null) return emptyList()
         var args = emptyList<LArgument>()
         /*
@@ -209,7 +202,7 @@ object LatexDtxDefinitionDataIndexer : DataIndexer<String, List<LatexSimpleDefin
         return args
     }
 
-    private fun extractDefinitionsFromBlocks(describeBlocks: List<String>): List<LatexSimpleDefinition> {
+    fun extractDefinitionsFromBlocks(describeBlocks: List<String>): List<LatexSimpleDefinition> {
         val result = mutableListOf<LatexSimpleDefinition>()
         for (block in describeBlocks) {
             val curSize = result.size
@@ -234,10 +227,6 @@ object LatexDtxDefinitionDataIndexer : DataIndexer<String, List<LatexSimpleDefin
         }
         return result
     }
-
-    private val regexOneLineArgs = """
-        \\(?<type>(marg|oarg|parg|meta))\{(?<name>[^}]+)}
-    """.trimIndent().toRegex()
 
     private val parameterSuffix = """
         \s*(\\star|\*)?(?<params>(\s*\\(marg|oarg|parg|meta)\{[^}]+})+)
@@ -294,34 +283,25 @@ object LatexDtxDefinitionDataIndexer : DataIndexer<String, List<LatexSimpleDefin
             if (def.name in names) continue
             definitions.add(def)
         }
-        return mapOf(dtxInfo.lib.name to definitions)
+        val filename = dtxInfo.lib.toFileName() ?: return emptyMap()
+        return mapOf(filename to definitions)
     }
 }
 
 class LatexDtxDefinitionIndexEx : FileBasedIndexExtension<String, List<LatexSimpleDefinition>>() {
     private val myInputFilter = DefaultFileTypeSpecificInputFilter(LatexSourceFileType) // only .dtx
 
-    override fun getKeyDescriptor(): KeyDescriptor<String> {
-        return EnumeratorStringDescriptor.INSTANCE
-    }
+    override fun getKeyDescriptor(): KeyDescriptor<String> = EnumeratorStringDescriptor.INSTANCE
 
-    override fun getName(): ID<String, List<LatexSimpleDefinition>> {
-        return LatexFileBasedIndexKeys.DTX_DEFINITIONS
-    }
+    override fun getName(): ID<String, List<LatexSimpleDefinition>> = LatexFileBasedIndexKeys.DTX_DEFINITIONS
 
-    override fun getIndexer(): DataIndexer<String, List<LatexSimpleDefinition>, FileContent> {
-        return LatexDtxDefinitionDataIndexer
-    }
+    override fun getIndexer(): DataIndexer<String, List<LatexSimpleDefinition>, FileContent> = LatexDtxDefinitionDataIndexer
 
-    override fun getValueExternalizer(): DataExternalizer<List<LatexSimpleDefinition>> {
-        return MyValueExternalizer
-    }
+    override fun getValueExternalizer(): DataExternalizer<List<LatexSimpleDefinition>> = MyValueExternalizer
 
     override fun getVersion() = 8
 
-    override fun getInputFilter(): FileBasedIndex.InputFilter {
-        return myInputFilter
-    }
+    override fun getInputFilter(): FileBasedIndex.InputFilter = myInputFilter
 
     override fun dependsOnFileContent() = true
 

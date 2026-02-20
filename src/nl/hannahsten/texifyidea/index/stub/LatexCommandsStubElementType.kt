@@ -2,7 +2,10 @@ package nl.hannahsten.texifyidea.index.stub
 
 import com.intellij.psi.stubs.*
 import nl.hannahsten.texifyidea.grammar.LatexLanguage
-import nl.hannahsten.texifyidea.index.*
+import nl.hannahsten.texifyidea.index.LatexStubIndexKeys
+import nl.hannahsten.texifyidea.index.NewDefinitionIndex
+import nl.hannahsten.texifyidea.index.NewLabelsIndex
+import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexParameter
 import nl.hannahsten.texifyidea.psi.contentText
@@ -19,9 +22,7 @@ import java.util.stream.Collectors
 class LatexCommandsStubElementType(debugName: String) :
     IStubElementType<LatexCommandsStub, LatexCommands>(debugName, LatexLanguage) {
 
-    override fun createPsi(latexCommandsStub: LatexCommandsStub): LatexCommands {
-        return LatexCommandsImpl(latexCommandsStub, this)
-    }
+    override fun createPsi(latexCommandsStub: LatexCommandsStub): LatexCommands = LatexCommandsImpl(latexCommandsStub, this)
 
     override fun createStub(latexCommands: LatexCommands, parent: StubElement<*>): LatexCommandsStub {
         val commandToken = latexCommands.commandToken.text
@@ -93,13 +94,6 @@ class LatexCommandsStubElementType(debugName: String) :
     }
 
     override fun indexStub(stub: LatexCommandsStub, sink: IndexSink) {
-        // We do not want all the commands from all package source files in this index, because
-//        // then we end up with 200k keys for texlive full, but we need to iterate over all keys
-//        // every time we need to get e.g. all commands in a file, so that would be too slow.
-//        // Therefore, we check if the indexing of this file was caused by being in an extra project root or not
-//        // It seems we cannot make a distinction that we do want to index with LatexExternalCommandIndex but not this index
-//        // Unfortunately, this seems to make indexing five times slower
-
         val token = stub.commandToken
         sink.occurrence(LatexStubIndexKeys.COMMANDS, token)
 
@@ -108,10 +102,8 @@ class LatexCommandsStubElementType(debugName: String) :
         NewLabelsIndex.sinkIndexCommand(stub, sink) // labels
     }
 
-    private fun deserialiseList(string: String): List<String> {
-        return LIST_ELEMENT_SEPARATOR.splitAsStream(string)
-            .collect(Collectors.toList())
-    }
+    private fun deserialiseList(string: String): List<String> = LIST_ELEMENT_SEPARATOR.splitAsStream(string)
+        .collect(Collectors.toList())
 
     private fun serialiseOptionalMap(stub: LatexCommandsStub): String {
         val keyValuePairs = stub.optionalParamsMap.map { "${it.key}=${it.value}" }

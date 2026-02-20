@@ -1,6 +1,8 @@
 package nl.hannahsten.texifyidea.util
 
 import com.intellij.execution.RunManager
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.fileEditor.FileEditorManager
@@ -19,12 +21,10 @@ import com.intellij.util.concurrency.annotations.RequiresReadLock
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.modules.LatexModuleType
-import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.LatexRunConfigurationType
 import nl.hannahsten.texifyidea.run.LatexTemplateConfigurationFactory
 import nl.hannahsten.texifyidea.util.files.allChildFiles
-import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 /**
  * Get a project [GlobalSearchScope] for this project.
@@ -35,12 +35,14 @@ val Project.projectSearchScope: GlobalSearchScope
 val Project.contentSearchScope: GlobalSearchScope
     get() = ProjectScope.getContentScope(this)
 
+@Suppress("unused")
 val Project.librarySearchScope: GlobalSearchScope
     get() = ProjectScope.getLibrariesScope(this)
 
 /**
  * Get a project [GlobalSearchScope] for this project.
  */
+@Suppress("unused")
 val Project.everythingScope: GlobalSearchScope
     get() = GlobalSearchScope.everythingScope(this)
 
@@ -118,10 +120,19 @@ fun Project?.latexTemplateRunConfig(): LatexRunConfiguration? = this?.let {
 }
 
 /**
- * Gets the currently focused text editor.
+ * Gets the currently focused text editor (returns null for example if the user has clicked on some button)
  */
-fun Project.currentTextEditor(): TextEditor? {
-    return FileEditorManager.getInstance(this).focusedEditor as? TextEditor?
+fun Project.focusedTextEditor(): TextEditor? = FileEditorManager.getInstance(this).focusedEditor as? TextEditor?
+
+/**
+ * Gets the text editor which was last selected (may not be focused anymore)
+ */
+fun Project.selectedTextEditor(): TextEditor? = FileEditorManager.getInstance(this).selectedEditor as? TextEditor?
+
+fun Project.selectedTextEditorOrWarning(): TextEditor? {
+    selectedTextEditor()?.let { return it }
+    Notification("LaTeX", "Could not find an open editor to insert text", "Put your caret in a LaTeX file first. Please report an issue on GitHub if you believe this is incorrect", NotificationType.ERROR).notify(this)
+    return null
 }
 
 /**
@@ -146,22 +157,11 @@ fun Project.hasLatexModule(): Boolean {
  * Best guess at whether this project can be considered a project containing significant LaTeX things.
  */
 @RequiresReadLock // Required by containsFileOfType
-fun Project.isLatexProject(): Boolean {
-    return hasLatexModule() ||
-        getLatexRunConfigurations().isNotEmpty() ||
-        (ApplicationNamesInfo.getInstance().scriptName != "idea" && containsFileOfType(LatexFileType))
-}
+fun Project.isLatexProject(): Boolean = hasLatexModule() ||
+    getLatexRunConfigurations().isNotEmpty() ||
+    (ApplicationNamesInfo.getInstance().scriptName != "idea" && containsFileOfType(LatexFileType))
 
 /**
  * True if we are in a unit test.
  */
 fun isTestProject() = ApplicationManager.getApplication().isUnitTestMode
-
-/**
- * Finds all section marker commands (as defined in [CommandMagic.sectionNameToLevel]) in the project.
- *
- * @return A list containing all the section marker [LatexCommands].
- */
-fun Project.findSectionMarkers(): Collection<LatexCommands> {
-    return NewCommandsIndex.getByNames(CommandMagic.sectionNameToLevel.keys, this)
-}

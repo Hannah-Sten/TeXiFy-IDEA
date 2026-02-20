@@ -4,7 +4,7 @@ import com.intellij.formatting.ASTBlock
 import com.intellij.formatting.Spacing
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import nl.hannahsten.texifyidea.formatting.createSpacing
-import nl.hannahsten.texifyidea.lang.DefaultEnvironment.TABULAR
+import nl.hannahsten.texifyidea.lang.predefined.EnvironmentNames
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexEnvironmentContent
 import nl.hannahsten.texifyidea.psi.LatexTypes
@@ -24,7 +24,7 @@ fun checkTableEnvironment(parent: ASTBlock, child: ASTBlock): LatexEnvironmentCo
     // node - no_math_content - environment_content - environment: We have to go two levels up
     val contentElement = parent.node?.psi?.firstParentOfType<LatexEnvironmentContent>(2) ?: return null
     val envNode = contentElement.parent as? LatexEnvironment ?: return null
-    if (envNode.getEnvironmentName() != TABULAR.environmentName) return null
+    if (envNode.getEnvironmentName() != EnvironmentNames.TABULAR) return null
     // Ignore raw texts
     if (child.node?.elementType == LatexTypes.RAW_TEXT_TOKEN || parent.node?.elementType == LatexTypes.RAW_TEXT) return null
     return contentElement
@@ -116,18 +116,16 @@ fun getAmpersandOffsets(contentTextOffset: Int, indent: String, contentLines: Mu
  * Remove lines without &, and everything after \\ to avoid confusing while aligning the &'s
  * Assumes users place things such as \hline or \midrule after the \\ or on a separate line
  */
-fun removeRules(content: String, tableLineSeparator: String): String {
-    return content.split("\n").mapNotNull { line ->
-        when {
-            line.contains(tableLineSeparator) -> {
-                // remove everything after \\
-                line.split(tableLineSeparator).first() + tableLineSeparator
-            }
-            line.count { it == '&' } == 0 -> null
-            else -> line
+fun removeRules(content: String, tableLineSeparator: String): String = content.split("\n").mapNotNull { line ->
+    when {
+        line.contains(tableLineSeparator) -> {
+            // remove everything after \\
+            line.split(tableLineSeparator).first() + tableLineSeparator
         }
-    }.joinToString("\n")
-}
+        line.count { it == '&' } == 0 -> null
+        else -> line
+    }
+}.joinToString("\n")
 
 fun getNumberOfSpaces(
     contentWithoutRules: String,
@@ -154,35 +152,36 @@ fun getNumberOfSpaces(
  *
  * @return List of lists, each list is a list of indices (the offset in the line for this ampersand)
  */
-private fun removeExtraSpaces(contentLinesWithoutRules: MutableList<String>): List<List<Int>> {
-    return contentLinesWithoutRules.map { line ->
-        // (relative index after removing spaces, number of spaces removed on this line before this ampersand)
-        val indices = mutableListOf<Int>()
-        var removedSpaces = 0
-        line.withIndex().forEach { (i, value) ->
-            when {
-                // Ignore escaped ampersands
-                value == '&' && if (i > 0) line[i - 1] != '\\' else true -> {
-                    indices += i - removedSpaces
-                }
-                value == '\\' && if (i < line.length - 1) line[i + 1] == '\\' else false -> {
-                    indices += i - removedSpaces
-                }
-                value in setOf(' ', '\n') -> {
-                    if (i > 0 && i < line.length - 1) {
-                        // Spaces after an ignored ampersand are not removed
-                        val isAfterSpaceOrSeparator = (line[i - 1] in setOf(' ', '&', '\n') && (i < 2 || line[i - 2] != '\\'))
-                        val isBeforeSpaceOrSeparator = line[i + 1] in setOf(' ', '&', '\n')
-                        val isBeforeDoubleBackslash = i < line.length - 2 && line[i + 1] == '\\' && line[i + 2] == '\\'
-                        if (isAfterSpaceOrSeparator || isBeforeSpaceOrSeparator || isBeforeDoubleBackslash) removedSpaces++
-                    }
-                }
-                else -> {
+private fun removeExtraSpaces(contentLinesWithoutRules: MutableList<String>): List<List<Int>> = contentLinesWithoutRules.map { line ->
+    // (relative index after removing spaces, number of spaces removed on this line before this ampersand)
+    val indices = mutableListOf<Int>()
+    var removedSpaces = 0
+    line.withIndex().forEach { (i, value) ->
+        when (value) {
+            // Ignore escaped ampersands
+            '&' if if (i > 0) line[i - 1] != '\\' else true -> {
+                indices += i - removedSpaces
+            }
+
+            '\\' if if (i < line.length - 1) line[i + 1] == '\\' else false -> {
+                indices += i - removedSpaces
+            }
+
+            in setOf(' ', '\n') -> {
+                if (i > 0 && i < line.length - 1) {
+                    // Spaces after an ignored ampersand are not removed
+                    val isAfterSpaceOrSeparator = (line[i - 1] in setOf(' ', '&', '\n') && (i < 2 || line[i - 2] != '\\'))
+                    val isBeforeSpaceOrSeparator = line[i + 1] in setOf(' ', '&', '\n')
+                    val isBeforeDoubleBackslash = i < line.length - 2 && line[i + 1] == '\\' && line[i + 2] == '\\'
+                    if (isAfterSpaceOrSeparator || isBeforeSpaceOrSeparator || isBeforeDoubleBackslash) removedSpaces++
                 }
             }
+
+            else -> {
+            }
         }
-        indices.toList()
     }
+    indices.toList()
 }
 
 /**
@@ -261,7 +260,8 @@ private fun getSpacesForRightBlock(
                 if ((
                         relativeIndices.getOrNull(i)?.getOrNull(level)
                             ?: 0
-                        ) > LINE_LENGTH && (didPreviousCellGetNewline || level < absoluteIndices.size - 1)
+                        ) > LINE_LENGTH &&
+                    (didPreviousCellGetNewline || level < absoluteIndices.size - 1)
                 ) return -1
                 return spacesPerCell.getOrNull(min(i, spacesPerCell.size - 1))?.getOrNull(level)
             }

@@ -5,18 +5,15 @@ import com.intellij.psi.stubs.PsiFileStub
 import com.intellij.psi.stubs.StubIndexKey
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
+import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 
 class NewCommandsIndexEx : LatexCompositeStubIndex<LatexCommands>(LatexCommands::class.java) {
 
-    override fun getKey(): StubIndexKey<String, LatexCommands> {
-        return LatexStubIndexKeys.COMMANDS
-    }
+    override fun getKey(): StubIndexKey<String, LatexCommands> = LatexStubIndexKeys.COMMANDS
 
-    override fun getVersion(): Int {
-        return 2
-    }
+    override fun getVersion(): Int = 2
 }
 
 /**
@@ -24,13 +21,23 @@ class NewCommandsIndexEx : LatexCompositeStubIndex<LatexCommands>(LatexCommands:
  */
 val NewCommandsIndex = NewCommandsIndexEx()
 
+class NewLatexEnvironmentIndexEx : LatexCompositeStubIndex<LatexEnvironment>(LatexEnvironment::class.java) {
+
+    override fun getKey(): StubIndexKey<String, LatexEnvironment> = LatexStubIndexKeys.ENVIRONMENTS
+
+    override fun getVersion(): Int = 2
+}
+
+/**
+ * The index for all environments.
+ */
+val NewLatexEnvironmentIndex = NewLatexEnvironmentIndexEx()
+
 /**
  * Definitions of both commands and theorems
  */
 class NewDefinitionIndexEx : LatexCompositeTransformedStubIndex<LatexCommandsStub, LatexCommands>(LatexCommands::class.java) {
-    override fun getVersion(): Int {
-        return 1004
-    }
+    override fun getVersion(): Int = 1004
 
     override fun sinkIndex(stub: LatexCommandsStub, sink: IndexSink) {
         val command = stub.commandToken
@@ -41,9 +48,7 @@ class NewDefinitionIndexEx : LatexCompositeTransformedStubIndex<LatexCommandsStu
         }
     }
 
-    override fun getKey(): StubIndexKey<String, LatexCommands> {
-        return LatexStubIndexKeys.DEFINITIONS
-    }
+    override fun getKey(): StubIndexKey<String, LatexCommands> = LatexStubIndexKeys.DEFINITIONS
 }
 
 val NewDefinitionIndex = NewDefinitionIndexEx()

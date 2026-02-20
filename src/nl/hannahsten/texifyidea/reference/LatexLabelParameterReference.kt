@@ -3,10 +3,10 @@ package nl.hannahsten.texifyidea.reference
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.*
 import com.intellij.psi.search.GlobalSearchScope
-import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.index.NewLabelsIndex
+import nl.hannahsten.texifyidea.index.projectstructure.LatexProjectStructure
 import nl.hannahsten.texifyidea.psi.LatexParameterText
-import nl.hannahsten.texifyidea.util.labels.extractLabelElement
+import nl.hannahsten.texifyidea.util.labels.LatexLabelUtil
 
 /**
  * This reference works on parameter text, i.e. the actual label parameters.
@@ -20,7 +20,7 @@ class LatexLabelParameterReference(element: LatexParameterText) : PsiReferenceBa
 
     private val labelName = element.text
 
-    override fun calculateDefaultRangeInElement(): TextRange? {
+    override fun calculateDefaultRangeInElement(): TextRange {
         val fullRange = ElementManipulators.getValueTextRange(element)
         val prefix = determinePrefix() ?: return fullRange
         val prefixLength = prefix.length
@@ -45,9 +45,7 @@ class LatexLabelParameterReference(element: LatexParameterText) : PsiReferenceBa
         return externalDocumentInfo.firstOrNull { labelName.startsWith(it.labelPrefix) }?.labelPrefix
     }
 
-    override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
-        return multiResolve(labelName, myElement.containingFile).toTypedArray()
-    }
+    override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> = multiResolve(labelName, myElement.containingFile).toTypedArray()
 
     override fun handleElementRename(newElementName: String): PsiElement {
         var newName = newElementName
@@ -61,28 +59,13 @@ class LatexLabelParameterReference(element: LatexParameterText) : PsiReferenceBa
     companion object {
 
         fun multiResolve(label: String, file: PsiFile): List<PsiElementResolveResult> {
-            val project = file.project
-            val basicSearchScope = LatexProjectStructure.getFilesetScopeFor(file, onlyTexFiles = true)
-            var elements = NewLabelsIndex.getByName(label, basicSearchScope)
-
-            LatexProjectStructure.getFilesetDataFor(file)?.externalDocumentInfo?.forEach { info ->
-                if (label.startsWith(info.labelPrefix)) {
-                    val labelWithoutPrefix = label.removePrefix(info.labelPrefix)
-                    val scopes = info.files.map { LatexProjectStructure.getFilesetScopeFor(it, project, onlyTexFiles = true) }
-                    elements += NewLabelsIndex.getByName(labelWithoutPrefix, GlobalSearchScope.union(scopes))
-                }
-            }
-
-            return elements.mapNotNull { e ->
-                // Find the normal text in the label command.
-                // We cannot just resolve to the label command itself, because for Find Usages IJ will get the name of the element
-                // under the cursor and use the words scanner to look for it (and then check if the elements found are references to the element under the cursor)
-                // but only the label text itself will have the correct name for that.
-                e.extractLabelElement()?.let { PsiElementResolveResult(it) }
-            }
+            val paramList = LatexLabelUtil.getLabelParamsByName(label, file)
+            if (paramList.isEmpty()) return emptyList()
+            return paramList.map { PsiElementResolveResult(it) }
         }
 
         fun isLabelDefined(label: String, file: PsiFile): Boolean {
+            // Fast check first
             val project = file.project
             val basicSearchScope = LatexProjectStructure.getFilesetScopeFor(file, onlyTexFiles = true)
             if (NewLabelsIndex.existsByName(label, project, basicSearchScope)) return true
@@ -94,7 +77,9 @@ class LatexLabelParameterReference(element: LatexParameterText) : PsiReferenceBa
                     if (NewLabelsIndex.existsByName(labelWithoutPrefix, project, GlobalSearchScope.union(scopes))) return true
                 }
             }
-            return false
+
+            // Exact check in the fileset (including external documents)
+            return LatexLabelUtil.getLabelParamsByName(label, file).isNotEmpty()
         }
     }
 }

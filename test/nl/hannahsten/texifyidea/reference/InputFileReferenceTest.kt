@@ -6,9 +6,7 @@ import nl.hannahsten.texifyidea.updateFilesets
 
 class InputFileReferenceTest : BasePlatformTestCase() {
 
-    override fun getTestDataPath(): String {
-        return "test/resources/reference"
-    }
+    override fun getTestDataPath(): String = "test/resources/reference"
 
     fun testRename() {
         myFixture.configureByFile("oldname.tex")

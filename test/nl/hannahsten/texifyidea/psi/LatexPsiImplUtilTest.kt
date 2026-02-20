@@ -4,16 +4,17 @@ import com.intellij.openapi.paths.WebReference
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.util.parser.*
+import nl.hannahsten.texifyidea.util.parser.extractUrlReferences
+import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
+import nl.hannahsten.texifyidea.util.parser.lastChildOfType
+import nl.hannahsten.texifyidea.util.parser.toStringMap
 import org.junit.Test
 
 class LatexPsiImplUtilTest : BasePlatformTestCase() {
 
     private val url = "https://github.com/Hannah-Sten/TeXiFy-IDEA"
 
-    override fun getTestDataPath(): String {
-        return "test/resources/psi"
-    }
+    override fun getTestDataPath(): String = "test/resources/psi"
 
     private val optionalParameters =
         """\usepackage[backend=biber,style={alphabetic order},optionwithoutvalue]{biblatex}"""

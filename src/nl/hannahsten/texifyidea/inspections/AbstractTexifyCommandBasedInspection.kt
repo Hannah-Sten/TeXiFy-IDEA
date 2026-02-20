@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.inspections
 
+import com.intellij.codeInsight.intention.FileModifier
 import com.intellij.codeInspection.InspectionManager
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
@@ -56,18 +57,17 @@ abstract class AbstractTexifyCommandBasedInspection(
     protected class ReplaceCommandQuickFix(
         val fixName: String,
         private val newNameWithoutSlash: String,
+        @FileModifier.SafeFieldForPreview
         private val requiredPkg: LatexLib = LatexLib.BASE
     ) : LocalQuickFix {
-        override fun getFamilyName(): @IntentionFamilyName String {
-            return fixName
-        }
+        override fun getFamilyName(): @IntentionFamilyName String = fixName
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val element = descriptor.psiElement as? LatexCommands ?: return
             element.setName(newNameWithoutSlash)
             // Ensure the required package is imported
             if(requiredPkg != LatexLib.BASE) {
-                PackageUtils.insertUsePackage(element.containingFile, requiredPkg)
+                PackageUtils.insertUsepackage(element.containingFile, requiredPkg)
             }
         }
     }

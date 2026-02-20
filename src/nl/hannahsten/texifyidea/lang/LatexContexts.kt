@@ -9,9 +9,7 @@ open class SimpleLatexContext(
     val name: String,
     final override val display: String = name
 ) : LatexContext {
-    override fun toString(): String {
-        return display
-    }
+    override fun toString(): String = display
 
     private val hash = name.hashCode()
 
@@ -32,15 +30,10 @@ interface ILFileInputContext : LatexContext
 class SimpleFileInputContext(
     name: String,
     val isCommaSeparated: Boolean = false,
+    val isExtensionRequired: Boolean = false,
     val supportedExtensions: Set<String> = emptySet(),
     val isAbsolutePathSupported: Boolean = true
 ) : SimpleLatexContext(name), ILFileInputContext
-
-/**
- * A context that describes a literal, for example `cc` in `\begin{tabular}{cc}`.
- * This is used to provide autocompletion for text content.
- */
-interface LLiteralContext : LatexContext
 
 /**
  * Some predefined contexts that are used in LaTeX files.
@@ -50,6 +43,8 @@ interface LLiteralContext : LatexContext
 object LatexContexts {
 
     val Math = SimpleLatexContext("math")
+
+    val InlineMath = SimpleLatexContext("math.inline")
 
     /**
      * Describes the context of package names, for example in `\usepackage{...}`.
@@ -64,11 +59,6 @@ object LatexContexts {
     val ClassName = SimpleLatexContext("class")
 
     val Preamble = SimpleLatexContext("preamble")
-
-    /**
-     * This context should never be introduced, so command under this context will never be suggested.
-     */
-    val Nothing = SimpleLatexContext("nothing")
 
     /**
      * Definitions of labels, such as `\label{...}`.
@@ -103,11 +93,26 @@ object LatexContexts {
     val Identifier = SimpleLatexContext("identifier")
 
     /**
+     * Verbatim as in \verb|...| or verbatim environments
+     */
+    val Verbatim = SimpleLatexContext("verbatim")
+
+    /**
      * Some string literal that may be meaningful, such as `cc` in `\begin{tabular}{cc}`.
      *
      * Creating more specific contexts for literals is preferred and auto-completion can be further provided.
      */
     val Literal = SimpleLatexContext("literal")
+
+    /**
+     * Placement/position specifiers, such as `[htbp]`, `[t]`, `[b]`, or `[c]`.
+     */
+    val Position = SimpleLatexContext("position")
+
+    /**
+     * TeX dimensions/lengths, such as `0.5\textwidth`, `2em`, or `3pt`.
+     */
+    val Dimension = SimpleLatexContext("dimension")
 
     /**
      * Plain text content, such as in `\text{...}`.
@@ -133,11 +138,15 @@ object LatexContexts {
     )
 
     val SingleBibFile = SimpleFileInputContext(
-        "file.bib", isCommaSeparated = false, supportedExtensions = setOf("bib"),
+        "file.bib", isCommaSeparated = false, isExtensionRequired = true, supportedExtensions = setOf("bib"),
     )
 
     val MultipleBibFiles = SimpleFileInputContext(
         "files.bib", isCommaSeparated = true, supportedExtensions = setOf("bib"),
+    )
+
+    val SingleCSLBibFile = SimpleFileInputContext(
+        "file.bib", isCommaSeparated = false, isExtensionRequired = true, supportedExtensions = setOf("bib", "json", "yaml"),
     )
 
     val Folder = SimpleLatexContext("folder")
@@ -145,7 +154,9 @@ object LatexContexts {
     /**
      * The citation reference in `\cite{...}`.
      */
-    val CitationReference = SimpleLatexContext("cite.ref")
+    val BibReference = SimpleLatexContext("bib.ref")
+
+    val BibKey = SimpleLatexContext("bib.key")
 
     /**
      * A context for BibTeX style files, such as `plain` in `\bibliographystyle{plain}`.
@@ -159,11 +170,20 @@ object LatexContexts {
     val MintedFuntimeLand = SimpleLatexContext("minted.funtime.land")
 
     /**
-     * A context for glossary entries, such as in `\gls{...}` or `\glsadd{...}`.
+     * References to glossary entries, such as in `\gls{...}` or `\Gls{...}`.
      */
-    val GlossaryLabel = SimpleLatexContext("glossary")
+    val GlossaryReference = SimpleLatexContext("glossary")
 
+    /**
+     * Definitions of glossary entries, such as in `\newglossaryentry{...}{...}`.
+     */
+    val GlossaryDefinition = SimpleLatexContext("new.glossary")
+
+    /**
+     * A context for color names or literal, such as in `\textcolor{red}{...}` or `\color{blue}`.
+     */
     val ColorReference = SimpleLatexContext("color")
+    val ColorDefinition = SimpleLatexContext("new.color")
 
     val PicturePath = SimpleLatexContext("picture.path")
 
@@ -180,4 +200,30 @@ object LatexContexts {
     val Alignable = SimpleLatexContext("alignable")
 
     val TikzPicture = SimpleLatexContext("tikz.picture")
+
+    fun asFileInputCtx(intro: LatexContextIntro): SimpleFileInputContext? {
+        if (intro !is LatexContextIntro.Assign) return null
+        val contexts = intro.contexts
+        for (ctx in contexts) {
+            if (ctx is SimpleFileInputContext) return ctx
+        }
+        return null
+    }
+
+    /**
+     * Contexts in which an identifier is expected.
+     *
+     * @see nl.hannahsten.texifyidea.psi.impl.LatexParameterTextImplMixin.getNameIdentifier
+     */
+    val contextsAsIdentifier = setOf(
+        LabelDefinition,
+        LabelReference,
+        BibKey,
+        BibReference,
+        GlossaryReference,
+        GlossaryDefinition,
+        CommandDeclaration,
+        EnvironmentDeclaration,
+        Identifier
+    )
 }

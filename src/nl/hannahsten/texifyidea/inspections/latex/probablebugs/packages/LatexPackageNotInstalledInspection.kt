@@ -17,14 +17,13 @@ import com.intellij.psi.SmartPsiElementPointer
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
+import nl.hannahsten.texifyidea.lang.predefined.CommandNames
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
 import nl.hannahsten.texifyidea.util.TexLivePackages
 import nl.hannahsten.texifyidea.util.files.rerunInspections
-import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.traverseTyped
 import nl.hannahsten.texifyidea.util.runCommand
 import java.util.*
@@ -44,9 +43,7 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
     override val inspectionId: String =
         "PackageNotInstalled"
 
-    override fun getDisplayName(): String {
-        return "Package is not installed"
-    }
+    override fun getDisplayName(): String = "Package is not installed"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
@@ -63,13 +60,13 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
         }
 
         val installedPackages = TexLivePackages.packageList ?: return descriptors
-        val customPackages = NewCommandsIndex.getByName(LatexGenericRegularCommand.PROVIDESPACKAGE.cmd, file.project)
+        val customPackages = NewCommandsIndex.getByName(CommandNames.PROVIDES_PACKAGE, file.project)
             .map { it.requiredParameterText(0) }
             .mapNotNull { it?.lowercase(Locale.getDefault()) }
         val packages = installedPackages + customPackages
 
         val commands = file.traverseTyped<LatexCommands>()
-            .filter { it.name == LatexGenericRegularCommand.USEPACKAGE.cmd || it.name == LatexGenericRegularCommand.REQUIREPACKAGE.cmd }
+            .filter { it.name == CommandNames.USE_PACKAGE || it.name == CommandNames.REQUIRE_PACKAGE }
 
         for (command in commands) {
             val references = InputFileReference.getFileArgumentsReferences(command)
@@ -117,12 +114,13 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
             // I don't know if you actually could install multiple packages
             // with one fix, but it's not a bad idea to clear cache once in a while
             knownNotInstalledPackages.clear()
-            val tlmgrExecutable = LatexSdkUtil.getExecutableName("tlmgr", project)
+            val psiFile = filePointer.element
+            val tlmgrExecutable = LatexSdkUtil.getExecutableName("tlmgr", psiFile, project)
 
             ProgressManager.getInstance()
                 .run(object : Task.Backgroundable(project, "Installing $packageName...") {
                     override fun run(indicator: ProgressIndicator) {
-                        val tlname = TexLivePackages.findTexLiveName(this, packageName, project)
+                        val tlname = TexLivePackages.findTexLiveName(this, packageName, project, psiFile)
 
                         if (tlname == null) {
                             Notification(

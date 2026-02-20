@@ -2,8 +2,6 @@ package nl.hannahsten.texifyidea.run.ui
 
 import com.intellij.ide.macro.MacroManager
 import com.intellij.ide.macro.ProjectFileDirMacro
-import com.intellij.notification.Notification
-import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.project.Project
@@ -11,8 +9,6 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
-import nl.hannahsten.texifyidea.util.files.FileUtil
-import nl.hannahsten.texifyidea.util.files.allChildDirectories
 import nl.hannahsten.texifyidea.util.files.createExcludedDir
 import java.io.File
 import java.nio.file.Path
@@ -34,9 +30,7 @@ class LatexOutputPath(private val variant: String, var mainFile: VirtualFile?, p
         const val mainFileString = "{mainFileParent}"
     }
 
-    fun clone(): LatexOutputPath {
-        return LatexOutputPath(variant, mainFile, project).apply { if (this@LatexOutputPath.pathString.isNotBlank()) this.pathString = this@LatexOutputPath.pathString }
-    }
+    fun clone(): LatexOutputPath = LatexOutputPath(variant, mainFile, project).apply { if (this@LatexOutputPath.pathString.isNotBlank()) this.pathString = this@LatexOutputPath.pathString }
 
     // Acts as a sort of cache
     var virtualFile: VirtualFile? = null
@@ -91,13 +85,12 @@ class LatexOutputPath(private val variant: String, var mainFile: VirtualFile?, p
             // Path is invalid (perhaps the user provided an invalid path)
             // Create and return default path
             if (contentRoot != null) {
-                Notification("LaTeX", "Invalid output path", "Output path $pathString of the run configuration could not be created, trying default path ${contentRoot?.path + "/" + variant}", NotificationType.WARNING).notify(project)
-                val defaultPathString = contentRoot!!.path + "/" + variant
+                val defaultPathString = contentRoot.path + "/" + variant
                 createOutputPath(defaultPathString)?.let { return it }
             }
 
             if (contentRoot != null) {
-                return contentRoot!!
+                return contentRoot
             }
 
             return null
@@ -130,6 +123,7 @@ class LatexOutputPath(private val variant: String, var mainFile: VirtualFile?, p
     /**
      * Whether the current output path is the default.
      */
+    @Suppress("unused")
     fun isDefault() = getDefaultOutputPath() == virtualFile
 
     /**

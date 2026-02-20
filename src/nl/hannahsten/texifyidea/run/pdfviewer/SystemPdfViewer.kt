@@ -11,9 +11,7 @@ abstract class SystemPdfViewer(
     override val name: String
         get() = viewerCommand
 
-    override fun toString(): String {
-        return displayName
-    }
+    override fun toString(): String = displayName
 
     /**
      * Check if the PDF viewer is available on the system, the result of this function is cached.
@@ -49,14 +47,13 @@ abstract class SystemPdfViewer(
      * Refresh the availability of the PDF viewer.
      * For example, when the user installs or uninstalls the viewer, this method can be called.
      */
+    @Suppress("unused")
     fun refreshAvailability(possiblePath: String? = null) {
         availability = checkAvailabilityOnSystem(possiblePath)
     }
 
-    override fun isAvailable(): Boolean {
-        return availability ?: checkAvailabilityOnSystem().also {
-            availability = it
-        }
+    override fun isAvailable(): Boolean = availability ?: checkAvailabilityOnSystem().also {
+        availability = it
     }
 
     override val isForwardSearchSupported: Boolean

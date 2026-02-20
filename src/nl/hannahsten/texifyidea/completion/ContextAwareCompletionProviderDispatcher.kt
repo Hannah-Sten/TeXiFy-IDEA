@@ -27,11 +27,12 @@ object ContextAwareCompletionProviderDispatcher : LatexContextAwareCompletionAda
             Folder to LatexFolderProvider,
             BibStyle to LatexBibliographyStyleProvider,
             LabelReference to LatexLabelReferenceProvider,
-            CitationReference to LatexBibliographyReferenceProvider,
+            BibReference to LatexBibliographyReferenceProvider,
             PicturePath to LatexGraphicsPathProvider,
-            GlossaryLabel to LatexGlossariesCompletionProvider,
+            GlossaryReference to LatexGlossariesCompletionProvider,
             ListType to LatexListTypeProvider,
             ColorReference to LatexXColorProvider,
+            Dimension to LatexDimensionUnitProvider,
             MintedFuntimeLand to LatexMintedTypeProvider,
         )
     }
@@ -43,9 +44,7 @@ object ContextAwareCompletionProviderDispatcher : LatexContextAwareCompletionAda
         return null
     }
 
-    private fun dispatchContext(context: LatexContext): LatexContextAwareCompletionProvider? {
-        return dispatchMap[context] ?: additionalDispatching(context)
-    }
+    private fun dispatchContext(context: LatexContext): LatexContextAwareCompletionProvider? = dispatchMap[context] ?: additionalDispatching(context)
 
     override fun addContextAwareCompletions(
         parameters: CompletionParameters, contexts: LContextSet, defBundle: DefinitionBundle,

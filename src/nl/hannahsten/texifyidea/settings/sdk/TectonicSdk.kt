@@ -69,27 +69,19 @@ class TectonicSdk : LatexSdk("Tectonic SDK") {
     }
 
     // The home path we are interested in, is actually the cache path, as it contains all the LaTeX files.
-    override fun isValidSdkHome(path: String): Boolean {
-        return File(path).run {
-            // We are looking for a urls directory as bootstrap
-            exists() && isDirectory && listFiles()?.map { it.name }?.contains("urls") == true
-        }
+    override fun isValidSdkHome(path: String): Boolean = File(path).run {
+        // We are looking for a urls directory as bootstrap
+        exists() && isDirectory && listFiles()?.map { it.name }?.contains("urls") == true
     }
 
     override fun getInvalidHomeMessage(path: String) = "Please select the caches path for Tectonic"
 
     // Actually we should return the TeX Live version, but not sure how to find it
-    override fun getVersionString(sdkHome: String): String? {
-        return "tectonic -V".runCommand()?.replace("Tectonic", "", ignoreCase = true)?.trim()
-    }
+    override fun getVersionString(sdkHome: String): String? = "tectonic -V".runCommand()?.replace("Tectonic", "", ignoreCase = true)?.trim()
 
     // Actually the dtx files are not cached, just lots of other file types.
     // sty files do seem to be present, but at the moment we're not indexing those.
-    override fun getDefaultSourcesPath(homePath: String): VirtualFile? {
-        return LocalFileSystem.getInstance().findFileByPath("$homePath/files")
-    }
+    override fun getDefaultSourcesPath(homePath: String): VirtualFile? = LocalFileSystem.getInstance().findFileByPath("$homePath/files")
 
-    override fun getDefaultStyleFilesPath(homePath: String): VirtualFile? {
-        return getDefaultSourcesPath(homePath)
-    }
+    override fun getDefaultStyleFilesPath(homePath: String): VirtualFile? = getDefaultSourcesPath(homePath)
 }

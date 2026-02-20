@@ -96,7 +96,7 @@ class LatexVerbatimToggleIntention : TexifyIntentionBase("Convert to other verba
 
             // Check if the newly inserted verbatim depends on a package and insert the package when needed.
             findDependency(newElement)?.let {
-                PackageUtils.insertUsePackage(file, it)
+                PackageUtils.insertUsepackage(file, it)
             }
         }
     }
@@ -123,19 +123,17 @@ class LatexVerbatimToggleIntention : TexifyIntentionBase("Convert to other verba
      * - `Boolean` Does the old verbatim command use characters other than `{}` to enclose its argument?
      *   (e.g. `\verb|test|` would set this boolean to true).
      */
-    private fun findVerbatimInformation(oldVerbatim: PsiElement): Triple<String?, PsiElement?, Boolean> {
-        return if (oldVerbatim.isVerbCommand()) {
-            val content = oldVerbatim.firstParentOfType(LatexCommands::class)?.getAllRequiredArguments()?.firstOrNull()
-            val parent = oldVerbatim.firstParentOfType(LatexCommands::class)?.parent
-            Triple(content, parent, CommandMagic.verbatim[oldVerbatim.getName()] == true)
-        }
-        else if (oldVerbatim.isVerbEnvironment()) {
-            val content = oldVerbatim.firstParentOfType(LatexEnvironment::class)?.environmentContent?.text
-            val parent = oldVerbatim.firstParentOfType(LatexEnvironment::class)?.parent
-            Triple(content, parent, false)
-        }
-        else Triple(null, null, false)
+    private fun findVerbatimInformation(oldVerbatim: PsiElement): Triple<String?, PsiElement?, Boolean> = if (oldVerbatim.isVerbCommand()) {
+        val content = oldVerbatim.firstParentOfType(LatexCommands::class)?.getAllRequiredArguments()?.firstOrNull()
+        val parent = oldVerbatim.firstParentOfType(LatexCommands::class)?.parent
+        Triple(content, parent, CommandMagic.verbatim[oldVerbatim.getName()] == true)
     }
+    else if (oldVerbatim.isVerbEnvironment()) {
+        val content = oldVerbatim.firstParentOfType(LatexEnvironment::class)?.environmentContent?.text
+        val parent = oldVerbatim.firstParentOfType(LatexEnvironment::class)?.parent
+        Triple(content, parent, false)
+    }
+    else Triple(null, null, false)
 
     /**
      * Use [LatexPsiHelper] to create a new psi element.

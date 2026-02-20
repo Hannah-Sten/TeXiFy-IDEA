@@ -6,13 +6,19 @@ import com.intellij.openapi.editor.ElementColorProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.LeafPsiElement
+import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
-import nl.hannahsten.texifyidea.lang.commands.LatexColorDefinitionCommand
-import nl.hannahsten.texifyidea.lang.commands.RequiredArgument
+import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.lang.predefined.PredefinedCmdGeneric
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
+import nl.hannahsten.texifyidea.psi.LatexTypes
+import nl.hannahsten.texifyidea.psi.contentText
 import nl.hannahsten.texifyidea.util.magic.ColorMagic
-import nl.hannahsten.texifyidea.util.parser.*
+import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
+import nl.hannahsten.texifyidea.util.parser.firstParentOfType
+import nl.hannahsten.texifyidea.util.parser.getOptionalArgumentValueByName
+import nl.hannahsten.texifyidea.util.parser.getRequiredArgumentValueByName
 import nl.hannahsten.texifyidea.util.toHexString
 import java.awt.Color
 import java.util.*
@@ -35,7 +41,7 @@ class LatexElementColorProvider : ElementColorProvider {
     override fun setColorTo(element: PsiElement, color: Color) {
         if (element is LeafPsiElement) {
             val command = element.firstParentOfType(LatexCommands::class)
-            val commandTemplate = LatexColorDefinitionCommand.entries.firstOrNull {
+            val commandTemplate = PredefinedCmdGeneric.colorDefinitionCommands.firstOrNull {
                 it.commandWithSlash == command?.name
             } ?: return
             val colorModel = command?.getRequiredArgumentValueByName("model-list") ?: return
@@ -51,7 +57,7 @@ class LatexElementColorProvider : ElementColorProvider {
             } ?: return
 
             val colorArgumentIndex =
-                commandTemplate.arguments.filterIsInstance<RequiredArgument>().indexOfFirst { it.name == "spec-list" }
+                commandTemplate.arguments.filter { it.isRequired }.indexOfFirst { it.name == "spec-list" }
             if (colorArgumentIndex == -1) return
 
             val newColorParameter = LatexPsiHelper(element.project).createRequiredParameter(newColorString)
@@ -64,25 +70,14 @@ class LatexElementColorProvider : ElementColorProvider {
      * Get the color that is used in a command that uses color. This color will be shown in the gutter.
      */
     override fun getColorFrom(element: PsiElement): Color? {
-        if (element is LeafPsiElement) {
-            val command = element.firstParentOfType(LatexCommands::class)
-            if (command.usesColor()) {
-                val colorArgument = when (command?.name) {
-                    // Show the defined color.
-                    in ColorMagic.colorDefinitions -> {
-                        command?.getRequiredArgumentValueByName("name")
-                    }
-                    // Show the used color.
-                    in ColorMagic.takeColorCommands -> {
-                        command?.getRequiredArgumentValueByName("color")
-                    }
-
-                    else -> null
-                } ?: return null
-                // Find the color to show.
-                if (command?.name == element.text) {
-                    return findColor(colorArgument, element.containingFile)
-                }
+        if (element !is LeafPsiElement) return null
+        if (element.elementType != LatexTypes.COMMAND_TOKEN) return null
+        val command = element.firstParentOfType(LatexCommands::class) ?: return null
+        val semantics = LatexDefinitionService.resolveCommand(command) ?: return null
+        LatexPsiUtil.processArgumentsWithSemantics(command, semantics) process@{ param, arg ->
+            arg ?: return@process
+            if (arg.contextSignature.introduces(LatexContexts.ColorReference) || arg.contextSignature.introduces(LatexContexts.ColorDefinition)) {
+                return findColor(param.contentText(), element.containingFile)
             }
         }
         return null
@@ -95,7 +90,7 @@ class LatexElementColorProvider : ElementColorProvider {
         if (defaultHex != null) return Color(defaultHex)
 
         val colorDefiningCommands = NewCommandsIndex.getByNames(
-            ColorMagic.colorDefinitions,
+            ColorMagic.colorDefinitions.keys,
             file,
         )
         // If this color is a single color (not a mix, and thus does not contain a !)
@@ -106,18 +101,18 @@ class LatexElementColorProvider : ElementColorProvider {
 
         val colorDefinitionCommand = colorDefiningCommands.find { it.getRequiredArgumentValueByName("name") == colorName }
         return when (colorDefinitionCommand?.name?.substring(1)) {
-            LatexColorDefinitionCommand.COLORLET.command -> {
+            "colorlet" -> {
                 getColorFromColorParameter(file, colorDefinitionCommand.getRequiredArgumentValueByName("color"), recursionDepth)
             }
 
-            LatexColorDefinitionCommand.DEFINECOLOR.command, LatexColorDefinitionCommand.PROVIDECOLOR.command -> {
+            "definecolor", "providecolor" -> {
                 getColorFromDefineColor(
                     colorDefinitionCommand.getRequiredArgumentValueByName("model-list"),
                     colorDefinitionCommand.getRequiredArgumentValueByName("spec-list")
                 )
             }
 
-            LatexColorDefinitionCommand.DEFINECOLORSERIES.command -> {
+            "definecolorseries" -> {
                 getColorFromDefineColor(
                     colorDefinitionCommand.getOptionalArgumentValueByName("b-model") ?: colorDefinitionCommand.getRequiredArgumentValueByName("core model"),
                     colorDefinitionCommand.getRequiredArgumentValueByName("b-spec")
@@ -187,14 +182,12 @@ class LatexElementColorProvider : ElementColorProvider {
     /**
      * Mix two colors, used to support red!50!yellow color definitions.
      */
-    private fun mix(a: Color, b: Color, percent: Int): Color {
-        return (percent / 100.0).let {
-            Color(
-                (a.red * it + b.red * (1.0 - it)).toInt(),
-                (a.green * it + b.green * (1.0 - it)).toInt(),
-                (a.blue * it + b.blue * (1.0 - it)).toInt()
-            )
-        }
+    private fun mix(a: Color, b: Color, percent: Int): Color = (percent / 100.0).let {
+        Color(
+            (a.red * it + b.red * (1.0 - it)).toInt(),
+            (a.green * it + b.green * (1.0 - it)).toInt(),
+            (a.blue * it + b.blue * (1.0 - it)).toInt()
+        )
     }
 
     /**
@@ -300,9 +293,7 @@ class LatexElementColorProvider : ElementColorProvider {
     /**
      * Get a [Color] from a hex color string.
      */
-    private fun fromHtmlString(htmlText: String): Color {
-        return Color.decode("#$htmlText")
-    }
+    private fun fromHtmlString(htmlText: String): Color = Color.decode("#$htmlText")
 
     /**
      * Get the hex string of a [Color], without leading #.

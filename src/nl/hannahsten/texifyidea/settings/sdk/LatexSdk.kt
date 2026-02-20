@@ -21,9 +21,7 @@ abstract class LatexSdk(name: String) : SdkType(name) {
 
     override fun saveAdditionalData(additionalData: SdkAdditionalData, additional: Element) {}
 
-    override fun createAdditionalDataConfigurable(sdkModel: SdkModel, sdkModificator: SdkModificator): AdditionalDataConfigurable? {
-        return null
-    }
+    override fun createAdditionalDataConfigurable(sdkModel: SdkModel, sdkModificator: SdkModificator): AdditionalDataConfigurable? = null
 
     override fun suggestSdkName(currentSdkName: String?, sdkHome: String) = name
 

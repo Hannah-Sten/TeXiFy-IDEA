@@ -79,4 +79,49 @@ class LatexLabelCompletionTest : BasePlatformTestCase() {
         assertEquals(2, result.size)
         assertTrue(result.any { l -> l.lookupString == "kameel" })
     }
+
+    fun testCustomizedLabelCommands() {
+        // given
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \newcommand{\mylabel}[1]{\label{#1}}
+            \begin{document}
+                \section{some sec}\label{sec:some-sec}
+                \section{some sec}\mylabel{sec:second-sec}
+                \ref{s<caret>}
+            \end{document}
+            """.trimIndent()
+        )
+        myFixture.updateCommandDef()
+        // when
+        val result = myFixture.complete(CompletionType.BASIC)
+
+        // then
+        assertEquals(2, result.size)
+        assertTrue(result.any { l -> l.lookupString == "sec:second-sec" })
+    }
+
+    fun testCustomizedLabelCommandsInCustomLabelReference() {
+        // given
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \newcommand{\mylabel}[1]{\label{#1}}
+            \newcommand{\myref}[1]{\ref{#1}}
+            \begin{document}
+                \section{some sec}\label{sec:some-sec}
+                \section{some sec}\mylabel{sec:second-sec}
+                \myref{s<caret>}
+            \end{document}
+            """.trimIndent()
+        )
+        myFixture.updateCommandDef()
+        // when
+        val result = myFixture.complete(CompletionType.BASIC)
+
+        // then
+        assertEquals(2, result.size)
+        assertTrue(result.any { l -> l.lookupString == "sec:second-sec" })
+    }
 }

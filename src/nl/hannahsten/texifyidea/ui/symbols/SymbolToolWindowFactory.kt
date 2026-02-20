@@ -14,7 +14,7 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.content.ContentFactory
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.WrapLayout
-import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.psiFile
 import java.awt.BorderLayout
@@ -120,7 +120,7 @@ open class SymbolToolWindowFactory : ToolWindowFactory, DumbAware {
             icon = IconLoader.getIcon(imagePath, SymbolToolWindowFactory::class.java)
 
             // Create a nice tooltip.
-            val packageInfo = if (dependency == LatexPackage.DEFAULT) "" else """<b>Package:</b> ${dependency.name}<br>"""
+            val packageInfo = if (dependency == LatexLib.BASE) "" else """<b>Package:</b> ${dependency.name}<br>"""
             toolTipText = """<html>
                 <p><b>Command:</b> ${generatedLatex.replace("<cursor>", "")}<br>
                 $packageInfo
@@ -158,7 +158,7 @@ open class SymbolToolWindowFactory : ToolWindowFactory, DumbAware {
          * Inserts the symbol into the currently active document.
          */
         private fun insertSymbol(symbol: SymbolUiEntry) {
-            val editor = project.currentTextEditor()?.editor ?: return
+            val editor = project.selectedTextEditorOrWarning()?.editor ?: return
             val originalCaret = editor.caretOffset()
             val selection = editor.selectionModel
 

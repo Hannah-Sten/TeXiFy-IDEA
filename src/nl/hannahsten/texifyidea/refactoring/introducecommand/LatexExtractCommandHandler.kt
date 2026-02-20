@@ -12,11 +12,11 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil.findCommonParent
 import com.intellij.psi.util.elementType
 import com.intellij.psi.util.parents
+import com.intellij.psi.util.startOffset
 import com.intellij.refactoring.IntroduceTargetChooser
 import com.intellij.refactoring.RefactoringActionHandler
 import com.intellij.refactoring.RefactoringBundle
 import com.intellij.refactoring.introduce.inplace.OccurrencesChooser
-import com.intellij.psi.util.startOffset
 import com.intellij.refactoring.util.CommonRefactoringUtil
 import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.psi.*
@@ -232,7 +232,7 @@ fun findCandidateExpressionsToExtract(editor: Editor, file: LatexFile): List<Lat
                 // in this text block, if it multiline, find current line
                 if (interruptedText.contains('\n')) {
                     val previousLineBreak =
-                        interruptedText.substring(0, editor.caretModel.offset - interruptedParent.startOffset)
+                        interruptedText.take(editor.caretModel.offset - interruptedParent.startOffset)
                             .lastIndexOf('\n')
                     val startIndex = previousLineBreak + 1 + interruptedText.substring(previousLineBreak + 1)
                         .indexOfFirst { !it.isWhitespace() }

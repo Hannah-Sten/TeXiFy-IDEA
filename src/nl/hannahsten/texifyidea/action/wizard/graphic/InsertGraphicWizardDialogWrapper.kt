@@ -10,7 +10,6 @@ import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.components.fields.ExpandableTextField
 import com.intellij.ui.components.panels.HorizontalLayout
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.lang.graphic.CaptionLocation
 import nl.hannahsten.texifyidea.lang.graphic.FigureLocation
 import nl.hannahsten.texifyidea.util.*
@@ -81,14 +80,14 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
     private val txtWidthRelative = JBCheckBox("Relative to line width").apply {
         addActionListener {
             // linewidth seems to be a good default: https://tex.stackexchange.com/a/17085/98850
-            val command = LatexGenericRegularCommand.LINEWIDTH.commandWithSlash
+            val command = "\\linewidth"
             addOrRemoveSizeCommand(txtWidth, it, command)
         }
     }
 
     private val txtHeightRelative = JBCheckBox("Relative to text height").apply {
         addActionListener {
-            val command = LatexGenericRegularCommand.TEXTHEIGHT.commandWithSlash
+            val command = "\\textheight"
             addOrRemoveSizeCommand(txtHeight, it, command)
         }
     }
@@ -178,24 +177,21 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
     /**
      * The check boxes for the figure locations.
      */
-    private val checkPosition = FigureLocation.entries.asSequence()
-        .map { location ->
-            location.symbol to JBCheckBox(location.description).apply {
-                addActionListener { event ->
-                    val source = event.source as? JBCheckBox ?: error("Not a JBCheckBox!")
-                    // Add symbol if selected.
-                    if (source.isSelected && txtPosition.text.contains(location.symbol).not()) {
-                        txtPosition.text += location.symbol
-                    }
-                    // Remove if deselected.
-                    else {
-                        txtPosition.text = txtPosition.text.replace(location.symbol, "")
-                    }
+    private val checkPosition = FigureLocation.entries.associateTo(LinkedHashMap()) { location ->
+        location.symbol to JBCheckBox(location.description).apply {
+            addActionListener { event ->
+                val source = event.source as? JBCheckBox ?: error("Not a JBCheckBox!")
+                // Add symbol if selected.
+                if (source.isSelected && txtPosition.text.contains(location.symbol).not()) {
+                    txtPosition.text += location.symbol
+                }
+                // Remove if deselected.
+                else {
+                    txtPosition.text = txtPosition.text.replace(location.symbol, "")
                 }
             }
         }
-        // Use linked hash map to preserve order.
-        .toMap(LinkedHashMap())
+    }
 
     init {
         super.init()

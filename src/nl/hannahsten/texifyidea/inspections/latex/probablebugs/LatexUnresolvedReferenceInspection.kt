@@ -7,17 +7,20 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.index.DefinitionBundle
-import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.index.NewBibtexEntryIndex
+import nl.hannahsten.texifyidea.index.projectstructure.LatexProjectStructure
 import nl.hannahsten.texifyidea.inspections.AbstractTexifyContextAwareInspection
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.psi.LatexParameter
 import nl.hannahsten.texifyidea.psi.contentText
 import nl.hannahsten.texifyidea.reference.LatexLabelParameterReference
+import nl.hannahsten.texifyidea.util.files.referencedFileSet
+import nl.hannahsten.texifyidea.util.includedPackagesInFileset
 import java.util.*
 
 /**
@@ -26,7 +29,7 @@ import java.util.*
 class LatexUnresolvedReferenceInspection : AbstractTexifyContextAwareInspection(
     inspectionId = "UnresolvedReference",
     inspectionGroup = InsightGroup.LATEX,
-    applicableContexts = setOf(LatexContexts.LabelReference, LatexContexts.CitationReference),
+    applicableContexts = setOf(LatexContexts.LabelReference, LatexContexts.BibReference),
     excludedContexts = setOf(LatexContexts.InsideDefinition, LatexContexts.Preamble),
     skipChildrenInContext = setOf(LatexContexts.Comment, LatexContexts.InsideDefinition)
 ) {
@@ -57,14 +60,19 @@ class LatexUnresolvedReferenceInspection : AbstractTexifyContextAwareInspection(
                 if (LatexLabelParameterReference.isLabelDefined(label, file)) {
                     return@run
                 }
-                if (NewBibtexEntryIndex.existsByNameInFileSet(label, file)) {
+                if (usingNonBibBibliography(file) || NewBibtexEntryIndex.existsByNameInFileSet(label, file)) {
                     return@run
                 }
                 val labelOffset = part.indexOfFirst { !it.isWhitespace() }
+                val range = TextRange.from(offset + labelOffset, label.length)
+                // #4299
+                if (range.length > element.textLength) {
+                    return@run
+                }
                 descriptors.add(
                     manager.createProblemDescriptor(
                         element,
-                        TextRange.from(offset + labelOffset, label.length),
+                        range,
                         "Unresolved reference '$label'",
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOnTheFly
@@ -74,4 +82,14 @@ class LatexUnresolvedReferenceInspection : AbstractTexifyContextAwareInspection(
             offset += part.length + 1
         }
     }
+
+    /**
+     * Checks if the user is using something other than a .bib file to get their references from.
+     *
+     * For example, the citation-style-language package allows .json and .yaml files to be used as bibliographies.
+     */
+    private fun usingNonBibBibliography(file: PsiFile): Boolean =
+        file.includedPackagesInFileset().contains(LatexLib.CITATION_STYLE_LANGUAGE) &&
+            // There are definitely cases where this isn't specific enough, but hardly anyone uses this anyway so let's keep it simple until someone complains.
+            file.referencedFileSet().none { it.virtualFile.extension == "bib" }
 }

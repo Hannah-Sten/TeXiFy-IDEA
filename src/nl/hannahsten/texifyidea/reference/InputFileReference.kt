@@ -1,9 +1,5 @@
 package nl.hannahsten.texifyidea.reference
 
-import com.intellij.execution.RunManager
-import com.intellij.execution.impl.RunManagerImpl
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.VirtualFile
@@ -11,14 +7,14 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.PsiReferenceBase
-import nl.hannahsten.texifyidea.index.LatexProjectStructure
+import nl.hannahsten.texifyidea.index.projectstructure.LatexProjectStructure
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.run.LatexRunConfiguration
-import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
-import nl.hannahsten.texifyidea.util.*
-import nl.hannahsten.texifyidea.util.files.*
+import nl.hannahsten.texifyidea.util.files.findRootFile
+import nl.hannahsten.texifyidea.util.files.removeFileExtension
+import nl.hannahsten.texifyidea.util.files.toRelativePath
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.toIntRange
 
 /**
  * Reference to a file, based on the command and the range of the filename within the command text.
@@ -135,9 +131,7 @@ class InputFileReference(
         }
     }
 
-    override fun handleElementRename(newElementName: String): PsiElement {
-        return handleElementRename(element, newElementName, true, refText, range)
-    }
+    override fun handleElementRename(newElementName: String): PsiElement = handleElementRename(element, newElementName, true, refText, range)
 
     // Required for moving referenced files
     override fun bindToElement(givenElement: PsiElement): PsiElement {
@@ -145,14 +139,5 @@ class InputFileReference(
         // Assume LaTeX will accept paths relative to the root file
         val newFileName = newFile.virtualFile?.path?.toRelativePath(this.element.containingFile.findRootFile().virtualFile.parent.path) ?: return this.element
         return handleElementRename(element, newFileName, false, refText, range)
-    }
-
-    /**
-     * Create a set possible complete file names (including extension), based on
-     * the command that includes a file, and the name of the file.
-     */
-    private fun LatexCommands.getFileNameWithExtensions(fileName: String): Set<String> {
-        val extension = CommandMagic.includeAndExtensions[this.commandToken.text] ?: emptySet()
-        return extension.map { "$fileName.$it" }.toSet() + setOf(fileName)
     }
 }

@@ -6,7 +6,7 @@ import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.inspections.AbstractTexifyRegexBasedInspection
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
-import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSSYMB
+import nl.hannahsten.texifyidea.lang.LatexLib.Companion.AMSSYMB
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.util.insertUsepackage
@@ -21,25 +21,15 @@ class LatexExtremeInequalityInspection : AbstractTexifyRegexBasedInspection(
     """.trimIndent().toRegex(),
     applicableContexts = setOf(LatexContexts.Math)
 ) {
-    override fun errorMessage(matcher: MatchResult, context: LContextSet): String {
-        return "Use the amssymb symbol instead."
-    }
+    override fun errorMessage(matcher: MatchResult, context: LContextSet): String = "Use the amssymb symbol instead."
 
-    override fun quickFixName(matcher: MatchResult, contexts: LContextSet): String {
-        return "Insert amssymb symbol."
-    }
+    override fun quickFixName(matcher: MatchResult, contexts: LContextSet): String = "Insert amssymb symbol."
 
-    override fun getHighlightRange(matcher: MatchResult): IntRange {
-        return matcher.groups[1]!!.range
-    }
+    override fun getHighlightRange(matcher: MatchResult): IntRange = matcher.groups[1]!!.range
 
-    override fun shouldInspectElement(element: PsiElement, lookup: LatexSemanticsLookup): Boolean {
-        return element is LatexNormalText
-    }
+    override fun shouldInspectElement(element: PsiElement, lookup: LatexSemanticsLookup): Boolean = element is LatexNormalText
 
-    override fun shouldInspectChildrenOf(element: PsiElement, state: LContextSet, lookup: LatexSemanticsLookup): Boolean {
-        return !shouldInspectElement(element, lookup)
-    }
+    override fun shouldInspectChildrenOf(element: PsiElement, state: LContextSet, lookup: LatexSemanticsLookup): Boolean = !shouldInspectElement(element, lookup)
 
     override fun getReplacement(match: MatchResult, fullElementText: String, project: Project, problemDescriptor: ProblemDescriptor): String {
         val rep = when (val operator = match.groups[1]!!.value) {

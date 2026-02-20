@@ -118,21 +118,19 @@ object MendeleyAuthenticator {
     /**
      * Exchange the [authenticationCode] for an access token. Use the stored access token when available.
      */
-    suspend fun getAccessToken(): Credentials? {
-        return PasswordSafe.instance.get(tokenAttributes) ?: authenticationCode?.let {
-            val token: AccessTokenInfo = authenticationClient.submitForm(
-                url = "https://api.mendeley.com/oauth/token",
-                formParameters = Parameters.build {
-                    append("grant_type", "authorization_code")
-                    append("code", it)
-                    append("redirect_uri", REDIRECT_URL)
-                }
-            ) {
-                basicAuth(MendeleyCredentials.ID, MendeleyCredentials.SECRET.decipher())
-            }.body()
+    suspend fun getAccessToken(): Credentials? = PasswordSafe.instance.get(tokenAttributes) ?: authenticationCode?.let {
+        val token: AccessTokenInfo = authenticationClient.submitForm(
+            url = "https://api.mendeley.com/oauth/token",
+            formParameters = Parameters.build {
+                append("grant_type", "authorization_code")
+                append("code", it)
+                append("redirect_uri", REDIRECT_URL)
+            }
+        ) {
+            basicAuth(MendeleyCredentials.ID, MendeleyCredentials.SECRET.decipher())
+        }.body()
 
-            token.getCredentials().first
-        }
+        token.getCredentials().first
     }
 
     /**

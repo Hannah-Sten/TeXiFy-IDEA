@@ -1,10 +1,6 @@
 package nl.hannahsten.texifyidea.index.file
 
-import com.intellij.util.indexing.FileBasedIndex
-import com.intellij.util.indexing.FileContent
-import com.intellij.util.indexing.ID
-import com.intellij.util.indexing.SingleEntryFileBasedIndexExtension
-import com.intellij.util.indexing.SingleEntryIndexer
+import com.intellij.util.indexing.*
 import com.intellij.util.io.DataExternalizer
 import com.intellij.util.io.externalizer.StringCollectionExternalizer.STRING_LIST_EXTERNALIZER
 import nl.hannahsten.texifyidea.index.LatexFileBasedIndexKeys
@@ -12,23 +8,15 @@ import nl.hannahsten.texifyidea.index.file.LatexRegexBasedIndex.PACKAGE_FILE_INP
 
 class LatexRegexBasedPackageInclusionIndex : SingleEntryFileBasedIndexExtension<List<String>>() {
 
-    override fun getName(): ID<Int, List<String>> {
-        return LatexFileBasedIndexKeys.REGEX_PACKAGE_INCLUSIONS
-    }
+    override fun getName(): ID<Int, List<String>> = LatexFileBasedIndexKeys.REGEX_PACKAGE_INCLUSIONS
 
-    override fun getInputFilter(): FileBasedIndex.InputFilter {
-        return PACKAGE_FILE_INPUT_FILTER
-    }
+    override fun getInputFilter(): FileBasedIndex.InputFilter = PACKAGE_FILE_INPUT_FILTER
 
-    override fun getValueExternalizer(): DataExternalizer<List<String>?> {
-        return STRING_LIST_EXTERNALIZER
-    }
+    override fun getValueExternalizer(): DataExternalizer<List<String>?> = STRING_LIST_EXTERNALIZER
 
     override fun getVersion(): Int = 1
 
-    override fun getIndexer(): SingleEntryIndexer<List<String>> {
-        return Indexer
-    }
+    override fun getIndexer(): SingleEntryIndexer<List<String>> = Indexer
 
     private object Indexer : SingleEntryIndexer<List<String>>(false) {
 

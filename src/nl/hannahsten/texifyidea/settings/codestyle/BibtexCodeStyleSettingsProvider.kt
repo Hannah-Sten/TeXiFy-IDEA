@@ -7,8 +7,11 @@ import com.intellij.psi.codeStyle.CodeStyleConfigurable
 import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.codeStyle.CodeStyleSettingsProvider
 import nl.hannahsten.texifyidea.grammar.BibtexLanguage
+import nl.hannahsten.texifyidea.grammar.LatexLanguage
 
 class BibtexCodeStyleSettingsProvider : CodeStyleSettingsProvider() {
+
+    override fun getLanguage() = LatexLanguage
 
     override fun createCustomSettings(settings: CodeStyleSettings) = BibtexCodeStyleSettings(settings)
 

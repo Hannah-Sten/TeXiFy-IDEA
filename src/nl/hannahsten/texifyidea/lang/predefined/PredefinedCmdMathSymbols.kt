@@ -1,6 +1,9 @@
+@file:Suppress("unused")
+
 package nl.hannahsten.texifyidea.lang.predefined
 
 import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.PredefinedCommandSet
 
 object PredefinedCmdMathSymbols : PredefinedCommandSet() {
@@ -146,8 +149,13 @@ object PredefinedCmdMathSymbols : PredefinedCommandSet() {
         symbol("nleftrightarrow", "↮", "Not left and right arrow")
         symbol("nLeftrightarrow", "⇎", "Not left and right double arrow")
 
+        underPackage(LatexLib.AMSMATH) {
+            symbol("implies", "⇒", "Implies (alias)")
+            symbol("impliedby", "⇐", "Implied by (alias)")
+        }
+
         // latexsymb arrows
-        packageOf("latexsymb")
+        packageOf("latexsym")
         symbol("leadsto", "⤳", "Leadsto")
 
         // stmaryrd arrows
@@ -231,24 +239,17 @@ object PredefinedCmdMathSymbols : PredefinedCommandSet() {
         symbol("arrowvert", "|", "Vertical arrow")
         symbol("Arrowvert", "‖", "Double vertical arrow")
         symbol("bracevert", null, "Brace vertical symbol")
-        symbol("Capital_Arrowvert", "‖", "Capital double vertical arrow")
         symbol("diamond", "◇", "Diamond symbol")
         symbol("diamondsuit", "♢", "Diamond suit")
         symbol("ldotp", ".", "Low dot punctuation")
         symbol("mathellipsis", "…", "Math ellipsis")
     }
 
-    val amsmathMathSymbols = mathCommands {
-
-        packageOf("amsmath")
-
-        symbol("backprime", "‵", "Reversed prime")
-    }
-
     val amssymbMathSymbols = mathCommands {
 
         packageOf("amssymb")
 
+        symbol("backprime", "‵", "Reversed prime")
         symbol("bigstar", "★", "Big star")
         symbol("blacksquare", "⬛", "Black square")
         symbol("blacklozenge", "⧫", "Black lozenge")
@@ -268,6 +269,7 @@ object PredefinedCmdMathSymbols : PredefinedCommandSet() {
         symbol("lrcorner", "⌟", "Lower right corner")
         symbol("lozenge", "⬨", "Lozenge")
         symbol("mho", "℧", "Reversed ohm")
+        symbol("shortparallel", "∥", "Short parallel")
         symbol("square", "◻", "Square")
         symbol("triangledown", "▽", "Triangle down")
         symbol("ulcorner", "⌜", "Upper left corner")
@@ -276,7 +278,6 @@ object PredefinedCmdMathSymbols : PredefinedCommandSet() {
         symbol("Bbbk", "\uD835\uDD5C", "Blackboard bold k")
         symbol("Finv", "Ⅎ", "Inverse F")
 
-        symbol("mathgroup", null, "Math group")
         symbol("mathsterling", null, "Math sterling symbol")
         symbol("mathunderscore", null, "Math underscore")
     }
@@ -337,7 +338,6 @@ object PredefinedCmdMathSymbols : PredefinedCommandSet() {
     }
 
     val defaultOperatorSymbols = mathCommands {
-
         symbol("forall", "∀", "Universal quantifier")
         symbol("partial", "∂", "Partial derivative")
         symbol("exists", "∃", "Existential quantifier")
@@ -361,7 +361,6 @@ object PredefinedCmdMathSymbols : PredefinedCommandSet() {
         symbol("angle", "∠", "Angle")
         symbol("mid", "∣", "Divides")
         symbol("parallel", "∥", "Parallel")
-        symbol("shortparallel", "∥", "Short parallel")
         symbol("land", "∧", "Logical and")
         symbol("lor", "∨", "Logical or")
         symbol("cap", "∩", "Intersection")
@@ -451,7 +450,7 @@ object PredefinedCmdMathSymbols : PredefinedCommandSet() {
         symbol("rhd", "▷", "Right half triangle")
         symbol("unlhd", "⊴", "Unnormalized left half triangle")
         symbol("unrhd", "⊵", "Unnormalized right half triangle")
-        symbol("tranglelefteq", "⊴", "Triangle left or equal")
+        symbol("trianglelefteq", "⊴", "Triangle left or equal")
         symbol("trianglerighteq", "⊵", "Triangle right or equal")
         symbol("ltimes", "⋉", "Left times")
         symbol("rtimes", "⋊", "Right times")
@@ -589,10 +588,6 @@ object PredefinedCmdMathSymbols : PredefinedCommandSet() {
         symbol("Colonapprox", "::≈")
         symbol("Colonsim", "::∼")
     }
-
-//    val delimiters = mathCommands {
-    // see PredefinedCmdPairedDelimiters
-//    }
 
     val uncategorizedStmaryrdSymbols = mathCommands {
         packageOf("stmaryrd")

@@ -52,15 +52,11 @@ object LatexStubFileElementType : IStubFileElementType<LatexFileStub>(
     // debugName is required to let IntelliJ distinguish between this FILE and BibtexParserDefinition.FILE
     "LatexStubFileElementType", Language.findInstance(LatexLanguage::class.java)
 ) {
-    override fun getStubVersion(): Int = 89
+    override fun getStubVersion(): Int = 93
 
-    override fun getExternalId(): @NonNls String {
-        return "texify.latex.LatexStubFileElementType"
-    }
+    override fun getExternalId(): @NonNls String = "texify.latex.LatexStubFileElementType"
 
-    override fun deserialize(dataStream: StubInputStream, parentStub: StubElement<*>?): LatexFileStub {
-        return LatexFileStub(null)
-    }
+    override fun deserialize(dataStream: StubInputStream, parentStub: StubElement<*>?): LatexFileStub = LatexFileStub(null)
 
     override fun serialize(stub: LatexFileStub, dataStream: StubOutputStream) {
         super.serialize(stub, dataStream)

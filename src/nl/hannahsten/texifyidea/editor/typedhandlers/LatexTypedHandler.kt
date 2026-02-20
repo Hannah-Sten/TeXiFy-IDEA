@@ -14,7 +14,6 @@ import com.intellij.psi.tree.IElementType
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.PsiUtilBase.getElementAtCaret
 import nl.hannahsten.texifyidea.file.LatexFile
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexInlineMath
 import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.settings.TexifySettings.Companion.getState
@@ -68,7 +67,7 @@ class LatexTypedHandler : TypedHandlerDelegate() {
 
     override fun charTyped(c: Char, project: Project, editor: Editor, file: PsiFile): Result {
         if (file is LatexFile && !getElementAtCaret(editor)?.inVerbatim().orFalse()) {
-            val dollarSign = LatexGenericRegularCommand.DOLLAR_SIGN.command.toCharArray().first()
+            val dollarSign = '$'
             if (c == dollarSign && getState().automaticSecondInlineMathSymbol) {
                 val tokenType = getTypedTokenType(editor)
                 if (tokenType !== LatexTypes.COMMAND_TOKEN && tokenType !== LatexTypes.COMMENT_TOKEN && tokenType !== LatexTypes.INLINE_MATH_END) {
@@ -97,17 +96,15 @@ class LatexTypedHandler : TypedHandlerDelegate() {
      * Disable autocomplete when typing a period, otherwise starting a new line
      * at the end of a line would be impossible (because postfix templates).
      */
-    override fun checkAutoPopup(charTyped: Char, project: Project, editor: Editor, file: PsiFile): Result {
-        return when {
-            charTyped != '.' -> {
-                super.checkAutoPopup(charTyped, project, editor, file)
-            }
-            file.isLatexFile() -> {
-                Result.STOP
-            }
-            else -> {
-                super.checkAutoPopup(charTyped, project, editor, file)
-            }
+    override fun checkAutoPopup(charTyped: Char, project: Project, editor: Editor, file: PsiFile): Result = when {
+        charTyped != '.' -> {
+            super.checkAutoPopup(charTyped, project, editor, file)
+        }
+        file.isLatexFile() -> {
+            Result.STOP
+        }
+        else -> {
+            super.checkAutoPopup(charTyped, project, editor, file)
         }
     }
 

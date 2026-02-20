@@ -2,11 +2,11 @@ package nl.hannahsten.texifyidea.inspections.latex.codestyle
 
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
-import nl.hannahsten.texifyidea.lang.alias.CommandManager
 import nl.hannahsten.texifyidea.psi.LatexOptionalKeyValPair
 import nl.hannahsten.texifyidea.settings.conventions.LabelConventionType
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsScheme
 import nl.hannahsten.texifyidea.testutils.updateConvention
+import nl.hannahsten.texifyidea.updateCommandDef
 import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 
 class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLabelInspection()) {
@@ -17,9 +17,7 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
         myFixture.updateConvention { s -> s.currentScheme = TexifyConventionsScheme() }
     }
 
-    override fun getTestDataPath(): String {
-        return "test/resources/inspections/latex/missinglabel"
-    }
+    override fun getTestDataPath(): String = "test/resources/inspections/latex/missinglabel"
 
     fun `test missing label warnings`() {
         myFixture.configureByFile("MissingLabelWarnings.tex")
@@ -66,7 +64,7 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
         """.trimIndent()
     )
 
-    fun `test missing section label no warnings (custom label command)`() {
+    fun `test missing section label no warnings for custom label command`() {
         myFixture.configureByText(
             LatexFileType,
             """
@@ -76,8 +74,7 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
             \section{some sec}\mylabel{some-sec}
             """.trimIndent()
         )
-        CommandManager.updateAliases(setOf("\\label"), project)
-
+        myFixture.updateCommandDef()
         myFixture.checkHighlighting(false, false, true, false)
     }
 
@@ -267,7 +264,7 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
         """.trimIndent(),
         after = """
         \begin{document}
-                \lstinputlisting[someoption,otheroption={with value},label={lst:lstinputlisting}]{some/file}
+            \lstinputlisting[someoption,otheroption={with value},label={lst:lstinputlisting}]{some/file}
         \end{document}
         """.trimIndent()
     )
@@ -280,7 +277,7 @@ class LatexMissingLabelInspectionTest : TexifyInspectionTestBase(LatexMissingLab
         """.trimIndent(),
         after = """
         \begin{document}
-                \lstinputlisting[label={lst:lstinputlisting}]{some/file}
+            \lstinputlisting[label={lst:lstinputlisting}]{some/file}
         \end{document}
         """.trimIndent()
     )

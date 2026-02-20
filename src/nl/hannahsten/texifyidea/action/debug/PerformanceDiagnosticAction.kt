@@ -3,25 +3,18 @@ package nl.hannahsten.texifyidea.action.debug
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogBuilder
-import kotlinx.html.body
-import kotlinx.html.br
-import kotlinx.html.h2
-import kotlinx.html.hr
-import kotlinx.html.html
+import kotlinx.html.*
 import kotlinx.html.stream.createHTML
-import kotlinx.html.table
-import kotlinx.html.td
-import kotlinx.html.tr
 import nl.hannahsten.texifyidea.completion.LatexContextAwareCompletionAdaptor
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
-import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.index.LatexLibraryDefinitionService
-import nl.hannahsten.texifyidea.index.LatexLibraryStructureService
-import nl.hannahsten.texifyidea.index.LatexProjectFilesets
+import nl.hannahsten.texifyidea.index.projectstructure.LatexLibraryStructureService
+import nl.hannahsten.texifyidea.index.projectstructure.LatexProjectFilesets
+import nl.hannahsten.texifyidea.index.projectstructure.LatexProjectStructure
 import nl.hannahsten.texifyidea.inspections.AbstractTexifyContextAwareInspection
 import java.lang.management.ManagementFactory
+import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicLong
 import javax.swing.JLabel
@@ -59,10 +52,17 @@ class PerformanceDiagnosticAction : AnAction() {
         val additionalInfo: String = ""
     )
 
-    private fun performance(name: String, tracker: SimplePerformanceTracker, additionalInfo: String = ""): PerformanceData {
-        return PerformanceData(
-            name, tracker.countOfBuilds, tracker.totalTimeCost, additionalInfo
-        )
+    private fun performance(name: String, tracker: SimplePerformanceTracker, additionalInfo: String = ""): PerformanceData = PerformanceData(
+        name, tracker.countOfBuilds, tracker.totalTimeCost, additionalInfo
+    )
+
+    private fun formatDurationMillis(milliseconds: Long): String = milliseconds.milliseconds.toString()
+
+    private fun formatRuns(count: Int): String = if (count < 100000) {
+        count.toString()
+    }
+    else {
+        String.format(Locale.US, "%.4E", count.toDouble())
     }
 
     private fun buildFilesetInfo(projectFilesets: LatexProjectFilesets?): String = buildString {
@@ -75,11 +75,9 @@ class PerformanceDiagnosticAction : AnAction() {
         appendLine("Expiration: ${LatexProjectStructure.expirationTime}")
     }
 
-    private fun buildCustomDefinitionsInfo(project: Project): String {
-        return """
+    private fun buildCustomDefinitionsInfo(): String = """
             Expiration: ${LatexDefinitionService.expirationTime}
-        """.trimIndent()
-    }
+    """.trimIndent()
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
@@ -96,7 +94,7 @@ class PerformanceDiagnosticAction : AnAction() {
                 buildFilesetInfo(projectFilesets)
             ),
             performance("Package Definitions", LatexLibraryDefinitionService.performanceTracker),
-            performance("Custom Definitions", LatexDefinitionService.performanceTracker, buildCustomDefinitionsInfo(project)),
+            performance("Custom Definitions", LatexDefinitionService.performanceTracker, buildCustomDefinitionsInfo()),
             performance("Completion Lookup", LatexContextAwareCompletionAdaptor.performanceTracker),
             performance("Ctx-aware Inspections", AbstractTexifyContextAwareInspection.performanceTracker)
         )
@@ -108,7 +106,7 @@ class PerformanceDiagnosticAction : AnAction() {
                 table {
                     tr {
                         td { +"Name" }
-                        td { +"CPU Time (ms)" }
+                        td { +"CPU Time" }
                         td { +"% of Total Uptime" }
                         td { +"Runs" }
                         td { +"Average Time" }
@@ -117,15 +115,15 @@ class PerformanceDiagnosticAction : AnAction() {
                     for (data in tableData) {
                         tr {
                             td { +data.name }
-                            td { +(data.totalTime.toString()) }
+                            td { +formatDurationMillis(data.totalTime) }
                             td {
                                 val percent = (data.totalTime.toDouble() / totalRunningTime * 100).toInt()
                                 +"$percent%"
                             }
-                            td { +(data.count.toString()) }
+                            td { +formatRuns(data.count) }
                             td {
                                 if (data.count > 0) {
-                                    +(data.totalTime / data.count).toString()
+                                    +formatDurationMillis(data.totalTime / data.count)
                                 }
                                 else {
                                     +"N/A"
@@ -160,11 +158,7 @@ class PerformanceDiagnosticAction : AnAction() {
         }
     }
 
-    override fun isDumbAware(): Boolean {
-        return true
-    }
+    override fun isDumbAware(): Boolean = true
 
-    override fun getActionUpdateThread(): ActionUpdateThread {
-        return ActionUpdateThread.EDT
-    }
+    override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.EDT
 }

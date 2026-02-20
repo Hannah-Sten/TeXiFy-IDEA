@@ -4,7 +4,7 @@ import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexLogMagicRegex.DUPLICA
 import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexLogMagicRegex.LINE_WIDTH
 import nl.hannahsten.texifyidea.run.ui.console.logtab.LatexLogMagicRegex.TEX_MISC_WARNINGS
 import nl.hannahsten.texifyidea.run.ui.console.logtab.messagehandlers.errors.LatexErrorHandler
-import nl.hannahsten.texifyidea.run.ui.console.logtab.messagehandlers.errors.LatexFixMeErrorMessageHandler
+import nl.hannahsten.texifyidea.run.ui.console.logtab.messagehandlers.errors.LatexFixMeMessageHandler
 import nl.hannahsten.texifyidea.run.ui.console.logtab.messagehandlers.errors.LatexSingleLineErrorMessageHandler
 import nl.hannahsten.texifyidea.run.ui.console.logtab.messagehandlers.errors.LatexUndefinedControlSequenceHandler
 import nl.hannahsten.texifyidea.run.ui.console.logtab.messagehandlers.warnings.*
@@ -15,9 +15,7 @@ object LatexLogMessageExtractor {
     /**
      * Pre-processing to check if line is worth looking at.
      */
-    fun skip(text: String?): Boolean {
-        return text.isNullOrBlank()
-    }
+    fun skip(text: String?): Boolean = text.isNullOrBlank()
 
     /**
      * Look for a warning or error message in [text], and return a handler that
@@ -31,7 +29,7 @@ object LatexLogMessageExtractor {
         val specialErrorHandlersList = listOf(
             LatexUndefinedControlSequenceHandler,
             LatexSingleLineErrorMessageHandler,
-            LatexFixMeErrorMessageHandler
+            LatexFixMeMessageHandler(LatexLogMessageType.ERROR),
         )
 
         // Most of these are just to have a special regex to extract the right line number
@@ -43,7 +41,7 @@ object LatexLogMessageExtractor {
             LatexPackageWarningHandler,
             LatexReferenceCitationWarningHandler,
             LatexLineWarningHandler,
-            LatexFixMeWarningMessageHandler,
+            LatexFixMeMessageHandler(LatexLogMessageType.WARNING),
             LatexPdftexWarningMessageHandler
         )
         // Problem: if we just joined the two lines together, we wouldn't know if the first line actually is part of (for example)

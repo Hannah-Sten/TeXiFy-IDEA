@@ -1,15 +1,13 @@
 package nl.hannahsten.texifyidea.inspections.latex.probablebugs
 
 import com.intellij.lang.annotation.HighlightSeverity
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import io.mockk.every
 import io.mockk.mockkStatic
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.gutter.LatexNavigationGutter
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
-import nl.hannahsten.texifyidea.lang.alias.CommandManager
-import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.updateFilesets
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import java.io.File
 import java.nio.file.Path
@@ -32,9 +30,7 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
         mockkStatic(LatexNavigationGutter::collectNavigationMarkers)
     }
 
-    override fun getTestDataPath(): String {
-        return "test/resources/inspections/latex/filenotfound"
-    }
+    override fun getTestDataPath(): String = "test/resources/inspections/latex/filenotfound"
 
     fun testMissingAbsolutePath() {
         // Avoid "VfsRootAccess$VfsRootAccessNotAllowedError: File accessed outside allowed roots" on Windows in github actions
@@ -202,6 +198,30 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
         myFixture.checkHighlighting()
     }
 
+    fun testPlainInclude() {
+        // \input prefers .tex files if they exist
+        myFixture.addFileToProject("no-ext", "text content")
+        myFixture.configureByText(LatexFileType, "\\input{no-ext}")
+        myFixture.updateFilesets()
+        myFixture.checkHighlighting()
+    }
+
+    fun testMultipleDots() {
+        // \input prefers .tex files if they exist
+        myFixture.addFileToProject("included.v1.0", "text content")
+        myFixture.configureByText(LatexFileType, "\\input{included.v1.0}")
+        myFixture.updateFilesets()
+        myFixture.checkHighlighting()
+    }
+
+    fun testMultipleDotsTex() {
+        // \input prefers .tex files if they exist
+        myFixture.addFileToProject("included.v1.0.tex", "\\LaTeX content")
+        myFixture.configureByText(LatexFileType, "\\input{included.v1.0}")
+        myFixture.updateFilesets()
+        myFixture.checkHighlighting()
+    }
+
     // Test not working in GitHub Actions
 //    fun testCommandAlias() {
 //        myFixture.configureByText(LatexFileType, """\newcommand{\myinput}{\input} \myinput{<error descr="File 'doesnotexist.tex' not found">doesnotexist.tex</error>}""")
@@ -216,10 +236,4 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
 //        updateIncludeCommandsBlocking(myFixture.project)
 //        myFixture.checkHighlighting()
 //    }
-
-    fun updateIncludeCommandsBlocking(project: Project) {
-        for (command in CommandMagic.allFileIncludeCommands) {
-            CommandManager.updateAliases(setOf(command), project)
-        }
-    }
 }

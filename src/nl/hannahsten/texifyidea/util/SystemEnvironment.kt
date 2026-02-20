@@ -8,9 +8,9 @@ import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import com.jetbrains.rd.util.ConcurrentHashMap
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.util.SystemEnvironment.Companion.isAvailable
-import com.jetbrains.rd.util.ConcurrentHashMap
 import nl.hannahsten.texifyidea.util.files.allChildDirectories
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import java.io.File
@@ -75,11 +75,11 @@ class SystemEnvironment {
         }
 
         val texinputs by lazy {
-            runCommand("kpsewhich", "--expand-var", "'\$TEXINPUTS'")
+            runCommand("kpsewhich", "--expand-var", $$"'$TEXINPUTS'")
         }
 
         val texmfhome by lazy {
-            runCommand("kpsewhich", "--expand-var", "'\$TEXMFHOME'")
+            runCommand("kpsewhich", "--expand-var", $$"'$TEXMFHOME'")
         }
     }
 }
@@ -140,7 +140,7 @@ fun getTexinputsPaths(
     (configurationTexmfhomeVariables + systemTexmfhome)
         .filterNotNull()
         .flatMap { it.split(",") }
-        .map { it.trim('\'', '/').replaceFirst("~", System.getProperty("user.home")) }
+        .map { it.trim('\'').trimEnd('/').replaceFirst("~", System.getProperty("user.home")) }
         .mapNotNull { LocalFileSystem.getInstance().findFileByPath("$it/tex") }
         .forEach { parent ->
             searchPaths.addAll(

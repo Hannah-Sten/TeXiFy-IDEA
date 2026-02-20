@@ -18,12 +18,12 @@ import nl.hannahsten.texifyidea.file.StyleFileType
 import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.index.SpecialKeys
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.reference.InputFileReference
-import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
 import nl.hannahsten.texifyidea.util.isTestProject
 import nl.hannahsten.texifyidea.util.magic.FileMagic
-import nl.hannahsten.texifyidea.util.parser.*
+import nl.hannahsten.texifyidea.util.parser.LatexExtractablePSI
+import nl.hannahsten.texifyidea.util.parser.asExtractable
+import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 
 /**
  * Checks if the file has LaTeX syntax.
@@ -44,17 +44,9 @@ fun PsiFile.isStyleFile() = virtualFile?.extension == "sty"
 fun PsiFile.isClassFile() = virtualFile?.extension == "cls"
 
 /**
- * Looks up the argument that is in the documentclass command, and if the file is found in the project return it.
- * Note this explicitly does not find files elsewhere on the system.
- */
-fun PsiFile.documentClassFileInProject() = findFile("${documentClass()}.cls", supportsAnyExtension = true)
-
-/**
  * If the file has a top-level \documentclass command, return the class name, null otherwise.
  */
-fun PsiFile.documentClass(): String? {
-    return traverseCommands(4).firstOrNull { it.nameWithSlash == "\\documentclass" }?.requiredParameterText(0)
-}
+fun PsiFile.documentClass(): String? = traverseCommands(4).firstOrNull { it.nameWithSlash == "\\documentclass" }?.requiredParameterText(0)
 
 /**
  * Looks up a file relative to this file.
@@ -70,7 +62,8 @@ fun PsiFile.findFile(path: String, extensions: List<String>? = null, supportsAny
 
     val file = directory?.findFile(path, extensions ?: FileMagic.includeExtensions, supportsAnyExtension = supportsAnyExtension) ?: return scanRoots(path, extensions)
     val psiFile = PsiManager.getInstance(project).findFile(file)
-    if (psiFile == null || LatexFileType != psiFile.fileType &&
+    if (psiFile == null ||
+        LatexFileType != psiFile.fileType &&
         StyleFileType != psiFile.fileType &&
         BibtexFileType != psiFile.fileType
     ) {
@@ -133,11 +126,8 @@ fun PsiFile.document(): Document? = PsiDocumentManager.getInstance(project).getD
  *          The name of the command including a backslash, or `null` for all commands.
  */
 fun PsiFile.commandsInFile(commandName: String? = null): Collection<LatexCommands> {
-    if(commandName != null) return traverseCommands().toList()
+    if(commandName != null) return traverseCommands().filter { it.nameWithSlash == commandName }.toList()
     return collectSubtreeTyped<LatexCommands>()
-//    return commandName?.let {
-//        this.allCommands().filter { it.name == commandName }
-//    } ?: this.allCommands()
 }
 
 /**
@@ -165,9 +155,7 @@ fun PsiFile.openedTextEditor(): Editor? = openedEditor()?.let {
 /**
  * Get all the definitions in the file.
  */
-fun PsiFile.definitions(): Collection<LatexCommands> {
-    return NewSpecialCommandsIndex.getByName(SpecialKeys.ALL_DEFINITIONS, this)
-}
+fun PsiFile.definitions(): Collection<LatexCommands> = NewSpecialCommandsIndex.getByName(SpecialKeys.ALL_DEFINITIONS, this)
 
 /**
  * Get all bibtex run configurations that are probably used to compile this file.

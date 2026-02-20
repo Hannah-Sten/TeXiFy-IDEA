@@ -51,8 +51,8 @@ class LatexNonBreakingSpaceInspectionTest : TexifyInspectionTestBase(LatexNonBre
     fun testWarningAfterMathContext() {
         myFixture.configureByText(
             LatexFileType,
-            """
-                Reference ${"$"}math$<warning descr="Reference without a non-breaking space"> </warning>\ref{fig}.
+            $$"""
+                Reference $math$<warning descr="Reference without a non-breaking space"> </warning>\ref{fig}.
             """.trimIndent()
         )
         myFixture.checkHighlighting()

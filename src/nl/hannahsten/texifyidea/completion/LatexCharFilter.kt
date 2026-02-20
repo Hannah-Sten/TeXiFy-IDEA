@@ -3,6 +3,8 @@ package nl.hannahsten.texifyidea.completion
 import com.intellij.codeInsight.lookup.CharFilter
 import com.intellij.codeInsight.lookup.Lookup
 import nl.hannahsten.texifyidea.file.LatexFile
+import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil.resolveContextUpward
 
 /**
  * @author Sten Wessel
@@ -10,12 +12,13 @@ import nl.hannahsten.texifyidea.file.LatexFile
 class LatexCharFilter : CharFilter() {
 
     override fun acceptChar(c: Char, prefixLength: Int, lookup: Lookup): Result? {
-        return if (!isInLatexContext(lookup)) {
-            null
-        }
-        else when (c) {
+        if (!isInLatexContext(lookup)) return null
+
+        return when (c) {
             '$' -> Result.HIDE_LOOKUP
             ':' -> Result.ADD_TO_PREFIX
+            // Allow space in cite commands to search with multiple terms
+            ' ' -> if (isInCiteContext(lookup)) Result.ADD_TO_PREFIX else null
             else -> null
         }
     }
@@ -27,5 +30,10 @@ class LatexCharFilter : CharFilter() {
         val element = lookup.psiElement
         val file = lookup.psiFile
         return file is LatexFile && element != null
+    }
+
+    private fun isInCiteContext(lookup: Lookup): Boolean {
+        val element = lookup.psiElement ?: return false
+        return resolveContextUpward(element).contains(LatexContexts.BibReference)
     }
 }

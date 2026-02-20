@@ -8,12 +8,14 @@ import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.inspections.AbstractTexifyRegexBasedInspection
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
-import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.AMSMATH
+import nl.hannahsten.texifyidea.lang.LatexLib.Companion.AMSMATH
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.psi.LatexNormalText
-import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.insertUsepackage
 import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
+import nl.hannahsten.texifyidea.util.replaceString
+import nl.hannahsten.texifyidea.util.toTextRange
 
 class LatexEllipsisInspection : AbstractTexifyRegexBasedInspection(
     inspectionId = "Ellipsis",
@@ -22,17 +24,13 @@ class LatexEllipsisInspection : AbstractTexifyRegexBasedInspection(
     excludedContexts = setOf(LatexContexts.TikzPicture)
     // we should have excluded other contexts, but we explicitly exclude this in case
 ) {
-    override fun errorMessage(matcher: MatchResult, context: LContextSet): String {
-        return "Ellipsis with ... instead of \\ldots or \\dots"
-    }
+    override fun errorMessage(matcher: MatchResult, context: LContextSet): String = "Ellipsis with ... instead of \\ldots or \\dots"
 
-    override fun quickFixName(matcher: MatchResult, contexts: LContextSet): String {
-        return if (LatexContexts.Math in contexts) {
-            "Convert to \\dots (amsmath package)"
-        }
-        else {
-            "Convert to \\ldots"
-        }
+    override fun quickFixName(matcher: MatchResult, contexts: LContextSet): String = if (LatexContexts.Math in contexts) {
+        "Convert to \\dots (amsmath package)"
+    }
+    else {
+        "Convert to \\ldots"
     }
 
     override fun getReplacement(match: MatchResult, fullElementText: String, project: Project, problemDescriptor: ProblemDescriptor): String {
@@ -56,11 +54,7 @@ class LatexEllipsisInspection : AbstractTexifyRegexBasedInspection(
         }
     }
 
-    override fun shouldInspectElement(element: PsiElement, lookup: LatexSemanticsLookup): Boolean {
-        return element is LatexNormalText
-    }
+    override fun shouldInspectElement(element: PsiElement, lookup: LatexSemanticsLookup): Boolean = element is LatexNormalText
 
-    override fun shouldInspectChildrenOf(element: PsiElement, state: LContextSet, lookup: LatexSemanticsLookup): Boolean {
-        return !shouldInspectElement(element, lookup)
-    }
+    override fun shouldInspectChildrenOf(element: PsiElement, state: LContextSet, lookup: LatexSemanticsLookup): Boolean = !shouldInspectElement(element, lookup)
 }

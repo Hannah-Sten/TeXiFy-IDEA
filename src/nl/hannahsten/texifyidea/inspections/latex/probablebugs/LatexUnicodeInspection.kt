@@ -13,16 +13,17 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import com.intellij.psi.util.PsiTreeUtil
+import com.jetbrains.rd.util.reflection.threadLocal
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.index.DefinitionBundle
+import nl.hannahsten.texifyidea.inspections.AbstractTexifyContextAwareInspection
 import nl.hannahsten.texifyidea.inspections.InsightGroup
-import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.Diacritic
-import nl.hannahsten.texifyidea.lang.commands.LatexCommand
-import nl.hannahsten.texifyidea.lang.commands.LatexMathCommand
-import nl.hannahsten.texifyidea.lang.commands.LatexRegularCommand
+import nl.hannahsten.texifyidea.lang.LContextSet
+import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.lang.LatexLib
+import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.psi.LatexContent
-import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.settings.sdk.MiktexWindowsSdk
@@ -54,7 +55,12 @@ import java.util.regex.Pattern
  *
  * @author Sten Wessel
  */
-class LatexUnicodeInspection : TexifyInspectionBase() {
+class LatexUnicodeInspection : AbstractTexifyContextAwareInspection(
+    inspectionGroup = InsightGroup.LATEX,
+    inspectionId = "Unicode"
+) {
+
+    private var unicodeEnabledLocal: Boolean? by threadLocal { null }
 
     object Util {
         internal val BASE_PATTERN = Pattern.compile("^\\p{ASCII}*")
@@ -84,54 +90,64 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
         }
     }
 
-    override val inspectionGroup = InsightGroup.LATEX
-
     @Nls
-    override fun getDisplayName(): String {
-        return "Unsupported non-ASCII character"
+    override fun getDisplayName(): String = "Unsupported non-ASCII character"
+
+    override fun prepareInspectionForFile(file: PsiFile, bundle: DefinitionBundle): Boolean {
+        unicodeEnabledLocal = Util.unicodeEnabled(file)
+        return true
     }
 
-    override val inspectionId = "Unicode"
+    override fun inspectElement(
+        element: PsiElement,
+        contexts: LContextSet,
+        bundle: DefinitionBundle,
+        file: PsiFile,
+        manager: InspectionManager,
+        isOnTheFly: Boolean,
+        descriptors: MutableList<ProblemDescriptor>
+    ) {
+        if (element !is LatexNormalText) {
+            return
+        }
 
-    override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        val hasUnicode = Util.unicodeEnabled(file)
+        val hasUnicode = unicodeEnabledLocal ?: Util.unicodeEnabled(file)
+        val matcher = PatternMagic.nonAscii.matcher(element.text)
+        while (matcher.find()) {
+            val inMathMode = LatexContexts.Math in contexts
 
-        val descriptors = descriptorList()
+            if (!inMathMode && hasUnicode) {
+                // Unicode is supported, characters are legal
+                continue
+            }
 
-        val texts = PsiTreeUtil.findChildrenOfType(file, LatexNormalText::class.java)
-        for (text in texts) {
-            val matcher = PatternMagic.nonAscii.matcher(text.text)
-            while (matcher.find()) {
-                val inMathMode = PsiTreeUtil.getParentOfType(text, LatexMathEnvironment::class.java) != null
-
-                if (!inMathMode && hasUnicode) {
-                    // Unicode is supported, characters are legal
-                    continue
-                }
-
-                val fix = if (inMathMode) {
-                    null
-                }
-                else {
-                    InsertUnicodePackageFix()
-                }
-                val fixes = listOfNotNull(fix).toTypedArray()
-
+            val escapeFix = EscapeUnicodeFix(inMathMode)
+            if (inMathMode) {
                 descriptors.add(
                     manager.createProblemDescriptor(
-                        text,
+                        element,
                         TextRange(matcher.start(), matcher.end()),
                         "Unsupported non-ASCII character",
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                        isOntheFly,
-                        EscapeUnicodeFix(inMathMode),
-                        *fixes
+                        isOnTheFly,
+                        escapeFix
+                    )
+                )
+            }
+            else {
+                descriptors.add(
+                    manager.createProblemDescriptor(
+                        element,
+                        TextRange(matcher.start(), matcher.end()),
+                        "Unsupported non-ASCII character",
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                        isOnTheFly,
+                        escapeFix,
+                        InsertUnicodePackageFix()
                     )
                 )
             }
         }
-
-        return descriptors
     }
 
     /**
@@ -148,15 +164,17 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
     private class InsertUnicodePackageFix : LocalQuickFix {
 
         @Nls
-        override fun getFamilyName(): String {
-            return "Include Unicode support packages"
-        }
+        override fun getFamilyName(): String = "Include Unicode support packages"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val file = descriptor.psiElement.containingFile
 
             PackageMagic.unicode.forEach { p ->
-                file.insertUsepackage(p)
+                when (p) {
+                    LatexLib.INPUTENC -> PackageUtils.insertUsepackage(file, p, listOf("utf8"))
+                    LatexLib.FONTENC -> PackageUtils.insertUsepackage(file, p, listOf("T1"))
+                    else -> file.insertUsepackage(p)
+                }
             }
         }
     }
@@ -165,7 +183,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
      * Attempts to escape the non-ASCII character to avoid encoding issues.
      *
      * The following attempts are made, in order, to determine a suitable replacement:   1.  The
-     * character is matched against the *display* attribute of either [ ] or [LatexCommand] (where appropriate).
+     * character is matched against the *display* attribute of either [ ] or [nl.hannahsten.texifyidea.lang.LSemanticCommand] (where appropriate).
      * When there is a match, the corresponding command is used as replacement. 1.  The character is decomposed to
      * separate combining marks (see also [Unicode](http://unicode.org/reports/tr15/)).
      * An attempt is made to match the combining sequence against LaTeX character diacritical
@@ -180,9 +198,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
     private class EscapeUnicodeFix(private val inMathMode: Boolean) : LocalQuickFix {
 
         @Nls
-        override fun getFamilyName(): String {
-            return "Escape Unicode character"
-        }
+        override fun getFamilyName(): String = "Escape Unicode character"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val element = descriptor.psiElement
@@ -203,7 +219,7 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
             runWriteCommandAction(project) {
                 replacement.findDependencies().forEach { pkg ->
                     document?.psiFile(project)?.let { file ->
-                        PackageUtils.insertUsePackage(file, pkg)
+                        PackageUtils.insertUsepackage(file, pkg)
                     }
                 }
 
@@ -235,16 +251,16 @@ class LatexUnicodeInspection : TexifyInspectionBase() {
 
             // Try to find in lookup for special command
             val replacementText: String?
-            val command: LatexCommand? = if (inMathMode) {
-                LatexMathCommand.findByDisplay(c)?.firstOrNull() ?: LatexRegularCommand.findByDisplay(c)?.firstOrNull()
+            val candidates = AllPredefined.findCommandByDisplay(c)
+            val semantic = if (inMathMode) {
+                candidates.firstOrNull {
+                    it.applicableContext?.contains(LatexContexts.Math) == true
+                } ?: candidates.firstOrNull()
             }
-            else {
-                LatexRegularCommand.findByDisplay(c)?.firstOrNull()
-            }
+            else candidates.firstOrNull()
 
             // Replace with found command or with standard substitution
-            replacementText = command?.let { "\\" + it.command }
-                ?: findReplacement(c)
+            replacementText = semantic?.commandWithSlash ?: findReplacement(c)
 
             return replacementText?.let {
                 LatexPsiHelper(element.project).createFromText(element.text.replaceRange(descriptor.textRangeInElement.toIntRange(), it))

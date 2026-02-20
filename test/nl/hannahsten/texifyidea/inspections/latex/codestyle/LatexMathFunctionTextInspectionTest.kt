@@ -51,7 +51,8 @@ class LatexMathFunctionTextInspectionTest : TexifyInspectionTestBase(LatexMathFu
     }
 
     fun testQuickFix() {
-        MATH_FUNCTIONS.take(2).forEach { // it is slow to test all of them
+        MATH_FUNCTIONS.take(2).forEach {
+            // it is slow to test all of them
             myFixture.configureByText(
                 LatexFileType,
                 """$ Test \text{$it } (3, 4) $ text max"""

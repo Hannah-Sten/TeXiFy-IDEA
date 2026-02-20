@@ -6,20 +6,23 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.TreeUtil
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
-import nl.hannahsten.texifyidea.index.LatexProjectStructure
-import nl.hannahsten.texifyidea.index.LatexProjectStructure.getFilesetScopeFor
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
+import nl.hannahsten.texifyidea.index.projectstructure.LatexProjectStructure
+import nl.hannahsten.texifyidea.index.projectstructure.LatexProjectStructure.getFilesetScopeFor
 import nl.hannahsten.texifyidea.lang.LatexLib
-import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
+import nl.hannahsten.texifyidea.lang.predefined.CommandNames
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
+import nl.hannahsten.texifyidea.psi.nameWithSlash
 import nl.hannahsten.texifyidea.psi.traverseCommands
-import nl.hannahsten.texifyidea.util.files.*
+import nl.hannahsten.texifyidea.util.PackageUtils.insertUsepackage
+import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.util.files.findRootFile
+import nl.hannahsten.texifyidea.util.files.isClassFile
+import nl.hannahsten.texifyidea.util.files.isStyleFile
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.magic.PackageMagic.conflictingPackageMap
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
-import nl.hannahsten.texifyidea.util.magic.cmd
-import kotlin.collections.forEach
 
 /**
  * @author Hannah Schellekens
@@ -43,11 +46,10 @@ object PackageUtils {
      * The anchor will be the given preferred anchor if not null.
      */
     fun getDefaultInsertAnchor(commands: Sequence<LatexCommands>, preferredAnchor: LatexCommands?): Pair<PsiElement?, Boolean> {
-        val classHuh = commands
-            .filter { cmd ->
-                cmd.name == LatexGenericRegularCommand.DOCUMENTCLASS.cmd || cmd.name == LatexGenericRegularCommand.LOADCLASS.cmd
-            }
-            .firstOrNull()
+        val classHuh = commands.firstOrNull { cmd ->
+            val name = cmd.nameWithSlash
+            name == CommandNames.DOCUMENT_CLASS || name == CommandNames.LOAD_CLASS
+        }
         val anchorAfter: PsiElement?
         val prependNewLine: Boolean
         if (classHuh != null) {
@@ -170,38 +172,21 @@ object PackageUtils {
      * Will not insert a new statement when the package has already been included, or when a conflicting package is already included.
      *
      * @param file The file to add the usepackage statement to.
-     * @param pack The package to include.
+     * @param lib The package to include.
      *
      * @return false if the package was not inserted, because a conflicting package is already present.
      */
-    fun insertUsepackage(file: PsiFile, pack: LatexPackage): Boolean {
-        if (pack.isDefault) {
-            return true
-        }
-        return insertUsePackage(file, LatexLib.Package(pack.name), pack.parameters.asList())
-    }
-
-    private val conflictingPackagesList = listOf(
-        setOf("biblatex.sty", "natbib.sty"),
-    )
-    private val conflictingPackageMap = buildMap {
-        conflictingPackagesList.forEach { names ->
-            names.forEach { name ->
-                merge(name, names) { old, new -> old + new }
-            }
-        }
-    }
-
-    fun insertUsePackage(file: PsiFile, lib: LatexLib, options: List<String> = emptyList()): Boolean {
+    fun insertUsepackage(file: PsiFile, lib: LatexLib, options: List<String> = emptyList()): Boolean {
         if (lib.isDefault || lib.isCustom) return true
-        val packName = lib.toPackageName() ?: return false
+        val packName = lib.asPackageName() ?: return false
         val filesetData = LatexProjectStructure.getFilesetDataFor(file)
         if (filesetData != null) {
-            if (lib.name in filesetData.libraries) return true
-            conflictingPackageMap[lib.name]?.let { conflicts ->
+            val fileName = lib.toFileName() ?: return true
+            if (fileName in filesetData.libraries) return true
+            conflictingPackageMap[fileName]?.let { conflicts ->
                 // Don't insert when a conflicting package is already present
                 if (conflicts.any {
-                        lib.name != it && filesetData.libraries.contains(it)
+                        fileName != it && filesetData.libraries.contains(it)
                     }
                 ) {
                     return false
@@ -264,7 +249,7 @@ object PackageUtils {
      */
     fun getExplicitUsedPackagesInFileset(file: PsiFile): List<String> {
         val scope = getFilesetScopeFor(file, onlyTexFiles = true)
-        val commands = NewCommandsIndex.getByName(LatexGenericRegularCommand.USEPACKAGE.commandWithSlash, scope)
+        val commands = NewCommandsIndex.getByName("\\usepackage", scope)
         return getPackagesFromCommands(commands, mutableListOf())
     }
 
@@ -294,7 +279,7 @@ object PackageUtils {
 /**
  * @see PackageUtils.insertUsepackage
  */
-fun PsiFile.insertUsepackage(pack: LatexPackage) = PackageUtils.insertUsepackage(this, pack)
+fun PsiFile.insertUsepackage(latexLib: LatexLib) = insertUsepackage(this, latexLib)
 
 /**
  * Find all included LaTeX packages in the file set of this file.
@@ -304,6 +289,4 @@ fun PsiFile.insertUsepackage(pack: LatexPackage) = PackageUtils.insertUsepackage
  *
  * @return List of all included packages, including those that are included indirectly.
  */
-fun PsiFile.includedPackagesInFileset(): Set<LatexPackage> {
-    return PackageUtils.getIncludedLibrariesInFileset(this).map { LatexPackage(it.substringBefore('.')) }.toSet()
-}
+fun PsiFile.includedPackagesInFileset(): Set<LatexLib> = PackageUtils.getIncludedLibrariesInFileset(this).map { LatexLib.Package(it.substringBefore('.')) }.toSet()

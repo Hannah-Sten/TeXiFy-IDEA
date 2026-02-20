@@ -1,11 +1,10 @@
 package nl.hannahsten.texifyidea.completion
 
+import com.intellij.codeInsight.completion.InsertHandler
+import com.intellij.codeInsight.completion.InsertionContext
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementPresentation
 import com.intellij.codeInsight.lookup.LookupElementRenderer
-
-import com.intellij.codeInsight.completion.InsertHandler
-import com.intellij.codeInsight.completion.InsertionContext
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.index.SourcedDefinition
@@ -61,13 +60,9 @@ data class SimpleWithDefLookupElement(
 
     override fun getAllLookupStrings(): Set<String> = allLookupStrings
 
-    override fun getObject(): Any {
-        return def
-    }
+    override fun getObject(): Any = def
 
-    override fun getPsiElement(): PsiElement? {
-        return def.definitionCommandPointer?.element
-    }
+    override fun getPsiElement(): PsiElement? = def.definitionCommandPointer?.element
 
     override fun isCaseSensitive(): Boolean = caseSensitive
 

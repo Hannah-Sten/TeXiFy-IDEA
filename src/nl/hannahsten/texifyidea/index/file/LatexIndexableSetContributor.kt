@@ -9,7 +9,7 @@ import com.intellij.openapi.vfs.toNioPathOrNull
 import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.intellij.platform.util.progress.forEachWithProgress
 import com.intellij.util.indexing.IndexableSetContributor
-import nl.hannahsten.texifyidea.index.LatexProjectStructure
+import nl.hannahsten.texifyidea.index.projectstructure.LatexProjectStructure
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.Log
@@ -22,7 +22,7 @@ import kotlin.io.path.isWritable
 import kotlin.io.path.listDirectoryEntries
 
 /**
- * Specify the paths that have to be indexed for the [LatexExternalCommandIndexEx].
+ * Specify the paths that have to be indexed for the commands defined in packages.
  */
 class LatexIndexableSetContributor : IndexableSetContributor() {
 
@@ -116,7 +116,5 @@ class LatexIndexableSetContributor : IndexableSetContributor() {
         filesets.mapping.keys.filterTo(roots) { it.isValid }
     }
 
-    override fun getAdditionalRootsToIndex(): Set<VirtualFile> {
-        return emptySet()
-    }
+    override fun getAdditionalRootsToIndex(): Set<VirtualFile> = emptySet()
 }

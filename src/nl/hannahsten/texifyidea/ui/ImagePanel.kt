@@ -13,11 +13,6 @@ import javax.swing.JPanel
  */
 internal class ImagePanel : JPanel() {
 
-    companion object {
-
-        private const val SERIAL_VERSION_UID = 1L
-    }
-
     private var image: Image? = null
     private var imageWidth: Int = 1
     private var imageHeight: Int = 1
@@ -59,12 +54,10 @@ internal class ImagePanel : JPanel() {
         scaled = image?.getScaledInstance(scaledImageWidth, scaledImageHeight, Image.SCALE_SMOOTH)
     }
 
-    override fun getPreferredSize(): Dimension {
-        return if (image == null) {
-            Dimension(200, 200)
-        }
-        else Dimension(image!!.getWidth(this), image!!.getHeight(this))
+    override fun getPreferredSize(): Dimension = if (image == null) {
+        Dimension(200, 200)
     }
+    else Dimension(image!!.getWidth(this), image!!.getHeight(this))
 
     override fun paintComponent(g: Graphics) {
         super.paintComponent(g)

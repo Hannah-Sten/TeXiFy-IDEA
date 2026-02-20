@@ -10,13 +10,13 @@ import com.intellij.psi.util.PsiTreeUtil.findChildrenOfType
 import com.intellij.refactoring.suggested.extend
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
+import nl.hannahsten.texifyidea.lang.LSemanticCommand
+import nl.hannahsten.texifyidea.lang.LatexLib
+import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.psi.traverseCommands
 import nl.hannahsten.texifyidea.util.files.document
 import nl.hannahsten.texifyidea.util.magic.PatternMagic.quotePattern
-import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.inMathContext
 import nl.hannahsten.texifyidea.util.replaceString
 import nl.hannahsten.texifyidea.util.toTextRange
@@ -59,6 +59,10 @@ class LatexQuoteInspection : TexifyInspectionBase() {
         LatexQuoteFix("closing double quote", "''"),
     )
 
+    private val fontspecCommandNames = AllPredefined.findByLib(LatexLib.FONTSPEC).mapNotNullTo(mutableSetOf()) {
+        if(it is LSemanticCommand) it.commandWithSlash else null
+    }
+
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         // Build up a list of acceptable quote pairs. The ith index in both arrays must contain a matching quote
         // pair. Additional quote pairs are extracted from the csquotes quote making commands
@@ -69,8 +73,7 @@ class LatexQuoteInspection : TexifyInspectionBase() {
         val commands = file.traverseCommands()
 
         // When Ligatures=TeXOff is set, straight quotes will be used. This setting can be applied in certain fontspec commands
-        val fontspecCommands = LatexGenericRegularCommand.entries.filter { it.dependency == LatexPackage.FONTSPEC }.map { it.cmd }
-        if (commands.filter { it.name in fontspecCommands }.any { it.text.contains("ligatures=TeXOff", ignoreCase = true) }) {
+        if (commands.filter { it.name in fontspecCommandNames }.any { it.text.contains("ligatures=TeXOff", ignoreCase = true) }) {
             return emptyList()
         }
         for (command in commands) {
@@ -152,9 +155,7 @@ class LatexQuoteInspection : TexifyInspectionBase() {
      */
     private class MathFix : LocalQuickFix {
 
-        override fun getFamilyName(): String {
-            return "Convert to inline maths environment, for typesetting feet, inches or other mathematical punctuation."
-        }
+        override fun getFamilyName(): String = "Convert to inline maths environment, for typesetting feet, inches or other mathematical punctuation."
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val document = descriptor.psiElement.containingFile.document() ?: return
@@ -168,9 +169,7 @@ class LatexQuoteInspection : TexifyInspectionBase() {
 
     private class LatexQuoteFix(val description: String, val replacement: String) : LocalQuickFix {
 
-        override fun getFamilyName(): String {
-            return "Replace with a LaTeX $description"
-        }
+        override fun getFamilyName(): String = "Replace with a LaTeX $description"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val document = descriptor.psiElement.containingFile.document() ?: return

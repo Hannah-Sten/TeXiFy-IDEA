@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.modules
 
 import com.intellij.ide.util.projectWizard.*
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.module.ModuleTypeManager
 import com.intellij.openapi.options.ConfigurationException
 import com.intellij.openapi.projectRoots.SdkTypeId
 import com.intellij.openapi.roots.CompilerModuleExtension
@@ -13,7 +14,6 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdk
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import java.io.File
-import java.util.*
 
 /**
  * @author Hannah Schellekens, Sten Wessel
@@ -32,7 +32,8 @@ class LatexModuleBuilder : ModuleBuilder() {
 
     var isBibtexEnabled = false
 
-    override fun getModuleType() = LatexModuleType.INSTANCE
+    override fun getModuleType(): LatexModuleType =
+        ModuleTypeManager.getInstance().findByID(LatexModuleType.ID) as? LatexModuleType ?: LatexModuleType()
 
     override fun getCustomOptionsStep(context: WizardContext?, parentDisposable: Disposable?) = LatexModuleWizardStep(this)
 

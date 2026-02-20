@@ -6,16 +6,13 @@ import com.intellij.codeInsight.lookup.LookupElement
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.completion.handlers.LatexCommandInsertHandler
 import nl.hannahsten.texifyidea.index.DefinitionBundle
-import nl.hannahsten.texifyidea.index.LatexLibraryDefinitionService
 import nl.hannahsten.texifyidea.index.SourcedDefinition
 import nl.hannahsten.texifyidea.lang.LArgument
 import nl.hannahsten.texifyidea.lang.LArgumentType
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LSemanticCommand
-import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.settings.TexifySettings.CompletionMode
-import nl.hannahsten.texifyidea.util.files.LatexPackageLocation
 import nl.hannahsten.texifyidea.util.files.isClassFile
 import nl.hannahsten.texifyidea.util.files.isStyleFile
 
@@ -32,7 +29,7 @@ object ContextAwareCommandCompletionProvider : LatexContextAwareCompletionAdapto
             checkCtx = completionMode == CompletionMode.SMART, contexts = contexts
         )
         if (completionMode == CompletionMode.ALL_PACKAGES) {
-            addAllExternalCommands(parameters, result, isClassOrStyleFile)
+            addExternal(parameters) { addBundleCommands(parameters, result, it, isClassOrStyleFile, checkCtx = false) }
         }
     }
 
@@ -53,35 +50,17 @@ object ContextAwareCommandCompletionProvider : LatexContextAwareCompletionAdapto
         result.addAllElements(lookupElements)
     }
 
-    private fun addAllExternalCommands(
-        parameters: CompletionParameters, result: CompletionResultSet, isClassOrStyleFile: Boolean
-    ) {
-        val project = parameters.originalFile.project
-        val addedLibs = mutableSetOf<LatexLib>()
-        val allNames = LatexPackageLocation.getAllPackageNames(project)
-        val defService = LatexLibraryDefinitionService.getInstance(project)
-        for (name in allNames) {
-            val lib = LatexLib(name)
-            if (!addedLibs.add(lib)) continue // skip already added libs
-            val libBundle = defService.getLibBundle(name)
-            addBundleCommands(parameters, result, libBundle, isClassOrStyleFile, checkCtx = false)
-            addedLibs.addAll(libBundle.allLibraries)
-        }
-    }
-
-    private fun buildArgumentInformation(cmd: LSemanticCommand, args: List<LArgument>): String {
-        return args.joinToString("")
-    }
+    private fun buildArgumentInformation(cmd: LSemanticCommand, args: List<LArgument>): String = args.joinToString("")
 
     private fun buildCommandDisplay(cmd: LSemanticCommand): String {
-        if (cmd.display == null) {
-            return cmd.nameWithSlash
+        if (cmd.display == null || cmd.arguments.isNotEmpty()) {
+            return cmd.commandWithSlash
         }
-        return cmd.nameWithSlash + " " + cmd.display
+        return cmd.commandWithSlash + " " + cmd.display
     }
 
     private fun buildLookupString(cmd: LSemanticCommand, subArgs: List<LArgument>): String = buildString {
-        append(cmd.nameWithSlash) // The command name with a slash, e.g. \newcommand/
+        append(cmd.commandWithSlash) // The command name with a slash, e.g. \newcommand/
         subArgs.joinTo(this, separator = "") {
             when (it.type) {
                 LArgumentType.REQUIRED -> "{}"
@@ -97,7 +76,7 @@ object ContextAwareCommandCompletionProvider : LatexContextAwareCompletionAdapto
         \alpha α                          amsmath.sty
         \mycommand[optional]{required}    main.tex
          */
-        val typeText = buildCommandSourceStr(sourced) // type text is at the right
+        val typeText = buildDefinitionSourceStr(sourced) // type text is at the right
         val presentableText = buildCommandDisplay(cmd)
         val applicableCtxText = buildApplicableContextStr(cmd)
         cmd.arguments.optionalPowerSet().forEachIndexed { index, subArgs ->

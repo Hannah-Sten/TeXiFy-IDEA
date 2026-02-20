@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package nl.hannahsten.texifyidea.util
 
 import java.util.*
@@ -32,28 +34,6 @@ fun <T> mutableMapOfArray(args: Array<out T>): MutableMap<T, T> {
 }
 
 /**
- * Puts some elements into a mutable map.
- *
- * The format is `key0, value0, key1, value1, ...`. This means that there must always be an even amount of elements.
- *
- * @return A map mapping `keyN` to `valueN` (see description above). When there are no elements, an empty map will be
- *          returned
- * @throws IllegalArgumentException When there is an odd amount of elements in the array.
- */
-fun <T> mutableMapOfVarargs(vararg args: T): MutableMap<T, T> = mutableMapOfArray(args)
-
-/**
- * Puts some into a mutable map.
- *
- * The format is `key0, value0, key1, value1, ...`. This means that there must always be an even amount of elements.
- *
- * @return A map mapping `keyN` to `valueN` (see description above). When there are no elements, an empty map will be
- *          returned
- * @throws IllegalArgumentException When there is an odd amount of elements in the array.
- */
-fun <T> mapOfVarargs(vararg args: T): Map<T, T> = mutableMapOfArray(args)
-
-/**
  * Gets a random element from the list using the given random object.
  */
 fun <T> List<T>.randomElement(random: Random): T = this[random.nextInt(this.size)]
@@ -63,12 +43,10 @@ fun <T> List<T>.randomElement(random: Random): T = this[random.nextInt(this.size
  *
  * @return All keys with the given value.
  */
-fun <K, V> Map<K, V>.findKeys(value: V): Set<K> {
-    return entries.asSequence()
-        .filter { (_, v) -> v == value }
-        .map { it.key }
-        .toSet()
-}
+fun <K, V> Map<K, V>.findKeys(value: V): Set<K> = entries.asSequence()
+    .filter { (_, v) -> v == value }
+    .map { it.key }
+    .toSet()
 
 /**
  * Finds at least `amount` elements matching the given predicate.
@@ -167,4 +145,29 @@ fun <T> Set<T>.existsIntersection(other: Set<T>): Boolean {
     if(this.isEmpty() || other.isEmpty()) return false
     val (small, large) = if(this.size < other.size) this to other else other to this
     return small.any { it in large }
+}
+
+inline fun <T> List<T>.indexOfFirstWithin(
+    filter: (T) -> Boolean,
+    predicate: (T) -> Boolean
+): Int {
+    var count = 0
+    for(element in this) {
+        if(filter(element)) {
+            if(predicate(element)) return count
+            count++
+        }
+    }
+    return -1
+}
+
+inline fun <T> List<T>.getByIndexWithin(filter: (T) -> Boolean, idx: Int): T? {
+    var count = 0
+    for(element in this) {
+        if(filter(element)) {
+            if(count == idx) return element
+            count++
+        }
+    }
+    return null
 }

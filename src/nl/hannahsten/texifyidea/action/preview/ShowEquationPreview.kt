@@ -15,8 +15,7 @@ import nl.hannahsten.texifyidea.util.parser.findOuterMathEnvironment
  */
 class ShowEquationPreview : PreviewAction("Equation Preview", TexifyIcons.EQUATION_PREVIEW) {
 
-    companion object {
-
+    object Util {
         @JvmStatic
         val FORM_KEY = Key<PreviewFormUpdater>("updater")
 
@@ -29,9 +28,9 @@ class ShowEquationPreview : PreviewAction("Equation Preview", TexifyIcons.EQUATI
 
         val outerMathEnvironment = element.findOuterMathEnvironment() ?: return
 
-        displayPreview(project, outerMathEnvironment, FORM_KEY) {
+        displayPreview(project, outerMathEnvironment, Util.FORM_KEY) {
             resetPreamble()
-            preamble += MATH_PREAMBLE
+            preamble += Util.MATH_PREAMBLE
             val psiFile = element.containingFile
             userPreamble += findPreamblesFromMagicComments(psiFile, "math")
         }

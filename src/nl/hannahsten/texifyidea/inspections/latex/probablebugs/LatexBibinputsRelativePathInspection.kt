@@ -9,10 +9,9 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
+import nl.hannahsten.texifyidea.lang.predefined.CommandNames
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.files.commandsInFile
-import nl.hannahsten.texifyidea.util.magic.cmd
 
 /**
  * BIBINPUTS cannot handle paths which start with ../  in the \bibliography command, e.g. \bibliography{../mybib}.
@@ -28,7 +27,7 @@ class LatexBibinputsRelativePathInspection : TexifyInspectionBase() {
     override val inspectionId = "BibinputsRelativePath"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
-        val commandsWithRelativePath = file.commandsInFile(LatexGenericRegularCommand.BIBLIOGRAPHY.cmd).filter { it.requiredParameterText(0)?.startsWith("../") == true }
+        val commandsWithRelativePath = file.commandsInFile(CommandNames.BIBLIOGRAPHY).filter { it.requiredParameterText(0)?.startsWith("../") == true }
         if (commandsWithRelativePath.isEmpty()) return emptyList()
 
         // todo If not using BIBINPUTS, all is fine and it will work.

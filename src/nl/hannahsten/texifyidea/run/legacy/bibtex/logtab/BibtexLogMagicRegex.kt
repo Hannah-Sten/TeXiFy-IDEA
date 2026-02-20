@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.run.legacy.bibtex.logtab
 
+@Suppress("unused")
 object BibtexLogMagicRegex {
 
     val bibFileOpened =

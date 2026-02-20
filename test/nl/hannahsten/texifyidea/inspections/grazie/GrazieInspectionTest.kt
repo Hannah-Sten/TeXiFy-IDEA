@@ -17,9 +17,7 @@ import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
 
 class GrazieInspectionTest : BasePlatformTestCase() {
 
-    override fun getTestDataPath(): String {
-        return "test/resources/inspections/grazie"
-    }
+    override fun getTestDataPath(): String = "test/resources/inspections/grazie"
 
     override fun setUp() {
         super.setUp()
@@ -64,7 +62,7 @@ class GrazieInspectionTest : BasePlatformTestCase() {
     }
 
     fun testInlineMath() {
-        myFixture.configureByText(LatexFileType, """Does Grazie detect ${'$'}m$ as a sentence?""")
+        myFixture.configureByText(LatexFileType, $$"""Does Grazie detect $m$ as a sentence?""")
         myFixture.checkHighlighting()
     }
 
@@ -138,8 +136,8 @@ class GrazieInspectionTest : BasePlatformTestCase() {
         GrazieConfig.update { it.copy(enabledLanguages = it.enabledLanguages + Lang.GERMANY_GERMAN) }
         myFixture.configureByText(
             LatexFileType,
-            """
-            Eine \textbf{Folge oder Zahlenfolge} in ${'$'}M$ ist eine Abbildung
+            $$"""
+            Eine \textbf{Folge oder Zahlenfolge} in $M$ ist eine Abbildung
             """.trimIndent()
         )
         myFixture.checkHighlighting()
@@ -162,10 +160,10 @@ class GrazieInspectionTest : BasePlatformTestCase() {
         GrazieConfig.update { it.copy(enabledLanguages = it.enabledLanguages + Lang.GERMANY_GERMAN) }
         myFixture.configureByText(
             LatexFileType,
-            """
+            $$"""
                 \begin{tabular}{llll}
-                    ${'$'}a$:                 & $\mathbb{N}$ & \rightarrow & ${'$'}M$     \\
-                    \multicolumn{1}{l}{} & ${'$'}n$          & \mapsto     & ${'$'}a(n)$.
+                    $a$:                 & $\mathbb{N}$ & \rightarrow & $M$     \\
+                    \multicolumn{1}{l}{} & $n$          & \mapsto     & $a(n)$.
                 \end{tabular}
 
                 Ich bin über die Entwicklung sehr froh.
@@ -216,9 +214,7 @@ class GrazieInspectionTest : BasePlatformTestCase() {
     /**
      * Text as sent to Grazie.
      */
-    private fun getSubmittedText(file: PsiFile): String {
-        return LatexTextExtractor().buildTextContent(file.findFirstChildOfType(LatexContent::class)!!).toString()
-    }
+    private fun getSubmittedText(file: PsiFile): String = LatexTextExtractor().buildTextContent(file.findFirstChildOfType(LatexContent::class)!!).toString()
 
     fun testNewlinesShouldBeKept() {
         val text = """

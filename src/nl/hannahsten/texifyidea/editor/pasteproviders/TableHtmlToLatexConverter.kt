@@ -1,12 +1,8 @@
 package nl.hannahsten.texifyidea.editor.pasteproviders
 
-import nl.hannahsten.texifyidea.action.wizard.table.ColumnType
-import nl.hannahsten.texifyidea.action.wizard.table.LatexTableWizardAction
-import nl.hannahsten.texifyidea.action.wizard.table.TableCreationDialogWrapper
-import nl.hannahsten.texifyidea.action.wizard.table.TableCreationTableModel
+import nl.hannahsten.texifyidea.action.wizard.table.*
 import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.util.toVector
-import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import java.util.*
 
@@ -26,34 +22,98 @@ class TableHtmlToLatexConverter : HtmlToLatexConverter {
      * Creates the Table Creation Dialog filled in with the data from the clipboard.
      */
     @Suppress("USELESS_CAST")
-    private fun Document.toTableDialogWrapper(latexFile: LatexFile): TableCreationDialogWrapper? {
-        val rows = select("table tr")
-        val height = rows.size
-        val width = rows.firstOrNull()?.select("td, th")?.size ?: 0
+    private fun Element.toTableDialogWrapper(latexFile: LatexFile): TableCreationDialogWrapper? {
+        // Work with this table element directly
+        val table = this
 
-        if (height == 0 && width == 0) return null
+        data class HtmlCell(val element: Element?, val text: String)
 
-        // Convert html to data vector Vector<Vector<Any?>> as required by DefaultTableModel
-        val header = rows.firstOrNull()?.select("td, th")?.mapNotNull { it.text() }?.toVector() ?: return null
-        val content: Vector<Vector<Any?>> = rows.drop(1).map { tr ->
-            tr.select("td, th").map { td -> convertHtmlToLatex(listOf(td), latexFile) as Any? }.toVector()
+        // Expand table into a full grid accounting for rowspan/colspan
+        val trs = table.select("tr")
+        val assignments = mutableMapOf<Pair<Int, Int>, HtmlCell>()
+        // Map grid locations to colspan size, if larger than 1
+        val colspans = mutableMapOf<Pair<Int, Int>, Int>()
+        var maxRowIndex = -1
+        var maxColIndex = -1
+
+        val header = mutableListOf<String>()
+        trs.forEachIndexed { r, tr ->
+            var c = 0
+            val cells = tr.select("td, th")
+            cells.forEach { td ->
+                // Find next free column in this row (skip positions filled by previous rowspans)
+                while (assignments.containsKey(Pair(r, c))) c++
+
+                val rs = td.attr("rowspan").toIntOrNull()?.coerceAtLeast(1) ?: 1
+                val cs = td.attr("colspan").toIntOrNull()?.coerceAtLeast(1) ?: 1
+                // We don't support colspans in the header for now
+                if (r > 0 && cs > 1) {
+                    // - 1 because we don't count the header row for the UI
+                    colspans[Pair(r - 1, c)] = cs
+                }
+                val cell = HtmlCell(td, td.text())
+
+                for (dr in 0 until rs) {
+                    for (dc in 0 until cs) {
+                        val rr = r + dr
+                        val cc = c + dc
+                        assignments[Pair(rr, cc)] = cell
+                        if (rr > maxRowIndex) maxRowIndex = rr
+                        if (cc > maxColIndex) maxColIndex = cc
+
+                        if (r == 0) {
+                            // First row: collect header names
+                            if (dc == 0) {
+                                header.add(td.text())
+                            }
+                            else {
+                                header.add("") // placeholder for spanned columns
+                            }
+                        }
+                    }
+                }
+                c += cs
+            }
+        }
+
+        val height = maxRowIndex + 1
+        val width = maxColIndex + 1
+        if (height <= 0 || width <= 0) return null
+
+        val grid: List<List<HtmlCell?>> = (0 until height).map { r ->
+            (0 until width).map { c -> assignments[Pair(r, c)] }
+        }
+
+        // Build content rows from the remaining grid rows
+        val content: Vector<Vector<Any?>> = (1 until height).map { r ->
+            (0 until width).map { c ->
+                val cell = grid[r][c]
+                if (cell?.element != null) {
+                    convertHtmlToLatex(listOf(cell.element), latexFile) as Any?
+                }
+                else {
+                    (cell?.text ?: "") as Any?
+                }
+            }.toVector()
         }.toVector()
 
-        // Find the type of column automatically.
-        val contentRows = rows.drop(1)
+        // Determine column types based on expanded content
         val columnTypes = (0 until width).map { col ->
-            // Check if all contents of the column (except the header) can be converted to a number.
-            // When that's the case => it's a number column. All other cases, text. Ignoring the Math option
-            // as the table information is most probably something outside of a latex context.
-            if (contentRows.all { it.select("td, th").getOrNull(col)?.text()?.toDoubleOrNull() != null }) {
-                ColumnType.NUMBERS_COLUMN
+            val allNumeric = (1 until height).all { r ->
+                val t = grid[r][col]?.text
+                t.isNullOrBlank() || t.trim().toDoubleOrNull() != null
             }
-            else ColumnType.TEXT_COLUMN
+            if (allNumeric) ColumnType.NUMBERS_COLUMN else ColumnType.TEXT_COLUMN
+        }
+
+        val columnSpanMap = object : ColumnSpanMap() {
+            override fun numberOfColumnsInSpan(row: Int, column: Int): Int = colspans[Pair(row, column)] ?: 1
         }
 
         return TableCreationDialogWrapper(
             columnTypes,
-            TableCreationTableModel(content, header)
+            TableCreationTableModel(content, header.toVector()),
+            columnSpanMap,
         )
     }
 }

@@ -5,7 +5,6 @@ import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.compiler.latex.LatexCompiler
 import java.io.File
@@ -92,7 +91,7 @@ object LatexmkRcFileFinder {
     fun isLatexmkRcFilePresent(runConfig: LatexRunConfiguration): Boolean {
         val isPresent = isSystemLatexmkRcFilePresent || isLocalLatexmkRcFilePresent(
             runConfig.options.compilerArguments,
-            runConfig.workingDirectory
+            runConfig.getResolvedWorkingDirectory()
         )
 
         // The first time, by default don't override what's in the latexmkrc (but avoid resetting the user chosen output format)
@@ -105,25 +104,21 @@ object LatexmkRcFileFinder {
     /**
      * Get TEXINPUTS from latexmkrc.
      */
-    private fun getTexinputs(file: VirtualFile): String? {
-        return """ensure_path\(\s*'TEXINPUTS',\s*'(?<path>[^']+)'\s*\)""".toRegex().find(file.inputStream.reader().readText())?.groups?.get("path")?.value
-    }
+    private fun getTexinputs(file: VirtualFile): String? = """ensure_path\(\s*'TEXINPUTS',\s*'(?<path>[^']+)'\s*\)""".toRegex().find(file.inputStream.reader().readText())?.groups?.get("path")?.value
 
     /**
      * Get the first TEXINPUTS we can find in latexmkrc files.
      * Cached because searching involves quite some system calls, and it's a rarely used feature.
      */
-    fun getTexinputsVariable(directory: VirtualFile, runConfig: LatexRunConfiguration?, project: Project): String? {
-        return if (usesLatexmkrc == false) {
-            null
+    fun getTexinputsVariable(directory: VirtualFile, runConfig: LatexRunConfiguration?, project: Project): String? = if (usesLatexmkrc == false) {
+        null
+    }
+    else {
+        val texinputs = getTexinputsVariableNoCache(directory, runConfig, project)
+        if (usesLatexmkrc == null) {
+            usesLatexmkrc = texinputs != null
         }
-        else {
-            val texinputs = getTexinputsVariableNoCache(directory, runConfig, project)
-            if (usesLatexmkrc == null) {
-                usesLatexmkrc = texinputs != null
-            }
-            texinputs
-        }
+        texinputs
     }
 
     /**
@@ -140,6 +135,7 @@ object LatexmkRcFileFinder {
         if (runConfig != null) {
             getLocalLatexmkRcFile(runConfig.options.compilerArguments, runConfig.options.mainFile.resolve()?.parent?.path)?.let { return getTexinputs(it) }
         }
+        if (!directory.isValid) return null
         // File could be anywhere if run configurations are not used, but searching the whole project could be too expensive
         directory.findChild(".latexmkrc")?.let { return getTexinputs(it) }
         directory.findChild("latexmkrc")?.let { return getTexinputs(it) }

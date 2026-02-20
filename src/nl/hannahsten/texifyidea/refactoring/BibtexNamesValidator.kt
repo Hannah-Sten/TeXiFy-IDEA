@@ -8,9 +8,7 @@ import com.intellij.openapi.project.Project
  */
 class BibtexNamesValidator : NamesValidator {
 
-    override fun isKeyword(name: String, project: Project?): Boolean {
-        return false
-    }
+    override fun isKeyword(name: String, project: Project?): Boolean = false
 
     override fun isIdentifier(name: String, project: Project?): Boolean {
         // Characters for bibtex identifiers, see lexer

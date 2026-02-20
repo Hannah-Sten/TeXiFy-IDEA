@@ -14,7 +14,7 @@ import nl.hannahsten.texifyidea.lang.LArgument
 import nl.hannahsten.texifyidea.lang.LSemanticCommand
 import nl.hannahsten.texifyidea.lang.LSemanticEnv
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
-import nl.hannahsten.texifyidea.util.*
+import nl.hannahsten.texifyidea.util.insertAndMove
 import nl.hannahsten.texifyidea.util.magic.TypographyMagic
 
 /**
@@ -35,7 +35,7 @@ data class LatexCommandInsertHandler(
         val editor = context.editor
         val offset = editor.caretModel.offset
         // context.startOffset is the offset of the start of the just inserted text.
-        val commandEndOffset = context.startOffset + semantics.nameWithSlash.length
+        val commandEndOffset = context.startOffset + semantics.commandWithSlash.length
         if (commandEndOffset >= offset) return
         // Remove the command token and everything after it.
         editor.document.deleteString(commandEndOffset, offset)
@@ -57,7 +57,7 @@ data class LatexCommandInsertHandler(
             }
         }
 
-        SemanticRightInsertHandler.handleInsert(context, item, semantics)
+        RightInsertHandler.handleInsert(context, item, semantics)
         LatexAddImportInsertHandler.handleInsert(context, item)
     }
 
@@ -65,8 +65,8 @@ data class LatexCommandInsertHandler(
         val numberRequiredArguments = arguments.count { it.isRequired }
 
         val templateText = List(numberRequiredArguments) {
-            "{\$__Variable$it$}"
-        }.joinToString("") + "\n\$END$\n\\${TypographyMagic.pseudoCodeBeginEndOpposites[cmd.name]}"
+            $$"{$__Variable$$it$}"
+        }.joinToString("") + $$"\n$END$\n\\$${TypographyMagic.pseudoCodeBeginEndOpposites[cmd.name]}"
         val parameterTemplate = object : TemplateImpl("", templateText, "") {
             override fun isToReformat(): Boolean = false
         }
@@ -80,7 +80,7 @@ data class LatexCommandInsertHandler(
      * Inserts a live template to make the end command match the begin command.
      */
     private fun insertBegin(context: InsertionContext) {
-        val templateText = "{\$__Variable0$}\$END$\n\\end{\$__Variable0$}"
+        val templateText = $$"{$__Variable0$}$END$\n\\end{$__Variable0$}"
         val template = object : TemplateImpl("", templateText, "") {
             override fun isToReformat(): Boolean = true
         }
@@ -105,7 +105,7 @@ data class LatexCommandInsertHandler(
         private fun insertRequiredArguments(environment: LSemanticEnv?, context: InsertionContext) {
             val numberRequiredArguments = environment?.arguments?.count { it.isRequired } ?: 0
 
-            val templateText = List(numberRequiredArguments) { "{\$__Variable$it$}" }.joinToString("") + "\n\$END$"
+            val templateText = List(numberRequiredArguments) { $$"{$__Variable$$it$}" }.joinToString("") + $$"\n$END$"
             val parameterTemplate = object : TemplateImpl("", templateText, "") {
                 override fun isToReformat(): Boolean = true
             }

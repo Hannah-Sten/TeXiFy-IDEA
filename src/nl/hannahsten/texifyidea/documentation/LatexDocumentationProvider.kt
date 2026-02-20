@@ -10,24 +10,24 @@ import nl.hannahsten.texifyidea.index.DefinitionBundle
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.index.SourcedDefinition
 import nl.hannahsten.texifyidea.lang.LSemanticEntity
-import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.lang.toLatexPackage
-import nl.hannahsten.texifyidea.psi.BibtexEntry
-import nl.hannahsten.texifyidea.psi.BibtexId
-import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexEnvIdentifier
-import nl.hannahsten.texifyidea.psi.nameWithSlash
+import nl.hannahsten.texifyidea.lang.LatexLib
+import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
 import nl.hannahsten.texifyidea.util.SystemEnvironment
+import nl.hannahsten.texifyidea.util.TexifyCoroutine
 import nl.hannahsten.texifyidea.util.containsAny
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.*
-import nl.hannahsten.texifyidea.util.runCommandWithExitCode
+import nl.hannahsten.texifyidea.util.runCommandNonBlocking
 
 /**
  * @author Sten Wessel
  */
 class LatexDocumentationProvider : DocumentationProvider {
+
+    object Cache {
+        val documentationUrls = mutableMapOf<LatexLib, Either<CommandFailure, List<String>>>()
+    }
 
     /**
      * The currently active lookup item.
@@ -64,12 +64,12 @@ class LatexDocumentationProvider : DocumentationProvider {
 
         val command = bundle?.lookupCommandPsi(element) ?: return@either null
         // Special case for package inclusion commands
-        if (command.nameWithSlash in CommandMagic.packageInclusionCommands) {
+        if (command.commandWithSlash in CommandMagic.packageInclusionCommands) {
             val pkg = element.requiredParametersText().getOrNull(0) ?: return@either null
-            return runTexdoc(LatexPackage(pkg))
+            return runTexdoc(LatexLib.Package(pkg))
         }
 
-        return runTexdoc(command.dependency.toLatexPackage())
+        return runTexdoc(command.dependency)
     }
 
     /**
@@ -130,7 +130,7 @@ class LatexDocumentationProvider : DocumentationProvider {
      * Generate the content that should be shown in the documentation popup.
      * Works for commands and environments
      */
-    private fun generateDocForLatexCommandsAndEnvironments(element: PsiElement, originalElement: PsiElement?): String? {
+    private fun generateDocForLatexCommandsAndEnvironments(element: PsiElement, originalElement: PsiElement?): String {
         // Indexed documentation
         // Apparently the lookup item is not yet initialised, so let's do that first
         // Can happen when requesting documentation for an item for which the user didn't request documentation during autocompletion
@@ -153,7 +153,7 @@ class LatexDocumentationProvider : DocumentationProvider {
             // Link to package docs
             originalElement ?: return@buildString
             val urlsMaybe = if (!isPackageInclusionCommand(element)) {
-                runTexdoc(lookupItem?.dependency?.toLatexPackage())
+                runTexdoc(lookupItem?.dependency)
             }
             else getUrlForElement(element, defBundle)
             val urlsText = urlsMaybe.fold(
@@ -210,50 +210,59 @@ class LatexDocumentationProvider : DocumentationProvider {
     /**
      * Find list of documentation urls.
      */
-    private fun runTexdoc(pkg: LatexPackage?): Either<CommandFailure, List<String>> = either {
+    private fun runTexdoc(pkg: LatexLib?): Either<CommandFailure, List<String>> = either {
         if (pkg == null) return@either emptyList()
 
-        // base/lt... files are documented in source2e.pdf
-        val name = if (pkg.fileName.isBlank() || (pkg.name.isBlank() && pkg.fileName.startsWith("lt"))) "source2e" else pkg.fileName
+        // mthelp can take a significant amount of time, but we cannot pre-fill the cache easily, so we request cache fill on the fly (urls are not a critical feature)
+        TexifyCoroutine.runInBackground {
+            // base/lt... files are documented in source2e.pdf
+            val name = if (pkg.name.isBlank() || (pkg.name.isBlank() && pkg.name.startsWith("lt"))) "source2e" else pkg.name
 
-        val command = if (TexliveSdk.Cache.isAvailable) {
-            // -M to avoid texdoc asking to choose from the list
-            listOf("texdoc", "-l", "-M", name)
-        }
-        else {
-            if (SystemEnvironment.isAvailable("texdoc")) {
-                // texdoc on MiKTeX is just a shortcut for mthelp which doesn't need the -M option
-                listOf("texdoc", "-l", name)
-            }
-            else if (SystemEnvironment.isAvailable("mthelp")) {
-                // In some cases, texdoc may not be available but mthelp is
-                listOf("mthelp", "-l", name)
-            }
-            else
-                raise(CommandFailure("Could not find mthelp or texdoc", 0))
-        }
-        val (output, exitCode) = runCommandWithExitCode(*command.toTypedArray(), returnExceptionMessage = true)
-        if (exitCode != 0 || output?.isNotBlank() != true) {
-            raise(CommandFailure(output ?: "", exitCode))
-        }
-
-        // Assume that if there are no path delimiters in the output, the output is some sort of error message (could be in any language)
-        val validLines = output.split("\n").filter { it.containsAny(setOf("\\", "/")) }
-
-        if (validLines.isEmpty()) {
-            raise(CommandFailure(output, exitCode))
-        }
-
-        validLines.toSet().mapNotNull {
-            // Do some guesswork about the format
-            if (TexliveSdk.Cache.isAvailable) {
-                // Line consists of: name version path optional file description
-                it.split("\t").getOrNull(2)
+            val command = if (TexliveSdk.Cache.isAvailable) {
+                // -M to avoid texdoc asking to choose from the list
+                listOf("texdoc", "-l", "-M", name)
             }
             else {
-                // mthelp seems to just output the paths itself
-                it
+                if (SystemEnvironment.isAvailable("texdoc")) {
+                    // texdoc on MiKTeX is just a shortcut for mthelp which doesn't need the -M option
+                    listOf("texdoc", "-l", name)
+                }
+                else if (SystemEnvironment.isAvailable("mthelp")) {
+                    // In some cases, texdoc may not be available but mthelp is
+                    listOf("mthelp", "-l", name)
+                }
+                else
+                    raise(CommandFailure("Could not find mthelp or texdoc", 0))
             }
+            val commandResult = runCommandNonBlocking(*command.toTypedArray(), returnExceptionMessageAsErrorOutput = true)
+            val output = commandResult.output
+            val exitCode = commandResult.exitCode
+            if (exitCode != 0 || output?.isNotBlank() != true) {
+                raise(CommandFailure(output ?: "", exitCode))
+            }
+
+            // Assume that if there are no path delimiters in the output, the output is some sort of error message (could be in any language)
+            val validLines = output.split("\n").filter { it.containsAny(setOf("\\", "/")) }
+
+            if (validLines.isEmpty()) {
+                raise(CommandFailure(output, exitCode))
+            }
+
+            validLines.toSet().mapNotNull {
+                // Do some guesswork about the format
+                if (TexliveSdk.Cache.isAvailable) {
+                    // Line consists of: name version path optional file description
+                    it.split("\t").getOrNull(2)
+                }
+                else {
+                    // mthelp seems to just output the paths itself
+                    it
+                }
+            }
+
+            Cache.documentationUrls[pkg] = Either.Right(validLines)
         }
+
+        return Cache.documentationUrls[pkg] ?: Either.Right(emptyList())
     }
 }

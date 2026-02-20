@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package nl.hannahsten.texifyidea.lang.predefined
 
 import nl.hannahsten.texifyidea.lang.LatexContexts
@@ -14,7 +16,7 @@ object MorePackages : PredefinedEntitySet() {
     }
 
     val physics = definedUnder("physics") {
-        val matrixArg = "mat".required(setOf(LatexContexts.Math, LatexContexts.Alignable))
+        val matrixArg = "mat".required(+LatexContexts.Alignable)
         underContext(LatexContexts.Math) {
             arrayOf("mqty", "pmqty", "bmqty", "Bmqty", "vmqty", "Vmqty", "dmqty").forEach {
                 it.cmd(matrixArg)
@@ -24,12 +26,13 @@ object MorePackages : PredefinedEntitySet() {
 
     val niceMatrix = definedUnder("nicematrix") {
         val colsArg = "cols".required(LatexContexts.Literal)
+        val introAlignable = +LatexContexts.Alignable
         underContext(LatexContexts.Math) {
             arrayOf("NiceMatrix", "pNiceMatrix", "bNiceMatrix", "BNiceMatrix", "vNiceMatrix", "VNiceMatrix").forEach {
-                it.env(setOf(LatexContexts.Alignable, LatexContexts.Math))
+                it.env(introAlignable)
             }
             arrayOf("NiceArray", "pNiceArray", "bNiceArray", "BNiceArray", "vNiceArray", "VNiceArray").forEach {
-                it.env(setOf(LatexContexts.Alignable, LatexContexts.Math), colsArg)
+                it.env(introAlignable, colsArg)
             }
         }
 

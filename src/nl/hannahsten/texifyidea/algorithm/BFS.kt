@@ -29,6 +29,7 @@ import java.util.*
  *
  * @author Hannah Schellekens
  */
+@Suppress("unused")
 class BFS<N>(startNode: N, private val adjacencyFunction: (N) -> List<N>, endNode: N? = null) : PathAlgorithm<N> {
 
     /**
@@ -171,9 +172,7 @@ class BFS<N>(startNode: N, private val adjacencyFunction: (N) -> List<N>, endNod
      * @return `true` if the node has been visited, `false` when the node hasn't been
      * visited.
      */
-    private fun isVisited(node: N): Boolean {
-        return visited!!.contains(node)
-    }
+    private fun isVisited(node: N): Boolean = visited!!.contains(node)
 
     /**
      * Get all the adjacent nodes of a given BFSNode.
@@ -182,9 +181,7 @@ class BFS<N>(startNode: N, private val adjacencyFunction: (N) -> List<N>, endNod
      * The node to get all adjacent nodes of.
      * @return A list containing all adjacent nodes relative to `node`.
      */
-    private fun getAdjacencyList(node: BFSNode): List<N> {
-        return adjacencyFunction(node.node)
-    }
+    private fun getAdjacencyList(node: BFSNode): List<N> = adjacencyFunction(node.node)
 
     /**
      * Reconstructs the shortest path from the end node towards the node with distance 0.
@@ -213,9 +210,7 @@ class BFS<N>(startNode: N, private val adjacencyFunction: (N) -> List<N>, endNod
      * executes without a goal in mind, `false` if the algorithm stops when the target has
      * been found.
      */
-    private fun hasGoal(): Boolean {
-        return end == null
-    }
+    private fun hasGoal(): Boolean = end == null
 
     /**
      * Class used by the BFS algorithm to keep track of augmented values.
@@ -266,9 +261,7 @@ class BFS<N>(startNode: N, private val adjacencyFunction: (N) -> List<N>, endNod
             return node == bfsNode?.node
         }
 
-        override fun hashCode(): Int {
-            return node.hashCode()
-        }
+        override fun hashCode(): Int = node.hashCode()
     }
 
     /**

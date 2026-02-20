@@ -84,7 +84,7 @@ open class LatexAddLabelToCommandIntention(val command: SmartPsiElementPointer<L
             else {
                 // Insert and start the \label live template
                 editor.caretModel.moveToOffset(command.endOffset())
-                val template = TemplateImpl("", "\\label{$prefix:\$__Variable0$}", "")
+                val template = TemplateImpl("", $$"\\label{$$prefix:$__Variable0$}", "")
                 template.addVariable(TextExpression(""), true)
                 TemplateManager.getInstance(editor.project).startTemplate(editor, template)
             }

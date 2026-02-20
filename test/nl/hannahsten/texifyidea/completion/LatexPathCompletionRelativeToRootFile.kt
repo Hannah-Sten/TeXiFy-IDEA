@@ -22,9 +22,7 @@ import nl.hannahsten.texifyidea.updateFilesets
  */
 class LatexPathCompletionRelativeToRootFile : BasePlatformTestCase() {
 
-    override fun getTestDataPath(): String {
-        return "test/resources/completion/path/relativetoroot"
-    }
+    override fun getTestDataPath(): String = "test/resources/completion/path/relativetoroot"
 
     override fun setUp() {
         super.setUp()

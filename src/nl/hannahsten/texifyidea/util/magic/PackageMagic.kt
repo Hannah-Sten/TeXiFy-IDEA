@@ -1,26 +1,27 @@
 package nl.hannahsten.texifyidea.util.magic
 
-import nl.hannahsten.texifyidea.lang.LatexPackage
-import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.HVINDEX
-import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.IDXLAYOUT
-import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.IMAKEIDX
-import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.INDEX
-import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.INDEXTOOLS
-import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MAKEIDX
-import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.MULTIND
-import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.NOMENCL
-import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.REPEATINDEX
-import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SPLITIDX
-import nl.hannahsten.texifyidea.lang.LatexPackage.Companion.SPLITINDEX
+import nl.hannahsten.texifyidea.lang.LatexLib
+import nl.hannahsten.texifyidea.lang.LatexLib.Companion.HVINDEX
+import nl.hannahsten.texifyidea.lang.LatexLib.Companion.IDXLAYOUT
+import nl.hannahsten.texifyidea.lang.LatexLib.Companion.IMAKEIDX
+import nl.hannahsten.texifyidea.lang.LatexLib.Companion.INDEX
+import nl.hannahsten.texifyidea.lang.LatexLib.Companion.INDEXTOOLS
+import nl.hannahsten.texifyidea.lang.LatexLib.Companion.MAKEIDX
+import nl.hannahsten.texifyidea.lang.LatexLib.Companion.MULTIND
+import nl.hannahsten.texifyidea.lang.LatexLib.Companion.NOMENCL
+import nl.hannahsten.texifyidea.lang.LatexLib.Companion.REPEATINDEX
+import nl.hannahsten.texifyidea.lang.LatexLib.Companion.SPLITIDX
+import nl.hannahsten.texifyidea.lang.LatexLib.Companion.SPLITINDEX
 
 object PackageMagic {
 
     /**
      * All unicode enabling packages.
      */
-    val unicode = hashSetOf(
-        LatexPackage.INPUTENC.with("utf8"),
-        LatexPackage.FONTENC.with("T1")
+    // Keep deterministic order for quick-fix insertion and tests.
+    val unicode = linkedSetOf(
+        LatexLib.INPUTENC, // Actually only with utf8 option
+        LatexLib.FONTENC, // Actually only with T1 option
     )
 
     /**
@@ -35,48 +36,22 @@ object PackageMagic {
     /**
      * Packages which provide a glossary.
      */
-    val glossary = hashSetOf(LatexPackage.GLOSSARIES, LatexPackage.GLOSSARIESEXTRA)
+    val glossary = hashSetOf(LatexLib.GLOSSARIES, LatexLib.GLOSSARIESEXTRA)
 
     val glossaryNames = glossary.map { it.name }.toSet()
 
-    /**
-     * Known conflicting packages.
-     */
-    val conflictingPackages = listOf(
-        setOf(LatexPackage.BIBLATEX, LatexPackage.NATBIB)
+    // Some packages load other packages only when some package option is provided
+    val packagesLoadedWithOptions = mapOf(
+        LatexLib.BIBLATEX to mapOf("natbib" to LatexLib.NATBIB) // Not directly true, but biblatex will provide natbib-like commands
     )
 
-    /**
-     * Maps packages to the packages it loads.
-     * This list is just there as a sort of default for those users who do not have LaTeX packages installed for example.
-     */
-    val packagesLoadingOtherPackages: Map<LatexPackage, Set<LatexPackage>> = mapOf(
-        LatexPackage.AMSSYMB to setOf(LatexPackage.AMSFONTS),
-        LatexPackage.MATHTOOLS to setOf(LatexPackage.AMSMATH),
-        LatexPackage.GRAPHICX to setOf(LatexPackage.GRAPHICS),
-        LatexPackage.XCOLOR to setOf(LatexPackage.COLOR),
-        LatexPackage.PDFCOMMENT to setOf(LatexPackage.HYPERREF),
-        LatexPackage.ALGORITHM2E to setOf(LatexPackage.ALGPSEUDOCODE), // Not true, but algorithm2e provides roughly the same commands
-        LatexPackage.NEWTXMATH to setOf(LatexPackage.AMSSYMB, LatexPackage.STMARYRD), // Not true, but newtxmath provides roughly the same commands
-    )
-
-    /**
-     * Maps argument specifiers to whether they are required (true) or
-     * optional (false).
-     */
-    val xparseParamSpecifiers = mapOf(
-        'm' to true,
-        'r' to true,
-        'R' to true,
-        'v' to true,
-        'b' to true,
-        'o' to false,
-        'd' to false,
-        'O' to false,
-        'D' to false,
-        's' to false,
-        't' to false,
-        'e' to false,
-        'E' to false
-    )
+    val conflictingPackageMap = buildMap {
+        // citation-style-language is not compatible with other packages, but the packages itself can still be compatible with each other.
+        merge("citation-style-language.sty", setOf("babelbib.sty", "backref.sty", "bibtopic.sty", "bibunits.sty", "chapterbib.sty", "cite.sty", "citeref.sty", "inlinebib.sty", "jurabib.sty", "mcite.sty", "mciteplus.sty", "multibib.sty", "natbib.sty", "splitbib.sty")) { old, new ->
+            (old + new).toSet()
+        }
+        merge("biblatex.sty", setOf("babelbib.sty", "backref.sty", "bibtopic.sty", "bibunits.sty", "chapterbib.sty", "cite.sty", "citeref.sty", "inlinebib.sty", "jurabib.sty", "mcite.sty", "mciteplus.sty", "multibib.sty", "natbib.sty", "splitbib.sty", "titlesec.sty", "ucs.sty", "etextools.sty")) { old, new ->
+            (old + new).toSet()
+        }
+    }
 }

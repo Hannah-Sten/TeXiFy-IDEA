@@ -26,5 +26,10 @@ data class TableInformation(
     /**
      * Contains the label that is to be used to reference the table.
      */
-    val label: String
+    val label: String,
+
+    /**
+     * Define column spans, which is a cell which covers multiple columns
+     */
+    val columnSpanMap: ColumnSpanMap
 )

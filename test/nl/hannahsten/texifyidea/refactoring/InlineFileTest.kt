@@ -10,7 +10,7 @@ import com.intellij.refactoring.inline.InlineOptions
 import com.intellij.testFramework.LightPlatformCodeInsightTestCase
 import com.intellij.testFramework.common.timeoutRunBlocking
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.index.LatexProjectStructure
+import nl.hannahsten.texifyidea.index.projectstructure.LatexProjectStructure
 import nl.hannahsten.texifyidea.refactoring.inlinecommand.LatexInlineCommandHandler.Util.getReference
 import nl.hannahsten.texifyidea.refactoring.inlinefile.LatexInlineFileHandler.Util.canInlineLatexElement
 import nl.hannahsten.texifyidea.refactoring.inlinefile.LatexInlineFileHandler.Util.resolveInlineFile
@@ -61,9 +61,7 @@ class InlineFileTest : LightPlatformCodeInsightTestCase() {
             @NonNls val fileName = configure()
             performAction(
                 object : MockInlineMethodOptions() {
-                    override fun isInlineThisOnly(): Boolean {
-                        return true
-                    }
+                    override fun isInlineThisOnly(): Boolean = true
                 },
                 false
             )
@@ -74,9 +72,7 @@ class InlineFileTest : LightPlatformCodeInsightTestCase() {
                 @NonNls val fileName = configure(testIndex)
                 performAction(
                     object : MockInlineMethodOptions() {
-                        override fun isInlineThisOnly(): Boolean {
-                            return true
-                        }
+                        override fun isInlineThisOnly(): Boolean = true
                     },
                     false
                 )

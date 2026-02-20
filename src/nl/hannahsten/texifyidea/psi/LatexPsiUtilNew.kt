@@ -2,16 +2,11 @@ package nl.hannahsten.texifyidea.psi
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
+import nl.hannahsten.texifyidea.index.LatexDefinitionService
+import nl.hannahsten.texifyidea.util.labels.LatexLabelUtil.extractLabelWithSemantics
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
-import nl.hannahsten.texifyidea.util.parser.forEachChildTyped
-import nl.hannahsten.texifyidea.util.parser.forEachDirectChild
-import nl.hannahsten.texifyidea.util.parser.forEachDirectChildTyped
-import nl.hannahsten.texifyidea.util.parser.getNthChildThat
-import nl.hannahsten.texifyidea.util.parser.getOptionalParameterMapFromParameters
-import nl.hannahsten.texifyidea.util.parser.toStringMap
-import nl.hannahsten.texifyidea.util.parser.traversePruneIf
-import nl.hannahsten.texifyidea.util.parser.traverseTyped
+import nl.hannahsten.texifyidea.util.parser.*
 
 /*
 This file contains utility functions for the LaTex-related PSI elements.
@@ -29,17 +24,16 @@ fun LatexEnvironment.getEnvironmentName(): String {
 /**
  * Get the environment name of the end command.
  */
-fun LatexEndCommand.environmentName(): String? {
-    return envIdentifier?.name
-}
+fun LatexEndCommand.environmentName(): String? = envIdentifier?.name
 
 /**
  * Get the environment name of the begin command.
  */
-fun LatexBeginCommand.environmentName(): String? {
-    return envIdentifier?.name
-}
+fun LatexBeginCommand.environmentName(): String? = envIdentifier?.name
 
+/**
+ * Possible duplicate of [nl.hannahsten.texifyidea.util.labels.LatexLabelUtil.extractLabelFromEnvironment]
+ */
 fun LatexEnvironment.getLabelFromOptionalParameter(): String? {
     if (EnvironmentMagic.labelAsParameter.contains(this.getEnvironmentName())) {
         // See if we can find a label option
@@ -50,6 +44,11 @@ fun LatexEnvironment.getLabelFromOptionalParameter(): String? {
         }
     }
     return null
+}
+
+fun LatexEnvironment.getLabelFromRequiredParameter(): String? {
+    val semantics = LatexDefinitionService.resolveEnv(this) ?: return null
+    return extractLabelWithSemantics(beginCommand, semantics.arguments)?.text
 }
 
 /**
@@ -68,20 +67,28 @@ fun LatexEnvironment.getLabel(): String? {
     // EnvironmentMagic
     // Find the nested label command in the environment content
 
-    val content = this.environmentContent ?: return null
+    val labelCommand = getLabelCommand() ?: return null
+    // In fact, it is a simple \label command
+    return labelCommand.requiredParameterText(0)
+}
 
-    // TODO: We have to deal with the fact that the label command can be nested inside other commands,
-    //  but the label can be belong to the outer command.
-    //  We should whether the label belongs to the outer command or the inner command.
-    // The current level 7 is set to make the test pass, but it is not a good solution.
-    // Setting it to 2 (environment_content - no_math_content - commands) ignores the nested label commands.
-    val labelCommand = content.traversePruneIf(7) {
+/**
+ * Find \label command for this environment
+ *
+ * TODO(TEX-244): We have to deal with the fact that the label command can be nested inside other commands,
+ *  but the label can be belong to the outer command.
+ *  We should whether the label belongs to the outer command or the inner command.
+ * The current level 7 is set to make the test pass, but it is not a good solution.
+ * Setting it to 2 (environment_content - no_math_content - commands) ignores the nested label commands.
+ *
+ */
+fun LatexEnvironment.getLabelCommand(): LatexCommands? {
+    val content = this.environmentContent ?: return null
+    return content.traversePruneIf(7) {
         it is LatexEnvironment // ignore the subtree if we reach another environment
     }.filterIsInstance<LatexCommands>().firstOrNull {
         it.name in CommandMagic.labels
-    } ?: return null
-    // In fact, it is a simple \label command
-    return labelCommand.requiredParameterText(0)
+    }
 }
 
 /**
@@ -141,7 +148,7 @@ inline fun PsiElement.traverseContextualSiblingsTemplate(action: (PsiElement) ->
  *  @see [traverseContextualSiblingsNext]
  *  @see [traverseContextualSiblingsPrev]
  */
-fun <T : Any> PsiElement.contextualSiblings(): List<LatexComposite> {
+fun PsiElement.contextualSiblings(): List<LatexComposite> {
     // Find the contextual siblings of the current element in the PSI tree.
     // The current element is surrounded by `no_math_content`, so we should go an extra level up
     val parent = contextualSurrounder() ?: return emptyList()
@@ -168,9 +175,7 @@ fun <T : Any> PsiElement.contextualSiblings(): List<LatexComposite> {
  *
  * @see [contextualSiblings]
  */
-inline fun PsiElement.traverseContextualSiblingsNext(action: (PsiElement) -> Unit) {
-    return traverseContextualSiblingsTemplate(action) { it.nextSibling }
-}
+inline fun PsiElement.traverseContextualSiblingsNext(action: (PsiElement) -> Unit) = traverseContextualSiblingsTemplate(action) { it.nextSibling }
 
 /**
  * Traverse the contextual siblings of the current [LatexComposite] element that are before it in the PSI tree in order.
@@ -182,9 +187,7 @@ inline fun PsiElement.traverseContextualSiblingsNext(action: (PsiElement) -> Uni
  * @see [contextualSiblings]
  *
  */
-inline fun PsiElement.traverseContextualSiblingsPrev(action: (PsiElement) -> Unit) {
-    return traverseContextualSiblingsTemplate(action) { it.prevSibling }
-}
+inline fun PsiElement.traverseContextualSiblingsPrev(action: (PsiElement) -> Unit) = traverseContextualSiblingsTemplate(action) { it.prevSibling }
 
 inline fun PsiElement.prevContextualSibling(predicate: (PsiElement) -> Boolean = { true }): PsiElement? {
     traverseContextualSiblingsPrev { sibling ->
@@ -213,17 +216,13 @@ fun PsiElement.nextContextualSiblingIgnoreWhitespace(): PsiElement? =
 /**
  * Gets the name of the command from the [PsiElement] if it is a command or is a content containing a command.
  */
-fun PsiElement.asCommandName(): String? {
-    return when (this) {
-        is LatexCommandWithParams -> this.getName()
-        is LatexNoMathContent -> this.commands?.name
-        else -> null
-    }
+fun PsiElement.asCommandName(): String? = when (this) {
+    is LatexCommandWithParams -> this.getName()
+    is LatexNoMathContent -> this.commands?.name
+    else -> null
 }
 
-inline fun PsiElement.forEachCommand(crossinline action: (LatexCommands) -> Unit) {
-    return forEachChildTyped<LatexCommands> { action(it) }
-}
+inline fun PsiElement.forEachCommand(crossinline action: (LatexCommands) -> Unit) = forEachChildTyped<LatexCommands> { action(it) }
 
 /**
  * Traverse all commands in the current [PsiElement] and its children.
@@ -233,9 +232,7 @@ inline fun PsiElement.forEachCommand(crossinline action: (LatexCommands) -> Unit
  * @param depth The maximum depth to traverse. Default is `Int.MAX_VALUE`.
  * @return A sequence of [LatexCommands] found in the element.
  */
-fun PsiElement.traverseCommands(depth: Int = Int.MAX_VALUE): Sequence<LatexCommands> {
-    return traverseTyped(depth)
-}
+fun PsiElement.traverseCommands(depth: Int = Int.MAX_VALUE): Sequence<LatexCommands> = traverseTyped(depth)
 
 inline fun LatexCommandWithParams.forEachOptionalParameter(
     action: (LatexOptionalKeyValKey, LatexKeyValValue?) -> Unit
@@ -261,13 +258,22 @@ inline fun LatexCommandWithParams.forEachRequiredParameter(
     }
 }
 
-private fun PsiElement.getParameterTexts0(): Sequence<LatexParameterText> {
-    return this.traversePruneIf { it is LatexCommandWithParams }.filterIsInstance<LatexParameterText>()
+inline fun LatexCommandWithParams.indexOfRequiredParameter(
+    predicate: (LatexRequiredParam) -> Boolean
+): Int {
+    var index = 0
+    forEachRequiredParameter {
+        if (predicate(it)) {
+            return index
+        }
+        index++
+    }
+    return -1
 }
 
-fun LatexCommandWithParams.getParameterTexts(): Sequence<LatexParameterText> {
-    return getParameterTexts0()
-}
+private fun PsiElement.getParameterTexts0(): Sequence<LatexParameterText> = this.traversePruneIf { it is LatexCommandWithParams }.filterIsInstance<LatexParameterText>()
+
+fun LatexCommandWithParams.getParameterTexts(): Sequence<LatexParameterText> = getParameterTexts0()
 
 fun LatexParameter.contentText(): String {
     requiredParam?.let {
@@ -282,9 +288,7 @@ fun LatexParameter.contentText(): String {
     return text
 }
 
-fun LatexRequiredParam.contentText(): String {
-    return stripContentText(text, '{', '}')
-}
+fun LatexRequiredParam.contentText(): String = stripContentText(text, '{', '}')
 
 fun stripContentText(text: String, prefix: Char, suffix: Char): String {
     var result = text
@@ -299,11 +303,4 @@ fun LatexCommandWithParams.getNthRequiredParameter(n: Int): LatexRequiredParam? 
         it is LatexParameter && it.requiredParam != null
     } as? LatexParameter
     return parameter?.requiredParam
-}
-
-fun LatexCommandWithParams.getNthOptionalParameter(n: Int): LatexOptionalParam? {
-    val parameter = getNthChildThat(n) {
-        it is LatexParameter && it.optionalParam != null
-    } as? LatexParameter
-    return parameter?.optionalParam
 }

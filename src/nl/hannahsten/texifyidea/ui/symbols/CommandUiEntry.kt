@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.ui.symbols
 
-import nl.hannahsten.texifyidea.lang.commands.LatexCommand
+import nl.hannahsten.texifyidea.lang.LSemanticCommand
+import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.util.formatAsFileName
 import java.util.*
 
@@ -19,7 +20,7 @@ import java.util.*
  * @author Hannah Schellekens
  */
 class CommandUiEntry(
-    override val command: LatexCommand,
+    override val command: LSemanticCommand,
     generatedLatex: String? = null,
     customFileName: String? = null,
     customDescription: String? = null,
@@ -28,20 +29,20 @@ class CommandUiEntry(
 
     override val generatedLatex: String = generatedLatex ?: command.commandWithSlash
 
-    override val fileName = customFileName ?: if (command.isMathMode) {
-        "math_${command.identifier.formatAsFileName()}.png"
+    override val fileName = customFileName ?: if (command.applicableContext?.contains(LatexContexts.Math) == true) {
+        "math_${command.name.formatAsFileName()}.png"
     }
-    else "text_${command.identifier.formatAsFileName()}.png"
+    else "text_${command.name.formatAsFileName()}.png"
 
     override val imagePath = "/nl/hannahsten/texifyidea/symbols/$fileName"
 
     override val imageLatex = customImageLatex ?: command.commandWithSlash
 
     override val description = customDescription ?: (
-        command.identifier
+        command.name
             .lowercase(Locale.getDefault())
-            .replace("_", " ") + if (command.isMathMode) " (math)" else ""
+            .replace("_", " ") + if (command.applicableContext?.contains(LatexContexts.Math) == true) " (math)" else ""
         )
 
-    override val isMathSymbol = command.isMathMode
+    override val isMathSymbol = command.applicableContext?.contains(LatexContexts.Math) == true
 }

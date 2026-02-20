@@ -1,11 +1,7 @@
 package nl.hannahsten.texifyidea.psi
 
 import com.intellij.psi.PsiElement
-import nl.hannahsten.texifyidea.lang.LArgument
-import nl.hannahsten.texifyidea.lang.LContextSet
-import nl.hannahsten.texifyidea.lang.LSemanticEnv
-import nl.hannahsten.texifyidea.lang.LatexContextIntro
-import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
+import nl.hannahsten.texifyidea.lang.*
 import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 import nl.hannahsten.texifyidea.util.parser.forEachDirectChild
 
@@ -49,18 +45,14 @@ abstract class LatexWithContextStateTraverser<S>(
     /**
      * Called when starting to process an element.
      */
-    protected open fun elementStart(e: PsiElement): WalkAction {
-        return WalkAction.CONTINUE
-    }
+    protected open fun elementStart(e: PsiElement): WalkAction = WalkAction.CONTINUE
 
     /**
      * Called when finishing processing an element.
      *
      * @return Whether to continue the whole traversal.
      */
-    protected open fun elementFinish(e: PsiElement): Boolean {
-        return true
-    }
+    protected open fun elementFinish(e: PsiElement): Boolean = true
 
     /**
      * Update the [state] when entering a context intro if returns [WalkAction.CONTINUE],
@@ -118,6 +110,10 @@ abstract class LatexWithContextStateTraverser<S>(
         return true
     }
 
+    /**
+     *
+     * @see LatexPsiUtil.resolveContextIntroUpward
+     */
     protected fun traverseRecur(e: PsiElement): Boolean {
         val action = elementStart(e)
         when (action) {
@@ -145,8 +141,19 @@ abstract class LatexWithContextStateTraverser<S>(
                 }
             }
 
+            is LatexInlineMath -> {
+                currentIntro = LatexContextIntro.INLINE_MATH
+            }
+
             is LatexMathContent -> {
                 currentIntro = LatexContextIntro.MATH
+            }
+
+            is LatexKeyValValue -> {
+                // For example, \lstset has label as key=value parameter
+                if ((e.parent as? LatexStrictKeyValPair)?.keyValKey?.text == "label") {
+                    currentIntro = LatexContextIntro.assign(LatexContexts.LabelDefinition)
+                }
             }
         }
 
@@ -205,9 +212,7 @@ abstract class RecordingContextIntroTraverser(
         return WalkAction.CONTINUE
     }
 
-    fun traverse(e: PsiElement): Boolean {
-        return traverseRecur(e)
-    }
+    fun traverse(e: PsiElement): Boolean = traverseRecur(e)
 
     val exitState: List<LatexContextIntro>
         get() = state

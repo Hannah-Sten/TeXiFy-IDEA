@@ -24,7 +24,5 @@ data class BibtexEntryStubImpl(
 
     override fun getName() = myIdentifier
 
-    override fun toString(): String {
-        return "BibtexEntryStubImpl(myIdentifier='$myIdentifier', myAuthors=$myAuthors, myYear='$myYear', myTitle='$myTitle')"
-    }
+    override fun toString(): String = "BibtexEntryStubImpl(myIdentifier='$myIdentifier', myAuthors=$myAuthors, myYear='$myYear', myTitle='$myTitle')"
 }

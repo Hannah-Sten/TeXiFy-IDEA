@@ -217,21 +217,21 @@ class TableAlignTest : BasePlatformTestCase() {
         """.trimIndent()
     }
 
-    fun ignoreLineStartWithAmpersand() {
-        """
-            \begin{tabular}{ccc}
-                a    & b & \\
-                cccc & d & \\
-                & aaa & \\
-            \end{tabular}
-        """.trimIndent() `should be reformatted to` """
-            \begin{tabular}{ccc}
-                a    & b & \\
-                cccc & d & \\
-                & aaa    & \\
-            \end{tabular}
-        """.trimIndent()
-    }
+//    fun testLineStartWithAmpersand() {
+//        """
+//            \begin{tabular}{ccc}
+//                a    & b & \\
+//                cccc & d & \\
+//                & aaa & \\
+//            \end{tabular}
+//        """.trimIndent() `should be reformatted to` """
+//            \begin{tabular}{ccc}
+//                a    & b & \\
+//                cccc & d & \\
+//                & aaa    & \\
+//            \end{tabular}
+//        """.trimIndent()
+//    }
 
     fun testBacklashAlign() {
         """

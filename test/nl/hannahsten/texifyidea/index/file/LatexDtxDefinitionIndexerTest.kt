@@ -12,9 +12,7 @@ class LatexDtxDefinitionIndexerTest : BasePlatformTestCase() {
         override fun <T : Any?> getUserData(key: Key<T>): T? = null
         override fun <T : Any?> putUserData(key: Key<T>, value: T?) {}
         override fun getFileType() = LatexSourceFileType
-        override fun getFileName(): String {
-            return name
-        }
+        override fun getFileName(): String = name
         override fun getFile(): VirtualFile = throw UnsupportedOperationException()
         override fun getProject() = throw UnsupportedOperationException()
         override fun getContent() = ByteArray(0)
@@ -189,5 +187,46 @@ class LatexDtxDefinitionIndexerTest : BasePlatformTestCase() {
         """.trimIndent()
         val defs = getDefinitions(text, "doc.dtx")
         assertTrue(defs.any { it.name == "macrocode" && it.isEnv })
+    }
+
+    fun testExtractArgumentsRequired() {
+        // pict2e.dtx
+        // Note that here a trick is used to align the commands with the arguments, by using that the macro's will appear in the left margin below each other
+        val text = """
+            \circle\marg{DIAM}\\ \circle*\marg{DIAM}\\ The (hollow) circles and disks (filled circles) of the \SL\ ^^A implementation had severe restrictions on the number of different diameters and maximum diameters available.
+        """.trimIndent()
+        val args = LatexDtxDefinitionDataIndexer.parseArguments(text)
+        assertEquals("Number of arguments:", 1, args.size)
+        assertEquals("DIAM", args[0].name)
+        assertTrue(args[0].isRequired)
+    }
+
+    fun testExtractArgumentsMultipleRequired() {
+        // pict2e.dtx
+        val text = """
+            \moveto\parg{X,Y}\\ \lineto\parg{X,Y}\\ \curveto\parg{X2,Y2}\parg{X3,Y3}\parg{X4,Y4}\\ \circlearc\oarg{N}\marg{X}\marg{Y}\marg{RAD}\marg{ANGLE1}\marg{ANGLE2}\\ These commands directly correspond to the \PS\ and \PDF\ path operators. You start defining a path giving its initial point by \cmd{\moveto}. Then you can consecutively add a line segment to a given point by \cmd{\lineto}, a ...
+        """.trimIndent()
+        val args = LatexDtxDefinitionDataIndexer.parseArguments(text)
+        assertEquals("Number of arguments:", 6, args.size)
+        assertEquals("N", args[0].name)
+        assertTrue(args[0].isOptional)
+        assertEquals("X", args[1].name)
+        assertTrue(args[1].isRequired)
+        assertEquals("ANGLE2", args[5].name)
+    }
+
+    fun testExtractArgumentsOneLineWithoutCommandPrefix() {
+        // xcolor.dtx
+        // Also seems common, to not repeat the command but start with the arguments list.
+        val text = """
+            \oarg{type}\marg{model-list}\marg{head}\marg{tail}\marg{set spec}\\ This command facilitates the construction of \emph{\Index{color set}s}, i.e.~(possibly large) sets of individual colors with common underlying \Meta{model-list} and \Meta{type}. Here, \Meta{set spec} = \Meta[1]{name},\Meta[1]{spec-list};\dots;\Meta[l]{name},\Meta[l]{spec-list} ( name/specification-list pairs).
+        """.trimIndent()
+        val args = LatexDtxDefinitionDataIndexer.parseArguments(text)
+        assertEquals("Number of arguments:", 5, args.size)
+        assertEquals("type", args[0].name)
+        assertTrue(args[0].isOptional)
+        assertEquals("model-list", args[1].name)
+        assertTrue(args[1].isRequired)
+        assertEquals("set spec", args[4].name)
     }
 }

@@ -7,6 +7,7 @@ package nl.hannahsten.texifyidea.settings.conventions
  * the currently active scheme modifies either the project state or the global state, depending on which scheme is
  * selected.
  */
+@ConsistentCopyVisibility
 data class TexifyConventionsSettings internal constructor(
     private var projectState: TexifyConventionsProjectState = TexifyConventionsProjectState(
         TexifyConventionsScheme(myName = TexifyConventionsScheme.PROJECT_SCHEME_NAME)
@@ -92,14 +93,12 @@ data class TexifyConventionsSettings internal constructor(
         return currentScheme.labelConventions.singleOrNull { c -> c.name == conventionName && c.type == type }
     }
 
-    fun getDefaultLabel(): LabelConvention {
-        return LabelConvention(false, LabelConventionType.ENVIRONMENT, "new-environment", "")
-    }
-
+    @Suppress("unused")
     fun deleteProjectLabel(index: Int) {
         projectState.scheme.labelConventions.removeAt(index)
     }
 
+    @Suppress("unused")
     fun deleteProjectLabel(item: LabelConvention) {
         projectState.scheme.labelConventions.remove(item)
     }

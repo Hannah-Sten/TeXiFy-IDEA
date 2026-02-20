@@ -8,7 +8,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
@@ -20,14 +19,12 @@ class LatexPackageNameDoesNotMatchFileNameInspection : TexifyInspectionBase() {
     override val inspectionId: String =
         "PackageNameDoesNotMatchFileName"
 
-    override fun getDisplayName(): String {
-        return "Package name does not match file name"
-    }
+    override fun getDisplayName(): String = "Package name does not match file name"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
 
-        val commands = file.collectSubtreeTyped<LatexCommands> { it.name == LatexGenericRegularCommand.PROVIDESPACKAGE.commandWithSlash }
+        val commands = file.collectSubtreeTyped<LatexCommands> { it.name == "\\ProvidesPackage" }
 
         for (command in commands) {
             val providesName = command.requiredParameterText(0)?.split("/")?.last()
@@ -50,9 +47,7 @@ class LatexPackageNameDoesNotMatchFileNameInspection : TexifyInspectionBase() {
 
     object PackageNameMatchFileNameQuickFix : LocalQuickFix {
 
-        override fun getFamilyName(): String {
-            return "Fix package name"
-        }
+        override fun getFamilyName(): String = "Fix package name"
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val providesCommand = descriptor.psiElement as LatexCommands

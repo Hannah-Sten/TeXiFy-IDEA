@@ -6,13 +6,13 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
-import nl.hannahsten.texifyidea.index.LatexProjectStructure
 import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
+import nl.hannahsten.texifyidea.index.projectstructure.LatexProjectStructure
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
-import nl.hannahsten.texifyidea.lang.commands.LatexGlossariesCommand
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
+import nl.hannahsten.texifyidea.util.extractGlossaryName
 import nl.hannahsten.texifyidea.util.parser.traverseTyped
 import nl.hannahsten.texifyidea.util.toTextRange
 
@@ -28,7 +28,7 @@ class LatexMissingGlossaryReferenceInspection : TexifyInspectionBase() {
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val entries = NewSpecialCommandsIndex.getAllGlossaryEntries(file)
-        val extractedNames = entries.asSequence().mapNotNull { LatexGlossariesCommand.extractGlossaryName(it) }
+        val extractedNames = entries.asSequence().mapNotNull { extractGlossaryName(it) }
             .map {
                 // Ensure the regex is valid, assuming that regular words don't contain e.g. braces
                 it.replace(nameLetterRegex, "")

@@ -7,10 +7,9 @@ import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.application.runReadAction
-import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.io.FileUtil
-import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.run.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.LatexTemplateConfigurationFactory
 import nl.hannahsten.texifyidea.run.legacy.MakeindexProgram
@@ -132,7 +131,7 @@ class RunMakeindexListener(
             runConfig.makeindexProgram = indexProgram
             runConfig.setSuggestedName()
             // See nomencl documentation
-            if (LatexPackage.NOMENCL in usedPackages && indexProgram == MakeindexProgram.MAKEINDEX) {
+            if (LatexLib.NOMENCL in usedPackages && indexProgram == MakeindexProgram.MAKEINDEX) {
                 runConfig.commandLineArguments = "${mainFile?.nameWithoutExtension}.nlo -s nomencl.ist -o ${mainFile?.nameWithoutExtension}.nls"
             }
 

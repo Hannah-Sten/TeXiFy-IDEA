@@ -20,9 +20,7 @@ import javax.swing.JPanel
  */
 class LatexGenerationSettingsProvider : CodeStyleSettingsProvider() {
 
-    override fun createConfigurable(settings: CodeStyleSettings, modelSettings: CodeStyleSettings): CodeStyleConfigurable {
-        return LatexCodeStyleGenerationConfigurable(settings)
-    }
+    override fun createConfigurable(settings: CodeStyleSettings, modelSettings: CodeStyleSettings): CodeStyleConfigurable = LatexCodeStyleGenerationConfigurable(settings)
 
     override fun getConfigurableDisplayName(): String = ApplicationBundle.message("title.code.generation")
     override fun getPriority(): DisplayPriority = DisplayPriority.CODE_SETTINGS
@@ -36,17 +34,13 @@ class LatexCodeStyleGenerationConfigurable(private val mySettings: CodeStyleSett
 
     override fun getDisplayName(): String = ApplicationBundle.message("title.code.generation")
 
-    override fun createComponent(): JComponent {
-        return JPanel().apply {
-            layout = BoxLayout(this, BoxLayout.Y_AXIS)
-            border = IdeBorderFactory.createEmptyBorder(JBInsets(0, 10, 10, 10))
-            add(myCommenterForm.commenterPanel)
-        }
+    override fun createComponent(): JComponent = JPanel().apply {
+        layout = BoxLayout(this, BoxLayout.Y_AXIS)
+        border = IdeBorderFactory.createEmptyBorder(JBInsets(0, 10, 10, 10))
+        add(myCommenterForm.commenterPanel)
     }
 
-    override fun isModified(): Boolean {
-        return myCommenterForm.isModified(mySettings)
-    }
+    override fun isModified(): Boolean = myCommenterForm.isModified(mySettings)
 
     override fun apply() {
         apply(mySettings)

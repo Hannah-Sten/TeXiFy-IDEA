@@ -7,20 +7,23 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNameIdentifierOwner
 import com.intellij.psi.PsiReference
 import com.intellij.psi.stubs.IStubElementType
-import com.intellij.psi.tree.IElementType
 import com.intellij.psi.util.elementType
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
 import nl.hannahsten.texifyidea.index.stub.optionalParamAt
 import nl.hannahsten.texifyidea.index.stub.requiredParamAt
 import nl.hannahsten.texifyidea.index.stub.requiredParams
+import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.psi.LatexTypes
 import nl.hannahsten.texifyidea.reference.InputFileReference
 import nl.hannahsten.texifyidea.reference.LatexCommandDefinitionReference
 import nl.hannahsten.texifyidea.structure.latex.LatexPresentationFactory
-import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.parser.*
+import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil.resolveContextUpward
+import nl.hannahsten.texifyidea.util.parser.extractUrlReferences
+import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
+import nl.hannahsten.texifyidea.util.parser.forEachDirectChild
+import nl.hannahsten.texifyidea.util.parser.getOptionalParameterMapFromParameters
 
 /**
  * This class is a mixin for LatexCommandsImpl.
@@ -28,11 +31,8 @@ import nl.hannahsten.texifyidea.util.parser.*
 abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStub>, PsiNameIdentifierOwner, LatexCommands {
     constructor(stub: LatexCommandsStub, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
     constructor(node: ASTNode) : super(node)
-    constructor(stub: LatexCommandsStub?, nodeType: IElementType?, node: ASTNode?) : super(stub, nodeType, node)
 
-    override fun toString(): String {
-        return "Command($name)"
-    }
+    override fun toString(): String = "Command($name)"
 
     override fun getTextOffset(): Int {
         val name = getName()
@@ -45,9 +45,7 @@ abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStu
         }
     }
 
-    override fun getNameIdentifier(): PsiElement {
-        return this
-    }
+    override fun getNameIdentifier(): PsiElement = this
 
     override fun hasStar(): Boolean {
         forEachDirectChild {
@@ -79,10 +77,9 @@ abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStu
         val result = mutableListOf<PsiReference>()
         // If it is a reference to a file
         result.addAll(InputFileReference.getFileArgumentsReferences(this))
-        val firstParam = requiredParameters().getOrNull(0)
-        if (CommandMagic.urls.contains(this.getName()) && firstParam != null) {
-            result.addAll(this.extractUrlReferences(firstParam))
-        }
+
+        result.addAll(this.parameterList.mapNotNull { it.requiredParam }.filter { resolveContextUpward(it).contains(LatexContexts.URL) }.flatMap { this.extractUrlReferences(it) })
+
         result.add(LatexCommandDefinitionReference(this))
         // We deal with the command itself, not its parameters
         // and the user is interested in the location of the command definition
@@ -92,13 +89,9 @@ abstract class LatexCommandsImplMixin : StubBasedPsiElementBase<LatexCommandsStu
     /**
      * Get the reference for this command, assuming it has exactly one reference (return null otherwise).
      */
-    override fun getReference(): PsiReference? {
-        return this.references.firstOrNull()
-    }
+    override fun getReference(): PsiReference? = this.references.firstOrNull()
 
-    override fun getPresentation(): ItemPresentation? {
-        return LatexPresentationFactory.getPresentation(this)
-    }
+    override fun getPresentation(): ItemPresentation? = LatexPresentationFactory.getPresentation(this)
 
     override fun getOptionalParameterMap() = getOptionalParameterMapFromParameters(this.parameterList)
 

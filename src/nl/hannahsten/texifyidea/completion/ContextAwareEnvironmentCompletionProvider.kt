@@ -6,13 +6,10 @@ import com.intellij.codeInsight.lookup.LookupElement
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.completion.handlers.LatexAddImportInsertHandler
 import nl.hannahsten.texifyidea.index.DefinitionBundle
-import nl.hannahsten.texifyidea.index.LatexLibraryDefinitionService
 import nl.hannahsten.texifyidea.index.SourcedDefinition
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LSemanticEnv
-import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.settings.TexifySettings
-import nl.hannahsten.texifyidea.util.files.LatexPackageLocation
 
 object ContextAwareEnvironmentCompletionProvider : LatexContextAwareCompletionAdaptor() {
 
@@ -30,7 +27,7 @@ object ContextAwareEnvironmentCompletionProvider : LatexContextAwareCompletionAd
             sourced, env.name,
             bold = true,
             tailText = tailText, tailTextGrayed = true,
-            typeText = buildCommandSourceStr(sourced),
+            typeText = buildDefinitionSourceStr(sourced),
             icon = TexifyIcons.DOT_ENVIRONMENT,
             insertHandler = LatexAddImportInsertHandler
         )
@@ -43,7 +40,7 @@ object ContextAwareEnvironmentCompletionProvider : LatexContextAwareCompletionAd
             checkCtx = completionMode == TexifySettings.CompletionMode.SMART, contexts = contexts
         )
         if (completionMode == TexifySettings.CompletionMode.ALL_PACKAGES) {
-            addAllExternalEnvironments(parameters, result)
+            addExternal(parameters) { addBundleEnvironments(result, it, checkCtx = false) }
         }
     }
 
@@ -58,21 +55,5 @@ object ContextAwareEnvironmentCompletionProvider : LatexContextAwareCompletionAd
             lookupElements.add(createEnvironmentLookupElement(env, sd))
         }
         result.addAllElements(lookupElements)
-    }
-
-    private fun addAllExternalEnvironments(
-        parameters: CompletionParameters, result: CompletionResultSet
-    ) {
-        val project = parameters.originalFile.project
-        val addedLibs = mutableSetOf<LatexLib>()
-        val allNames = LatexPackageLocation.getAllPackageNames(project)
-        val defService = LatexLibraryDefinitionService.getInstance(project)
-        for (name in allNames) {
-            val lib = LatexLib(name)
-            if (!addedLibs.add(lib)) continue // skip already added libs
-            val libBundle = defService.getLibBundle(name)
-            addBundleEnvironments(result, libBundle, checkCtx = false)
-            addedLibs.addAll(libBundle.allLibraries)
-        }
     }
 }

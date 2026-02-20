@@ -5,7 +5,5 @@ import com.intellij.psi.search.IndexPatternProvider
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
 class LatexTodoIndexPatternProvider : IndexPatternProvider {
-    override fun getIndexPatterns(): Array<IndexPattern> {
-        return CommandMagic.todoCommands.map { IndexPattern("${it.replace("\\", "\\\\")}\\b", true) }.toTypedArray()
-    }
+    override fun getIndexPatterns(): Array<IndexPattern> = CommandMagic.todoCommands.map { IndexPattern("${it.replace("\\", "\\\\")}\\b", true) }.toTypedArray()
 }

@@ -1,15 +1,13 @@
 package nl.hannahsten.texifyidea.run.ui
 
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdk
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 
 /**
  * Options for the run configuration.
- *
- * See [LatexSdk], which partially supersedes this class.
- * This enum is still required, for example to support non-IntelliJ IDEs, but also to allow overriding the distribution type
- * when for example a different project SDK needs to be selected for a different language to work.
+ * See [LatexSdk].
  */
 enum class LatexDistributionType(val displayName: String) {
 
@@ -18,10 +16,28 @@ enum class LatexDistributionType(val displayName: String) {
     WSL_TEXLIVE("TeX Live using WSL"),
     DOCKER_MIKTEX("Dockerized MiKTeX"),
     DOCKER_TEXLIVE("Dockerized TeX Live"),
-    PROJECT_SDK("Use project SDK");
+    PROJECT_SDK("Use project SDK"),
+    MODULE_SDK("Use module SDK");
 
     private fun isMiktex() = this == MIKTEX || this == DOCKER_MIKTEX
-    fun isMiktex(project: Project) = this == MIKTEX || this == DOCKER_MIKTEX || (this == PROJECT_SDK && LatexSdkUtil.getLatexDistributionType(project)?.isMiktex() == true)
+
+    /**
+     * Check if this distribution type represents MiKTeX.
+     * For SDK-based types, resolves the actual SDK to determine the distribution.
+     */
+    fun isMiktex(project: Project, mainFile: VirtualFile? = null): Boolean = when (this) {
+        MIKTEX, DOCKER_MIKTEX -> true
+        PROJECT_SDK -> LatexSdkUtil.getLatexDistributionType(project)?.isMiktex() == true
+        MODULE_SDK -> {
+            if (mainFile != null) {
+                LatexSdkUtil.getLatexDistributionTypeForFile(mainFile, project)?.isMiktex() == true
+            }
+            else {
+                LatexSdkUtil.getLatexDistributionType(project)?.isMiktex() == true
+            }
+        }
+        else -> false
+    }
 
     fun isDocker() = this == DOCKER_MIKTEX || this == DOCKER_TEXLIVE
 
@@ -31,8 +47,6 @@ enum class LatexDistributionType(val displayName: String) {
 
     companion object {
 
-        fun valueOfIgnoreCase(value: String?): LatexDistributionType {
-            return entries.firstOrNull { it.name.equals(value, true) } ?: TEXLIVE
-        }
+        fun valueOfIgnoreCase(value: String?): LatexDistributionType = entries.firstOrNull { it.name.equals(value, true) } ?: TEXLIVE
     }
 }

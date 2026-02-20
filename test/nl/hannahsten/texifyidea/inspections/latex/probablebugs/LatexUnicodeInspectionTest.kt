@@ -169,14 +169,14 @@ class LatexUnicodeInspectionQuickFix : LatexUnicodeInspectionTest() {
     fun `test escape unicode quick fix known math command`() {
         setUnicodeSupport(false)
 
-        testNamedQuickFix("\$α$", "$\\alpha$", "Escape Unicode character", 1)
+        testNamedQuickFix($$"$α$", "$\\alpha$", "Escape Unicode character", 1)
     }
 
     fun `test escape unicode quick fix math command`() {
         setUnicodeSupport(false)
 
-        // ℂ cannot be converted.
-        testNamedQuickFix("\$ℂ$", "\$ℂ$", "Escape Unicode character", 1)
+        // ℂ can be actually converted to \BbbC with unicode-math
+        testNamedQuickFix($$"$ℂ$", "\\usepackage{unicode-math}\$\\BbbC\$", "Escape Unicode character", 1)
     }
 }
 

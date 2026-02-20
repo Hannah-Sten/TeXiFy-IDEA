@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package nl.hannahsten.texifyidea.lang.predefined
 
 import nl.hannahsten.texifyidea.lang.LArgument
@@ -9,7 +11,8 @@ object PredefinedPrimitives : PredefinedCommandSet() {
         val envArg = LArgument.required("env", LatexContexts.Identifier)
         "begin".cmd(envArg)
         "end".cmd(envArg)
-        underContexts { // The primitive commands will never be suggested for autocompletion.
+        underContexts {
+            // The primitive commands will never be suggested for autocompletion.
             "begingroup".cmd { "Begin a group" }
             "endgroup".cmd { "End a group" }
 

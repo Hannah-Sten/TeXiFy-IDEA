@@ -45,9 +45,7 @@ abstract class EditorAction(val name: String) : AnAction() {
         return psiFile.findElementAt(offset)
     }
 
-    protected fun getPsiFile(file: VirtualFile, project: Project): PsiFile? {
-        return PsiManager.getInstance(project).findFile(file)
-    }
+    protected fun getPsiFile(file: VirtualFile, project: Project): PsiFile? = PsiManager.getInstance(project).findFile(file)
 
     protected fun runWriteAction(project: Project, file: VirtualFile, writeAction: () -> Unit) {
         if (file.isWritable) {

@@ -2,11 +2,9 @@ package nl.hannahsten.texifyidea.structure.latex
 
 import com.intellij.navigation.ItemPresentation
 import nl.hannahsten.texifyidea.TexifyIcons
-import nl.hannahsten.texifyidea.lang.commands.LatexNewDefinitionCommand
-import nl.hannahsten.texifyidea.lang.commands.LatexXparseCommand
 import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.util.parser.toStringMap
 import nl.hannahsten.texifyidea.util.parser.nextCommand
+import nl.hannahsten.texifyidea.util.parser.toStringMap
 
 /**
  * @author Hannah Schellekens
@@ -42,10 +40,10 @@ class LatexNewCommandPresentation(newCommand: LatexCommands) : ItemPresentation 
         this.newCommandName = command ?: ("" + suffix)
 
         // Get the definition to show in place of the location string.
-        locationString = when {
-            newCommand.name == LatexNewDefinitionCommand.NEWCOMMAND.commandWithSlash && required.size >= 2 -> required[1]
-            newCommand.name == LatexNewDefinitionCommand.RENEWCOMMAND.commandWithSlash && required.size >= 2 -> required[1]
-            newCommand.name == LatexXparseCommand.NEWDOCUMENTCOMMAND.commandWithSlash && required.size >= 3 -> required[2]
+        locationString = when (newCommand.name) {
+            "\\newcommand" if required.size >= 2 -> required[1]
+            "\\renewcommand" if required.size >= 2 -> required[1]
+            "\\NewDocumentCommand" if required.size >= 3 -> required[2]
             else -> ""
         }
     }

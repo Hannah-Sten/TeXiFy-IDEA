@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.editor.pasteproviders
 import nl.hannahsten.texifyidea.editor.pasteproviders.StyledTextHtmlToLatexConverter.Companion.closingTags
 import nl.hannahsten.texifyidea.editor.pasteproviders.StyledTextHtmlToLatexConverter.Companion.openingTags
 import nl.hannahsten.texifyidea.file.LatexFile
-import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.util.insertUsepackage
 import org.jsoup.nodes.Element
 import org.jsoup.nodes.Node
@@ -58,7 +58,7 @@ private fun handleElement(element: Element, psiFile: LatexFile): String {
 }
 
 private val tagDependencies = hashMapOf(
-    "a" to LatexPackage.HYPERREF
+    "a" to LatexLib.HYPERREF
 )
 
 fun htmlTextIsFormattable(htmlIn: String): Boolean =

@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.psi
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.lang.alias.CommandManager
 
 class LatexParameterTextUtilTest : BasePlatformTestCase() {
 
@@ -13,8 +12,6 @@ class LatexParameterTextUtilTest : BasePlatformTestCase() {
                 \label{mylabel<caret>}{I redefined \label}
             """.trimIndent()
         )
-        CommandManager.updateAliases(setOf("\\label"), project)
-
         myFixture.renameElementAtCaret("nolabel")
         myFixture.checkResult(
             """

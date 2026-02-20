@@ -12,8 +12,8 @@ class LatexParagraphFillHandlerTest : BasePlatformTestCase() {
 
     fun `test single sentence with inline math`() {
         testFillParagraph(
-            "This is a nor<caret>mal \$a + \\alpha$ sentence.",
-            "This is a normal \$a + \\alpha$ sentence."
+            $$"This is a nor<caret>mal $a + \\alpha$ sentence.",
+            $$"This is a normal $a + \\alpha$ sentence."
         )
     }
 

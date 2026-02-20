@@ -1,15 +1,17 @@
 package nl.hannahsten.texifyidea.structure.latex
 
 import com.intellij.navigation.ItemPresentation
+import com.intellij.openapi.fileEditor.FileDocumentManager
 import nl.hannahsten.texifyidea.TexifyIcons
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand.*
-import nl.hannahsten.texifyidea.lang.commands.LatexMathtoolsRegularCommand.*
-import nl.hannahsten.texifyidea.lang.commands.LatexNewDefinitionCommand.NEWCOMMAND
-import nl.hannahsten.texifyidea.lang.commands.LatexNewDefinitionCommand.RENEWCOMMAND
-import nl.hannahsten.texifyidea.lang.commands.LatexXparseCommand
+import nl.hannahsten.texifyidea.index.LatexDefinitionService
+import nl.hannahsten.texifyidea.lang.LSemanticCommand
+import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.lang.introduces
+import nl.hannahsten.texifyidea.lang.predefined.CommandNames
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.nameWithSlash
+import nl.hannahsten.texifyidea.util.labels.LatexLabelUtil
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.magic.cmd
 
 /**
  * @author Hannah Schellekens
@@ -19,27 +21,37 @@ object LatexPresentationFactory {
     @JvmStatic
     fun getPresentation(commands: LatexCommands): ItemPresentation {
         // Any delay here will be a delay before the contents of the structure popup are shown
-        val labelingCommands = CommandMagic.labels
-        // TODO: use DefinitionService
-        if (labelingCommands.contains(commands.name)) {
-            return LatexLabelPresentation(commands)
+        val nameWithSlash = commands.nameWithSlash
+        val semantics = LatexDefinitionService.resolveCommand(commands)
+        if (nameWithSlash in CommandMagic.labels || semantics?.introduces(LatexContexts.LabelDefinition) == true) {
+            return buildLabelPresentation(commands, semantics)
         }
-        return when (commands.name) {
-            PART.cmd -> LatexPartPresentation(commands)
-            CHAPTER.cmd -> LatexChapterPresentation(commands)
-            SECTION.cmd -> LatexSectionPresentation(commands)
-            SUBSECTION.cmd -> LatexSubSectionPresentation(commands)
-            SUBSUBSECTION.cmd -> LatexSubSubSectionPresentation(commands)
-            PARAGRAPH.cmd -> LatexParagraphPresentation(commands)
-            SUBPARAGRAPH.cmd -> LatexSubParagraphPresentation(commands)
-            NEWCOMMAND.cmd, RENEWCOMMAND.cmd, DECLARE_MATH_OPERATOR.cmd, LatexXparseCommand.NEWDOCUMENTCOMMAND.cmd -> LatexNewCommandPresentation(commands)
-            DECLARE_PAIRED_DELIMITER.cmd, DECLARE_PAIRED_DELIMITER_X.cmd, DECLARE_PAIRED_DELIMITER_XPP.cmd -> LatexPairedDelimiterPresentation(
-                commands
-            )
-            LABEL.cmd -> LatexLabelPresentation(commands)
-            BIBITEM.cmd -> BibitemPresentation(commands)
-            in CommandMagic.allFileIncludeCommands -> LatexIncludePresentation(commands)
-            else -> LatexOtherCommandPresentation(commands, TexifyIcons.DOT_COMMAND)
+        return CommandNames.run {
+            when (commands.name) {
+                PART -> LatexPartPresentation(commands)
+                CHAPTER -> LatexChapterPresentation(commands)
+                SECTION -> LatexSectionPresentation(commands)
+                SUB_SECTION -> LatexSubSectionPresentation(commands)
+                SUB_SUB_SECTION -> LatexSubSubSectionPresentation(commands)
+                PARAGRAPH -> LatexParagraphPresentation(commands)
+                SUB_PARAGRAPH -> LatexSubParagraphPresentation(commands)
+                NEW_COMMAND, RENEW_COMMAND, DECLARE_MATH_OPERATOR, NEW_DOCUMENT_COMMAND -> LatexNewCommandPresentation(commands)
+                DECLARE_PAIRED_DELIMITER, DECLARE_PAIRED_DELIMITER_X, DECLARE_PAIRED_DELIMITER_XPP -> LatexPairedDelimiterPresentation(commands)
+                BIB_ITEM -> BibitemPresentation(commands)
+                in CommandMagic.allFileIncludeCommands -> LatexIncludePresentation(commands)
+                else -> LatexOtherCommandPresentation(commands, TexifyIcons.DOT_COMMAND)
+            }
         }
+    }
+
+    private fun buildLabelPresentation(cmd: LatexCommands, semantics: LSemanticCommand?): ItemPresentation {
+        val presentableText: String = LatexLabelUtil.extractLabelParamInCommand(cmd, true, semantics)?.text ?: "<no label>"
+        // Location string.
+        val manager = FileDocumentManager.getInstance()
+        val document = manager.getDocument(cmd.containingFile.virtualFile)
+        val line = document!!.getLineNumber(cmd.textOffset) + 1
+        val locationString = cmd.containingFile.name + ":" + line
+
+        return LatexLabelPresentation(locationString, presentableText)
     }
 }

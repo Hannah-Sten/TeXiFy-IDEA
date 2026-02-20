@@ -74,9 +74,7 @@ class BibtexRunConfiguration(
         }
     }
 
-    override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState {
-        return BibtexCommandLineState(environment, this)
-    }
+    override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState = BibtexCommandLineState(environment, this)
 
     override fun readExternal(element: Element) {
         super<RunConfigurationBase>.readExternal(element)
@@ -152,12 +150,10 @@ class BibtexRunConfiguration(
         latexDistribution = distributionType
     }
 
-    fun getLatexDistributionType(): LatexDistributionType {
-        return if (latexDistribution != LatexDistributionType.PROJECT_SDK) {
-            latexDistribution
-        }
-        else {
-            LatexSdkUtil.getLatexDistributionType(project) ?: LatexDistributionType.TEXLIVE
-        }
+    fun getLatexDistributionType(): LatexDistributionType = if (latexDistribution != LatexDistributionType.PROJECT_SDK) {
+        latexDistribution
+    }
+    else {
+        LatexSdkUtil.getLatexDistributionType(project) ?: LatexDistributionType.TEXLIVE
     }
 }

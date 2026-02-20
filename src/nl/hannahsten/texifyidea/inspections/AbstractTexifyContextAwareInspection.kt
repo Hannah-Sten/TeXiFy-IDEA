@@ -7,12 +7,7 @@ import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.SuppressQuickFix
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiComment
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
-import com.intellij.psi.PsiWhiteSpace
-import com.intellij.psi.SmartPsiElementPointer
-import com.intellij.psi.createSmartPointer
+import com.intellij.psi.*
 import com.intellij.psi.util.elementType
 import com.intellij.util.SmartList
 import nl.hannahsten.texifyidea.action.debug.SimplePerformanceTracker
@@ -28,17 +23,7 @@ import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
 import nl.hannahsten.texifyidea.lang.magic.MutableMagicComment
 import nl.hannahsten.texifyidea.lang.magic.addMagicCommentToPsiElement
-import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexContent
-import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.psi.LatexGroup
-import nl.hannahsten.texifyidea.psi.LatexMagicComment
-import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
-import nl.hannahsten.texifyidea.psi.LatexNoMathContent
-import nl.hannahsten.texifyidea.psi.LatexTypes
-import nl.hannahsten.texifyidea.psi.LatexWithContextTraverser
-import nl.hannahsten.texifyidea.psi.containsKeyValuePair
-import nl.hannahsten.texifyidea.psi.getEnvironmentName
+import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.existsIntersection
 import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
 import nl.hannahsten.texifyidea.util.parser.traverse
@@ -180,9 +165,7 @@ abstract class AbstractTexifyContextAwareInspection(
      *
      * @see isAvailableForFile
      */
-    protected open fun prepareInspectionForFile(file: PsiFile, bundle: DefinitionBundle): Boolean {
-        return true
-    }
+    protected open fun prepareInspectionForFile(file: PsiFile, bundle: DefinitionBundle): Boolean = true
 
     /**
      * Looks at the start of the file to see if there is a magic comment that suppresses this inspection.
@@ -203,9 +186,7 @@ abstract class AbstractTexifyContextAwareInspection(
      *
      * Overriding this method can be used to avoid descending into certain elements to improve performance.
      */
-    protected open fun shouldInspectChildrenOf(element: PsiElement, state: LContextSet, lookup: LatexSemanticsLookup): Boolean {
-        return true
-    }
+    protected open fun shouldInspectChildrenOf(element: PsiElement, state: LContextSet, lookup: LatexSemanticsLookup): Boolean = true
 
     protected inner class InspectionTraverser(
         private val manager: InspectionManager, private val isOnTheFly: Boolean,
@@ -276,9 +257,7 @@ abstract class AbstractTexifyContextAwareInspection(
         override fun generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo =
             IntentionPreviewInfo.EMPTY
 
-        override fun isAvailable(project: Project, context: PsiElement): Boolean {
-            return context.containingFile.fileType == LatexFileType
-        }
+        override fun isAvailable(project: Project, context: PsiElement): Boolean = context.containingFile.fileType == LatexFileType
 
         override fun isSuppressAll() = false
     }
@@ -308,9 +287,7 @@ abstract class AbstractTexifyContextAwareInspection(
 
         override fun getFamilyName() = "Suppress for environment '$environmentName'"
 
-        override fun isAvailable(project: Project, context: PsiElement): Boolean {
-            return super.isAvailable(project, context)
-        }
+        override fun isAvailable(project: Project, context: PsiElement): Boolean = super.isAvailable(project, context)
     }
 
     /**
@@ -339,9 +316,7 @@ abstract class AbstractTexifyContextAwareInspection(
 
         override fun getFamilyName() = "Suppress for command '$commandToken'"
 
-        override fun isAvailable(project: Project, context: PsiElement): Boolean {
-            return commandToken != null && super.isAvailable(project, context)
-        }
+        override fun isAvailable(project: Project, context: PsiElement): Boolean = commandToken != null && super.isAvailable(project, context)
     }
 
     /**

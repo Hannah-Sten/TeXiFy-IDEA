@@ -10,21 +10,12 @@ import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
 import nl.hannahsten.texifyidea.index.stub.LatexParameterStub
 import nl.hannahsten.texifyidea.index.stub.requiredParamAt
-import nl.hannahsten.texifyidea.lang.LArgument
-import nl.hannahsten.texifyidea.lang.LArgumentType
-import nl.hannahsten.texifyidea.lang.LatexContextIntro
-import nl.hannahsten.texifyidea.lang.LContextSet
-import nl.hannahsten.texifyidea.lang.LSemanticCommand
-import nl.hannahsten.texifyidea.lang.LSemanticEnv
-import nl.hannahsten.texifyidea.lang.LatexContext
-import nl.hannahsten.texifyidea.lang.LatexContexts
-import nl.hannahsten.texifyidea.lang.LatexLib
-import nl.hannahsten.texifyidea.lang.LatexSemanticsCommandLookup
-import nl.hannahsten.texifyidea.lang.LatexSemanticsEnvLookup
-import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
+import nl.hannahsten.texifyidea.lang.*
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
+import nl.hannahsten.texifyidea.lang.predefined.EnvironmentNames
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil.getDefinedCommandName
 
 /**
  * Finds the [LatexEndCommand] that matches the begin command.
@@ -40,8 +31,8 @@ fun LatexBeginCommand.endCommand(): LatexEndCommand? = nextSiblingOfType(LatexEn
  * @return `true` if the command marks a valid entry point, `false` if not.
  */
 fun LatexBeginCommand.isEntryPoint(): Boolean {
-    // Currently: only allowing `\begin{document}`.
-    return this.environmentName() == "document"
+    // Currently: only allowing `\\begin{document}`.
+    return this.environmentName() == EnvironmentNames.DOCUMENT
 }
 
 /**
@@ -66,9 +57,7 @@ fun LatexNoMathContent.isDisplayMath() = children.firstOrNull() is LatexMathEnvi
  *
  * @return `true` when the fileset has a bibliography included, `false` otherwise.
  */
-fun PsiFile.hasBibliography(): Boolean {
-    return NewCommandsIndex.getByNameInFileSet("\\bibliography", this).isNotEmpty()
-}
+fun PsiFile.hasBibliography(): Boolean = NewCommandsIndex.getByNameInFileSet("\\bibliography", this).isNotEmpty()
 
 /**
  * Checks if the fileset for this file uses \printbibliography, in which case the user probably wants to use biber.
@@ -136,24 +125,22 @@ fun PsiElement.findOccurrences(searchRoot: PsiElement): List<LatexExtractablePSI
     return visitor.foundOccurrences.map { it.asExtractable() }
 }
 
-fun PsiElement.findDependencies(): Set<LatexLib> {
-    return this.collectSubtreeTo(mutableSetOf(), Int.MAX_VALUE) { e ->
-        val dependency = when (e) {
-            is LatexCommands -> {
-                // If the command is a known command, add its dependency.
-                val nameNoSlash = e.name?.removePrefix("\\") ?: ""
-                AllPredefined.lookupCommand(nameNoSlash)?.dependency
-            }
-
-            is LatexEnvironment -> {
-                // If the environment is a known environment, add its dependency.
-                AllPredefined.lookupEnv(e.getEnvironmentName())?.dependency
-            }
-
-            else -> null
+fun PsiElement.findDependencies(): Set<LatexLib> = this.collectSubtreeTo(mutableSetOf(), Int.MAX_VALUE) { e ->
+    val dependency = when (e) {
+        is LatexCommands -> {
+            // If the command is a known command, add its dependency.
+            val nameNoSlash = e.name?.removePrefix("\\") ?: ""
+            AllPredefined.lookupCommand(nameNoSlash)?.dependency
         }
-        dependency?.takeIf { it.requiresImport }
+
+        is LatexEnvironment -> {
+            // If the environment is a known environment, add its dependency.
+            AllPredefined.lookupEnv(e.getEnvironmentName())?.dependency
+        }
+
+        else -> null
     }
+    dependency?.takeIf { it.requiresImport }
 }
 
 fun LatexSemanticsEnvLookup.lookupEnv(name: String?): LSemanticEnv? {
@@ -161,14 +148,12 @@ fun LatexSemanticsEnvLookup.lookupEnv(name: String?): LSemanticEnv? {
     return lookupEnv(name)
 }
 
-fun LatexSemanticsCommandLookup.lookupCommand(name: String?): LSemanticCommand? {
+fun LatexSemanticsCommandLookup.lookupCommandN(name: String?): LSemanticCommand? {
     if (name == null) return null
     return lookupCommand(name)
 }
 
-fun LatexSemanticsCommandLookup.lookupCommandPsi(cmd: LatexCommands): LSemanticCommand? {
-    return lookupCommand(cmd.nameWithoutSlash)
-}
+fun LatexSemanticsCommandLookup.lookupCommandPsi(cmd: LatexCommands): LSemanticCommand? = lookupCommandN(cmd.nameWithoutSlash)
 
 /**
  * Utility functions for the Latex PSI file structure.
@@ -210,25 +195,14 @@ object LatexPsiUtil {
         return nextCommand.name
     }
 
+    /**
+     * Use [getDefinedCommandName] if possible, since it can use stub info.
+     */
     fun getDefinedCommandElement(cmd: LatexCommands): LatexCommands? {
         cmd.firstRequiredParameter()?.let {
             return it.findFirstChildTyped<LatexCommands>()
         }
         return cmd.nextContextualSibling { true } as? LatexCommands
-    }
-
-    /**
-     * Check if the command is inside a definition command as a parameter, like `\newcommand{\cmd}{}`.
-     */
-    private fun isInsideNewCommandDef(cmd: LatexComposite): Boolean {
-        // command - parameter - required_parameter - required_param_content - parameter_text - command
-        //                                                                                    - NormalTextWord
-        // we leave some space
-        val parentParameter = cmd.firstParentOfType<LatexParameter>(5) ?: return false
-        val defCommand = parentParameter.firstParentOfType<LatexCommands>(1) ?: return false
-        val name = defCommand.name
-        if (name !in CommandMagic.definitions) return false
-        return defCommand.firstParameter() === parentParameter // they should be exactly the same object
     }
 
     private fun isInsidePlainDef(cmd: PsiElement): Boolean {
@@ -239,31 +213,31 @@ object LatexPsiUtil {
         return true
     }
 
-    fun stubTypeToLArgumentType(type: Int): LArgumentType {
-        return when (type) {
-            LatexParameterStub.REQUIRED -> LArgumentType.REQUIRED
-            LatexParameterStub.OPTIONAL -> LArgumentType.OPTIONAL
-            else -> LArgumentType.REQUIRED
-        }
+    fun stubTypeToLArgumentType(type: Int): LArgumentType = when (type) {
+        LatexParameterStub.REQUIRED -> LArgumentType.REQUIRED
+        LatexParameterStub.OPTIONAL -> LArgumentType.OPTIONAL
+        else -> LArgumentType.REQUIRED
     }
 
-    fun parameterToLArgumentType(parameter: LatexParameter): LArgumentType {
-        return when {
-            parameter.requiredParam != null -> LArgumentType.REQUIRED
-            parameter.optionalParam != null -> LArgumentType.OPTIONAL
-            else -> LArgumentType.REQUIRED // default to required if no parameters are present
-        }
+    fun parameterToLArgumentType(parameter: LatexParameter): LArgumentType = when {
+        parameter.requiredParam != null -> LArgumentType.REQUIRED
+        parameter.optionalParam != null -> LArgumentType.OPTIONAL
+        else -> LArgumentType.REQUIRED // default to required if no parameters are present
     }
 
-    fun parameterTypeMatchesStub(parameter: LatexParameterStub, type: LArgumentType): Boolean {
-        return when (type) {
-            LArgumentType.REQUIRED -> parameter.type == LatexParameterStub.REQUIRED
-            LArgumentType.OPTIONAL -> parameter.type == LatexParameterStub.OPTIONAL
-        }
+    fun parameterTypeMatchesStub(parameter: LatexParameterStub, type: LArgumentType): Boolean = when (type) {
+        LArgumentType.REQUIRED -> parameter.type == LatexParameterStub.REQUIRED
+        LArgumentType.OPTIONAL -> parameter.type == LatexParameterStub.OPTIONAL
     }
 
     inline fun processArgumentsWithSemantics(cmd: LatexCommandWithParams, semantics: LSemanticCommand, action: (LatexParameter, LArgument?) -> Unit) {
         processArgumentsWithSemantics(cmd, semantics.arguments, action)
+    }
+
+    inline fun processArgumentsWithNonNullSemantics(cmd: LatexCommandWithParams, semantics: LSemanticCommand, action: (LatexParameter, LArgument) -> Unit) {
+        processArgumentsWithSemantics(cmd, semantics.arguments) { param, arg ->
+            if(arg != null) action(param, arg)
+        }
     }
 
     inline fun processArgumentsWithSemantics(cmd: LatexCommandWithParams, argList: List<LArgument>, action: (LatexParameter, LArgument?) -> Unit) {
@@ -299,6 +273,7 @@ object LatexPsiUtil {
         }
     }
 
+    @Suppress("unused")
     inline fun processArgumentsWithSemantics(cmd: LatexCommandsStub, semantics: LSemanticCommand, action: (LatexParameterStub, LArgument) -> Unit) {
         val arguments = semantics.arguments
         var argIdx = 0
@@ -319,10 +294,13 @@ object LatexPsiUtil {
         }
     }
 
-    fun alignCommandArgument(command: LatexCommandWithParams, parameter: LatexParameter, arguments: List<LArgument>): LArgument? {
-        val command = parameter.firstParentOfType<LatexCommands>() ?: return null
+    /**
+     * Get the semantic argument corresponding to the given parameter in the command, based on the semantics' argument list.
+     *
+     */
+    fun getCorrespondingArgument(command: LatexCommandWithParams, parameter: LatexParameter, arguments: List<LArgument>): LArgument? {
         processArgumentsWithSemantics(command, arguments) { p, arg ->
-            if (p == parameter) return arg
+            if (p === parameter) return arg
         }
         return null
     }
@@ -331,7 +309,7 @@ object LatexPsiUtil {
         val beginCommand = parameter.firstParentOfType<LatexBeginCommand>(3) ?: return null
         val name = beginCommand.environmentName() ?: return null
         val semantics = lookup.lookupEnv(name) ?: return null
-        val arg = alignCommandArgument(beginCommand, parameter, semantics.arguments) ?: return null
+        val arg = getCorrespondingArgument(beginCommand, parameter, semantics.arguments) ?: return null
         return arg.contextSignature
     }
 
@@ -339,7 +317,7 @@ object LatexPsiUtil {
         val command = parameter.firstParentOfType<LatexCommands>(3) ?: return resolveBeginCommandContext(parameter, lookup)
         val name = command.name?.removePrefix("\\") ?: return null
         val semantics = lookup.lookupCommand(name) ?: return null
-        val arg = alignCommandArgument(command, parameter, semantics.arguments) ?: return null
+        val arg = getCorrespondingArgument(command, parameter, semantics.arguments) ?: return null
         return arg.contextSignature
     }
 
@@ -355,21 +333,27 @@ object LatexPsiUtil {
         return resolveContextUpward(e, lookup)
     }
 
+    fun PsiElement.isInCommandDefinition(): Boolean = resolveContextUpward(this).contains(LatexContexts.InsideDefinition)
+
     /**
      * Resolve the context introductions at the given element by traversing the PSI tree upwards and collecting context changes.
      * The list is ordered from innermost to outermost context introduction.
+     *
+     * @see LatexWithContextStateTraverser
      */
     fun resolveContextIntroUpward(e: PsiElement, lookup: LatexSemanticsLookup, shortCircuit: Boolean = false): List<LatexContextIntro> {
         var collectedContextIntro: MutableList<LatexContextIntro>? = null
         var current: PsiElement = e
         // see Latex.bnf
         while (true) {
-            current = current.firstStrictParent { // `firstParent` is inclusive
+            current = current.firstStrictParent {
+                // `firstParent` is inclusive
                 it is LatexParameter || it is LatexEnvironment || it is LatexMathEnvironment
             } ?: break
             val intro = when (current) {
                 is LatexParameter -> resolveCommandParameterContext(current, lookup) ?: continue
                 is LatexEnvironment -> resolveEnvironmentContext(current, lookup) ?: continue
+                is LatexInlineMath -> LatexContextIntro.INLINE_MATH
                 is LatexMathEnvironment -> LatexContextIntro.MATH
                 else -> continue
             }
@@ -420,9 +404,10 @@ object LatexPsiUtil {
     /**
      * Check if the given element is nested inside a command definition (maybe deeply).
      */
-    fun isInsideDefinition(element: PsiElement): Boolean {
-        val bundle = LatexDefinitionService.getBundleFor(element)
-        return isInsideDefinition(element, bundle)
+    @Suppress("unused")
+    fun PsiElement.isInsideDefinition(): Boolean {
+        val bundle = LatexDefinitionService.getBundleFor(this)
+        return isInsideDefinition(this, bundle)
     }
 
     /**

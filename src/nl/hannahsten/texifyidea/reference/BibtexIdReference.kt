@@ -31,9 +31,7 @@ class BibtexIdReference(element: LatexParameterText) : PsiReferenceBase<LatexPar
         }.toTypedArray()
     }
 
-    override fun isReferenceTo(element: PsiElement): Boolean {
-        return multiResolve(false).any { it.element == element }
-    }
+    override fun isReferenceTo(element: PsiElement): Boolean = multiResolve(false).any { it.element == element }
 
     override fun handleElementRename(newElementName: String): PsiElement {
         myElement.setName(newElementName)

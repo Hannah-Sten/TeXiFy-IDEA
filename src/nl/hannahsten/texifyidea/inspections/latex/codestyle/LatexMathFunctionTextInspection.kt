@@ -8,15 +8,15 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.file.LatexFileType
-import nl.hannahsten.texifyidea.inspections.AbstractTexifyCommandBasedInspection
-import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
 import nl.hannahsten.texifyidea.index.DefinitionBundle
+import nl.hannahsten.texifyidea.inspections.AbstractTexifyCommandBasedInspection
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.psi.nameWithoutSlash
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
+import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
 
 /**
  * @author Hannah Schellekens
@@ -73,8 +73,6 @@ class LatexMathFunctionTextInspection : AbstractTexifyCommandBasedInspection(
             return IntentionPreviewInfo.CustomDiff(LatexFileType, textCommand.text, functionText)
         }
 
-        private fun extractFunction(textCommandElement: LatexCommands): String? {
-            return textCommandElement.requiredParameterText(0)?.trim()?.let { "\\$it" }
-        }
+        private fun extractFunction(textCommandElement: LatexCommands): String? = textCommandElement.requiredParameterText(0)?.trim()?.let { "\\$it" }
     }
 }

@@ -1,11 +1,6 @@
 package nl.hannahsten.texifyidea.reference
 
-import com.intellij.psi.ElementManipulators
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiElementResolveResult
-import com.intellij.psi.PsiPolyVariantReference
-import com.intellij.psi.PsiReferenceBase
-import com.intellij.psi.ResolveResult
+import com.intellij.psi.*
 import nl.hannahsten.texifyidea.index.NewDefinitionIndex
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexParameterText
@@ -21,9 +16,7 @@ class LatexEnvironmentDefinitionReference(
         rangeInElement = ElementManipulators.getValueTextRange(element)
     }
 
-    override fun resolve(): PsiElement? {
-        return multiResolve(false).firstOrNull()?.element
-    }
+    override fun resolve(): PsiElement? = multiResolve(false).firstOrNull()?.element
 
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
         val name = environment.getEnvironmentName()
@@ -34,7 +27,7 @@ class LatexEnvironmentDefinitionReference(
         }.toTypedArray()
     }
 
-    override fun handleElementRename(newElementName: String): PsiElement? {
+    override fun handleElementRename(newElementName: String): PsiElement {
         val beginElement = environment.beginCommand
         beginElement.envIdentifier?.setName(newElementName)
         val endElement = environment.endCommand

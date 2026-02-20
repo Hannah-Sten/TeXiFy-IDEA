@@ -2,15 +2,14 @@ package nl.hannahsten.texifyidea.editor
 
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import nl.hannahsten.texifyidea.testFoldingWithDefinitions
 
 /**
  * Note that folding builders need to implement DumbAware.
  */
 class LatexFoldingTest : BasePlatformTestCase() {
 
-    override fun getTestDataPath(): String {
-        return "test/resources/editor/folding"
-    }
+    override fun getTestDataPath(): String = "test/resources/editor/folding"
 
     fun testDashFolding() {
         // Unicode issues on windows
@@ -55,5 +54,36 @@ class LatexFoldingTest : BasePlatformTestCase() {
 
     fun testCommentFolding() {
         myFixture.testFolding("$testDataPath/comments.tex")
+    }
+
+    fun testLeftRightFolding() {
+        myFixture.testFolding("$testDataPath/left-right.tex")
+    }
+
+    fun testMathStyleFolding() {
+        // Unicode issues on windows
+        if (!SystemInfo.isWindows) {
+            myFixture.testFolding("$testDataPath/math-style.tex")
+        }
+    }
+
+    fun testCommandDeclarationMathStyleFolding() {
+        // Unicode issues on windows
+        if (!SystemInfo.isWindows) {
+            myFixture.testFoldingWithDefinitions(
+                """
+                <fold text='\usepackage{...}'>\usepackage{unicode-math}</fold>
+                \newcommand{\caL}{<fold text='𝓛'>\mathcal{L}</fold>}
+                \newcommand{\bm}{{<fold text='𝐦'>\mathbf{m}</fold>}}
+                \newcommand{\mr}{\mathrm}
+                
+                $<fold text='𝓛'>\mathcal{L}</fold>$
+                $<fold text='𝐦'>\bm</fold>$
+                $<fold text='𝐀'>\symbf{A}</fold>$
+                $<fold text='A'>\mr{A}</fold>$
+                """,
+                fileName = "command-declaration-math-style.tex"
+            )
+        }
     }
 }

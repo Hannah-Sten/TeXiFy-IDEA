@@ -32,9 +32,7 @@ class LatexInlineCommandProcessor(
     private val myScope: SearchScope = GlobalSearchScope.projectScope(myProject)
 ) : BaseRefactoringProcessor(myProject) {
 
-    override fun createUsageViewDescriptor(usages: Array<out UsageInfo>): UsageViewDescriptor {
-        return LatexInlineCommandDescriptor(inlineCommand)
-    }
+    override fun createUsageViewDescriptor(usages: Array<out UsageInfo>): UsageViewDescriptor = LatexInlineCommandDescriptor(inlineCommand)
 
     override fun findUsages(): Array<UsageInfo> {
         val tempreferences =
@@ -125,7 +123,5 @@ class LatexInlineCommandProcessor(
         return true
     }
 
-    override fun getCommandName(): String {
-        return "Inlining Command " + this.inlineCommand.name
-    }
+    override fun getCommandName(): String = "Inlining Command " + this.inlineCommand.name
 }

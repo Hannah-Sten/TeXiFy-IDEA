@@ -20,9 +20,7 @@ class RemoteLibraryManager : PersistentStateComponent<RemoteLibraryState> {
 
     fun getLibraries(): Map<String, LibraryState> = libraries.toMap()
 
-    override fun getState(): RemoteLibraryState {
-        return RemoteLibraryState(libraries.toMap())
-    }
+    override fun getState(): RemoteLibraryState = RemoteLibraryState(libraries.toMap())
 
     override fun loadState(state: RemoteLibraryState) {
         libraries = state.libraries.toMutableMap()
@@ -37,10 +35,6 @@ class RemoteLibraryManager : PersistentStateComponent<RemoteLibraryState> {
         } ?: run {
             libraries[library.identifier] = LibraryState(library.displayName, library::class.java, bibItems, url)
         }
-    }
-
-    fun removeLibrary(library: RemoteBibLibrary) {
-        removeLibraryByKey(library.identifier)
     }
 
     fun removeLibraryByKey(key: String) {

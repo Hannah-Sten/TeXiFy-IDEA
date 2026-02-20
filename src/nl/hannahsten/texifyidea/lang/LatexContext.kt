@@ -39,26 +39,24 @@ sealed interface LatexContextIntro {
 
     fun introduces(candidate: LatexContext): Boolean
 
-    fun introducesAny(candidates: LContextSet): Boolean {
-        return candidates.any { introduces(it) }
-    }
+    fun introducesAny(candidates: LContextSet): Boolean = candidates.any { introduces(it) }
 
-    fun displayString(): String {
-        return when (val intro = this) {
-            Inherit -> ""
-            is Clear -> "<>"
-            is Assign -> "<${intro.contexts.joinToString(",")}>"
-            is Modify -> buildString {
-                append("<")
-                if (intro.toAdd.isNotEmpty()) {
-                    append("+${intro.toAdd.joinToString(",")}")
-                }
-                if (intro.toRemove.isNotEmpty()) {
-                    if (intro.toAdd.isNotEmpty()) append(";")
-                    append("-${intro.toRemove.joinToString(",")}")
-                }
-                append(">")
+    val introducedContexts: LContextSet
+
+    fun displayString(): String = when (val intro = this) {
+        Inherit -> ""
+        is Clear -> "<>"
+        is Assign -> "<${intro.contexts.joinToString(",")}>"
+        is Modify -> buildString {
+            append("<")
+            if (intro.toAdd.isNotEmpty()) {
+                append("+${intro.toAdd.joinToString(",")}")
             }
+            if (intro.toRemove.isNotEmpty()) {
+                if (intro.toAdd.isNotEmpty()) append(";")
+                append("-${intro.toRemove.joinToString(",")}")
+            }
+            append(">")
         }
     }
 
@@ -67,43 +65,31 @@ sealed interface LatexContextIntro {
      * This is the default behavior, so it can be used to reset the context to the outer scope.
      */
     object Inherit : LatexContextIntro {
-        override fun applyTo(outerCtx: LContextSet): LContextSet {
-            return outerCtx
-        }
+        override fun applyTo(outerCtx: LContextSet): LContextSet = outerCtx
 
-        override fun revoke(innerCtx: LContextSet): LContextSet {
-            return innerCtx
-        }
+        override fun revoke(innerCtx: LContextSet): LContextSet = innerCtx
 
-        override fun toString(): String {
-            return ""
-        }
+        override fun toString(): String = ""
 
-        override fun introduces(candidate: LatexContext): Boolean {
-            return false
-        }
+        override fun introduces(candidate: LatexContext): Boolean = false
 
-        override fun introducesAny(candidates: LContextSet): Boolean {
-            return false
-        }
+        override fun introducesAny(candidates: LContextSet): Boolean = false
+
+        override val introducedContexts: LContextSet
+            get() = emptySet()
     }
 
     data object Clear : LatexContextIntro {
-        override fun applyTo(outerCtx: LContextSet): LContextSet {
-            return emptySet()
-        }
+        override fun applyTo(outerCtx: LContextSet): LContextSet = emptySet()
 
-        override fun revoke(innerCtx: LContextSet): LContextSet? {
-            return if (innerCtx.isEmpty()) emptySet() else null
-        }
+        override fun revoke(innerCtx: LContextSet): LContextSet? = if (innerCtx.isEmpty()) emptySet() else null
 
-        override fun introduces(candidate: LatexContext): Boolean {
-            return false
-        }
+        override fun introduces(candidate: LatexContext): Boolean = false
 
-        override fun introducesAny(candidates: LContextSet): Boolean {
-            return false
-        }
+        override fun introducesAny(candidates: LContextSet): Boolean = false
+
+        override val introducedContexts: LContextSet
+            get() = emptySet()
     }
 
     /**
@@ -114,27 +100,21 @@ sealed interface LatexContextIntro {
         constructor(contexts: LatexContext) : this(setOf(contexts))
         constructor(vararg contexts: LatexContext) : this(contexts.toSet())
 
-        override fun applyTo(outerCtx: LContextSet): LContextSet {
-            return contexts
-        }
+        override fun applyTo(outerCtx: LContextSet): LContextSet = contexts
 
         override fun revoke(innerCtx: LContextSet): LContextSet? {
             if (contexts.containsAll(innerCtx)) return emptySet()
             return null
         }
 
-        override fun introduces(candidate: LatexContext): Boolean {
-            return contexts.contains(candidate)
-        }
+        override fun introduces(candidate: LatexContext): Boolean = contexts.contains(candidate)
 
-        override fun introducesAny(candidates: LContextSet): Boolean {
-            //
-            return contexts.existsIntersection(candidates)
-        }
+        override fun introducesAny(candidates: LContextSet): Boolean = contexts.existsIntersection(candidates)
 
-        override fun toString(): String {
-            return "Assign(${contexts.joinToString(",") { it.display }})"
-        }
+        override fun toString(): String = "Assign(${contexts.joinToString(",") { it.display }})"
+
+        override val introducedContexts: LContextSet
+            get() = contexts
     }
 
     /**
@@ -157,13 +137,9 @@ sealed interface LatexContextIntro {
             return innerCtx - toAdd
         }
 
-        override fun introduces(candidate: LatexContext): Boolean {
-            return candidate in toAdd
-        }
+        override fun introduces(candidate: LatexContext): Boolean = candidate in toAdd
 
-        override fun introducesAny(candidates: LContextSet): Boolean {
-            return candidates.existsIntersection(toAdd)
-        }
+        override fun introducesAny(candidates: LContextSet): Boolean = candidates.existsIntersection(toAdd)
 
         override fun toString(): String {
             val parts = mutableListOf<String>()
@@ -175,44 +151,34 @@ sealed interface LatexContextIntro {
             }
             return parts.joinToString("", prefix = "Modify(", postfix = ")")
         }
+
+        override val introducedContexts: LContextSet
+            get() = toAdd
     }
 
     companion object {
 
-        fun inherit(): LatexContextIntro {
-            return Inherit
+        fun inherit(): LatexContextIntro = Inherit
+
+        fun add(ctx: LatexContext): LatexContextIntro = Modify(
+            toAdd = setOf(ctx), toRemove = emptySet()
+        )
+
+        fun remove(ctx: LatexContext): LatexContextIntro = Modify(
+            toAdd = emptySet(), toRemove = setOf(ctx)
+        )
+
+        fun assign(ctx: LatexContext): LatexContextIntro = Assign(setOf(ctx))
+
+        fun assign(ctx: LContextSet): LatexContextIntro = Assign(ctx)
+
+        @Suppress("unused")
+        fun buildContext(introList: List<LatexContextIntro>, outerCtx: LContextSet = emptySet()): LContextSet = introList.fold(outerCtx) { ctx, intro ->
+            intro.applyTo(ctx)
         }
 
-        fun add(ctx: LatexContext): LatexContextIntro {
-            return Modify(
-                toAdd = setOf(ctx), toRemove = emptySet()
-            )
-        }
-
-        fun remove(ctx: LatexContext): LatexContextIntro {
-            return Modify(
-                toAdd = emptySet(), toRemove = setOf(ctx)
-            )
-        }
-
-        fun assign(ctx: LatexContext): LatexContextIntro {
-            return Assign(setOf(ctx))
-        }
-
-        fun assign(ctx: LContextSet): LatexContextIntro {
-            return Assign(ctx)
-        }
-
-        fun buildContext(introList: List<LatexContextIntro>, outerCtx: LContextSet = emptySet()): LContextSet {
-            return introList.fold(outerCtx) { ctx, intro ->
-                intro.applyTo(ctx)
-            }
-        }
-
-        fun buildContextReversedList(introList: List<LatexContextIntro>, innerCtx: LContextSet = emptySet()): LContextSet {
-            return introList.foldRight(innerCtx) { intro, ctx ->
-                intro.applyTo(ctx)
-            }
+        fun buildContextReversedList(introList: List<LatexContextIntro>, innerCtx: LContextSet = emptySet()): LContextSet = introList.foldRight(innerCtx) { intro, ctx ->
+            intro.applyTo(ctx)
         }
 
         private operator fun LContextSet.plus(other: LContextSet): LContextSet {
@@ -233,27 +199,23 @@ sealed interface LatexContextIntro {
             }
         }
 
-        fun compose(a: LatexContextIntro, b: LatexContextIntro): LatexContextIntro {
-            return when (b) {
-                is Clear, is Assign -> b
-                is Inherit -> a
-                is Modify -> {
-                    when (a) {
-                        Inherit -> b
-                        is Clear -> Assign(b.toAdd)
-                        is Assign -> Assign(b.applyTo(a.contexts))
-                        is Modify -> Modify(
-                            toAdd = a.toAdd - a.toRemove + b.toAdd - b.toRemove,
-                            toRemove = a.toRemove - b.toAdd + b.toRemove
-                        )
-                    }
+        fun compose(a: LatexContextIntro, b: LatexContextIntro): LatexContextIntro = when (b) {
+            is Clear, is Assign -> b
+            is Inherit -> a
+            is Modify -> {
+                when (a) {
+                    Inherit -> b
+                    is Clear -> Assign(b.toAdd)
+                    is Assign -> Assign(b.applyTo(a.contexts))
+                    is Modify -> Modify(
+                        toAdd = a.toAdd - a.toRemove + b.toAdd - b.toRemove,
+                        toRemove = a.toRemove - b.toAdd + b.toRemove
+                    )
                 }
             }
         }
 
-        fun composeList(introList: List<LatexContextIntro>): LatexContextIntro {
-            return introList.fold(Inherit, ::compose)
-        }
+        fun composeList(introList: List<LatexContextIntro>): LatexContextIntro = introList.fold(Inherit, ::compose)
 
         fun union(a: LatexContextIntro, b: LatexContextIntro): LatexContextIntro {
             if (b is Clear || b is Inherit) return a
@@ -262,7 +224,6 @@ sealed interface LatexContextIntro {
                 is Assign -> when (b) {
                     is Assign -> Assign(a.contexts + b.contexts)
                     is Modify -> Assign(b.applyTo(a.contexts))
-                    else -> a // already handled above
                 }
 
                 is Modify -> when (b) {
@@ -271,8 +232,6 @@ sealed interface LatexContextIntro {
                         toAdd = a.toAdd + b.toAdd,
                         toRemove = a.toRemove + b.toRemove
                     )
-
-                    else -> a // already handled above
                 }
             }
         }
@@ -291,5 +250,7 @@ sealed interface LatexContextIntro {
          * Introduces the math context.
          */
         val MATH = Assign(LatexContexts.Math)
+
+        val INLINE_MATH = Assign(setOf(LatexContexts.Math, LatexContexts.InlineMath))
     }
 }

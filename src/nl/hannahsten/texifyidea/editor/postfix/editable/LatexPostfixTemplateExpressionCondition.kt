@@ -11,10 +11,6 @@ sealed class LatexPostfixTemplateExpressionCondition : PostfixTemplateExpression
     abstract fun expressionSelector(): LatexPostfixExpressionSelector
 
     companion object {
-        fun selectableValues() = setOf(
-            LatexPostfixTemplateTextOnlyExpressionCondition(),
-            LatexPostfixTemplateMathOnlyExpressionCondition()
-        )
 
         fun readExternal(condition: Element): LatexPostfixTemplateExpressionCondition {
             val id = condition.getAttributeValue(PostfixTemplateExpressionCondition.ID_ATTR)

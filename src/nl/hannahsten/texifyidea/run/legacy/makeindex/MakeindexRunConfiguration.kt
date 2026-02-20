@@ -8,7 +8,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.legacy.MakeindexProgram
-import nl.hannahsten.texifyidea.run.step.getMakeindexOptions
 import org.jdom.Element
 import java.util.*
 
@@ -36,9 +35,7 @@ class MakeindexRunConfiguration(
     var commandLineArguments: String? = null
     var workingDirectory: VirtualFile? = null
 
-    override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState {
-        return MakeindexCommandLineState(environment, mainFile, workingDirectory, project, makeindexProgram, commandLineArguments)
-    }
+    override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState = MakeindexCommandLineState(environment, mainFile, workingDirectory, project, makeindexProgram, commandLineArguments)
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = MakeindexSettingsEditor(project)
 

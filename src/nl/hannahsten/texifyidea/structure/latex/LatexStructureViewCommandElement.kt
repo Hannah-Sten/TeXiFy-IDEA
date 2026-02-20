@@ -4,10 +4,10 @@ import com.intellij.ide.structureView.StructureViewTreeElement
 import com.intellij.ide.util.treeView.smartTree.SortableTreeElement
 import com.intellij.ide.util.treeView.smartTree.TreeElement
 import com.intellij.navigation.NavigationItem
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
+import nl.hannahsten.texifyidea.lang.predefined.CommandNames
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.psi.nameWithSlash
 import nl.hannahsten.texifyidea.structure.EditableHintPresentation
-import nl.hannahsten.texifyidea.util.magic.cmd
 import nl.hannahsten.texifyidea.util.parser.nextCommand
 
 /**
@@ -21,7 +21,8 @@ class LatexStructureViewCommandElement private constructor(private val element: 
 
         @JvmStatic
         fun newCommand(commands: LatexCommands): LatexStructureViewCommandElement? {
-            if (LatexGenericRegularCommand.LET.cmd == commands.name || LatexGenericRegularCommand.DEF.cmd == commands.commandToken.text) {
+            val name = commands.nameWithSlash
+            if (CommandNames.LET == name || CommandNames.DEF == name) {
                 val sibling = commands.nextCommand() ?: return null
 
                 return LatexStructureViewCommandElement(sibling)
@@ -62,11 +63,7 @@ class LatexStructureViewCommandElement private constructor(private val element: 
         }
     }
 
-    override fun canNavigate(): Boolean {
-        return element is NavigationItem && (element as NavigationItem).canNavigate()
-    }
+    override fun canNavigate(): Boolean = element is NavigationItem && (element as NavigationItem).canNavigate()
 
-    override fun canNavigateToSource(): Boolean {
-        return element is NavigationItem && (element as NavigationItem).canNavigateToSource()
-    }
+    override fun canNavigateToSource(): Boolean = element is NavigationItem && (element as NavigationItem).canNavigateToSource()
 }

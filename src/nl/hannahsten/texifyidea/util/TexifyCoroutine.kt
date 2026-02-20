@@ -14,9 +14,7 @@ import kotlinx.coroutines.launch
 @Service
 class TexifyCoroutine(val coroutineScope: CoroutineScope) {
     companion object {
-        fun getInstance(): TexifyCoroutine {
-            return ApplicationManager.getApplication().getService(TexifyCoroutine::class.java)
-        }
+        fun getInstance(): TexifyCoroutine = ApplicationManager.getApplication().getService(TexifyCoroutine::class.java)
 
         /**
          * Run a coroutine in the background using the Texify plugin's coroutine scope.

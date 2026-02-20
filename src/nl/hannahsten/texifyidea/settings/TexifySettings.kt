@@ -2,14 +2,7 @@ package nl.hannahsten.texifyidea.settings
 
 import com.intellij.ide.PowerSaveMode
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.components.BaseState
-import com.intellij.openapi.components.RoamingType
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.components.SimplePersistentStateComponent
-import com.intellij.openapi.components.State
-import com.intellij.openapi.components.Storage
-import com.intellij.openapi.components.service
-import nl.hannahsten.texifyidea.lang.commands.LatexGenericRegularCommand
+import com.intellij.openapi.components.*
 import nl.hannahsten.texifyidea.run.pdfviewer.SumatraViewer
 
 @Service
@@ -28,9 +21,7 @@ class TexifySettings : SimplePersistentStateComponent<TexifySettings.State>(Stat
          * Warning: don't retrieve the settings on class initialization (e.g. storing it in a companion object), as that is not unlikely to throw a ProcessCanceledException.
          */
         @JvmStatic
-        fun getInstance(): TexifySettings {
-            return ApplicationManager.getApplication().service()
-        }
+        fun getInstance(): TexifySettings = ApplicationManager.getApplication().service()
 
         @JvmStatic
         fun getState() = getInstance().state
@@ -91,10 +82,10 @@ class TexifySettings : SimplePersistentStateComponent<TexifySettings.State>(Stat
         var enableTextidote by property(false)
         var textidoteOptions by string(DEFAULT_TEXTIDOTE_OPTIONS)
         var latexIndentOptions by string(null)
+        var bibtexTidyOptions by string(null)
         var automaticQuoteReplacement by enum(QuoteReplacement.NONE)
         var htmlPasteTranslator by enum(HtmlPasteTranslator.BUILTIN)
         var autoCompileOption by enum<AutoCompile>(AutoCompile.OFF)
-        var missingLabelMinimumLevel by enum(LatexGenericRegularCommand.SUBSECTION)
         var pathToSumatra by string(null)
         var hasApprovedDetexify by property(false)
         var filesetExpirationTimeMs by property(DEFAULT_FILESET_EXPIRATION_TIME_MS)
@@ -107,22 +98,18 @@ class TexifySettings : SimplePersistentStateComponent<TexifySettings.State>(Stat
         }
     }
 
-    fun isAutoCompileEnabled(): Boolean {
-        return when (state.autoCompileOption) {
-            AutoCompile.OFF -> false
-            AutoCompile.ALWAYS, AutoCompile.AFTER_DOCUMENT_SAVE -> true
-            AutoCompile.DISABLE_ON_POWER_SAVE -> !PowerSaveMode.isEnabled()
-        }
+    fun isAutoCompileEnabled(): Boolean = when (state.autoCompileOption) {
+        AutoCompile.OFF -> false
+        AutoCompile.ALWAYS, AutoCompile.AFTER_DOCUMENT_SAVE -> true
+        AutoCompile.DISABLE_ON_POWER_SAVE -> !PowerSaveMode.isEnabled()
     }
 
     /**
      * Returns true if the auto compile should be triggered immediately after a change in the document.
      */
-    fun isAutoCompileImmediate(): Boolean {
-        return when (state.autoCompileOption) {
-            AutoCompile.ALWAYS -> true
-            AutoCompile.OFF, AutoCompile.AFTER_DOCUMENT_SAVE -> false
-            AutoCompile.DISABLE_ON_POWER_SAVE -> !PowerSaveMode.isEnabled()
-        }
+    fun isAutoCompileImmediate(): Boolean = when (state.autoCompileOption) {
+        AutoCompile.ALWAYS -> true
+        AutoCompile.OFF, AutoCompile.AFTER_DOCUMENT_SAVE -> false
+        AutoCompile.DISABLE_ON_POWER_SAVE -> !PowerSaveMode.isEnabled()
     }
 }

@@ -11,48 +11,36 @@ import nl.hannahsten.texifyidea.psi.LatexTypes
 
 class LatexUsagesProvider : FindUsagesProvider {
 
-    override fun getWordsScanner(): WordsScanner {
-        return DefaultWordsScanner(
-            LatexLexerAdapter(),
-            // Identifiers.
-            TokenSet.create(
-                LatexTypes.COMMAND_TOKEN, LatexTypes.COMMANDS,
-                LatexTypes.BEGIN_COMMAND, LatexTypes.BEGIN_TOKEN,
-                LatexTypes.END_COMMAND, LatexTypes.END_TOKEN,
-                LatexTypes.PARAMETER_TEXT, LatexTypes.PARAMETER,
-                LatexTypes.REQUIRED_PARAM, LatexTypes.OPTIONAL_PARAM,
-                LatexTypes.LEFT, LatexTypes.RIGHT,
-            ),
-            // Comments.
-            TokenSet.create(LatexTypes.COMMENT_TOKEN, LatexTypes.COMMENT),
-            // Literals.
-            TokenSet.create(
-                LatexTypes.ENVIRONMENT_CONTENT, LatexTypes.CONTENT,
-                LatexTypes.MATH_CONTENT, LatexTypes.ENVIRONMENT,
-                LatexTypes.MATH_ENVIRONMENT, LatexTypes.DISPLAY_MATH,
-                LatexTypes.INLINE_MATH, LatexTypes.NO_MATH_CONTENT,
-                LatexTypes.GROUP, LatexTypes.OPTIONAL_PARAM
-            )
+    override fun getWordsScanner(): WordsScanner = DefaultWordsScanner(
+        LatexLexerAdapter(),
+        // Identifiers.
+        TokenSet.create(
+            LatexTypes.COMMAND_TOKEN, LatexTypes.COMMANDS,
+            LatexTypes.BEGIN_COMMAND, LatexTypes.BEGIN_TOKEN,
+            LatexTypes.END_COMMAND, LatexTypes.END_TOKEN,
+            LatexTypes.PARAMETER_TEXT, LatexTypes.PARAMETER,
+            LatexTypes.REQUIRED_PARAM, LatexTypes.OPTIONAL_PARAM,
+            LatexTypes.LEFT, LatexTypes.RIGHT,
+        ),
+        // Comments.
+        TokenSet.create(LatexTypes.COMMENT_TOKEN, LatexTypes.COMMENT),
+        // Literals.
+        TokenSet.create(
+            LatexTypes.ENVIRONMENT_CONTENT, LatexTypes.CONTENT,
+            LatexTypes.MATH_CONTENT, LatexTypes.ENVIRONMENT,
+            LatexTypes.MATH_ENVIRONMENT, LatexTypes.DISPLAY_MATH,
+            LatexTypes.INLINE_MATH, LatexTypes.NO_MATH_CONTENT,
+            LatexTypes.GROUP, LatexTypes.OPTIONAL_PARAM
         )
-    }
+    )
 
-    override fun getNodeText(element: PsiElement, useFullName: Boolean): String {
-        return element.node.text
-    }
+    override fun getNodeText(element: PsiElement, useFullName: Boolean): String = element.node.text
 
-    override fun getDescriptiveName(element: PsiElement): String {
-        return element.text
-    }
+    override fun getDescriptiveName(element: PsiElement): String = element.text
 
-    override fun getType(element: PsiElement): String {
-        return element.node.elementType.toString()
-    }
+    override fun getType(element: PsiElement): String = element.node.elementType.toString()
 
-    override fun getHelpId(psiElement: PsiElement): String? {
-        return null
-    }
+    override fun getHelpId(psiElement: PsiElement): String? = null
 
-    override fun canFindUsagesFor(psiElement: PsiElement): Boolean {
-        return psiElement is PsiNameIdentifierOwner
-    }
+    override fun canFindUsagesFor(psiElement: PsiElement): Boolean = psiElement is PsiNameIdentifierOwner
 }

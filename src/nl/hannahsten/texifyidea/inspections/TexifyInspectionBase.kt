@@ -13,11 +13,7 @@ import com.intellij.psi.createSmartPointer
 import com.intellij.util.SmartList
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.lang.magic.*
-import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.psi.LatexGroup
-import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
-import nl.hannahsten.texifyidea.psi.getEnvironmentName
+import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.parser.isComment
 import nl.hannahsten.texifyidea.util.parser.parentOfType
 
@@ -78,10 +74,8 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
      * Checks whether the inspection must be suppressed (`true`) or not (`false`) based on the position of the given
      * PsiElement.
      */
-    protected open fun PsiElement.isSuppressed(): Boolean {
-        return magicComment()?.containsPair("suppress", inspectionId) == true ||
-            allParentMagicComments().containsPair("suppress", inspectionId)
-    }
+    protected open fun PsiElement.isSuppressed(): Boolean = magicComment()?.containsPair("suppress", inspectionId) == true ||
+        allParentMagicComments().containsPair("suppress", inspectionId)
 
     override fun getBatchSuppressActions(element: PsiElement?): Array<SuppressQuickFix> {
         val result = createSuppression(element, inspectionId, outerSuppressionScopes)
@@ -104,7 +98,6 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
         if (file.isSuppressed()) {
             return null
         }
-        // TODO: improvement can be done for inspections
         return inspectFile(file, manager, isOnTheFly)
             .filter { checkContext(it.psiElement) }
             .toTypedArray()
@@ -173,9 +166,7 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
          */
         override fun generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo = IntentionPreviewInfo.EMPTY
 
-        override fun isAvailable(project: Project, context: PsiElement): Boolean {
-            return context.containingFile.fileType == LatexFileType
-        }
+        override fun isAvailable(project: Project, context: PsiElement): Boolean = context.containingFile.fileType == LatexFileType
 
         override fun isSuppressAll() = false
     }
@@ -200,15 +191,13 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
         /**
          * The name of the environment to suppress, or `null` when there is no environment name available.
          */
-        private val environmentName: String? = parentEnvironment.getEnvironmentName()
+        private val environmentName: String = parentEnvironment.getEnvironmentName()
 
         override val suppressionScope = MagicCommentScope.ENVIRONMENT
 
         override fun getFamilyName() = "Suppress for environment '$environmentName'"
 
-        override fun isAvailable(project: Project, context: PsiElement): Boolean {
-            return environmentName != null && super.isAvailable(project, context)
-        }
+        override fun isAvailable(project: Project, context: PsiElement): Boolean = super.isAvailable(project, context)
     }
 
     /**
@@ -235,9 +224,7 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
 
         override fun getFamilyName() = "Suppress for command '$commandToken'"
 
-        override fun isAvailable(project: Project, context: PsiElement): Boolean {
-            return commandToken != null && super.isAvailable(project, context)
-        }
+        override fun isAvailable(project: Project, context: PsiElement): Boolean = commandToken != null && super.isAvailable(project, context)
     }
 
     /**

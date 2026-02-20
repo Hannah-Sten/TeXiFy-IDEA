@@ -7,14 +7,13 @@ import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.action.insert.InsertTable
-import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.util.caretOffset
-import nl.hannahsten.texifyidea.util.currentTextEditor
 import nl.hannahsten.texifyidea.util.files.isLatexFile
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.insertUsepackage
 import nl.hannahsten.texifyidea.util.lineIndentationByOffset
-import java.util.*
+import nl.hannahsten.texifyidea.util.selectedTextEditorOrWarning
 
 /**
  * Action that shows a dialog with a table creation wizard, and inserts the table as latex at the location of the
@@ -28,7 +27,7 @@ class LatexTableWizardAction : AnAction() {
      * Show a dialog and get the text to insert.
      */
     fun getTableTextWithDialog(project: Project, defaultDialogWrapper: TableCreationDialogWrapper? = null): String {
-        val editor = project.currentTextEditor() ?: return ""
+        val editor = project.selectedTextEditorOrWarning() ?: return ""
         val document = editor.editor.document
 
         // Get the indentation from the current line.
@@ -49,7 +48,7 @@ class LatexTableWizardAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val file = e.getData(PlatformDataKeys.VIRTUAL_FILE) ?: return
         val project = e.getData(PlatformDataKeys.PROJECT) ?: return
-        val editor = project.currentTextEditor() ?: return
+        val editor = project.selectedTextEditorOrWarning() ?: return
         val tableTextToInsert = getTableTextWithDialog(project)
         // Use an insert action to insert the table.
         InsertTable(tableTextToInsert).actionPerformed(file, project, editor)
@@ -59,7 +58,7 @@ class LatexTableWizardAction : AnAction() {
             project,
             "Insert Table",
             "LaTeX",
-            { file.psiFile(project)?.insertUsepackage(LatexPackage.BOOKTABS) },
+            { file.psiFile(project)?.insertUsepackage(LatexLib.BOOKTABS) },
             file.psiFile(project)
         )
     }
@@ -86,19 +85,38 @@ class LatexTableWizardAction : AnAction() {
                 postfix = " \\\\\n$indent\\midrule\n"
             ) { "\\textbf{$it}" }
 
-        val rows = tableModel.dataVector.joinToString(separator = "\n", postfix = "\n$indent\\bottomrule\n") { row ->
-            (row as Vector<*>).joinToString(
-                prefix = indent,
-                separator = " & ",
-                postfix = " \\\\"
-            ) {
+        // Convert content to string
+        val contentRows = tableModel.dataVector
+        var content = ""
+        for (rowIndex in 0 until contentRows.size) {
+            var rowString = indent
+            val numberOfRows = contentRows[rowIndex].size
+            var columnIndex = 0
+            while (columnIndex < numberOfRows) {
                 // Enclose with $ if the type of this column is math.
-                val index = row.indexOf(it)
-                val encloseWith = if (columnTypes[index] == ColumnType.MATH_COLUMN) "$" else ""
-                encloseWith + it.toString() + encloseWith
+                val encloseWith = if (columnTypes[columnIndex] == ColumnType.MATH_COLUMN) "$" else ""
+                val cellContent = encloseWith + contentRows[rowIndex][columnIndex] + encloseWith
+
+                val span = columnSpanMap.numberOfColumnsInSpan(rowIndex, columnIndex)
+                if (span > 1) {
+                    rowString += "\\multicolumn{$span}{l}{$cellContent}"
+                    // Skip the spanned columns
+                    columnIndex += span - 1
+                }
+                else {
+                    rowString += cellContent
+                }
+
+                if (columnIndex < numberOfRows - 1) {
+                    rowString += " & "
+                }
+
+                columnIndex++
             }
+            content += "$rowString \\\\\n"
         }
-        return headers + rows
+        content += "$indent\\bottomrule\n"
+        return headers + content
     }
 
     /**

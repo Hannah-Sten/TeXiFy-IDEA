@@ -16,9 +16,9 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 data class LatexErrorTreeViewConfiguration(
     var showKeywordWarnings: MutableMap<LatexKeywordFilter, Boolean> = LatexKeywordFilter.entries.associateWith { true }.toMutableMap(),
     var showBibtexWarnings: Boolean = true,
-    var expanded: Boolean = true // Unfortunately we cannot use this, because expandAll() apparently only works in Actions
-) :
-    PersistentStateComponent<LatexErrorTreeViewConfiguration> {
+    // Unfortunately we cannot use this, because expandAll() apparently only works in Actions
+    var expanded: Boolean = true
+) : PersistentStateComponent<LatexErrorTreeViewConfiguration> {
 
     companion object {
 
@@ -27,9 +27,7 @@ data class LatexErrorTreeViewConfiguration(
             project.getService(LatexErrorTreeViewConfiguration::class.java)
     }
 
-    override fun getState(): LatexErrorTreeViewConfiguration {
-        return this
-    }
+    override fun getState(): LatexErrorTreeViewConfiguration = this
 
     override fun loadState(state: LatexErrorTreeViewConfiguration) {
         XmlSerializerUtil.copyBean(state, this)

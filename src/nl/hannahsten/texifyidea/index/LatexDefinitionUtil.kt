@@ -8,32 +8,17 @@ import com.intellij.psi.SmartPointerManager
 import com.intellij.psi.stubs.PsiFileStub
 import com.intellij.psi.stubs.StubElement
 import com.intellij.psi.util.elementType
+import nl.hannahsten.texifyidea.editor.folding.MathStyle
 import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.index.SourcedDefinition.DefinitionSource
+import nl.hannahsten.texifyidea.index.projectstructure.LatexLibraryInfo
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
 import nl.hannahsten.texifyidea.index.stub.requiredParamAt
-import nl.hannahsten.texifyidea.lang.LArgument
-import nl.hannahsten.texifyidea.lang.LArgumentType
-import nl.hannahsten.texifyidea.lang.LContextSet
-import nl.hannahsten.texifyidea.lang.LSemanticCommand
-import nl.hannahsten.texifyidea.lang.LSemanticEntity
-import nl.hannahsten.texifyidea.lang.LSemanticEnv
-import nl.hannahsten.texifyidea.lang.LatexContext
-import nl.hannahsten.texifyidea.lang.LatexContextIntro
-import nl.hannahsten.texifyidea.lang.LatexContexts
-import nl.hannahsten.texifyidea.lang.LatexLib
-import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
+import nl.hannahsten.texifyidea.lang.*
 import nl.hannahsten.texifyidea.lang.predefined.PredefinedCmdDefinitions
-import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.LatexContent
-import nl.hannahsten.texifyidea.psi.LatexEnvironment
-import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.psi.LatexTypes
-import nl.hannahsten.texifyidea.psi.contentText
-import nl.hannahsten.texifyidea.psi.getEnvironmentName
-import nl.hannahsten.texifyidea.psi.getNthRequiredParameter
-import nl.hannahsten.texifyidea.psi.nameWithoutSlash
+import nl.hannahsten.texifyidea.lang.predefined.PredefinedCmdGeneric
+import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
@@ -128,7 +113,8 @@ object LatexDefinitionUtil {
      * @return shift in index, name of the defined command
      */
     private fun getCommandDefNameStub(defStub: LatexCommandsStub, idx: Int, stubs: List<StubElement<*>>): String? {
-        defStub.requiredParamAt(0)?.let { // \newcommand{\cmd}{...}
+        defStub.requiredParamAt(0)?.let {
+            // \newcommand{\cmd}{...}
             return it.trim()
         }
         // \def\cmd\something
@@ -138,7 +124,8 @@ object LatexDefinitionUtil {
     }
 
     private fun getCommandDefNameAST(defCommand: LatexCommands): String? {
-        defCommand.parameterList.getOrNull(0)?.let { // \newcommand{\cmd}{...}
+        defCommand.parameterList.getOrNull(0)?.let {
+            // \newcommand{\cmd}{...}
             return it.contentText().trim()
         }
         return LatexPsiUtil.getDefinedCommandElement(defCommand)?.name
@@ -166,7 +153,7 @@ object LatexDefinitionUtil {
 
         // let us use the index to find the command definitions
         val defCommands = NewSpecialCommandsIndex.getAllDefinitions(project, virtualFile)
-        val source = if(virtualFile.fileType == LatexFileType) DefinitionSource.UserDefined else DefinitionSource.LibraryScan
+        val source = if (virtualFile.fileType == LatexFileType) DefinitionSource.UserDefined else DefinitionSource.LibraryScan
         for (defCommand in defCommands) {
             val defCmdName = defCommand.nameWithoutSlash ?: continue
             val semantics = when (defCmdName) {
@@ -205,13 +192,9 @@ object LatexDefinitionUtil {
         return null
     }
 
-    private fun List<Pair<LArgumentType, String>>.getNthRequiredArg(index: Int): String? {
-        return getNthArgOfType(index, LArgumentType.REQUIRED)
-    }
+    private fun List<Pair<LArgumentType, String>>.getNthRequiredArg(index: Int): String? = getNthArgOfType(index, LArgumentType.REQUIRED)
 
-    private fun List<Pair<LArgumentType, String>>.getNthOptionalArg(index: Int): String? {
-        return getNthArgOfType(index, LArgumentType.OPTIONAL)
-    }
+    private fun List<Pair<LArgumentType, String>>.getNthOptionalArg(index: Int): String? = getNthArgOfType(index, LArgumentType.OPTIONAL)
 
     private val namesOfCmdDefRegular = buildSet {
         PredefinedCmdDefinitions.regularDefinitionOfCommand.mapTo(this) { it.name }
@@ -230,14 +213,12 @@ object LatexDefinitionUtil {
 
     private fun parseCommandDef(
         defCmdName: String, defCommand: LatexCommands, lookup: LatexSemanticsLookup, project: Project
-    ): LSemanticCommand? {
-        return when (defCmdName) {
-            in namesOfCmdDefRegular -> parseRegularCommandDef(defCommand, lookup, project)
-            in namesOfCmdDefArgSpec -> parseArgSpecCommandDef(defCommand, lookup, project)
-            in namesOfCmdDefMath -> parseCommandDefNameOnlyUnderCtx(defCommand, setOf(LatexContexts.Math))
-            in namesOfCmdDefText -> parseCommandDefNameOnlyUnderCtx(defCommand, setOf(LatexContexts.Text))
-            else -> parseCommandDefNameOnlyUnderCtx(defCommand)
-        }
+    ): LSemanticCommand? = when (defCmdName) {
+        in namesOfCmdDefRegular -> parseRegularCommandDef(defCommand, lookup, project)
+        in namesOfCmdDefArgSpec -> parseArgSpecCommandDef(defCommand, lookup, project)
+        in namesOfCmdDefMath -> parseCommandDefNameOnlyUnderCtx(defCommand, setOf(LatexContexts.Math))
+        in namesOfCmdDefText -> parseCommandDefNameOnlyUnderCtx(defCommand, setOf(LatexContexts.Text))
+        else -> parseCommandDefNameOnlyUnderCtx(defCommand)
     }
 
     private fun parseCommandDefNameOnlyUnderCtx(defCommand: LatexCommands, requiredCtx: LContextSet? = null): LSemanticCommand? {
@@ -301,22 +282,46 @@ object LatexDefinitionUtil {
             if (originalSemantic != null) {
                 // use the original command semantics
                 val description = "Alias for ${originalSemantic.displayName}"
-                return LSemanticCommand(
+                val semantics = LSemanticCommand(
                     name, LatexLib.CUSTOM, originalSemantic.applicableContext, originalSemantic.arguments, description, originalSemantic.display
                 )
+                originalSemantic.copyMetaTo(semantics) // also remember to copy meta info
+                return semantics
             }
         }
 
         val codeElement = LatexPsiHelper.createFromText(codeRawText, project)
         val applicableContext = guessApplicableContexts(codeElement, lookup)
         if (argSignature.isEmpty()) {
-            return LSemanticCommand(name, LatexLib.CUSTOM, applicableContext, description = codeRawText, arguments = emptyList())
+            val display = deriveDisplayFromDefinition(project, lookup, codeText)
+            return LSemanticCommand(name, LatexLib.CUSTOM, applicableContext, description = codeRawText, arguments = emptyList(), display = display)
         }
         val argIntro = guessArgumentContextIntro(codeElement, argSignature.size, lookup)
         val arguments = argIntro.mapIndexed { i, argIntro ->
             LArgument("#${i + 1}", argSignature[i], argIntro)
         }
         return LSemanticCommand(name, LatexLib.CUSTOM, applicableContext, arguments, description = codeText)
+    }
+
+    private fun deriveDisplayFromDefinition(project: Project, lookup: LatexSemanticsLookup, codeText: String): String? {
+        if (codeText.isBlank()) return null
+        val trimmed = codeText.trim()
+        val psiFile = LatexPsiHelper.createFromText(trimmed, project)
+        val command = psiFile.findFirstChildTyped<LatexCommands>() ?: return null
+        if (!isCommandOnlyWrappedByBraces(trimmed, command)) return null
+        val commandName = command.name?.removePrefix("\\") ?: return null
+        val semantic = lookup.lookupCommand(commandName) ?: return null
+        val style = semantic.getMeta(MathStyle.META_KEY) ?: return null
+        val firstReq = command.firstRequiredParameter() ?: return null
+        val rawText = firstReq.contentText()
+        return style.map(rawText)
+    }
+
+    private fun isCommandOnlyWrappedByBraces(fullText: String, command: LatexCommands): Boolean {
+        val range = command.textRange
+        if (range.startOffset < 0 || range.endOffset > fullText.length) return false
+        val outside = fullText.substring(0, range.startOffset) + fullText.substring(range.endOffset)
+        return outside.all { it.isWhitespace() || it == '{' || it == '}' }
     }
 
     private fun guessApplicableContexts(definitionElement: PsiElement?, lookup: LatexSemanticsLookup): LContextSet? {
@@ -341,11 +346,22 @@ object LatexDefinitionUtil {
 
     private val parameterPlaceholderRegex = Regex("#[1-9]")
 
+    /**
+     *
+     *
+     * @param codeElement A definition of a command/environment
+     * @param argCount Number of arguments of the command/environment being defined as [codeElement]
+     * @param lookup Look up known semantics
+     * @param contextIntroArr For each argument, what contexts are introduced
+     * @return ?
+     */
     private fun guessArgumentContextIntroAndExitState(
         codeElement: PsiElement, argCount: Int, lookup: LatexSemanticsLookup, contextIntroArr: Array<LatexContextIntro?> = arrayOfNulls(argCount)
     ): Pair<Array<LatexContextIntro?>, List<LatexContextIntro>> {
         val exitState = LatexPsiUtil.traverseRecordingContextIntro(codeElement, lookup) traverse@{ e, introList ->
-            if (e.elementType != LatexTypes.NORMAL_TEXT_WORD) return@traverse
+            // In definitions, arguments may appear in raw/verbatim-like areas (RAW_TEXT), so also scan those for placeholders.
+            // Missing a placeholder here causes the argument to be treated as `Comment` by default, which can grey-out large code blocks.
+            if (e.elementType != LatexTypes.NORMAL_TEXT_WORD && e.elementType != LatexTypes.RAW_TEXT) return@traverse
             if (!e.textContains('#')) return@traverse
             parameterPlaceholderRegex.findAll(e.text).forEach { match ->
                 val paramIndex = match.value.removePrefix("#").toIntOrNull() ?: return@forEach
@@ -359,17 +375,18 @@ object LatexDefinitionUtil {
         return contextIntroArr to exitState
     }
 
-    private fun guessArgumentContextIntro(
+    internal fun guessArgumentContextIntro(
         codeElement: PsiElement, argCount: Int, lookup: LatexSemanticsLookup,
         contextIntroArr: Array<LatexContextIntro?> = arrayOfNulls(argCount)
-    ): List<LatexContextIntro> {
-        return guessArgumentContextIntroAndExitState(codeElement, argCount, lookup, contextIntroArr).first.map {
-            it ?: LatexContextIntro.assign(LatexContexts.Comment) // this argument is somehow not used, so we assign it to the comment context
-        }
+    ): List<LatexContextIntro> = guessArgumentContextIntroAndExitState(codeElement, argCount, lookup, contextIntroArr).first.map {
+        // If we cannot infer the context for an argument, do not treat it as a comment.
+        // In practice, a `Comment` fallback can grey-out large parts of a document when inference fails.
+        it ?: LatexContextIntro.inherit()
     }
 
     private val namesOfEnvDefRegular = buildSet {
         PredefinedCmdDefinitions.regularDefinitionOfEnvironment.mapTo(this) { it.name }
+        PredefinedCmdGeneric.listingsDefinitionCommands.mapTo(this) { it.name }
     }
     private val namesOfEnvDefArgSpec = buildSet {
         PredefinedCmdDefinitions.argSpecDefinitionOfEnvironment.mapTo(this) { it.name }
@@ -420,7 +437,7 @@ object LatexDefinitionUtil {
         val hasOptionalArg = contents.getNthOptionalArg(1) != null
         val beginElement = codeElement.getNthRequiredParameter(1)
         val endElement = codeElement.getNthRequiredParameter(2)
-        return buildEnvironmentSemantics(envName, beginElement, endElement, buildRegularArgSignature(numArg, hasOptionalArg), defCommand, lookup, project)
+        return buildEnvironmentSemantics(envName, beginElement, endElement, buildRegularArgSignature(numArg, hasOptionalArg), lookup)
     }
 
     private fun parseArgSpecEnvironmentDef(defCommand: LatexCommands, contents: List<Pair<LArgumentType, String>>, lookup: LatexSemanticsLookup, project: Project): LSemanticEnv? {
@@ -430,13 +447,13 @@ object LatexDefinitionUtil {
         val argSignature = buildArgSpecSignature(contents.getNthRequiredArg(1))
         val beginElement = codeElement.getNthRequiredParameter(2)
         val endElement = codeElement.getNthRequiredParameter(3)
-        return buildEnvironmentSemantics(envName, beginElement, endElement, argSignature, defCommand, lookup, project)
+        return buildEnvironmentSemantics(envName, beginElement, endElement, argSignature, lookup)
     }
 
     private fun buildEnvironmentSemantics(
         envName: String, beginElement: PsiElement?, endElement: PsiElement?,
         argTypeList: List<LArgumentType>,
-        defCommand: LatexCommands, lookup: LatexSemanticsLookup, project: Project
+        lookup: LatexSemanticsLookup
     ): LSemanticEnv {
         if (beginElement == null || endElement == null) return LSemanticEnv(envName, LatexLib.CUSTOM)
         val applicableContexts = guessApplicableContexts(beginElement, lookup)
@@ -459,9 +476,7 @@ object LatexDefinitionUtil {
         return oldCtx.union(newCtx)
     }
 
-    private fun replaceIfEmpty(old: String, new: String): String {
-        return old.ifEmpty { new }
-    }
+    private fun replaceIfEmpty(old: String, new: String): String = old.ifEmpty { new }
 
     private fun chooseArgs(old: List<LArgument>, new: List<LArgument>, isOldPredefined: Boolean): List<LArgument> {
         if (new.isEmpty()) return old
@@ -477,7 +492,9 @@ object LatexDefinitionUtil {
         return LSemanticCommand(
             oldCmd.name, oldCmd.dependency,
             ctx, arg, description, display
-        )
+        ).also {
+            mergeMetaTo(it, oldCmd, newCmd)
+        }
     }
 
     private fun mergeEnvDefinition(oldEnv: LSemanticEnv, newEnv: LSemanticEnv, isOldPredefined: Boolean): LSemanticEnv {
@@ -488,7 +505,15 @@ object LatexDefinitionUtil {
         return LSemanticEnv(
             oldEnv.name, oldEnv.dependency,
             ctx, arg, innerIntro, description
-        )
+        ).also {
+            mergeMetaTo(it, oldEnv, newEnv)
+        }
+    }
+
+    private fun mergeMetaTo(created: LSemanticEntity, old: LSemanticEntity, new: LSemanticEntity) {
+        // currently, we just copy all meta info, but in the future we may want to be more careful about merging meta info
+        old.copyMetaTo(created)
+        new.copyMetaTo(created)
     }
 
     /**

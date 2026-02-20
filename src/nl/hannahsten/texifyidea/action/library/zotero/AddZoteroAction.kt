@@ -20,9 +20,7 @@ import javax.swing.JComponent
 
 class AddZoteroAction : AddLibraryAction<ZoteroLibrary, AddZoteroAction.AddZoteroDialogWrapper>() {
 
-    override fun getDialog(project: Project): AddZoteroDialogWrapper {
-        return AddZoteroDialogWrapper(project)
-    }
+    override fun getDialog(project: Project): AddZoteroDialogWrapper = AddZoteroDialogWrapper(project)
 
     override suspend fun createLibrary(dialogWrapper: AddZoteroDialogWrapper, project: Project): Either<RemoteLibraryRequestFailure, Pair<ZoteroLibrary, List<BibtexEntry>>?> = either {
         val library = RemoteBibLibraryFactory.create<ZoteroLibrary>(dialogWrapper.name, dialogWrapper.url) ?: return@either null
@@ -50,24 +48,22 @@ class AddZoteroAction : AddLibraryAction<ZoteroLibrary, AddZoteroAction.AddZoter
             init()
         }
 
-        override fun createCenterPanel(): JComponent {
-            return panel {
-                row("Name") {
-                    textField().bindText({ name }, { name = it })
-                    contextHelp("Name as shown in the TeXiFy Remote Library tool window")
-                }
-                row("URL") {
-                    textField().bindText({ url }, { url = it }).resizableColumn()
-                    contextHelp("Zotero API, see TeXiFy documentation for using groups or BBT")
-                }
-                row("User ID:") {
-                    textField().bindText({ userID }, { userID = it }).focused()
-                    contextHelp("You can find your user ID in Zotero Settings > Feeds/API.")
-                }
-                row("User API key:") {
-                    textField().bindText({ userApiKey }, { userApiKey = it })
-                    contextHelp("Create a new API key in Zotero Settings > Feeds/API > Create new private key")
-                }
+        override fun createCenterPanel(): JComponent = panel {
+            row("Name") {
+                textField().bindText({ name }, { name = it })
+                contextHelp("Name as shown in the TeXiFy Remote Library tool window")
+            }
+            row("URL") {
+                textField().bindText({ url }, { url = it }).resizableColumn()
+                contextHelp("Zotero API, see TeXiFy documentation for using groups or BBT")
+            }
+            row("User ID:") {
+                textField().bindText({ userID }, { userID = it }).focused()
+                contextHelp("You can find your user ID in Zotero Settings > Feeds/API.")
+            }
+            row("User API key:") {
+                textField().bindText({ userApiKey }, { userApiKey = it })
+                contextHelp("Create a new API key in Zotero Settings > Feeds/API > Create new private key")
             }
         }
     }

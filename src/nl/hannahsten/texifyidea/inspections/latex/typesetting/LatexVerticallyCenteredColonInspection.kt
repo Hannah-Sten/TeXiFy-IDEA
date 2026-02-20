@@ -10,7 +10,7 @@ import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.inspections.AbstractTexifyRegexBasedInspection
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
-import nl.hannahsten.texifyidea.lang.LatexPackage
+import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.LatexSemanticsLookup
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexMathEnvironment
@@ -31,9 +31,7 @@ class LatexVerticallyCenteredColonInspection : AbstractTexifyRegexBasedInspectio
     regex = Util.REGEX,
     highlight = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
 ) {
-    override fun errorMessage(matcher: MatchResult, context: LContextSet): String {
-        return "Colon is vertically uncentered"
-    }
+    override fun errorMessage(matcher: MatchResult, context: LContextSet): String = "Colon is vertically uncentered"
 
     override fun quickFixName(matcher: MatchResult, contexts: LContextSet): String {
         val key = Util.PATTERNS.keys.firstOrNull { matcher.value.replace(Util.WHITESPACE, "") == it }
@@ -41,18 +39,12 @@ class LatexVerticallyCenteredColonInspection : AbstractTexifyRegexBasedInspectio
         return "Change to $command (mathtools)"
     }
 
-    override fun getHighlightRange(matcher: MatchResult): IntRange {
-        return matcher.range
-    }
+    override fun getHighlightRange(matcher: MatchResult): IntRange = matcher.range
 
-    override fun shouldInspectElement(element: PsiElement, lookup: LatexSemanticsLookup): Boolean {
-        return element is LatexMathEnvironment ||
-            (element is LatexEnvironment && LatexPsiUtil.isContextIntroduced(element, lookup, LatexContexts.Math))
-    }
+    override fun shouldInspectElement(element: PsiElement, lookup: LatexSemanticsLookup): Boolean = element is LatexMathEnvironment ||
+        (element is LatexEnvironment && LatexPsiUtil.isContextIntroduced(element, lookup, LatexContexts.Math))
 
-    override fun shouldInspectChildrenOf(element: PsiElement, state: LContextSet, lookup: LatexSemanticsLookup): Boolean {
-        return !shouldInspectElement(element, lookup)
-    }
+    override fun shouldInspectChildrenOf(element: PsiElement, state: LContextSet, lookup: LatexSemanticsLookup): Boolean = !shouldInspectElement(element, lookup)
 
     override fun getReplacement(match: MatchResult, fullElementText: String, project: Project, problemDescriptor: ProblemDescriptor): String {
         val key = Util.PATTERNS.keys.firstOrNull { match.value.replace(Util.WHITESPACE, "") == it }
@@ -65,7 +57,7 @@ class LatexVerticallyCenteredColonInspection : AbstractTexifyRegexBasedInspectio
     override fun doApplyFix(project: Project, descriptor: ProblemDescriptor, match: MatchResult, fullElementText: String) {
         super.doApplyFix(project, descriptor, match, fullElementText)
         val file = descriptor.psiElement.containingFile ?: return
-        file.insertUsepackage(LatexPackage.MATHTOOLS)
+        file.insertUsepackage(LatexLib.MATHTOOLS)
     }
 
     override fun prepareInspectionForFile(file: PsiFile, bundle: DefinitionBundle): Boolean {
