@@ -18,9 +18,9 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.environmentName
 import nl.hannahsten.texifyidea.psi.nameWithSlash
 import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
+import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.includedPackagesInFileset
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
-import nl.hannahsten.texifyidea.util.files.documentClass
 import nl.hannahsten.texifyidea.util.parser.traverse
 
 class LatexmkRunConfigurationProducer : LazyRunConfigurationProducer<LatexmkRunConfiguration>() {
@@ -32,6 +32,10 @@ class LatexmkRunConfigurationProducer : LazyRunConfigurationProducer<LatexmkRunC
         context: ConfigurationContext,
         sourceElement: Ref<PsiElement>
     ): Boolean {
+        if (!isLatexmkRunConfigurationEnabled(TexifySettings.getState().runConfigLatexmkMode)) {
+            return false
+        }
+
         val location = context.location ?: return false
         val container = location.psiElement.containingFile ?: return false
         val mainFile = container.virtualFile ?: return false
@@ -80,6 +84,9 @@ class LatexmkRunConfigurationProducer : LazyRunConfigurationProducer<LatexmkRunC
         return mainFile?.path == currentFile.path
     }
 }
+
+internal fun isLatexmkRunConfigurationEnabled(mode: TexifySettings.RunConfigLatexmkMode): Boolean =
+    mode != TexifySettings.RunConfigLatexmkMode.RUN_LATEX_BIB_ONLY
 
 internal fun preferredCompileModeForPackages(packages: Set<LatexLib>): LatexmkCompileMode? {
     if (packages.any { it in PackageMagic.preferredXeEngineLibraries }) {

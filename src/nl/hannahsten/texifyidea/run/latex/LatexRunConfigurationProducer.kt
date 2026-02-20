@@ -12,6 +12,7 @@ import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.allParentMagicComments
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
+import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.files.findTectonicTomlFile
 import nl.hannahsten.texifyidea.util.files.hasTectonicTomlFile
 import nl.hannahsten.texifyidea.util.includedPackagesInFileset
@@ -28,6 +29,10 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
         context: ConfigurationContext,
         sourceElement: Ref<PsiElement>
     ): Boolean {
+        if (!isLatexRunConfigurationEnabled(TexifySettings.getState().runConfigLatexmkMode)) {
+            return false
+        }
+
         val location = context.location ?: return false
         val container = location.psiElement.containingFile ?: return false
         val mainFile = container.virtualFile ?: return false
@@ -73,3 +78,6 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
         return mainFile?.path == currentFile.path
     }
 }
+
+internal fun isLatexRunConfigurationEnabled(mode: TexifySettings.RunConfigLatexmkMode): Boolean =
+    mode != TexifySettings.RunConfigLatexmkMode.LATEXMK_ONLY

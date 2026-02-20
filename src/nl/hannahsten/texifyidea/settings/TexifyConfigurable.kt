@@ -45,6 +45,7 @@ class TexifyConfigurable : SearchableConfigurable {
     private var automaticQuoteReplacement: ComboBox<String>? = null
     private var htmlPasteTranslator: ComboBox<String>? = null
     private var autoCompileOption: ComboBox<String>? = null
+    private var runConfigLatexmkMode: ComboBox<String>? = null
     private var sumatraPath: TextFieldWithBrowseButton? = null
     private var filesetExpirationTimeMs: IntegerField? = null
     private var completionMode: ComboBox<String>? = null
@@ -91,6 +92,7 @@ class TexifyConfigurable : SearchableConfigurable {
             EnumSetting(::automaticQuoteReplacement, state::automaticQuoteReplacement, TexifySettings.QuoteReplacement.entries),
             EnumSetting(::htmlPasteTranslator, state::htmlPasteTranslator, TexifySettings.HtmlPasteTranslator.entries),
             EnumSetting(::autoCompileOption, state::autoCompileOption, TexifySettings.AutoCompile.entries),
+            EnumSetting(::runConfigLatexmkMode, state::runConfigLatexmkMode, TexifySettings.RunConfigLatexmkMode.entries),
         )
     }
 
@@ -121,6 +123,7 @@ class TexifyConfigurable : SearchableConfigurable {
                 automaticQuoteReplacement = addComboBox("Smart quote substitution: ", "Off", "TeX ligatures", "TeX commands", "csquotes")
                 htmlPasteTranslator = addComboBox("HTML paste translator", "Built-in", "Pandoc", "Disabled")
                 autoCompileOption = addComboBox("Automatic compilation", "Off", "Always", "After document save", "Disable in power save mode")
+                runConfigLatexmkMode = addComboBox("Run configuration mode", "Run/LaTeX + Bib only", "Latexmk only", "Both")
                 addFilesetExpirationTimeMs(this)
             }
         )
