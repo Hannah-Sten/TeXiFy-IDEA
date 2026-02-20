@@ -58,9 +58,7 @@ class LatexmkRunConfiguration(
         private const val EXPAND_MACROS_IN_ENVIRONMENT_VARIABLES = "expand-macros-in-environment-variables"
 
         private const val COMPILE_MODE = "compile-mode"
-        private const val ENGINE_MODE = "engine-mode"
         private const val CUSTOM_ENGINE_COMMAND = "custom-engine-command"
-        private const val LATEXMK_OUTPUT_FORMAT = "latexmk-output-format"
         private const val CITATION_TOOL = "citation-tool"
         private const val EXTRA_ARGUMENTS = "extra-arguments"
         private const val DEFAULT_EXTRA_ARGUMENTS = "-synctex=1"
@@ -102,7 +100,6 @@ class LatexmkRunConfiguration(
     var compileMode: LatexmkCompileMode = LatexmkCompileMode.PDFLATEX_PDF
         set(value) {
             field = value
-            legacyMigrationError = null
         }
 
     var customEngineCommand: String? = null
@@ -117,8 +114,6 @@ class LatexmkRunConfiguration(
             field = value?.trim()?.ifEmpty { null }
         }
 
-    private var legacyMigrationError: String? = null
-
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = LatexmkSettingsEditor(project)
 
     override fun createAdditionalTabComponents(manager: AdditionalTabComponentManager, startedProcess: ProcessHandler?) {
@@ -130,7 +125,6 @@ class LatexmkRunConfiguration(
 
     @Throws(RuntimeConfigurationException::class)
     override fun checkConfiguration() {
-        legacyMigrationError?.let { throw RuntimeConfigurationError(it) }
         if (mainFile == null && mainFilePath.isBlank()) {
             throw RuntimeConfigurationError("Run configuration is invalid: no valid main LaTeX file selected")
         }
@@ -191,12 +185,8 @@ class LatexmkRunConfiguration(
 
         hasBeenRun = parent.getChildText(HAS_BEEN_RUN)?.toBoolean() ?: false
 
-        legacyMigrationError = null
         compileMode = parent.getChildText(COMPILE_MODE)?.let { runCatching { LatexmkCompileMode.valueOf(it) }.getOrNull() }
-            ?: mapLegacyCompileMode(parent).getOrElse {
-                legacyMigrationError = "Latexmk run configuration is using an unsupported legacy engine/output format combination. Please select a new Compile mode."
-                LatexmkCompileMode.PDFLATEX_PDF
-            }
+            ?: LatexmkCompileMode.PDFLATEX_PDF
 
         customEngineCommand = parent.getChildText(CUSTOM_ENGINE_COMMAND)
         citationTool = parent.getChildText(CITATION_TOOL)?.let { runCatching { LatexmkCitationTool.valueOf(it) }.getOrNull() } ?: LatexmkCitationTool.AUTO
@@ -347,51 +337,4 @@ class LatexmkRunConfiguration(
     }
 
     override fun clone(): RunConfiguration = super.clone()
-
-    private fun mapLegacyCompileMode(parent: Element): Result<LatexmkCompileMode> {
-        val legacyEngine = parent.getChildText(ENGINE_MODE)?.let { runCatching { LatexmkEngineMode.valueOf(it) }.getOrNull() } ?: LatexmkEngineMode.PDFLATEX
-        val legacyFormat = parent.getChildText(LATEXMK_OUTPUT_FORMAT)?.let { runCatching { LegacyLatexmkOutputFormat.valueOf(it) }.getOrNull() } ?: LegacyLatexmkOutputFormat.PDF
-        return runCatching {
-            when (legacyEngine) {
-                LatexmkEngineMode.PDFLATEX -> when (legacyFormat) {
-                    LegacyLatexmkOutputFormat.PDF -> LatexmkCompileMode.PDFLATEX_PDF
-                    else -> error("Unsupported legacy combination")
-                }
-
-                LatexmkEngineMode.LUALATEX -> when (legacyFormat) {
-                    LegacyLatexmkOutputFormat.PDF -> LatexmkCompileMode.LUALATEX_PDF
-                    else -> error("Unsupported legacy combination")
-                }
-
-                LatexmkEngineMode.XELATEX -> when (legacyFormat) {
-                    LegacyLatexmkOutputFormat.PDF -> LatexmkCompileMode.XELATEX_PDF
-                    LegacyLatexmkOutputFormat.XDV -> LatexmkCompileMode.XELATEX_XDV
-                    else -> error("Unsupported legacy combination")
-                }
-
-                LatexmkEngineMode.LATEX -> when (legacyFormat) {
-                    LegacyLatexmkOutputFormat.DVI -> LatexmkCompileMode.LATEX_DVI
-                    LegacyLatexmkOutputFormat.PS -> LatexmkCompileMode.LATEX_PS
-                    else -> error("Unsupported legacy combination")
-                }
-
-                LatexmkEngineMode.CUSTOM_COMMAND -> LatexmkCompileMode.CUSTOM
-            }
-        }
-    }
-}
-
-private enum class LatexmkEngineMode {
-    PDFLATEX,
-    XELATEX,
-    LUALATEX,
-    LATEX,
-    CUSTOM_COMMAND,
-}
-
-private enum class LegacyLatexmkOutputFormat {
-    PDF,
-    DVI,
-    PS,
-    XDV,
 }
