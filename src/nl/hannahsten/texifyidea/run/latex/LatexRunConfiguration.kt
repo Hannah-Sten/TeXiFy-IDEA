@@ -44,6 +44,7 @@ import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogTabComponent
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCitationTool
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
+import nl.hannahsten.texifyidea.run.latexmk.buildLatexmkStructuredArguments
 import nl.hannahsten.texifyidea.run.latexmk.compileModeFromMagicCommand
 import nl.hannahsten.texifyidea.run.latexmk.preferredCompileModeForPackages
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
@@ -65,7 +66,6 @@ import java.nio.file.InvalidPathException
 import java.util.*
 import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
-import com.intellij.util.execution.ParametersListUtil
 
 /**
  * @author Hannah Schellekens, Sten Wessel
@@ -759,22 +759,15 @@ class LatexRunConfiguration(
         '}'.toString()
 
     fun buildLatexmkArguments(): String {
-        val arguments = mutableListOf<String>()
         val hasRcFile = LatexmkRcFileFinder.hasLatexmkRc(compilerArguments, getResolvedWorkingDirectory())
         val effectiveCompileMode = effectiveLatexmkCompileMode()
-
-        val hasExplicitStructuredOptions =
-            effectiveCompileMode != LatexmkCompileMode.PDFLATEX_PDF ||
-                latexmkCitationTool != LatexmkCitationTool.AUTO ||
-                (effectiveCompileMode == LatexmkCompileMode.CUSTOM && !latexmkCustomEngineCommand.isNullOrBlank())
-
-        if (!hasRcFile || hasExplicitStructuredOptions) {
-            arguments += effectiveCompileMode.toLatexmkFlags(latexmkCustomEngineCommand)
-            arguments += latexmkCitationTool.toLatexmkFlags()
-        }
-
-        latexmkExtraArguments?.let { arguments += ParametersListUtil.parse(it) }
-        return ParametersListUtil.join(arguments)
+        return buildLatexmkStructuredArguments(
+            hasRcFile = hasRcFile,
+            compileMode = effectiveCompileMode,
+            citationTool = latexmkCitationTool,
+            customEngineCommand = latexmkCustomEngineCommand,
+            extraArguments = latexmkExtraArguments,
+        )
     }
 
     fun effectiveLatexmkCompileMode(): LatexmkCompileMode {
@@ -823,25 +816,4 @@ class LatexRunConfiguration(
             runConfiguration.auxilPath = this.auxilPath.clone()
         }
     }
-}
-
-private fun LatexmkCompileMode.toLatexmkFlags(customEngineCommand: String?): List<String> = when (this) {
-    LatexmkCompileMode.AUTO -> listOf("-pdf")
-    LatexmkCompileMode.PDFLATEX_PDF -> listOf("-pdf")
-    LatexmkCompileMode.LUALATEX_PDF -> listOf("-lualatex")
-    LatexmkCompileMode.XELATEX_PDF -> listOf("-xelatex")
-    LatexmkCompileMode.LATEX_DVI -> listOf("-latex", "-dvi")
-    LatexmkCompileMode.XELATEX_XDV -> listOf("-xelatex", "-xdv")
-    LatexmkCompileMode.LATEX_PS -> listOf("-latex", "-ps")
-    LatexmkCompileMode.CUSTOM -> customEngineCommand?.let {
-        val escaped = it.replace("\"", "\\\"")
-        listOf("-pdflatex=\"$escaped\"")
-    } ?: emptyList()
-}
-
-private fun LatexmkCitationTool.toLatexmkFlags(): List<String> = when (this) {
-    LatexmkCitationTool.AUTO -> emptyList()
-    LatexmkCitationTool.BIBTEX -> listOf("-bibtex")
-    LatexmkCitationTool.BIBER -> listOf("-use-biber")
-    LatexmkCitationTool.DISABLED -> listOf("-bibtex-")
 }
