@@ -68,7 +68,6 @@ class RunMakeindexListener(
             finally {
                 executionState.isLastRunConfig = false
                 executionState.isFirstRunConfig = true
-                executionState.syncTo(latexRunConfig)
             }
         }
     }
@@ -96,14 +95,11 @@ class RunMakeindexListener(
         if (latexRunConfig.bibRunConfigs.isEmpty()) {
             // LaTeX twice
             executionState.isFirstRunConfig = false
-            executionState.syncTo(latexRunConfig)
             val latexSettings = RunManagerImpl.getInstanceImpl(environment.project).getSettings(latexRunConfig)
                 ?: return
             executionState.isLastRunConfig = false
-            executionState.syncTo(latexRunConfig)
             RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)
             executionState.isLastRunConfig = true
-            executionState.syncTo(latexRunConfig)
             RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)
         }
     }

@@ -65,7 +65,6 @@ class RunExternalToolListener(
         finally {
             executionState.isLastRunConfig = false
             executionState.isFirstRunConfig = true
-            executionState.syncTo(latexRunConfig)
         }
     }
 
@@ -74,7 +73,6 @@ class RunExternalToolListener(
         if (latexRunConfig.bibRunConfigs.isEmpty() && latexRunConfig.makeindexRunConfigs.isEmpty()) {
             // LaTeX twice
             executionState.isFirstRunConfig = false
-            executionState.syncTo(latexRunConfig)
             val latexSettings = RunManagerImpl.getInstanceImpl(environment.project).getSettings(latexRunConfig)
                 ?: return
 
@@ -84,10 +82,8 @@ class RunExternalToolListener(
             latexSettings.configuration.beforeRunTasks = mutableListOf()
 
             executionState.isLastRunConfig = false
-            executionState.syncTo(latexRunConfig)
             RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)
             executionState.isLastRunConfig = true
-            executionState.syncTo(latexRunConfig)
             RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)
 
             latexSettings.configuration.beforeRunTasks = beforeRunTasks

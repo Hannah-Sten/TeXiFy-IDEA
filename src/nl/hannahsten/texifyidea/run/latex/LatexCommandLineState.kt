@@ -38,7 +38,7 @@ import java.io.File
 open class LatexCommandLineState(environment: ExecutionEnvironment, private val runConfig: LatexRunConfiguration) : CommandLineState(environment) {
 
     private val programParamsConfigurator = ProgramParametersConfigurator()
-    private val executionState = LatexRunExecutionState.from(runConfig)
+    private val executionState = runConfig.executionState
 
     @Throws(ExecutionException::class)
     override fun startProcess(): ProcessHandler {
@@ -66,7 +66,6 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
         val handler = createHandler(mainFile, compiler)
         executionState.hasBeenRun = true
-        executionState.syncTo(runConfig)
 
         if (!isLastCompile(isMakeindexNeeded = false, handler)) return handler
 
@@ -99,7 +98,6 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         val isMakeindexNeeded = runMakeindexIfNeeded(handler, mainFile, runConfig.filesToCleanUp)
         runExternalToolsIfNeeded(handler)
         executionState.hasBeenRun = true
-        executionState.syncTo(runConfig)
 
         if (!isLastCompile(isMakeindexNeeded, handler)) return handler
 
@@ -232,7 +230,6 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         if (runConfig.bibRunConfigs.isEmpty() && !isMakeindexNeeded && runConfig.externalToolRunConfigs.isEmpty()) {
             if (!shouldCompileTwice) {
                 executionState.isLastRunConfig = true
-                executionState.syncTo(runConfig)
             }
 
             // Schedule the second compile only if this is the first compile
@@ -254,23 +251,23 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
             // Only run latex after the last one
             if (index == runConfig.bibRunConfigs.size - 1) {
-                handler.addProcessListener(RunBibtexListener(bibSettings, runConfig, environment, true))
+                handler.addProcessListener(RunBibtexListener(bibSettings, runConfig, environment, executionState, true))
             }
             else {
-                handler.addProcessListener(RunBibtexListener(bibSettings, runConfig, environment, false))
+                handler.addProcessListener(RunBibtexListener(bibSettings, runConfig, environment, executionState, false))
             }
         }
     }
 
     private fun schedulePdfViewerIfNeeded(handler: KillableProcessHandler) {
         // Do not schedule to open the pdf viewer when this is not the last run config in the chain or it is an auto compile
-        if (runConfig.isLastRunConfig && !runConfig.isAutoCompiling) {
+        if (executionState.isLastRunConfig && !runConfig.isAutoCompiling) {
             addOpenViewerListener(handler, runConfig.requireFocus)
         }
     }
 
     private fun scheduleFileCleanup(filesToCleanUp: MutableList<File>, filesToCleanUpIfEmpty: Set<File>, handler: KillableProcessHandler) {
-        if (runConfig.isLastRunConfig) {
+        if (executionState.isLastRunConfig) {
             handler.addProcessListener(FileCleanupListener(filesToCleanUp, filesToCleanUpIfEmpty))
         }
     }

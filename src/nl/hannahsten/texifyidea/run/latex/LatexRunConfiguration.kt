@@ -154,21 +154,34 @@ class LatexRunConfiguration(
      */
     var latexDistribution: LatexDistributionType = LatexDistributionType.MODULE_SDK
 
+    @Transient
+    var executionState: LatexRunExecutionState = LatexRunExecutionState()
+
     /** Whether this run configuration is the last one in the chain of run configurations (e.g. latex, bibtex, latex, latex). */
-    var isLastRunConfig = false
-    var isFirstRunConfig = true
+    var isLastRunConfig: Boolean
+        get() = executionState.isLastRunConfig
+        set(value) {
+            executionState.isLastRunConfig = value
+        }
+
+    var isFirstRunConfig: Boolean
+        get() = executionState.isFirstRunConfig
+        set(value) {
+            executionState.isFirstRunConfig = value
+        }
 
     // Whether the run configuration has already been run or not, since it has been created
-    var hasBeenRun = false
+    var hasBeenRun: Boolean
+        get() = executionState.hasBeenRun
+        set(value) {
+            executionState.hasBeenRun = value
+        }
 
     /** Whether the pdf viewer should claim focus after compilation. */
     var requireFocus = true
 
     /** Whether the run configuration is currently auto-compiling.     */
     override var isAutoCompiling = false
-
-    @Transient
-    internal var executionState: LatexRunExecutionState = LatexRunExecutionState()
 
     private var bibRunConfigIds = mutableSetOf<String>()
     var bibRunConfigs: Set<RunnerAndConfigurationSettings>
