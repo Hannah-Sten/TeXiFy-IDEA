@@ -161,6 +161,7 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
             }
         }
         updateCompilerSpecificVisibility(runConfiguration.compiler ?: PDFLATEX)
+        updateAuxDirVisibility(runConfiguration.compiler ?: PDFLATEX)
 
         // Reset LaTeX distribution selection
         val selection = LatexDistributionSelection.fromDistributionType(runConfiguration.latexDistribution)
@@ -269,14 +270,13 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
 
         if (chosenCompiler == LatexCompiler.ARARA) {
             outputPathRow.isVisible = false
-            auxilPathRow?.isVisible = false
             outputFormatRow.isVisible = false
         }
         else {
             outputPathRow.isVisible = true
-            auxilPathRow?.isVisible = true
             outputFormatRow.isVisible = chosenCompiler != LatexCompiler.LATEXMK
         }
+        updateAuxDirVisibility(chosenCompiler)
     }
 
     override fun createEditor(): JComponent {
@@ -409,7 +409,9 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
         classicCompilerComponents += externalToolsPanel
 
         bindUiEvents()
-        updateCompilerSpecificVisibility(compiler.selectedItem as? LatexCompiler ?: PDFLATEX)
+        val initialCompiler = compiler.selectedItem as? LatexCompiler ?: PDFLATEX
+        updateCompilerSpecificVisibility(initialCompiler)
+        updateAuxDirVisibility(initialCompiler)
     }
 
     private fun bindUiEvents() {
@@ -422,6 +424,7 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
             selectedCompiler.outputFormats.forEach { format -> outputFormat.addItem(format) }
             outputFormat.selectedItem = selectedCompiler.outputFormats.firstOrNull() ?: Format.PDF
             updateCompilerSpecificVisibility(selectedCompiler)
+            updateAuxDirVisibility(selectedCompiler)
         }
     }
 
@@ -461,23 +464,20 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
     }
 
     private fun buildPathsSection(panel: JPanel) {
-        // The aux directory is only available on MiKTeX, so only allow disabling on MiKTeX
-        if (LatexSdkUtil.isMiktexAvailable) {
-            val auxilPathField = TextFieldWithBrowseButton()
-            auxilPathField.addBrowseFolderListener(
-                TextBrowseFolderListener(
-                    FileChooserDescriptor(false, true, false, false, false, false)
-                        .withTitle("Auxiliary Files Directory")
-                        .withRoots(
-                            *ProjectRootManager.getInstance(project)
-                                .contentRootsFromAllModules
-                        )
-                )
+        val auxilPathField = TextFieldWithBrowseButton()
+        auxilPathField.addBrowseFolderListener(
+            TextBrowseFolderListener(
+                FileChooserDescriptor(false, true, false, false, false, false)
+                    .withTitle("Auxiliary Files Directory")
+                    .withRoots(
+                        *ProjectRootManager.getInstance(project)
+                            .contentRootsFromAllModules
+                    )
             )
-            auxilPath = auxilPathField
-            auxilPathRow = LabeledComponent.create(auxilPathField, "Directory for auxiliary files")
-            panel.add(auxilPathRow)
-        }
+        )
+        auxilPath = auxilPathField
+        auxilPathRow = LabeledComponent.create(auxilPathField, "Directory for auxiliary files")
+        panel.add(auxilPathRow)
 
         val outputPathField = TextFieldWithBrowseButton()
         outputPathField.addBrowseFolderListener(
@@ -579,5 +579,12 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
         val isLatexmk = selectedCompiler == LatexCompiler.LATEXMK
         classicCompilerComponents.forEach { it.isVisible = !isLatexmk }
         latexmkComponents.forEach { it.isVisible = isLatexmk }
+    }
+
+    private fun updateAuxDirVisibility(selectedCompiler: LatexCompiler) {
+        val visibleByMasterRule = LatexSdkUtil.isMiktexAvailable
+        val visibleByLatexmkOverride = selectedCompiler == LatexCompiler.LATEXMK
+        val visible = selectedCompiler != LatexCompiler.ARARA && (visibleByMasterRule || visibleByLatexmkOverride)
+        auxilPathRow?.isVisible = visible
     }
 }

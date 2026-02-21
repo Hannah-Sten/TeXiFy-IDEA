@@ -130,6 +130,39 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         assertFalse(outputFormat.isVisible)
     }
 
+    fun testLatexmkCompilerShowsAuxPathRowInEditor() {
+        val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
+        runConfig.compiler = LatexCompiler.LATEXMK
+
+        val editor = LatexSettingsEditor(project)
+        editor.resetFrom(runConfig)
+
+        val auxPathRowField = LatexSettingsEditor::class.java.getDeclaredField("auxilPathRow")
+        auxPathRowField.isAccessible = true
+        val auxPathRow = auxPathRowField.get(editor) as? javax.swing.JComponent
+        assertNotNull(auxPathRow)
+        assertTrue(auxPathRow!!.isVisible)
+    }
+
+    fun testAraraCompilerHidesAuxPathRowInEditor() {
+        val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
+
+        val editor = LatexSettingsEditor(project)
+        editor.resetFrom(runConfig)
+
+        val compilerField = LatexSettingsEditor::class.java.getDeclaredField("compiler")
+        compilerField.isAccessible = true
+        @Suppress("UNCHECKED_CAST")
+        val compiler = compilerField.get(editor) as com.intellij.openapi.ui.ComboBox<LatexCompiler>
+        compiler.selectedItem = LatexCompiler.ARARA
+
+        val auxPathRowField = LatexSettingsEditor::class.java.getDeclaredField("auxilPathRow")
+        auxPathRowField.isAccessible = true
+        val auxPathRow = auxPathRowField.get(editor) as? javax.swing.JComponent
+        assertNotNull(auxPathRow)
+        assertFalse(auxPathRow!!.isVisible)
+    }
+
     fun testLatexmkCompileModeEditorContainsAuto() {
         val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
         runConfig.compiler = LatexCompiler.LATEXMK

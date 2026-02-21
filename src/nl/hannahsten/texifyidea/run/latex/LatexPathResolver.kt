@@ -8,7 +8,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapi.vfs.toNioPathOrNull
 import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
 import nl.hannahsten.texifyidea.util.files.FileUtil
 import nl.hannahsten.texifyidea.util.files.allChildDirectories
@@ -53,7 +52,7 @@ internal object LatexPathResolver {
             return resolved
         }
 
-        return resolveRelativePathAgainstContentRoots(resolvedRaw, project) ?: resolved
+        return resolveRelativePathAgainstContentRoots(resolvedRaw, moduleRoot, project) ?: resolved
     }
 
     fun getMainFileContentRoot(mainFile: VirtualFile?, project: Project): VirtualFile? {
@@ -63,13 +62,16 @@ internal object LatexPathResolver {
         }
     }
 
-    private fun resolveRelativePathAgainstContentRoots(path: String, project: Project): Path? {
-        if (!project.isInitialized) return null
-        return ReadAction.compute<Path?, RuntimeException> {
-            ProjectRootManager.getInstance(project).contentRoots.firstNotNullOfOrNull { root ->
-                root.findFileByRelativePath(path)?.toNioPathOrNull()
+    private fun resolveRelativePathAgainstContentRoots(path: String, moduleRoot: VirtualFile?, project: Project): Path? {
+        moduleRoot?.findFileByRelativePath(path)?.let { return Path.of(it.path) }
+
+        return runCatching {
+            ReadAction.compute<Path?, RuntimeException> {
+                ProjectRootManager.getInstance(project).contentRoots.firstNotNullOfOrNull { root ->
+                    root.findFileByRelativePath(path)?.let { Path.of(it.path) }
+                }
             }
-        }
+        }.getOrNull()
     }
 
     @Throws(ExecutionException::class)
