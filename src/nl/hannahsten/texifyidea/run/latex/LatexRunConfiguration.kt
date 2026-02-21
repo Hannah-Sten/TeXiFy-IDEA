@@ -28,7 +28,6 @@ import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.common.addTextChild
 import nl.hannahsten.texifyidea.run.common.getOrCreateAndClearParent
-import nl.hannahsten.texifyidea.run.common.writeCommonCompilationFields
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogTabComponent
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCitationTool
@@ -429,20 +428,17 @@ class LatexRunConfiguration(
     private fun writeCoreFields(parent: Element) {
         parent.addTextChild(COMPILER, compiler?.name ?: "")
         parent.addTextChild(COMPILER_ARGUMENTS, compilerArguments ?: "")
-        writeCommonCompilationFields(
-            parent = parent,
-            compilerPath = compilerPath,
-            pdfViewerName = pdfViewer?.name,
-            requireFocus = requireFocus,
-            viewerCommand = viewerCommand,
-            writeEnvironmentVariables = environmentVariables::writeExternal,
-            expandMacrosEnvVariables = expandMacrosEnvVariables,
-            beforeRunCommand = beforeRunCommand,
-            mainFilePath = mainFile?.path ?: "",
-            workingDirectory = workingDirectory?.toString() ?: LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER,
-            latexDistribution = latexDistribution.name,
-            hasBeenRun = hasBeenRun,
-        )
+        parent.addTextChild(COMPILER_PATH, compilerPath ?: "")
+        parent.addTextChild(PDF_VIEWER, pdfViewer?.name ?: "")
+        parent.addTextChild(REQUIRE_FOCUS, requireFocus.toString())
+        parent.addTextChild(VIEWER_COMMAND, viewerCommand ?: "")
+        environmentVariables.writeExternal(parent)
+        parent.addTextChild(EXPAND_MACROS_IN_ENVIRONMENT_VARIABLES, expandMacrosEnvVariables.toString())
+        parent.addTextChild(BEFORE_RUN_COMMAND, beforeRunCommand ?: "")
+        parent.addTextChild(MAIN_FILE, mainFile?.path ?: "")
+        parent.addTextChild(WORKING_DIRECTORY, workingDirectory?.toString() ?: LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER)
+        parent.addTextChild(LATEX_DISTRIBUTION, latexDistribution.name)
+        parent.addTextChild(HAS_BEEN_RUN, hasBeenRun.toString())
     }
 
     private fun writePathAndCompileFields(parent: Element) {
