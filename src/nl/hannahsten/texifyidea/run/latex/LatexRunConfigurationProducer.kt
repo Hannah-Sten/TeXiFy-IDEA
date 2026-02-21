@@ -13,7 +13,6 @@ import nl.hannahsten.texifyidea.run.common.isSameContextFile
 import nl.hannahsten.texifyidea.run.common.isTexFile
 import nl.hannahsten.texifyidea.run.common.resolveLatexContextFile
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
-import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.files.findTectonicTomlFile
 import nl.hannahsten.texifyidea.util.files.hasTectonicTomlFile
 import nl.hannahsten.texifyidea.util.includedPackagesInFileset
@@ -30,10 +29,6 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
         context: ConfigurationContext,
         sourceElement: Ref<PsiElement>
     ): Boolean {
-        if (!isLatexRunConfigurationEnabled(TexifySettings.getState().runConfigLatexmkMode)) {
-            return false
-        }
-
         val (container, mainFile) = resolveLatexContextFile(context) ?: return false
 
         if (!isTexFile(mainFile)) {
@@ -69,6 +64,3 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
         context: ConfigurationContext
     ): Boolean = isSameContextFile(runConfiguration.mainFile, context)
 }
-
-internal fun isLatexRunConfigurationEnabled(mode: TexifySettings.RunConfigLatexmkMode): Boolean =
-    mode != TexifySettings.RunConfigLatexmkMode.LATEXMK_ONLY

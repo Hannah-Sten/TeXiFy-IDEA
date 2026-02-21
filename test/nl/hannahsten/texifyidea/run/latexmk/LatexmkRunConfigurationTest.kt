@@ -4,6 +4,10 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.openapi.application.ApplicationManager
 import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer
+import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
+import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import com.intellij.execution.configurations.RuntimeConfigurationError
 import org.jdom.Element
 import org.jdom.Namespace
@@ -165,19 +169,20 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
     }
 
     fun testUnicodeEngineCompatibilityUsesLatexmkCompileMode() {
-        val runConfig = LatexmkRunConfiguration(
+        val runConfig = LatexRunConfiguration(
             myFixture.project,
-            LatexConfigurationFactory(LatexmkRunConfigurationType()),
-            "Latexmk"
+            LatexRunConfigurationProducer().configurationFactory,
+            "LaTeX"
         )
+        runConfig.compiler = LatexCompiler.LATEXMK
 
-        runConfig.compileMode = LatexmkCompileMode.LUALATEX_PDF
+        runConfig.latexmkCompileMode = LatexmkCompileMode.LUALATEX_PDF
         assertEquals(true, unicodeEngineCompatibility(runConfig))
 
-        runConfig.compileMode = LatexmkCompileMode.PDFLATEX_PDF
+        runConfig.latexmkCompileMode = LatexmkCompileMode.PDFLATEX_PDF
         assertEquals(false, unicodeEngineCompatibility(runConfig))
 
-        runConfig.compileMode = LatexmkCompileMode.CUSTOM
+        runConfig.latexmkCompileMode = LatexmkCompileMode.CUSTOM
         assertEquals(null, unicodeEngineCompatibility(runConfig))
     }
 
@@ -196,13 +201,30 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
         assertFalse(arguments.contains("-pdf"))
     }
 
-    fun testRunConfigurationsXmlRegistersLatexAndLatexmkProducers() {
+    fun testLatexRunConfigurationLatexmkArgumentsIgnoreOutputFormat() {
+        val runConfig = LatexRunConfiguration(
+            myFixture.project,
+            LatexRunConfigurationProducer().configurationFactory,
+            "LaTeX"
+        )
+        runConfig.compiler = LatexCompiler.LATEXMK
+        runConfig.latexmkCompileMode = LatexmkCompileMode.LUALATEX_PDF
+        runConfig.latexmkCitationTool = LatexmkCitationTool.AUTO
+        runConfig.latexmkExtraArguments = null
+        runConfig.outputFormat = Format.DVI
+
+        val arguments = runConfig.buildLatexmkArguments()
+        assertTrue(arguments.contains("-lualatex"))
+        assertFalse(arguments.contains("-output-format"))
+    }
+
+    fun testRunConfigurationsXmlRegistersOnlyLatexProducer() {
         val xml = Files.readString(Path.of("resources/META-INF/extensions/run-configurations.xml"))
         val latexmkProducer = "nl.hannahsten.texifyidea.run.latexmk.LatexmkRunConfigurationProducer"
         val latexProducer = "nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer"
         val latexConfigurationType = "nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationType"
 
-        assertTrue(xml.contains(latexmkProducer))
+        assertFalse(xml.contains(latexmkProducer))
         assertTrue(xml.contains(latexProducer))
         assertTrue(xml.contains(latexConfigurationType))
     }

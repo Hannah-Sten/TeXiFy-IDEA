@@ -99,8 +99,6 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
         override val handlesNumberOfCompiles = true
 
-        override val outputFormats = arrayOf(Format.DEFAULT, Format.PDF, Format.DVI)
-
         override fun createCommand(
             runConfig: LatexRunConfiguration,
             auxilPath: String?,
@@ -126,10 +124,6 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
                 command.add("-file-line-error")
                 command.add("-interaction=nonstopmode")
                 command.add("-synctex=1")
-            }
-
-            if (runConfig.outputFormat != Format.DEFAULT) {
-                command.add("-output-format=${runConfig.outputFormat.name.lowercase(Locale.getDefault())}")
             }
 
             command.add("-output-directory=$outputPath")

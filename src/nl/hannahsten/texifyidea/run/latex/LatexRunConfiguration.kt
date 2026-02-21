@@ -40,11 +40,14 @@ import nl.hannahsten.texifyidea.run.common.getOrCreateAndClearParent
 import nl.hannahsten.texifyidea.run.common.writeCommonCompilationFields
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogTabComponent
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
+import nl.hannahsten.texifyidea.run.latexmk.LatexmkCitationTool
+import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.SumatraViewer
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdk
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
+import nl.hannahsten.texifyidea.util.LatexmkRcFileFinder
 import nl.hannahsten.texifyidea.util.files.findFile
 import nl.hannahsten.texifyidea.util.files.findVirtualFileByAbsoluteOrRelativePath
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
@@ -58,6 +61,7 @@ import java.nio.file.InvalidPathException
 import java.util.*
 import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
+import com.intellij.util.execution.ParametersListUtil
 
 /**
  * @author Hannah Schellekens, Sten Wessel
@@ -90,10 +94,15 @@ class LatexRunConfiguration(
         private const val BIB_RUN_CONFIG = "bib-run-config"
         private const val MAKEINDEX_RUN_CONFIG = "makeindex-run-config"
         private const val EXPAND_MACROS_IN_ENVIRONMENT_VARIABLES = "expand-macros-in-environment-variables"
+        private const val LATEXMK_COMPILE_MODE = "latexmk-compile-mode"
+        private const val LATEXMK_CUSTOM_ENGINE_COMMAND = "latexmk-custom-engine-command"
+        private const val LATEXMK_CITATION_TOOL = "latexmk-citation-tool"
+        private const val LATEXMK_EXTRA_ARGUMENTS = "latexmk-extra-arguments"
 
         // For backwards compatibility
         private const val AUX_DIR = "aux-dir"
         private const val OUT_DIR = "out-dir"
+        private const val DEFAULT_LATEXMK_EXTRA_ARGUMENTS = "-synctex=1"
     }
 
     var compiler: LatexCompiler? = null
@@ -134,6 +143,16 @@ class LatexRunConfiguration(
 
     var compileTwice = false
     var outputFormat: Format = Format.PDF
+    var latexmkCompileMode: LatexmkCompileMode = LatexmkCompileMode.PDFLATEX_PDF
+    var latexmkCustomEngineCommand: String? = null
+        set(value) {
+            field = value?.trim()?.ifEmpty { null }
+        }
+    var latexmkCitationTool: LatexmkCitationTool = LatexmkCitationTool.AUTO
+    var latexmkExtraArguments: String? = DEFAULT_LATEXMK_EXTRA_ARGUMENTS
+        set(value) {
+            field = value?.trim()?.ifEmpty { null }
+        }
 
     /**
      * The LaTeX distribution to use for this run configuration.
@@ -234,6 +253,10 @@ class LatexRunConfiguration(
         executor: Executor,
         environment: ExecutionEnvironment
     ): RunProfileState {
+        if (compiler == LatexCompiler.LATEXMK) {
+            compilerArguments = buildLatexmkArguments()
+        }
+
         val filter = RegexpFilter(
             environment.project,
             $$"^$FILE_PATH$:$LINE$"
@@ -377,6 +400,14 @@ class LatexRunConfiguration(
 
         // Read output format.
         this.outputFormat = Format.byNameIgnoreCase(parent.getChildText(OUTPUT_FORMAT))
+        this.latexmkCompileMode = parent.getChildText(LATEXMK_COMPILE_MODE)
+            ?.let { runCatching { LatexmkCompileMode.valueOf(it) }.getOrNull() }
+            ?: LatexmkCompileMode.PDFLATEX_PDF
+        this.latexmkCustomEngineCommand = parent.getChildText(LATEXMK_CUSTOM_ENGINE_COMMAND)
+        this.latexmkCitationTool = parent.getChildText(LATEXMK_CITATION_TOOL)
+            ?.let { runCatching { LatexmkCitationTool.valueOf(it) }.getOrNull() }
+            ?: LatexmkCitationTool.AUTO
+        this.latexmkExtraArguments = parent.getChildText(LATEXMK_EXTRA_ARGUMENTS) ?: DEFAULT_LATEXMK_EXTRA_ARGUMENTS
 
         // Read LatexDistribution
         this.latexDistribution = LatexDistributionType.valueOfIgnoreCase(parent.getChildText(LATEX_DISTRIBUTION))
@@ -421,6 +452,10 @@ class LatexRunConfiguration(
         parent.addTextChild(AUXIL_PATH, auxilPath.virtualFile?.path ?: auxilPath.pathString)
         parent.addTextChild(COMPILE_TWICE, compileTwice.toString())
         parent.addTextChild(OUTPUT_FORMAT, outputFormat.name)
+        parent.addTextChild(LATEXMK_COMPILE_MODE, latexmkCompileMode.name)
+        parent.addTextChild(LATEXMK_CUSTOM_ENGINE_COMMAND, latexmkCustomEngineCommand ?: "")
+        parent.addTextChild(LATEXMK_CITATION_TOOL, latexmkCitationTool.name)
+        parent.addTextChild(LATEXMK_EXTRA_ARGUMENTS, latexmkExtraArguments ?: "")
         parent.addTextChild(BIB_RUN_CONFIG, bibRunConfigIds.toString())
         parent.addTextChild(MAKEINDEX_RUN_CONFIG, makeindexRunConfigIds.toString())
     }
@@ -656,10 +691,16 @@ class LatexRunConfiguration(
     // Path to output file (e.g. pdf)
     override fun getOutputFilePath(): String {
         val outputDir = outputPath.getAndCreatePath() ?: mainFile?.parent
-        return "${outputDir?.path}/" + mainFile!!
-            .nameWithoutExtension + "." + if (outputFormat == Format.DEFAULT) "pdf"
-        else outputFormat.toString()
-            .lowercase(Locale.getDefault())
+        val extension = if (compiler == LatexCompiler.LATEXMK) {
+            latexmkCompileMode.extension.lowercase(Locale.getDefault())
+        }
+        else if (outputFormat == Format.DEFAULT) {
+            "pdf"
+        }
+        else {
+            outputFormat.toString().lowercase(Locale.getDefault())
+        }
+        return "${outputDir?.path}/${mainFile!!.nameWithoutExtension}.$extension"
     }
 
     /**
@@ -709,6 +750,24 @@ class LatexRunConfiguration(
         ", outputFormat=" + outputFormat +
         '}'.toString()
 
+    fun buildLatexmkArguments(): String {
+        val arguments = mutableListOf<String>()
+        val hasRcFile = LatexmkRcFileFinder.hasLatexmkRc(compilerArguments, getResolvedWorkingDirectory())
+
+        val hasExplicitStructuredOptions =
+            latexmkCompileMode != LatexmkCompileMode.PDFLATEX_PDF ||
+                latexmkCitationTool != LatexmkCitationTool.AUTO ||
+                !latexmkCustomEngineCommand.isNullOrBlank()
+
+        if (!hasRcFile || hasExplicitStructuredOptions) {
+            arguments += latexmkCompileMode.toLatexmkFlags(latexmkCustomEngineCommand)
+            arguments += latexmkCitationTool.toLatexmkFlags()
+        }
+
+        latexmkExtraArguments?.let { arguments += ParametersListUtil.parse(it) }
+        return ParametersListUtil.join(arguments)
+    }
+
     // Explicitly deep clone references, otherwise a copied run config has references to the original objects
     override fun clone(): RunConfiguration {
         return super.clone().also {
@@ -717,4 +776,24 @@ class LatexRunConfiguration(
             runConfiguration.auxilPath = this.auxilPath.clone()
         }
     }
+}
+
+private fun LatexmkCompileMode.toLatexmkFlags(customEngineCommand: String?): List<String> = when (this) {
+    LatexmkCompileMode.PDFLATEX_PDF -> listOf("-pdf")
+    LatexmkCompileMode.LUALATEX_PDF -> listOf("-lualatex")
+    LatexmkCompileMode.XELATEX_PDF -> listOf("-xelatex")
+    LatexmkCompileMode.LATEX_DVI -> listOf("-latex", "-dvi")
+    LatexmkCompileMode.XELATEX_XDV -> listOf("-xelatex", "-xdv")
+    LatexmkCompileMode.LATEX_PS -> listOf("-latex", "-ps")
+    LatexmkCompileMode.CUSTOM -> customEngineCommand?.let {
+        val escaped = it.replace("\"", "\\\"")
+        listOf("-pdflatex=\"$escaped\"")
+    } ?: emptyList()
+}
+
+private fun LatexmkCitationTool.toLatexmkFlags(): List<String> = when (this) {
+    LatexmkCitationTool.AUTO -> emptyList()
+    LatexmkCitationTool.BIBTEX -> listOf("-bibtex")
+    LatexmkCitationTool.BIBER -> listOf("-use-biber")
+    LatexmkCitationTool.DISABLED -> listOf("-bibtex-")
 }

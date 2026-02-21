@@ -65,6 +65,7 @@ class LatexmkCommandBuilderTest : BasePlatformTestCase() {
         assertTrue(command.any { it == "-file-line-error" })
         assertTrue(command.any { it == "-outdir=${outDir.path}" })
         assertTrue(command.any { it == "-auxdir=${auxDir.path}" })
+        assertFalse(command.any { it.startsWith("-output-format=") })
     }
 
     fun testBuildCommandOmitsAuxdirWhenEqualToOutdir() {

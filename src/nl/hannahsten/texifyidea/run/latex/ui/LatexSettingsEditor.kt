@@ -29,6 +29,8 @@ import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexOutputPath
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfigurationType
+import nl.hannahsten.texifyidea.run.latexmk.LatexmkCitationTool
+import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
 import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.SumatraViewer
@@ -63,9 +65,15 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
     private var expandMacrosEnvVariables: JBCheckBox? = null
     private var compileTwice: JBCheckBox? = null
     private lateinit var outputFormat: LabeledComponent<ComboBox<Format>>
+    private lateinit var latexmkCompileMode: LabeledComponent<ComboBox<LatexmkCompileMode>>
+    private lateinit var latexmkCustomEngineCommand: LabeledComponent<JBTextField>
+    private lateinit var latexmkCitationTool: LabeledComponent<ComboBox<LatexmkCitationTool>>
+    private lateinit var latexmkExtraArguments: LabeledComponent<RawCommandLineEditor>
     private lateinit var latexDistribution: LabeledComponent<ComboBox<LatexDistributionSelection>>
     private val extensionSeparator = TitledSeparator("Extensions")
     private lateinit var externalToolsPanel: RunConfigurationPanel
+    private val classicCompilerComponents = mutableListOf<JComponent>()
+    private val latexmkComponents = mutableListOf<JComponent>()
 
     private lateinit var pdfViewer: LabeledComponent<ComboBox<PdfViewer?>>
 
@@ -100,6 +108,11 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
         // Reset compiler arguments
         val args = runConfiguration.compilerArguments
         compilerArguments.component.text = args ?: ""
+        latexmkCompileMode.component.selectedItem = runConfiguration.latexmkCompileMode
+        latexmkCustomEngineCommand.component.text = runConfiguration.latexmkCustomEngineCommand ?: ""
+        latexmkCustomEngineCommand.component.isEnabled = runConfiguration.latexmkCompileMode == LatexmkCompileMode.CUSTOM
+        latexmkCitationTool.component.selectedItem = runConfiguration.latexmkCitationTool
+        latexmkExtraArguments.component.text = runConfiguration.latexmkExtraArguments ?: ""
 
         // Reset environment variables
         environmentVariables.envData = runConfiguration.environmentVariables
@@ -143,7 +156,7 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
 
         // Reset output format.
         // Make sure to use the output formats relevant for the chosen compiler
-        if (runConfiguration.compiler != null) {
+        if (runConfiguration.compiler != null && runConfiguration.compiler != LatexCompiler.LATEXMK) {
             outputFormat.component.removeAllItems()
             for (item in runConfiguration.compiler!!.outputFormats) {
                 outputFormat.component.addItem(item)
@@ -155,6 +168,7 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
                 outputFormat.component.selectedItem = Format.PDF
             }
         }
+        updateCompilerSpecificVisibility(runConfiguration.compiler ?: PDFLATEX)
 
         // Reset LaTeX distribution selection
         val selection = LatexDistributionSelection.fromDistributionType(runConfiguration.latexDistribution)
@@ -204,6 +218,13 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
 
         // Apply custom compiler arguments
         runConfiguration.compilerArguments = compilerArguments.component.text
+        runConfiguration.latexmkCompileMode = latexmkCompileMode.component.selectedItem as? LatexmkCompileMode ?: LatexmkCompileMode.PDFLATEX_PDF
+        runConfiguration.latexmkCustomEngineCommand = latexmkCustomEngineCommand.component.text
+        runConfiguration.latexmkCitationTool = latexmkCitationTool.component.selectedItem as? LatexmkCitationTool ?: LatexmkCitationTool.AUTO
+        runConfiguration.latexmkExtraArguments = latexmkExtraArguments.component.text
+        if (chosenCompiler == LatexCompiler.LATEXMK) {
+            runConfiguration.compilerArguments = runConfiguration.buildLatexmkArguments()
+        }
 
         // Apply environment variables
         runConfiguration.environmentVariables = environmentVariables.envData
@@ -249,8 +270,10 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
         }
 
         // Apply output format.
-        val format = outputFormat.component.selectedItem as Format?
-        runConfiguration.outputFormat = format ?: Format.PDF
+        if (chosenCompiler != LatexCompiler.LATEXMK) {
+            val format = outputFormat.component.selectedItem as Format?
+            runConfiguration.outputFormat = format ?: Format.PDF
+        }
 
         // Apply LaTeX distribution selection
         val selectedDistribution = latexDistribution.component.selectedItem as? LatexDistributionSelection
@@ -295,6 +318,36 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
 
         compilerArguments = LabeledComponent.create(argumentsEditor, "Custom compiler arguments")
         panel.add(compilerArguments)
+        classicCompilerComponents += compilerArguments
+
+        val latexmkCompileModeCombo = ComboBox(LatexmkCompileMode.entries.toTypedArray())
+        latexmkCompileMode = LabeledComponent.create(latexmkCompileModeCombo, "Compile mode")
+        panel.add(latexmkCompileMode)
+        latexmkComponents += latexmkCompileMode
+
+        val latexmkCustomEngineField = JBTextField().apply { isEnabled = false }
+        latexmkCustomEngineCommand = LabeledComponent.create(latexmkCustomEngineField, "Custom engine command")
+        panel.add(latexmkCustomEngineCommand)
+        latexmkComponents += latexmkCustomEngineCommand
+
+        latexmkCompileModeCombo.addItemListener {
+            latexmkCustomEngineField.isEnabled =
+                it.stateChange == ItemEvent.SELECTED &&
+                latexmkCompileModeCombo.selectedItem == LatexmkCompileMode.CUSTOM
+            if (!latexmkCustomEngineField.isEnabled) {
+                latexmkCustomEngineField.text = ""
+            }
+        }
+
+        val latexmkCitationToolCombo = ComboBox(LatexmkCitationTool.entries.toTypedArray())
+        latexmkCitationTool = LabeledComponent.create(latexmkCitationToolCombo, "Citation tool")
+        panel.add(latexmkCitationTool)
+        latexmkComponents += latexmkCitationTool
+
+        val latexmkExtraArgumentsField = RawCommandLineEditor()
+        latexmkExtraArguments = LabeledComponent.create(latexmkExtraArgumentsField, "Additional latexmk arguments")
+        panel.add(latexmkExtraArguments)
+        latexmkComponents += latexmkExtraArguments
 
         environmentVariables = EnvironmentVariablesComponent()
         panel.add(environmentVariables)
@@ -360,12 +413,14 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
         compileTwice = JBCheckBox("Always compile at least twice")
         compileTwice!!.isSelected = false
         panel.add(compileTwice)
+        classicCompilerComponents += compileTwice!!
 
         // Output format.
         val cboxFormat = ComboBox(selectedCompiler.outputFormats)
         outputFormat = LabeledComponent.create(cboxFormat, "Output format")
         outputFormat.setSize(128, outputFormat.height)
         panel.add(outputFormat)
+        classicCompilerComponents += outputFormat
 
         // LaTeX distribution selection
         val distributionSelections = LatexDistributionSelection.getAvailableSelections(project).toTypedArray()
@@ -386,10 +441,25 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
         panel.add(latexDistribution)
 
         panel.add(extensionSeparator)
+        classicCompilerComponents += extensionSeparator
 
         // Extension panel
         externalToolsPanel = RunConfigurationPanel(project, "External LaTeX programs: ")
         panel.add(externalToolsPanel)
+        classicCompilerComponents += externalToolsPanel
+
+        compiler.component.addItemListener {
+            if (it.stateChange != ItemEvent.SELECTED) {
+                return@addItemListener
+            }
+            val selectedCompiler = it.item as? LatexCompiler ?: PDFLATEX
+            outputFormat.component.removeAllItems()
+            selectedCompiler.outputFormats.forEach { format -> outputFormat.component.addItem(format) }
+            outputFormat.component.selectedItem = selectedCompiler.outputFormats.firstOrNull() ?: Format.PDF
+            updateCompilerSpecificVisibility(selectedCompiler)
+        }
+
+        updateCompilerSpecificVisibility(compiler.component.selectedItem as? LatexCompiler ?: PDFLATEX)
     }
 
     private fun addOutputPathField(panel: JPanel) {
@@ -503,5 +573,11 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
         enableViewerCommand.addItemListener { e -> viewerCommand.isEnabled = e.stateChange == ItemEvent.SELECTED }
 
         panel.add(viewerCommand)
+    }
+
+    private fun updateCompilerSpecificVisibility(selectedCompiler: LatexCompiler) {
+        val isLatexmk = selectedCompiler == LatexCompiler.LATEXMK
+        classicCompilerComponents.forEach { it.isVisible = !isLatexmk }
+        latexmkComponents.forEach { it.isVisible = isLatexmk }
     }
 }

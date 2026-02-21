@@ -68,12 +68,6 @@ class TexifySettings : SimplePersistentStateComponent<TexifySettings.State>(Stat
         ALL_PACKAGES,
     }
 
-    enum class RunConfigLatexmkMode {
-        RUN_LATEX_BIB_ONLY,
-        LATEXMK_ONLY,
-        BOTH,
-    }
-
     class State : BaseState() {
         var automaticSecondInlineMathSymbol by property(true)
         var automaticUpDownBracket by property(true)
@@ -92,7 +86,6 @@ class TexifySettings : SimplePersistentStateComponent<TexifySettings.State>(Stat
         var automaticQuoteReplacement by enum(QuoteReplacement.NONE)
         var htmlPasteTranslator by enum(HtmlPasteTranslator.BUILTIN)
         var autoCompileOption by enum<AutoCompile>(AutoCompile.OFF)
-        var runConfigLatexmkMode by enum<RunConfigLatexmkMode>(RunConfigLatexmkMode.BOTH)
         var pathToSumatra by string(null)
         var hasApprovedDetexify by property(false)
         var suppressIgnoredMasksPrompt by property(false)

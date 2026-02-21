@@ -26,9 +26,6 @@ import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationType
-import nl.hannahsten.texifyidea.run.latexmk.LatexmkRunConfiguration
-import nl.hannahsten.texifyidea.run.latexmk.LatexmkRunConfigurationType
-import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.files.allChildFiles
 
 /**
@@ -127,15 +124,7 @@ fun Project?.selectedRunConfig(): LatexCompilationRunConfiguration? = this?.let 
  */
 fun Project?.latexTemplateRunConfig(): LatexCompilationRunConfiguration? = this?.let {
     val runManager = RunManager.getInstance(it)
-    when (TexifySettings.getState().runConfigLatexmkMode) {
-        TexifySettings.RunConfigLatexmkMode.RUN_LATEX_BIB_ONLY ->
-            runManager.getConfigurationTemplate(LatexConfigurationFactory(LatexRunConfigurationType())).configuration as? LatexRunConfiguration
-        TexifySettings.RunConfigLatexmkMode.LATEXMK_ONLY ->
-            runManager.getConfigurationTemplate(LatexConfigurationFactory(LatexmkRunConfigurationType())).configuration as? LatexmkRunConfiguration
-        TexifySettings.RunConfigLatexmkMode.BOTH ->
-            (runManager.getConfigurationTemplate(LatexConfigurationFactory(LatexmkRunConfigurationType())).configuration as? LatexmkRunConfiguration)
-                ?: (runManager.getConfigurationTemplate(LatexConfigurationFactory(LatexRunConfigurationType())).configuration as? LatexRunConfiguration)
-    }
+    runManager.getConfigurationTemplate(LatexConfigurationFactory(LatexRunConfigurationType())).configuration as? LatexRunConfiguration
 }
 
 /**
