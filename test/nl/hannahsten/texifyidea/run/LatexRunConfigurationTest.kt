@@ -54,6 +54,30 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         assertEquals(mainFile.virtualFile, (runConfig.bibRunConfigs.first().configuration as BibtexRunConfiguration).mainFile)
     }
 
+    fun testBibRunConfigWithoutPsiPointerUsesResolvedMainFile() {
+        val mainFile = myFixture.addFileToProject(
+            "main.tex",
+            """
+            \documentclass{article}
+            \begin{document}
+                \cite{knuth1990}
+                \bibliography{references}
+            \end{document}
+            """.trimIndent()
+        )
+        val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
+        runBlocking {
+            runConfig.mainFilePath = "main.tex"
+        }
+        runConfig.executionState.resolvedMainFile = mainFile.virtualFile
+        runConfig.executionState.psiFile = null
+
+        runConfig.generateBibRunConfig()
+
+        assertTrue(runConfig.bibRunConfigs.isNotEmpty())
+        assertEquals(mainFile.virtualFile, (runConfig.bibRunConfigs.first().configuration as BibtexRunConfiguration).mainFile)
+    }
+
     fun testLatexmkCompilerClearsAuxiliaryRunConfigsInEditorApply() {
         val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
         val runManager = com.intellij.execution.impl.RunManagerImpl.getInstanceImpl(project)

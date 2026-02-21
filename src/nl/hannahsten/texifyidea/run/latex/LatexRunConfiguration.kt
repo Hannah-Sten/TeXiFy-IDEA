@@ -111,7 +111,9 @@ class LatexRunConfiguration(
     /** Whether the run configuration is currently auto-compiling.     */
     var isAutoCompiling = false
 
+    @Volatile
     private var bibRunConfigIds = mutableSetOf<String>()
+
     var bibRunConfigs: Set<RunnerAndConfigurationSettings>
         get() = bibRunConfigIds.mapNotNull {
             RunManagerImpl.getInstanceImpl(project).getConfigurationById(it)

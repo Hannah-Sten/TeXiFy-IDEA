@@ -37,7 +37,8 @@ import nl.hannahsten.texifyidea.util.magic.PackageMagic
 open class LatexCommandLineState(environment: ExecutionEnvironment, private val runConfig: LatexRunConfiguration) : CommandLineState(environment) {
 
     private val programParamsConfigurator = ProgramParametersConfigurator()
-    private val executionState = runConfig.executionState
+    private val executionState: LatexRunExecutionState
+        get() = runConfig.executionState
 
     @Throws(ExecutionException::class)
     override fun startProcess(): ProcessHandler {

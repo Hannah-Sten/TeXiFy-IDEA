@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.run.latex
 
 import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.execution.impl.RunManagerImpl
+import com.intellij.psi.PsiManager
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.lang.LatexLib
@@ -24,7 +25,10 @@ import java.util.Locale
 internal class LatexAuxChainResolver(private val runConfig: LatexRunConfiguration) {
 
     fun generateBibRunConfig() {
-        val psiFile = runConfig.executionState.psiFile?.element ?: return
+        val mainFile = runConfig.executionState.resolvedMainFile ?: LatexRunConfigurationStaticSupport.resolveMainFile(runConfig)
+        val psiFile = mainFile?.let { PsiManager.getInstance(runConfig.project).findFile(it) }
+            ?: runConfig.executionState.psiFile?.element
+            ?: return
         val compilerFromMagicComment: Pair<BibliographyCompiler, String>? by lazy {
             val runCommand = psiFile.allParentMagicComments()
                 .value(DefaultMagicKeys.BIBTEXCOMPILER) ?: return@lazy null
@@ -45,7 +49,6 @@ internal class LatexAuxChainResolver(private val runConfig: LatexRunConfiguratio
         }
 
         val usesChapterbib = psiFile.includedPackagesInFileset().contains(LatexLib.CHAPTERBIB)
-        val mainFile = LatexRunConfigurationStaticSupport.resolveMainFile(runConfig)
 
         if (!usesChapterbib) {
             addBibRunConfig(defaultCompiler, mainFile, compilerFromMagicComment?.second)

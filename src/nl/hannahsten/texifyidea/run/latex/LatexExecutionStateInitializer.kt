@@ -2,7 +2,10 @@ package nl.hannahsten.texifyidea.run.latex
 
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.runners.ExecutionEnvironment
+import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.PsiManager
+import com.intellij.psi.SmartPointerManager
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
@@ -25,6 +28,12 @@ internal object LatexExecutionStateInitializer {
         val mainFile = LatexRunConfigurationStaticSupport.resolveMainFile(runConfig)
             ?: throw ExecutionException("Main file cannot be resolved")
         executionState.resolvedMainFile = mainFile
+        val mainPsiFile = ReadAction.compute<com.intellij.psi.PsiFile?, RuntimeException> {
+            PsiManager.getInstance(runConfig.project).findFile(mainFile)
+        }
+        if (mainPsiFile != null) {
+            executionState.psiFile = SmartPointerManager.getInstance(runConfig.project).createSmartPsiElementPointer(mainPsiFile)
+        }
         executionState.resolvedWorkingDirectory = LatexPathResolver.resolve(runConfig.workingDirectory, mainFile, environment.project)
             ?: Path.of(mainFile.parent.path)
 
