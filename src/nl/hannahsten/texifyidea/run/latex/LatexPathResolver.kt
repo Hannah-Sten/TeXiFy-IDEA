@@ -8,6 +8,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.toNioPathOrNull
 import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
 import nl.hannahsten.texifyidea.util.files.FileUtil
 import nl.hannahsten.texifyidea.util.files.allChildDirectories
@@ -46,11 +47,13 @@ internal object LatexPathResolver {
             .takeIf { it.isNotBlank() }
             ?: return null
 
-        if (pathOrNull(resolvedRaw)?.isAbsolute == true) {
-            return pathOrNull(resolvedRaw)
+        val resolved = pathOrNull(resolvedRaw)
+
+        if (resolved?.isAbsolute == true) {
+            return resolved
         }
 
-        return pathOrNull(resolveRelativePathAgainstContentRoots(resolvedRaw, project) ?: resolvedRaw)
+        return resolveRelativePathAgainstContentRoots(resolvedRaw, project) ?: resolved
     }
 
     fun getMainFileContentRoot(mainFile: VirtualFile?, project: Project): VirtualFile? {
@@ -60,19 +63,13 @@ internal object LatexPathResolver {
         }
     }
 
-    private fun resolveRelativePathAgainstContentRoots(path: String, project: Project): String? {
+    private fun resolveRelativePathAgainstContentRoots(path: String, project: Project): Path? {
         if (!project.isInitialized) return null
-        return ReadAction.compute<String?, RuntimeException> {
+        return ReadAction.compute<Path?, RuntimeException> {
             ProjectRootManager.getInstance(project).contentRoots.firstNotNullOfOrNull { root ->
-                resolveRelativePathAgainstRoot(path, root)
+                root.findFileByRelativePath(path)?.toNioPathOrNull()
             }
         }
-    }
-
-    private fun resolveRelativePathAgainstRoot(path: String, root: VirtualFile): String? {
-        root.findFileByRelativePath(path)?.let { return it.path }
-        val absoluteCandidate = File(root.path, path).path
-        return LocalFileSystem.getInstance().findFileByPath(absoluteCandidate)?.path
     }
 
     @Throws(ExecutionException::class)
