@@ -14,9 +14,9 @@ import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
  */
 fun unicodeEngineCompatibility(runConfig: LatexCompilationRunConfiguration?): Boolean? = when (runConfig) {
     is LatexRunConfiguration -> when (runConfig.compiler) {
-        LatexCompiler.LATEXMK -> when (runConfig.latexmkCompileMode) {
+        LatexCompiler.LATEXMK -> when (runConfig.effectiveLatexmkCompileMode()) {
             LatexmkCompileMode.LUALATEX_PDF, LatexmkCompileMode.XELATEX_PDF, LatexmkCompileMode.XELATEX_XDV -> true
-            LatexmkCompileMode.PDFLATEX_PDF, LatexmkCompileMode.LATEX_DVI, LatexmkCompileMode.LATEX_PS -> false
+            LatexmkCompileMode.AUTO, LatexmkCompileMode.PDFLATEX_PDF, LatexmkCompileMode.LATEX_DVI, LatexmkCompileMode.LATEX_PS -> false
             LatexmkCompileMode.CUSTOM -> null
         }
         LatexCompiler.LUALATEX, LatexCompiler.XELATEX -> true

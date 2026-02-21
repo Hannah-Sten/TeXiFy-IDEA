@@ -13,6 +13,7 @@ import nl.hannahsten.texifyidea.run.common.isSameContextFile
 import nl.hannahsten.texifyidea.run.common.isTexFile
 import nl.hannahsten.texifyidea.run.common.resolveLatexContextFile
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
+import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
 import nl.hannahsten.texifyidea.util.files.findTectonicTomlFile
 import nl.hannahsten.texifyidea.util.files.hasTectonicTomlFile
 import nl.hannahsten.texifyidea.util.includedPackagesInFileset
@@ -54,6 +55,9 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
         else command
         runConfiguration.compiler = LatexCompiler.byExecutableName(compiler)
         runConfiguration.compilerArguments = command.removePrefix(compiler).trim()
+        if (runConfiguration.compiler == LatexCompiler.LATEXMK) {
+            runConfiguration.latexmkCompileMode = LatexmkCompileMode.AUTO
+        }
 
         runConfiguration.workingDirectory = if (runConfiguration.compiler == LatexCompiler.TECTONIC && mainFile.hasTectonicTomlFile()) mainFile.findTectonicTomlFile()!!.parent.path else LatexOutputPath.MAIN_FILE_STRING
         return true

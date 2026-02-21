@@ -214,7 +214,7 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
 
         // Apply custom compiler arguments
         runConfiguration.compilerArguments = compilerArguments.text
-        runConfiguration.latexmkCompileMode = latexmkCompileMode.selectedItem as? LatexmkCompileMode ?: LatexmkCompileMode.PDFLATEX_PDF
+        runConfiguration.latexmkCompileMode = latexmkCompileMode.selectedItem as? LatexmkCompileMode ?: LatexmkCompileMode.AUTO
         runConfiguration.latexmkCustomEngineCommand = latexmkCustomEngineCommand.text
         runConfiguration.latexmkCitationTool = latexmkCitationTool.selectedItem as? LatexmkCitationTool ?: LatexmkCitationTool.AUTO
         runConfiguration.latexmkExtraArguments = latexmkExtraArguments.text

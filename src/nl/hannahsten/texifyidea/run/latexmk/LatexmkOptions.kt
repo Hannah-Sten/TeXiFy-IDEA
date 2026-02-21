@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.run.latexmk
 
 enum class LatexmkCompileMode(private val displayName: String, val extension: String) {
+    AUTO("AUTO", "pdf"),
     PDFLATEX_PDF("pdfLaTeX (PDF)", "pdf"),
     LUALATEX_PDF("LuaLaTeX (PDF)", "pdf"),
     XELATEX_PDF("XeLaTeX (PDF)", "pdf"),

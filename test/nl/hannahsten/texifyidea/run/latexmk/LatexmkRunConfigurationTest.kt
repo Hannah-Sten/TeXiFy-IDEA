@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.run.latexmk
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.psi.createSmartPointer
 import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
@@ -15,6 +16,11 @@ import java.nio.file.Files
 import java.nio.file.Path
 
 class LatexmkRunConfigurationTest : BasePlatformTestCase() {
+
+    fun testCompileModeContainsAuto() {
+        assertTrue(LatexmkCompileMode.entries.contains(LatexmkCompileMode.AUTO))
+        assertEquals("AUTO", LatexmkCompileMode.AUTO.toString())
+    }
 
     fun testWriteRead() {
         val runConfig = LatexmkRunConfiguration(
@@ -216,6 +222,88 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
         val arguments = runConfig.buildLatexmkArguments()
         assertTrue(arguments.contains("-lualatex"))
         assertFalse(arguments.contains("-output-format"))
+    }
+
+    fun testLatexRunConfigurationAutoModeFollowsMagicXdv() {
+        val psi = myFixture.addFileToProject(
+            "main.tex",
+            """
+            % !TeX program = latexmk -xelatex -xdv
+            \documentclass{article}
+            \begin{document}
+            hi
+            \end{document}
+            """.trimIndent()
+        )
+        val runConfig = LatexRunConfiguration(
+            myFixture.project,
+            LatexRunConfigurationProducer().configurationFactory,
+            "LaTeX"
+        )
+        runConfig.compiler = LatexCompiler.LATEXMK
+        runConfig.mainFile = psi.virtualFile
+        runConfig.psiFile = psi.createSmartPointer()
+        runConfig.latexmkCompileMode = LatexmkCompileMode.AUTO
+        runConfig.latexmkCitationTool = LatexmkCitationTool.AUTO
+        runConfig.latexmkExtraArguments = null
+
+        val arguments = runConfig.buildLatexmkArguments()
+        assertTrue(arguments.contains("-xelatex"))
+        assertTrue(arguments.contains("-xdv"))
+        assertTrue(runConfig.getOutputFilePath().endsWith(".xdv"))
+    }
+
+    fun testLatexRunConfigurationAutoModeUsesPackageHeuristics() {
+        val psi = myFixture.addFileToProject(
+            "main.tex",
+            """
+            \documentclass{article}
+            \usepackage{fontspec}
+            \begin{document}
+            hi
+            \end{document}
+            """.trimIndent()
+        )
+        val runConfig = LatexRunConfiguration(
+            myFixture.project,
+            LatexRunConfigurationProducer().configurationFactory,
+            "LaTeX"
+        )
+        runConfig.compiler = LatexCompiler.LATEXMK
+        runConfig.mainFile = psi.virtualFile
+        runConfig.psiFile = psi.createSmartPointer()
+        runConfig.latexmkCompileMode = LatexmkCompileMode.AUTO
+        runConfig.latexmkCitationTool = LatexmkCitationTool.AUTO
+        runConfig.latexmkExtraArguments = null
+
+        assertEquals(LatexmkCompileMode.LUALATEX_PDF, runConfig.effectiveLatexmkCompileMode())
+        assertTrue(runConfig.buildLatexmkArguments().contains("-lualatex"))
+    }
+
+    fun testLatexRunConfigurationAutoModeFallsBackToPdfLatex() {
+        val psi = myFixture.addFileToProject(
+            "main.tex",
+            """
+            \documentclass{article}
+            \begin{document}
+            hi
+            \end{document}
+            """.trimIndent()
+        )
+        val runConfig = LatexRunConfiguration(
+            myFixture.project,
+            LatexRunConfigurationProducer().configurationFactory,
+            "LaTeX"
+        )
+        runConfig.compiler = LatexCompiler.LATEXMK
+        runConfig.mainFile = psi.virtualFile
+        runConfig.psiFile = psi.createSmartPointer()
+        runConfig.latexmkCompileMode = LatexmkCompileMode.AUTO
+        runConfig.latexmkCitationTool = LatexmkCitationTool.AUTO
+        runConfig.latexmkExtraArguments = null
+
+        assertEquals(LatexmkCompileMode.PDFLATEX_PDF, runConfig.effectiveLatexmkCompileMode())
+        assertTrue(runConfig.buildLatexmkArguments().contains("-pdf"))
     }
 
     fun testLatexmkCompilerExposesNoOutputFormatSwitch() {

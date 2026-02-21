@@ -12,6 +12,7 @@ import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer
 import nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfigurationType
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
+import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
 import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType
 import org.jdom.Element
 import org.jdom.Namespace
@@ -127,5 +128,39 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         outputFormatField.isAccessible = true
         val outputFormat = outputFormatField.get(editor) as javax.swing.JComponent
         assertFalse(outputFormat.isVisible)
+    }
+
+    fun testLatexmkCompileModeEditorContainsAuto() {
+        val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
+        runConfig.compiler = LatexCompiler.LATEXMK
+
+        val editor = LatexSettingsEditor(project)
+        editor.resetFrom(runConfig)
+
+        val compileModeField = LatexSettingsEditor::class.java.getDeclaredField("latexmkCompileMode")
+        compileModeField.isAccessible = true
+        @Suppress("UNCHECKED_CAST")
+        val compileMode = compileModeField.get(editor) as com.intellij.openapi.ui.ComboBox<LatexmkCompileMode>
+        val items = (0 until compileMode.itemCount).map { compileMode.getItemAt(it) }
+        assertTrue(items.contains(LatexmkCompileMode.AUTO))
+    }
+
+    fun testLatexmkCompileModeEditorApplyFallsBackToAuto() {
+        val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
+        runConfig.compiler = LatexCompiler.LATEXMK
+        runConfig.latexmkCompileMode = LatexmkCompileMode.PDFLATEX_PDF
+
+        val editor = LatexSettingsEditor(project)
+        editor.resetFrom(runConfig)
+
+        val compileModeField = LatexSettingsEditor::class.java.getDeclaredField("latexmkCompileMode")
+        compileModeField.isAccessible = true
+        @Suppress("UNCHECKED_CAST")
+        val compileMode = compileModeField.get(editor) as com.intellij.openapi.ui.ComboBox<LatexmkCompileMode>
+        compileMode.selectedItem = null
+
+        editor.applyTo(runConfig)
+
+        assertEquals(LatexmkCompileMode.AUTO, runConfig.latexmkCompileMode)
     }
 }

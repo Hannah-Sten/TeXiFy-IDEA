@@ -11,6 +11,7 @@ import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.icons.AllIcons
+import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.application.readAction
 import com.intellij.openapi.application.writeAction
 import com.intellij.openapi.options.SettingsEditor
@@ -22,6 +23,7 @@ import com.intellij.openapi.util.WriteExternalException
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiManager
 import com.intellij.psi.SmartPsiElementPointer
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.lang.LatexLib
@@ -42,6 +44,8 @@ import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogTabComponent
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCitationTool
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
+import nl.hannahsten.texifyidea.run.latexmk.compileModeFromMagicCommand
+import nl.hannahsten.texifyidea.run.latexmk.preferredCompileModeForPackages
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.SumatraViewer
 import nl.hannahsten.texifyidea.settings.TexifySettings
@@ -143,7 +147,7 @@ class LatexRunConfiguration(
 
     var compileTwice = false
     var outputFormat: Format = Format.PDF
-    var latexmkCompileMode: LatexmkCompileMode = LatexmkCompileMode.PDFLATEX_PDF
+    var latexmkCompileMode: LatexmkCompileMode = LatexmkCompileMode.AUTO
     var latexmkCustomEngineCommand: String? = null
         set(value) {
             field = value?.trim()?.ifEmpty { null }
@@ -406,7 +410,7 @@ class LatexRunConfiguration(
         this.outputFormat = Format.byNameIgnoreCase(parent.getChildText(OUTPUT_FORMAT))
         this.latexmkCompileMode = parent.getChildText(LATEXMK_COMPILE_MODE)
             ?.let { runCatching { LatexmkCompileMode.valueOf(it) }.getOrNull() }
-            ?: LatexmkCompileMode.PDFLATEX_PDF
+            ?: LatexmkCompileMode.AUTO
         this.latexmkCustomEngineCommand = parent.getChildText(LATEXMK_CUSTOM_ENGINE_COMMAND)
         this.latexmkCitationTool = parent.getChildText(LATEXMK_CITATION_TOOL)
             ?.let { runCatching { LatexmkCitationTool.valueOf(it) }.getOrNull() }
@@ -696,7 +700,7 @@ class LatexRunConfiguration(
     override fun getOutputFilePath(): String {
         val outputDir = outputPath.getAndCreatePath() ?: mainFile?.parent
         val extension = if (compiler == LatexCompiler.LATEXMK) {
-            latexmkCompileMode.extension.lowercase(Locale.getDefault())
+            effectiveLatexmkCompileMode().extension.lowercase(Locale.getDefault())
         }
         else if (outputFormat == Format.DEFAULT) {
             "pdf"
@@ -757,19 +761,58 @@ class LatexRunConfiguration(
     fun buildLatexmkArguments(): String {
         val arguments = mutableListOf<String>()
         val hasRcFile = LatexmkRcFileFinder.hasLatexmkRc(compilerArguments, getResolvedWorkingDirectory())
+        val effectiveCompileMode = effectiveLatexmkCompileMode()
 
         val hasExplicitStructuredOptions =
-            latexmkCompileMode != LatexmkCompileMode.PDFLATEX_PDF ||
+            effectiveCompileMode != LatexmkCompileMode.PDFLATEX_PDF ||
                 latexmkCitationTool != LatexmkCitationTool.AUTO ||
-                !latexmkCustomEngineCommand.isNullOrBlank()
+                (effectiveCompileMode == LatexmkCompileMode.CUSTOM && !latexmkCustomEngineCommand.isNullOrBlank())
 
         if (!hasRcFile || hasExplicitStructuredOptions) {
-            arguments += latexmkCompileMode.toLatexmkFlags(latexmkCustomEngineCommand)
+            arguments += effectiveCompileMode.toLatexmkFlags(latexmkCustomEngineCommand)
             arguments += latexmkCitationTool.toLatexmkFlags()
         }
 
         latexmkExtraArguments?.let { arguments += ParametersListUtil.parse(it) }
         return ParametersListUtil.join(arguments)
+    }
+
+    fun effectiveLatexmkCompileMode(): LatexmkCompileMode {
+        if (latexmkCompileMode != LatexmkCompileMode.AUTO) {
+            return latexmkCompileMode
+        }
+
+        return ReadAction.compute<LatexmkCompileMode, RuntimeException> {
+            val psi = psiFile?.element ?: mainFile?.let { PsiManager.getInstance(project).findFile(it) }
+            val magicComments = psi?.allParentMagicComments()
+            val magicMode = compileModeFromMagicCommand(
+                magicComments?.value(DefaultMagicKeys.COMPILER) ?: magicComments?.value(DefaultMagicKeys.PROGRAM)
+            )
+            val packageMode = psi?.let { psiFile ->
+                val directLibraries = mutableSetOf<LatexLib>()
+                psiFile.traverseCommands().forEach { command ->
+                    when (command.nameWithSlash) {
+                        CommandNames.USE_PACKAGE -> {
+                            command.requiredParameterText(0)
+                                ?.split(",")
+                                ?.map { it.trim() }
+                                ?.filter { it.isNotBlank() }
+                                ?.forEach { directLibraries.add(LatexLib.Package(it)) }
+                        }
+                        CommandNames.DOCUMENT_CLASS -> {
+                            command.requiredParameterText(0)
+                                ?.trim()
+                                ?.takeIf { it.isNotBlank() }
+                                ?.let { directLibraries.add(LatexLib.Class(it)) }
+                        }
+                    }
+                }
+
+                preferredCompileModeForPackages(directLibraries)
+                    ?: preferredCompileModeForPackages(psiFile.includedPackagesInFileset())
+            }
+            magicMode ?: packageMode ?: LatexmkCompileMode.PDFLATEX_PDF
+        }
     }
 
     // Explicitly deep clone references, otherwise a copied run config has references to the original objects
@@ -783,6 +826,7 @@ class LatexRunConfiguration(
 }
 
 private fun LatexmkCompileMode.toLatexmkFlags(customEngineCommand: String?): List<String> = when (this) {
+    LatexmkCompileMode.AUTO -> listOf("-pdf")
     LatexmkCompileMode.PDFLATEX_PDF -> listOf("-pdf")
     LatexmkCompileMode.LUALATEX_PDF -> listOf("-lualatex")
     LatexmkCompileMode.XELATEX_PDF -> listOf("-xelatex")

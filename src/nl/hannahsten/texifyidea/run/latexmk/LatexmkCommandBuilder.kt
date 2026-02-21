@@ -218,6 +218,7 @@ object LatexmkCommandBuilder {
 }
 
 private fun LatexmkCompileMode.toLatexmkFlags(customEngineCommand: String?): List<String> = when (this) {
+    LatexmkCompileMode.AUTO -> listOf("-pdf")
     LatexmkCompileMode.PDFLATEX_PDF -> listOf("-pdf")
     LatexmkCompileMode.LUALATEX_PDF -> listOf("-lualatex")
     LatexmkCompileMode.XELATEX_PDF -> listOf("-xelatex")
