@@ -218,6 +218,39 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
         assertFalse(arguments.contains("-output-format"))
     }
 
+    fun testLatexmkCompilerExposesNoOutputFormatSwitch() {
+        assertEquals(listOf(Format.PDF), LatexCompiler.LATEXMK.outputFormats.toList())
+    }
+
+    fun testLatexRunConfigurationLatexmkCommandUsesOutdirAuxdirAndNoDuplicatePdf() {
+        val mainFile = myFixture.addFileToProject("main.tex", "\\documentclass{article}")
+
+        val runConfig = LatexRunConfiguration(
+            myFixture.project,
+            LatexRunConfigurationProducer().configurationFactory,
+            "LaTeX"
+        )
+        runConfig.compiler = LatexCompiler.LATEXMK
+        runConfig.mainFile = mainFile.virtualFile
+        runConfig.latexmkCompileMode = LatexmkCompileMode.PDFLATEX_PDF
+        runConfig.latexmkCitationTool = LatexmkCitationTool.AUTO
+        runConfig.latexmkExtraArguments = null
+        runConfig.compilerArguments = runConfig.buildLatexmkArguments()
+
+        val command = LatexCompiler.LATEXMK.getCommand(runConfig, project) ?: error("No command generated")
+
+        assertTrue(command.any { it == "-interaction=nonstopmode" })
+        assertTrue(command.any { it == "-file-line-error" })
+        assertTrue(command.any { it.startsWith("-outdir=") })
+        val hasAuxDir = command.any { it.startsWith("-auxdir=") }
+        if (hasAuxDir) {
+            assertFalse(command.any { it.startsWith("-aux-directory=") })
+        }
+        assertFalse(command.any { it.startsWith("-output-directory=") })
+        assertFalse(command.any { it.startsWith("-output-format=") })
+        assertEquals(1, command.count { it == "-pdf" })
+    }
+
     fun testRunConfigurationsXmlRegistersOnlyLatexProducer() {
         val xml = Files.readString(Path.of("resources/META-INF/extensions/run-configurations.xml"))
         val latexmkProducer = "nl.hannahsten.texifyidea.run.latexmk.LatexmkRunConfigurationProducer"

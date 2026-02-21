@@ -99,6 +99,8 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
         override val handlesNumberOfCompiles = true
 
+        override val outputFormats = arrayOf(Format.PDF)
+
         override fun createCommand(
             runConfig: LatexRunConfiguration,
             auxilPath: String?,
@@ -117,19 +119,17 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
             val isLatexmkRcFilePresent = LatexmkRcFileFinder.hasLatexmkRc(runConfig.compilerArguments, runConfig.getResolvedWorkingDirectory())
 
-            // If it is present, assume that it will handle everything (command line options would overwrite latexmkrc options)
+            // Keep diagnostic behavior consistent, even when latexmkrc is present.
+            command.add("-file-line-error")
+            command.add("-interaction=nonstopmode")
             if (!isLatexmkRcFilePresent) {
-                // Adding the -pdf flag makes latexmk run with pdflatex, which is definitely preferred over running with just latex
-                command.add("-pdf")
-                command.add("-file-line-error")
-                command.add("-interaction=nonstopmode")
                 command.add("-synctex=1")
             }
 
-            command.add("-output-directory=$outputPath")
+            command.add("-outdir=$outputPath")
 
-            if (auxilPath != null && runConfig.getLatexDistributionType().isMiktex(runConfig.project)) {
-                command.add("-aux-directory=$auxilPath")
+            if (auxilPath != null && auxilPath != outputPath) {
+                command.add("-auxdir=$auxilPath")
             }
 
             // -include-directory does not work with latexmk

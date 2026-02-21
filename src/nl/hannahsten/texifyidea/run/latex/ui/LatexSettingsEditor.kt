@@ -290,7 +290,7 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
         else {
             outputPath.isVisible = true
             auxilPath?.isVisible = true
-            outputFormat.isVisible = true
+            outputFormat.isVisible = chosenCompiler != LatexCompiler.LATEXMK
         }
     }
 

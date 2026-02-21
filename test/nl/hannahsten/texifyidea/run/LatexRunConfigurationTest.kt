@@ -13,6 +13,7 @@ import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer
 import nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfigurationType
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType
+import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import org.jdom.Element
 import org.jdom.Namespace
 
@@ -81,5 +82,52 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         assertTrue(runConfig.bibRunConfigs.isEmpty())
         assertTrue(runConfig.makeindexRunConfigs.isEmpty())
         assertTrue(runConfig.externalToolRunConfigs.isEmpty())
+    }
+
+    fun testLatexmkCompilerClearsCompileTwiceInEditorApply() {
+        val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
+        runConfig.compiler = LatexCompiler.PDFLATEX
+        runConfig.compileTwice = true
+
+        val editor = LatexSettingsEditor(project)
+        editor.resetFrom(runConfig)
+
+        val compilerField = LatexSettingsEditor::class.java.getDeclaredField("compiler")
+        compilerField.isAccessible = true
+        @Suppress("UNCHECKED_CAST")
+        val compiler = compilerField.get(editor) as com.intellij.openapi.ui.LabeledComponent<com.intellij.openapi.ui.ComboBox<LatexCompiler>>
+        compiler.component.selectedItem = LatexCompiler.LATEXMK
+
+        editor.applyTo(runConfig)
+
+        assertFalse(runConfig.compileTwice)
+    }
+
+    fun testReadExternalIgnoresCompileTwiceForLatexmk() {
+        val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
+        val element = Element("configuration", Namespace.getNamespace("", ""))
+        runConfig.compiler = LatexCompiler.LATEXMK
+        runConfig.compileTwice = true
+        runConfig.writeExternal(element)
+
+        val restored = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Restored")
+        restored.readExternal(element)
+
+        assertEquals(LatexCompiler.LATEXMK, restored.compiler)
+        assertFalse(restored.compileTwice)
+    }
+
+    fun testLatexmkCompilerHidesOutputFormatInEditor() {
+        val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
+        runConfig.compiler = LatexCompiler.LATEXMK
+
+        val editor = LatexSettingsEditor(project)
+        editor.resetFrom(runConfig)
+
+        val outputFormatField = LatexSettingsEditor::class.java.getDeclaredField("outputFormat")
+        outputFormatField.isAccessible = true
+        @Suppress("UNCHECKED_CAST")
+        val outputFormat = outputFormatField.get(editor) as com.intellij.openapi.ui.LabeledComponent<com.intellij.openapi.ui.ComboBox<Format>>
+        assertFalse(outputFormat.isVisible)
     }
 }

@@ -83,7 +83,9 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             runConfig.isAutoCompiling = false
             // reset this flag, which will be set in each auto-compile
         }
-        scheduleFileCleanup(runConfig.filesToCleanUp, runConfig.filesToCleanUpIfEmpty, handler)
+        if (!isLatexmk) {
+            scheduleFileCleanup(runConfig.filesToCleanUp, runConfig.filesToCleanUpIfEmpty, handler)
+        }
 
         return handler
     }
@@ -201,15 +203,17 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
     }
 
     private fun isLastCompile(isMakeindexNeeded: Boolean, handler: KillableProcessHandler): Boolean {
+        val shouldCompileTwice = runConfig.compiler != LatexCompiler.LATEXMK && runConfig.compileTwice
+
         // If there is no bibtex/makeindex involved and we don't need to compile twice, then this is the last compile
         if (runConfig.bibRunConfigs.isEmpty() && !isMakeindexNeeded && runConfig.externalToolRunConfigs.isEmpty()) {
-            if (!runConfig.compileTwice) {
+            if (!shouldCompileTwice) {
                 runConfig.isLastRunConfig = true
             }
 
             // Schedule the second compile only if this is the first compile
             @Suppress("KotlinConstantConditions")
-            if (!runConfig.isLastRunConfig && runConfig.compileTwice) {
+            if (!runConfig.isLastRunConfig && shouldCompileTwice) {
                 handler.addProcessListener(RunLatexListener(runConfig, environment))
                 return false
             }

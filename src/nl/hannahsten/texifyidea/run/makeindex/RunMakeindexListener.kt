@@ -6,8 +6,7 @@ import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.runners.ExecutionEnvironment
-import com.intellij.openapi.application.runReadAction
-import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.io.FileUtil
 import nl.hannahsten.texifyidea.lang.LatexLib
@@ -20,6 +19,7 @@ import nl.hannahsten.texifyidea.util.appendExtension
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.includedPackagesInFileset
 import nl.hannahsten.texifyidea.util.magic.FileMagic
+import nl.hannahsten.texifyidea.util.runInBackgroundNonBlocking
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -34,46 +34,39 @@ class RunMakeindexListener(
 ) : ProcessListener {
 
     override fun processTerminated(event: ProcessEvent) {
-        try {
-            // Only create new one if there is none yet
-            val runConfigSettingsList =
-                latexRunConfig.makeindexRunConfigs.ifEmpty {
-                    val configs = mutableSetOf<RunnerAndConfigurationSettings>()
-                    // We need index access, which has to be done in EDT but we cannot run slow operations in EDT
-                    ProgressManager.getInstance().runProcessWithProgressSynchronously(
-                        { configs.addAll(generateIndexConfigs()) },
-                        "Generating Makeindex Run Configuration...",
-                        false,
-                        latexRunConfig.project,
-                    )
-                    configs
+        runInBackgroundNonBlocking(latexRunConfig.project, "Generating Makeindex Run Configuration...") {
+            try {
+                // Only create new one if there is none yet
+                val runConfigSettingsList = latexRunConfig.makeindexRunConfigs.ifEmpty {
+                    generateIndexConfigs()
                 }
 
-            // Run all run configurations
-            for (runConfigSettings in runConfigSettingsList) {
-                val makeindexRunConfig = runConfigSettings.configuration as MakeindexRunConfiguration
-                val options = getMakeindexOptions(makeindexRunConfig.mainFile, makeindexRunConfig.project)
-                val baseFileName = options.getOrDefault("name", makeindexRunConfig.mainFile?.nameWithoutExtension) ?: return
+                // Run all run configurations
+                for (runConfigSettings in runConfigSettingsList) {
+                    val makeindexRunConfig = runConfigSettings.configuration as MakeindexRunConfiguration
+                    val options = getMakeindexOptions(makeindexRunConfig.mainFile, makeindexRunConfig.project)
+                    val baseFileName = options.getOrDefault("name", makeindexRunConfig.mainFile?.nameWithoutExtension) ?: return@runInBackgroundNonBlocking
 
-                // Because bib2gls needs the bib file, and we do not want to guess the location of the bib file(s) to copy,
-                // we choose to copy the aux file first and then run bib2gls next to the main file
-                // In comparison: other makeindex programs we run in the auxil dir and then copy the output files (like .ind)
-                if (makeindexRunConfig.makeindexProgram == MakeindexProgram.BIB2GLS) {
-                    copyIndexOutputFiles(baseFileName, FileMagic.bib2glsDependenciesExtensions)
+                    // Because bib2gls needs the bib file, and we do not want to guess the location of the bib file(s) to copy,
+                    // we choose to copy the aux file first and then run bib2gls next to the main file
+                    // In comparison: other makeindex programs we run in the auxil dir and then copy the output files (like .ind)
+                    if (makeindexRunConfig.makeindexProgram == MakeindexProgram.BIB2GLS) {
+                        copyIndexOutputFiles(baseFileName, FileMagic.bib2glsDependenciesExtensions)
+                    }
+
+                    // Run makeindex
+                    RunConfigurationBeforeRunProvider.doExecuteTask(environment, runConfigSettings, null)
+
+                    copyIndexOutputFiles(baseFileName, FileMagic.indexFileExtensions)
+                    copyBib2glsOutput(makeindexRunConfig, baseFileName)
                 }
 
-                // Run makeindex
-                RunConfigurationBeforeRunProvider.doExecuteTask(environment, runConfigSettings, null)
-
-                copyIndexOutputFiles(baseFileName, FileMagic.indexFileExtensions)
-                copyBib2glsOutput(makeindexRunConfig, baseFileName)
+                scheduleLatexRuns()
             }
-
-            scheduleLatexRuns()
-        }
-        finally {
-            latexRunConfig.isLastRunConfig = false
-            latexRunConfig.isFirstRunConfig = true
+            finally {
+                latexRunConfig.isLastRunConfig = false
+                latexRunConfig.isFirstRunConfig = true
+            }
         }
     }
 
@@ -112,7 +105,7 @@ class RunMakeindexListener(
     private fun generateIndexConfigs(): Set<RunnerAndConfigurationSettings> {
         val runManager = RunManagerImpl.getInstanceImpl(environment.project)
 
-        val usedPackages = runReadAction {
+        val usedPackages = ReadAction.compute<Set<LatexLib>, RuntimeException> {
             latexRunConfig.mainFile?.psiFile(environment.project)?.includedPackagesInFileset() ?: emptySet()
         }
         val mainFile = latexRunConfig.mainFile

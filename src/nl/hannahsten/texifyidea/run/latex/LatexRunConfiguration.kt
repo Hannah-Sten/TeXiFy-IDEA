@@ -397,6 +397,9 @@ class LatexRunConfiguration(
         else {
             this.compileTwice = compileTwiceBoolean.toBoolean()
         }
+        if (compiler == LatexCompiler.LATEXMK) {
+            this.compileTwice = false
+        }
 
         // Read output format.
         this.outputFormat = Format.byNameIgnoreCase(parent.getChildText(OUTPUT_FORMAT))
