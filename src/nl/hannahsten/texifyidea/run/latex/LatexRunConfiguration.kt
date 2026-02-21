@@ -11,7 +11,6 @@ import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.icons.AllIcons
-import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.application.readAction
 import com.intellij.openapi.application.writeAction
 import com.intellij.openapi.options.SettingsEditor
@@ -23,18 +22,7 @@ import com.intellij.openapi.util.WriteExternalException
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
-import com.intellij.psi.PsiManager
 import com.intellij.psi.SmartPsiElementPointer
-import nl.hannahsten.texifyidea.index.NewCommandsIndex
-import nl.hannahsten.texifyidea.lang.LatexLib
-import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
-import nl.hannahsten.texifyidea.lang.magic.allParentMagicComments
-import nl.hannahsten.texifyidea.lang.predefined.CommandNames
-import nl.hannahsten.texifyidea.psi.nameWithSlash
-import nl.hannahsten.texifyidea.psi.traverseCommands
-import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
-import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
-import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.common.addTextChild
@@ -44,21 +32,12 @@ import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogTabComponent
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCitationTool
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
-import nl.hannahsten.texifyidea.run.latexmk.buildLatexmkStructuredArguments
-import nl.hannahsten.texifyidea.run.latexmk.compileModeFromMagicCommand
-import nl.hannahsten.texifyidea.run.latexmk.preferredCompileModeForPackages
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.SumatraViewer
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdk
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
-import nl.hannahsten.texifyidea.util.LatexmkRcFileFinder
-import nl.hannahsten.texifyidea.util.files.findFile
 import nl.hannahsten.texifyidea.util.files.findVirtualFileByAbsoluteOrRelativePath
-import nl.hannahsten.texifyidea.util.files.referencedFileSet
-import nl.hannahsten.texifyidea.util.includedPackagesInFileset
-import nl.hannahsten.texifyidea.util.parser.hasBibliography
-import nl.hannahsten.texifyidea.util.parser.usesBiber
 import nl.hannahsten.texifyidea.util.runInBackgroundNonBlocking
 import org.jdom.Element
 import java.io.File
@@ -97,6 +76,10 @@ class LatexRunConfiguration(
         private const val HAS_BEEN_RUN = "has-been-run"
         private const val BIB_RUN_CONFIG = "bib-run-config"
         private const val MAKEINDEX_RUN_CONFIG = "makeindex-run-config"
+        private const val EXTERNAL_TOOL_RUN_CONFIG = "external-tool-run-config"
+        private const val BIB_RUN_CONFIGS = "bib-run-configs"
+        private const val MAKEINDEX_RUN_CONFIGS = "makeindex-run-configs"
+        private const val EXTERNAL_TOOL_RUN_CONFIGS = "external-tool-run-configs"
         private const val EXPAND_MACROS_IN_ENVIRONMENT_VARIABLES = "expand-macros-in-environment-variables"
         private const val LATEXMK_COMPILE_MODE = "latexmk-compile-mode"
         private const val LATEXMK_CUSTOM_ENGINE_COMMAND = "latexmk-custom-engine-command"
@@ -186,6 +169,9 @@ class LatexRunConfiguration(
     /** Whether the run configuration is currently auto-compiling.     */
     override var isAutoCompiling = false
 
+    @Transient
+    internal var executionState: LatexRunExecutionState = LatexRunExecutionState()
+
     private var bibRunConfigIds = mutableSetOf<String>()
     var bibRunConfigs: Set<RunnerAndConfigurationSettings>
         get() = bibRunConfigIds.mapNotNull {
@@ -226,6 +212,12 @@ class LatexRunConfiguration(
     // (for example makeindex) and the last run, we save this information temporarily here while the run configuration is running.
     val filesToCleanUp = mutableListOf<File>()
     val filesToCleanUpIfEmpty = mutableSetOf<File>()
+
+    @Transient
+    private val auxChainResolver = LatexAuxChainResolver(this)
+
+    @Transient
+    private val latexmkModeService = LatexmkModeService(this)
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = LatexSettingsEditor(project)
 
@@ -358,7 +350,7 @@ class LatexRunConfiguration(
         // Read output path
         val outputPathString = parent.getChildText(OUTPUT_PATH)
         if (outputPathString != null) {
-            if (outputPathString.endsWith("/bin")) {
+            if (isInvalidJetBrainsBinPath(outputPathString)) {
                 this.outputPath = LatexOutputPath("out", mainFile, project)
             }
             else {
@@ -423,16 +415,9 @@ class LatexRunConfiguration(
         // Read whether the run config has been run
         this.hasBeenRun = parent.getChildText(HAS_BEEN_RUN)?.toBoolean() ?: false
 
-        // Read bibliography run configurations, which is a list of ids
-        val bibRunConfigElt = parent.getChildText(BIB_RUN_CONFIG)
-        // Assume the list is of the form [id 1,id 2]
-        this.bibRunConfigIds = bibRunConfigElt?.drop(1)?.dropLast(1)?.split(", ")?.toMutableSet() ?: mutableSetOf()
-
-        // Read makeindex run configurations
-        val makeindexRunConfigElt = parent.getChildText(MAKEINDEX_RUN_CONFIG)
-        if (makeindexRunConfigElt != null) {
-            this.makeindexRunConfigIds = makeindexRunConfigElt.drop(1).dropLast(1).split(", ").toMutableSet()
-        }
+        this.bibRunConfigIds = LatexRunConfigurationSerializer.readRunConfigIds(parent, BIB_RUN_CONFIGS, BIB_RUN_CONFIG)
+        this.makeindexRunConfigIds = LatexRunConfigurationSerializer.readRunConfigIds(parent, MAKEINDEX_RUN_CONFIGS, MAKEINDEX_RUN_CONFIG)
+        this.externalToolRunConfigIds = LatexRunConfigurationSerializer.readRunConfigIds(parent, EXTERNAL_TOOL_RUN_CONFIGS, EXTERNAL_TOOL_RUN_CONFIG)
     }
 
     @Throws(WriteExternalException::class)
@@ -464,108 +449,24 @@ class LatexRunConfiguration(
         parent.addTextChild(LATEXMK_CUSTOM_ENGINE_COMMAND, latexmkCustomEngineCommand ?: "")
         parent.addTextChild(LATEXMK_CITATION_TOOL, latexmkCitationTool.name)
         parent.addTextChild(LATEXMK_EXTRA_ARGUMENTS, latexmkExtraArguments ?: "")
+        // Keep legacy single-field serialization for backward compatibility with older versions.
         parent.addTextChild(BIB_RUN_CONFIG, bibRunConfigIds.toString())
         parent.addTextChild(MAKEINDEX_RUN_CONFIG, makeindexRunConfigIds.toString())
+        parent.addTextChild(EXTERNAL_TOOL_RUN_CONFIG, externalToolRunConfigIds.toString())
+        LatexRunConfigurationSerializer.writeRunConfigIds(parent, BIB_RUN_CONFIGS, bibRunConfigIds)
+        LatexRunConfigurationSerializer.writeRunConfigIds(parent, MAKEINDEX_RUN_CONFIGS, makeindexRunConfigIds)
+        LatexRunConfigurationSerializer.writeRunConfigIds(parent, EXTERNAL_TOOL_RUN_CONFIGS, externalToolRunConfigIds)
     }
 
     /**
      * Create a new bib run config and add it to the set.
      */
-    private fun addBibRunConfig(defaultCompiler: BibliographyCompiler, mainFile: VirtualFile?, compilerArguments: String? = null) {
-        val runManager = RunManagerImpl.getInstanceImpl(project)
-
-        val bibSettings = runManager.createConfiguration(
-            "",
-            LatexConfigurationFactory(BibtexRunConfigurationType())
-        )
-
-        val bibtexRunConfiguration = bibSettings.configuration as BibtexRunConfiguration
-
-        bibtexRunConfiguration.compiler = defaultCompiler
-        if (compilerArguments != null) bibtexRunConfiguration.compilerArguments = compilerArguments
-        bibtexRunConfiguration.mainFile = mainFile
-        bibtexRunConfiguration.setSuggestedName()
-        bibtexRunConfiguration.setDefaultDistribution(getLatexDistributionType())
-
-        // On non-MiKTeX systems, add bibinputs for bibtex to work
-        if (!getLatexDistributionType().isMiktex(project, mainFile)) {
-            // Only if default, because the user could have changed it after creating the run config but before running
-            if (mainFile != null && outputPath.virtualFile != mainFile.parent) {
-                // As seen in issue 2165, appending a colon (like with TEXINPUTS) may not work on Windows,
-                // however it may be necessary on Mac/Linux as seen in #2249.
-                bibtexRunConfiguration.environmentVariables = bibtexRunConfiguration.environmentVariables.with(mapOf("BIBINPUTS" to mainFile.parent.path, "BSTINPUTS" to mainFile.parent.path + File.pathSeparator))
-            }
-        }
-
-        runManager.addConfiguration(bibSettings)
-
-        bibRunConfigs = bibRunConfigs + setOf(bibSettings)
-    }
-
-    /**
-     * Generate a Bibtex run configuration, after trying to guess whether the user wants to use bibtex or biber as compiler.
-     */
-    internal fun generateBibRunConfig() {
-        val psiFile = this.psiFile?.element ?: return // Do not auto-generate a bib run config when there is no psi file
-        // Get a pair of Bib compiler and compiler arguments.
-        val compilerFromMagicComment: Pair<BibliographyCompiler, String>? by lazy {
-            val runCommand = psiFile.allParentMagicComments()
-                .value(DefaultMagicKeys.BIBTEXCOMPILER) ?: return@lazy null
-            val compilerString = if (runCommand.contains(' ')) {
-                runCommand.let { it.subSequence(0, it.indexOf(' ')) }.trim()
-                    .toString()
-            }
-            else runCommand
-            val compiler = BibliographyCompiler.valueOf(compilerString.uppercase(Locale.getDefault()))
-            val compilerArguments = runCommand.removePrefix(compilerString)
-                .trim()
-            Pair(compiler, compilerArguments)
-        }
-
-        val defaultCompiler = when {
-            compilerFromMagicComment != null -> compilerFromMagicComment!!.first
-            psiFile.hasBibliography() -> BibliographyCompiler.BIBTEX
-            psiFile.usesBiber() -> BibliographyCompiler.BIBER
-            else -> return // Do not auto-generate a bib run config when we can't detect bibtex
-        }
-
-        // When chapterbib is used, every chapter has its own bibliography and needs its own run config
-        val usesChapterbib = psiFile.includedPackagesInFileset().contains(LatexLib.CHAPTERBIB)
-
-        if (!usesChapterbib) {
-            addBibRunConfig(defaultCompiler, mainFile, compilerFromMagicComment?.second)
-        }
-        else {
-            val allBibliographyCommands =
-                NewCommandsIndex.getByNameInFileSet(CommandNames.BIBLIOGRAPHY, psiFile)
-
-            // We know that there can only be one bibliography per top-level \include,
-            // however not all of them may contain a bibliography, and the ones
-            // that do have one can have it in any included file
-            psiFile.traverseCommands()
-                .filter { it.nameWithSlash == CommandNames.INCLUDE }
-                .flatMap { command -> command.requiredParametersText() }
-                .forEach { filename ->
-                    // Find all the files of this chapter, then check if any of the bibliography commands appears in a file in this chapter
-                    val chapterMainFile = psiFile.findFile(filename, supportsAnyExtension = true)
-                        ?: return@forEach
-
-                    val chapterFiles = chapterMainFile.referencedFileSet()
-                        .toMutableSet().apply { add(chapterMainFile) }
-
-                    val chapterHasBibliography = allBibliographyCommands.any { it.containingFile in chapterFiles }
-
-                    if (chapterHasBibliography) {
-                        addBibRunConfig(defaultCompiler, chapterMainFile.virtualFile, compilerFromMagicComment?.second)
-                    }
-                }
-        }
-    }
+    internal fun generateBibRunConfig() = auxChainResolver.generateBibRunConfig()
 
     /**
      * All run configs in the chain except the LaTeX ones.
      */
-    fun getAllAuxiliaryRunConfigs(): Set<RunnerAndConfigurationSettings> = bibRunConfigs + makeindexRunConfigs + externalToolRunConfigs
+    fun getAllAuxiliaryRunConfigs(): Set<RunnerAndConfigurationSettings> = auxChainResolver.getAllAuxiliaryRunConfigs()
 
     override fun getResolvedWorkingDirectory(): java.nio.file.Path? {
         val pathString = if (!workingDirectory.isNullOrBlank() && mainFile != null) {
@@ -758,55 +659,9 @@ class LatexRunConfiguration(
         ", outputFormat=" + outputFormat +
         '}'.toString()
 
-    fun buildLatexmkArguments(): String {
-        val hasRcFile = LatexmkRcFileFinder.hasLatexmkRc(compilerArguments, getResolvedWorkingDirectory())
-        val effectiveCompileMode = effectiveLatexmkCompileMode()
-        return buildLatexmkStructuredArguments(
-            hasRcFile = hasRcFile,
-            compileMode = effectiveCompileMode,
-            citationTool = latexmkCitationTool,
-            customEngineCommand = latexmkCustomEngineCommand,
-            extraArguments = latexmkExtraArguments,
-        )
-    }
+    fun buildLatexmkArguments(): String = latexmkModeService.buildArguments()
 
-    fun effectiveLatexmkCompileMode(): LatexmkCompileMode {
-        if (latexmkCompileMode != LatexmkCompileMode.AUTO) {
-            return latexmkCompileMode
-        }
-
-        return ReadAction.compute<LatexmkCompileMode, RuntimeException> {
-            val psi = psiFile?.element ?: mainFile?.let { PsiManager.getInstance(project).findFile(it) }
-            val magicComments = psi?.allParentMagicComments()
-            val magicMode = compileModeFromMagicCommand(
-                magicComments?.value(DefaultMagicKeys.COMPILER) ?: magicComments?.value(DefaultMagicKeys.PROGRAM)
-            )
-            val packageMode = psi?.let { psiFile ->
-                val directLibraries = mutableSetOf<LatexLib>()
-                psiFile.traverseCommands().forEach { command ->
-                    when (command.nameWithSlash) {
-                        CommandNames.USE_PACKAGE -> {
-                            command.requiredParameterText(0)
-                                ?.split(",")
-                                ?.map { it.trim() }
-                                ?.filter { it.isNotBlank() }
-                                ?.forEach { directLibraries.add(LatexLib.Package(it)) }
-                        }
-                        CommandNames.DOCUMENT_CLASS -> {
-                            command.requiredParameterText(0)
-                                ?.trim()
-                                ?.takeIf { it.isNotBlank() }
-                                ?.let { directLibraries.add(LatexLib.Class(it)) }
-                        }
-                    }
-                }
-
-                preferredCompileModeForPackages(directLibraries)
-                    ?: preferredCompileModeForPackages(psiFile.includedPackagesInFileset())
-            }
-            magicMode ?: packageMode ?: LatexmkCompileMode.PDFLATEX_PDF
-        }
-    }
+    fun effectiveLatexmkCompileMode(): LatexmkCompileMode = latexmkModeService.effectiveCompileMode()
 
     // Explicitly deep clone references, otherwise a copied run config has references to the original objects
     override fun clone(): RunConfiguration {

@@ -163,4 +163,49 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
 
         assertEquals(LatexmkCompileMode.AUTO, runConfig.latexmkCompileMode)
     }
+
+    fun testResetEditorFromDoesNotMutateCompileTwiceOrLastRunFlag() {
+        val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
+        runConfig.compiler = LatexCompiler.LATEXMK
+        runConfig.compileTwice = true
+        runConfig.isLastRunConfig = true
+
+        val editor = LatexSettingsEditor(project)
+        editor.resetFrom(runConfig)
+
+        assertTrue(runConfig.compileTwice)
+        assertTrue(runConfig.isLastRunConfig)
+    }
+
+    fun testWriteExternalStoresAuxConfigIdsInStructuredFormat() {
+        val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
+        val runManager = com.intellij.execution.impl.RunManagerImpl.getInstanceImpl(project)
+        val bib = runManager.createConfiguration("bib", LatexConfigurationFactory(BibtexRunConfigurationType()))
+        runManager.addConfiguration(bib)
+        runConfig.bibRunConfigs = setOf(bib)
+
+        val element = Element("configuration", Namespace.getNamespace("", ""))
+        runConfig.writeExternal(element)
+        val parent = element.getChild("texify") ?: error("Missing texify node")
+        val structured = parent.getChild("bib-run-configs") ?: error("Missing structured ids node")
+        assertTrue(structured.getChildren("id").isNotEmpty())
+    }
+
+    fun testReadExternalSupportsLegacyAuxConfigSetFormat() {
+        val runManager = com.intellij.execution.impl.RunManagerImpl.getInstanceImpl(project)
+        val bib = runManager.createConfiguration("bib", LatexConfigurationFactory(BibtexRunConfigurationType()))
+        runManager.addConfiguration(bib)
+
+        val root = Element("configuration", Namespace.getNamespace("", ""))
+        val parent = Element("texify")
+        parent.addContent(Element("compiler").setText(LatexCompiler.PDFLATEX.name))
+        parent.addContent(Element("main-file").setText(""))
+        parent.addContent(Element("bib-run-config").setText("[${bib.uniqueID}]"))
+        root.addContent(parent)
+
+        val restored = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Restored")
+        restored.readExternal(root)
+
+        assertTrue(restored.bibRunConfigs.any { it.uniqueID == bib.uniqueID })
+    }
 }

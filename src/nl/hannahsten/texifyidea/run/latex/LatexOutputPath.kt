@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.run.latex
 import com.intellij.execution.ExecutionException
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
-import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.LocalFileSystem
@@ -61,7 +61,7 @@ class LatexOutputPath(private val variant: String, var mainFile: VirtualFile?, p
 
     private fun getPath(): VirtualFile? {
         // When we previously made the mistake of calling findRelativePath with an empty string, the output path will be set to the /bin folder of IntelliJ. Fix that here, to be sure
-        if (virtualFile?.path?.endsWith("/bin") == true) {
+        if (isInvalidJetBrainsBinPath(virtualFile?.path)) {
             virtualFile = null
         }
 
@@ -110,7 +110,7 @@ class LatexOutputPath(private val variant: String, var mainFile: VirtualFile?, p
     fun getMainFileContentRoot(mainFile: VirtualFile?): VirtualFile? {
         if (mainFile == null) return null
         if (!project.isInitialized) return null
-        return runReadAction {
+        return ReadAction.compute<VirtualFile?, RuntimeException> {
             ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)
         }
     }
@@ -118,7 +118,7 @@ class LatexOutputPath(private val variant: String, var mainFile: VirtualFile?, p
     private fun getDefaultOutputPath(): VirtualFile? {
         if (mainFile == null) return null
         var defaultOutputPath: VirtualFile? = null
-        runReadAction {
+        ReadAction.run<RuntimeException> {
             val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile!!)
             if (moduleRoot?.path != null) {
                 defaultOutputPath = LocalFileSystem.getInstance().findFileByPath(moduleRoot.path + "/" + variant)
@@ -142,7 +142,7 @@ class LatexOutputPath(private val variant: String, var mainFile: VirtualFile?, p
         val fileIndex = ProjectRootManager.getInstance(project).fileIndex
 
         // Create output path for non-MiKTeX systems (MiKTeX creates it automatically)
-        val module = runReadAction { fileIndex.getModuleForFile(mainFile, false) }
+        val module = ReadAction.compute<com.intellij.openapi.module.Module?, RuntimeException> { fileIndex.getModuleForFile(mainFile, false) }
         if (File(outPath).mkdirs()) {
             module?.createExcludedDir(outPath)
             return LocalFileSystem.getInstance().refreshAndFindFileByPath(outPath)

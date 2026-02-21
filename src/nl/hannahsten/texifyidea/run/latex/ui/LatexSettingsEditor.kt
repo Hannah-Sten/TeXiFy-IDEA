@@ -28,6 +28,7 @@ import nl.hannahsten.texifyidea.run.latex.LatexCommandLineOptionsCache
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexOutputPath
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.isInvalidJetBrainsBinPath
 import nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfigurationType
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCitationTool
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
@@ -135,17 +136,11 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
         // Reset whether to compile twice
         if (runConfiguration.compiler?.handlesNumberOfCompiles == true) {
             compileTwice.isVisible = false
-            runConfiguration.compileTwice = false
         }
         else {
             compileTwice.isVisible = true
         }
-        compileTwice.isSelected = runConfiguration.compileTwice
-
-        // If we need to compile twice, make sure the LatexCommandLineState knows
-        if (runConfiguration.compileTwice) {
-            runConfiguration.isLastRunConfig = false
-        }
+        compileTwice.isSelected = runConfiguration.compiler?.handlesNumberOfCompiles != true && runConfiguration.compileTwice
 
         // Reset output format.
         // Make sure to use the output formats relevant for the chosen compiler
@@ -233,7 +228,7 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
         // Apply main file.
         runConfiguration.setMainFile(mainFile.text)
 
-        if (!outputPath.text.endsWith("/bin")) {
+        if (!isInvalidJetBrainsBinPath(outputPath.text)) {
             runConfiguration.setFileOutputPath(outputPath.text)
         }
 

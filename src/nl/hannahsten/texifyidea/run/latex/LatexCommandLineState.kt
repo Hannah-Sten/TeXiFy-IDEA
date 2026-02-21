@@ -6,6 +6,7 @@ import com.intellij.execution.process.KillableProcessHandler
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.util.ProgramParametersConfigurator
+import com.intellij.util.execution.ParametersListUtil
 import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.DumbService
@@ -37,18 +38,56 @@ import java.io.File
 open class LatexCommandLineState(environment: ExecutionEnvironment, private val runConfig: LatexRunConfiguration) : CommandLineState(environment) {
 
     private val programParamsConfigurator = ProgramParametersConfigurator()
+    private val executionState = LatexRunExecutionState.from(runConfig)
 
     @Throws(ExecutionException::class)
     override fun startProcess(): ProcessHandler {
         val compiler = runConfig.compiler ?: throw ExecutionException("No valid compiler specified.")
-        val isLatexmk = compiler == LatexCompiler.LATEXMK
         val mainFile = runConfig.mainFile ?: throw ExecutionException("Main file is not specified.")
 
+        return if (compiler == LatexCompiler.LATEXMK) {
+            startLatexmkProcess(mainFile, compiler)
+        }
+        else {
+            startClassicProcess(mainFile, compiler)
+        }
+    }
+
+    private fun startLatexmkProcess(mainFile: VirtualFile, compiler: LatexCompiler): ProcessHandler {
         if (runConfig.outputPath.virtualFile == null || !runConfig.outputPath.virtualFile!!.exists()) {
             runConfig.outputPath.getAndCreatePath()
         }
 
-        if (!runConfig.hasBeenRun && !isLatexmk) {
+        val createdOutputDirectories = if (!runConfig.getLatexDistributionType().isMiktex(runConfig.project)) {
+            runConfig.outputPath.updateOutputSubDirs()
+        }
+        else {
+            setOf()
+        }
+        runConfig.filesToCleanUpIfEmpty.addAll(createdOutputDirectories)
+
+        val handler = createHandler(mainFile, compiler)
+        executionState.hasBeenRun = true
+        executionState.syncTo(runConfig)
+
+        if (!isLastCompile(isMakeindexNeeded = false, handler)) return handler
+
+        schedulePdfViewerIfNeeded(handler)
+        if (runConfig.isAutoCompiling) {
+            handler.addProcessListener(AutoCompileDoneListener())
+            runConfig.isAutoCompiling = false
+            // reset this flag, which will be set in each auto-compile
+        }
+
+        return handler
+    }
+
+    private fun startClassicProcess(mainFile: VirtualFile, compiler: LatexCompiler): ProcessHandler {
+        if (runConfig.outputPath.virtualFile == null || !runConfig.outputPath.virtualFile!!.exists()) {
+            runConfig.outputPath.getAndCreatePath()
+        }
+
+        if (!executionState.hasBeenRun) {
             firstRunSetup(compiler)
         }
 
@@ -61,32 +100,20 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         runConfig.filesToCleanUpIfEmpty.addAll(createdOutputDirectories)
 
         val handler = createHandler(mainFile, compiler)
-        val isMakeindexNeeded = if (isLatexmk) {
-            false
-        }
-        else {
-            runMakeindexIfNeeded(handler, mainFile, runConfig.filesToCleanUp)
-        }
-        if (!isLatexmk) {
-            runExternalToolsIfNeeded(handler)
-        }
-        runConfig.hasBeenRun = true
+        val isMakeindexNeeded = runMakeindexIfNeeded(handler, mainFile, runConfig.filesToCleanUp)
+        runExternalToolsIfNeeded(handler)
+        executionState.hasBeenRun = true
+        executionState.syncTo(runConfig)
 
         if (!isLastCompile(isMakeindexNeeded, handler)) return handler
 
-        if (!isLatexmk) {
-            scheduleBibtexRunIfNeeded(handler)
-        }
+        scheduleBibtexRunIfNeeded(handler)
         schedulePdfViewerIfNeeded(handler)
         if (runConfig.isAutoCompiling) {
             handler.addProcessListener(AutoCompileDoneListener())
             runConfig.isAutoCompiling = false
-            // reset this flag, which will be set in each auto-compile
         }
-        if (!isLatexmk) {
-            scheduleFileCleanup(runConfig.filesToCleanUp, runConfig.filesToCleanUpIfEmpty, handler)
-        }
-
+        scheduleFileCleanup(runConfig.filesToCleanUp, runConfig.filesToCleanUpIfEmpty, handler)
         return handler
     }
 
@@ -129,7 +156,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             ReadAction.run<RuntimeException> {
                 // If the index is not ready, we cannot check if a bib run config is needed, so skip this and run the main run config anyway
                 if (!DumbService.getInstance(runConfig.project).isDumb) {
-                    Log.debug("Not generating bibtex run config because index is not ready")
+                    Log.debug("Generating bibtex run config during first run setup")
                     runConfig.generateBibRunConfig()
                 }
             }
@@ -148,7 +175,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
     private fun runExternalToolsIfNeeded(
         handler: KillableProcessHandler
     ): Boolean {
-        val isAnyExternalToolNeeded = if (!runConfig.hasBeenRun) {
+        val isAnyExternalToolNeeded = if (!executionState.hasBeenRun) {
             // This is a relatively expensive check
             RunExternalToolListener.getRequiredExternalTools(runConfig.mainFile, runConfig.project).isNotEmpty()
         }
@@ -156,8 +183,8 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             false
         }
 
-        if (runConfig.isFirstRunConfig && (runConfig.externalToolRunConfigs.isNotEmpty() || isAnyExternalToolNeeded)) {
-            handler.addProcessListener(RunExternalToolListener(runConfig, environment))
+        if (executionState.isFirstRunConfig && (runConfig.externalToolRunConfigs.isNotEmpty() || isAnyExternalToolNeeded)) {
+            handler.addProcessListener(RunExternalToolListener(runConfig, environment, executionState))
         }
 
         return isAnyExternalToolNeeded
@@ -168,7 +195,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
         // To find out whether makeindex is needed is relatively expensive,
         // so we only do this the first time
-        if (!runConfig.hasBeenRun) {
+        if (!executionState.hasBeenRun) {
             val commandsInFileSet = NewCommandsIndex.getAllKeys(LatexProjectStructure.getFilesetScopeFor(mainFile, environment.project))
             // Option 1 in http://mirrors.ctan.org/macros/latex/contrib/glossaries/glossariesbegin.pdf
             val usesTexForGlossaries = "\\makenoidxglossaries" in commandsInFileSet
@@ -195,8 +222,8 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         }
 
         // Run makeindex when applicable
-        if (runConfig.isFirstRunConfig && (runConfig.makeindexRunConfigs.isNotEmpty() || isMakeindexNeeded)) {
-            handler.addProcessListener(RunMakeindexListener(runConfig, environment, filesToCleanUp))
+        if (executionState.isFirstRunConfig && (runConfig.makeindexRunConfigs.isNotEmpty() || isMakeindexNeeded)) {
+            handler.addProcessListener(RunMakeindexListener(runConfig, environment, filesToCleanUp, executionState))
         }
 
         return isMakeindexNeeded
@@ -208,13 +235,14 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         // If there is no bibtex/makeindex involved and we don't need to compile twice, then this is the last compile
         if (runConfig.bibRunConfigs.isEmpty() && !isMakeindexNeeded && runConfig.externalToolRunConfigs.isEmpty()) {
             if (!shouldCompileTwice) {
-                runConfig.isLastRunConfig = true
+                executionState.isLastRunConfig = true
+                executionState.syncTo(runConfig)
             }
 
             // Schedule the second compile only if this is the first compile
             @Suppress("KotlinConstantConditions")
-            if (!runConfig.isLastRunConfig && shouldCompileTwice) {
-                handler.addProcessListener(RunLatexListener(runConfig, environment))
+            if (!executionState.isLastRunConfig && shouldCompileTwice) {
+                handler.addProcessListener(RunLatexListener(runConfig, environment, executionState))
                 return false
             }
         }
@@ -224,7 +252,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
     private fun scheduleBibtexRunIfNeeded(handler: KillableProcessHandler) {
         runConfig.bibRunConfigs.forEachIndexed { index, bibSettings ->
-            if (!runConfig.isFirstRunConfig) {
+            if (!executionState.isFirstRunConfig) {
                 return@forEachIndexed
             }
 
@@ -263,7 +291,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             val commandString = runConfig.viewerCommand!!
 
             // Split on spaces
-            val commandList = commandString.split(" ").toMutableList()
+            val commandList = ParametersListUtil.parse(commandString).toMutableList()
 
             val containsPlaceholder = commandList.contains("{pdf}")
 

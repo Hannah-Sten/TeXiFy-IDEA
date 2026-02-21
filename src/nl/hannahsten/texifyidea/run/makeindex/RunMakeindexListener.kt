@@ -12,6 +12,7 @@ import com.intellij.openapi.util.io.FileUtil
 import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
 import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
+import nl.hannahsten.texifyidea.run.latex.LatexRunExecutionState
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.getDefaultMakeindexPrograms
 import nl.hannahsten.texifyidea.run.latex.getMakeindexOptions
@@ -30,7 +31,8 @@ import java.io.IOException
 class RunMakeindexListener(
     private val latexRunConfig: LatexRunConfiguration,
     private val environment: ExecutionEnvironment,
-    private val filesToCleanUp: MutableList<File>
+    private val filesToCleanUp: MutableList<File>,
+    private val executionState: LatexRunExecutionState,
 ) : ProcessListener {
 
     override fun processTerminated(event: ProcessEvent) {
@@ -64,8 +66,9 @@ class RunMakeindexListener(
                 scheduleLatexRuns()
             }
             finally {
-                latexRunConfig.isLastRunConfig = false
-                latexRunConfig.isFirstRunConfig = true
+                executionState.isLastRunConfig = false
+                executionState.isFirstRunConfig = true
+                executionState.syncTo(latexRunConfig)
             }
         }
     }
@@ -92,12 +95,15 @@ class RunMakeindexListener(
         // Don't schedule more latex runs if bibtex is used, because that will already schedule the extra runs
         if (latexRunConfig.bibRunConfigs.isEmpty()) {
             // LaTeX twice
-            latexRunConfig.isFirstRunConfig = false
+            executionState.isFirstRunConfig = false
+            executionState.syncTo(latexRunConfig)
             val latexSettings = RunManagerImpl.getInstanceImpl(environment.project).getSettings(latexRunConfig)
                 ?: return
-            latexRunConfig.isLastRunConfig = false
+            executionState.isLastRunConfig = false
+            executionState.syncTo(latexRunConfig)
             RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)
-            latexRunConfig.isLastRunConfig = true
+            executionState.isLastRunConfig = true
+            executionState.syncTo(latexRunConfig)
             RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)
         }
     }

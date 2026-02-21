@@ -14,7 +14,8 @@ import com.intellij.openapi.util.Key
  */
 class RunLatexListener(
     private val runConfig: LatexRunConfiguration,
-    private val environment: ExecutionEnvironment
+    private val environment: ExecutionEnvironment,
+    private val executionState: LatexRunExecutionState,
 ) : ProcessListener {
 
     override fun processTerminated(event: ProcessEvent) {
@@ -24,9 +25,11 @@ class RunLatexListener(
 
         val latexSettings = RunManagerImpl.getInstanceImpl(environment.project).getSettings(runConfig)
             ?: return
-        runConfig.isLastRunConfig = true
+        executionState.isLastRunConfig = true
+        executionState.syncTo(runConfig)
         RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)
-        runConfig.isLastRunConfig = false
+        executionState.isLastRunConfig = false
+        executionState.syncTo(runConfig)
     }
 
     override fun onTextAvailable(p0: ProcessEvent, p1: Key<*>) {
