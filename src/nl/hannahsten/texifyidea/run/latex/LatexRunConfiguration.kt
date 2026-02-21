@@ -109,9 +109,6 @@ class LatexRunConfiguration(
     var beforeRunCommand: String? = null
 
     override var mainFile: VirtualFile? = null
-        set(value) {
-            field = value
-        }
 
     // Save the psifile which can be used to check whether to create a bibliography based on which commands are in the psifile
     // This is not done when creating the template run configuration in order to delay the expensive bibtex check
@@ -161,12 +158,6 @@ class LatexRunConfiguration(
         get() = executionState.isLastRunConfig
         set(value) {
             executionState.isLastRunConfig = value
-        }
-
-    var isFirstRunConfig: Boolean
-        get() = executionState.isFirstRunConfig
-        set(value) {
-            executionState.isFirstRunConfig = value
         }
 
     // Whether the run configuration has already been run or not, since it has been created
@@ -456,7 +447,7 @@ class LatexRunConfiguration(
      */
     fun getAllAuxiliaryRunConfigs(): Set<RunnerAndConfigurationSettings> = auxChainResolver.getAllAuxiliaryRunConfigs()
 
-    override fun getResolvedWorkingDirectory(): java.nio.file.Path? {
+    override fun getResolvedWorkingDirectory(): Path? {
         val pathString = if (workingDirectory != null && mainFile != null) {
             workingDirectory?.toString()?.replace(LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER, mainFile!!.parent.path)
         }

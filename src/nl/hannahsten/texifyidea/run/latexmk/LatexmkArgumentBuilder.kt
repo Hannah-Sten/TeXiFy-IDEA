@@ -13,8 +13,7 @@ internal fun buildLatexmkStructuredArguments(
 
     val hasExplicitStructuredOptions =
         compileMode != LatexmkCompileMode.PDFLATEX_PDF ||
-            citationTool != LatexmkCitationTool.AUTO ||
-            (compileMode == LatexmkCompileMode.CUSTOM && !customEngineCommand.isNullOrBlank())
+            citationTool != LatexmkCitationTool.AUTO
 
     if (!hasRcFile || hasExplicitStructuredOptions) {
         arguments += compileMode.toLatexmkFlags(customEngineCommand)

@@ -233,7 +233,6 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             }
 
             // Schedule the second compile only if this is the first compile
-            @Suppress("KotlinConstantConditions")
             if (!executionState.isLastRunConfig && shouldCompileTwice) {
                 handler.addProcessListener(RunLatexListener(runConfig, environment, executionState))
                 return false

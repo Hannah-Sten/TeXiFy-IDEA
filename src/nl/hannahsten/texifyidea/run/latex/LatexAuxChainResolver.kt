@@ -95,6 +95,6 @@ internal class LatexAuxChainResolver(private val runConfig: LatexRunConfiguratio
         }
 
         runManager.addConfiguration(bibSettings)
-        runConfig.bibRunConfigs = runConfig.bibRunConfigs + setOf(bibSettings)
+        runConfig.bibRunConfigs += setOf(bibSettings)
     }
 }

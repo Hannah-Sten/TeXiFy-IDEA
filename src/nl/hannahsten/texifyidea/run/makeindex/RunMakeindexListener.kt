@@ -40,11 +40,8 @@ class RunMakeindexListener(
         runInBackgroundNonBlocking(latexRunConfig.project, "Generating Makeindex Run Configuration...") {
             try {
                 // Only create new one if there is none yet
-                val runConfigSettingsList = if (latexRunConfig.makeindexRunConfigs.isEmpty()) {
+                val runConfigSettingsList = latexRunConfig.makeindexRunConfigs.ifEmpty {
                     generateIndexConfigs()
-                }
-                else {
-                    latexRunConfig.makeindexRunConfigs
                 }
 
                 // Run all run configurations
@@ -89,7 +86,7 @@ class RunMakeindexListener(
                     }
                 }
             }
-            catch (ignored: IOException) {}
+            catch (_: IOException) {}
         }
     }
 

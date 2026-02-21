@@ -321,7 +321,7 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
 
         expandMacrosEnvVariables.addItemListener {
             if (it.stateChange == 1) { // checkbox checked
-                envVariableTextFieldMacroSupportExtension?.let {
+                envVariableTextFieldMacroSupportExtension?.let { it ->
                     environmentVariableTextField.addExtension(it)
                 } ?: run {
                     MacrosDialog.addTextFieldExtension(environmentVariableTextField)
