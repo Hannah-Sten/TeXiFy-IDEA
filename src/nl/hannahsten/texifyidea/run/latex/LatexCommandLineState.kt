@@ -28,7 +28,6 @@ import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.util.*
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
-import java.io.File
 
 /**
  * Run the run configuration: start the compile process and initiate forward search (when applicable).
@@ -76,7 +75,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         }
 
         val handler = createHandler(mainFile, compiler)
-        val isMakeindexNeeded = runMakeindexIfNeeded(handler, mainFile, runConfig.filesToCleanUp)
+        val isMakeindexNeeded = runMakeindexIfNeeded(handler, mainFile)
         runExternalToolsIfNeeded(handler)
         executionState.markHasRun()
 
@@ -88,7 +87,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             handler.addProcessListener(AutoCompileDoneListener())
             runConfig.isAutoCompiling = false
         }
-        scheduleFileCleanup(runConfig.filesToCleanUp, runConfig.filesToCleanUpIfEmpty, handler)
+        scheduleFileCleanup(handler)
         return handler
     }
 
@@ -165,7 +164,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         return isAnyExternalToolNeeded
     }
 
-    private fun runMakeindexIfNeeded(handler: KillableProcessHandler, mainFile: VirtualFile, filesToCleanUp: MutableList<File>): Boolean {
+    private fun runMakeindexIfNeeded(handler: KillableProcessHandler, mainFile: VirtualFile): Boolean {
         var isMakeindexNeeded = false
 
         // To find out whether makeindex is needed is relatively expensive,
@@ -198,7 +197,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
         // Run makeindex when applicable
         if (executionState.isFirstRunConfig && (runConfig.makeindexRunConfigs.isNotEmpty() || isMakeindexNeeded)) {
-            handler.addProcessListener(RunMakeindexListener(runConfig, environment, filesToCleanUp, executionState))
+            handler.addProcessListener(RunMakeindexListener(runConfig, environment, executionState))
         }
 
         return isMakeindexNeeded
@@ -246,9 +245,9 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         }
     }
 
-    private fun scheduleFileCleanup(filesToCleanUp: MutableList<File>, filesToCleanUpIfEmpty: Set<File>, handler: KillableProcessHandler) {
+    private fun scheduleFileCleanup(handler: KillableProcessHandler) {
         if (executionState.isLastRunConfig) {
-            handler.addProcessListener(FileCleanupListener(filesToCleanUp, filesToCleanUpIfEmpty))
+            handler.addProcessListener(FileCleanupListener(executionState.filesToCleanUp, executionState.directoriesToDeleteIfEmpty))
         }
     }
 
@@ -265,6 +264,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
             // Split on spaces
             val commandList = ParametersListUtil.parse(commandString).toMutableList()
+            val outputFilePath = executionState.resolvedOutputFilePath ?: return
 
             val containsPlaceholder = commandList.contains("{pdf}")
 
@@ -272,13 +272,13 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
                 // Replace placeholder
                 for (i in 0 until commandList.size) {
                     if (commandList[i].contains("{pdf}")) {
-                        commandList[i] = commandList[i].replace("{pdf}", runConfig.outputFilePath)
+                        commandList[i] = commandList[i].replace("{pdf}", outputFilePath)
                     }
                 }
             }
             else {
                 // If no placeholder was used, assume the path is the final argument
-                commandList += runConfig.outputFilePath
+                commandList += outputFilePath
             }
             handler.addProcessListener(OpenCustomPdfViewerListener(commandList.toTypedArray(), runConfig = runConfig))
             return

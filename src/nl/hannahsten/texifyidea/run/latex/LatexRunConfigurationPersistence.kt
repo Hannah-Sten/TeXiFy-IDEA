@@ -49,10 +49,6 @@ internal object LatexRunConfigurationPersistence {
     private const val LATEXMK_CITATION_TOOL = "latexmk-citation-tool"
     private const val LATEXMK_EXTRA_ARGUMENTS = "latexmk-extra-arguments"
 
-    // For backwards compatibility
-    private const val AUX_DIR = "aux-dir"
-    private const val OUT_DIR = "out-dir"
-
     fun readInto(runConfig: LatexRunConfiguration, element: Element) {
         val parent = element.getChild(TEXIFY_PARENT) ?: return
 
@@ -104,8 +100,6 @@ internal object LatexRunConfigurationPersistence {
             ?.let { runCatching { LatexmkCitationTool.valueOf(it) }.getOrNull() }
             ?: LatexmkCitationTool.AUTO
         runConfig.latexmkExtraArguments = parent.getChildText(LATEXMK_EXTRA_ARGUMENTS) ?: LatexRunConfiguration.DEFAULT_LATEXMK_EXTRA_ARGUMENTS
-
-        LatexRunConfigurationStaticSupport.applyLegacyOutAuxFlags(runConfig, parent.getChildText(AUX_DIR), parent.getChildText(OUT_DIR))
 
         runConfig.setAuxRunConfigIds(LatexRunConfigurationSerializer.readRunConfigIds(parent, BIB_RUN_CONFIGS, BIB_RUN_CONFIG))
         runConfig.setMakeindexRunConfigIds(LatexRunConfigurationSerializer.readRunConfigIds(parent, MAKEINDEX_RUN_CONFIGS, MAKEINDEX_RUN_CONFIG))

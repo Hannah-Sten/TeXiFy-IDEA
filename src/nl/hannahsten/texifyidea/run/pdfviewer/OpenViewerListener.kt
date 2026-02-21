@@ -25,10 +25,11 @@ class OpenViewerListener(
     override fun processTerminated(event: ProcessEvent) {
         if (event.exitCode == 0) {
             try {
+                val outputPath = runConfig.executionState.resolvedOutputFilePath ?: return
                 // ensure the viewer is open, especially for Sumatra
-                viewer.openFile(runConfig.getOutputFilePath(), project, focusAllowed = focusAllowed)
+                viewer.openFile(outputPath, project, focusAllowed = focusAllowed)
                 viewer.forwardSearch(
-                    outputPath = runConfig.getOutputFilePath(),
+                    outputPath = outputPath,
                     sourceFilePath = sourceFilePath,
                     line = line,
                     project = project,

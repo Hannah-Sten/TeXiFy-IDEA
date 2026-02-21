@@ -23,14 +23,11 @@ import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogTabComponent
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCitationTool
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
-import nl.hannahsten.texifyidea.run.latexmk.compileModeFromMagicCommand
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdk
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import org.jdom.Element
-import java.io.File
 import java.nio.file.Path
-import java.util.*
 
 /**
  * @author Hannah Schellekens, Sten Wessel
@@ -149,11 +146,6 @@ class LatexRunConfiguration(
                 externalToolRunConfigIds.add(it.uniqueID)
             }
         }
-
-    // In order to propagate information about which files need to be cleaned up at the end between one run of the run config
-    // (for example makeindex) and the last run, we save this information temporarily here while the run configuration is running.
-    val filesToCleanUp = mutableListOf<File>()
-    val filesToCleanUpIfEmpty = mutableSetOf<File>()
 
     @Transient
     private val auxChainResolver = LatexAuxChainResolver(this)
@@ -297,28 +289,6 @@ class LatexRunConfiguration(
     override fun isGeneratedName(): Boolean {
         val fileNameWithoutExtension = LatexRunConfigurationStaticSupport.mainFileNameWithoutExtension(this) ?: return false
         return fileNameWithoutExtension == name
-    }
-
-    // Path to output file (e.g. pdf)
-    override fun getOutputFilePath(): String {
-        val mainFile = executionState.resolvedMainFile ?: return ""
-        val outputDirPath = executionState.resolvedOutputDir?.path ?: return ""
-        val baseName = mainFile.nameWithoutExtension
-        val extension = if (compiler == LatexCompiler.LATEXMK) {
-            val modeFromArgs = executionState.effectiveCompilerArguments
-                ?.takeIf(String::isNotBlank)
-                ?.let { compileModeFromMagicCommand("latexmk $it") }
-            (modeFromArgs ?: executionState.effectiveLatexmkCompileMode ?: LatexmkCompileMode.PDFLATEX_PDF)
-                .extension
-                .lowercase(Locale.getDefault())
-        }
-        else if (outputFormat == Format.DEFAULT) {
-            "pdf"
-        }
-        else {
-            outputFormat.toString().lowercase(Locale.getDefault())
-        }
-        return "$outputDirPath/$baseName.$extension"
     }
 
     fun setAuxRunConfigIds(ids: Set<String>) {

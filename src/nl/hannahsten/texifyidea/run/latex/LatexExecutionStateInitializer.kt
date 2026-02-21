@@ -4,7 +4,11 @@ import com.intellij.execution.ExecutionException
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
+import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
+import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
+import nl.hannahsten.texifyidea.run.latexmk.compileModeFromMagicCommand
 import java.nio.file.Path
+import java.util.Locale
 
 internal object LatexExecutionStateInitializer {
 
@@ -30,7 +34,7 @@ internal object LatexExecutionStateInitializer {
 
         if (!runConfig.getLatexDistributionType().isMiktex(runConfig.project, mainFile)) {
             val createdDirectories = LatexPathResolver.updateOutputSubDirs(runConfig, mainFile, executionState.resolvedOutputDir)
-            runConfig.filesToCleanUpIfEmpty.addAll(createdDirectories)
+            executionState.addCleanupDirectoriesIfEmpty(createdDirectories)
         }
 
         val effectiveMode = if (runConfig.compiler == LatexCompiler.LATEXMK) {
@@ -46,8 +50,33 @@ internal object LatexExecutionStateInitializer {
         else {
             runConfig.compilerArguments
         }
+        executionState.resolvedOutputFilePath = computeOutputFilePath(runConfig, executionState, mainFile)
         executionState.initFingerprint = buildFingerprint(runConfig, mainFile)
         executionState.isInitialized = true
+    }
+
+    private fun computeOutputFilePath(
+        runConfig: LatexRunConfiguration,
+        executionState: LatexRunExecutionState,
+        mainFile: VirtualFile,
+    ): String? {
+        val outputDirPath = executionState.resolvedOutputDir?.path ?: return null
+        val baseName = mainFile.nameWithoutExtension
+        val extension = if (runConfig.compiler == LatexCompiler.LATEXMK) {
+            val modeFromArgs = executionState.effectiveCompilerArguments
+                ?.takeIf(String::isNotBlank)
+                ?.let { compileModeFromMagicCommand("latexmk $it") }
+            (modeFromArgs ?: executionState.effectiveLatexmkCompileMode ?: LatexmkCompileMode.PDFLATEX_PDF)
+                .extension
+                .lowercase(Locale.getDefault())
+        }
+        else if (runConfig.outputFormat == Format.DEFAULT) {
+            "pdf"
+        }
+        else {
+            runConfig.outputFormat.toString().lowercase(Locale.getDefault())
+        }
+        return "$outputDirPath/$baseName.$extension"
     }
 
     private fun buildFingerprint(runConfig: LatexRunConfiguration, mainFile: VirtualFile): String = listOf(

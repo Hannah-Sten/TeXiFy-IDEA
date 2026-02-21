@@ -3,7 +3,6 @@ package nl.hannahsten.texifyidea.run.latex
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
-import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
 
 internal object LatexRunConfigurationStaticSupport {
 
@@ -67,21 +66,5 @@ internal object LatexRunConfigurationStaticSupport {
         val usesAuxilDir = LatexPathResolver.resolveAuxDir(runConfig, mainFile) != mainParent
         val usesOutDir = LatexPathResolver.resolveOutputDir(runConfig, mainFile) != mainParent
         return usesAuxilDir || usesOutDir
-    }
-
-    fun applyLegacyOutAuxFlags(runConfig: LatexRunConfiguration, auxDirBoolean: String?, outDirBoolean: String?) {
-        val main = resolveMainFile(runConfig) ?: return
-        if (auxDirBoolean != null && runConfig.auxilPath == null) {
-            val usesAuxDir = java.lang.Boolean.parseBoolean(auxDirBoolean)
-            val moduleRoot = ProjectRootManager.getInstance(runConfig.project).fileIndex.getContentRootForFile(main)
-            val path = if (usesAuxDir) moduleRoot?.path + "/auxil" else main.parent.path
-            runConfig.auxilPath = pathOrNull(path)
-        }
-        if (outDirBoolean != null && runConfig.outputPath == null) {
-            val usesOutDir = java.lang.Boolean.parseBoolean(outDirBoolean)
-            val moduleRoot = ProjectRootManager.getInstance(runConfig.project).fileIndex.getContentRootForFile(main)
-            val path = if (usesOutDir) moduleRoot?.path + "/out" else main.parent.path
-            runConfig.outputPath = pathOrNull(path)
-        }
     }
 }

@@ -23,6 +23,9 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
         runConfig.executionState.resolvedAuxDir = LatexPathResolver.resolveAuxDir(runConfig, mainFile)
         runConfig.executionState.effectiveLatexmkCompileMode = LatexmkModeService.effectiveCompileMode(runConfig)
         runConfig.executionState.effectiveCompilerArguments = LatexmkModeService.buildArguments(runConfig, runConfig.executionState.effectiveLatexmkCompileMode)
+        val extension = (runConfig.executionState.effectiveLatexmkCompileMode ?: LatexmkCompileMode.PDFLATEX_PDF).extension.lowercase()
+        runConfig.executionState.resolvedOutputFilePath =
+            "${runConfig.executionState.resolvedOutputDir?.path}/${mainFile.nameWithoutExtension}.$extension"
         runConfig.executionState.isInitialized = true
     }
 
@@ -153,7 +156,7 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
         val arguments = LatexmkModeService.buildArguments(runConfig)
         assertTrue(arguments.contains("-xelatex"))
         assertTrue(arguments.contains("-xdv"))
-        assertTrue(runConfig.getOutputFilePath().endsWith(".xdv"))
+        assertTrue(runConfig.executionState.resolvedOutputFilePath?.endsWith(".xdv") == true)
     }
 
     fun testLatexRunConfigurationAutoModeUsesPackageHeuristics() {

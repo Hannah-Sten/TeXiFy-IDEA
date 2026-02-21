@@ -4,6 +4,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPsiElementPointer
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
+import java.io.File
 import java.nio.file.Path
 
 data class LatexRunExecutionState(
@@ -16,9 +17,13 @@ data class LatexRunExecutionState(
     var resolvedOutputDir: VirtualFile? = null,
     var resolvedAuxDir: VirtualFile? = null,
     var resolvedWorkingDirectory: Path? = null,
+    /** Absolute path to the compiled document output file (for example the generated PDF/XDV). */
+    var resolvedOutputFilePath: String? = null,
     var psiFile: SmartPsiElementPointer<PsiFile>? = null,
     var effectiveLatexmkCompileMode: LatexmkCompileMode? = null,
     var effectiveCompilerArguments: String? = null,
+    val filesToCleanUp: MutableList<File> = mutableListOf(),
+    val directoriesToDeleteIfEmpty: MutableSet<File> = mutableSetOf(),
 ) {
 
     fun beginAuxChain() {
@@ -50,8 +55,19 @@ data class LatexRunExecutionState(
         resolvedOutputDir = null
         resolvedAuxDir = null
         resolvedWorkingDirectory = null
+        resolvedOutputFilePath = null
         effectiveLatexmkCompileMode = null
         effectiveCompilerArguments = null
+        filesToCleanUp.clear()
+        directoriesToDeleteIfEmpty.clear()
+    }
+
+    fun addCleanupFile(file: File) {
+        filesToCleanUp.add(file)
+    }
+
+    fun addCleanupDirectoriesIfEmpty(files: Collection<File>) {
+        directoriesToDeleteIfEmpty.addAll(files)
     }
 
     fun resetAfterAuxChain() {

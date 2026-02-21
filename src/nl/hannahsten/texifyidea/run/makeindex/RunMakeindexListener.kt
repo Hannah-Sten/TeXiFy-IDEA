@@ -32,7 +32,6 @@ import java.io.IOException
 class RunMakeindexListener(
     private val latexRunConfig: LatexRunConfiguration,
     private val environment: ExecutionEnvironment,
-    private val filesToCleanUp: MutableList<File>,
     private val executionState: LatexRunExecutionState,
 ) : ProcessListener {
 
@@ -160,7 +159,7 @@ class RunMakeindexListener(
 
             // Only clean up file if not copied there by user
             if (indexFileSource.exists() && !indexFileDestination.exists()) {
-                filesToCleanUp.add(indexFileDestination)
+                executionState.addCleanupFile(indexFileDestination)
             }
 
             try {

@@ -53,13 +53,12 @@ object ZathuraViewer : SystemPdfViewer("Zathura", "zathura") {
         val runConfig = project.selectedRunConfig() ?: return null
         val runConfigMainFile = LatexRunConfigurationStaticSupport.resolveMainFile(runConfig)
         return if (runConfigMainFile?.psiFile(project)?.referencedFileSet()?.contains(sourcePsiFile) == true) {
-            // getOutputFilePath() contains the file name and pdf extension already.
-            runConfig.getOutputFilePath()
+            runConfig.executionState.resolvedOutputFilePath
         }
         // If not, search for a run configuration that compiles the root file of the current file,
         // and use the output path that is specified there.
         else {
-            runConfigThatCompilesFile(sourceVirtualFile, project)?.getOutputFilePath() ?: return null
+            runConfigThatCompilesFile(sourceVirtualFile, project)?.executionState?.resolvedOutputFilePath ?: return null
         }
     }
 
