@@ -64,8 +64,8 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
     private var auxilPathRow: JComponent? = null
 
     private lateinit var workingDirectory: TextFieldWithBrowseButton
-    private var expandMacrosEnvVariables: JBCheckBox? = null
-    private var compileTwice: JBCheckBox? = null
+    private lateinit var expandMacrosEnvVariables: JBCheckBox
+    private lateinit var compileTwice: JBCheckBox
     private lateinit var outputFormat: ComboBox<Format>
     private lateinit var outputFormatRow: JComponent
     private lateinit var latexmkCompileMode: ComboBox<LatexmkCompileMode>
@@ -73,7 +73,6 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
     private lateinit var latexmkCitationTool: ComboBox<LatexmkCitationTool>
     private lateinit var latexmkExtraArguments: RawCommandLineEditor
     private lateinit var latexDistribution: ComboBox<LatexDistributionSelection>
-    private val extensionSeparator = TitledSeparator("Extensions")
     private lateinit var externalToolsPanel: RunConfigurationPanel
     private val classicCompilerComponents = mutableListOf<JComponent>()
     private val latexmkComponents = mutableListOf<JComponent>()
@@ -119,18 +118,14 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
 
         // Reset environment variables
         environmentVariables.envData = runConfiguration.environmentVariables
-        if (expandMacrosEnvVariables != null) {
-            expandMacrosEnvVariables!!.isSelected = runConfiguration.expandMacrosEnvVariables
-        }
+        expandMacrosEnvVariables.isSelected = runConfiguration.expandMacrosEnvVariables
 
         beforeRunCommand.text = runConfiguration.beforeRunCommand
 
         // Reset the main file to compile.
         mainFile.text = runConfiguration.mainFile?.path ?: ""
 
-        if (auxilPath != null) {
-            auxilPath!!.text = runConfiguration.auxilPath.virtualFile?.path ?: runConfiguration.auxilPath.pathString
-        }
+        auxilPath?.text = runConfiguration.auxilPath.virtualFile?.path ?: runConfiguration.auxilPath.pathString
 
         // We may be editing a run configuration template, don't resolve any path
         outputPath.text = runConfiguration.outputPath.virtualFile?.path ?: runConfiguration.outputPath.pathString
@@ -138,30 +133,29 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
         workingDirectory.text = runConfiguration.workingDirectory ?: LatexOutputPath.MAIN_FILE_STRING
 
         // Reset whether to compile twice
-        if (compileTwice != null) {
-            if (runConfiguration.compiler?.handlesNumberOfCompiles == true) {
-                compileTwice!!.isVisible = false
-                runConfiguration.compileTwice = false
-            }
-            else {
-                compileTwice!!.isVisible = true
-            }
-            compileTwice!!.isSelected = runConfiguration.compileTwice
+        if (runConfiguration.compiler?.handlesNumberOfCompiles == true) {
+            compileTwice.isVisible = false
+            runConfiguration.compileTwice = false
+        }
+        else {
+            compileTwice.isVisible = true
+        }
+        compileTwice.isSelected = runConfiguration.compileTwice
 
-            // If we need to compile twice, make sure the LatexCommandLineState knows
-            if (runConfiguration.compileTwice) {
-                runConfiguration.isLastRunConfig = false
-            }
+        // If we need to compile twice, make sure the LatexCommandLineState knows
+        if (runConfiguration.compileTwice) {
+            runConfiguration.isLastRunConfig = false
         }
 
         // Reset output format.
         // Make sure to use the output formats relevant for the chosen compiler
-        if (runConfiguration.compiler != null && runConfiguration.compiler != LatexCompiler.LATEXMK) {
+        val configuredCompiler = runConfiguration.compiler
+        if (configuredCompiler != null && configuredCompiler != LatexCompiler.LATEXMK) {
             outputFormat.removeAllItems()
-            for (item in runConfiguration.compiler!!.outputFormats) {
+            for (item in configuredCompiler.outputFormats) {
                 outputFormat.addItem(item)
             }
-            if (runConfiguration.compiler!!.outputFormats.contains(runConfiguration.outputFormat)) {
+            if (configuredCompiler.outputFormats.contains(runConfiguration.outputFormat)) {
                 outputFormat.selectedItem = runConfiguration.outputFormat
             }
             else {
@@ -232,7 +226,7 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
         runConfiguration.environmentVariables = environmentVariables.envData
 
         // Apply parse macros in environment variables
-        runConfiguration.expandMacrosEnvVariables = expandMacrosEnvVariables?.isSelected ?: false
+        runConfiguration.expandMacrosEnvVariables = expandMacrosEnvVariables.isSelected
 
         runConfiguration.beforeRunCommand = beforeRunCommand.text
 
@@ -243,27 +237,23 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
             runConfiguration.setFileOutputPath(outputPath.text)
         }
 
-        if (auxilPath != null) {
-            runConfiguration.setFileAuxilPath(auxilPath!!.text)
-        }
+        auxilPath?.let { runConfiguration.setFileAuxilPath(it.text) }
 
         runConfiguration.workingDirectory = workingDirectory.text
 
-        if (compileTwice != null) {
-            // Only show option to configure number of compiles when applicable
-            if (runConfiguration.compiler?.handlesNumberOfCompiles == true) {
-                compileTwice!!.isVisible = false
-                runConfiguration.compileTwice = false
-            }
-            else {
-                compileTwice!!.isVisible = true
-                runConfiguration.compileTwice = compileTwice!!.isSelected
-            }
+        // Only show option to configure number of compiles when applicable
+        if (runConfiguration.compiler?.handlesNumberOfCompiles == true) {
+            compileTwice.isVisible = false
+            runConfiguration.compileTwice = false
+        }
+        else {
+            compileTwice.isVisible = true
+            runConfiguration.compileTwice = compileTwice.isSelected
+        }
 
-            // If we need to compile twice, make sure the LatexCommandLineState knows
-            if (runConfiguration.compileTwice) {
-                runConfiguration.isLastRunConfig = false
-            }
+        // If we need to compile twice, make sure the LatexCommandLineState knows
+        if (runConfiguration.compileTwice) {
+            runConfiguration.isLastRunConfig = false
         }
 
         // Apply output format.
@@ -355,17 +345,16 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
         panel.add(environmentVariables)
 
         expandMacrosEnvVariables = JBCheckBox("Expand macros in environment variables")
-        expandMacrosEnvVariables!!.isSelected = false
+        expandMacrosEnvVariables.isSelected = false
 
         val environmentVariableTextField = environmentVariables.component.textField as ExtendableTextField
         var envVariableTextFieldMacroSupportExtension: ExtendableTextComponent.Extension? = null
 
-        expandMacrosEnvVariables!!.addItemListener {
+        expandMacrosEnvVariables.addItemListener {
             if (it.stateChange == 1) { // checkbox checked
-                if (envVariableTextFieldMacroSupportExtension != null) {
-                    environmentVariableTextField.addExtension(envVariableTextFieldMacroSupportExtension!!)
-                }
-                else {
+                envVariableTextFieldMacroSupportExtension?.let {
+                    environmentVariableTextField.addExtension(it)
+                } ?: run {
                     MacrosDialog.addTextFieldExtension(environmentVariableTextField)
                     envVariableTextFieldMacroSupportExtension = environmentVariableTextField.extensions.last()
                 }
@@ -413,9 +402,9 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
         panel.add(LabeledComponent.create(workingDirectory, "Working directory"))
 
         compileTwice = JBCheckBox("Always compile at least twice")
-        compileTwice!!.isSelected = false
+        compileTwice.isSelected = false
         panel.add(compileTwice)
-        classicCompilerComponents += compileTwice!!
+        classicCompilerComponents += compileTwice
 
         // Output format.
         val cboxFormat = ComboBox(selectedCompiler.outputFormats)
@@ -442,6 +431,7 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
         latexDistribution = distributionComboBox
         panel.add(LabeledComponent.create(latexDistribution, "LaTeX Distribution"))
 
+        val extensionSeparator = TitledSeparator("Extensions")
         panel.add(extensionSeparator)
         classicCompilerComponents += extensionSeparator
 
