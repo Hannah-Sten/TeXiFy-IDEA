@@ -21,7 +21,6 @@ import com.intellij.util.concurrency.annotations.RequiresReadLock
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.modules.LatexModuleType
-import nl.hannahsten.texifyidea.run.latex.LatexCompilationRunConfiguration
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
@@ -97,14 +96,14 @@ fun Project.containsFileOfType(type: FileType): Boolean {
 /**
  * Get all LaTeX run configurations in the project.
  */
-fun Project.getLatexRunConfigurations(): Collection<LatexCompilationRunConfiguration> {
+fun Project.getLatexRunConfigurations(): Collection<LatexRunConfiguration> {
     if (isDisposed) return emptyList()
-    return RunManager.getInstance(this).allConfigurationsList.filterIsInstance<LatexCompilationRunConfiguration>()
+    return RunManager.getInstance(this).allConfigurationsList.filterIsInstance<LatexRunConfiguration>()
 }
 
 fun Project.hasLatexRunConfigurations(): Boolean {
     if (isDisposed) return false
-    return RunManager.getInstance(this).allConfigurationsList.any { it is LatexCompilationRunConfiguration }
+    return RunManager.getInstance(this).allConfigurationsList.any { it is LatexRunConfiguration }
 }
 
 fun Project.getBibtexRunConfigurations(): Collection<BibtexRunConfiguration> {
@@ -115,14 +114,14 @@ fun Project.getBibtexRunConfigurations(): Collection<BibtexRunConfiguration> {
 /**
  * Get the run configuration that is currently selected.
  */
-fun Project?.selectedRunConfig(): LatexCompilationRunConfiguration? = this?.let {
-    RunManager.getInstance(it).selectedConfiguration?.configuration as? LatexCompilationRunConfiguration
+fun Project?.selectedRunConfig(): LatexRunConfiguration? = this?.let {
+    RunManager.getInstance(it).selectedConfiguration?.configuration as? LatexRunConfiguration
 }
 
 /**
  * Get the run configuration of the template.
  */
-fun Project?.latexTemplateRunConfig(): LatexCompilationRunConfiguration? = this?.let {
+fun Project?.latexTemplateRunConfig(): LatexRunConfiguration? = this?.let {
     val runManager = RunManager.getInstance(it)
     runManager.getConfigurationTemplate(LatexConfigurationFactory(LatexRunConfigurationType())).configuration as? LatexRunConfiguration
 }

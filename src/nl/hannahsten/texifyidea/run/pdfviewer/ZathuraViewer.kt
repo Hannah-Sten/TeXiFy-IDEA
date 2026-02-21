@@ -10,7 +10,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.psi.PsiManager
-import nl.hannahsten.texifyidea.run.latex.LatexCompilationRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.selectedRunConfig
@@ -65,9 +65,9 @@ object ZathuraViewer : SystemPdfViewer("Zathura", "zathura") {
      * Get the run config that compiles the virtualFile, i.e.,
      * the run configuration that has [virtualFile] as its main file.
      */
-    private fun runConfigThatCompilesFile(virtualFile: VirtualFile, project: Project): LatexCompilationRunConfiguration? =
+    private fun runConfigThatCompilesFile(virtualFile: VirtualFile, project: Project): LatexRunConfiguration? =
         (RunManagerImpl.getInstanceImpl(project) as RunManager)
             .allConfigurationsList
-            .filterIsInstance<LatexCompilationRunConfiguration>()
+            .filterIsInstance<LatexRunConfiguration>()
             .firstOrNull { it.mainFile == virtualFile }
 }

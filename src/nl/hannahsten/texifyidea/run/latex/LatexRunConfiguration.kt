@@ -32,6 +32,7 @@ import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogTabComponent
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCitationTool
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
+import nl.hannahsten.texifyidea.run.latexmk.compileModeFromMagicCommand
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.SumatraViewer
 import nl.hannahsten.texifyidea.settings.TexifySettings
@@ -52,7 +53,7 @@ class LatexRunConfiguration(
     project: Project,
     factory: ConfigurationFactory,
     name: String
-) : RunConfigurationBase<LatexCommandLineState>(project, factory, name), LocatableConfiguration, LatexCompilationRunConfiguration {
+) : RunConfigurationBase<LatexCommandLineState>(project, factory, name), LocatableConfiguration {
 
     companion object {
 
@@ -92,11 +93,11 @@ class LatexRunConfiguration(
     }
 
     var compiler: LatexCompiler? = null
-    override var compilerPath: String? = null
-    override var pdfViewer: PdfViewer? = null
+    var compilerPath: String? = null
+    var pdfViewer: PdfViewer? = null
     var viewerCommand: String? = null
 
-    override var compilerArguments: String? = null
+    var compilerArguments: String? = null
         set(compilerArguments) {
             field = compilerArguments?.trim()
             if (field?.isEmpty() == true) {
@@ -105,10 +106,10 @@ class LatexRunConfiguration(
         }
 
     var expandMacrosEnvVariables = false
-    override var environmentVariables: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT
+    var environmentVariables: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT
     var beforeRunCommand: String? = null
 
-    override var mainFile: VirtualFile? = null
+    var mainFile: VirtualFile? = null
 
     // Save the psifile which can be used to check whether to create a bibliography based on which commands are in the psifile
     // This is not done when creating the template run configuration in order to delay the expensive bibtex check
@@ -171,7 +172,7 @@ class LatexRunConfiguration(
     var requireFocus = true
 
     /** Whether the run configuration is currently auto-compiling.     */
-    override var isAutoCompiling = false
+    var isAutoCompiling = false
 
     private var bibRunConfigIds = mutableSetOf<String>()
     var bibRunConfigs: Set<RunnerAndConfigurationSettings>
@@ -251,7 +252,8 @@ class LatexRunConfiguration(
         environment: ExecutionEnvironment
     ): RunProfileState {
         if (compiler == LatexCompiler.LATEXMK) {
-            compilerArguments = buildLatexmkArguments()
+            val effectiveMode = latexmkModeService.effectiveCompileMode()
+            compilerArguments = latexmkModeService.buildArguments(effectiveMode)
         }
 
         val filter = RegexpFilter(
@@ -447,7 +449,7 @@ class LatexRunConfiguration(
      */
     fun getAllAuxiliaryRunConfigs(): Set<RunnerAndConfigurationSettings> = auxChainResolver.getAllAuxiliaryRunConfigs()
 
-    override fun getResolvedWorkingDirectory(): Path? {
+    fun getResolvedWorkingDirectory(): Path? {
         val pathString = if (workingDirectory != null && mainFile != null) {
             workingDirectory?.toString()?.replace(LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER, mainFile!!.parent.path)
         }
@@ -457,7 +459,7 @@ class LatexRunConfiguration(
         return pathString?.let { pathOrNull(it) }
     }
 
-    override fun hasDefaultWorkingDirectory(): Boolean = workingDirectory == null
+    fun hasDefaultWorkingDirectory(): Boolean = workingDirectory == null
 
     /**
      * Looks up the corresponding [VirtualFile] and sets [LatexRunConfiguration.mainFile].
@@ -553,7 +555,7 @@ class LatexRunConfiguration(
      *
      * @return The auxil folder when MiKTeX used, or else the out folder when used.
      */
-    override fun getAuxilDirectory(): VirtualFile? = if (getLatexDistributionType().isMiktex(project, mainFile)) {
+    fun getAuxilDirectory(): VirtualFile? = if (getLatexDistributionType().isMiktex(project, mainFile)) {
         // If we are using MiKTeX it might still be we are not using an auxil directory, so then fall back to the out directory
         LatexPathResolver.resolveAuxDir(this) ?: LatexPathResolver.resolveOutputDir(this)
     }
@@ -561,7 +563,7 @@ class LatexRunConfiguration(
         LatexPathResolver.resolveOutputDir(this)
     }
 
-    override fun getOutputDirectory(): VirtualFile? = LatexPathResolver.resolveOutputDir(this)
+    fun getOutputDirectory(): VirtualFile? = LatexPathResolver.resolveOutputDir(this)
 
     fun setSuggestedName() {
         suggestedName()?.let { name = it }
@@ -580,7 +582,10 @@ class LatexRunConfiguration(
     override fun getOutputFilePath(): String {
         val outputDir = LatexPathResolver.resolveOutputDir(this) ?: mainFile?.parent
         val extension = if (compiler == LatexCompiler.LATEXMK) {
-            effectiveLatexmkCompileMode().extension.lowercase(Locale.getDefault())
+            val modeFromArgs = compilerArguments
+                ?.takeIf(String::isNotBlank)
+                ?.let { compileModeFromMagicCommand("latexmk $it") }
+            (modeFromArgs ?: effectiveLatexmkCompileMode()).extension.lowercase(Locale.getDefault())
         }
         else if (outputFormat == Format.DEFAULT) {
             "pdf"

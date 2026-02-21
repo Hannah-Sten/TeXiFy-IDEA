@@ -17,9 +17,9 @@ import nl.hannahsten.texifyidea.util.includedPackagesInFileset
 
 internal class LatexmkModeService(private val runConfig: LatexRunConfiguration) {
 
-    fun buildArguments(): String {
+    fun buildArguments(effectiveCompileModeOverride: LatexmkCompileMode? = null): String {
         val hasRcFile = LatexmkRcFileFinder.hasLatexmkRc(runConfig.compilerArguments, runConfig.getResolvedWorkingDirectory())
-        val effectiveCompileMode = effectiveCompileMode()
+        val effectiveCompileMode = effectiveCompileModeOverride ?: effectiveCompileMode()
         return buildLatexmkStructuredArguments(
             hasRcFile = hasRcFile,
             compileMode = effectiveCompileMode,

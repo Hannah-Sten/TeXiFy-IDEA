@@ -9,7 +9,7 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.rd.util.ConcurrentHashMap
-import nl.hannahsten.texifyidea.run.latex.LatexCompilationRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.util.SystemEnvironment.Companion.isAvailable
 import nl.hannahsten.texifyidea.util.files.allChildDirectories
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
@@ -99,7 +99,7 @@ fun getTexinputsPaths(
     val searchPaths = mutableSetOf<String>()
     val runManager = RunManagerImpl.getInstanceImpl(project) as RunManager
     val allConfigurations = runManager.allConfigurationsList
-        .filterIsInstance<LatexCompilationRunConfiguration>()
+        .filterIsInstance<LatexRunConfiguration>()
     val selectedConfiguratios = if (rootFiles.isEmpty()) allConfigurations else allConfigurations.filter { it.mainFile in rootFiles }
     val runConfigVariables = selectedConfiguratios.map { it.environmentVariables.envs }
 

@@ -9,7 +9,7 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.project.Project
 import kotlinx.coroutines.delay
-import nl.hannahsten.texifyidea.run.latex.LatexCompilationRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.runInBackgroundWithoutProgress
 import java.util.concurrent.atomic.AtomicBoolean
@@ -77,7 +77,7 @@ object AutoCompileState {
         val runConfigSettings = RunManager.getInstance(proj).selectedConfiguration
 
         val runConfig = runConfigSettings?.configuration
-        if (runConfig !is LatexCompilationRunConfiguration) {
+        if (runConfig !is LatexRunConfiguration) {
             Notification("LaTeX", "Could not auto-compile", "Please make sure you have a valid LaTeX run configuration selected.", NotificationType.WARNING).notify(null)
             return
         }

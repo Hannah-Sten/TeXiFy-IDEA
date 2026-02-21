@@ -5,7 +5,7 @@ import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
-import nl.hannahsten.texifyidea.run.latex.LatexCompilationRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
@@ -115,7 +115,7 @@ object LatexmkRcFileFinder {
      * Get the first TEXINPUTS we can find in latexmkrc files.
      * Cached because searching involves quite some system calls, and it's a rarely used feature.
      */
-    fun getTexinputsVariable(directory: VirtualFile, runConfig: LatexCompilationRunConfiguration?, project: Project): String? = if (usesLatexmkrc == false) {
+    fun getTexinputsVariable(directory: VirtualFile, runConfig: LatexRunConfiguration?, project: Project): String? = if (usesLatexmkrc == false) {
         null
     }
     else {
@@ -131,7 +131,7 @@ object LatexmkRcFileFinder {
      *
      * @param runConfig Run configuration to check for working directory and arguments.
      */
-    private fun getTexinputsVariableNoCache(directory: VirtualFile, runConfig: LatexCompilationRunConfiguration?, project: Project): String? {
+    private fun getTexinputsVariableNoCache(directory: VirtualFile, runConfig: LatexRunConfiguration?, project: Project): String? {
         // Cache system file
         (systemLatexmkRcFile ?: getSystemLatexmkRcFile().also { systemLatexmkRcFile = it })?.let {
             return getTexinputs(it)

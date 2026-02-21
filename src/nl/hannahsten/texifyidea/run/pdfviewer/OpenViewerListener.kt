@@ -7,14 +7,14 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.action.ForwardSearchAction
-import nl.hannahsten.texifyidea.run.latex.LatexCompilationRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 
 /**
  * Execute a forward search with the selected viewer after the compilation is done.
  */
 class OpenViewerListener(
     private val viewer: PdfViewer,
-    val runConfig: LatexCompilationRunConfiguration,
+    val runConfig: LatexRunConfiguration,
     private val sourceFilePath: String,
     val line: Int,
     val project: Project,

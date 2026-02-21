@@ -5,13 +5,13 @@ import com.intellij.execution.process.ProcessListener
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.util.Key
-import nl.hannahsten.texifyidea.run.latex.LatexCompilationRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import java.io.IOException
 
 /**
  * Run the given command after the process has succeeded.
  */
-class OpenCustomPdfViewerListener(val command: Array<String>, val failSilently: Boolean = false, val runConfig: LatexCompilationRunConfiguration) : ProcessListener {
+class OpenCustomPdfViewerListener(val command: Array<String>, val failSilently: Boolean = false, val runConfig: LatexRunConfiguration) : ProcessListener {
 
     override fun processTerminated(event: ProcessEvent) {
         if (event.exitCode == 0) {
