@@ -13,7 +13,6 @@ import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer
 import nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfigurationType
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType
-import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import org.jdom.Element
 import org.jdom.Namespace
 
@@ -74,8 +73,8 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         val compilerField = LatexSettingsEditor::class.java.getDeclaredField("compiler")
         compilerField.isAccessible = true
         @Suppress("UNCHECKED_CAST")
-        val compiler = compilerField.get(editor) as com.intellij.openapi.ui.LabeledComponent<com.intellij.openapi.ui.ComboBox<LatexCompiler>>
-        compiler.component.selectedItem = LatexCompiler.LATEXMK
+        val compiler = compilerField.get(editor) as com.intellij.openapi.ui.ComboBox<LatexCompiler>
+        compiler.selectedItem = LatexCompiler.LATEXMK
 
         editor.applyTo(runConfig)
 
@@ -95,8 +94,8 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         val compilerField = LatexSettingsEditor::class.java.getDeclaredField("compiler")
         compilerField.isAccessible = true
         @Suppress("UNCHECKED_CAST")
-        val compiler = compilerField.get(editor) as com.intellij.openapi.ui.LabeledComponent<com.intellij.openapi.ui.ComboBox<LatexCompiler>>
-        compiler.component.selectedItem = LatexCompiler.LATEXMK
+        val compiler = compilerField.get(editor) as com.intellij.openapi.ui.ComboBox<LatexCompiler>
+        compiler.selectedItem = LatexCompiler.LATEXMK
 
         editor.applyTo(runConfig)
 
@@ -124,10 +123,9 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         val editor = LatexSettingsEditor(project)
         editor.resetFrom(runConfig)
 
-        val outputFormatField = LatexSettingsEditor::class.java.getDeclaredField("outputFormat")
+        val outputFormatField = LatexSettingsEditor::class.java.getDeclaredField("outputFormatRow")
         outputFormatField.isAccessible = true
-        @Suppress("UNCHECKED_CAST")
-        val outputFormat = outputFormatField.get(editor) as com.intellij.openapi.ui.LabeledComponent<com.intellij.openapi.ui.ComboBox<Format>>
+        val outputFormat = outputFormatField.get(editor) as javax.swing.JComponent
         assertFalse(outputFormat.isVisible)
     }
 }

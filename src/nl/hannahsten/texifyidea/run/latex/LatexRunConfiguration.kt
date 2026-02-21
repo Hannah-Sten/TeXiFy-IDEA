@@ -320,6 +320,7 @@ class LatexRunConfiguration(
                     // If the path is invalid, we just ignore it
                 }
                 if (SumatraViewer.trySumatraPath(path)) {
+                    @Suppress("UnstableApiUsage")
                     writeAction {
                         TexifySettings.getState().pathToSumatra = path.absolutePathString()
                     }
