@@ -197,6 +197,75 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         assertEquals(LatexmkCompileMode.AUTO, runConfig.latexmkCompileMode)
     }
 
+    fun testLatexmkAutoCompileModeInEditorApplyUsesSelectedMainFilePackages() {
+        val mainFile = myFixture.addFileToProject(
+            "main-fontspec.tex",
+            """
+            \documentclass{article}
+            \usepackage{fontspec}
+            \begin{document}
+            hi
+            \end{document}
+            """.trimIndent()
+        )
+        val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
+        runConfig.compiler = LatexCompiler.LATEXMK
+        runConfig.latexmkCompileMode = LatexmkCompileMode.AUTO
+
+        val editor = LatexSettingsEditor(project)
+        editor.resetFrom(runConfig)
+
+        val mainFileField = LatexSettingsEditor::class.java.getDeclaredField("mainFile")
+        mainFileField.isAccessible = true
+        val mainFileChooser = mainFileField.get(editor) as com.intellij.openapi.ui.TextFieldWithBrowseButton
+        mainFileChooser.text = mainFile.virtualFile.name
+
+        editor.applyTo(runConfig)
+
+        assertEquals(mainFile.virtualFile, runConfig.mainFile)
+        assertTrue(runConfig.compilerArguments?.contains("-lualatex") == true)
+    }
+
+    fun testLatexmkAutoCompileModeFollowsMainFileChangeWhenPsiPointerIsStale() {
+        val oldMain = myFixture.addFileToProject(
+            "old-main.tex",
+            """
+            \documentclass{article}
+            \begin{document}
+            old
+            \end{document}
+            """.trimIndent()
+        )
+        val newMain = myFixture.addFileToProject(
+            "new-main.tex",
+            """
+            \documentclass{ctexbeamer}
+            \begin{document}
+            new
+            \end{document}
+            """.trimIndent()
+        )
+        val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
+        runConfig.compiler = LatexCompiler.LATEXMK
+        runConfig.latexmkCompileMode = LatexmkCompileMode.AUTO
+        runConfig.mainFile = oldMain.virtualFile
+        runConfig.psiFile = oldMain.createSmartPointer()
+
+        val editor = LatexSettingsEditor(project)
+        editor.resetFrom(runConfig)
+
+        val mainFileField = LatexSettingsEditor::class.java.getDeclaredField("mainFile")
+        mainFileField.isAccessible = true
+        val mainFileChooser = mainFileField.get(editor) as com.intellij.openapi.ui.TextFieldWithBrowseButton
+        mainFileChooser.text = newMain.virtualFile.name
+
+        editor.applyTo(runConfig)
+
+        assertEquals(newMain.virtualFile, runConfig.mainFile)
+        assertEquals(LatexmkCompileMode.XELATEX_PDF, runConfig.effectiveLatexmkCompileMode())
+        assertTrue(runConfig.compilerArguments?.contains("-xelatex") == true)
+    }
+
     fun testResetEditorFromDoesNotMutateCompileTwiceOrLastRunFlag() {
         val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
         runConfig.compiler = LatexCompiler.LATEXMK

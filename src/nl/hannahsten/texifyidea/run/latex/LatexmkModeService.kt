@@ -35,7 +35,7 @@ internal class LatexmkModeService(private val runConfig: LatexRunConfiguration) 
         }
 
         return ReadAction.compute<LatexmkCompileMode, RuntimeException> {
-            val psi = runConfig.psiFile?.element ?: runConfig.mainFile?.let { PsiManager.getInstance(runConfig.project).findFile(it) }
+            val psi = runConfig.mainFile?.let { PsiManager.getInstance(runConfig.project).findFile(it) } ?: runConfig.psiFile?.element
             val magicComments = psi?.allParentMagicComments()
             val magicMode = compileModeFromMagicCommand(
                 magicComments?.value(DefaultMagicKeys.COMPILER) ?: magicComments?.value(DefaultMagicKeys.PROGRAM)

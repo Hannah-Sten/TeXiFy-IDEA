@@ -217,6 +217,9 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
         runConfiguration.latexmkCustomEngineCommand = latexmkCustomEngineCommand.text
         runConfiguration.latexmkCitationTool = latexmkCitationTool.selectedItem as? LatexmkCitationTool ?: LatexmkCitationTool.AUTO
         runConfiguration.latexmkExtraArguments = latexmkExtraArguments.text
+
+        runConfiguration.setMainFile(mainFile.text)
+
         if (chosenCompiler == LatexCompiler.LATEXMK) {
             runConfiguration.compilerArguments = runConfiguration.buildLatexmkArguments()
         }
@@ -228,9 +231,6 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
         runConfiguration.expandMacrosEnvVariables = expandMacrosEnvVariables.isSelected
 
         runConfiguration.beforeRunCommand = beforeRunCommand.text
-
-        // Apply main file.
-        runConfiguration.setMainFile(mainFile.text)
 
         if (!isInvalidJetBrainsBinPath(outputPath.text)) {
             runConfiguration.setFileOutputPath(outputPath.text)
