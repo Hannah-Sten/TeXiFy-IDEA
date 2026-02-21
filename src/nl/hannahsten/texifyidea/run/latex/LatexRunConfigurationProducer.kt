@@ -3,15 +3,14 @@ package nl.hannahsten.texifyidea.run.latex
 import com.intellij.execution.actions.ConfigurationContext
 import com.intellij.execution.actions.LazyRunConfigurationProducer
 import com.intellij.execution.configurations.ConfigurationFactory
+import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
 import com.intellij.psi.createSmartPointer
+import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.allParentMagicComments
-import nl.hannahsten.texifyidea.run.common.isSameContextFile
-import nl.hannahsten.texifyidea.run.common.isTexFile
-import nl.hannahsten.texifyidea.run.common.resolveLatexContextFile
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
 import nl.hannahsten.texifyidea.util.files.findTectonicTomlFile
@@ -31,9 +30,12 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
         context: ConfigurationContext,
         sourceElement: Ref<PsiElement>
     ): Boolean {
-        val (container, mainFile) = resolveLatexContextFile(context) ?: return false
+        val location = context.location ?: return false
+        val container = location.psiElement.containingFile ?: return false
+        val mainFile = container.virtualFile ?: return false
 
-        if (!isTexFile(mainFile)) {
+        val extension = mainFile.extension ?: return false
+        if (!extension.equals(LatexFileType.defaultExtension, ignoreCase = true)) {
             return false
         }
 
@@ -71,5 +73,9 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
     override fun isConfigurationFromContext(
         runConfiguration: LatexRunConfiguration,
         context: ConfigurationContext
-    ): Boolean = isSameContextFile(LatexRunConfigurationStaticSupport.resolveMainFile(runConfiguration), context)
+    ): Boolean {
+        val psiFile = context.dataContext.getData(PlatformDataKeys.PSI_FILE) ?: return false
+        val currentFile = psiFile.virtualFile ?: return false
+        return LatexRunConfigurationStaticSupport.resolveMainFile(runConfiguration) == currentFile
+    }
 }

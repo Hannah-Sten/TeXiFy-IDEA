@@ -63,7 +63,7 @@ class LatexRunConfiguration(
     var mainFilePath: String? = null
         set(value) {
             field = value?.trim()?.ifEmpty { null }
-            executionState.resolvedMainFile = null
+            executionState.clearInitialization()
         }
 
     /** Path to the directory containing the output files. */
