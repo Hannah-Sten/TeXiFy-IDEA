@@ -198,7 +198,9 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
             if (includesMakeindex) {
                 runConfiguration.makeindexRunConfigs = setOf()
             }
-            // Panel remains visible, to allow adding ExternalToolRunConfiguration
+            if (chosenCompiler == LatexCompiler.LATEXMK) {
+                runConfiguration.externalToolRunConfigs = setOf()
+            }
         }
         else {
             // Update run config based on UI

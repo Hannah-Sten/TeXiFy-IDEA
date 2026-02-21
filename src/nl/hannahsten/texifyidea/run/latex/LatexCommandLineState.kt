@@ -6,8 +6,8 @@ import com.intellij.execution.process.KillableProcessHandler
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.util.ProgramParametersConfigurator
-import com.intellij.openapi.application.runReadAction
-import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.application.ReadAction
+import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.editor.autocompile.AutoCompileDoneListener
@@ -41,28 +41,15 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
     @Throws(ExecutionException::class)
     override fun startProcess(): ProcessHandler {
         val compiler = runConfig.compiler ?: throw ExecutionException("No valid compiler specified.")
+        val isLatexmk = compiler == LatexCompiler.LATEXMK
         val mainFile = runConfig.mainFile ?: throw ExecutionException("Main file is not specified.")
 
-        ProgressManager.getInstance().runProcessWithProgressSynchronously(
-            {
-                if (runConfig.outputPath.virtualFile == null || !runConfig.outputPath.virtualFile!!.exists()) {
-                    runConfig.outputPath.getAndCreatePath()
-                }
-            },
-            "Creating Output Directories...",
-            false,
-            runConfig.project
-        )
+        if (runConfig.outputPath.virtualFile == null || !runConfig.outputPath.virtualFile!!.exists()) {
+            runConfig.outputPath.getAndCreatePath()
+        }
 
-        if (!runConfig.hasBeenRun) {
-            // Show to the user what we're doing that takes so long (up to 30 seconds for a large project)
-            // Unfortunately, this will block the UI (so you can't cancel it either), and I don't know how to run it in the background (e.g. Backgroundable) while still returning a ProcessHandler at the end of this method. Maybe it should be its own process.
-            ProgressManager.getInstance().runProcessWithProgressSynchronously(
-                { firstRunSetup(compiler) },
-                "Generating Run Configuration...",
-                false,
-                runConfig.project
-            )
+        if (!runConfig.hasBeenRun && !isLatexmk) {
+            firstRunSetup(compiler)
         }
 
         val createdOutputDirectories = if (!runConfig.getLatexDistributionType().isMiktex(runConfig.project)) {
@@ -74,13 +61,22 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         runConfig.filesToCleanUpIfEmpty.addAll(createdOutputDirectories)
 
         val handler = createHandler(mainFile, compiler)
-        val isMakeindexNeeded = runMakeindexIfNeeded(handler, mainFile, runConfig.filesToCleanUp)
-        runExternalToolsIfNeeded(handler)
+        val isMakeindexNeeded = if (isLatexmk) {
+            false
+        }
+        else {
+            runMakeindexIfNeeded(handler, mainFile, runConfig.filesToCleanUp)
+        }
+        if (!isLatexmk) {
+            runExternalToolsIfNeeded(handler)
+        }
         runConfig.hasBeenRun = true
 
         if (!isLastCompile(isMakeindexNeeded, handler)) return handler
 
-        scheduleBibtexRunIfNeeded(handler)
+        if (!isLatexmk) {
+            scheduleBibtexRunIfNeeded(handler)
+        }
         schedulePdfViewerIfNeeded(handler)
         if (runConfig.isAutoCompiling) {
             handler.addProcessListener(AutoCompileDoneListener())
@@ -112,15 +108,23 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
      * Do some long-running checks to generate the correct run configuration.
      */
     private fun firstRunSetup(compiler: LatexCompiler) {
+        if (compiler == LatexCompiler.LATEXMK) {
+            return
+        }
+
+        val usesCsl = ReadAction.compute<Boolean, RuntimeException> {
+            runConfig.mainFile?.psiFile(runConfig.project)?.includedPackagesInFileset()?.contains(LatexLib.CITATION_STYLE_LANGUAGE) == true
+        }
+
         // Only at this moment we know the user really wants to run the run configuration, so only now we do the expensive check of
         // checking for bibliography commands.
         if (runConfig.bibRunConfigs.isEmpty() &&
             !compiler.includesBibtex &&
             // citation-style-language package does not need a bibtex run configuration
-            runConfig.mainFile?.psiFile(runConfig.project)?.includedPackagesInFileset()?.contains(LatexLib.CITATION_STYLE_LANGUAGE)?.not() == true
+            !usesCsl
         ) {
             // Generating a bib run config involves PSI access, which requires a read action.
-            runReadAction {
+            ReadAction.run<RuntimeException> {
                 // If the index is not ready, we cannot check if a bib run config is needed, so skip this and run the main run config anyway
                 if (!DumbService.getInstance(runConfig.project).isDumb) {
                     Log.debug("Not generating bibtex run config because index is not ready")
@@ -172,10 +176,12 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             }
 
             // If no index package is used, we assume we won't have to run makeindex
-            val includedPackages = runConfig.mainFile
-                ?.psiFile(runConfig.project)
-                ?.includedPackagesInFileset()
-                ?: setOf()
+            val includedPackages = ReadAction.compute<Set<LatexLib>, RuntimeException> {
+                runConfig.mainFile
+                    ?.psiFile(runConfig.project)
+                    ?.includedPackagesInFileset()
+                    ?: setOf()
+            }
 
             isMakeindexNeeded = includedPackages.intersect(PackageMagic.index + PackageMagic.glossary).isNotEmpty() && runConfig.compiler?.includesMakeindex == false && !usesTexForGlossaries
 
@@ -295,12 +301,12 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         val line = editor?.document?.getLineNumber(editor.caretOffset())?.plus(1) ?: 0
 
         // Get the currently open file to use for forward search.
-        val currentPsiFile = editor?.document?.psiFile(environment.project)
+        val currentFilePath = editor?.document?.let { FileDocumentManager.getInstance().getFile(it)?.path }
             // Get the main file from the run configuration as a fallback.
-            ?: runConfig.mainFile?.psiFile(environment.project)
+            ?: runConfig.mainFile?.path
             ?: return
 
         // Set the OpenViewerListener to execute when the compilation is done.
-        handler.addProcessListener(OpenViewerListener(viewer, runConfig, currentPsiFile.virtualFile.path, line, environment.project, focusAllowed))
+        handler.addProcessListener(OpenViewerListener(viewer, runConfig, currentFilePath, line, environment.project, focusAllowed))
     }
 }
