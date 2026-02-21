@@ -31,4 +31,49 @@ class LatexOutputPathTest : BasePlatformTestCase() {
         assertNotNull(outPath)
         assertTrue(outPath!!.path.startsWith("/src"))
     }
+
+    fun testRelativeOutputPathResolvesViaContentRoot() {
+        val mainFile = myFixture.addFileToProject(
+            "sub/main.tex",
+            """
+            \documentclass{article}
+            \begin{document}
+                main
+            \end{document}
+            """.trimIndent()
+        )
+        val marker = myFixture.addFileToProject("build/out/.keep", "")
+        val expectedPath = marker.virtualFile.parent.path
+
+        val resolved = LatexPathResolver.resolve(
+            Path.of("build/out"),
+            mainFile.virtualFile,
+            project
+        )
+
+        assertEquals(expectedPath, resolved?.toString())
+    }
+
+    fun testUnresolvedRelativeOutputPathFallsBackWithoutCrash() {
+        val mainFile = myFixture.addFileToProject(
+            "sub/main.tex",
+            """
+            \documentclass{article}
+            \begin{document}
+                main
+            \end{document}
+            """.trimIndent()
+        )
+
+        val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
+        runConfig.psiFile = mainFile.createSmartPointer()
+        runBlocking {
+            runConfig.setMainFile("sub/main.tex")
+        }
+
+        runConfig.outputPath = Path.of("non-existent-relative-dir")
+        val resolved = LatexPathResolver.resolveOutputDir(runConfig)
+
+        assertNotNull(resolved)
+    }
 }

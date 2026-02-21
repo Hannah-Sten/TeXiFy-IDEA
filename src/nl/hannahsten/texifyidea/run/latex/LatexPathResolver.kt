@@ -33,11 +33,6 @@ internal object LatexPathResolver {
     }
 
     fun resolve(path: Path?, mainFile: VirtualFile?, project: Project): Path? {
-        val pathString = resolveToString(path, mainFile, project) ?: return null
-        return pathOrNull(pathString)
-    }
-
-    fun resolveToString(path: Path?, mainFile: VirtualFile?, project: Project): String? {
         val raw = path?.toString()?.trim().orEmpty()
         if (raw.isBlank()) return null
 
@@ -45,10 +40,17 @@ internal object LatexPathResolver {
         val projectRootPath = moduleRoot?.path ?: mainFile?.parent?.path
         val mainFileParentPath = mainFile?.parent?.path ?: projectRootPath
 
-        return raw
+        val resolvedRaw = raw
             .replace(PROJECT_DIR_PLACEHOLDER, projectRootPath ?: return null)
             .replace(MAIN_FILE_PARENT_PLACEHOLDER, mainFileParentPath ?: return null)
             .takeIf { it.isNotBlank() }
+            ?: return null
+
+        if (pathOrNull(resolvedRaw)?.isAbsolute == true) {
+            return pathOrNull(resolvedRaw)
+        }
+
+        return pathOrNull(resolveRelativePathAgainstContentRoots(resolvedRaw, project) ?: resolvedRaw)
     }
 
     fun getMainFileContentRoot(mainFile: VirtualFile?, project: Project): VirtualFile? {
@@ -56,6 +58,21 @@ internal object LatexPathResolver {
         return ReadAction.compute<VirtualFile?, RuntimeException> {
             ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)
         }
+    }
+
+    private fun resolveRelativePathAgainstContentRoots(path: String, project: Project): String? {
+        if (!project.isInitialized) return null
+        return ReadAction.compute<String?, RuntimeException> {
+            ProjectRootManager.getInstance(project).contentRoots.firstNotNullOfOrNull { root ->
+                resolveRelativePathAgainstRoot(path, root)
+            }
+        }
+    }
+
+    private fun resolveRelativePathAgainstRoot(path: String, root: VirtualFile): String? {
+        root.findFileByRelativePath(path)?.let { return it.path }
+        val absoluteCandidate = File(root.path, path).path
+        return LocalFileSystem.getInstance().findFileByPath(absoluteCandidate)?.path
     }
 
     @Throws(ExecutionException::class)
@@ -79,7 +96,7 @@ internal object LatexPathResolver {
     }
 
     private fun ensureDir(path: Path, mainFile: VirtualFile?, project: Project, variant: String): VirtualFile? {
-        val resolvedPathString = resolveToString(path, mainFile, project)
+        val resolvedPathString = resolve(path, mainFile, project)?.toString()
         if (resolvedPathString == null || isInvalidJetBrainsBinPath(resolvedPathString)) {
             return mainFile?.parent
         }
@@ -127,3 +144,5 @@ internal object LatexPathResolver {
         return null
     }
 }
+
+internal fun isInvalidJetBrainsBinPath(path: String?): Boolean = path?.endsWith("/bin") == true
