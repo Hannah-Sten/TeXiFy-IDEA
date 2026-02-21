@@ -54,12 +54,10 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
     }
 
     private fun startLatexmkProcess(mainFile: VirtualFile, compiler: LatexCompiler): ProcessHandler {
-        if (runConfig.outputPath.virtualFile == null || !runConfig.outputPath.virtualFile!!.exists()) {
-            runConfig.outputPath.getAndCreatePath()
-        }
+        LatexPathResolver.resolveOutputDir(runConfig)
 
         val createdOutputDirectories = if (!runConfig.getLatexDistributionType().isMiktex(runConfig.project)) {
-            runConfig.outputPath.updateOutputSubDirs()
+            LatexPathResolver.updateOutputSubDirs(runConfig)
         }
         else {
             setOf()
@@ -83,16 +81,14 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
     }
 
     private fun startClassicProcess(mainFile: VirtualFile, compiler: LatexCompiler): ProcessHandler {
-        if (runConfig.outputPath.virtualFile == null || !runConfig.outputPath.virtualFile!!.exists()) {
-            runConfig.outputPath.getAndCreatePath()
-        }
+        LatexPathResolver.resolveOutputDir(runConfig)
 
         if (!executionState.hasBeenRun) {
             firstRunSetup(compiler)
         }
 
         val createdOutputDirectories = if (!runConfig.getLatexDistributionType().isMiktex(runConfig.project)) {
-            runConfig.outputPath.updateOutputSubDirs()
+            LatexPathResolver.updateOutputSubDirs(runConfig)
         }
         else {
             setOf()

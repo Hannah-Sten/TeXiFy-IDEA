@@ -17,6 +17,7 @@ import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
 import nl.hannahsten.texifyidea.util.files.findTectonicTomlFile
 import nl.hannahsten.texifyidea.util.files.hasTectonicTomlFile
 import nl.hannahsten.texifyidea.util.includedPackagesInFileset
+import java.nio.file.Path
 
 /**
  * @author Hannah Schellekens
@@ -40,9 +41,6 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
         runConfiguration.mainFile = mainFile
         runConfiguration.psiFile = container.createSmartPointer()
         runConfiguration.setSuggestedName()
-        // Avoid changing the outputPath of the template run config (which is a shallow clone)
-        runConfiguration.outputPath = runConfiguration.outputPath.clone()
-        runConfiguration.auxilPath = runConfiguration.auxilPath.clone()
 
         val magicComments = container.allParentMagicComments()
 
@@ -61,7 +59,12 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
             runConfiguration.latexmkCompileMode = LatexmkCompileMode.AUTO
         }
 
-        runConfiguration.workingDirectory = if (runConfiguration.compiler == LatexCompiler.TECTONIC && mainFile.hasTectonicTomlFile()) mainFile.findTectonicTomlFile()!!.parent.path else LatexOutputPath.MAIN_FILE_STRING
+        runConfiguration.workingDirectory = if (runConfiguration.compiler == LatexCompiler.TECTONIC && mainFile.hasTectonicTomlFile()) {
+            Path.of(mainFile.findTectonicTomlFile()!!.parent.path)
+        }
+        else {
+            null
+        }
         return true
     }
 

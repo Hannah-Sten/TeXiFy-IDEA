@@ -20,13 +20,14 @@ import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.components.fields.ExtendableTextComponent
 import com.intellij.ui.components.fields.ExtendableTextField
+import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.PDFLATEX
 import nl.hannahsten.texifyidea.run.latex.LatexCommandLineOptionsCache
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
-import nl.hannahsten.texifyidea.run.latex.LatexOutputPath
+import nl.hannahsten.texifyidea.run.latex.LatexPathResolver
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.isInvalidJetBrainsBinPath
 import nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfigurationType
@@ -126,12 +127,14 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
         // Reset the main file to compile.
         mainFile.text = runConfiguration.mainFile?.path ?: ""
 
-        auxilPath?.text = runConfiguration.auxilPath.virtualFile?.path ?: runConfiguration.auxilPath.pathString
+        auxilPath?.text = runConfiguration.auxilPath?.toString()
+            ?: "${LatexPathResolver.PROJECT_DIR_PLACEHOLDER}/auxil"
 
         // We may be editing a run configuration template, don't resolve any path
-        outputPath.text = runConfiguration.outputPath.virtualFile?.path ?: runConfiguration.outputPath.pathString
+        outputPath.text = runConfiguration.outputPath?.toString()
+            ?: "${LatexPathResolver.PROJECT_DIR_PLACEHOLDER}/out"
 
-        workingDirectory.text = runConfiguration.workingDirectory ?: LatexOutputPath.MAIN_FILE_STRING
+        workingDirectory.text = runConfiguration.workingDirectory?.toString() ?: LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER
 
         // Reset whether to compile twice
         if (runConfiguration.compiler?.handlesNumberOfCompiles == true) {
@@ -235,6 +238,8 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
         auxilPath?.let { runConfiguration.setFileAuxilPath(it.text) }
 
         runConfiguration.workingDirectory = workingDirectory.text
+            .takeUnless { it.isBlank() || it == LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER }
+            ?.let { pathOrNull(it) }
 
         // Only show option to configure number of compiles when applicable
         if (runConfiguration.compiler?.handlesNumberOfCompiles == true) {
@@ -480,7 +485,7 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
             )
         )
         outputPath = outputPathField
-        outputPathRow = LabeledComponent.create(outputPath, "Directory for output files, you can use ${LatexOutputPath.MAIN_FILE_STRING} or ${LatexOutputPath.PROJECT_DIR_STRING} as placeholders:")
+        outputPathRow = LabeledComponent.create(outputPath, "Directory for output files, you can use ${LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER} or ${LatexPathResolver.PROJECT_DIR_PLACEHOLDER} as placeholders:")
         panel.add(outputPathRow)
     }
 

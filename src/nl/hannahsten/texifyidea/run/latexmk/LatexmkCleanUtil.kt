@@ -8,6 +8,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.util.io.awaitExit
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
+import nl.hannahsten.texifyidea.run.latex.LatexPathResolver
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.runInBackgroundWithoutProgress
@@ -89,10 +90,10 @@ object LatexmkCleanUtil {
             command += ParametersListUtil.parse(compilerArguments)
         }
 
-        val outputPath = runConfig.outputPath.getAndCreatePath()?.path ?: mainFile.parent.path
+        val outputPath = LatexPathResolver.resolveOutputDir(runConfig)?.path ?: mainFile.parent.path
         command += "-outdir=$outputPath"
 
-        val auxPath = runConfig.auxilPath.getAndCreatePath()?.path
+        val auxPath = LatexPathResolver.resolveAuxDir(runConfig)?.path
         if (auxPath != null && auxPath != outputPath) {
             command += "-auxdir=$auxPath"
         }

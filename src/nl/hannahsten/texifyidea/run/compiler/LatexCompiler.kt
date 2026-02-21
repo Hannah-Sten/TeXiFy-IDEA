@@ -7,6 +7,7 @@ import com.intellij.openapi.project.rootManager
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
+import nl.hannahsten.texifyidea.run.latex.LatexPathResolver
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.settings.sdk.DockerSdk
 import nl.hannahsten.texifyidea.settings.sdk.DockerSdkAdditionalData
@@ -276,7 +277,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
     fun getCommand(runConfig: LatexRunConfiguration, project: Project): List<String>? {
         val mainFile = runConfig.mainFile ?: return null
         // Getting the content root is an expensive operation (See WorkspaceFileIndexDataImpl#ensureIsUpToDate), and since it probably won't change often we reuse a cached value
-        val moduleRoot = runConfig.outputPath.getMainFileContentRoot(runConfig.mainFile)
+        val moduleRoot = LatexPathResolver.getMainFileContentRoot(mainFile, runConfig.project)
         // For now we disable module roots with Docker
         // Could be improved by mounting them to the right directory
         val moduleRoots = if (runConfig.getLatexDistributionType().isDocker()) {
@@ -305,7 +306,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             "/out"
         }
         else {
-            (runConfig.outputPath.getAndCreatePath() ?: mainFile.parent).path.toWslPathIfNeeded(runConfig.getLatexDistributionType())
+            (LatexPathResolver.resolveOutputDir(runConfig) ?: mainFile.parent).path.toWslPathIfNeeded(runConfig.getLatexDistributionType())
         }
 
         val auxilPath = if (runConfig.getLatexDistributionType() == LatexDistributionType.DOCKER_MIKTEX) {
@@ -315,7 +316,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             null
         }
         else {
-            runConfig.auxilPath.getAndCreatePath()?.path?.toWslPathIfNeeded(runConfig.getLatexDistributionType())
+            LatexPathResolver.resolveAuxDir(runConfig)?.path?.toWslPathIfNeeded(runConfig.getLatexDistributionType())
         }
 
         val command = createCommand(
@@ -410,14 +411,14 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         if (dockerOutputDir != null) {
             // Avoid mounting the mainfile parent also to /miktex/work/out,
             // because there may be a good reason to make the output directory the same as the source directory
-            val outPath = runConfig.outputPath.getAndCreatePath()
+            val outPath = LatexPathResolver.resolveOutputDir(runConfig)
             if (outPath?.path != null && outPath != mainFile.parent) {
                 parameterList.addAll(listOf("-v", "${outPath.path}:$dockerOutputDir"))
             }
         }
 
         if (dockerAuxilDir != null) {
-            val auxilPath = runConfig.auxilPath.getAndCreatePath()
+            val auxilPath = LatexPathResolver.resolveAuxDir(runConfig)
             if (auxilPath?.path != null && auxilPath != mainFile.parent) {
                 parameterList.addAll(listOf("-v", "${auxilPath.path}:$dockerAuxilDir"))
             }
