@@ -20,8 +20,8 @@ internal object LatexPathResolver {
     const val PROJECT_DIR_PLACEHOLDER = "{projectDir}"
     const val MAIN_FILE_PARENT_PLACEHOLDER = "{mainFileParent}"
 
-    private val defaultOutputPath: Path = Path.of("$PROJECT_DIR_PLACEHOLDER/out")
-    private val defaultAuxilPath: Path = Path.of("$PROJECT_DIR_PLACEHOLDER/auxil")
+    val defaultOutputPath: Path = Path.of(MAIN_FILE_PARENT_PLACEHOLDER)
+    val defaultAuxilPath: Path = Path.of(MAIN_FILE_PARENT_PLACEHOLDER)
 
     fun resolveOutputDir(runConfig: LatexRunConfiguration): VirtualFile? = ensureDir(runConfig.outputPath ?: defaultOutputPath, runConfig.mainFile, runConfig.project, "out")
 

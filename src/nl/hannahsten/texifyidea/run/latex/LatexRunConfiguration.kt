@@ -119,10 +119,10 @@ class LatexRunConfiguration(
     var psiFile: SmartPsiElementPointer<PsiFile>? = null
 
     /** Path to the directory containing the output files. */
-    var outputPath: Path? = Path.of("${LatexPathResolver.PROJECT_DIR_PLACEHOLDER}/out")
+    var outputPath: Path? = LatexPathResolver.defaultOutputPath
 
     /** Path to the directory containing the auxiliary files. */
-    var auxilPath: Path? = Path.of("${LatexPathResolver.PROJECT_DIR_PLACEHOLDER}/auxil")
+    var auxilPath: Path? = LatexPathResolver.defaultAuxilPath
 
     var workingDirectory: Path? = null
 
@@ -348,7 +348,7 @@ class LatexRunConfiguration(
         // Read output path
         val outputPathString = parent.getChildText(OUTPUT_PATH)
         if (outputPathString != null) {
-            this.outputPath = if (isInvalidJetBrainsBinPath(outputPathString)) Path.of("${LatexPathResolver.PROJECT_DIR_PLACEHOLDER}/out")
+            this.outputPath = if (isInvalidJetBrainsBinPath(outputPathString)) LatexPathResolver.defaultOutputPath
             else pathOrNull(outputPathString)
         }
 

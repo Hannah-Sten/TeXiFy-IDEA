@@ -128,11 +128,11 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
         mainFile.text = runConfiguration.mainFile?.path ?: ""
 
         auxilPath?.text = runConfiguration.auxilPath?.toString()
-            ?: "${LatexPathResolver.PROJECT_DIR_PLACEHOLDER}/auxil"
+            ?: LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER
 
         // We may be editing a run configuration template, don't resolve any path
         outputPath.text = runConfiguration.outputPath?.toString()
-            ?: "${LatexPathResolver.PROJECT_DIR_PLACEHOLDER}/out"
+            ?: LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER
 
         workingDirectory.text = runConfiguration.workingDirectory?.toString() ?: LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER
 
