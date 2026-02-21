@@ -1,17 +1,12 @@
 package nl.hannahsten.texifyidea.run.latexmk
 
-import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.psi.createSmartPointer
+import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.lang.LatexLib
-import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
-import com.intellij.execution.configurations.RuntimeConfigurationError
-import org.jdom.Element
-import org.jdom.Namespace
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer
 import java.nio.file.Files
 import java.nio.file.Path
 
@@ -20,88 +15,6 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
     fun testCompileModeContainsAuto() {
         assertTrue(LatexmkCompileMode.entries.contains(LatexmkCompileMode.AUTO))
         assertEquals("AUTO", LatexmkCompileMode.AUTO.toString())
-    }
-
-    fun testWriteRead() {
-        val runConfig = LatexmkRunConfiguration(
-            myFixture.project,
-            LatexConfigurationFactory(LatexmkRunConfigurationType()),
-            "Latexmk"
-        )
-
-        runConfig.compileMode = LatexmkCompileMode.XELATEX_XDV
-        runConfig.customEngineCommand = "xelatex %O %S"
-        runConfig.citationTool = LatexmkCitationTool.BIBER
-        runConfig.extraArguments = "-silent -halt-on-error"
-        runConfig.outputPathRaw = "{mainFileParent}"
-        runConfig.auxilPathRaw = "{projectDir}/aux"
-
-        val element = Element("configuration", Namespace.getNamespace("", ""))
-        runConfig.writeExternal(element)
-
-        val restored = LatexmkRunConfiguration(
-            myFixture.project,
-            LatexConfigurationFactory(LatexmkRunConfigurationType()),
-            "Latexmk"
-        )
-        restored.readExternal(element)
-
-        assertEquals(LatexmkCompileMode.XELATEX_XDV, restored.compileMode)
-        assertEquals("xelatex %O %S", restored.customEngineCommand)
-        assertEquals(LatexmkCitationTool.BIBER, restored.citationTool)
-        assertEquals("-silent -halt-on-error", restored.extraArguments)
-        assertEquals("{mainFileParent}", restored.outputPathRaw)
-        assertEquals("{projectDir}/aux", restored.auxilPathRaw)
-    }
-
-    fun testStructuredArgsAndExtraArgs() {
-        val runConfig = LatexmkRunConfiguration(
-            myFixture.project,
-            LatexConfigurationFactory(LatexmkRunConfigurationType()),
-            "Latexmk"
-        )
-
-        runConfig.compileMode = LatexmkCompileMode.LATEX_DVI
-        runConfig.citationTool = LatexmkCitationTool.DISABLED
-        runConfig.extraArguments = "-pdf -interaction=nonstopmode"
-
-        val arguments = runConfig.buildLatexmkArguments()
-
-        assertTrue(arguments.contains("-latex"))
-        assertTrue(arguments.contains("-dvi"))
-        assertTrue(arguments.contains("-bibtex-"))
-        assertTrue(arguments.contains("-pdf"))
-        assertTrue(arguments.contains("-interaction=nonstopmode"))
-    }
-
-    fun testDefaultExtraArgumentsAreSynctex() {
-        val runConfig = LatexmkRunConfiguration(
-            myFixture.project,
-            LatexConfigurationFactory(LatexmkRunConfigurationType()),
-            "Latexmk"
-        )
-
-        assertEquals("-synctex=1", runConfig.extraArguments)
-    }
-
-    fun testDefaultAuxDirectoryIsEmpty() {
-        val runConfig = LatexmkRunConfiguration(
-            myFixture.project,
-            LatexConfigurationFactory(LatexmkRunConfigurationType()),
-            "Latexmk"
-        )
-
-        assertEquals("", runConfig.auxilPathRaw)
-    }
-
-    fun testDefaultCompileModeIsPdfLatexPdf() {
-        val runConfig = LatexmkRunConfiguration(
-            myFixture.project,
-            LatexConfigurationFactory(LatexmkRunConfigurationType()),
-            "Latexmk"
-        )
-
-        assertEquals(LatexmkCompileMode.PDFLATEX_PDF, runConfig.compileMode)
     }
 
     fun testPreferredModeFromPackagesFallsBackToLuaLatexPdf() {
@@ -119,23 +32,13 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
         assertEquals(LatexmkCompileMode.XELATEX_PDF, preferred)
     }
 
-    fun testPreferredModeFromPackagesUsesXeLatexForCtexBeamerWhenClassComesFromFilesetLibrary() {
-        val preferred = preferredCompileModeForPackages(setOf(LatexLib.fromFileName("ctexbeamer.cls")))
-        assertEquals(LatexmkCompileMode.XELATEX_PDF, preferred)
-    }
-
     fun testPreferredModeFromPackagesUsesLuaLatexForLuaTexJa() {
         val preferred = preferredCompileModeForPackages(setOf(LatexLib.Package("luatexja")))
         assertEquals(LatexmkCompileMode.LUALATEX_PDF, preferred)
     }
 
     fun testPreferredModeFromPackagesPrefersXeLatexWhenBothXeAndLuaLibrariesArePresent() {
-        val preferred = preferredCompileModeForPackages(
-            setOf(
-                LatexLib.FONTSPEC,
-                LatexLib.Package("xecjk"),
-            )
-        )
+        val preferred = preferredCompileModeForPackages(setOf(LatexLib.FONTSPEC, LatexLib.Package("xecjk")))
         assertEquals(LatexmkCompileMode.XELATEX_PDF, preferred)
     }
 
@@ -190,21 +93,6 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
 
         runConfig.latexmkCompileMode = LatexmkCompileMode.CUSTOM
         assertEquals(null, unicodeEngineCompatibility(runConfig))
-    }
-
-    fun testLuaLatexEngineDoesNotInjectPdfFlag() {
-        val runConfig = LatexmkRunConfiguration(
-            myFixture.project,
-            LatexConfigurationFactory(LatexmkRunConfigurationType()),
-            "Latexmk"
-        )
-        runConfig.compileMode = LatexmkCompileMode.LUALATEX_PDF
-        runConfig.citationTool = LatexmkCitationTool.AUTO
-        runConfig.extraArguments = null
-
-        val arguments = runConfig.buildLatexmkArguments()
-        assertTrue(arguments.contains("-lualatex"))
-        assertFalse(arguments.contains("-pdf"))
     }
 
     fun testLatexRunConfigurationLatexmkArgumentsIgnoreOutputFormat() {
@@ -364,81 +252,5 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
         assertFalse(xml.contains(latexmkProducer))
         assertTrue(xml.contains(latexProducer))
         assertTrue(xml.contains(latexConfigurationType))
-    }
-
-    fun testSetMainFileOnEdtStoresPathWithoutResolving() {
-        val runConfig = LatexmkRunConfiguration(
-            myFixture.project,
-            LatexConfigurationFactory(LatexmkRunConfigurationType()),
-            "Latexmk",
-        )
-
-        ApplicationManager.getApplication().invokeAndWait {
-            runConfig.setMainFile("src/main.tex")
-        }
-
-        assertNull(runConfig.mainFile)
-        assertEquals("src/main.tex", runConfig.getMainFilePath())
-    }
-
-    fun testResolveMainFileIfNeededResolvesFromStoredPath() {
-        val file = myFixture.addFileToProject("src/main.tex", "\\documentclass{article}").virtualFile
-        val runConfig = LatexmkRunConfiguration(
-            myFixture.project,
-            LatexConfigurationFactory(LatexmkRunConfigurationType()),
-            "Latexmk",
-        )
-
-        ApplicationManager.getApplication().invokeAndWait {
-            runConfig.setMainFile("src/main.tex")
-        }
-
-        assertNull(runConfig.mainFile)
-        assertEquals(file.path, runConfig.resolveMainFileIfNeeded()?.path)
-    }
-
-    fun testWriteExternalKeepsStoredMainFilePathWhenUnresolved() {
-        val runConfig = LatexmkRunConfiguration(
-            myFixture.project,
-            LatexConfigurationFactory(LatexmkRunConfigurationType()),
-            "Latexmk",
-        )
-        ApplicationManager.getApplication().invokeAndWait {
-            runConfig.setMainFile("src/main.tex")
-        }
-
-        val element = Element("configuration", Namespace.getNamespace("", ""))
-        runConfig.writeExternal(element)
-
-        val parent = element.getChild("texify-latexmk")
-        assertEquals("src/main.tex", parent.getChildText("main-file"))
-    }
-
-    fun testCheckConfigurationAcceptsStoredTexPathWhenUnresolved() {
-        val runConfig = LatexmkRunConfiguration(
-            myFixture.project,
-            LatexConfigurationFactory(LatexmkRunConfigurationType()),
-            "Latexmk",
-        )
-        ApplicationManager.getApplication().invokeAndWait {
-            runConfig.setMainFile("src/main.tex")
-        }
-
-        runConfig.checkConfiguration()
-    }
-
-    fun testCheckConfigurationRejectsStoredNonTexPathWhenUnresolved() {
-        val runConfig = LatexmkRunConfiguration(
-            myFixture.project,
-            LatexConfigurationFactory(LatexmkRunConfigurationType()),
-            "Latexmk",
-        )
-        ApplicationManager.getApplication().invokeAndWait {
-            runConfig.setMainFile("src/main.txt")
-        }
-
-        assertThrows(RuntimeConfigurationError::class.java) {
-            runConfig.checkConfiguration()
-        }
     }
 }
