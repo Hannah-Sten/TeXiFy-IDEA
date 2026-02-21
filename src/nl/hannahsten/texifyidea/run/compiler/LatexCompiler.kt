@@ -11,7 +11,6 @@ import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.settings.sdk.DockerSdk
 import nl.hannahsten.texifyidea.settings.sdk.DockerSdkAdditionalData
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
-import nl.hannahsten.texifyidea.util.LatexmkRcFileFinder
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.files.hasTectonicTomlFile
 import nl.hannahsten.texifyidea.util.runCommand
@@ -117,14 +116,9 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
                 )
             )
 
-            val isLatexmkRcFilePresent = LatexmkRcFileFinder.hasLatexmkRc(runConfig.compilerArguments, runConfig.getResolvedWorkingDirectory())
-
             // Keep diagnostic behavior consistent, even when latexmkrc is present.
             command.add("-file-line-error")
             command.add("-interaction=nonstopmode")
-            if (!isLatexmkRcFilePresent) {
-                command.add("-synctex=1")
-            }
 
             command.add("-outdir=$outputPath")
 
@@ -445,13 +439,13 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
      *
      * @return The command to be executed.
      */
-    protected open fun createCommand(
+    abstract fun createCommand(
         runConfig: LatexRunConfiguration,
         auxilPath: String?,
         outputPath: String,
         moduleRoot: VirtualFile?,
         moduleRoots: Array<VirtualFile>
-    ): MutableList<String> = error("Not implemented for $this")
+    ): MutableList<String>
 
     /**
      * Whether the compiler includes running bibtex/biber.

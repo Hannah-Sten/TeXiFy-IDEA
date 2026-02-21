@@ -251,6 +251,22 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
         assertEquals(1, command.count { it == "-pdf" })
     }
 
+    fun testLatexRunConfigurationLatexmkCommandHasSingleSynctexFlag() {
+        val mainFile = myFixture.addFileToProject("main.tex", "\\documentclass{article}")
+
+        val runConfig = LatexRunConfiguration(
+            myFixture.project,
+            LatexRunConfigurationProducer().configurationFactory,
+            "LaTeX"
+        )
+        runConfig.compiler = LatexCompiler.LATEXMK
+        runConfig.mainFile = mainFile.virtualFile
+        runConfig.compilerArguments = runConfig.buildLatexmkArguments()
+
+        val command = LatexCompiler.LATEXMK.getCommand(runConfig, project) ?: error("No command generated")
+        assertEquals(1, command.count { it == "-synctex=1" })
+    }
+
     fun testRunConfigurationsXmlRegistersOnlyLatexProducer() {
         val xml = Files.readString(Path.of("resources/META-INF/extensions/run-configurations.xml"))
         val latexmkProducer = "nl.hannahsten.texifyidea.run.latexmk.LatexmkRunConfigurationProducer"
