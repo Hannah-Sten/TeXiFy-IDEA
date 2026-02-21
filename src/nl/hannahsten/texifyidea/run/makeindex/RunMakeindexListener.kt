@@ -166,7 +166,7 @@ class RunMakeindexListener(
             try {
                 FileUtil.copy(indexFileSource, indexFileDestination)
             }
-            catch (ignored: FileNotFoundException) {
+            catch (_: FileNotFoundException) {
             }
         }
     }
