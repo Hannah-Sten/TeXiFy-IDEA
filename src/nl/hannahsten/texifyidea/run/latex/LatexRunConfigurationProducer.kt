@@ -44,8 +44,10 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
         runConfiguration.outputPath = runConfiguration.outputPath.clone()
         runConfiguration.auxilPath = runConfiguration.auxilPath.clone()
 
-        val runCommand = container.allParentMagicComments().value(DefaultMagicKeys.COMPILER)
-        val runProgram = container.allParentMagicComments().value(DefaultMagicKeys.PROGRAM)
+        val magicComments = container.allParentMagicComments()
+
+        val runCommand = magicComments.value(DefaultMagicKeys.COMPILER)
+        val runProgram = magicComments.value(DefaultMagicKeys.PROGRAM)
         // citation-style-language package should use lualatex by default, unless overridden by magic comments above.
         val csl = if (container.includedPackagesInFileset().contains(LatexLib.CITATION_STYLE_LANGUAGE)) LatexCompiler.LUALATEX.name else null
         val command = runCommand ?: runProgram ?: csl ?: return true
