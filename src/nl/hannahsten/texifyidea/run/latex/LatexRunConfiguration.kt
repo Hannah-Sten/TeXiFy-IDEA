@@ -16,6 +16,18 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.util.InvalidDataException
 import com.intellij.openapi.util.WriteExternalException
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.PsiManager
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
+import nl.hannahsten.texifyidea.lang.LatexLib
+import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
+import nl.hannahsten.texifyidea.lang.magic.allParentMagicComments
+import nl.hannahsten.texifyidea.lang.predefined.CommandNames
+import nl.hannahsten.texifyidea.psi.nameWithSlash
+import nl.hannahsten.texifyidea.psi.traverseCommands
+import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
+import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
+import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
@@ -26,8 +38,15 @@ import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdk
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
+import nl.hannahsten.texifyidea.util.files.findFile
+import nl.hannahsten.texifyidea.util.files.referencedFileSet
+import nl.hannahsten.texifyidea.util.includedPackagesInFileset
+import nl.hannahsten.texifyidea.util.parser.hasBibliography
+import nl.hannahsten.texifyidea.util.parser.usesBiber
 import org.jdom.Element
+import java.io.File
 import java.nio.file.Path
+import java.util.Locale
 
 /**
  * @author Hannah Schellekens, Sten Wessel
@@ -149,9 +168,6 @@ class LatexRunConfiguration(
             }
         }
 
-    @Transient
-    private val auxChainResolver = LatexAuxChainResolver(this)
-
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = LatexSettingsEditor(project)
 
     override fun createAdditionalTabComponents(
@@ -220,12 +236,84 @@ class LatexRunConfiguration(
     /**
      * Create a new bib run config and add it to the set.
      */
-    internal fun generateBibRunConfig() = auxChainResolver.generateBibRunConfig()
+    internal fun generateBibRunConfig() {
+        val mainFile = executionState.resolvedMainFile ?: LatexRunConfigurationStaticSupport.resolveMainFile(this)
+        val psiFile = mainFile?.let { PsiManager.getInstance(project).findFile(it) }
+            ?: executionState.psiFile?.element
+            ?: return
+        val compilerFromMagicComment: Pair<BibliographyCompiler, String>? by lazy {
+            val runCommand = psiFile.allParentMagicComments()
+                .value(DefaultMagicKeys.BIBTEXCOMPILER) ?: return@lazy null
+            val compilerString = if (runCommand.contains(' ')) {
+                runCommand.let { it.subSequence(0, it.indexOf(' ')) }.trim().toString()
+            }
+            else runCommand
+            val compiler = BibliographyCompiler.valueOf(compilerString.uppercase(Locale.getDefault()))
+            val compilerArguments = runCommand.removePrefix(compilerString).trim()
+            Pair(compiler, compilerArguments)
+        }
+
+        val defaultCompiler = when {
+            compilerFromMagicComment != null -> compilerFromMagicComment!!.first
+            psiFile.hasBibliography() -> BibliographyCompiler.BIBTEX
+            psiFile.usesBiber() -> BibliographyCompiler.BIBER
+            else -> return
+        }
+
+        val usesChapterbib = psiFile.includedPackagesInFileset().contains(LatexLib.CHAPTERBIB)
+        if (!usesChapterbib) {
+            addBibRunConfig(defaultCompiler, mainFile, compilerFromMagicComment?.second)
+            return
+        }
+
+        val allBibliographyCommands = NewCommandsIndex.getByNameInFileSet(CommandNames.BIBLIOGRAPHY, psiFile)
+        psiFile.traverseCommands()
+            .filter { it.nameWithSlash == CommandNames.INCLUDE }
+            .flatMap { command -> command.requiredParametersText() }
+            .forEach { filename ->
+                val chapterMainFile = psiFile.findFile(filename, supportsAnyExtension = true) ?: return@forEach
+                val chapterFiles = chapterMainFile.referencedFileSet().toMutableSet().apply { add(chapterMainFile) }
+                val chapterHasBibliography = allBibliographyCommands.any { it.containingFile in chapterFiles }
+                if (chapterHasBibliography) {
+                    addBibRunConfig(defaultCompiler, chapterMainFile.virtualFile, compilerFromMagicComment?.second)
+                }
+            }
+    }
 
     /**
      * All run configs in the chain except the LaTeX ones.
      */
-    fun getAllAuxiliaryRunConfigs(): Set<RunnerAndConfigurationSettings> = auxChainResolver.getAllAuxiliaryRunConfigs()
+    fun getAllAuxiliaryRunConfigs(): Set<RunnerAndConfigurationSettings> = bibRunConfigs + makeindexRunConfigs + externalToolRunConfigs
+
+    private fun addBibRunConfig(
+        defaultCompiler: BibliographyCompiler,
+        mainFile: VirtualFile?,
+        compilerArguments: String? = null
+    ) {
+        val runManager = RunManagerImpl.getInstanceImpl(project)
+        val bibSettings = runManager.createConfiguration("", LatexConfigurationFactory(BibtexRunConfigurationType()))
+        val bibtexRunConfiguration = bibSettings.configuration as BibtexRunConfiguration
+
+        bibtexRunConfiguration.compiler = defaultCompiler
+        if (compilerArguments != null) bibtexRunConfiguration.compilerArguments = compilerArguments
+        bibtexRunConfiguration.mainFile = mainFile
+        bibtexRunConfiguration.setSuggestedName()
+        bibtexRunConfiguration.setDefaultDistribution(getLatexDistributionType())
+
+        if (!getLatexDistributionType().isMiktex(project, mainFile)) {
+            if (mainFile != null && executionState.resolvedOutputDir != mainFile.parent) {
+                bibtexRunConfiguration.environmentVariables = bibtexRunConfiguration.environmentVariables.with(
+                    mapOf(
+                        "BIBINPUTS" to mainFile.parent.path,
+                        "BSTINPUTS" to mainFile.parent.path + File.pathSeparator
+                    )
+                )
+            }
+        }
+
+        runManager.addConfiguration(bibSettings)
+        bibRunConfigs += setOf(bibSettings)
+    }
 
     fun hasDefaultWorkingDirectory(): Boolean = workingDirectory == null
 
