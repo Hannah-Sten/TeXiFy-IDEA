@@ -80,7 +80,8 @@ class RunExternalToolListener(
      */
     private fun generateExternalToolConfigs(): Set<RunnerAndConfigurationSettings> {
         val runManager = RunManagerImpl.getInstanceImpl(environment.project)
-        val tools = getRequiredExternalTools(latexRunConfig.mainFile, environment.project)
+        val mainFile = executionState.resolvedMainFile
+        val tools = getRequiredExternalTools(mainFile, environment.project)
 
         val runConfigs = mutableSetOf<RunnerAndConfigurationSettings>()
 
@@ -92,10 +93,10 @@ class RunExternalToolListener(
 
             val runConfig = runConfigSettings.configuration as ExternalToolRunConfiguration
 
-            runConfig.mainFile = latexRunConfig.mainFile
+            runConfig.mainFile = mainFile
             runConfig.program = tool
             runConfig.setSuggestedName()
-            runConfig.workingDirectory = latexRunConfig.getAuxilDirectory()
+            runConfig.workingDirectory = executionState.resolvedAuxDir
 
             runManager.addConfiguration(runConfigSettings)
             runConfigs.add(runConfigSettings)

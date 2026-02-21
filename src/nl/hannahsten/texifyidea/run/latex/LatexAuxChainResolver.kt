@@ -84,7 +84,7 @@ internal class LatexAuxChainResolver(private val runConfig: LatexRunConfiguratio
         bibtexRunConfiguration.setDefaultDistribution(runConfig.getLatexDistributionType())
 
         if (!runConfig.getLatexDistributionType().isMiktex(runConfig.project, mainFile)) {
-            if (mainFile != null && LatexPathResolver.resolveOutputDir(runConfig) != mainFile.parent) {
+            if (mainFile != null && runConfig.executionState.resolvedOutputDir != mainFile.parent) {
                 bibtexRunConfiguration.environmentVariables = bibtexRunConfiguration.environmentVariables.with(
                     mapOf(
                         "BIBINPUTS" to mainFile.parent.path,

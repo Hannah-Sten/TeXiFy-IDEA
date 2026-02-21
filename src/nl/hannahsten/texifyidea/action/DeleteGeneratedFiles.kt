@@ -11,6 +11,7 @@ import com.intellij.openapi.util.registry.Registry
 import com.intellij.openapi.vfs.InvalidVirtualFileAccessException
 import com.intellij.openapi.vfs.LocalFileSystem
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
+import nl.hannahsten.texifyidea.run.latex.LatexPathResolver
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCleanUtil
 import nl.hannahsten.texifyidea.util.Log
@@ -55,7 +56,13 @@ class DeleteGeneratedFiles : AnAction() {
 
         // Custom output folders
         val customOutput = project.getLatexRunConfigurations()
-            .flatMap { listOf(it.getOutputDirectory(), it.getAuxilDirectory()) }
+            .flatMap { config ->
+                val mainFile = config.resolveMainFile()
+                listOf(
+                    LatexPathResolver.resolveOutputDir(config, mainFile),
+                    LatexPathResolver.resolveAuxDir(config, mainFile)
+                )
+            }
             // There's no reason to delete files outside the project
             .filter { it?.path?.contains(project.basePath!!) == true }
             .filterNotNull()

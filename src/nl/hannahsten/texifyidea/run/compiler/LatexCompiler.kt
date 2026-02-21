@@ -228,7 +228,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
             // The available command line arguments can be found at https://github.com/tectonic-typesetting/tectonic/blob/d7a8497c90deb08b5e5792a11d6e8b082f53bbb7/src/bin/tectonic.rs#L158
             // The V2 CLI uses a toml file and should not have arguments
-            if ((runConfig.executionState.resolvedMainFile ?: runConfig.resolveMainFile())?.hasTectonicTomlFile() != true) {
+            if (runConfig.executionState.resolvedMainFile?.hasTectonicTomlFile() != true) {
                 command.add("--synctex")
 
                 command.add("--outfmt=${runConfig.outputFormat.name.lowercase(Locale.getDefault())}")
@@ -275,7 +275,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
      *          The current project.
      */
     fun getCommand(runConfig: LatexRunConfiguration, project: Project): List<String>? {
-        val mainFile = runConfig.executionState.resolvedMainFile ?: runConfig.resolveMainFile() ?: return null
+        val mainFile = runConfig.executionState.resolvedMainFile ?: return null
         // Getting the content root is an expensive operation (See WorkspaceFileIndexDataImpl#ensureIsUpToDate), and since it probably won't change often we reuse a cached value
         val moduleRoot = LatexPathResolver.getMainFileContentRoot(mainFile, project)
         // For now we disable module roots with Docker
@@ -306,12 +306,11 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             "/out"
         }
         else if (runConfig.compiler == LATEXMK) {
-            val resolved = runConfig.executionState.resolvedOutputDir?.path
-                ?: LatexPathResolver.resolve(runConfig.outputPath ?: LatexPathResolver.defaultOutputPath, mainFile, project)?.toString()
-            (resolved ?: mainFile.parent.path).toWslPathIfNeeded(runConfig.getLatexDistributionType())
+            (runConfig.executionState.resolvedOutputDir?.path ?: return null)
+                .toWslPathIfNeeded(runConfig.getLatexDistributionType())
         }
         else {
-            (runConfig.executionState.resolvedOutputDir ?: LatexPathResolver.resolveOutputDir(runConfig, mainFile) ?: mainFile.parent)
+            (runConfig.executionState.resolvedOutputDir ?: return null)
                 .path
                 .toWslPathIfNeeded(runConfig.getLatexDistributionType())
         }
@@ -323,14 +322,11 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             null
         }
         else if (runConfig.compiler == LATEXMK) {
-            (
-                runConfig.executionState.resolvedAuxDir?.path
-                    ?: LatexPathResolver.resolve(runConfig.auxilPath ?: LatexPathResolver.defaultAuxilPath, mainFile, project)?.toString()
-                )
+            (runConfig.executionState.resolvedAuxDir?.path)
                 ?.toWslPathIfNeeded(runConfig.getLatexDistributionType())
         }
         else {
-            (runConfig.executionState.resolvedAuxDir ?: LatexPathResolver.resolveAuxDir(runConfig, mainFile))
+            (runConfig.executionState.resolvedAuxDir)
                 ?.path
                 ?.toWslPathIfNeeded(runConfig.getLatexDistributionType())
         }
@@ -347,7 +343,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             var wslCommand = GeneralCommandLine(command).commandLineString
 
             // Custom compiler arguments specified by the user
-            runConfig.getEffectiveCompilerArguments()?.let { arguments ->
+            runConfig.executionState.effectiveCompilerArguments?.let { arguments ->
                 ParametersListUtil.parse(arguments)
                     .forEach { wslCommand += " $it" }
             }
@@ -362,7 +358,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         }
 
         // Custom compiler arguments specified by the user
-        runConfig.getEffectiveCompilerArguments()?.let { arguments ->
+        runConfig.executionState.effectiveCompilerArguments?.let { arguments ->
             ParametersListUtil.parse(arguments)
                 .forEach { command.add(it) }
         }
@@ -427,14 +423,14 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         if (dockerOutputDir != null) {
             // Avoid mounting the mainfile parent also to /miktex/work/out,
             // because there may be a good reason to make the output directory the same as the source directory
-            val outPath = runConfig.executionState.resolvedOutputDir ?: LatexPathResolver.resolveOutputDir(runConfig, mainFile)
+            val outPath = runConfig.executionState.resolvedOutputDir
             if (outPath?.path != null && outPath != mainFile.parent) {
                 parameterList.addAll(listOf("-v", "${outPath.path}:$dockerOutputDir"))
             }
         }
 
         if (dockerAuxilDir != null) {
-            val auxilPath = runConfig.executionState.resolvedAuxDir ?: LatexPathResolver.resolveAuxDir(runConfig, mainFile)
+            val auxilPath = runConfig.executionState.resolvedAuxDir
             if (auxilPath?.path != null && auxilPath != mainFile.parent) {
                 parameterList.addAll(listOf("-v", "${auxilPath.path}:$dockerAuxilDir"))
             }

@@ -6,12 +6,23 @@ import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
+import nl.hannahsten.texifyidea.run.latex.LatexPathResolver
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer
 import java.nio.file.Files
 import java.nio.file.Path
 
 class LatexmkRunConfigurationTest : BasePlatformTestCase() {
+
+    private fun initializeExecutionState(runConfig: LatexRunConfiguration) {
+        val mainFile = runConfig.executionState.resolvedMainFile ?: runConfig.mainFile ?: return
+        runConfig.executionState.resolvedMainFile = mainFile
+        runConfig.executionState.resolvedOutputDir = LatexPathResolver.resolveOutputDir(runConfig, mainFile)
+        runConfig.executionState.resolvedAuxDir = LatexPathResolver.resolveAuxDir(runConfig, mainFile)
+        runConfig.executionState.effectiveLatexmkCompileMode = runConfig.effectiveLatexmkCompileMode()
+        runConfig.executionState.effectiveCompilerArguments = runConfig.buildLatexmkArguments()
+        runConfig.executionState.isInitialized = true
+    }
 
     fun testCompileModeContainsAuto() {
         assertTrue(LatexmkCompileMode.entries.contains(LatexmkCompileMode.AUTO))
@@ -136,6 +147,7 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
         runConfig.latexmkCitationTool = LatexmkCitationTool.AUTO
         runConfig.latexmkExtraArguments = null
 
+        initializeExecutionState(runConfig)
         val arguments = runConfig.buildLatexmkArguments()
         assertTrue(arguments.contains("-xelatex"))
         assertTrue(arguments.contains("-xdv"))
@@ -213,6 +225,7 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
         runConfig.latexmkCitationTool = LatexmkCitationTool.AUTO
         runConfig.latexmkExtraArguments = null
         runConfig.compilerArguments = runConfig.buildLatexmkArguments()
+        initializeExecutionState(runConfig)
 
         val command = LatexCompiler.LATEXMK.getCommand(runConfig, project) ?: error("No command generated")
 
@@ -239,6 +252,7 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
         runConfig.compiler = LatexCompiler.LATEXMK
         runConfig.mainFile = mainFile.virtualFile
         runConfig.compilerArguments = runConfig.buildLatexmkArguments()
+        initializeExecutionState(runConfig)
 
         val command = LatexCompiler.LATEXMK.getCommand(runConfig, project) ?: error("No command generated")
         assertEquals(1, command.count { it == "-synctex=1" })
@@ -260,6 +274,7 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
         runConfig.outputPath = outputDir
         runConfig.auxilPath = auxDir
         runConfig.compilerArguments = runConfig.buildLatexmkArguments()
+        initializeExecutionState(runConfig)
 
         val command = LatexCompiler.LATEXMK.getCommand(runConfig, project) ?: error("No command generated")
         assertTrue("Expected -outdir in command: $command", command.any { it.startsWith("-outdir=") })
@@ -283,6 +298,7 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
         runConfig.outputPath = outputDir
         runConfig.auxilPath = auxDir
         runConfig.compilerArguments = runConfig.buildLatexmkArguments()
+        initializeExecutionState(runConfig)
 
         val command = LatexCompiler.LATEXMK.getCommand(runConfig, project) ?: error("No command generated")
         assertTrue(command.contains("-outdir=$outputDir"))

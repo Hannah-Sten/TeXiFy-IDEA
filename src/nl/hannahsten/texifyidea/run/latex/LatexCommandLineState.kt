@@ -141,7 +141,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
                 (it.configuration as? BibtexRunConfiguration)?.apply {
                     // Check if the aux, out, or src folder should be used as bib working dir.
                     // This involves a synchronous refreshAndFindFileByPath, and hence cannot be done in a read action
-                    this.bibWorkingDir = runConfig.getAuxilDirectory()
+                    this.bibWorkingDir = executionState.resolvedAuxDir ?: executionState.resolvedOutputDir
                 }
             }
         }
@@ -181,7 +181,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
             // If no index package is used, we assume we won't have to run makeindex
             val includedPackages = ReadAction.compute<Set<LatexLib>, RuntimeException> {
-                (executionState.resolvedMainFile ?: runConfig.resolveMainFile())
+                executionState.resolvedMainFile
                     ?.psiFile(runConfig.project)
                     ?.includedPackagesInFileset()
                     ?: setOf()

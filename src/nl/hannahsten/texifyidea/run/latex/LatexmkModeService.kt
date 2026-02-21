@@ -18,7 +18,8 @@ import nl.hannahsten.texifyidea.util.includedPackagesInFileset
 internal class LatexmkModeService(private val runConfig: LatexRunConfiguration) {
 
     fun buildArguments(effectiveCompileModeOverride: LatexmkCompileMode? = null): String {
-        val hasRcFile = LatexmkRcFileFinder.hasLatexmkRc(runConfig.compilerArguments, runConfig.getResolvedWorkingDirectory())
+        val workingDirectory = runConfig.executionState.resolvedWorkingDirectory
+        val hasRcFile = LatexmkRcFileFinder.hasLatexmkRc(runConfig.compilerArguments, workingDirectory)
         val effectiveCompileMode = effectiveCompileModeOverride ?: effectiveCompileMode()
         return buildLatexmkStructuredArguments(
             hasRcFile = hasRcFile,
@@ -35,7 +36,13 @@ internal class LatexmkModeService(private val runConfig: LatexRunConfiguration) 
         }
 
         return ReadAction.compute<LatexmkCompileMode, RuntimeException> {
-            val psi = runConfig.mainFile?.let { PsiManager.getInstance(runConfig.project).findFile(it) } ?: runConfig.psiFile?.element
+            val mainFile = if (runConfig.executionState.isInitialized) {
+                runConfig.executionState.resolvedMainFile
+            }
+            else {
+                runConfig.resolveMainFile()
+            }
+            val psi = mainFile?.let { PsiManager.getInstance(runConfig.project).findFile(it) } ?: runConfig.psiFile?.element
             val magicComments = psi?.allParentMagicComments()
             val magicMode = compileModeFromMagicCommand(
                 magicComments?.value(DefaultMagicKeys.COMPILER) ?: magicComments?.value(DefaultMagicKeys.PROGRAM)

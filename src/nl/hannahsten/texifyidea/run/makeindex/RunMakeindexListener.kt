@@ -78,8 +78,8 @@ class RunMakeindexListener(
     private fun copyBib2glsOutput(makeindexRunConfig: MakeindexRunConfiguration, baseFileName: String) {
         if (makeindexRunConfig.makeindexProgram == MakeindexProgram.BIB2GLS) {
             try {
-                val mainFile = latexRunConfig.mainFile
-                val auxilDir = latexRunConfig.getAuxilDirectory()
+                val mainFile = executionState.resolvedMainFile
+                val auxilDir = executionState.resolvedAuxDir ?: executionState.resolvedOutputDir
                 if (mainFile != null && auxilDir != null && mainFile.path != auxilDir.path) {
                     for (extension in setOf("glstex", "glg")) {
                         FileUtil.rename(File(mainFile.parent.path + '/' + baseFileName.appendExtension(extension)), File(auxilDir.path + '/' + baseFileName.appendExtension(extension)))
@@ -101,9 +101,9 @@ class RunMakeindexListener(
         val runManager = RunManagerImpl.getInstanceImpl(environment.project)
 
         val usedPackages = readAction {
-            latexRunConfig.mainFile?.psiFile(environment.project)?.includedPackagesInFileset() ?: emptySet()
+            executionState.resolvedMainFile?.psiFile(environment.project)?.includedPackagesInFileset() ?: emptySet()
         }
-        val mainFile = latexRunConfig.mainFile
+        val mainFile = executionState.resolvedMainFile
         val indexPrograms = getDefaultMakeindexPrograms(mainFile, environment.project, usedPackages)
 
         val runConfigs = mutableSetOf<RunnerAndConfigurationSettings>()
@@ -125,7 +125,7 @@ class RunMakeindexListener(
             }
 
             // bib2gls we handle separately, because it needs the bib file, so instead of running it in the auxil dir we run it next to the main file
-            runConfig.workingDirectory = if (runConfig.makeindexProgram != MakeindexProgram.BIB2GLS) latexRunConfig.getAuxilDirectory() else runConfig.mainFile?.parent
+            runConfig.workingDirectory = if (runConfig.makeindexProgram != MakeindexProgram.BIB2GLS) (executionState.resolvedAuxDir ?: executionState.resolvedOutputDir) else runConfig.mainFile?.parent
 
             runManager.addConfiguration(makeindexRunConfigSettings)
             runConfigs.add(makeindexRunConfigSettings)
@@ -143,8 +143,8 @@ class RunMakeindexListener(
      * @return List of files that should be cleaned up.
      */
     private fun copyIndexOutputFiles(baseFileName: String, indexFileExtensions: Set<String>) {
-        val mainFile = latexRunConfig.mainFile ?: return
-        val auxilDir = latexRunConfig.getAuxilDirectory() ?: return
+        val mainFile = executionState.resolvedMainFile ?: return
+        val auxilDir = executionState.resolvedAuxDir ?: executionState.resolvedOutputDir ?: return
         val sourceDir = auxilDir.path + '/'
         val destinationDir = File(mainFile.path).parent + '/'
 

@@ -75,7 +75,7 @@ class LatexRunConfiguration(
 
     @Deprecated("Use mainFilePath as static configuration; this property is a compatibility view over execution state.")
     var mainFile: VirtualFile?
-        get() = executionState.resolvedMainFile ?: resolveMainFile()
+        get() = if (executionState.isInitialized) executionState.resolvedMainFile else (executionState.resolvedMainFile ?: resolveMainFile())
         set(value) {
             mainFilePath = value?.path
             executionState.resolvedMainFile = value
@@ -266,17 +266,6 @@ class LatexRunConfiguration(
      */
     fun getAllAuxiliaryRunConfigs(): Set<RunnerAndConfigurationSettings> = auxChainResolver.getAllAuxiliaryRunConfigs()
 
-    fun getResolvedWorkingDirectory(): Path? {
-        executionState.resolvedWorkingDirectory?.let { return it }
-        val mainFile = resolveMainFile()
-        return if (workingDirectory != null) {
-            LatexPathResolver.resolve(workingDirectory, mainFile, project)
-        }
-        else {
-            mainFile?.parent?.path?.let { Path.of(it) }
-        }
-    }
-
     fun hasDefaultWorkingDirectory(): Boolean = workingDirectory == null
 
     /**
@@ -311,7 +300,8 @@ class LatexRunConfiguration(
      */
     fun getLatexSdk(): Sdk? = when (latexDistribution) {
         LatexDistributionType.MODULE_SDK -> {
-            val sdk = resolveMainFile()?.let { LatexSdkUtil.getLatexSdkForFile(it, project) }
+            val mainFile = if (executionState.isInitialized) executionState.resolvedMainFile else resolveMainFile()
+            val sdk = mainFile?.let { LatexSdkUtil.getLatexSdkForFile(it, project) }
                 ?: LatexSdkUtil.getLatexProjectSdk(project)
             if (sdk?.sdkType is LatexSdk) sdk else null
         }
@@ -343,21 +333,6 @@ class LatexRunConfiguration(
         }
     }
 
-    /**
-     * Find the directory where auxiliary files will be placed, depending on the run config settings.
-     *
-     * @return The auxil folder when MiKTeX used, or else the out folder when used.
-     */
-    fun getAuxilDirectory(): VirtualFile? = if (getLatexDistributionType().isMiktex(project, resolveMainFile())) {
-        // If we are using MiKTeX it might still be we are not using an auxil directory, so then fall back to the out directory
-        executionState.resolvedAuxDir ?: LatexPathResolver.resolveAuxDir(this, resolveMainFile()) ?: (executionState.resolvedOutputDir ?: LatexPathResolver.resolveOutputDir(this, resolveMainFile()))
-    }
-    else {
-        executionState.resolvedOutputDir ?: LatexPathResolver.resolveOutputDir(this, resolveMainFile())
-    }
-
-    fun getOutputDirectory(): VirtualFile? = executionState.resolvedOutputDir ?: LatexPathResolver.resolveOutputDir(this, resolveMainFile())
-
     fun setSuggestedName() {
         suggestedName()?.let { name = it }
     }
@@ -368,7 +343,7 @@ class LatexRunConfiguration(
     }
 
     private fun mainFileNameWithoutExtension(): String? {
-        val resolved = resolveMainFile()
+        val resolved = if (executionState.isInitialized) executionState.resolvedMainFile else resolveMainFile()
         if (resolved != null) {
             return resolved.nameWithoutExtension
         }
@@ -380,20 +355,16 @@ class LatexRunConfiguration(
 
     // Path to output file (e.g. pdf)
     override fun getOutputFilePath(): String {
-        val mainFile = resolveMainFile()
-        val outputDirPath = when {
-            executionState.resolvedOutputDir != null -> executionState.resolvedOutputDir!!.path
-            mainFile != null -> (LatexPathResolver.resolveOutputDir(this, mainFile) ?: mainFile.parent).path
-            else -> getResolvedWorkingDirectory()?.toString()
-                ?: outputPath?.toString()
-                ?: ""
-        }
-        val baseName = mainFile?.nameWithoutExtension ?: mainFileNameWithoutExtension() ?: return ""
+        val mainFile = executionState.resolvedMainFile ?: return ""
+        val outputDirPath = executionState.resolvedOutputDir?.path ?: return ""
+        val baseName = mainFile.nameWithoutExtension
         val extension = if (compiler == LatexCompiler.LATEXMK) {
-            val modeFromArgs = getEffectiveCompilerArguments()
+            val modeFromArgs = executionState.effectiveCompilerArguments
                 ?.takeIf(String::isNotBlank)
                 ?.let { compileModeFromMagicCommand("latexmk $it") }
-            (modeFromArgs ?: effectiveLatexmkCompileMode()).extension.lowercase(Locale.getDefault())
+            (modeFromArgs ?: executionState.effectiveLatexmkCompileMode ?: LatexmkCompileMode.PDFLATEX_PDF)
+                .extension
+                .lowercase(Locale.getDefault())
         }
         else if (outputFormat == Format.DEFAULT) {
             "pdf"
@@ -403,10 +374,6 @@ class LatexRunConfiguration(
         }
         return "$outputDirPath/$baseName.$extension"
     }
-
-    fun getEffectiveCompilerArguments(): String? = executionState.effectiveCompilerArguments ?: compilerArguments
-
-    fun getEffectiveLatexmkCompileMode(): LatexmkCompileMode = executionState.effectiveLatexmkCompileMode ?: effectiveLatexmkCompileMode()
 
     fun setAuxRunConfigIds(ids: Set<String>) {
         bibRunConfigIds = ids.toMutableSet()
@@ -425,6 +392,13 @@ class LatexRunConfiguration(
     fun getExternalToolRunConfigIds(): Set<String> = externalToolRunConfigIds
 
     fun resolveMainFile(path: String? = mainFilePath): VirtualFile? {
+        if (path == null || path == mainFilePath) {
+            if (executionState.isInitialized) {
+                return executionState.resolvedMainFile
+            }
+            executionState.resolvedMainFile?.let { return it }
+        }
+
         val candidate = path?.trim()?.takeIf { it.isNotBlank() } ?: return null
         val fileSystem = com.intellij.openapi.vfs.LocalFileSystem.getInstance()
         val absolute = fileSystem.findFileByPath(candidate)
@@ -497,6 +471,13 @@ class LatexRunConfiguration(
      * Whether an auxil or out directory is used, i.e. whether not both are set to the directory of the main file
      */
     fun usesAuxilOrOutDirectory(): Boolean {
+        if (executionState.isInitialized) {
+            val mainParent = executionState.resolvedMainFile?.parent
+            val usesAuxilDir = (executionState.resolvedAuxDir ?: executionState.resolvedOutputDir) != mainParent
+            val usesOutDir = executionState.resolvedOutputDir != mainParent
+            return usesAuxilDir || usesOutDir
+        }
+
         val mainParent = resolveMainFile()?.parent
         val usesAuxilDir = LatexPathResolver.resolveAuxDir(this, resolveMainFile()) != mainParent
         val usesOutDir = LatexPathResolver.resolveOutputDir(this, resolveMainFile()) != mainParent

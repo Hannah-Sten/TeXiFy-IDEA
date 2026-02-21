@@ -40,7 +40,7 @@ object LatexmkCleanUtil {
         }
 
         runInBackgroundWithoutProgress {
-            val workingDirectoryPath = runConfig.getResolvedWorkingDirectory() ?: Path.of(mainFile.parent.path)
+            val workingDirectoryPath = LatexPathResolver.resolve(runConfig.workingDirectory, mainFile, project) ?: Path.of(mainFile.parent.path)
             val envVariables = runConfig.environmentVariables.envs.let { envs ->
                 if (!runConfig.expandMacrosEnvVariables) {
                     envs
