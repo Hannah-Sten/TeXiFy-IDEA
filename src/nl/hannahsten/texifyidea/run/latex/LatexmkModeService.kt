@@ -42,7 +42,7 @@ internal class LatexmkModeService(private val runConfig: LatexRunConfiguration) 
             )
             val packageMode = psi?.let { psiFile ->
                 val directLibraries = mutableSetOf<LatexLib>()
-                psiFile.traverseCommands().forEach { command ->
+                psiFile.traverseCommands(4).forEach { command ->
                     when (command.nameWithSlash) {
                         CommandNames.USE_PACKAGE -> {
                             command.requiredParameterText(0)

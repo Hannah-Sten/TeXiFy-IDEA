@@ -305,6 +305,10 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         else if (runConfig.getLatexDistributionType() == LatexDistributionType.DOCKER_TEXLIVE) {
             "/out"
         }
+        else if (runConfig.compiler == LATEXMK) {
+            val resolved = LatexPathResolver.resolve(runConfig.outputPath ?: LatexPathResolver.defaultOutputPath, mainFile, project)
+            (resolved?.toString() ?: mainFile.parent.path).toWslPathIfNeeded(runConfig.getLatexDistributionType())
+        }
         else {
             (LatexPathResolver.resolveOutputDir(runConfig) ?: mainFile.parent).path.toWslPathIfNeeded(runConfig.getLatexDistributionType())
         }
@@ -314,6 +318,11 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         }
         else if (runConfig.getLatexDistributionType() == LatexDistributionType.DOCKER_TEXLIVE) {
             null
+        }
+        else if (runConfig.compiler == LATEXMK) {
+            LatexPathResolver.resolve(runConfig.auxilPath ?: LatexPathResolver.defaultAuxilPath, mainFile, project)
+                ?.toString()
+                ?.toWslPathIfNeeded(runConfig.getLatexDistributionType())
         }
         else {
             LatexPathResolver.resolveAuxDir(runConfig)?.path?.toWslPathIfNeeded(runConfig.getLatexDistributionType())

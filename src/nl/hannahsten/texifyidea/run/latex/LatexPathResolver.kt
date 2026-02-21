@@ -8,6 +8,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
 import nl.hannahsten.texifyidea.util.files.FileUtil
 import nl.hannahsten.texifyidea.util.files.allChildDirectories
@@ -26,7 +27,9 @@ internal object LatexPathResolver {
     fun resolveOutputDir(runConfig: LatexRunConfiguration): VirtualFile? = ensureDir(runConfig.outputPath ?: defaultOutputPath, runConfig.mainFile, runConfig.project, "out")
 
     fun resolveAuxDir(runConfig: LatexRunConfiguration): VirtualFile? {
-        if (!runConfig.getLatexDistributionType().isMiktex(runConfig.project, runConfig.mainFile)) {
+        val supportsAuxDir = runConfig.getLatexDistributionType().isMiktex(runConfig.project, runConfig.mainFile) ||
+            runConfig.compiler == LatexCompiler.LATEXMK
+        if (!supportsAuxDir) {
             return null
         }
         return ensureDir(runConfig.auxilPath ?: defaultAuxilPath, runConfig.mainFile, runConfig.project, "auxil")
@@ -63,7 +66,10 @@ internal object LatexPathResolver {
     }
 
     private fun resolveRelativePathAgainstContentRoots(path: String, moduleRoot: VirtualFile?, project: Project): Path? {
-        moduleRoot?.findFileByRelativePath(path)?.let { return Path.of(it.path) }
+        if (moduleRoot != null) {
+            moduleRoot.findFileByRelativePath(path)?.let { return Path.of(it.path) }
+            return Path.of(moduleRoot.path).resolve(path).normalize()
+        }
 
         return runCatching {
             ReadAction.compute<Path?, RuntimeException> {

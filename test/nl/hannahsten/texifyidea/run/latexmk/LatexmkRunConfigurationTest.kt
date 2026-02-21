@@ -5,6 +5,7 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
+import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer
 import java.nio.file.Files
@@ -241,6 +242,51 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
 
         val command = LatexCompiler.LATEXMK.getCommand(runConfig, project) ?: error("No command generated")
         assertEquals(1, command.count { it == "-synctex=1" })
+    }
+
+    fun testLatexmkOnTexliveUsesAuxdirWhenAuxPathDiffersFromOutdir() {
+        val mainFile = myFixture.addFileToProject("main.tex", "\\documentclass{article}")
+        val outputDir = Files.createTempDirectory("texify-latexmk-out")
+        val auxDir = Files.createTempDirectory("texify-latexmk-aux")
+
+        val runConfig = LatexRunConfiguration(
+            myFixture.project,
+            LatexRunConfigurationProducer().configurationFactory,
+            "LaTeX"
+        )
+        runConfig.compiler = LatexCompiler.LATEXMK
+        runConfig.latexDistribution = LatexDistributionType.TEXLIVE
+        runConfig.mainFile = mainFile.virtualFile
+        runConfig.outputPath = outputDir
+        runConfig.auxilPath = auxDir
+        runConfig.compilerArguments = runConfig.buildLatexmkArguments()
+
+        val command = LatexCompiler.LATEXMK.getCommand(runConfig, project) ?: error("No command generated")
+        assertTrue("Expected -outdir in command: $command", command.any { it.startsWith("-outdir=") })
+        assertTrue("Expected -auxdir in command: $command", command.any { it.startsWith("-auxdir=") })
+    }
+
+    fun testLatexmkOnTexliveDoesNotFallbackWhenOutOrAuxDirDoesNotExist() {
+        val mainFile = myFixture.addFileToProject("main.tex", "\\documentclass{article}")
+        val root = Files.createTempDirectory("texify-latexmk-missing")
+        val outputDir = root.resolve("missing-out")
+        val auxDir = root.resolve("missing-aux")
+
+        val runConfig = LatexRunConfiguration(
+            myFixture.project,
+            LatexRunConfigurationProducer().configurationFactory,
+            "LaTeX"
+        )
+        runConfig.compiler = LatexCompiler.LATEXMK
+        runConfig.latexDistribution = LatexDistributionType.TEXLIVE
+        runConfig.mainFile = mainFile.virtualFile
+        runConfig.outputPath = outputDir
+        runConfig.auxilPath = auxDir
+        runConfig.compilerArguments = runConfig.buildLatexmkArguments()
+
+        val command = LatexCompiler.LATEXMK.getCommand(runConfig, project) ?: error("No command generated")
+        assertTrue(command.contains("-outdir=$outputDir"))
+        assertTrue(command.contains("-auxdir=$auxDir"))
     }
 
     fun testRunConfigurationsXmlRegistersOnlyLatexProducer() {
