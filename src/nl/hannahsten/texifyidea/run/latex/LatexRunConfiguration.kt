@@ -284,14 +284,10 @@ class LatexRunConfiguration(
 
         val parent = element.getChild(TEXIFY_PARENT) ?: return
 
-        readCompilerFields(parent)
-        readViewerFields(parent)
-        readEnvironmentFields(parent)
-        readMainAndPathFields(parent)
-        readLegacyPathFields(parent)
-        readCompileFields(parent)
+        readCoreFields(parent)
+        readPathAndCompileFields(parent)
         readLatexmkFields(parent)
-        readDistributionAndState(parent)
+        readLegacyPathFields(parent)
         readAuxConfigIds(parent)
     }
 
@@ -306,15 +302,12 @@ class LatexRunConfiguration(
         writeAuxConfigIds(parent)
     }
 
-    private fun readCompilerFields(parent: Element) {
+    private fun readCoreFields(parent: Element) {
         val compilerName = parent.getChildText(COMPILER)
         compiler = runCatching { LatexCompiler.valueOf(compilerName) }.getOrNull()
 
         val compilerPathRead = parent.getChildText(COMPILER_PATH)
         compilerPath = if (compilerPathRead.isNullOrEmpty()) null else compilerPathRead
-    }
-
-    private fun readViewerFields(parent: Element) {
         val viewerName = parent.getChildText(PDF_VIEWER)
         pdfViewer = PdfViewer.availableViewers.firstOrNull { it.name == viewerName || it.name?.uppercase() == viewerName }
             ?: PdfViewer.firstAvailableViewer
@@ -345,9 +338,6 @@ class LatexRunConfiguration(
                 }
             }
         }
-    }
-
-    private fun readEnvironmentFields(parent: Element) {
         val compilerArgumentsRead = parent.getChildText(COMPILER_ARGUMENTS)
         compilerArguments = if (compilerArgumentsRead.isNullOrEmpty()) null else compilerArgumentsRead
         environmentVariables = EnvironmentVariablesData.readExternal(parent)
@@ -355,11 +345,13 @@ class LatexRunConfiguration(
 
         val beforeRunCommandRead = parent.getChildText(BEFORE_RUN_COMMAND)
         beforeRunCommand = if (beforeRunCommandRead.isNullOrEmpty()) null else beforeRunCommandRead
+
+        setMainFile(parent.getChildText(MAIN_FILE))
+        latexDistribution = LatexDistributionType.valueOfIgnoreCase(parent.getChildText(LATEX_DISTRIBUTION))
+        hasBeenRun = parent.getChildText(HAS_BEEN_RUN)?.toBoolean() ?: false
     }
 
-    private fun readMainAndPathFields(parent: Element) {
-        setMainFile(parent.getChildText(MAIN_FILE))
-
+    private fun readPathAndCompileFields(parent: Element) {
         parent.getChildText(OUTPUT_PATH)?.let { outputPathString ->
             outputPath = if (isInvalidJetBrainsBinPath(outputPathString)) LatexPathResolver.defaultOutputPath
             else pathOrNull(outputPathString)
@@ -375,27 +367,7 @@ class LatexRunConfiguration(
             workingDirectoryText == LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER -> null
             else -> pathOrNull(workingDirectoryText)
         }
-    }
 
-    private fun readLegacyPathFields(parent: Element) {
-        val auxDirBoolean = parent.getChildText(AUX_DIR)
-        if (auxDirBoolean != null && auxilPath == null && mainFile != null) {
-            val usesAuxDir = java.lang.Boolean.parseBoolean(auxDirBoolean)
-            val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile!!)
-            val path = if (usesAuxDir) moduleRoot?.path + "/auxil" else mainFile!!.parent.path
-            auxilPath = pathOrNull(path)
-        }
-
-        val outDirBoolean = parent.getChildText(OUT_DIR)
-        if (outDirBoolean != null && outputPath == null && mainFile != null) {
-            val usesOutDir = java.lang.Boolean.parseBoolean(outDirBoolean)
-            val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile!!)
-            val path = if (usesOutDir) moduleRoot?.path + "/out" else mainFile!!.parent.path
-            outputPath = pathOrNull(path)
-        }
-    }
-
-    private fun readCompileFields(parent: Element) {
         compileTwice = parent.getChildText(COMPILE_TWICE)?.toBoolean() ?: false
         if (compiler == LatexCompiler.LATEXMK) {
             compileTwice = false
@@ -414,9 +386,22 @@ class LatexRunConfiguration(
         latexmkExtraArguments = parent.getChildText(LATEXMK_EXTRA_ARGUMENTS) ?: DEFAULT_LATEXMK_EXTRA_ARGUMENTS
     }
 
-    private fun readDistributionAndState(parent: Element) {
-        latexDistribution = LatexDistributionType.valueOfIgnoreCase(parent.getChildText(LATEX_DISTRIBUTION))
-        hasBeenRun = parent.getChildText(HAS_BEEN_RUN)?.toBoolean() ?: false
+    private fun readLegacyPathFields(parent: Element) {
+        val auxDirBoolean = parent.getChildText(AUX_DIR)
+        if (auxDirBoolean != null && auxilPath == null && mainFile != null) {
+            val usesAuxDir = java.lang.Boolean.parseBoolean(auxDirBoolean)
+            val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile!!)
+            val path = if (usesAuxDir) moduleRoot?.path + "/auxil" else mainFile!!.parent.path
+            auxilPath = pathOrNull(path)
+        }
+
+        val outDirBoolean = parent.getChildText(OUT_DIR)
+        if (outDirBoolean != null && outputPath == null && mainFile != null) {
+            val usesOutDir = java.lang.Boolean.parseBoolean(outDirBoolean)
+            val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile!!)
+            val path = if (usesOutDir) moduleRoot?.path + "/out" else mainFile!!.parent.path
+            outputPath = pathOrNull(path)
+        }
     }
 
     private fun readAuxConfigIds(parent: Element) {
