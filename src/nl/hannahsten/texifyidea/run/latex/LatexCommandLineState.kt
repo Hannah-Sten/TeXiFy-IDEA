@@ -65,7 +65,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         runConfig.filesToCleanUpIfEmpty.addAll(createdOutputDirectories)
 
         val handler = createHandler(mainFile, compiler)
-        executionState.hasBeenRun = true
+        executionState.markHasRun()
 
         if (!isLastCompile(isMakeindexNeeded = false, handler)) return handler
 
@@ -97,7 +97,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         val handler = createHandler(mainFile, compiler)
         val isMakeindexNeeded = runMakeindexIfNeeded(handler, mainFile, runConfig.filesToCleanUp)
         runExternalToolsIfNeeded(handler)
-        executionState.hasBeenRun = true
+        executionState.markHasRun()
 
         if (!isLastCompile(isMakeindexNeeded, handler)) return handler
 
@@ -229,7 +229,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         // If there is no bibtex/makeindex involved and we don't need to compile twice, then this is the last compile
         if (runConfig.bibRunConfigs.isEmpty() && !isMakeindexNeeded && runConfig.externalToolRunConfigs.isEmpty()) {
             if (!shouldCompileTwice) {
-                executionState.isLastRunConfig = true
+                executionState.markLastPass()
             }
 
             // Schedule the second compile only if this is the first compile

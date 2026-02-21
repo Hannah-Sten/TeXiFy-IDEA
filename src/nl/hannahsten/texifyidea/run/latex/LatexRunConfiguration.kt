@@ -285,35 +285,48 @@ class LatexRunConfiguration(
 
         val parent = element.getChild(TEXIFY_PARENT) ?: return
 
-        // Read compiler.
+        readCompilerFields(parent)
+        readViewerFields(parent)
+        readEnvironmentFields(parent)
+        readMainAndPathFields(parent)
+        readLegacyPathFields(parent)
+        readCompileFields(parent)
+        readLatexmkFields(parent)
+        readDistributionAndState(parent)
+        readAuxConfigIds(parent)
+    }
+
+    @Throws(WriteExternalException::class)
+    override fun writeExternal(element: Element) {
+        super<RunConfigurationBase>.writeExternal(element)
+
+        val parent = getOrCreateAndClearParent(element, TEXIFY_PARENT)
+        writeCoreFields(parent)
+        writePathAndCompileFields(parent)
+        writeLatexmkFields(parent)
+        writeAuxConfigIds(parent)
+    }
+
+    private fun readCompilerFields(parent: Element) {
         val compilerName = parent.getChildText(COMPILER)
-        try {
-            this.compiler = LatexCompiler.valueOf(compilerName)
-        }
-        catch (_: IllegalArgumentException) {
-            this.compiler = null
-        }
+        compiler = runCatching { LatexCompiler.valueOf(compilerName) }.getOrNull()
 
-        // Read compiler custom path.
         val compilerPathRead = parent.getChildText(COMPILER_PATH)
-        this.compilerPath = if (compilerPathRead.isNullOrEmpty()) null else compilerPathRead
+        compilerPath = if (compilerPathRead.isNullOrEmpty()) null else compilerPathRead
+    }
 
-        // Read pdf viewer.
+    private fun readViewerFields(parent: Element) {
         val viewerName = parent.getChildText(PDF_VIEWER)
-        // For backwards compatibility (0.10.3 and earlier), handle uppercase names
-        this.pdfViewer = PdfViewer.availableViewers.firstOrNull { it.name == viewerName || it.name?.uppercase() == viewerName } ?: PdfViewer.firstAvailableViewer
+        pdfViewer = PdfViewer.availableViewers.firstOrNull { it.name == viewerName || it.name?.uppercase() == viewerName }
+            ?: PdfViewer.firstAvailableViewer
+        requireFocus = parent.getChildText(REQUIRE_FOCUS)?.toBoolean() ?: true
 
-        this.requireFocus = parent.getChildText(REQUIRE_FOCUS)?.toBoolean() ?: true
-
-        // Read custom pdf viewer command
         val viewerCommandRead = parent.getChildText(VIEWER_COMMAND)
-        this.viewerCommand = if (viewerCommandRead.isNullOrEmpty()) null else viewerCommandRead
+        viewerCommand = if (viewerCommandRead.isNullOrEmpty()) null else viewerCommandRead
 
         // Backwards compatibility (0.10.3 and earlier): path to SumatraPDF executable
         parent.getChildText(SUMATRA_PATH)?.let { folder ->
-            // the previous setting was the folder containing the SumatraPDF executable
             runInBackgroundNonBlocking(project, "Set SumatraPDF path") {
-                // a write action
                 val settings = TexifySettings.getState()
                 val isSumatraPathSet = readAction { settings.pathToSumatra != null }
                 if (isSumatraPathSet) {
@@ -324,7 +337,6 @@ class LatexRunConfiguration(
                 }
                 catch (_: InvalidPathException) {
                     return@runInBackgroundNonBlocking
-                    // If the path is invalid, we just ignore it
                 }
                 if (SumatraViewer.trySumatraPath(path)) {
                     @Suppress("UnstableApiUsage")
@@ -334,135 +346,120 @@ class LatexRunConfiguration(
                 }
             }
         }
+    }
 
-        // Read compiler arguments.
+    private fun readEnvironmentFields(parent: Element) {
         val compilerArgumentsRead = parent.getChildText(COMPILER_ARGUMENTS)
         compilerArguments = if (compilerArgumentsRead.isNullOrEmpty()) null else compilerArgumentsRead
-
-        // Read environment variables
         environmentVariables = EnvironmentVariablesData.readExternal(parent)
-
-        // Read whether to expand macros in run configuration
-        val expandMacrosRunConfigurationBoolean = parent.getChildText(EXPAND_MACROS_IN_ENVIRONMENT_VARIABLES)
-        if (expandMacrosRunConfigurationBoolean == null) {
-            this.expandMacrosEnvVariables = false
-        }
-        else {
-            this.expandMacrosEnvVariables = expandMacrosRunConfigurationBoolean.toBoolean()
-        }
+        expandMacrosEnvVariables = parent.getChildText(EXPAND_MACROS_IN_ENVIRONMENT_VARIABLES)?.toBoolean() ?: false
 
         val beforeRunCommandRead = parent.getChildText(BEFORE_RUN_COMMAND)
         beforeRunCommand = if (beforeRunCommandRead.isNullOrEmpty()) null else beforeRunCommandRead
+    }
 
-        // Read main file.
-        val filePath = parent.getChildText(MAIN_FILE)
-        setMainFile(filePath)
+    private fun readMainAndPathFields(parent: Element) {
+        setMainFile(parent.getChildText(MAIN_FILE))
 
-        // Read output path
-        val outputPathString = parent.getChildText(OUTPUT_PATH)
-        if (outputPathString != null) {
-            this.outputPath = if (isInvalidJetBrainsBinPath(outputPathString)) LatexPathResolver.defaultOutputPath
+        parent.getChildText(OUTPUT_PATH)?.let { outputPathString ->
+            outputPath = if (isInvalidJetBrainsBinPath(outputPathString)) LatexPathResolver.defaultOutputPath
             else pathOrNull(outputPathString)
         }
 
-        // Read auxil path
-        val auxilPathString = parent.getChildText(AUXIL_PATH)
-        if (auxilPathString != null) {
-            this.auxilPath = pathOrNull(auxilPathString)
+        parent.getChildText(AUXIL_PATH)?.let { auxilPathString ->
+            auxilPath = pathOrNull(auxilPathString)
         }
 
         val workingDirectoryText = parent.getChildText(WORKING_DIRECTORY)
-        this.workingDirectory = when {
+        workingDirectory = when {
             workingDirectoryText.isNullOrBlank() -> null
             workingDirectoryText == LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER -> null
             else -> pathOrNull(workingDirectoryText)
         }
-
-        // Backwards compatibility
-        val auxDirBoolean = parent.getChildText(AUX_DIR)
-        if (auxDirBoolean != null && this.auxilPath == null && this.mainFile != null) {
-            // If there is no auxil path yet but this option still exists,
-            // guess the output path in the same way as it was previously done
-            val usesAuxDir = java.lang.Boolean.parseBoolean(auxDirBoolean)
-            val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(this.mainFile!!)
-            val path = if (usesAuxDir) moduleRoot?.path + "/auxil" else this.mainFile!!.parent.path
-            this.auxilPath = pathOrNull(path)
-        }
-        val outDirBoolean = parent.getChildText(OUT_DIR)
-        if (outDirBoolean != null && this.outputPath == null && this.mainFile != null) {
-            val usesOutDir = java.lang.Boolean.parseBoolean(outDirBoolean)
-            val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(this.mainFile!!)
-            val path = if (usesOutDir) moduleRoot?.path + "/out" else this.mainFile!!.parent.path
-            this.outputPath = pathOrNull(path)
-        }
-
-        // Read whether to compile twice
-        val compileTwiceBoolean = parent.getChildText(COMPILE_TWICE)
-        if (compileTwiceBoolean == null) {
-            this.compileTwice = false
-        }
-        else {
-            this.compileTwice = compileTwiceBoolean.toBoolean()
-        }
-        if (compiler == LatexCompiler.LATEXMK) {
-            this.compileTwice = false
-        }
-
-        // Read output format.
-        this.outputFormat = Format.byNameIgnoreCase(parent.getChildText(OUTPUT_FORMAT))
-        this.latexmkCompileMode = parent.getChildText(LATEXMK_COMPILE_MODE)
-            ?.let { runCatching { LatexmkCompileMode.valueOf(it) }.getOrNull() }
-            ?: LatexmkCompileMode.AUTO
-        this.latexmkCustomEngineCommand = parent.getChildText(LATEXMK_CUSTOM_ENGINE_COMMAND)
-        this.latexmkCitationTool = parent.getChildText(LATEXMK_CITATION_TOOL)
-            ?.let { runCatching { LatexmkCitationTool.valueOf(it) }.getOrNull() }
-            ?: LatexmkCitationTool.AUTO
-        this.latexmkExtraArguments = parent.getChildText(LATEXMK_EXTRA_ARGUMENTS) ?: DEFAULT_LATEXMK_EXTRA_ARGUMENTS
-
-        // Read LatexDistribution
-        this.latexDistribution = LatexDistributionType.valueOfIgnoreCase(parent.getChildText(LATEX_DISTRIBUTION))
-
-        // Read whether the run config has been run
-        this.hasBeenRun = parent.getChildText(HAS_BEEN_RUN)?.toBoolean() ?: false
-
-        this.bibRunConfigIds = LatexRunConfigurationSerializer.readRunConfigIds(parent, BIB_RUN_CONFIGS, BIB_RUN_CONFIG)
-        this.makeindexRunConfigIds = LatexRunConfigurationSerializer.readRunConfigIds(parent, MAKEINDEX_RUN_CONFIGS, MAKEINDEX_RUN_CONFIG)
-        this.externalToolRunConfigIds = LatexRunConfigurationSerializer.readRunConfigIds(parent, EXTERNAL_TOOL_RUN_CONFIGS, EXTERNAL_TOOL_RUN_CONFIG)
     }
 
-    @Throws(WriteExternalException::class)
-    override fun writeExternal(element: Element) {
-        super<RunConfigurationBase>.writeExternal(element)
+    private fun readLegacyPathFields(parent: Element) {
+        val auxDirBoolean = parent.getChildText(AUX_DIR)
+        if (auxDirBoolean != null && auxilPath == null && mainFile != null) {
+            val usesAuxDir = java.lang.Boolean.parseBoolean(auxDirBoolean)
+            val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile!!)
+            val path = if (usesAuxDir) moduleRoot?.path + "/auxil" else mainFile!!.parent.path
+            auxilPath = pathOrNull(path)
+        }
 
-        val parent = getOrCreateAndClearParent(element, TEXIFY_PARENT)
+        val outDirBoolean = parent.getChildText(OUT_DIR)
+        if (outDirBoolean != null && outputPath == null && mainFile != null) {
+            val usesOutDir = java.lang.Boolean.parseBoolean(outDirBoolean)
+            val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile!!)
+            val path = if (usesOutDir) moduleRoot?.path + "/out" else mainFile!!.parent.path
+            outputPath = pathOrNull(path)
+        }
+    }
+
+    private fun readCompileFields(parent: Element) {
+        compileTwice = parent.getChildText(COMPILE_TWICE)?.toBoolean() ?: false
+        if (compiler == LatexCompiler.LATEXMK) {
+            compileTwice = false
+        }
+        outputFormat = Format.byNameIgnoreCase(parent.getChildText(OUTPUT_FORMAT))
+    }
+
+    private fun readLatexmkFields(parent: Element) {
+        latexmkCompileMode = parent.getChildText(LATEXMK_COMPILE_MODE)
+            ?.let { runCatching { LatexmkCompileMode.valueOf(it) }.getOrNull() }
+            ?: LatexmkCompileMode.AUTO
+        latexmkCustomEngineCommand = parent.getChildText(LATEXMK_CUSTOM_ENGINE_COMMAND)
+        latexmkCitationTool = parent.getChildText(LATEXMK_CITATION_TOOL)
+            ?.let { runCatching { LatexmkCitationTool.valueOf(it) }.getOrNull() }
+            ?: LatexmkCitationTool.AUTO
+        latexmkExtraArguments = parent.getChildText(LATEXMK_EXTRA_ARGUMENTS) ?: DEFAULT_LATEXMK_EXTRA_ARGUMENTS
+    }
+
+    private fun readDistributionAndState(parent: Element) {
+        latexDistribution = LatexDistributionType.valueOfIgnoreCase(parent.getChildText(LATEX_DISTRIBUTION))
+        hasBeenRun = parent.getChildText(HAS_BEEN_RUN)?.toBoolean() ?: false
+    }
+
+    private fun readAuxConfigIds(parent: Element) {
+        bibRunConfigIds = LatexRunConfigurationSerializer.readRunConfigIds(parent, BIB_RUN_CONFIGS, BIB_RUN_CONFIG)
+        makeindexRunConfigIds = LatexRunConfigurationSerializer.readRunConfigIds(parent, MAKEINDEX_RUN_CONFIGS, MAKEINDEX_RUN_CONFIG)
+        externalToolRunConfigIds = LatexRunConfigurationSerializer.readRunConfigIds(parent, EXTERNAL_TOOL_RUN_CONFIGS, EXTERNAL_TOOL_RUN_CONFIG)
+    }
+
+    private fun writeCoreFields(parent: Element) {
         parent.addTextChild(COMPILER, compiler?.name ?: "")
-        parent.addTextChild(COMPILER_ARGUMENTS, this.compilerArguments ?: "")
+        parent.addTextChild(COMPILER_ARGUMENTS, compilerArguments ?: "")
         writeCommonCompilationFields(
             parent = parent,
             compilerPath = compilerPath,
             pdfViewerName = pdfViewer?.name,
             requireFocus = requireFocus,
             viewerCommand = viewerCommand,
-            writeEnvironmentVariables = this.environmentVariables::writeExternal,
+            writeEnvironmentVariables = environmentVariables::writeExternal,
             expandMacrosEnvVariables = expandMacrosEnvVariables,
-            beforeRunCommand = this.beforeRunCommand,
+            beforeRunCommand = beforeRunCommand,
             mainFilePath = mainFile?.path ?: "",
             workingDirectory = workingDirectory?.toString() ?: LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER,
             latexDistribution = latexDistribution.name,
             hasBeenRun = hasBeenRun,
         )
+    }
+
+    private fun writePathAndCompileFields(parent: Element) {
         parent.addTextChild(OUTPUT_PATH, outputPath?.toString() ?: "")
         parent.addTextChild(AUXIL_PATH, auxilPath?.toString() ?: "")
         parent.addTextChild(COMPILE_TWICE, compileTwice.toString())
         parent.addTextChild(OUTPUT_FORMAT, outputFormat.name)
+    }
+
+    private fun writeLatexmkFields(parent: Element) {
         parent.addTextChild(LATEXMK_COMPILE_MODE, latexmkCompileMode.name)
         parent.addTextChild(LATEXMK_CUSTOM_ENGINE_COMMAND, latexmkCustomEngineCommand ?: "")
         parent.addTextChild(LATEXMK_CITATION_TOOL, latexmkCitationTool.name)
         parent.addTextChild(LATEXMK_EXTRA_ARGUMENTS, latexmkExtraArguments ?: "")
-        // Keep legacy single-field serialization for backward compatibility with older versions.
-        parent.addTextChild(BIB_RUN_CONFIG, bibRunConfigIds.toString())
-        parent.addTextChild(MAKEINDEX_RUN_CONFIG, makeindexRunConfigIds.toString())
-        parent.addTextChild(EXTERNAL_TOOL_RUN_CONFIG, externalToolRunConfigIds.toString())
+    }
+
+    private fun writeAuxConfigIds(parent: Element) {
         LatexRunConfigurationSerializer.writeRunConfigIds(parent, BIB_RUN_CONFIGS, bibRunConfigIds)
         LatexRunConfigurationSerializer.writeRunConfigIds(parent, MAKEINDEX_RUN_CONFIGS, makeindexRunConfigIds)
         LatexRunConfigurationSerializer.writeRunConfigIds(parent, EXTERNAL_TOOL_RUN_CONFIGS, externalToolRunConfigIds)

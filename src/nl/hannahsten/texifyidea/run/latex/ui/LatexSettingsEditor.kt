@@ -289,9 +289,9 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
         panel = JPanel()
         panel.layout = VerticalFlowLayout(VerticalFlowLayout.TOP)
 
-        addCompilerPathField(panel)
+        buildCompilerSection(panel)
 
-        addPdfViewerCommandField(panel)
+        buildPdfViewerSection(panel)
 
         // Optional custom compiler arguments
         val argumentsLabel = JLabel("Custom compiler arguments")
@@ -308,38 +308,7 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
         panel.add(compilerArgumentsRow)
         classicCompilerComponents += compilerArgumentsRow
 
-        val latexmkCompileModeCombo = ComboBox(LatexmkCompileMode.entries.toTypedArray())
-        latexmkCompileMode = latexmkCompileModeCombo
-        val latexmkCompileModeRow = LabeledComponent.create(latexmkCompileMode, "Compile mode")
-        panel.add(latexmkCompileModeRow)
-        latexmkComponents += latexmkCompileModeRow
-
-        val latexmkCustomEngineField = JBTextField().apply { isEnabled = false }
-        latexmkCustomEngineCommand = latexmkCustomEngineField
-        val latexmkCustomEngineRow = LabeledComponent.create(latexmkCustomEngineCommand, "Custom engine command")
-        panel.add(latexmkCustomEngineRow)
-        latexmkComponents += latexmkCustomEngineRow
-
-        latexmkCompileModeCombo.addItemListener {
-            latexmkCustomEngineField.isEnabled =
-                it.stateChange == ItemEvent.SELECTED &&
-                latexmkCompileModeCombo.selectedItem == LatexmkCompileMode.CUSTOM
-            if (!latexmkCustomEngineField.isEnabled) {
-                latexmkCustomEngineField.text = ""
-            }
-        }
-
-        val latexmkCitationToolCombo = ComboBox(LatexmkCitationTool.entries.toTypedArray())
-        latexmkCitationTool = latexmkCitationToolCombo
-        val latexmkCitationToolRow = LabeledComponent.create(latexmkCitationTool, "Citation tool")
-        panel.add(latexmkCitationToolRow)
-        latexmkComponents += latexmkCitationToolRow
-
-        val latexmkExtraArgumentsField = RawCommandLineEditor()
-        latexmkExtraArguments = latexmkExtraArgumentsField
-        val latexmkExtraArgumentsRow = LabeledComponent.create(latexmkExtraArguments, "Additional latexmk arguments")
-        panel.add(latexmkExtraArgumentsRow)
-        latexmkComponents += latexmkExtraArgumentsRow
+        buildLatexmkSection(panel)
 
         environmentVariables = EnvironmentVariablesComponent()
         panel.add(environmentVariables)
@@ -385,7 +354,7 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
         mainFile = mainFileField
         panel.add(LabeledComponent.create(mainFile, "Main file to compile"))
 
-        addOutputPathField(panel)
+        buildPathsSection(panel)
 
         val workingDirectoryField = TextFieldWithBrowseButton()
         workingDirectoryField.addBrowseFolderListener(
@@ -440,6 +409,11 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
         panel.add(externalToolsPanel)
         classicCompilerComponents += externalToolsPanel
 
+        bindUiEvents()
+        updateCompilerSpecificVisibility(compiler.selectedItem as? LatexCompiler ?: PDFLATEX)
+    }
+
+    private fun bindUiEvents() {
         compiler.addItemListener {
             if (it.stateChange != ItemEvent.SELECTED) {
                 return@addItemListener
@@ -450,11 +424,44 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
             outputFormat.selectedItem = selectedCompiler.outputFormats.firstOrNull() ?: Format.PDF
             updateCompilerSpecificVisibility(selectedCompiler)
         }
-
-        updateCompilerSpecificVisibility(compiler.selectedItem as? LatexCompiler ?: PDFLATEX)
     }
 
-    private fun addOutputPathField(panel: JPanel) {
+    private fun buildLatexmkSection(panel: JPanel) {
+        val latexmkCompileModeCombo = ComboBox(LatexmkCompileMode.entries.toTypedArray())
+        latexmkCompileMode = latexmkCompileModeCombo
+        val latexmkCompileModeRow = LabeledComponent.create(latexmkCompileMode, "Compile mode")
+        panel.add(latexmkCompileModeRow)
+        latexmkComponents += latexmkCompileModeRow
+
+        val latexmkCustomEngineField = JBTextField().apply { isEnabled = false }
+        latexmkCustomEngineCommand = latexmkCustomEngineField
+        val latexmkCustomEngineRow = LabeledComponent.create(latexmkCustomEngineCommand, "Custom engine command")
+        panel.add(latexmkCustomEngineRow)
+        latexmkComponents += latexmkCustomEngineRow
+
+        latexmkCompileModeCombo.addItemListener {
+            latexmkCustomEngineField.isEnabled =
+                it.stateChange == ItemEvent.SELECTED &&
+                latexmkCompileModeCombo.selectedItem == LatexmkCompileMode.CUSTOM
+            if (!latexmkCustomEngineField.isEnabled) {
+                latexmkCustomEngineField.text = ""
+            }
+        }
+
+        val latexmkCitationToolCombo = ComboBox(LatexmkCitationTool.entries.toTypedArray())
+        latexmkCitationTool = latexmkCitationToolCombo
+        val latexmkCitationToolRow = LabeledComponent.create(latexmkCitationTool, "Citation tool")
+        panel.add(latexmkCitationToolRow)
+        latexmkComponents += latexmkCitationToolRow
+
+        val latexmkExtraArgumentsField = RawCommandLineEditor()
+        latexmkExtraArguments = latexmkExtraArgumentsField
+        val latexmkExtraArgumentsRow = LabeledComponent.create(latexmkExtraArguments, "Additional latexmk arguments")
+        panel.add(latexmkExtraArgumentsRow)
+        latexmkComponents += latexmkExtraArgumentsRow
+    }
+
+    private fun buildPathsSection(panel: JPanel) {
         // The aux directory is only available on MiKTeX, so only allow disabling on MiKTeX
         if (LatexSdkUtil.isMiktexAvailable) {
             val auxilPathField = TextFieldWithBrowseButton()
@@ -492,7 +499,7 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
     /**
      * Compiler with optional custom path for compiler executable.
      */
-    private fun addCompilerPathField(panel: JPanel) {
+    private fun buildCompilerSection(panel: JPanel) {
         // Compiler
         val compilerField = ComboBox(LatexCompiler.entries.toTypedArray())
         compiler = compilerField
@@ -523,7 +530,7 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
     /**
      * Optional custom pdf viewer command text field.
      */
-    private fun addPdfViewerCommandField(panel: JPanel) {
+    private fun buildPdfViewerSection(panel: JPanel) {
         val viewerField = ComboBox(PdfViewer.availableViewers.toTypedArray())
         pdfViewer = viewerField
         pdfViewer.addActionListener {

@@ -2,13 +2,13 @@ package nl.hannahsten.texifyidea.run.bibtex
 
 import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.execution.impl.RunConfigurationBeforeRunProvider
-import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.util.Key
 import nl.hannahsten.texifyidea.run.latex.LatexRunExecutionState
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexRerunScheduler
 
 /**
  * @author Sten Wessel
@@ -32,22 +32,11 @@ class RunBibtexListener(
         }
 
         if (runLatexAfterwards) {
-            // Mark the next latex runs to exclude bibtex compilation
-            executionState.isFirstRunConfig = false
             try {
-                val latexSettings = RunManagerImpl.getInstanceImpl(environment.project).getSettings(latexConfiguration)
-                    ?: return
-
-                // Compile twice to fix references etc
-                // Mark the next latex run as not being the final one, to avoid for instance opening the pdf viewer too early (with possible multiple open pdfs as a result, or a second open would fail because of a write lock)
-                executionState.isLastRunConfig = false
-                RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)
-                executionState.isLastRunConfig = true
-                RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)
+                LatexRerunScheduler.runLatexTwice(environment, latexConfiguration, executionState)
             }
             finally {
-                executionState.isLastRunConfig = false
-                executionState.isFirstRunConfig = true
+                executionState.resetAfterAuxChain()
             }
         }
     }

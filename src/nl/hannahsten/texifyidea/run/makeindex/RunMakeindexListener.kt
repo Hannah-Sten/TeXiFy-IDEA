@@ -6,12 +6,13 @@ import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.runners.ExecutionEnvironment
-import com.intellij.openapi.application.ReadAction
+import com.intellij.openapi.application.readAction
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.io.FileUtil
 import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
 import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
+import nl.hannahsten.texifyidea.run.latex.LatexRerunScheduler
 import nl.hannahsten.texifyidea.run.latex.LatexRunExecutionState
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.getDefaultMakeindexPrograms
@@ -39,8 +40,11 @@ class RunMakeindexListener(
         runInBackgroundNonBlocking(latexRunConfig.project, "Generating Makeindex Run Configuration...") {
             try {
                 // Only create new one if there is none yet
-                val runConfigSettingsList = latexRunConfig.makeindexRunConfigs.ifEmpty {
+                val runConfigSettingsList = if (latexRunConfig.makeindexRunConfigs.isEmpty()) {
                     generateIndexConfigs()
+                }
+                else {
+                    latexRunConfig.makeindexRunConfigs
                 }
 
                 // Run all run configurations
@@ -66,8 +70,7 @@ class RunMakeindexListener(
                 scheduleLatexRuns()
             }
             finally {
-                executionState.isLastRunConfig = false
-                executionState.isFirstRunConfig = true
+                executionState.resetAfterAuxChain()
             }
         }
     }
@@ -93,21 +96,14 @@ class RunMakeindexListener(
     private fun scheduleLatexRuns() {
         // Don't schedule more latex runs if bibtex is used, because that will already schedule the extra runs
         if (latexRunConfig.bibRunConfigs.isEmpty()) {
-            // LaTeX twice
-            executionState.isFirstRunConfig = false
-            val latexSettings = RunManagerImpl.getInstanceImpl(environment.project).getSettings(latexRunConfig)
-                ?: return
-            executionState.isLastRunConfig = false
-            RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)
-            executionState.isLastRunConfig = true
-            RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)
+            LatexRerunScheduler.runLatexTwice(environment, latexRunConfig, executionState)
         }
     }
 
-    private fun generateIndexConfigs(): Set<RunnerAndConfigurationSettings> {
+    private suspend fun generateIndexConfigs(): Set<RunnerAndConfigurationSettings> {
         val runManager = RunManagerImpl.getInstanceImpl(environment.project)
 
-        val usedPackages = ReadAction.compute<Set<LatexLib>, RuntimeException> {
+        val usedPackages = readAction {
             latexRunConfig.mainFile?.psiFile(environment.project)?.includedPackagesInFileset() ?: emptySet()
         }
         val mainFile = latexRunConfig.mainFile

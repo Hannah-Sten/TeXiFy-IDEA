@@ -13,6 +13,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.run.compiler.ExternalTool
 import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
+import nl.hannahsten.texifyidea.run.latex.LatexRerunScheduler
 import nl.hannahsten.texifyidea.run.latex.LatexRunExecutionState
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.util.files.psiFile
@@ -63,30 +64,14 @@ class RunExternalToolListener(
             scheduleLatexRuns()
         }
         finally {
-            executionState.isLastRunConfig = false
-            executionState.isFirstRunConfig = true
+            executionState.resetAfterAuxChain()
         }
     }
 
     private fun scheduleLatexRuns() {
         // Don't schedule more latex runs if bibtex is used, because that will already schedule the extra runs
         if (latexRunConfig.bibRunConfigs.isEmpty() && latexRunConfig.makeindexRunConfigs.isEmpty()) {
-            // LaTeX twice
-            executionState.isFirstRunConfig = false
-            val latexSettings = RunManagerImpl.getInstanceImpl(environment.project).getSettings(latexRunConfig)
-                ?: return
-
-            // Terrible hack to avoid running the before run tasks repeatedly
-            // At least I think this is the intended behaviour, but not sure so first testing it here
-            val beforeRunTasks = latexSettings.configuration.beforeRunTasks
-            latexSettings.configuration.beforeRunTasks = mutableListOf()
-
-            executionState.isLastRunConfig = false
-            RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)
-            executionState.isLastRunConfig = true
-            RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)
-
-            latexSettings.configuration.beforeRunTasks = beforeRunTasks
+            LatexRerunScheduler.runLatexTwice(environment, latexRunConfig, executionState, suppressBeforeRunTasks = true)
         }
     }
 
