@@ -29,7 +29,6 @@ import nl.hannahsten.texifyidea.run.latex.LatexCommandLineOptionsCache
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexPathResolver
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.latex.LatexmkModeService
 import nl.hannahsten.texifyidea.run.latex.isInvalidJetBrainsBinPath
 import nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfigurationType
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCitationTool
@@ -221,10 +220,6 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
 
         runConfiguration.mainFilePath = mainFile.text
 
-        if (chosenCompiler == LatexCompiler.LATEXMK) {
-            runConfiguration.compilerArguments = LatexmkModeService.buildArguments(runConfiguration)
-        }
-
         // Apply environment variables
         runConfiguration.environmentVariables = environmentVariables.envData
 
@@ -255,7 +250,7 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
 
         // If we need to compile twice, make sure the LatexCommandLineState knows
         if (runConfiguration.compileTwice) {
-            runConfiguration.isLastRunConfig = false
+            runConfiguration.executionState.isLastRunConfig = false
         }
 
         // Apply output format.

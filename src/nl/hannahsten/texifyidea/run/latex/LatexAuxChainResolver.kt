@@ -24,7 +24,7 @@ import java.util.Locale
 internal class LatexAuxChainResolver(private val runConfig: LatexRunConfiguration) {
 
     fun generateBibRunConfig() {
-        val psiFile = runConfig.psiFile?.element ?: return
+        val psiFile = runConfig.executionState.psiFile?.element ?: return
         val compilerFromMagicComment: Pair<BibliographyCompiler, String>? by lazy {
             val runCommand = psiFile.allParentMagicComments()
                 .value(DefaultMagicKeys.BIBTEXCOMPILER) ?: return@lazy null

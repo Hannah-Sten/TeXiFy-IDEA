@@ -16,9 +16,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.util.InvalidDataException
 import com.intellij.openapi.util.WriteExternalException
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiFile
-import com.intellij.psi.SmartPsiElementPointer
 import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
@@ -68,21 +65,9 @@ class LatexRunConfiguration(
 
     var mainFilePath: String? = null
         set(value) {
-            field = LatexRunConfigurationStaticSupport.normalizeMainFilePath(this, value)
+            field = value?.trim()?.ifEmpty { null }
             executionState.resolvedMainFile = null
         }
-
-    @Deprecated("Use mainFilePath as static configuration; this property is a compatibility view over execution state.")
-    var mainFile: VirtualFile?
-        get() = executionState.resolvedMainFile
-        set(value) {
-            mainFilePath = value?.path
-            executionState.resolvedMainFile = value
-        }
-
-    // Save the psifile which can be used to check whether to create a bibliography based on which commands are in the psifile
-    // This is not done when creating the template run configuration in order to delay the expensive bibtex check
-    var psiFile: SmartPsiElementPointer<PsiFile>? = null
 
     /** Path to the directory containing the output files. */
     var outputPath: Path? = LatexPathResolver.defaultOutputPath
@@ -122,20 +107,6 @@ class LatexRunConfiguration(
 
     @Transient
     var executionState: LatexRunExecutionState = LatexRunExecutionState()
-
-    /** Whether this run configuration is the last one in the chain of run configurations (e.g. latex, bibtex, latex, latex). */
-    var isLastRunConfig: Boolean
-        get() = executionState.isLastRunConfig
-        set(value) {
-            executionState.isLastRunConfig = value
-        }
-
-    // Whether the run configuration has already been run or not, since it has been created
-    var hasBeenRun: Boolean
-        get() = executionState.hasBeenRun
-        set(value) {
-            executionState.hasBeenRun = value
-        }
 
     /** Whether the pdf viewer should claim focus after compilation. */
     var requireFocus = true
@@ -286,7 +257,7 @@ class LatexRunConfiguration(
      */
     fun getLatexSdk(): Sdk? = when (latexDistribution) {
         LatexDistributionType.MODULE_SDK -> {
-            val mainFile = executionState.resolvedMainFile ?: LatexRunConfigurationStaticSupport.resolveMainFile(this)
+            val mainFile = executionState.resolvedMainFile
             val sdk = mainFile?.let { LatexSdkUtil.getLatexSdkForFile(it, project) }
                 ?: LatexSdkUtil.getLatexProjectSdk(project)
             if (sdk?.sdkType is LatexSdk) sdk else null

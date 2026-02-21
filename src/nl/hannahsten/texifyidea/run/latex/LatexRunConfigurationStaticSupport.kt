@@ -32,12 +32,6 @@ internal object LatexRunConfigurationStaticSupport {
         return null
     }
 
-    fun normalizeMainFilePath(runConfig: LatexRunConfiguration, path: String?): String? {
-        val trimmed = path?.trim()?.takeIf { it.isNotEmpty() } ?: return null
-        val resolved = resolveMainFile(runConfig, trimmed)
-        return resolved?.let { toProjectRelativePathOrAbsolute(runConfig, it) } ?: trimmed
-    }
-
     fun toProjectRelativePathOrAbsolute(runConfig: LatexRunConfiguration, file: VirtualFile): String {
         val contentRoots = ProjectRootManager.getInstance(runConfig.project).contentRoots
         val match = contentRoots

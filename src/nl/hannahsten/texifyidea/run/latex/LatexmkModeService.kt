@@ -35,13 +35,8 @@ internal object LatexmkModeService {
         }
 
         return ReadAction.compute<LatexmkCompileMode, RuntimeException> {
-            val mainFile = if (runConfig.executionState.isInitialized) {
-                runConfig.executionState.resolvedMainFile
-            }
-            else {
-                LatexRunConfigurationStaticSupport.resolveMainFile(runConfig)
-            }
-            val psi = mainFile?.let { PsiManager.getInstance(runConfig.project).findFile(it) } ?: runConfig.psiFile?.element
+            val mainFile = runConfig.executionState.resolvedMainFile
+            val psi = mainFile?.let { PsiManager.getInstance(runConfig.project).findFile(it) } ?: runConfig.executionState.psiFile?.element
             val magicComments = psi?.allParentMagicComments()
             val magicMode = compileModeFromMagicCommand(
                 magicComments?.value(DefaultMagicKeys.COMPILER) ?: magicComments?.value(DefaultMagicKeys.PROGRAM)

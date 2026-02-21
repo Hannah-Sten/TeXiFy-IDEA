@@ -20,6 +20,7 @@ import nl.hannahsten.texifyidea.index.SpecialKeys
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationStaticSupport
 import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
 import nl.hannahsten.texifyidea.util.isTestProject
 import nl.hannahsten.texifyidea.util.magic.FileMagic
@@ -164,7 +165,7 @@ fun PsiFile.getBibtexRunConfigurations() = project
     .getLatexRunConfigurations()
     .asSequence()
     .filterIsInstance<LatexRunConfiguration>()
-    .filter { it.mainFile == findRootFile().virtualFile }
+    .filter { LatexRunConfigurationStaticSupport.resolveMainFile(it) == findRootFile().virtualFile }
     .flatMap { it.bibRunConfigs }
     .map { it.configuration }
     .filterIsInstance<BibtexRunConfiguration>()

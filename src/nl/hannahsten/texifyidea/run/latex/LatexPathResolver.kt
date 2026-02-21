@@ -26,15 +26,13 @@ internal object LatexPathResolver {
 
     fun resolveOutputDir(
         runConfig: LatexRunConfiguration,
-        mainFile: VirtualFile? = runConfig.executionState.resolvedMainFile
-            ?: if (runConfig.executionState.isInitialized) null else LatexRunConfigurationStaticSupport.resolveMainFile(runConfig),
+        mainFile: VirtualFile? = runConfig.executionState.resolvedMainFile,
     ): VirtualFile? =
         ensureDir(runConfig.outputPath ?: defaultOutputPath, mainFile, runConfig.project, "out")
 
     fun resolveAuxDir(
         runConfig: LatexRunConfiguration,
-        mainFile: VirtualFile? = runConfig.executionState.resolvedMainFile
-            ?: if (runConfig.executionState.isInitialized) null else LatexRunConfigurationStaticSupport.resolveMainFile(runConfig),
+        mainFile: VirtualFile? = runConfig.executionState.resolvedMainFile,
     ): VirtualFile? {
         val supportsAuxDir = runConfig.getLatexDistributionType().isMiktex(runConfig.project, mainFile) ||
             runConfig.compiler == LatexCompiler.LATEXMK
@@ -92,8 +90,7 @@ internal object LatexPathResolver {
     @Throws(ExecutionException::class)
     fun updateOutputSubDirs(
         runConfig: LatexRunConfiguration,
-        mainFile: VirtualFile? = runConfig.executionState.resolvedMainFile
-            ?: if (runConfig.executionState.isInitialized) null else LatexRunConfigurationStaticSupport.resolveMainFile(runConfig),
+        mainFile: VirtualFile? = runConfig.executionState.resolvedMainFile,
         outputDir: VirtualFile? = resolveOutputDir(runConfig, mainFile),
     ): Set<File> {
         val includeRoot = mainFile?.parent ?: return emptySet()

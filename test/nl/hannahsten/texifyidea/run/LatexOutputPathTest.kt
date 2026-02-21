@@ -21,10 +21,11 @@ class LatexOutputPathTest : BasePlatformTestCase() {
             """.trimIndent()
         )
         val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
-        runConfig.psiFile = mainFile.createSmartPointer()
+        runConfig.executionState.psiFile = mainFile.createSmartPointer()
         runBlocking {
             runConfig.mainFilePath = "main.tex"
         }
+        runConfig.executionState.resolvedMainFile = mainFile.virtualFile
 
         runConfig.outputPath = Path.of("${LatexPathResolver.PROJECT_DIR_PLACEHOLDER}/out")
         val outPath = LatexPathResolver.resolveOutputDir(runConfig)
@@ -66,10 +67,11 @@ class LatexOutputPathTest : BasePlatformTestCase() {
         )
 
         val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
-        runConfig.psiFile = mainFile.createSmartPointer()
+        runConfig.executionState.psiFile = mainFile.createSmartPointer()
         runBlocking {
             runConfig.mainFilePath = "sub/main.tex"
         }
+        runConfig.executionState.resolvedMainFile = mainFile.virtualFile
 
         runConfig.outputPath = Path.of("non-existent-relative-dir")
         val resolved = LatexPathResolver.resolveOutputDir(runConfig)

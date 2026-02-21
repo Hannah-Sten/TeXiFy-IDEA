@@ -1,6 +1,8 @@
 package nl.hannahsten.texifyidea.run.latex
 
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.PsiFile
+import com.intellij.psi.SmartPsiElementPointer
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
 import java.nio.file.Path
 
@@ -14,6 +16,7 @@ data class LatexRunExecutionState(
     var resolvedOutputDir: VirtualFile? = null,
     var resolvedAuxDir: VirtualFile? = null,
     var resolvedWorkingDirectory: Path? = null,
+    var psiFile: SmartPsiElementPointer<PsiFile>? = null,
     var effectiveLatexmkCompileMode: LatexmkCompileMode? = null,
     var effectiveCompilerArguments: String? = null,
 ) {

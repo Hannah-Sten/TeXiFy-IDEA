@@ -39,7 +39,7 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
 
         // Change the main file as given by the template run configuration to the current file
         runConfiguration.mainFilePath = LatexRunConfigurationStaticSupport.toProjectRelativePathOrAbsolute(runConfiguration, mainFile)
-        runConfiguration.psiFile = container.createSmartPointer()
+        runConfiguration.executionState.psiFile = container.createSmartPointer()
         runConfiguration.setSuggestedName()
 
         val magicComments = container.allParentMagicComments()

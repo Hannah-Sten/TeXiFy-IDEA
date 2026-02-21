@@ -45,7 +45,7 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
             """.trimIndent()
         )
         val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
-        runConfig.psiFile = mainFile.createSmartPointer()
+        runConfig.executionState.psiFile = mainFile.createSmartPointer()
         runBlocking {
             runConfig.mainFilePath = "main.tex"
         }
@@ -225,7 +225,9 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
 
         assertEquals(mainFile.virtualFile.name, runConfig.mainFilePath)
         assertEquals(mainFile.virtualFile, nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationStaticSupport.resolveMainFile(runConfig))
-        assertTrue(runConfig.compilerArguments?.contains("-lualatex") == true)
+        assertNull(runConfig.compilerArguments)
+        runConfig.executionState.resolvedMainFile = nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationStaticSupport.resolveMainFile(runConfig)
+        assertTrue(LatexmkModeService.buildArguments(runConfig).contains("-lualatex"))
     }
 
     fun testLatexmkAutoCompileModeFollowsMainFileChangeWhenPsiPointerIsStale() {
@@ -251,7 +253,7 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         runConfig.compiler = LatexCompiler.LATEXMK
         runConfig.latexmkCompileMode = LatexmkCompileMode.AUTO
         runConfig.mainFilePath = oldMain.virtualFile.name
-        runConfig.psiFile = oldMain.createSmartPointer()
+        runConfig.executionState.psiFile = oldMain.createSmartPointer()
 
         val editor = LatexSettingsEditor(project)
         editor.resetFrom(runConfig)
@@ -265,21 +267,23 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
 
         assertEquals(newMain.virtualFile.name, runConfig.mainFilePath)
         assertEquals(newMain.virtualFile, nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationStaticSupport.resolveMainFile(runConfig))
+        assertNull(runConfig.compilerArguments)
+        runConfig.executionState.resolvedMainFile = nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationStaticSupport.resolveMainFile(runConfig)
         assertEquals(LatexmkCompileMode.XELATEX_PDF, LatexmkModeService.effectiveCompileMode(runConfig))
-        assertTrue(runConfig.compilerArguments?.contains("-xelatex") == true)
+        assertTrue(LatexmkModeService.buildArguments(runConfig).contains("-xelatex"))
     }
 
     fun testResetEditorFromDoesNotMutateCompileTwiceOrLastRunFlag() {
         val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
         runConfig.compiler = LatexCompiler.LATEXMK
         runConfig.compileTwice = true
-        runConfig.isLastRunConfig = true
+        runConfig.executionState.isLastRunConfig = true
 
         val editor = LatexSettingsEditor(project)
         editor.resetFrom(runConfig)
 
         assertTrue(runConfig.compileTwice)
-        assertTrue(runConfig.isLastRunConfig)
+        assertTrue(runConfig.executionState.isLastRunConfig)
     }
 
     fun testWriteExternalStoresAuxConfigIdsInStructuredFormat() {

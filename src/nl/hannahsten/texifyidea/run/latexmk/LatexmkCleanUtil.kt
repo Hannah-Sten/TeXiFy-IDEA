@@ -5,6 +5,7 @@ import com.intellij.execution.util.ProgramParametersConfigurator
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.io.awaitExit
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
@@ -35,7 +36,7 @@ object LatexmkCleanUtil {
             return
         }
 
-        val command = buildCleanCommand(runConfig, mode == Mode.CLEAN_ALL)
+        val command = buildCleanCommand(runConfig, mainFile, mode == Mode.CLEAN_ALL)
         if (command == null) {
             Notification("LaTeX", "Latexmk clean failed", "Could not build latexmk clean command.", NotificationType.ERROR).notify(project)
             return
@@ -76,8 +77,7 @@ object LatexmkCleanUtil {
         }
     }
 
-    private fun buildCleanCommand(runConfig: LatexRunConfiguration, cleanAll: Boolean): List<String>? {
-        val mainFile = LatexRunConfigurationStaticSupport.resolveMainFile(runConfig) ?: return null
+    private fun buildCleanCommand(runConfig: LatexRunConfiguration, mainFile: VirtualFile, cleanAll: Boolean): List<String>? {
         val distributionType = runConfig.getLatexDistributionType()
         val executable = runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(
             LatexCompiler.LATEXMK.executableName,
@@ -92,10 +92,10 @@ object LatexmkCleanUtil {
             command += ParametersListUtil.parse(compilerArguments)
         }
 
-        val outputPath = LatexPathResolver.resolveOutputDir(runConfig)?.path ?: mainFile.parent.path
+        val outputPath = LatexPathResolver.resolveOutputDir(runConfig, mainFile)?.path ?: mainFile.parent.path
         command += "-outdir=$outputPath"
 
-        val auxPath = LatexPathResolver.resolveAuxDir(runConfig)?.path
+        val auxPath = LatexPathResolver.resolveAuxDir(runConfig, mainFile)?.path
         if (auxPath != null && auxPath != outputPath) {
             command += "-auxdir=$auxPath"
         }

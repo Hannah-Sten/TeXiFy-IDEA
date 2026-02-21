@@ -144,7 +144,7 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
         )
         runConfig.compiler = LatexCompiler.LATEXMK
         runConfig.mainFilePath = psi.virtualFile.name
-        runConfig.psiFile = psi.createSmartPointer()
+        runConfig.executionState.psiFile = psi.createSmartPointer()
         runConfig.latexmkCompileMode = LatexmkCompileMode.AUTO
         runConfig.latexmkCitationTool = LatexmkCitationTool.AUTO
         runConfig.latexmkExtraArguments = null
@@ -174,7 +174,7 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
         )
         runConfig.compiler = LatexCompiler.LATEXMK
         runConfig.mainFilePath = psi.virtualFile.name
-        runConfig.psiFile = psi.createSmartPointer()
+        runConfig.executionState.psiFile = psi.createSmartPointer()
         runConfig.latexmkCompileMode = LatexmkCompileMode.AUTO
         runConfig.latexmkCitationTool = LatexmkCitationTool.AUTO
         runConfig.latexmkExtraArguments = null
@@ -200,7 +200,7 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
         )
         runConfig.compiler = LatexCompiler.LATEXMK
         runConfig.mainFilePath = psi.virtualFile.name
-        runConfig.psiFile = psi.createSmartPointer()
+        runConfig.executionState.psiFile = psi.createSmartPointer()
         runConfig.latexmkCompileMode = LatexmkCompileMode.AUTO
         runConfig.latexmkCitationTool = LatexmkCitationTool.AUTO
         runConfig.latexmkExtraArguments = null
