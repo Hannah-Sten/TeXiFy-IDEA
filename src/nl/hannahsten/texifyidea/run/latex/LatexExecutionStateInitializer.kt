@@ -51,7 +51,6 @@ internal object LatexExecutionStateInitializer {
             runConfig.compilerArguments
         }
         executionState.resolvedOutputFilePath = computeOutputFilePath(runConfig, executionState, mainFile)
-        executionState.initFingerprint = buildFingerprint(runConfig, mainFile)
         executionState.isInitialized = true
     }
 
@@ -78,19 +77,4 @@ internal object LatexExecutionStateInitializer {
         }
         return "$outputDirPath/$baseName.$extension"
     }
-
-    private fun buildFingerprint(runConfig: LatexRunConfiguration, mainFile: VirtualFile): String = listOf(
-        mainFile.path,
-        runConfig.compiler?.name,
-        runConfig.compilerPath,
-        runConfig.mainFilePath,
-        runConfig.outputPath?.toString(),
-        runConfig.auxilPath?.toString(),
-        runConfig.workingDirectory?.toString(),
-        runConfig.latexmkCompileMode.name,
-        runConfig.latexmkCustomEngineCommand,
-        runConfig.latexmkCitationTool.name,
-        runConfig.latexmkExtraArguments,
-        runConfig.compilerArguments,
-    ).joinToString("|")
 }

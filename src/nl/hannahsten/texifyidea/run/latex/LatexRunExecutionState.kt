@@ -12,7 +12,6 @@ data class LatexRunExecutionState(
     var isLastRunConfig: Boolean = false,
     var hasBeenRun: Boolean = false,
     var isInitialized: Boolean = false,
-    var initFingerprint: String? = null,
     var resolvedMainFile: VirtualFile? = null,
     var resolvedOutputDir: VirtualFile? = null,
     var resolvedAuxDir: VirtualFile? = null,
@@ -50,7 +49,6 @@ data class LatexRunExecutionState(
 
     fun clearInitialization() {
         isInitialized = false
-        initFingerprint = null
         resolvedMainFile = null
         resolvedOutputDir = null
         resolvedAuxDir = null
