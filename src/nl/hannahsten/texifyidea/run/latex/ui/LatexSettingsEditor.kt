@@ -125,7 +125,7 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
         beforeRunCommand.text = runConfiguration.beforeRunCommand
 
         // Reset the main file to compile.
-        mainFile.text = runConfiguration.mainFile?.path ?: ""
+        mainFile.text = runConfiguration.mainFilePath ?: ""
 
         auxilPath?.text = runConfiguration.auxilPath?.toString()
             ?: LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER

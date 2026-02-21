@@ -38,7 +38,7 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
         }
 
         // Change the main file as given by the template run configuration to the current file
-        runConfiguration.mainFile = mainFile
+        runConfiguration.mainFilePath = runConfiguration.toProjectRelativePathOrAbsolute(mainFile)
         runConfiguration.psiFile = container.createSmartPointer()
         runConfiguration.setSuggestedName()
 
@@ -71,5 +71,5 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
     override fun isConfigurationFromContext(
         runConfiguration: LatexRunConfiguration,
         context: ConfigurationContext
-    ): Boolean = isSameContextFile(runConfiguration.mainFile, context)
+    ): Boolean = isSameContextFile(runConfiguration.resolveMainFile(), context)
 }

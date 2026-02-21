@@ -24,15 +24,16 @@ internal object LatexPathResolver {
     val defaultOutputPath: Path = Path.of(MAIN_FILE_PARENT_PLACEHOLDER)
     val defaultAuxilPath: Path = Path.of(MAIN_FILE_PARENT_PLACEHOLDER)
 
-    fun resolveOutputDir(runConfig: LatexRunConfiguration): VirtualFile? = ensureDir(runConfig.outputPath ?: defaultOutputPath, runConfig.mainFile, runConfig.project, "out")
+    fun resolveOutputDir(runConfig: LatexRunConfiguration, mainFile: VirtualFile? = runConfig.resolveMainFile()): VirtualFile? =
+        ensureDir(runConfig.outputPath ?: defaultOutputPath, mainFile, runConfig.project, "out")
 
-    fun resolveAuxDir(runConfig: LatexRunConfiguration): VirtualFile? {
-        val supportsAuxDir = runConfig.getLatexDistributionType().isMiktex(runConfig.project, runConfig.mainFile) ||
+    fun resolveAuxDir(runConfig: LatexRunConfiguration, mainFile: VirtualFile? = runConfig.resolveMainFile()): VirtualFile? {
+        val supportsAuxDir = runConfig.getLatexDistributionType().isMiktex(runConfig.project, mainFile) ||
             runConfig.compiler == LatexCompiler.LATEXMK
         if (!supportsAuxDir) {
             return null
         }
-        return ensureDir(runConfig.auxilPath ?: defaultAuxilPath, runConfig.mainFile, runConfig.project, "auxil")
+        return ensureDir(runConfig.auxilPath ?: defaultAuxilPath, mainFile, runConfig.project, "auxil")
     }
 
     fun resolve(path: Path?, mainFile: VirtualFile?, project: Project): Path? {
@@ -81,9 +82,13 @@ internal object LatexPathResolver {
     }
 
     @Throws(ExecutionException::class)
-    fun updateOutputSubDirs(runConfig: LatexRunConfiguration): Set<File> {
-        val includeRoot = runConfig.mainFile?.parent ?: return emptySet()
-        val outPath = resolveOutputDir(runConfig)?.path ?: return emptySet()
+    fun updateOutputSubDirs(
+        runConfig: LatexRunConfiguration,
+        mainFile: VirtualFile? = runConfig.resolveMainFile(),
+        outputDir: VirtualFile? = resolveOutputDir(runConfig, mainFile),
+    ): Set<File> {
+        val includeRoot = mainFile?.parent ?: return emptySet()
+        val outPath = outputDir?.path ?: return emptySet()
         val files: Set<VirtualFile> = includeRoot.allChildDirectories()
         val createdDirectories = mutableSetOf<File>()
 

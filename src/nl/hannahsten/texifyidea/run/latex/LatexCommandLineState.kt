@@ -43,7 +43,8 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
     @Throws(ExecutionException::class)
     override fun startProcess(): ProcessHandler {
         val compiler = runConfig.compiler ?: throw ExecutionException("No valid compiler specified.")
-        val mainFile = runConfig.mainFile ?: throw ExecutionException("Main file is not specified.")
+        LatexExecutionStateInitializer.initialize(runConfig, environment, executionState)
+        val mainFile = executionState.resolvedMainFile ?: throw ExecutionException("Main file cannot be resolved")
 
         return if (compiler == LatexCompiler.LATEXMK) {
             startLatexmkProcess(mainFile, compiler)
@@ -54,16 +55,6 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
     }
 
     private fun startLatexmkProcess(mainFile: VirtualFile, compiler: LatexCompiler): ProcessHandler {
-        LatexPathResolver.resolveOutputDir(runConfig)
-
-        val createdOutputDirectories = if (!runConfig.getLatexDistributionType().isMiktex(runConfig.project)) {
-            LatexPathResolver.updateOutputSubDirs(runConfig)
-        }
-        else {
-            setOf()
-        }
-        runConfig.filesToCleanUpIfEmpty.addAll(createdOutputDirectories)
-
         val handler = createHandler(mainFile, compiler)
         executionState.markHasRun()
 
@@ -80,19 +71,9 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
     }
 
     private fun startClassicProcess(mainFile: VirtualFile, compiler: LatexCompiler): ProcessHandler {
-        LatexPathResolver.resolveOutputDir(runConfig)
-
         if (!executionState.hasBeenRun) {
             firstRunSetup(compiler)
         }
-
-        val createdOutputDirectories = if (!runConfig.getLatexDistributionType().isMiktex(runConfig.project)) {
-            LatexPathResolver.updateOutputSubDirs(runConfig)
-        }
-        else {
-            setOf()
-        }
-        runConfig.filesToCleanUpIfEmpty.addAll(createdOutputDirectories)
 
         val handler = createHandler(mainFile, compiler)
         val isMakeindexNeeded = runMakeindexIfNeeded(handler, mainFile, runConfig.filesToCleanUp)
@@ -120,7 +101,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
             environment = environment,
             mainFile = mainFile,
             command = command,
-            workingDirectory = runConfig.getResolvedWorkingDirectory(),
+            workingDirectory = executionState.resolvedWorkingDirectory,
             expandMacrosEnvVariables = runConfig.expandMacrosEnvVariables,
             envs = runConfig.environmentVariables.envs,
             expandEnvValue = { value -> programParamsConfigurator.expandPathAndMacros(value, null, runConfig.project) ?: value },
@@ -136,7 +117,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         }
 
         val usesCsl = ReadAction.compute<Boolean, RuntimeException> {
-            runConfig.mainFile?.psiFile(runConfig.project)?.includedPackagesInFileset()?.contains(LatexLib.CITATION_STYLE_LANGUAGE) == true
+            executionState.resolvedMainFile?.psiFile(runConfig.project)?.includedPackagesInFileset()?.contains(LatexLib.CITATION_STYLE_LANGUAGE) == true
         }
 
         // Only at this moment we know the user really wants to run the run configuration, so only now we do the expensive check of
@@ -171,7 +152,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
     ): Boolean {
         val isAnyExternalToolNeeded = if (!executionState.hasBeenRun) {
             // This is a relatively expensive check
-            RunExternalToolListener.getRequiredExternalTools(runConfig.mainFile, runConfig.project).isNotEmpty()
+            RunExternalToolListener.getRequiredExternalTools(executionState.resolvedMainFile, runConfig.project).isNotEmpty()
         }
         else {
             false
@@ -200,7 +181,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
             // If no index package is used, we assume we won't have to run makeindex
             val includedPackages = ReadAction.compute<Set<LatexLib>, RuntimeException> {
-                runConfig.mainFile
+                (executionState.resolvedMainFile ?: runConfig.resolveMainFile())
                     ?.psiFile(runConfig.project)
                     ?.includedPackagesInFileset()
                     ?: setOf()
@@ -327,7 +308,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
         // Get the currently open file to use for forward search.
         val currentFilePath = editor?.document?.let { FileDocumentManager.getInstance().getFile(it)?.path }
             // Get the main file from the run configuration as a fallback.
-            ?: runConfig.mainFile?.path
+            ?: executionState.resolvedMainFile?.path
             ?: return
 
         // Set the OpenViewerListener to execute when the compilation is done.
