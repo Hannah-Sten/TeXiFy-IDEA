@@ -11,6 +11,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.psi.PsiManager
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationStaticSupport
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.selectedRunConfig
@@ -50,7 +51,8 @@ object ZathuraViewer : SystemPdfViewer("Zathura", "zathura") {
         // First check if the file in the editor (sourceFilePath) is in the file set of the main file of the latest run run configuration.
         // If so, guess the main file (pdf) of that run config as the pdf.
         val runConfig = project.selectedRunConfig() ?: return null
-        return if (runConfig.mainFile?.psiFile(project)?.referencedFileSet()?.contains(sourcePsiFile) == true) {
+        val runConfigMainFile = LatexRunConfigurationStaticSupport.resolveMainFile(runConfig)
+        return if (runConfigMainFile?.psiFile(project)?.referencedFileSet()?.contains(sourcePsiFile) == true) {
             // getOutputFilePath() contains the file name and pdf extension already.
             runConfig.getOutputFilePath()
         }
@@ -69,5 +71,5 @@ object ZathuraViewer : SystemPdfViewer("Zathura", "zathura") {
         (RunManagerImpl.getInstanceImpl(project) as RunManager)
             .allConfigurationsList
             .filterIsInstance<LatexRunConfiguration>()
-            .firstOrNull { it.mainFile == virtualFile }
+            .firstOrNull { LatexRunConfigurationStaticSupport.resolveMainFile(it) == virtualFile }
 }

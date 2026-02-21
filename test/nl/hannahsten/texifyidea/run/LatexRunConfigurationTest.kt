@@ -10,6 +10,7 @@ import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.LatexPathResolver
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer
+import nl.hannahsten.texifyidea.run.latex.LatexmkModeService
 import nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfigurationType
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
@@ -46,7 +47,7 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
         runConfig.psiFile = mainFile.createSmartPointer()
         runBlocking {
-            runConfig.setMainFile("main.tex")
+            runConfig.mainFilePath = "main.tex"
         }
         runConfig.generateBibRunConfig()
         assertTrue(runConfig.bibRunConfigs.isNotEmpty())
@@ -222,7 +223,8 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
 
         editor.applyTo(runConfig)
 
-        assertEquals(mainFile.virtualFile, runConfig.mainFile)
+        assertEquals(mainFile.virtualFile.name, runConfig.mainFilePath)
+        assertEquals(mainFile.virtualFile, nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationStaticSupport.resolveMainFile(runConfig))
         assertTrue(runConfig.compilerArguments?.contains("-lualatex") == true)
     }
 
@@ -248,7 +250,7 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
         runConfig.compiler = LatexCompiler.LATEXMK
         runConfig.latexmkCompileMode = LatexmkCompileMode.AUTO
-        runConfig.mainFile = oldMain.virtualFile
+        runConfig.mainFilePath = oldMain.virtualFile.name
         runConfig.psiFile = oldMain.createSmartPointer()
 
         val editor = LatexSettingsEditor(project)
@@ -261,8 +263,9 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
 
         editor.applyTo(runConfig)
 
-        assertEquals(newMain.virtualFile, runConfig.mainFile)
-        assertEquals(LatexmkCompileMode.XELATEX_PDF, runConfig.effectiveLatexmkCompileMode())
+        assertEquals(newMain.virtualFile.name, runConfig.mainFilePath)
+        assertEquals(newMain.virtualFile, nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationStaticSupport.resolveMainFile(runConfig))
+        assertEquals(LatexmkCompileMode.XELATEX_PDF, LatexmkModeService.effectiveCompileMode(runConfig))
         assertTrue(runConfig.compilerArguments?.contains("-xelatex") == true)
     }
 

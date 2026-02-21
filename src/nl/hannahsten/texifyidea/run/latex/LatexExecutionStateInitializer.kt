@@ -18,7 +18,7 @@ internal object LatexExecutionStateInitializer {
             return
         }
 
-        val mainFile = runConfig.resolveMainFile()
+        val mainFile = LatexRunConfigurationStaticSupport.resolveMainFile(runConfig)
             ?: throw ExecutionException("Main file cannot be resolved")
         executionState.resolvedMainFile = mainFile
         executionState.resolvedWorkingDirectory = LatexPathResolver.resolve(runConfig.workingDirectory, mainFile, environment.project)
@@ -34,14 +34,14 @@ internal object LatexExecutionStateInitializer {
         }
 
         val effectiveMode = if (runConfig.compiler == LatexCompiler.LATEXMK) {
-            runConfig.effectiveLatexmkCompileMode()
+            LatexmkModeService.effectiveCompileMode(runConfig)
         }
         else {
             null
         }
         executionState.effectiveLatexmkCompileMode = effectiveMode
         executionState.effectiveCompilerArguments = if (runConfig.compiler == LatexCompiler.LATEXMK) {
-            runConfig.buildLatexmkArguments()
+            LatexmkModeService.buildArguments(runConfig, effectiveMode)
         }
         else {
             runConfig.compilerArguments

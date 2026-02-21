@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.run.latexmk
 
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexmkModeService
 
 /**
  * Resolve whether the effective engine of a run configuration supports Unicode natively.
@@ -12,7 +13,7 @@ import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
  * - null: unknown (e.g. custom command)
  */
 fun unicodeEngineCompatibility(runConfig: LatexRunConfiguration?): Boolean? = when (runConfig?.compiler) {
-    LatexCompiler.LATEXMK -> when (runConfig.effectiveLatexmkCompileMode()) {
+    LatexCompiler.LATEXMK -> when (LatexmkModeService.effectiveCompileMode(runConfig)) {
         LatexmkCompileMode.LUALATEX_PDF, LatexmkCompileMode.XELATEX_PDF, LatexmkCompileMode.XELATEX_XDV -> true
         LatexmkCompileMode.AUTO, LatexmkCompileMode.PDFLATEX_PDF, LatexmkCompileMode.LATEX_DVI, LatexmkCompileMode.LATEX_PS -> false
         LatexmkCompileMode.CUSTOM -> null

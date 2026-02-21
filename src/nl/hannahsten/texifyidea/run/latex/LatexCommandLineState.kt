@@ -191,7 +191,7 @@ open class LatexCommandLineState(environment: ExecutionEnvironment, private val 
 
             // Some packages do handle makeindex themselves
             // Note that when you use imakeidx with the noautomatic option it won't, but we don't check for that
-            if (includedPackages.contains(LatexLib.IMAKEIDX) && !runConfig.usesAuxilOrOutDirectory()) {
+            if (includedPackages.contains(LatexLib.IMAKEIDX) && !LatexRunConfigurationStaticSupport.usesAuxilOrOutDirectory(runConfig)) {
                 isMakeindexNeeded = false
             }
         }

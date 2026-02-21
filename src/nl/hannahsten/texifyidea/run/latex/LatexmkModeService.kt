@@ -15,12 +15,11 @@ import nl.hannahsten.texifyidea.run.latexmk.preferredCompileModeForPackages
 import nl.hannahsten.texifyidea.util.LatexmkRcFileFinder
 import nl.hannahsten.texifyidea.util.includedPackagesInFileset
 
-internal class LatexmkModeService(private val runConfig: LatexRunConfiguration) {
+internal object LatexmkModeService {
 
-    fun buildArguments(effectiveCompileModeOverride: LatexmkCompileMode? = null): String {
-        val workingDirectory = runConfig.executionState.resolvedWorkingDirectory
-        val hasRcFile = LatexmkRcFileFinder.hasLatexmkRc(runConfig.compilerArguments, workingDirectory)
-        val effectiveCompileMode = effectiveCompileModeOverride ?: effectiveCompileMode()
+    fun buildArguments(runConfig: LatexRunConfiguration, effectiveCompileModeOverride: LatexmkCompileMode? = null): String {
+        val hasRcFile = LatexmkRcFileFinder.hasLatexmkRc(runConfig.compilerArguments, runConfig.executionState.resolvedWorkingDirectory)
+        val effectiveCompileMode = effectiveCompileModeOverride ?: effectiveCompileMode(runConfig)
         return buildLatexmkStructuredArguments(
             hasRcFile = hasRcFile,
             compileMode = effectiveCompileMode,
@@ -30,7 +29,7 @@ internal class LatexmkModeService(private val runConfig: LatexRunConfiguration) 
         )
     }
 
-    fun effectiveCompileMode(): LatexmkCompileMode {
+    fun effectiveCompileMode(runConfig: LatexRunConfiguration): LatexmkCompileMode {
         if (runConfig.latexmkCompileMode != LatexmkCompileMode.AUTO) {
             return runConfig.latexmkCompileMode
         }
@@ -40,7 +39,7 @@ internal class LatexmkModeService(private val runConfig: LatexRunConfiguration) 
                 runConfig.executionState.resolvedMainFile
             }
             else {
-                runConfig.resolveMainFile()
+                LatexRunConfigurationStaticSupport.resolveMainFile(runConfig)
             }
             val psi = mainFile?.let { PsiManager.getInstance(runConfig.project).findFile(it) } ?: runConfig.psiFile?.element
             val magicComments = psi?.allParentMagicComments()

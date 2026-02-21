@@ -10,6 +10,8 @@ import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.LatexPathResolver
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationStaticSupport
+import nl.hannahsten.texifyidea.run.latex.LatexmkModeService
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.runInBackgroundWithoutProgress
 import java.nio.file.Path
@@ -27,7 +29,7 @@ object LatexmkCleanUtil {
             return
         }
 
-        val mainFile = runConfig.mainFile
+        val mainFile = LatexRunConfigurationStaticSupport.resolveMainFile(runConfig)
         if (mainFile == null) {
             Notification("LaTeX", "Latexmk clean failed", "No main file is configured.", NotificationType.ERROR).notify(project)
             return
@@ -75,7 +77,7 @@ object LatexmkCleanUtil {
     }
 
     private fun buildCleanCommand(runConfig: LatexRunConfiguration, cleanAll: Boolean): List<String>? {
-        val mainFile = runConfig.mainFile ?: return null
+        val mainFile = LatexRunConfigurationStaticSupport.resolveMainFile(runConfig) ?: return null
         val distributionType = runConfig.getLatexDistributionType()
         val executable = runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(
             LatexCompiler.LATEXMK.executableName,
@@ -85,7 +87,7 @@ object LatexmkCleanUtil {
         )
 
         val command = mutableListOf(executable)
-        val compilerArguments = runConfig.buildLatexmkArguments()
+        val compilerArguments = LatexmkModeService.buildArguments(runConfig)
         if (compilerArguments.isNotBlank()) {
             command += ParametersListUtil.parse(compilerArguments)
         }

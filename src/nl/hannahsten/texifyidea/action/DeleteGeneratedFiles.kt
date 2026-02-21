@@ -13,6 +13,7 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.LatexPathResolver
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationStaticSupport
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCleanUtil
 import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
@@ -57,7 +58,7 @@ class DeleteGeneratedFiles : AnAction() {
         // Custom output folders
         val customOutput = project.getLatexRunConfigurations()
             .flatMap { config ->
-                val mainFile = config.resolveMainFile()
+                val mainFile = LatexRunConfigurationStaticSupport.resolveMainFile(config)
                 listOf(
                     LatexPathResolver.resolveOutputDir(config, mainFile),
                     LatexPathResolver.resolveAuxDir(config, mainFile)

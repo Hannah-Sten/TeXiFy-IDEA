@@ -14,7 +14,6 @@ import com.intellij.icons.AllIcons
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.Sdk
-import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.InvalidDataException
 import com.intellij.openapi.util.WriteExternalException
 import com.intellij.openapi.vfs.VirtualFile
@@ -69,13 +68,13 @@ class LatexRunConfiguration(
 
     var mainFilePath: String? = null
         set(value) {
-            field = normalizeMainFilePath(value)
+            field = LatexRunConfigurationStaticSupport.normalizeMainFilePath(this, value)
             executionState.resolvedMainFile = null
         }
 
     @Deprecated("Use mainFilePath as static configuration; this property is a compatibility view over execution state.")
     var mainFile: VirtualFile?
-        get() = if (executionState.isInitialized) executionState.resolvedMainFile else (executionState.resolvedMainFile ?: resolveMainFile())
+        get() = executionState.resolvedMainFile
         set(value) {
             mainFilePath = value?.path
             executionState.resolvedMainFile = value
@@ -188,9 +187,6 @@ class LatexRunConfiguration(
     @Transient
     private val auxChainResolver = LatexAuxChainResolver(this)
 
-    @Transient
-    private val latexmkModeService = LatexmkModeService(this)
-
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = LatexSettingsEditor(project)
 
     override fun createAdditionalTabComponents(
@@ -201,7 +197,7 @@ class LatexRunConfiguration(
 
         if (manager is LogConsoleManagerBase && startedProcess != null) {
             manager.addAdditionalTabComponent(
-                LatexLogTabComponent(project, executionState.resolvedMainFile ?: resolveMainFile(), startedProcess),
+                LatexLogTabComponent(project, executionState.resolvedMainFile, startedProcess),
                 "LaTeX-Log",
                 AllIcons.Vcs.Changelist,
                 false
@@ -268,16 +264,6 @@ class LatexRunConfiguration(
 
     fun hasDefaultWorkingDirectory(): Boolean = workingDirectory == null
 
-    /**
-     * Looks up the corresponding [VirtualFile] and sets [LatexRunConfiguration.mainFile].
-     *
-     * See [readExternal]: NOTE: do not use runReadAction here as it may cause deadlock when other threads try to get run configurations from a write lock
-     *
-     */
-    fun setMainFile(mainFilePath: String) {
-        this.mainFilePath = mainFilePath
-    }
-
     fun setDefaultCompiler() {
         compiler = LatexCompiler.PDFLATEX
     }
@@ -300,7 +286,7 @@ class LatexRunConfiguration(
      */
     fun getLatexSdk(): Sdk? = when (latexDistribution) {
         LatexDistributionType.MODULE_SDK -> {
-            val mainFile = if (executionState.isInitialized) executionState.resolvedMainFile else resolveMainFile()
+            val mainFile = executionState.resolvedMainFile ?: LatexRunConfigurationStaticSupport.resolveMainFile(this)
             val sdk = mainFile?.let { LatexSdkUtil.getLatexSdkForFile(it, project) }
                 ?: LatexSdkUtil.getLatexProjectSdk(project)
             if (sdk?.sdkType is LatexSdk) sdk else null
@@ -338,19 +324,8 @@ class LatexRunConfiguration(
     }
 
     override fun isGeneratedName(): Boolean {
-        val fileNameWithoutExtension = mainFileNameWithoutExtension() ?: return false
+        val fileNameWithoutExtension = LatexRunConfigurationStaticSupport.mainFileNameWithoutExtension(this) ?: return false
         return fileNameWithoutExtension == getName()
-    }
-
-    private fun mainFileNameWithoutExtension(): String? {
-        val resolved = if (executionState.isInitialized) executionState.resolvedMainFile else resolveMainFile()
-        if (resolved != null) {
-            return resolved.nameWithoutExtension
-        }
-        val path = mainFilePath ?: return null
-        val slashIndex = maxOf(path.lastIndexOf('/'), path.lastIndexOf('\\'))
-        val name = if (slashIndex >= 0) path.substring(slashIndex + 1) else path
-        return name.substringBeforeLast('.', name)
     }
 
     // Path to output file (e.g. pdf)
@@ -391,59 +366,13 @@ class LatexRunConfiguration(
     fun getMakeindexRunConfigIds(): Set<String> = makeindexRunConfigIds
     fun getExternalToolRunConfigIds(): Set<String> = externalToolRunConfigIds
 
-    fun resolveMainFile(path: String? = mainFilePath): VirtualFile? {
-        if (path == null || path == mainFilePath) {
-            if (executionState.isInitialized) {
-                return executionState.resolvedMainFile
-            }
-            executionState.resolvedMainFile?.let { return it }
-        }
-
-        val candidate = path?.trim()?.takeIf { it.isNotBlank() } ?: return null
-        val fileSystem = com.intellij.openapi.vfs.LocalFileSystem.getInstance()
-        val absolute = fileSystem.findFileByPath(candidate)
-        if (absolute?.extension == "tex") {
-            return absolute
-        }
-
-        val contentRoots = ProjectRootManager.getInstance(project).contentRoots
-        for (contentRoot in contentRoots) {
-            val file = contentRoot.findFileByRelativePath(candidate)
-            if (file?.extension == "tex") {
-                return file
-            }
-        }
-        return null
-    }
-
-    private fun normalizeMainFilePath(path: String?): String? {
-        val trimmed = path?.trim()?.takeIf { it.isNotEmpty() } ?: return null
-        val resolved = resolveMainFile(trimmed)
-        return resolved?.let { toProjectRelativePathOrAbsolute(it) } ?: trimmed
-    }
-
-    fun toProjectRelativePathOrAbsolute(file: VirtualFile): String {
-        val contentRoots = ProjectRootManager.getInstance(project).contentRoots
-        val match = contentRoots
-            .filter { file.path.startsWith("${it.path}/") || file.path == it.path }
-            .maxByOrNull { it.path.length }
-        if (match == null) {
-            return file.path
-        }
-        return file.path.removePrefix(match.path).trimStart('/')
-    }
-
-    override fun suggestedName(): String? = mainFileNameWithoutExtension()
+    override fun suggestedName(): String? = LatexRunConfigurationStaticSupport.mainFileNameWithoutExtension(this)
 
     override fun toString(): String = "LatexRunConfiguration{" + "compiler=" + compiler +
         ", compilerPath=" + compilerPath +
         ", mainFilePath=" + mainFilePath +
         ", outputFormat=" + outputFormat +
         '}'.toString()
-
-    fun buildLatexmkArguments(): String = latexmkModeService.buildArguments()
-
-    fun effectiveLatexmkCompileMode(): LatexmkCompileMode = latexmkModeService.effectiveCompileMode()
 
     override fun clone(): RunConfiguration {
         val cloned = super.clone() as LatexRunConfiguration
@@ -470,35 +399,4 @@ class LatexRunConfiguration(
     /**
      * Whether an auxil or out directory is used, i.e. whether not both are set to the directory of the main file
      */
-    fun usesAuxilOrOutDirectory(): Boolean {
-        if (executionState.isInitialized) {
-            val mainParent = executionState.resolvedMainFile?.parent
-            val usesAuxilDir = (executionState.resolvedAuxDir ?: executionState.resolvedOutputDir) != mainParent
-            val usesOutDir = executionState.resolvedOutputDir != mainParent
-            return usesAuxilDir || usesOutDir
-        }
-
-        val mainParent = resolveMainFile()?.parent
-        val usesAuxilDir = LatexPathResolver.resolveAuxDir(this, resolveMainFile()) != mainParent
-        val usesOutDir = LatexPathResolver.resolveOutputDir(this, resolveMainFile()) != mainParent
-
-        return usesAuxilDir || usesOutDir
-    }
-
-    // Legacy migration helper used by persistence while reading old fields.
-    fun applyLegacyOutAuxFlags(auxDirBoolean: String?, outDirBoolean: String?) {
-        val main = resolveMainFile() ?: return
-        if (auxDirBoolean != null && auxilPath == null) {
-            val usesAuxDir = java.lang.Boolean.parseBoolean(auxDirBoolean)
-            val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(main)
-            val path = if (usesAuxDir) moduleRoot?.path + "/auxil" else main.parent.path
-            auxilPath = pathOrNull(path)
-        }
-        if (outDirBoolean != null && outputPath == null) {
-            val usesOutDir = java.lang.Boolean.parseBoolean(outDirBoolean)
-            val moduleRoot = ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(main)
-            val path = if (usesOutDir) moduleRoot?.path + "/out" else main.parent.path
-            outputPath = pathOrNull(path)
-        }
-    }
 }

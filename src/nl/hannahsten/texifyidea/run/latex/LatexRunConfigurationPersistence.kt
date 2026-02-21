@@ -105,7 +105,7 @@ internal object LatexRunConfigurationPersistence {
             ?: LatexmkCitationTool.AUTO
         runConfig.latexmkExtraArguments = parent.getChildText(LATEXMK_EXTRA_ARGUMENTS) ?: LatexRunConfiguration.DEFAULT_LATEXMK_EXTRA_ARGUMENTS
 
-        runConfig.applyLegacyOutAuxFlags(parent.getChildText(AUX_DIR), parent.getChildText(OUT_DIR))
+        LatexRunConfigurationStaticSupport.applyLegacyOutAuxFlags(runConfig, parent.getChildText(AUX_DIR), parent.getChildText(OUT_DIR))
 
         runConfig.setAuxRunConfigIds(LatexRunConfigurationSerializer.readRunConfigIds(parent, BIB_RUN_CONFIGS, BIB_RUN_CONFIG))
         runConfig.setMakeindexRunConfigIds(LatexRunConfigurationSerializer.readRunConfigIds(parent, MAKEINDEX_RUN_CONFIGS, MAKEINDEX_RUN_CONFIG))

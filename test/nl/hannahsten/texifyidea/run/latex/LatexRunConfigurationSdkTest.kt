@@ -83,7 +83,7 @@ class LatexRunConfigurationSdkTest : BasePlatformTestCase() {
 
         val file = myFixture.addFileToProject("test.tex", "\\documentclass{article}")
         val runConfig = createRunConfiguration()
-        runConfig.mainFile = file.virtualFile
+        runConfig.mainFilePath = file.virtualFile.name
         runConfig.latexDistribution = LatexDistributionType.MODULE_SDK
 
         assertEquals(
@@ -100,7 +100,7 @@ class LatexRunConfigurationSdkTest : BasePlatformTestCase() {
 
         val file = myFixture.addFileToProject("test.tex", "\\documentclass{article}")
         val runConfig = createRunConfiguration()
-        runConfig.mainFile = file.virtualFile
+        runConfig.mainFilePath = file.virtualFile.name
         runConfig.latexDistribution = LatexDistributionType.MODULE_SDK
 
         assertEquals(
@@ -118,7 +118,7 @@ class LatexRunConfigurationSdkTest : BasePlatformTestCase() {
 
         val file = myFixture.addFileToProject("test.tex", "\\documentclass{article}")
         val runConfig = createRunConfiguration()
-        runConfig.mainFile = file.virtualFile
+        runConfig.mainFilePath = file.virtualFile.name
         runConfig.latexDistribution = LatexDistributionType.PROJECT_SDK
 
         assertEquals(

@@ -23,7 +23,7 @@ class LatexOutputPathTest : BasePlatformTestCase() {
         val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
         runConfig.psiFile = mainFile.createSmartPointer()
         runBlocking {
-            runConfig.setMainFile("main.tex")
+            runConfig.mainFilePath = "main.tex"
         }
 
         runConfig.outputPath = Path.of("${LatexPathResolver.PROJECT_DIR_PLACEHOLDER}/out")
@@ -68,7 +68,7 @@ class LatexOutputPathTest : BasePlatformTestCase() {
         val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
         runConfig.psiFile = mainFile.createSmartPointer()
         runBlocking {
-            runConfig.setMainFile("sub/main.tex")
+            runConfig.mainFilePath = "sub/main.tex"
         }
 
         runConfig.outputPath = Path.of("non-existent-relative-dir")

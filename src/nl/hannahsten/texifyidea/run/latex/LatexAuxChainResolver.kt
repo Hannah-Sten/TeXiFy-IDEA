@@ -45,9 +45,10 @@ internal class LatexAuxChainResolver(private val runConfig: LatexRunConfiguratio
         }
 
         val usesChapterbib = psiFile.includedPackagesInFileset().contains(LatexLib.CHAPTERBIB)
+        val mainFile = LatexRunConfigurationStaticSupport.resolveMainFile(runConfig)
 
         if (!usesChapterbib) {
-            addBibRunConfig(defaultCompiler, runConfig.mainFile, compilerFromMagicComment?.second)
+            addBibRunConfig(defaultCompiler, mainFile, compilerFromMagicComment?.second)
             return
         }
 

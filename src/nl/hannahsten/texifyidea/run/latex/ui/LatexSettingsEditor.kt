@@ -29,6 +29,7 @@ import nl.hannahsten.texifyidea.run.latex.LatexCommandLineOptionsCache
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexPathResolver
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexmkModeService
 import nl.hannahsten.texifyidea.run.latex.isInvalidJetBrainsBinPath
 import nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfigurationType
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCitationTool
@@ -218,10 +219,10 @@ class LatexSettingsEditor(private var project: Project) : SettingsEditor<LatexRu
         runConfiguration.latexmkCitationTool = latexmkCitationTool.selectedItem as? LatexmkCitationTool ?: LatexmkCitationTool.AUTO
         runConfiguration.latexmkExtraArguments = latexmkExtraArguments.text
 
-        runConfiguration.setMainFile(mainFile.text)
+        runConfiguration.mainFilePath = mainFile.text
 
         if (chosenCompiler == LatexCompiler.LATEXMK) {
-            runConfiguration.compilerArguments = runConfiguration.buildLatexmkArguments()
+            runConfiguration.compilerArguments = LatexmkModeService.buildArguments(runConfiguration)
         }
 
         // Apply environment variables
