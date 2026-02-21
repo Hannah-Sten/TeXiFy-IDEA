@@ -296,7 +296,7 @@ class LatexRunConfiguration(
 
     override fun isGeneratedName(): Boolean {
         val fileNameWithoutExtension = LatexRunConfigurationStaticSupport.mainFileNameWithoutExtension(this) ?: return false
-        return fileNameWithoutExtension == getName()
+        return fileNameWithoutExtension == name
     }
 
     // Path to output file (e.g. pdf)

@@ -19,7 +19,6 @@ import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.index.SpecialKeys
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationStaticSupport
 import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
 import nl.hannahsten.texifyidea.util.isTestProject
@@ -164,7 +163,6 @@ fun PsiFile.definitions(): Collection<LatexCommands> = NewSpecialCommandsIndex.g
 fun PsiFile.getBibtexRunConfigurations() = project
     .getLatexRunConfigurations()
     .asSequence()
-    .filterIsInstance<LatexRunConfiguration>()
     .filter { LatexRunConfigurationStaticSupport.resolveMainFile(it) == findRootFile().virtualFile }
     .flatMap { it.bibRunConfigs }
     .map { it.configuration }

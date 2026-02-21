@@ -77,7 +77,7 @@ object LatexmkCleanUtil {
         }
     }
 
-    private fun buildCleanCommand(runConfig: LatexRunConfiguration, mainFile: VirtualFile, cleanAll: Boolean): List<String>? {
+    private fun buildCleanCommand(runConfig: LatexRunConfiguration, mainFile: VirtualFile, cleanAll: Boolean): List<String> {
         val distributionType = runConfig.getLatexDistributionType()
         val executable = runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(
             LatexCompiler.LATEXMK.executableName,
