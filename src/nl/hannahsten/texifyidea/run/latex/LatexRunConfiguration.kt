@@ -38,6 +38,7 @@ import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdk
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
+import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.files.findFile
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.includedPackagesInFileset
@@ -124,6 +125,12 @@ class LatexRunConfiguration(
     @Transient
     var executionState: LatexRunExecutionState = LatexRunExecutionState()
 
+    @Transient
+    internal var stepSchemaStatus: StepSchemaReadStatus = StepSchemaReadStatus.MISSING
+
+    @Transient
+    internal var stepSchemaTypes: List<String> = emptyList()
+
     /** Whether the pdf viewer should claim focus after compilation. */
     var requireFocus = true
 
@@ -206,6 +213,18 @@ class LatexRunConfiguration(
         // Manual run boundary: reruns in aux chain set isFirstRunConfig=false, so do not reset there.
         if (executionState.isFirstRunConfig) {
             executionState.prepareForManualRun()
+        }
+
+        val desiredPipeline = LatexRunStepsMigrationPolicy.chooseExecutionPipeline(stepSchemaStatus)
+        if (desiredPipeline == ExecutionPipelineMode.STEPS) {
+            val plan = nl.hannahsten.texifyidea.run.latex.step.LatexRunStepPlanBuilder.build(stepSchemaTypes)
+            if (plan.steps.isNotEmpty()) {
+                if (plan.unsupportedTypes.isNotEmpty()) {
+                    Log.warn("Unsupported compile-step types in schema: ${plan.unsupportedTypes.joinToString(", ")}")
+                }
+                return nl.hannahsten.texifyidea.run.latex.flow.LatexStepRunState(this, environment, plan)
+            }
+            Log.warn("Compile-step schema was present but no supported steps were found. Falling back to legacy pipeline.")
         }
 
         val filter = RegexpFilter(
@@ -408,6 +427,8 @@ class LatexRunConfiguration(
     override fun clone(): RunConfiguration {
         val cloned = super.clone() as LatexRunConfiguration
         cloned.executionState = LatexRunExecutionState()
+        cloned.stepSchemaStatus = StepSchemaReadStatus.MISSING
+        cloned.stepSchemaTypes = emptyList()
         return cloned
     }
 

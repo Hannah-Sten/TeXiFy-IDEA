@@ -58,7 +58,7 @@
 ### Phase 0：冻结目标与兼容边界
 
 - 状态：`IN_PROGRESS`（设计已冻结，待代码接入）
-- 目标：确定新旧 XML 兼容策略、执行开关策略、最小可交付范围（MVP）。
+- 目标：确定新旧 XML 兼容策略与“无开关直接迁移”执行策略。
 
 #### Phase 0 冻结决策
 
@@ -67,9 +67,9 @@
 | 向后兼容策略 | 双轨兼容 | 保持现有 `texify/*` 字段可读写；新增步骤字段并行存在。 |
 | 旧配置升级方式 | 惰性升级 | 读取旧配置时不立刻重写结构；仅在用户修改并保存时输出新结构。 |
 | 旧字段保留期限 | 至少两个小版本 | 避免回滚时丢配置。 |
-| 默认执行引擎 | 旧引擎默认 | `new-ui` 默认继续使用现有 `LatexCommandLineState` 路径。 |
-| 新引擎启用方式 | Registry 开关 | 先内部开关，再逐步默认开启。 |
-| UI 切换方式 | 与执行开关解耦 | 允许“旧执行 + 新 UI”或“新执行 + 旧 UI”独立验证。 |
+| 默认执行引擎 | 新 schema 优先 | 有效步骤 schema 存在时优先走新流程；否则回退 legacy。 |
+| 启用方式 | 无 feature flag | 不使用 registry 作为中间缓冲层。 |
+| UI 切换方式 | 直接迁移 | 以 `new-ui` 为目标形态推进，不做双轨 UI 开关。 |
 
 #### Phase 0 兼容契约（XML）
 
@@ -89,22 +89,7 @@
 2. 若步骤容器存在但解析失败，记录 warning 并回退旧执行链。  
 3. 若步骤容器缺失，使用旧字段和旧执行链。  
 4. 保存时：
-   - 当步骤模型开关关闭：仅写旧字段。
-   - 当步骤模型开关开启：写步骤字段，并继续写旧字段（至少两个小版本）。
-
-#### Phase 0 Feature Flag 方案
-
-- 在 `resources/META-INF/plugin.xml` 新增 registry keys（默认 `false`）：
-  - `texify.run.steps.engine`
-  - `texify.run.steps.ui`
-  - `texify.run.steps.write.schema`
-- 推荐启用顺序：
-  1. `engine`（内部验证执行）
-  2. `ui`（验证编辑器）
-  3. `write.schema`（开始写新步骤字段）
-- 回滚策略：
-  - 任一阶段只需关闭对应 key 即可回退到旧路径。
-  - 因继续写旧字段，回滚不依赖数据迁移。
+   - Phase 0 仍写旧字段（新字段写入在 Phase 2 开启），避免当前行为波动。
 
 #### Phase 0 最小交付范围（MVP）
 
@@ -121,17 +106,16 @@
   - 读旧配置、写新结构、再读回（round-trip）
   - 新旧字段并存时的优先级选择
   - 新步骤解析失败时自动回退旧链路
-  - 关闭 `write.schema` 时不写任何步骤字段
 
 #### Phase 0 PR 切分建议
 
-- PR-0A：仅文档 + registry keys + 空实现开关（不改行为）。
-- PR-0B：执行入口读取开关并打印诊断日志（仍走旧链）。
+- PR-0A：文档与兼容契约冻结（无 registry 方案）。
+- PR-0B：执行入口接入 schema 探测与优先级策略（仍暂走旧链）。
 - PR-0C：测试骨架（优先级与回退用例先加 pending/failing test）。
 
 ### Phase 1：在 `new-ui` 引入步骤域模型（无 UI 变更）
 
-- 状态：`TODO`
+- 状态：`IN_PROGRESS`（核心骨架已接入）
 - 目标：先落地执行数据模型，再接 UI。
 - 代码落点（建议）：
   - `src/nl/hannahsten/texifyidea/run/latex/step/*`
@@ -257,6 +241,14 @@
   - 基于 `run-config-ui` 和 `new-ui` 的结构差异，确定“先模型、后 UI、最后清理”的迁移顺序。
   - 明确不直接迁移旧分支中未完成的自定义执行控制台实现。
 - 2026-02-22（Phase 0 细化）
-  - 冻结了 XML 兼容契约、冲突优先级和 feature flag 方案。
-  - 明确新步骤 schema 的写入门控（`write.schema`）与可回滚策略。
+  - 冻结了 XML 兼容契约与冲突优先级。
+  - 评估过 feature flag 方案，后续按“直接迁移”决策移除。
   - 增加 Phase 0 的 PR 拆分建议（0A/0B/0C）。
+- 2026-02-22（Phase 0 落地：0A/0B/0C）
+  - 移除了 registry 缓冲方案，改为无 feature flag 的直接迁移策略。
+  - 运行配置入口已接入步骤 schema 探测与优先级判定，当前仍回退 legacy 执行链（不改变用户行为）。
+  - 新增步骤 schema 探测与策略骨架测试，覆盖“优先级/回退”规则。
+- 2026-02-22（Phase 1 启动）
+  - 新增 `run/latex/step` 与 `run/latex/flow` 目录：引入最小步骤模型（LaTeX Compile / PDF Viewer）与顺序执行器。
+  - `LatexRunConfiguration.getState()` 已在检测到可支持步骤 schema 时切换为 `LatexStepRunState`。
+  - 增加步骤类型解析与执行状态选择测试。

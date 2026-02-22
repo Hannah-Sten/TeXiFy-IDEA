@@ -50,7 +50,11 @@ internal object LatexRunConfigurationPersistence {
     private const val LATEXMK_EXTRA_ARGUMENTS = "latexmk-extra-arguments"
 
     fun readInto(runConfig: LatexRunConfiguration, element: Element) {
+        runConfig.stepSchemaStatus = StepSchemaReadStatus.MISSING
+        runConfig.stepSchemaTypes = emptyList()
         val parent = element.getChild(TEXIFY_PARENT) ?: return
+        runConfig.stepSchemaStatus = LatexRunConfigurationSerializer.probeStepSchema(parent)
+        runConfig.stepSchemaTypes = LatexRunConfigurationSerializer.readStepTypes(parent)
 
         runConfig.compiler = parent.getChildText(COMPILER)
             ?.let { runCatching { LatexCompiler.valueOf(it) }.getOrNull() }

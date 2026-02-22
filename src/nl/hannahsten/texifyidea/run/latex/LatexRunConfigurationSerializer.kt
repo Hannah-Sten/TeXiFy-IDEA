@@ -4,6 +4,39 @@ import org.jdom.Element
 
 internal object LatexRunConfigurationSerializer {
 
+    private const val COMPILE_STEPS = "compile-steps"
+    private const val COMPILE_STEP = "compile-step"
+    private const val TYPE = "type"
+    private const val STEP_NAME = "step-name"
+
+    fun probeStepSchema(parent: Element): StepSchemaReadStatus {
+        val stepsParent = parent.getChild(COMPILE_STEPS) ?: return StepSchemaReadStatus.MISSING
+        val steps = stepsParent.getChildren(COMPILE_STEP)
+        if (steps.isEmpty()) {
+            return StepSchemaReadStatus.INVALID
+        }
+
+        val allStepsHaveIdentifier = steps.all { step ->
+            !step.getAttributeValue(TYPE).isNullOrBlank() ||
+                !step.getAttributeValue(STEP_NAME).isNullOrBlank()
+        }
+        return if (allStepsHaveIdentifier) {
+            StepSchemaReadStatus.PARSED
+        }
+        else {
+            StepSchemaReadStatus.INVALID
+        }
+    }
+
+    fun readStepTypes(parent: Element): List<String> {
+        val stepsParent = parent.getChild(COMPILE_STEPS) ?: return emptyList()
+        return stepsParent.getChildren(COMPILE_STEP)
+            .mapNotNull { step ->
+                step.getAttributeValue(TYPE)?.trim()?.takeIf(String::isNotBlank)
+                    ?: step.getAttributeValue(STEP_NAME)?.trim()?.takeIf(String::isNotBlank)
+            }
+    }
+
     fun readRunConfigIds(parent: Element, listTag: String, legacyTag: String? = null): MutableSet<String> {
         val listElement = parent.getChild(listTag)
         if (listElement != null) {
