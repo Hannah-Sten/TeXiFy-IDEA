@@ -53,8 +53,7 @@ internal object LatexRunConfigurationPersistence {
         runConfig.stepSchemaStatus = StepSchemaReadStatus.MISSING
         runConfig.stepSchemaTypes = emptyList()
         val parent = element.getChild(TEXIFY_PARENT) ?: return
-        runConfig.stepSchemaStatus = LatexRunConfigurationSerializer.probeStepSchema(parent)
-        runConfig.stepSchemaTypes = LatexRunConfigurationSerializer.readStepTypes(parent)
+        val schemaStatus = LatexRunConfigurationSerializer.probeStepSchema(parent)
 
         runConfig.compiler = parent.getChildText(COMPILER)
             ?.let { runCatching { LatexCompiler.valueOf(it) }.getOrNull() }
@@ -108,6 +107,16 @@ internal object LatexRunConfigurationPersistence {
         runConfig.setAuxRunConfigIds(LatexRunConfigurationSerializer.readRunConfigIds(parent, BIB_RUN_CONFIGS, BIB_RUN_CONFIG))
         runConfig.setMakeindexRunConfigIds(LatexRunConfigurationSerializer.readRunConfigIds(parent, MAKEINDEX_RUN_CONFIGS, MAKEINDEX_RUN_CONFIG))
         runConfig.setExternalToolRunConfigIds(LatexRunConfigurationSerializer.readRunConfigIds(parent, EXTERNAL_TOOL_RUN_CONFIGS, EXTERNAL_TOOL_RUN_CONFIG))
+
+        runConfig.stepSchemaStatus = schemaStatus
+        runConfig.stepSchemaTypes = when (schemaStatus) {
+            StepSchemaReadStatus.PARSED -> LatexRunConfigurationSerializer.readStepTypes(parent)
+            StepSchemaReadStatus.MISSING -> {
+                runConfig.stepSchemaStatus = StepSchemaReadStatus.PARSED
+                inferStepTypesFromLegacyConfiguration(runConfig)
+            }
+            StepSchemaReadStatus.INVALID -> inferStepTypesFromLegacyConfiguration(runConfig)
+        }
     }
 
     fun writeFrom(runConfig: LatexRunConfiguration, element: Element) {
@@ -139,6 +148,22 @@ internal object LatexRunConfigurationPersistence {
         LatexRunConfigurationSerializer.writeRunConfigIds(parent, BIB_RUN_CONFIGS, runConfig.getBibRunConfigIds())
         LatexRunConfigurationSerializer.writeRunConfigIds(parent, MAKEINDEX_RUN_CONFIGS, runConfig.getMakeindexRunConfigIds())
         LatexRunConfigurationSerializer.writeRunConfigIds(parent, EXTERNAL_TOOL_RUN_CONFIGS, runConfig.getExternalToolRunConfigIds())
+
+        val stepTypes = runConfig.stepSchemaTypes.ifEmpty {
+            inferStepTypesFromLegacyConfiguration(runConfig)
+        }
+        LatexRunConfigurationSerializer.writeStepTypes(parent, stepTypes)
+    }
+
+    private fun inferStepTypesFromLegacyConfiguration(runConfig: LatexRunConfiguration): List<String> {
+        val inferred = mutableListOf<String>()
+        if (runConfig.compiler != null) {
+            inferred += "latex-compile"
+        }
+        if (runConfig.pdfViewer != null || !runConfig.viewerCommand.isNullOrBlank()) {
+            inferred += "pdf-viewer"
+        }
+        return inferred
     }
 
     private fun migrateSumatraPath(runConfig: LatexRunConfiguration, folder: String) {

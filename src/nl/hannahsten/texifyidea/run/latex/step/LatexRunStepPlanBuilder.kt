@@ -7,25 +7,18 @@ internal data class LatexRunStepPlan(
 
 internal object LatexRunStepPlanBuilder {
 
-    private val latexAliases = setOf("latex-compile", "compile-latex")
-    private val viewerAliases = setOf("pdf-viewer", "open-pdf", "open-pdf-viewer")
-
     fun build(stepTypes: List<String>): LatexRunStepPlan {
         val steps = mutableListOf<LatexRunStep>()
         val unsupported = mutableListOf<String>()
 
         for (raw in stepTypes) {
-            val type = raw.trim().lowercase()
-            val step = when {
-                type in latexAliases -> LatexCompileRunStep()
-                type in viewerAliases -> PdfViewerRunStep()
-                else -> null
-            }
-            if (step == null) {
+            val spec = LatexRunStepSpec(raw)
+            val provider = LatexRunStepProviders.find(spec.normalizedType)
+            if (provider == null) {
                 unsupported += raw
             }
             else {
-                steps += step
+                steps += provider.create(spec)
             }
         }
 

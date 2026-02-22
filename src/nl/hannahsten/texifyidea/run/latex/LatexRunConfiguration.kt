@@ -218,13 +218,18 @@ class LatexRunConfiguration(
         val desiredPipeline = LatexRunStepsMigrationPolicy.chooseExecutionPipeline(stepSchemaStatus)
         if (desiredPipeline == ExecutionPipelineMode.STEPS) {
             val plan = nl.hannahsten.texifyidea.run.latex.step.LatexRunStepPlanBuilder.build(stepSchemaTypes)
-            if (plan.steps.isNotEmpty()) {
+            if (plan.steps.isNotEmpty() && isSupportedByCurrentStepEngine()) {
                 if (plan.unsupportedTypes.isNotEmpty()) {
                     Log.warn("Unsupported compile-step types in schema: ${plan.unsupportedTypes.joinToString(", ")}")
                 }
                 return nl.hannahsten.texifyidea.run.latex.flow.LatexStepRunState(this, environment, plan)
             }
-            Log.warn("Compile-step schema was present but no supported steps were found. Falling back to legacy pipeline.")
+            if (plan.steps.isEmpty()) {
+                Log.warn("Compile-step schema was present but no supported steps were found. Falling back to legacy pipeline.")
+            }
+            else {
+                Log.info("Compile-step schema is present, but current configuration is not yet supported by the step engine. Falling back to legacy pipeline.")
+            }
         }
 
         val filter = RegexpFilter(
@@ -238,6 +243,14 @@ class LatexRunConfiguration(
         )
         state.addConsoleFilters(filter)
         return state
+    }
+
+    private fun isSupportedByCurrentStepEngine(): Boolean {
+        // Phase 2 safeguard: keep legacy behavior for configurations that still depend on auxiliary run-config chains.
+        if (compiler != LatexCompiler.LATEXMK) return false
+        if (compileTwice) return false
+        if (getAllAuxiliaryRunConfigs().isNotEmpty()) return false
+        return true
     }
 
     @Throws(InvalidDataException::class)

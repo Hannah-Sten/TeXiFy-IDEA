@@ -37,6 +37,18 @@ internal object LatexRunConfigurationSerializer {
             }
     }
 
+    fun writeStepTypes(parent: Element, stepTypes: List<String>) {
+        if (stepTypes.isEmpty()) return
+        val stepsParent = Element(COMPILE_STEPS)
+        stepTypes.forEach { type ->
+            if (type.isBlank()) return@forEach
+            stepsParent.addContent(Element(COMPILE_STEP).setAttribute(TYPE, type))
+        }
+        if (stepsParent.getChildren(COMPILE_STEP).isNotEmpty()) {
+            parent.addContent(stepsParent)
+        }
+    }
+
     fun readRunConfigIds(parent: Element, listTag: String, legacyTag: String? = null): MutableSet<String> {
         val listElement = parent.getChild(listTag)
         if (listElement != null) {

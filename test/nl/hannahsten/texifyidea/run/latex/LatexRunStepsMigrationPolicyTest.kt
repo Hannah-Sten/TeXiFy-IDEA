@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.run.latex
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.run.latex.step.LatexCompileRunStep
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepPlanBuilder
+import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepProviders
 import nl.hannahsten.texifyidea.run.latex.step.PdfViewerRunStep
 import org.jdom.Element
 
@@ -103,5 +104,11 @@ class LatexRunStepsMigrationPolicyTest : BasePlatformTestCase() {
 
         assertEquals(1, plan.steps.size)
         assertEquals(listOf("unknown-step"), plan.unsupportedTypes)
+    }
+
+    fun testStepProviderRegistryFindsAliasesCaseInsensitive() {
+        assertNotNull(LatexRunStepProviders.find("compile-latex"))
+        assertNotNull(LatexRunStepProviders.find("LATEX-COMPILE"))
+        assertNotNull(LatexRunStepProviders.find("Open-PDF"))
     }
 }

@@ -57,7 +57,7 @@
 
 ### Phase 0：冻结目标与兼容边界
 
-- 状态：`IN_PROGRESS`（设计已冻结，待代码接入）
+- 状态：`DONE`
 - 目标：确定新旧 XML 兼容策略与“无开关直接迁移”执行策略。
 
 #### Phase 0 冻结决策
@@ -115,7 +115,7 @@
 
 ### Phase 1：在 `new-ui` 引入步骤域模型（无 UI 变更）
 
-- 状态：`IN_PROGRESS`（核心骨架已接入）
+- 状态：`DONE`
 - 目标：先落地执行数据模型，再接 UI。
 - 代码落点（建议）：
   - `src/nl/hannahsten/texifyidea/run/latex/step/*`
@@ -130,7 +130,7 @@
 
 ### Phase 2：持久化与向后兼容
 
-- 状态：`TODO`
+- 状态：`DONE`
 - 目标：序列化步骤，并兼容旧字段。
 - 代码落点：
   - `src/nl/hannahsten/texifyidea/run/latex/LatexRunConfigurationPersistence.kt`
@@ -225,9 +225,9 @@
 
 ## 执行看板
 
-- [ ] Phase 0: 兼容边界冻结（设计完成，待代码接入）
-- [ ] Phase 1: 步骤域模型
-- [ ] Phase 2: 序列化兼容
+- [x] Phase 0: 兼容边界冻结
+- [x] Phase 1: 步骤域模型
+- [x] Phase 2: 序列化兼容
 - [ ] Phase 3: 旧能力桥接
 - [ ] Phase 4: Fragment UI 外壳
 - [ ] Phase 5: 序列碎片与拖拽
@@ -252,3 +252,15 @@
   - 新增 `run/latex/step` 与 `run/latex/flow` 目录：引入最小步骤模型（LaTeX Compile / PDF Viewer）与顺序执行器。
   - `LatexRunConfiguration.getState()` 已在检测到可支持步骤 schema 时切换为 `LatexStepRunState`。
   - 增加步骤类型解析与执行状态选择测试。
+- 2026-02-22（Phase 1 完成）
+  - 引入 `StepSpec`、`StepProvider` 与 Provider Registry，替换硬编码步骤映射。
+  - `LatexStepRunState` 增加 `RegexpFilter`，保持与 legacy 路径一致的行号跳转能力。
+  - 通过 `LatexRunStepsMigrationPolicyTest`、`LatexRunStepStateSelectionTest`、`LatexRunConfigurationTest` 回归验证。
+- 2026-02-22（Phase 2 启动）
+  - 新增 `compile-steps` 写入：在保留 legacy 字段的同时并行写入步骤 schema。
+  - 对缺失步骤 schema 的旧配置增加默认步骤推断（`latex-compile` + `pdf-viewer`）。
+  - 对非法步骤 schema 保留 `INVALID` 状态并回退到 legacy 推断步骤，避免中断升级。
+- 2026-02-22（Phase 2 完成）
+  - `LatexRunConfigurationSerializer` 增加 `compile-steps` 写入能力与类型提取。
+  - `LatexRunConfigurationPersistence` 完成新旧 schema 双向兼容：优先读新 schema，缺失/异常时回退 legacy 推断。
+  - 新增 `LatexRunStepSchemaPersistenceTest`，验证写入、旧配置推断、异常 schema 回退与显式 schema 优先。
