@@ -57,14 +57,77 @@
 
 ### Phase 0：冻结目标与兼容边界
 
-- 状态：`TODO`
-- 目标：确定新旧 XML 兼容策略与最小可交付范围。
-- 产出：
-  - 步骤序列序列化草案（新增标签，不破坏现有标签）
-  - 回滚策略（开关或 feature flag）
-- 验收：
-  - 现有 `LatexRunConfigurationTest` 全绿
-  - 不改动用户已有配置行为
+- 状态：`IN_PROGRESS`（设计已冻结，待代码接入）
+- 目标：确定新旧 XML 兼容策略、执行开关策略、最小可交付范围（MVP）。
+
+#### Phase 0 冻结决策
+
+| 决策项 | 决策 | 说明 |
+| --- | --- | --- |
+| 向后兼容策略 | 双轨兼容 | 保持现有 `texify/*` 字段可读写；新增步骤字段并行存在。 |
+| 旧配置升级方式 | 惰性升级 | 读取旧配置时不立刻重写结构；仅在用户修改并保存时输出新结构。 |
+| 旧字段保留期限 | 至少两个小版本 | 避免回滚时丢配置。 |
+| 默认执行引擎 | 旧引擎默认 | `new-ui` 默认继续使用现有 `LatexCommandLineState` 路径。 |
+| 新引擎启用方式 | Registry 开关 | 先内部开关，再逐步默认开启。 |
+| UI 切换方式 | 与执行开关解耦 | 允许“旧执行 + 新 UI”或“新执行 + 旧 UI”独立验证。 |
+
+#### Phase 0 兼容契约（XML）
+
+- 现有读写字段继续作为稳定契约（不可破坏）：
+  - `compiler`, `compiler-path`, `pdf-viewer`, `viewer-command`
+  - `compiler-arguments`, `main-file`, `working-directory`
+  - `output-path`, `auxil-path`, `latex-distribution`
+  - `bib-run-configs`, `makeindex-run-configs`, `external-tool-run-configs`
+  - 兼容旧集合格式：`bib-run-config`, `makeindex-run-config`, `external-tool-run-config`
+- 预留新增字段（步骤模型）：
+  - 建议标签：`<compile-steps><compile-step type="...">...</compile-step></compile-steps>`
+  - 注意：`run-config-ui` 使用 `<compile-step step-name="...">`，新实现保留同语义但建议在外层加容器，便于版本化。
+
+#### Phase 0 冲突优先级（当旧字段与新步骤并存）
+
+1. 若步骤容器存在且可解析，优先使用步骤序列执行。  
+2. 若步骤容器存在但解析失败，记录 warning 并回退旧执行链。  
+3. 若步骤容器缺失，使用旧字段和旧执行链。  
+4. 保存时：
+   - 当步骤模型开关关闭：仅写旧字段。
+   - 当步骤模型开关开启：写步骤字段，并继续写旧字段（至少两个小版本）。
+
+#### Phase 0 Feature Flag 方案
+
+- 在 `resources/META-INF/plugin.xml` 新增 registry keys（默认 `false`）：
+  - `texify.run.steps.engine`
+  - `texify.run.steps.ui`
+  - `texify.run.steps.write.schema`
+- 推荐启用顺序：
+  1. `engine`（内部验证执行）
+  2. `ui`（验证编辑器）
+  3. `write.schema`（开始写新步骤字段）
+- 回滚策略：
+  - 任一阶段只需关闭对应 key 即可回退到旧路径。
+  - 因继续写旧字段，回滚不依赖数据迁移。
+
+#### Phase 0 最小交付范围（MVP）
+
+- 执行侧：仅要求支持 `LaTeX Compile` + `PDF Viewer` 两种步骤。
+- UI 侧：可延后；Phase 0 不要求 fragment UI 上线。
+- 兼容侧：必须保证旧用户配置行为不变化。
+
+#### Phase 0 测试清单（冻结）
+
+- 保底回归：
+  - `test/nl/hannahsten/texifyidea/run/LatexRunConfigurationTest.kt`
+  - `test/nl/hannahsten/texifyidea/run/latexmk/LatexmkRunConfigurationTest.kt`
+- 新增测试（Phase 1/2 立即补）：
+  - 读旧配置、写新结构、再读回（round-trip）
+  - 新旧字段并存时的优先级选择
+  - 新步骤解析失败时自动回退旧链路
+  - 关闭 `write.schema` 时不写任何步骤字段
+
+#### Phase 0 PR 切分建议
+
+- PR-0A：仅文档 + registry keys + 空实现开关（不改行为）。
+- PR-0B：执行入口读取开关并打印诊断日志（仍走旧链）。
+- PR-0C：测试骨架（优先级与回退用例先加 pending/failing test）。
 
 ### Phase 1：在 `new-ui` 引入步骤域模型（无 UI 变更）
 
@@ -178,7 +241,7 @@
 
 ## 执行看板
 
-- [ ] Phase 0: 兼容边界冻结
+- [ ] Phase 0: 兼容边界冻结（设计完成，待代码接入）
 - [ ] Phase 1: 步骤域模型
 - [ ] Phase 2: 序列化兼容
 - [ ] Phase 3: 旧能力桥接
@@ -193,4 +256,7 @@
   - 初始化迁移文档。
   - 基于 `run-config-ui` 和 `new-ui` 的结构差异，确定“先模型、后 UI、最后清理”的迁移顺序。
   - 明确不直接迁移旧分支中未完成的自定义执行控制台实现。
-
+- 2026-02-22（Phase 0 细化）
+  - 冻结了 XML 兼容契约、冲突优先级和 feature flag 方案。
+  - 明确新步骤 schema 的写入门控（`write.schema`）与可回滚策略。
+  - 增加 Phase 0 的 PR 拆分建议（0A/0B/0C）。
