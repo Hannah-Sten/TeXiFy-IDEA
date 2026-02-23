@@ -31,6 +31,17 @@ class LatexRequiredExtensionInspectionTest : TexifyInspectionTestBase(LatexRequi
         myFixture.checkHighlighting()
     }
 
+    fun testNoWarning2() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            % \bibliography has no required extension, LatexNoExtensionInspection should fire here
+            \bibliography{test.bib}
+            """.trimIndent()
+        )
+        myFixture.checkHighlighting()
+    }
+
     fun testNoWarningCitationStyleLanguage() {
         myFixture.configureByText(
             LatexFileType,

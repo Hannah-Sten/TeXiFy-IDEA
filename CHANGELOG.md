@@ -22,6 +22,7 @@
 * Package imports now resolve to only the local package if it exists, by @jandermoreira 
 * Fix bug in retrieving texmfhome directory on Linux
 * Fix duplicate messages in log message tab after filtering
+* Fix "Remove file extension" incorrect filename replacement, by @kivojenko
 
 ## [0.11.7] - 2026-01-09
 

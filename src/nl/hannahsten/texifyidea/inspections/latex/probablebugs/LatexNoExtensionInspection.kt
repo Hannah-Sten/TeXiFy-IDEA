@@ -12,14 +12,9 @@ import nl.hannahsten.texifyidea.inspections.AbstractTexifyCommandBasedInspection
 import nl.hannahsten.texifyidea.lang.LContextSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
-import nl.hannahsten.texifyidea.psi.LatexCommands
-import nl.hannahsten.texifyidea.psi.contentText
-import nl.hannahsten.texifyidea.psi.forEachRequiredParameter
-import nl.hannahsten.texifyidea.psi.nameWithSlash
-import nl.hannahsten.texifyidea.util.files.document
+import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.startOffsetInAncestor
-import nl.hannahsten.texifyidea.util.replaceString
 import java.util.*
 
 /**
@@ -75,27 +70,27 @@ class LatexNoExtensionInspection : AbstractTexifyCommandBasedInspection(
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands
-            val document = command.containingFile.document() ?: return
 
             val nameWithSlash = command.nameWithSlash
             val illegalExtensions = CommandMagic.illegalExtensions[nameWithSlash] ?: return
 
-            command.forEachRequiredParameter {
-                val params = it.contentText().split(",")
-                var offset = it.startOffsetInAncestor(command)
+            command.forEachRequiredParameter { parameter ->
+                val params = parameter.contentText().split(",")
+                val newParams = mutableListOf<String>()
                 for (parameter in params) {
-                    offset += 1 // account for opening brace或逗号
                     if (illegalExtensions.any { ext -> parameter.endsWith(ext) && !parameter.endsWith('}') }) {
                         val replacement = illegalExtensions
                             .find { ext -> parameter.endsWith(ext) }
                             ?.let { ext -> parameter.removeSuffix(ext) }
                             ?: parameter
-                        val range = TextRange(offset, offset + parameter.length)
-                        document.replaceString(range, replacement)
-                        offset -= (range.length - replacement.length)
+                        newParams.add(replacement)
                     }
-                    offset += parameter.length
+                    else {
+                        newParams.add(parameter)
+                    }
                 }
+                val newParameter = LatexPsiHelper(project).createRequiredParameter(newParams.joinToString(","))
+                parameter.parent.node.replaceChild(parameter.node, newParameter.node)
             }
         }
     }
