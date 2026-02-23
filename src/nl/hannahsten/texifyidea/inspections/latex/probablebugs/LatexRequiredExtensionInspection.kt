@@ -42,6 +42,7 @@ class LatexRequiredExtensionInspection : AbstractTexifyCommandBasedInspection(
         descriptors: MutableList<ProblemDescriptor>
     ) {
         val requiredAnyExtension = findRequiredExtensions(command) ?: return
+        if (requiredAnyExtension.isEmpty()) return
 
         command.forEachRequiredParameter {
             val params = it.contentText().split(",")
