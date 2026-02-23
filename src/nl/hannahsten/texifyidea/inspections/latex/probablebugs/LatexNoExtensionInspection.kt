@@ -82,7 +82,7 @@ class LatexNoExtensionInspection : AbstractTexifyCommandBasedInspection(
 
             command.forEachRequiredParameter {
                 val params = it.contentText().split(",")
-                var offset = it.startOffsetInAncestor(command)
+                var offset = it.startOffsetInAncestor(command) + command.textRange.startOffset
                 for (parameter in params) {
                     offset += 1 // account for opening brace或逗号
                     if (illegalExtensions.any { ext -> parameter.endsWith(ext) && !parameter.endsWith('}') }) {
