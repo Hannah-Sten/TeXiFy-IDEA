@@ -111,10 +111,7 @@ internal object LatexRunConfigurationPersistence {
         runConfig.stepSchemaStatus = schemaStatus
         runConfig.stepSchemaTypes = when (schemaStatus) {
             StepSchemaReadStatus.PARSED -> LatexRunConfigurationSerializer.readStepTypes(parent)
-            StepSchemaReadStatus.MISSING -> {
-                runConfig.stepSchemaStatus = StepSchemaReadStatus.PARSED
-                inferStepTypesFromLegacyConfiguration(runConfig)
-            }
+            StepSchemaReadStatus.MISSING -> inferStepTypesFromLegacyConfiguration(runConfig)
             StepSchemaReadStatus.INVALID -> inferStepTypesFromLegacyConfiguration(runConfig)
         }
     }
@@ -158,6 +155,18 @@ internal object LatexRunConfigurationPersistence {
     private fun inferStepTypesFromLegacyConfiguration(runConfig: LatexRunConfiguration): List<String> {
         val inferred = mutableListOf<String>()
         if (runConfig.compiler != null) {
+            inferred += "latex-compile"
+        }
+        if (runConfig.externalToolRunConfigs.isNotEmpty()) {
+            inferred += "legacy-external-tool"
+        }
+        if (runConfig.makeindexRunConfigs.isNotEmpty()) {
+            inferred += "legacy-makeindex"
+        }
+        if (runConfig.bibRunConfigs.isNotEmpty()) {
+            inferred += "legacy-bibtex"
+        }
+        if (runConfig.compileTwice) {
             inferred += "latex-compile"
         }
         if (runConfig.pdfViewer != null || !runConfig.viewerCommand.isNullOrBlank()) {

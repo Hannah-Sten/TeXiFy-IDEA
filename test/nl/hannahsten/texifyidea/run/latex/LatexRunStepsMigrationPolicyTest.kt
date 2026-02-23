@@ -4,6 +4,9 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.run.latex.step.LatexCompileRunStep
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepPlanBuilder
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepProviders
+import nl.hannahsten.texifyidea.run.latex.step.LegacyBibtexRunStep
+import nl.hannahsten.texifyidea.run.latex.step.LegacyExternalToolRunStep
+import nl.hannahsten.texifyidea.run.latex.step.LegacyMakeindexRunStep
 import nl.hannahsten.texifyidea.run.latex.step.PdfViewerRunStep
 import org.jdom.Element
 
@@ -104,6 +107,15 @@ class LatexRunStepsMigrationPolicyTest : BasePlatformTestCase() {
 
         assertEquals(1, plan.steps.size)
         assertEquals(listOf("unknown-step"), plan.unsupportedTypes)
+    }
+
+    fun testStepPlanBuilderMapsLegacyBridgeStepAliases() {
+        val plan = LatexRunStepPlanBuilder.build(listOf("bibliography", "makeindex", "external-tool"))
+
+        assertEquals(3, plan.steps.size)
+        assertTrue(plan.steps[0] is LegacyBibtexRunStep)
+        assertTrue(plan.steps[1] is LegacyMakeindexRunStep)
+        assertTrue(plan.steps[2] is LegacyExternalToolRunStep)
     }
 
     fun testStepProviderRegistryFindsAliasesCaseInsensitive() {

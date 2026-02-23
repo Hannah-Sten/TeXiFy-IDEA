@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.startup
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationAction
 import com.intellij.notification.NotificationType
+import com.intellij.openapi.application.readAction
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.ProjectActivity
@@ -38,8 +39,11 @@ class LatexIgnoredMasksPromptActivity : ProjectActivity, DumbAware {
             .notify(project)
     }
 
-    internal fun shouldPrompt(project: Project): Boolean {
-        if (!project.isLatexProject()) return false
+    internal suspend fun shouldPrompt(project: Project): Boolean {
+        val isLatex = readAction {
+            project.isLatexProject()
+        }
+        if (!isLatex) return false
         if (TexifySettings.getState().suppressIgnoredMasksPrompt) return false
         return LatexIgnoredFileMasks.findMissingMasks(LatexIgnoredFileMasks.getCurrentMasks()).isNotEmpty()
     }

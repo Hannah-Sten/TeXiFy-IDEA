@@ -4,6 +4,9 @@ internal object LatexRunStepProviders {
 
     val all: List<LatexRunStepProvider> = listOf(
         LatexCompileRunStepProvider,
+        LegacyBibtexRunStepProvider,
+        LegacyMakeindexRunStepProvider,
+        LegacyExternalToolRunStepProvider,
         PdfViewerRunStepProvider,
     )
 

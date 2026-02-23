@@ -145,18 +145,18 @@
 
 ### Phase 3：步骤桥接（先桥接旧能力，再替换旧能力）
 
-- 状态：`TODO`
+- 状态：`DONE`
 - 目标：保留现有能力，避免一次性移除旧机制。
 - 任务：
   - 用“桥接步骤”封装当前 `bibtex/makeindex/external tool` 运行链
   - 把 `RunBibtexListener` / `RunMakeindexListener` / `RunExternalToolListener` 的触发点从“隐式链”迁到“显式步骤”
 - 验收：
   - biber/bibtex/makeindex/external tool 仍可执行
-  - 失败短路逻辑可配置且可测试
+  - 失败短路行为与 legacy 一致（首个失败即终止）且可测试
 
 ### Phase 4：分片式 UI 外壳落地
 
-- 状态：`TODO`
+- 状态：`DONE`
 - 目标：把 `LatexSettingsEditor` 从长表单迁移到 fragment 架构。
 - 代码落点：
   - `src/nl/hannahsten/texifyidea/run/latex/ui/LatexSettingsEditor.kt`
@@ -228,8 +228,8 @@
 - [x] Phase 0: 兼容边界冻结
 - [x] Phase 1: 步骤域模型
 - [x] Phase 2: 序列化兼容
-- [ ] Phase 3: 旧能力桥接
-- [ ] Phase 4: Fragment UI 外壳
+- [x] Phase 3: 旧能力桥接
+- [x] Phase 4: Fragment UI 外壳
 - [ ] Phase 5: 序列碎片与拖拽
 - [ ] Phase 6: 自动推断与高级步骤
 - [ ] Phase 7: 清理与收口
@@ -246,7 +246,7 @@
   - 增加 Phase 0 的 PR 拆分建议（0A/0B/0C）。
 - 2026-02-22（Phase 0 落地：0A/0B/0C）
   - 移除了 registry 缓冲方案，改为无 feature flag 的直接迁移策略。
-  - 运行配置入口已接入步骤 schema 探测与优先级判定，当前仍回退 legacy 执行链（不改变用户行为）。
+  - 运行配置入口已接入步骤 schema 探测与优先级判定：`PARSED` 走步骤引擎，`MISSING/INVALID` 走 legacy 执行链。
   - 新增步骤 schema 探测与策略骨架测试，覆盖“优先级/回退”规则。
 - 2026-02-22（Phase 1 启动）
   - 新增 `run/latex/step` 与 `run/latex/flow` 目录：引入最小步骤模型（LaTeX Compile / PDF Viewer）与顺序执行器。
@@ -264,3 +264,16 @@
   - `LatexRunConfigurationSerializer` 增加 `compile-steps` 写入能力与类型提取。
   - `LatexRunConfigurationPersistence` 完成新旧 schema 双向兼容：优先读新 schema，缺失/异常时回退 legacy 推断。
   - 新增 `LatexRunStepSchemaPersistenceTest`，验证写入、旧配置推断、异常 schema 回退与显式 schema 优先。
+- 2026-02-22（Phase 3 启动）
+  - 为 `legacy-bibtex`、`legacy-makeindex`、`legacy-external-tool` 引入 bridge step/provider。
+  - 旧配置推断步骤序列时，补充 aux step 与 `compileTwice` 的显式表示。
+- 2026-02-23（Phase 3 第二段收口）
+  - bridge steps 改为在步骤引擎内直接执行：`Legacy*RunStep` 通过 `RunConfigurationBeforeRunProvider` 触发旧 run configurations。
+  - 移除 bridge steps 的“强制回退 legacy pipeline”中间态，显式步骤路径与执行路径保持一致。
+  - 对 `MISSING` 步骤 schema 保持状态不变，仅推断步骤类型用于后续写回，避免旧配置在首次读取后误切换到新执行器。
+  - 增加/更新桥接执行与迁移策略测试，覆盖别名映射、执行器选择和步骤序列推断。
+- 2026-02-23（Phase 4 完成）
+  - `LatexSettingsEditor` 切换为 `RunConfigurationFragmentedEditor`，引入 fragment 化外壳。
+  - 迁移基础碎片：compiler、main file、compiler arguments、working directory、environment variables。
+  - 保留 `LegacyLatexSettingsEditor` 作为可选“Advanced options (legacy)”碎片，确保高级配置在过渡期可继续编辑。
+  - 新增编辑器切换测试，原有表单行为测试改为验证 `LegacyLatexSettingsEditor`。

@@ -13,12 +13,19 @@ import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer
 import nl.hannahsten.texifyidea.run.latex.LatexmkModeService
 import nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfigurationType
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
+import nl.hannahsten.texifyidea.run.latex.ui.LegacyLatexSettingsEditor
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
 import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType
 import org.jdom.Element
 import org.jdom.Namespace
 
 class LatexRunConfigurationTest : BasePlatformTestCase() {
+
+    fun testConfigurationEditorUsesFragmentedSettingsEditor() {
+        val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
+        val editor = runConfig.configurationEditor
+        assertTrue(editor is LatexSettingsEditor)
+    }
 
     fun testWriteRead() {
         val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
@@ -93,10 +100,10 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         runConfig.makeindexRunConfigs = setOf(makeindex)
         runConfig.externalToolRunConfigs = setOf(external)
 
-        val editor = LatexSettingsEditor(project)
+        val editor = LegacyLatexSettingsEditor(project)
         editor.resetFrom(runConfig)
 
-        val compilerField = LatexSettingsEditor::class.java.getDeclaredField("compiler")
+        val compilerField = LegacyLatexSettingsEditor::class.java.getDeclaredField("compiler")
         compilerField.isAccessible = true
         @Suppress("UNCHECKED_CAST")
         val compiler = compilerField.get(editor) as com.intellij.openapi.ui.ComboBox<LatexCompiler>
@@ -114,10 +121,10 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         runConfig.compiler = LatexCompiler.PDFLATEX
         runConfig.compileTwice = true
 
-        val editor = LatexSettingsEditor(project)
+        val editor = LegacyLatexSettingsEditor(project)
         editor.resetFrom(runConfig)
 
-        val compilerField = LatexSettingsEditor::class.java.getDeclaredField("compiler")
+        val compilerField = LegacyLatexSettingsEditor::class.java.getDeclaredField("compiler")
         compilerField.isAccessible = true
         @Suppress("UNCHECKED_CAST")
         val compiler = compilerField.get(editor) as com.intellij.openapi.ui.ComboBox<LatexCompiler>
@@ -146,10 +153,10 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
         runConfig.compiler = LatexCompiler.LATEXMK
 
-        val editor = LatexSettingsEditor(project)
+        val editor = LegacyLatexSettingsEditor(project)
         editor.resetFrom(runConfig)
 
-        val outputFormatField = LatexSettingsEditor::class.java.getDeclaredField("outputFormatRow")
+        val outputFormatField = LegacyLatexSettingsEditor::class.java.getDeclaredField("outputFormatRow")
         outputFormatField.isAccessible = true
         val outputFormat = outputFormatField.get(editor) as javax.swing.JComponent
         assertFalse(outputFormat.isVisible)
@@ -159,10 +166,10 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
         runConfig.compiler = LatexCompiler.LATEXMK
 
-        val editor = LatexSettingsEditor(project)
+        val editor = LegacyLatexSettingsEditor(project)
         editor.resetFrom(runConfig)
 
-        val auxPathRowField = LatexSettingsEditor::class.java.getDeclaredField("auxilPathRow")
+        val auxPathRowField = LegacyLatexSettingsEditor::class.java.getDeclaredField("auxilPathRow")
         auxPathRowField.isAccessible = true
         val auxPathRow = auxPathRowField.get(editor) as? javax.swing.JComponent
         assertNotNull(auxPathRow)
@@ -172,16 +179,16 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
     fun testAraraCompilerHidesAuxPathRowInEditor() {
         val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
 
-        val editor = LatexSettingsEditor(project)
+        val editor = LegacyLatexSettingsEditor(project)
         editor.resetFrom(runConfig)
 
-        val compilerField = LatexSettingsEditor::class.java.getDeclaredField("compiler")
+        val compilerField = LegacyLatexSettingsEditor::class.java.getDeclaredField("compiler")
         compilerField.isAccessible = true
         @Suppress("UNCHECKED_CAST")
         val compiler = compilerField.get(editor) as com.intellij.openapi.ui.ComboBox<LatexCompiler>
         compiler.selectedItem = LatexCompiler.ARARA
 
-        val auxPathRowField = LatexSettingsEditor::class.java.getDeclaredField("auxilPathRow")
+        val auxPathRowField = LegacyLatexSettingsEditor::class.java.getDeclaredField("auxilPathRow")
         auxPathRowField.isAccessible = true
         val auxPathRow = auxPathRowField.get(editor) as? javax.swing.JComponent
         assertNotNull(auxPathRow)
@@ -192,10 +199,10 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
         runConfig.compiler = LatexCompiler.LATEXMK
 
-        val editor = LatexSettingsEditor(project)
+        val editor = LegacyLatexSettingsEditor(project)
         editor.resetFrom(runConfig)
 
-        val compileModeField = LatexSettingsEditor::class.java.getDeclaredField("latexmkCompileMode")
+        val compileModeField = LegacyLatexSettingsEditor::class.java.getDeclaredField("latexmkCompileMode")
         compileModeField.isAccessible = true
         @Suppress("UNCHECKED_CAST")
         val compileMode = compileModeField.get(editor) as com.intellij.openapi.ui.ComboBox<LatexmkCompileMode>
@@ -208,10 +215,10 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         runConfig.compiler = LatexCompiler.LATEXMK
         runConfig.latexmkCompileMode = LatexmkCompileMode.PDFLATEX_PDF
 
-        val editor = LatexSettingsEditor(project)
+        val editor = LegacyLatexSettingsEditor(project)
         editor.resetFrom(runConfig)
 
-        val compileModeField = LatexSettingsEditor::class.java.getDeclaredField("latexmkCompileMode")
+        val compileModeField = LegacyLatexSettingsEditor::class.java.getDeclaredField("latexmkCompileMode")
         compileModeField.isAccessible = true
         @Suppress("UNCHECKED_CAST")
         val compileMode = compileModeField.get(editor) as com.intellij.openapi.ui.ComboBox<LatexmkCompileMode>
@@ -237,10 +244,10 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         runConfig.compiler = LatexCompiler.LATEXMK
         runConfig.latexmkCompileMode = LatexmkCompileMode.AUTO
 
-        val editor = LatexSettingsEditor(project)
+        val editor = LegacyLatexSettingsEditor(project)
         editor.resetFrom(runConfig)
 
-        val mainFileField = LatexSettingsEditor::class.java.getDeclaredField("mainFile")
+        val mainFileField = LegacyLatexSettingsEditor::class.java.getDeclaredField("mainFile")
         mainFileField.isAccessible = true
         val mainFileChooser = mainFileField.get(editor) as com.intellij.openapi.ui.TextFieldWithBrowseButton
         mainFileChooser.text = mainFile.virtualFile.name
@@ -279,10 +286,10 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         runConfig.mainFilePath = oldMain.virtualFile.name
         runConfig.executionState.psiFile = oldMain.createSmartPointer()
 
-        val editor = LatexSettingsEditor(project)
+        val editor = LegacyLatexSettingsEditor(project)
         editor.resetFrom(runConfig)
 
-        val mainFileField = LatexSettingsEditor::class.java.getDeclaredField("mainFile")
+        val mainFileField = LegacyLatexSettingsEditor::class.java.getDeclaredField("mainFile")
         mainFileField.isAccessible = true
         val mainFileChooser = mainFileField.get(editor) as com.intellij.openapi.ui.TextFieldWithBrowseButton
         mainFileChooser.text = newMain.virtualFile.name
@@ -303,7 +310,7 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         runConfig.compileTwice = true
         runConfig.executionState.isLastRunConfig = true
 
-        val editor = LatexSettingsEditor(project)
+        val editor = LegacyLatexSettingsEditor(project)
         editor.resetFrom(runConfig)
 
         assertTrue(runConfig.compileTwice)

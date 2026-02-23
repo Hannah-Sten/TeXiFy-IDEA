@@ -175,7 +175,7 @@ class LatexRunConfiguration(
             }
         }
 
-    override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = LatexSettingsEditor(project)
+    override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = LatexSettingsEditor(this)
 
     override fun createAdditionalTabComponents(
         manager: AdditionalTabComponentManager,
@@ -218,7 +218,7 @@ class LatexRunConfiguration(
         val desiredPipeline = LatexRunStepsMigrationPolicy.chooseExecutionPipeline(stepSchemaStatus)
         if (desiredPipeline == ExecutionPipelineMode.STEPS) {
             val plan = nl.hannahsten.texifyidea.run.latex.step.LatexRunStepPlanBuilder.build(stepSchemaTypes)
-            if (plan.steps.isNotEmpty() && isSupportedByCurrentStepEngine()) {
+            if (plan.steps.isNotEmpty()) {
                 if (plan.unsupportedTypes.isNotEmpty()) {
                     Log.warn("Unsupported compile-step types in schema: ${plan.unsupportedTypes.joinToString(", ")}")
                 }
@@ -226,9 +226,6 @@ class LatexRunConfiguration(
             }
             if (plan.steps.isEmpty()) {
                 Log.warn("Compile-step schema was present but no supported steps were found. Falling back to legacy pipeline.")
-            }
-            else {
-                Log.info("Compile-step schema is present, but current configuration is not yet supported by the step engine. Falling back to legacy pipeline.")
             }
         }
 
@@ -243,14 +240,6 @@ class LatexRunConfiguration(
         )
         state.addConsoleFilters(filter)
         return state
-    }
-
-    private fun isSupportedByCurrentStepEngine(): Boolean {
-        // Phase 2 safeguard: keep legacy behavior for configurations that still depend on auxiliary run-config chains.
-        if (compiler != LatexCompiler.LATEXMK) return false
-        if (compileTwice) return false
-        if (getAllAuxiliaryRunConfigs().isNotEmpty()) return false
-        return true
     }
 
     @Throws(InvalidDataException::class)

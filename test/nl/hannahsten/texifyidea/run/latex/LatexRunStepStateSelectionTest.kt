@@ -47,7 +47,7 @@ class LatexRunStepStateSelectionTest : BasePlatformTestCase() {
         assertTrue(state is LatexCommandLineState)
     }
 
-    fun testGetStateFallsBackToLegacyWhenConfigNotYetSupportedByStepEngine() {
+    fun testGetStateUsesStepRunStateForNonLatexmkWhenNoLegacyBridgeStepIsPresent() {
         val runConfig = LatexRunConfiguration(
             myFixture.project,
             LatexRunConfigurationProducer().configurationFactory,
@@ -63,6 +63,25 @@ class LatexRunStepStateSelectionTest : BasePlatformTestCase() {
 
         val state = runConfig.getState(executor, environment)
 
-        assertTrue(state is LatexCommandLineState)
+        assertTrue(state is LatexStepRunState)
+    }
+
+    fun testGetStateUsesStepRunStateWhenPlanContainsLegacyBridgeStep() {
+        val runConfig = LatexRunConfiguration(
+            myFixture.project,
+            LatexRunConfigurationProducer().configurationFactory,
+            "Test run config"
+        )
+        runConfig.compiler = LatexCompiler.PDFLATEX
+        runConfig.stepSchemaStatus = StepSchemaReadStatus.PARSED
+        runConfig.stepSchemaTypes = listOf("compile-latex", "legacy-bibtex")
+
+        val environment = mockk<ExecutionEnvironment>(relaxed = true)
+        every { environment.project } returns project
+        val executor = mockk<Executor>(relaxed = true)
+
+        val state = runConfig.getState(executor, environment)
+
+        assertTrue(state is LatexStepRunState)
     }
 }
