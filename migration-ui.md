@@ -170,7 +170,7 @@
 
 ### Phase 5：编译序列碎片与拖拽排序
 
-- 状态：`TODO`
+- 状态：`DONE`
 - 目标：支持可组合步骤与排序（核心体验）。
 - 任务：
   - 引入 `CompileSequenceFragment` 与可视化 step pills
@@ -181,7 +181,7 @@
 
 ### Phase 6：高级步骤与自动推断
 
-- 状态：`TODO`
+- 状态：`DONE`
 - 目标：恢复并升级旧分支中的自动化推断能力。
 - 任务：
   - 迁移 bibliography step 的 `createIfRequired` 逻辑（含 biber/bibtex 推断）
@@ -230,8 +230,8 @@
 - [x] Phase 2: 序列化兼容
 - [x] Phase 3: 旧能力桥接
 - [x] Phase 4: Fragment UI 外壳
-- [ ] Phase 5: 序列碎片与拖拽
-- [ ] Phase 6: 自动推断与高级步骤
+- [x] Phase 5: 序列碎片与拖拽
+- [x] Phase 6: 自动推断与高级步骤
 - [ ] Phase 7: 清理与收口
 
 ## 更新日志
@@ -277,3 +277,14 @@
   - 迁移基础碎片：compiler、main file、compiler arguments、working directory、environment variables。
   - 保留 `LegacyLatexSettingsEditor` 作为可选“Advanced options (legacy)”碎片，确保高级配置在过渡期可继续编辑。
   - 新增编辑器切换测试，原有表单行为测试改为验证 `LegacyLatexSettingsEditor`。
+- 2026-02-23（Phase 5 完成）
+  - 新增 `LatexCompileSequenceComponent` / `LatexCompileSequenceFragment`，支持步骤添加、删除、拖拽重排与双击改类型。
+  - 编译序列碎片直接写回 `stepSchemaTypes`，并在应用配置时将 `stepSchemaStatus` 标记为 `PARSED`。
+  - 对无显式 schema 的配置，序列碎片默认按 legacy 字段推断步骤顺序（含 aux 与 `compileTwice`）。
+  - 新增 `LatexCompileSequenceComponentTest` 验证步骤 schema 写回行为。
+- 2026-02-23（Phase 6 完成）
+  - 新增 `LatexRunStepAutoInference`：在步骤执行前按文档内容自动补齐必要中间步骤（`legacy-bibtex` / `pythontex-command` / `makeglossaries-command` / `xindy-command`），并在需要时自动补一个后置 `latex-compile`。
+  - `legacy-bibtex` 步骤执行时，若无现成 bib run config，会按旧逻辑自动生成后执行，等效迁移 `createIfRequired` 思路。
+  - 新增 `CommandLineRunStep` 与 `CommandLineRunStepParser`，命令行参数解析改用 `ParametersListUtil.parse`，不再使用简单空格切分。
+  - 引入 pythontex/makeglossaries/xindy 三个内置模板步骤 provider，并接入步骤 registry 与 UI step 描述。
+  - 新增 `LatexRunStepAutoInferenceTest`、`CommandLineRunStepParserTest`，并扩展迁移策略测试覆盖新模板步骤别名映射。

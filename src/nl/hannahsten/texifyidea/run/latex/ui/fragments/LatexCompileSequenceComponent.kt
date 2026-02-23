@@ -1,0 +1,300 @@
+package nl.hannahsten.texifyidea.run.latex.ui.fragments
+
+import com.intellij.execution.ui.TagButton
+import com.intellij.icons.AllIcons
+import com.intellij.ide.DataManager
+import com.intellij.ide.dnd.DnDAction
+import com.intellij.ide.dnd.DnDDragStartBean
+import com.intellij.ide.dnd.DnDEvent
+import com.intellij.ide.dnd.DnDManager
+import com.intellij.ide.dnd.DnDSource
+import com.intellij.ide.dnd.DnDTarget
+import com.intellij.openapi.Disposable
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.ui.popup.JBPopupFactory
+import com.intellij.openapi.util.Conditions
+import com.intellij.openapi.util.Disposer
+import com.intellij.openapi.wm.IdeFocusManager
+import com.intellij.ui.InplaceButton
+import com.intellij.ui.components.labels.LinkLabel
+import com.intellij.util.ui.JBUI
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.StepSchemaReadStatus
+import java.awt.Dimension
+import java.awt.FlowLayout
+import java.awt.Point
+import java.awt.Rectangle
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseEvent
+import javax.swing.Box
+import javax.swing.BoxLayout
+import javax.swing.JButton
+import javax.swing.JComponent
+import javax.swing.JLabel
+import javax.swing.JLayeredPane
+import javax.swing.JPanel
+
+internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
+    JPanel(),
+    DnDTarget,
+    Disposable {
+
+    private val dropFirst = JLabel(AllIcons.General.DropPlace).apply {
+        border = JBUI.Borders.empty()
+        isVisible = false
+    }
+
+    private val addButton: InplaceButton = InplaceButton("Add step", AllIcons.General.Add) {
+        // InplaceButton passes MouseEvent as ActionEvent source, so always anchor to the button itself.
+        showTypeSelectionPopup(addButton, ::addStep)
+    }
+
+    private val addPanel = JPanel().apply {
+        border = JBUI.Borders.emptyRight(5)
+        add(addButton)
+    }
+
+    private val addLabel = LinkLabel<Any>("Add step", null) { source, _ ->
+        showTypeSelectionPopup(source, ::addStep)
+    }.apply {
+        border = JBUI.Borders.emptyRight(5)
+    }
+
+    private val stepButtons = mutableListOf<StepButton>()
+
+    private lateinit var runConfiguration: LatexRunConfiguration
+
+    var changeListener: () -> Unit = {}
+
+    init {
+        Disposer.register(parentDisposable, this)
+        layout = BoxLayout(this, BoxLayout.Y_AXIS)
+        border = JBUI.Borders.empty(4, 0)
+        add(Box.createVerticalStrut(30))
+        add(
+            JPanel(FlowLayout(FlowLayout.CENTER, 0, 0)).apply {
+                add(dropFirst)
+                preferredSize = dropFirst.preferredSize
+                alignmentX = LEFT_ALIGNMENT
+            }
+        )
+        DnDManager.getInstance().registerTarget(this, this, this)
+    }
+
+    private fun buildPanel() {
+        remove(addPanel)
+        remove(addLabel)
+        stepButtons.forEach { stepButton ->
+            stepButton.alignmentX = LEFT_ALIGNMENT
+            add(stepButton)
+        }
+        addPanel.alignmentX = LEFT_ALIGNMENT
+        addLabel.alignmentX = LEFT_ALIGNMENT
+        add(addPanel)
+        add(addLabel)
+        addLabel.isVisible = stepButtons.none { it.isVisible }
+        revalidate()
+        repaint()
+    }
+
+    private fun addStep(type: String) {
+        stepButtons.add(StepButton(type))
+        buildPanel()
+        changeListener()
+    }
+
+    private fun showTypeSelectionPopup(anchor: JComponent, onSelected: (String) -> Unit) {
+        val group = DefaultActionGroup()
+
+        for (type in LatexStepUiSupport.availableStepTypes()) {
+            group.add(AddStepAction(type, onSelected))
+        }
+
+        JBPopupFactory.getInstance().createActionGroupPopup(
+            "Add New Step",
+            group,
+            DataManager.getInstance().getDataContext(anchor),
+            false,
+            false,
+            false,
+            null,
+            -1,
+            Conditions.alwaysTrue()
+        ).showUnderneathOf(anchor)
+    }
+
+    fun resetEditorFrom(configuration: LatexRunConfiguration) {
+        this.runConfiguration = configuration
+        stepButtons.forEach { remove(it) }
+        stepButtons.clear()
+
+        val stepTypes = configuration.stepSchemaTypes.ifEmpty {
+            LatexStepUiSupport.inferStepTypesFromLegacyConfiguration(configuration)
+        }
+        stepTypes.forEach { stepButtons.add(StepButton(it)) }
+
+        buildPanel()
+    }
+
+    fun applyEditorTo(configuration: LatexRunConfiguration) {
+        stepButtons.removeAll { !it.isVisible }
+        configuration.stepSchemaTypes = stepButtons.map { it.stepType }
+        configuration.stepSchemaStatus = StepSchemaReadStatus.PARSED
+    }
+
+    override fun update(event: DnDEvent): Boolean {
+        val buttonToReplace = findButtonToReplace(event)
+        if (buttonToReplace == null) {
+            stepButtons.forEach { it.showDropPlace(false) }
+            dropFirst.isVisible = false
+            event.isDropPossible = false
+            return true
+        }
+
+        val dropButton = findDropButton(buttonToReplace, event)
+        stepButtons.forEach { it.showDropPlace(it == dropButton) }
+        dropFirst.isVisible = dropButton == null
+        event.isDropPossible = true
+
+        return false
+    }
+
+    override fun drop(event: DnDEvent) {
+        val (index, _) = findButtonToReplace(event) ?: return
+        val droppedButton = event.attachedObject as? StepButton ?: return
+
+        stepButtons.remove(droppedButton)
+        stepButtons.add(index, droppedButton)
+        buildPanel()
+        changeListener()
+        IdeFocusManager.getInstance(runConfiguration.project).requestFocus(droppedButton, false)
+    }
+
+    override fun cleanUpOnLeave() {
+        stepButtons.forEach { it.showDropPlace(false) }
+        dropFirst.isVisible = false
+    }
+
+    private fun findButtonToReplace(event: DnDEvent): IndexedValue<StepButton>? {
+        if (event.attachedObject !is StepButton) {
+            return null
+        }
+
+        val area = Rectangle(event.point.x - 5, event.point.y - 5, 10, 10)
+        val indexedSteps = stepButtons.withIndex()
+        val intersected = indexedSteps.find { (_, button) ->
+            button.isVisible && button.bounds.intersects(area)
+        } ?: return null
+
+        val (index, intersectedButton) = intersected
+        if (intersectedButton == event.attachedObject) {
+            return null
+        }
+
+        // In vertical mode we insert before/after based on whether pointer is on upper/lower half.
+        val upperHalf = intersectedButton.bounds.centerY > event.point.y
+        val replaceTarget = if (index < stepButtons.indexOf(event.attachedObject)) {
+            if (!upperHalf) {
+                indexedSteps.find { (i, button) -> button.isVisible && i > index }
+            }
+            else {
+                intersected
+            }
+        }
+        else if (upperHalf) {
+            indexedSteps.findLast { (i, button) -> button.isVisible && i < index }
+        }
+        else {
+            intersected
+        }
+
+        return if (replaceTarget?.value == event.attachedObject) null else replaceTarget
+    }
+
+    private fun findDropButton(replaceButton: IndexedValue<StepButton>, event: DnDEvent): StepButton? = if (replaceButton.index > stepButtons.indexOf(event.attachedObject)) {
+        replaceButton.value
+    }
+    else {
+        stepButtons.withIndex()
+            .findLast { (i, button) -> button.isVisible && i < replaceButton.index }
+            ?.value
+    }
+
+    override fun dispose() {
+    }
+
+    private inner class StepButton(stepType: String) : TagButton("", { changeListener() }), DnDSource {
+
+        var stepType: String = stepType
+            private set
+
+        private var dropPlace: JLabel? = null
+
+        init {
+            Disposer.register(this@LatexCompileSequenceComponent, this)
+            dropPlace = JLabel(AllIcons.General.DropPlace)
+            add(dropPlace, JLayeredPane.DRAG_LAYER)
+            dropPlace?.isVisible = false
+
+            updateFromStepType()
+
+            myButton.addMouseListener(object : MouseAdapter() {
+                override fun mouseClicked(e: MouseEvent) {
+                    if (e.clickCount == 2) {
+                        showTypeSelectionPopup(myButton) { selectedType ->
+                            this@StepButton.stepType = selectedType
+                            updateFromStepType()
+                            changeListener()
+                        }
+                    }
+                }
+            })
+
+            DnDManager.getInstance().registerSource(this, myButton, this)
+            layoutButtons()
+        }
+
+        private fun updateFromStepType() {
+            updateButton(LatexStepUiSupport.description(stepType), LatexStepUiSupport.icon(stepType))
+            myButton.toolTipText = "Double-click to change step type. Drag and drop to reorder."
+        }
+
+        override fun layoutButtons() {
+            super.layoutButtons()
+
+            val indicator = dropPlace ?: return
+            val bounds = myButton.bounds
+            val size = indicator.preferredSize
+            val gap = JBUI.scale(2)
+            preferredSize = Dimension(bounds.width + size.width + 2 * gap, bounds.height)
+            indicator.setBounds(
+                (bounds.maxX + gap).toInt(),
+                bounds.y + (bounds.height - size.height) / 2,
+                size.width,
+                size.height
+            )
+        }
+
+        override fun canStartDragging(action: DnDAction?, dragOrigin: Point): Boolean = true
+
+        override fun startDragging(action: DnDAction?, dragOrigin: Point): DnDDragStartBean = DnDDragStartBean(this)
+
+        fun showDropPlace(show: Boolean) {
+            dropPlace?.isVisible = show
+        }
+
+        fun getButton(): JButton = myButton
+    }
+
+    private class AddStepAction(
+        private val type: String,
+        private val onSelected: (String) -> Unit,
+    ) : AnAction(LatexStepUiSupport.description(type), null, LatexStepUiSupport.icon(type)) {
+
+        override fun actionPerformed(e: AnActionEvent) {
+            onSelected(type)
+        }
+    }
+}

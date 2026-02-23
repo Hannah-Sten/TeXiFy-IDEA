@@ -7,6 +7,9 @@ internal object LatexRunStepProviders {
         LegacyBibtexRunStepProvider,
         LegacyMakeindexRunStepProvider,
         LegacyExternalToolRunStepProvider,
+        PythontexCommandRunStepProvider,
+        MakeglossariesCommandRunStepProvider,
+        XindyCommandRunStepProvider,
         PdfViewerRunStepProvider,
     )
 

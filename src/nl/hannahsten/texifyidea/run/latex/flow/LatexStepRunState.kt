@@ -11,8 +11,11 @@ import com.intellij.execution.runners.ProgramRunner
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import nl.hannahsten.texifyidea.run.latex.LatexExecutionStateInitializer
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepAutoInference
+import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepPlanBuilder
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepContext
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepPlan
+import nl.hannahsten.texifyidea.util.Log
 
 internal class LatexStepRunState(
     private val runConfig: LatexRunConfiguration,
@@ -27,7 +30,18 @@ internal class LatexStepRunState(
         val mainFile = runConfig.executionState.resolvedMainFile
             ?: throw ExecutionException("Main file cannot be resolved")
         val context = LatexRunStepContext(runConfig, environment, runConfig.executionState, mainFile)
-        val handlers = plan.steps.map { step -> step.createProcess(context) }
+
+        val baseTypes = plan.steps.map { it.id }
+        val effectiveTypes = LatexRunStepAutoInference.augmentStepTypes(runConfig, mainFile, baseTypes)
+        if (effectiveTypes != baseTypes) {
+            Log.debug("Auto-inferred compile-step sequence: ${effectiveTypes.joinToString(" -> ")}")
+        }
+        val effectivePlan = LatexRunStepPlanBuilder.build(effectiveTypes)
+        if (effectivePlan.unsupportedTypes.isNotEmpty()) {
+            Log.warn("Unsupported compile-step types after auto-inference: ${effectivePlan.unsupportedTypes.joinToString(", ")}")
+        }
+
+        val handlers = effectivePlan.steps.map { step -> step.createProcess(context) }
         if (handlers.isEmpty()) {
             throw ExecutionException("No executable steps found in compile-step schema.")
         }

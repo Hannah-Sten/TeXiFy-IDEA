@@ -7,6 +7,8 @@ import com.intellij.execution.ui.RunConfigurationFragmentedEditor
 import com.intellij.execution.ui.SettingsEditorFragment
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.ui.fragments.LatexBasicFragments
+import nl.hannahsten.texifyidea.run.latex.ui.fragments.LatexCompileSequenceComponent
+import nl.hannahsten.texifyidea.run.latex.ui.fragments.LatexCompileSequenceFragment
 
 class LatexSettingsEditor(settings: LatexRunConfiguration) : RunConfigurationFragmentedEditor<LatexRunConfiguration>(settings) {
 
@@ -16,6 +18,7 @@ class LatexSettingsEditor(settings: LatexRunConfiguration) : RunConfigurationFra
         val fragments = mutableListOf<SettingsEditorFragment<LatexRunConfiguration, *>>()
 
         fragments.addAll(BeforeRunFragment.createGroup())
+        fragments.add(LatexCompileSequenceFragment(LatexCompileSequenceComponent(this)))
         fragments.add(CommonParameterFragments.createHeader(latexGroupName))
         fragments.add(LatexBasicFragments.createCompilerFragment())
         fragments.add(LatexBasicFragments.createMainFileFragment(project))

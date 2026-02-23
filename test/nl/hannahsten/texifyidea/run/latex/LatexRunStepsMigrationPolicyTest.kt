@@ -118,9 +118,21 @@ class LatexRunStepsMigrationPolicyTest : BasePlatformTestCase() {
         assertTrue(plan.steps[2] is LegacyExternalToolRunStep)
     }
 
+    fun testStepPlanBuilderMapsTemplateStepAliases() {
+        val plan = LatexRunStepPlanBuilder.build(listOf("pythontex", "makeglossaries", "xindy"))
+
+        assertEquals(3, plan.steps.size)
+        assertEquals("pythontex-command", plan.steps[0].id)
+        assertEquals("makeglossaries-command", plan.steps[1].id)
+        assertEquals("xindy-command", plan.steps[2].id)
+    }
+
     fun testStepProviderRegistryFindsAliasesCaseInsensitive() {
         assertNotNull(LatexRunStepProviders.find("compile-latex"))
         assertNotNull(LatexRunStepProviders.find("LATEX-COMPILE"))
         assertNotNull(LatexRunStepProviders.find("Open-PDF"))
+        assertNotNull(LatexRunStepProviders.find("PYTHONTEX"))
+        assertNotNull(LatexRunStepProviders.find("makeglossaries"))
+        assertNotNull(LatexRunStepProviders.find("TexIndy"))
     }
 }
