@@ -24,19 +24,19 @@ internal abstract class AbstractStepFragmentedEditor<TStep : LatexStepRunConfigu
         @NlsContexts.Tooltip hint: String? = null,
         actionHint: String? = null,
     ): SettingsEditorFragment<StepFragmentedState, C> {
-        val fragment = SettingsEditorFragment(
+        val fragment = SettingsEditorFragment<StepFragmentedState, C>(
             id,
             name,
             null,
             component,
             0,
-            BiConsumer<StepFragmentedState, C> { state, comp ->
+            BiConsumer { state, comp ->
                 withSelectedStep(state) { step -> reset(step, comp) }
             },
-            BiConsumer<StepFragmentedState, C> { state, comp ->
+            BiConsumer { state, comp ->
                 withSelectedStep(state) { step -> apply(step, comp) }
             },
-            Predicate<StepFragmentedState> { state ->
+            Predicate { state ->
                 withSelectedStep(state) { step -> initiallyVisible(step) }
             }
         )
