@@ -10,17 +10,23 @@ internal object MakeglossariesCommandRunStepProvider : LatexRunStepProvider {
 
     override val aliases: Set<String> = setOf(
         type,
-        "makeglossaries-command",
-        "makeglossaries",
+        "makeglossaries"
     )
 
     override fun create(stepConfig: LatexStepRunConfigurationOptions): LatexRunStep = CommandLineRunStep(
         configId = stepConfig.id,
         id = type,
         commandLineSupplier = { context ->
-            (stepConfig as? MakeglossariesStepOptions)?.commandLine
-                ?.takeIf(String::isNotBlank)
-                ?: "makeglossaries ${context.mainFile.nameWithoutExtension}"
+            val options = stepConfig as? MakeglossariesStepOptions
+                ?: error("Expected MakeglossariesStepOptions for $type, but got ${stepConfig::class.simpleName}")
+            val executable = options.executable?.trim().takeUnless { it.isNullOrBlank() } ?: "makeglossaries"
+            val arguments = options.arguments?.trim().takeUnless { it.isNullOrBlank() } ?: context.mainFile.nameWithoutExtension
+            "$executable $arguments"
+        },
+        workingDirectorySupplier = { context ->
+            val options = stepConfig as? MakeglossariesStepOptions
+                ?: error("Expected MakeglossariesStepOptions for $type, but got ${stepConfig::class.simpleName}")
+            CommandLineRunStep.resolveWorkingDirectory(context, options.workingDirectoryPath)
         },
     )
 }

@@ -2,7 +2,12 @@ package nl.hannahsten.texifyidea.run.latex.ui.fragments
 
 import com.intellij.execution.ui.FragmentedSettingsEditor
 import com.intellij.execution.ui.SettingsEditorFragment
+import com.intellij.openapi.fileChooser.FileChooserDescriptor
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.ui.LabeledComponent
+import com.intellij.openapi.ui.TextBrowseFolderListener
+import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.util.NlsContexts
 import nl.hannahsten.texifyidea.run.latex.LatexStepRunConfigurationOptions
 import java.util.function.BiConsumer
@@ -48,6 +53,16 @@ internal abstract class AbstractStepFragmentedEditor<TStep : LatexStepRunConfigu
     }
 
     protected abstract fun selectedStep(state: StepFragmentedState): TStep
+
+    protected fun createDirectoryField(project: Project, title: String): TextFieldWithBrowseButton = TextFieldWithBrowseButton().apply {
+        addBrowseFolderListener(
+            TextBrowseFolderListener(
+                FileChooserDescriptor(false, true, false, false, false, false)
+                    .withTitle(title)
+                    .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules.toSet().toTypedArray())
+            )
+        )
+    }
 
     protected fun applyTooltip(component: JComponent, tooltip: String) {
         component.toolTipText = tooltip

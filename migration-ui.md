@@ -295,10 +295,18 @@
 - [x] Phase 8: 三段式 UI 与步骤设置面板
 - [x] Phase 9: Step-Based Tree Log Tab
 - [x] Phase 9.1: Step Log 收口（唯一输出页签 + 根节点汇总输出）
-- [ ] Phase 10: `LatexRunConfiguration` 结构化重构
+- [x] Phase 10: `LatexRunConfiguration` 结构化重构
+- [x] Phase 11: `common + steps` 执行/UI/settings 收口
 
 ## 更新日志
 
+- 2026-02-24（Phase 11 收口）
+  - 执行链补齐 makeindex/bib2gls 旧语义：新增 `StepArtifactSync`，在步骤执行前后做依赖拷贝与产物回填，`FileMagic.indexFileExtensions` 与 `bib2glsDependenciesExtensions` 恢复为有效执行路径的一部分。
+  - `MakeindexRunStep` 恢复旧命令生成规则（`name`/target basename、`xindy` 的 `.idx`、`-o` 覆盖时不追加目标文件）。
+  - `BibtexStepOptions` / `MakeindexStepOptions` / `ExternalToolStepOptions` / `PythontexStepOptions` / `MakeglossariesStepOptions` / `XindyStepOptions` 新增实例级 working directory 等字段，并接入执行层优先解析。
+  - `Step settings` 全覆盖：新增 `BibtexStepFragmentedEditor`、`MakeindexStepFragmentedEditor`、`ExternalToolStepFragmentedEditor`、`PythontexStepFragmentedEditor`、`MakeglossariesStepFragmentedEditor`、`XindyStepFragmentedEditor`，不再常态落入 unsupported。
+  - 清理 legacy 语义命名：`Legacy*RunStepProvider` 改名为中性 provider；删除未使用的旧 `RunConfigurationPanel` 入口。
+  - 新增执行与 UI 回归测试：`StepArtifactSyncTest`、`MakeindexRunStepTest`，并扩展 `LatexStepSettingsComponentTest` 覆盖全部 step 卡片路由。
 - 2026-02-22
   - 初始化迁移文档。
   - 基于 `run-config-ui` 和 `new-ui` 的结构差异，确定“先模型、后 UI、最后清理”的迁移顺序。

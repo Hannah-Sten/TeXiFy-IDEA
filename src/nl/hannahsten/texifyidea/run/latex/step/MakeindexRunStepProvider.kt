@@ -4,13 +4,12 @@ import nl.hannahsten.texifyidea.run.latex.LatexStepRunConfigurationOptions
 import nl.hannahsten.texifyidea.run.latex.LatexStepType
 import nl.hannahsten.texifyidea.run.latex.MakeindexStepOptions
 
-internal object LegacyMakeindexRunStepProvider : LatexRunStepProvider {
+internal object MakeindexRunStepProvider : LatexRunStepProvider {
 
     override val type: String = LatexStepType.MAKEINDEX
 
     override val aliases: Set<String> = setOf(
         type,
-        "legacy-makeindex",
         "index",
         "makeindex-step",
     )

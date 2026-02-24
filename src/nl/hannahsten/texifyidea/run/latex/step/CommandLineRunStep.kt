@@ -3,6 +3,8 @@ package nl.hannahsten.texifyidea.run.latex.step
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.util.ProgramParametersConfigurator
+import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
+import nl.hannahsten.texifyidea.run.latex.LatexPathResolver
 import nl.hannahsten.texifyidea.run.common.createCompilationHandler
 import java.nio.file.Path
 
@@ -35,6 +37,15 @@ internal class CommandLineRunStep(
     }
 
     companion object {
+
+        fun resolveWorkingDirectory(context: LatexRunStepContext, configuredPath: String?): Path? {
+            val configured = configuredPath
+                ?.trim()
+                ?.takeIf(String::isNotBlank)
+                ?.let(::pathOrNull)
+                ?.let { LatexPathResolver.resolve(it, context.mainFile, context.environment.project) }
+            return configured ?: defaultWorkingDirectory(context)
+        }
 
         fun defaultWorkingDirectory(context: LatexRunStepContext): Path? = context.executionState.resolvedAuxDir?.let { Path.of(it.path) }
             ?: context.executionState.resolvedOutputDir?.let { Path.of(it.path) }

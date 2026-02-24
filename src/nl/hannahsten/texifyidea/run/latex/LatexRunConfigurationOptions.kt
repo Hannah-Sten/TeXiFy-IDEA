@@ -214,6 +214,8 @@ class BibtexStepOptions : LatexStepRunConfigurationOptions() {
     var bibliographyCompiler by enum(BibliographyCompiler.BIBTEX)
     var compilerPath by string(null)
     var compilerArguments by string(null)
+    var workingDirectoryPath by string(null)
+    var beforeRunCommand by string(null)
 
     override fun deepCopy(): LatexStepRunConfigurationOptions {
         val copied = BibtexStepOptions()
@@ -223,6 +225,8 @@ class BibtexStepOptions : LatexStepRunConfigurationOptions() {
         copied.bibliographyCompiler = bibliographyCompiler
         copied.compilerPath = compilerPath
         copied.compilerArguments = compilerArguments
+        copied.workingDirectoryPath = workingDirectoryPath
+        copied.beforeRunCommand = beforeRunCommand
         copied.copySelectedOptionsFrom(this)
         return copied
     }
@@ -235,6 +239,9 @@ class MakeindexStepOptions : LatexStepRunConfigurationOptions() {
 
     var program by enum(MakeindexProgram.MAKEINDEX)
     var commandLineArguments by string(null)
+    var workingDirectoryPath by string(null)
+    var targetBaseNameOverride by string(null)
+    var beforeRunCommand by string(null)
 
     override fun deepCopy(): LatexStepRunConfigurationOptions {
         val copied = MakeindexStepOptions()
@@ -243,6 +250,9 @@ class MakeindexStepOptions : LatexStepRunConfigurationOptions() {
         copied.type = type
         copied.program = program
         copied.commandLineArguments = commandLineArguments
+        copied.workingDirectoryPath = workingDirectoryPath
+        copied.targetBaseNameOverride = targetBaseNameOverride
+        copied.beforeRunCommand = beforeRunCommand
         copied.copySelectedOptionsFrom(this)
         return copied
     }
@@ -253,14 +263,20 @@ class ExternalToolStepOptions : LatexStepRunConfigurationOptions() {
 
     override var type: String = LatexStepType.EXTERNAL_TOOL
 
-    var commandLine by string(null)
+    var executable by string(null)
+    var arguments by string(null)
+    var workingDirectoryPath by string(null)
+    var beforeRunCommand by string(null)
 
     override fun deepCopy(): LatexStepRunConfigurationOptions {
         val copied = ExternalToolStepOptions()
         copied.id = id
         copied.enabled = enabled
         copied.type = type
-        copied.commandLine = commandLine
+        copied.executable = executable
+        copied.arguments = arguments
+        copied.workingDirectoryPath = workingDirectoryPath
+        copied.beforeRunCommand = beforeRunCommand
         copied.copySelectedOptionsFrom(this)
         return copied
     }
@@ -271,14 +287,20 @@ class PythontexStepOptions : LatexStepRunConfigurationOptions() {
 
     override var type: String = LatexStepType.PYTHONTEX
 
-    var commandLine by string(null)
+    var executable by string("pythontex")
+    var arguments by string(null)
+    var workingDirectoryPath by string(null)
+    var beforeRunCommand by string(null)
 
     override fun deepCopy(): LatexStepRunConfigurationOptions {
         val copied = PythontexStepOptions()
         copied.id = id
         copied.enabled = enabled
         copied.type = type
-        copied.commandLine = commandLine
+        copied.executable = executable
+        copied.arguments = arguments
+        copied.workingDirectoryPath = workingDirectoryPath
+        copied.beforeRunCommand = beforeRunCommand
         copied.copySelectedOptionsFrom(this)
         return copied
     }
@@ -289,14 +311,20 @@ class MakeglossariesStepOptions : LatexStepRunConfigurationOptions() {
 
     override var type: String = LatexStepType.MAKEGLOSSARIES
 
-    var commandLine by string(null)
+    var executable by string("makeglossaries")
+    var arguments by string(null)
+    var workingDirectoryPath by string(null)
+    var beforeRunCommand by string(null)
 
     override fun deepCopy(): LatexStepRunConfigurationOptions {
         val copied = MakeglossariesStepOptions()
         copied.id = id
         copied.enabled = enabled
         copied.type = type
-        copied.commandLine = commandLine
+        copied.executable = executable
+        copied.arguments = arguments
+        copied.workingDirectoryPath = workingDirectoryPath
+        copied.beforeRunCommand = beforeRunCommand
         copied.copySelectedOptionsFrom(this)
         return copied
     }
@@ -307,14 +335,20 @@ class XindyStepOptions : LatexStepRunConfigurationOptions() {
 
     override var type: String = LatexStepType.XINDY
 
-    var commandLine by string(null)
+    var executable by string("xindy")
+    var arguments by string(null)
+    var workingDirectoryPath by string(null)
+    var beforeRunCommand by string(null)
 
     override fun deepCopy(): LatexStepRunConfigurationOptions {
         val copied = XindyStepOptions()
         copied.id = id
         copied.enabled = enabled
         copied.type = type
-        copied.commandLine = commandLine
+        copied.executable = executable
+        copied.arguments = arguments
+        copied.workingDirectoryPath = workingDirectoryPath
+        copied.beforeRunCommand = beforeRunCommand
         copied.copySelectedOptionsFrom(this)
         return copied
     }

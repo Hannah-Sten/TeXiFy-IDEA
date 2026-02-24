@@ -9,8 +9,7 @@ internal object StepMessageParserFactory {
         LatexStepType.LATEX_COMPILE,
         LatexStepType.LATEXMK_COMPILE -> LatexStepMessageParserSession(mainFile)
 
-        LatexStepType.BIBTEX,
-        "legacy-bibtex" -> BibtexStepMessageParserSession(mainFile)
+        LatexStepType.BIBTEX -> BibtexStepMessageParserSession(mainFile)
 
         else -> NoopStepMessageParser
     }

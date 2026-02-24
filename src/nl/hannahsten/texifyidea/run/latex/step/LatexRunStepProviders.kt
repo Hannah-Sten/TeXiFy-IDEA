@@ -5,9 +5,9 @@ internal object LatexRunStepProviders {
     val all: List<LatexRunStepProvider> = listOf(
         LatexCompileRunStepProvider,
         LatexmkCompileRunStepProvider,
-        LegacyBibtexRunStepProvider,
-        LegacyMakeindexRunStepProvider,
-        LegacyExternalToolRunStepProvider,
+        BibtexRunStepProvider,
+        MakeindexRunStepProvider,
+        ExternalToolRunStepProvider,
         PythontexCommandRunStepProvider,
         MakeglossariesCommandRunStepProvider,
         XindyCommandRunStepProvider,

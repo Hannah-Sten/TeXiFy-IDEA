@@ -16,9 +16,10 @@ internal class BibtexRunStep(
 
     @Throws(ExecutionException::class)
     override fun createProcess(context: LatexRunStepContext): ProcessHandler {
+        val workingDirectory = CommandLineRunStep.resolveWorkingDirectory(context, stepConfig.workingDirectoryPath)
         val command = mutableListOf(stepConfig.compilerPath ?: stepConfig.bibliographyCompiler.executableName)
         if (stepConfig.bibliographyCompiler.name == "BIBER") {
-            command += "--input-directory=${context.mainFile.parent.path}"
+            command += "--input-directory=${workingDirectory?.toString() ?: context.mainFile.parent.path}"
         }
         stepConfig.compilerArguments
             ?.takeIf(String::isNotBlank)
@@ -31,7 +32,7 @@ internal class BibtexRunStep(
             environment = context.environment,
             mainFile = context.mainFile,
             command = command,
-            workingDirectory = CommandLineRunStep.defaultWorkingDirectory(context),
+            workingDirectory = workingDirectory,
             expandMacrosEnvVariables = context.runConfig.expandMacrosEnvVariables,
             envs = context.runConfig.environmentVariables.envs,
             expandEnvValue = { value -> configurator.expandPathAndMacros(value, null, context.runConfig.project) ?: value },

@@ -14,6 +14,7 @@ import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepAutoInference
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepPlanBuilder
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepContext
 import nl.hannahsten.texifyidea.run.latex.step.LatexStepPresentation
+import nl.hannahsten.texifyidea.run.latex.step.StepArtifactSync
 import nl.hannahsten.texifyidea.run.latex.steplog.LatexStepLogTabComponent
 import nl.hannahsten.texifyidea.util.Log
 
@@ -55,7 +56,20 @@ internal class LatexStepRunState(
             throw ExecutionException("No executable steps found in compile-step schema.")
         }
 
-        val overallHandler = StepAwareSequentialProcessHandler(executions)
+        val stepsByConfigId = effectiveSteps.associateBy { it.id }
+        val artifactSync = StepArtifactSync(context, stepsByConfigId)
+        val overallHandler = StepAwareSequentialProcessHandler(
+            executions = executions,
+            lifecycleHooks = object : StepExecutionLifecycleHooks {
+                override fun beforeStep(execution: LatexStepExecution) {
+                    artifactSync.beforeStep(execution.configId)
+                }
+
+                override fun afterStep(execution: LatexStepExecution, exitCode: Int) {
+                    artifactSync.afterStep(execution.configId, exitCode)
+                }
+            },
+        )
         val stepLogConsole = LatexStepLogTabComponent(environment.project, mainFile, overallHandler)
 
         return DefaultExecutionResult(stepLogConsole, overallHandler)

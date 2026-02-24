@@ -14,12 +14,6 @@ internal object LatexStepPresentation {
         LatexStepType.MAKEGLOSSARIES to "Run makeglossaries",
         LatexStepType.XINDY to "Run xindy",
         LatexStepType.PDF_VIEWER to "Open PDF viewer",
-        "legacy-external-tool" to "Run external tool",
-        "legacy-makeindex" to "Run makeindex",
-        "legacy-bibtex" to "Run bibliography",
-        "pythontex-command" to "Run pythontex",
-        "makeglossaries-command" to "Run makeglossaries",
-        "xindy-command" to "Run xindy",
     )
 
     fun displayName(type: String): String = descriptions[type] ?: "Step: $type"

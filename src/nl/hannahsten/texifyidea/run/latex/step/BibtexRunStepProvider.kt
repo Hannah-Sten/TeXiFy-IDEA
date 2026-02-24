@@ -4,13 +4,12 @@ import nl.hannahsten.texifyidea.run.latex.BibtexStepOptions
 import nl.hannahsten.texifyidea.run.latex.LatexStepRunConfigurationOptions
 import nl.hannahsten.texifyidea.run.latex.LatexStepType
 
-internal object LegacyBibtexRunStepProvider : LatexRunStepProvider {
+internal object BibtexRunStepProvider : LatexRunStepProvider {
 
     override val type: String = LatexStepType.BIBTEX
 
     override val aliases: Set<String> = setOf(
         type,
-        "legacy-bibtex",
         "bibliography",
     )
 

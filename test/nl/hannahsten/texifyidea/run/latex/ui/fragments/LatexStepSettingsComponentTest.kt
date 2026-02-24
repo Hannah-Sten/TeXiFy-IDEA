@@ -65,7 +65,7 @@ class LatexStepSettingsComponentTest : BasePlatformTestCase() {
         val disposable = Disposer.newDisposable()
         try {
             val component = LatexStepSettingsComponent(disposable, project)
-            val runConfig = configWithSteps(BibtexStepOptions())
+            val runConfig = configWithSteps(ExternalToolStepOptions().apply { type = "unsupported-step" })
             val step = runConfig.configOptions.steps.first()
 
             component.resetEditorFrom(runConfig)
@@ -76,6 +76,30 @@ class LatexStepSettingsComponentTest : BasePlatformTestCase() {
         finally {
             Disposer.dispose(disposable)
         }
+    }
+
+    fun testShowsBibtexCardWhenBibtexStepIsSelected() {
+        assertCardForStep("bibtex", BibtexStepOptions())
+    }
+
+    fun testShowsMakeindexCardWhenMakeindexStepIsSelected() {
+        assertCardForStep("makeindex", MakeindexStepOptions())
+    }
+
+    fun testShowsExternalToolCardWhenExternalToolStepIsSelected() {
+        assertCardForStep("externalTool", ExternalToolStepOptions())
+    }
+
+    fun testShowsPythontexCardWhenPythontexStepIsSelected() {
+        assertCardForStep("pythontex", PythontexStepOptions())
+    }
+
+    fun testShowsMakeglossariesCardWhenMakeglossariesStepIsSelected() {
+        assertCardForStep("makeglossaries", MakeglossariesStepOptions())
+    }
+
+    fun testShowsXindyCardWhenXindyStepIsSelected() {
+        assertCardForStep("xindy", XindyStepOptions())
     }
 
     fun testResetApplyRoundTripPreservesCompileAndViewerSettings() {
@@ -145,5 +169,22 @@ class LatexStepSettingsComponentTest : BasePlatformTestCase() {
         "run config"
     ).apply {
         configOptions.steps = steps.map { it.deepCopy() }.toMutableList()
+    }
+
+    private fun assertCardForStep(expectedCardId: String, step: LatexStepRunConfigurationOptions) {
+        val disposable = Disposer.newDisposable()
+        try {
+            val component = LatexStepSettingsComponent(disposable, project)
+            val runConfig = configWithSteps(step)
+            val selected = runConfig.configOptions.steps.first()
+
+            component.resetEditorFrom(runConfig)
+            component.onStepSelectionChanged(0, selected.id, selected.type)
+
+            assertEquals(expectedCardId, component.currentCardId())
+        }
+        finally {
+            Disposer.dispose(disposable)
+        }
     }
 }
