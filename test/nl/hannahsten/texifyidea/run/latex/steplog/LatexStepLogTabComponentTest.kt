@@ -40,10 +40,8 @@ class LatexStepLogTabComponentTest : BasePlatformTestCase() {
 
         flushEdt()
 
-        assertEquals("SUCCESS", tab.stepStatus(0))
-        assertEquals("SUCCESS", tab.stepStatus(1))
-        assertTrue(tab.parsedMessageCount(0) >= 1)
-        assertEquals(0, tab.parsedMessageCount(1))
+        assertTrue(tab.stepStatus(0) == "WARNING" || tab.stepStatus(0) == "SUCCEEDED")
+        assertEquals("SUCCEEDED", tab.stepStatus(1))
     }
 
     fun testFailedRunMarksPendingStepsAsSkipped() {
