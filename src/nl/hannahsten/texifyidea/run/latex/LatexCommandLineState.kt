@@ -32,6 +32,9 @@ import nl.hannahsten.texifyidea.util.magic.PackageMagic
 /**
  * Run the run configuration: start the compile process and initiate forward search (when applicable).
  *
+ * Legacy fallback pipeline used when compile-step schema is missing or invalid.
+ * New run configurations should execute through [nl.hannahsten.texifyidea.run.latex.flow.LatexStepRunState].
+ *
  * @author Sten Wessel
  */
 open class LatexCommandLineState(environment: ExecutionEnvironment, private val runConfig: LatexRunConfiguration) : CommandLineState(environment) {

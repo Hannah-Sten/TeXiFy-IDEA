@@ -131,6 +131,9 @@ class LatexRunConfiguration(
     @Transient
     internal var stepSchemaTypes: List<String> = emptyList()
 
+    @Transient
+    internal var stepUiOptionIdsByType: MutableMap<String, MutableSet<String>> = mutableMapOf()
+
     /** Whether the pdf viewer should claim focus after compilation. */
     var requireFocus = true
 
@@ -431,6 +434,7 @@ class LatexRunConfiguration(
         cloned.executionState = LatexRunExecutionState()
         cloned.stepSchemaStatus = StepSchemaReadStatus.MISSING
         cloned.stepSchemaTypes = emptyList()
+        cloned.stepUiOptionIdsByType = mutableMapOf()
         return cloned
     }
 

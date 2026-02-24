@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.run.latex.ui.fragments
 
 import com.intellij.icons.AllIcons
+import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepProviders
 import javax.swing.Icon
@@ -9,6 +10,7 @@ internal object LatexStepUiSupport {
 
     private val knownDescriptions: Map<String, String> = mapOf(
         "latex-compile" to "Compile LaTeX",
+        "latexmk-compile" to "Compile with latexmk",
         "legacy-external-tool" to "Run external tool",
         "legacy-makeindex" to "Run makeindex",
         "legacy-bibtex" to "Run bibliography",
@@ -29,9 +31,14 @@ internal object LatexStepUiSupport {
 
     fun inferStepTypesFromLegacyConfiguration(runConfig: LatexRunConfiguration): List<String> {
         val inferred = mutableListOf<String>()
+        val compileType = when (runConfig.compiler) {
+            LatexCompiler.LATEXMK -> "latexmk-compile"
+            null -> null
+            else -> "latex-compile"
+        }
 
-        if (runConfig.compiler != null) {
-            inferred += "latex-compile"
+        if (compileType != null) {
+            inferred += compileType
         }
         if (runConfig.externalToolRunConfigs.isNotEmpty()) {
             inferred += "legacy-external-tool"
@@ -42,7 +49,7 @@ internal object LatexStepUiSupport {
         if (runConfig.bibRunConfigs.isNotEmpty()) {
             inferred += "legacy-bibtex"
         }
-        if (runConfig.compileTwice) {
+        if (runConfig.compileTwice && compileType == "latex-compile") {
             inferred += "latex-compile"
         }
         if (runConfig.pdfViewer != null || !runConfig.viewerCommand.isNullOrBlank()) {

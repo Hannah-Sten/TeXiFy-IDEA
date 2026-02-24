@@ -13,6 +13,7 @@ import nl.hannahsten.texifyidea.util.parser.usesBiber
 internal object LatexRunStepAutoInference {
 
     private const val LATEX_COMPILE = "latex-compile"
+    private const val LATEXMK_COMPILE = "latexmk-compile"
     private const val PDF_VIEWER = "pdf-viewer"
     private const val LEGACY_BIBTEX = "legacy-bibtex"
     private const val LEGACY_MAKEINDEX = "legacy-makeindex"
@@ -20,6 +21,7 @@ internal object LatexRunStepAutoInference {
     private const val PYTHONTEX_COMMAND = "pythontex-command"
     private const val MAKEGLOSSARIES_COMMAND = "makeglossaries-command"
     private const val XINDY_COMMAND = "xindy-command"
+    private val COMPILE_STEP_TYPES = setOf(LATEX_COMPILE, LATEXMK_COMPILE)
 
     fun augmentStepTypes(
         runConfig: LatexRunConfiguration,
@@ -82,7 +84,7 @@ internal object LatexRunStepAutoInference {
         mainFileText: String,
         packageNamesInText: Set<String>,
     ): Boolean {
-        if (LEGACY_BIBTEX in stepTypes || runConfig.compiler?.includesBibtex == true) {
+        if (LEGACY_BIBTEX in stepTypes || runConfig.compiler?.includesBibtex == true || LATEXMK_COMPILE in stepTypes) {
             return false
         }
         if (LatexLib.CITATION_STYLE_LANGUAGE in usedPackages || "citation-style-language" in packageNamesInText) {
@@ -129,7 +131,7 @@ internal object LatexRunStepAutoInference {
         usedPackages: Set<LatexLib>,
         packageNamesInText: Set<String>,
     ): Boolean {
-        if (runConfig.compiler?.includesMakeindex == true) {
+        if (runConfig.compiler?.includesMakeindex == true || LATEXMK_COMPILE in stepTypes) {
             return false
         }
         if (LEGACY_MAKEINDEX in stepTypes || MAKEGLOSSARIES_COMMAND in stepTypes) {
@@ -150,7 +152,7 @@ internal object LatexRunStepAutoInference {
         stepTypes: List<String>,
         mainFileText: String,
     ): Boolean {
-        if (runConfig.compiler?.includesMakeindex == true) {
+        if (runConfig.compiler?.includesMakeindex == true || LATEXMK_COMPILE in stepTypes) {
             return false
         }
         if (LEGACY_MAKEINDEX in stepTypes || XINDY_COMMAND in stepTypes) {
@@ -161,7 +163,7 @@ internal object LatexRunStepAutoInference {
     }
 
     private fun preferredAuxInsertIndex(stepTypes: List<String>): Int {
-        val firstCompileIndex = stepTypes.indexOfFirst { it == LATEX_COMPILE }
+        val firstCompileIndex = stepTypes.indexOfFirst { it in COMPILE_STEP_TYPES }
         val viewerIndex = stepTypes.indexOfFirst { it == PDF_VIEWER }.let { if (it < 0) stepTypes.size else it }
         return if (firstCompileIndex >= 0) {
             (firstCompileIndex + 1).coerceAtMost(viewerIndex)
@@ -173,18 +175,16 @@ internal object LatexRunStepAutoInference {
 
     private fun ensureCompileAfterAuxSteps(stepTypes: MutableList<String>, lastInsertedIndex: Int) {
         val hasCompileBeforeViewer = stepTypes.withIndex().any { (index, type) ->
-            index > lastInsertedIndex && type == LATEX_COMPILE
+            index > lastInsertedIndex && type in COMPILE_STEP_TYPES
         }
         if (hasCompileBeforeViewer) {
             return
         }
 
-        if (stepTypes.none { it == LATEX_COMPILE }) {
-            return
-        }
+        val followUpCompileType = stepTypes.firstOrNull { it in COMPILE_STEP_TYPES } ?: return
 
         val beforeViewer = stepTypes.indexOfFirst { it == PDF_VIEWER }.let { if (it < 0) stepTypes.size else it }
-        stepTypes.add(beforeViewer, LATEX_COMPILE)
+        stepTypes.add(beforeViewer, followUpCompileType)
     }
 
     private fun extractUsedPackageNames(mainFileText: String): Set<String> {

@@ -5,17 +5,19 @@ import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.util.ProgramParametersConfigurator
+import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.common.createCompilationHandler
 
-internal class LatexCompileRunStep : LatexRunStep {
-
-    override val id: String = "latex-compile"
+internal class LatexCompileRunStep(
+    override val id: String = "latex-compile",
+    private val compilerOverride: LatexCompiler? = null,
+) : LatexRunStep {
 
     @Throws(ExecutionException::class)
     override fun createProcess(context: LatexRunStepContext): ProcessHandler {
         val runConfig = context.runConfig
-        val compiler = runConfig.compiler ?: throw ExecutionException("No valid compiler specified.")
+        val compiler = compilerOverride ?: runConfig.compiler ?: throw ExecutionException("No valid compiler specified.")
         val command = compiler.getCommand(runConfig, context.environment.project)
             ?: throw ExecutionException("Compile command could not be created.")
         val programParamsConfigurator = ProgramParametersConfigurator()

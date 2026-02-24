@@ -9,23 +9,33 @@ import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.ui.fragments.LatexBasicFragments
 import nl.hannahsten.texifyidea.run.latex.ui.fragments.LatexCompileSequenceComponent
 import nl.hannahsten.texifyidea.run.latex.ui.fragments.LatexCompileSequenceFragment
+import nl.hannahsten.texifyidea.run.latex.ui.fragments.LatexStepSettingsComponent
+import nl.hannahsten.texifyidea.run.latex.ui.fragments.LatexStepSettingsFragment
 
 class LatexSettingsEditor(settings: LatexRunConfiguration) : RunConfigurationFragmentedEditor<LatexRunConfiguration>(settings) {
 
-    private val latexGroupName = "Compile LaTeX"
+    private val commonGroupName = "Common settings"
 
     override fun createRunFragments(): MutableList<SettingsEditorFragment<LatexRunConfiguration, *>> {
         val fragments = mutableListOf<SettingsEditorFragment<LatexRunConfiguration, *>>()
+        val compileSequenceComponent = LatexCompileSequenceComponent(this)
+        val stepSettingsComponent = LatexStepSettingsComponent(this, project)
+        compileSequenceComponent.onSelectionChanged = { index, type ->
+            stepSettingsComponent.onStepSelectionChanged(index, type)
+        }
+        compileSequenceComponent.onStepTypesChanged = { types ->
+            stepSettingsComponent.onStepTypesChanged(types)
+        }
 
-        fragments.addAll(BeforeRunFragment.createGroup())
-        fragments.add(LatexCompileSequenceFragment(LatexCompileSequenceComponent(this)))
-        fragments.add(CommonParameterFragments.createHeader(latexGroupName))
-        fragments.add(LatexBasicFragments.createCompilerFragment())
+        fragments.add(CommonParameterFragments.createHeader(commonGroupName))
         fragments.add(LatexBasicFragments.createMainFileFragment(project))
-        fragments.add(LatexBasicFragments.createCompilerArgumentsFragment(latexGroupName))
-        fragments.add(LatexBasicFragments.createWorkingDirectoryFragment(project))
-        fragments.add(LatexBasicFragments.createEnvironmentVariablesFragment(latexGroupName))
+        fragments.add(LatexBasicFragments.createWorkingDirectoryFragment(commonGroupName, project))
+        fragments.add(LatexBasicFragments.createPathDirectoriesFragment(commonGroupName, project))
+        fragments.add(LatexBasicFragments.createEnvironmentVariablesFragment(commonGroupName))
+        fragments.add(LatexCompileSequenceFragment(compileSequenceComponent))
+        fragments.add(LatexStepSettingsFragment(stepSettingsComponent))
         fragments.add(LatexBasicFragments.createLegacyAdvancedFragment(project))
+        fragments.addAll(BeforeRunFragment.createGroup())
         fragments.add(CommonTags.parallelRun())
 
         return fragments

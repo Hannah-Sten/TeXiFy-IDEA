@@ -48,10 +48,16 @@ internal object LatexRunConfigurationPersistence {
     private const val LATEXMK_CUSTOM_ENGINE_COMMAND = "latexmk-custom-engine-command"
     private const val LATEXMK_CITATION_TOOL = "latexmk-citation-tool"
     private const val LATEXMK_EXTRA_ARGUMENTS = "latexmk-extra-arguments"
+    private const val STEP_UI_OPTIONS = "step-ui-options"
+    private const val STEP_UI_STEP = "step"
+    private const val STEP_UI_OPTION = "option"
+    private const val ATTR_TYPE = "type"
+    private const val ATTR_ID = "id"
 
     fun readInto(runConfig: LatexRunConfiguration, element: Element) {
         runConfig.stepSchemaStatus = StepSchemaReadStatus.MISSING
         runConfig.stepSchemaTypes = emptyList()
+        runConfig.stepUiOptionIdsByType = mutableMapOf()
         val parent = element.getChild(TEXIFY_PARENT) ?: return
         val schemaStatus = LatexRunConfigurationSerializer.probeStepSchema(parent)
 
@@ -114,6 +120,7 @@ internal object LatexRunConfigurationPersistence {
             StepSchemaReadStatus.MISSING -> inferStepTypesFromLegacyConfiguration(runConfig)
             StepSchemaReadStatus.INVALID -> inferStepTypesFromLegacyConfiguration(runConfig)
         }
+        runConfig.stepUiOptionIdsByType = readStepUiOptionIds(parent)
     }
 
     fun writeFrom(runConfig: LatexRunConfiguration, element: Element) {
@@ -150,12 +157,64 @@ internal object LatexRunConfigurationPersistence {
             inferStepTypesFromLegacyConfiguration(runConfig)
         }
         LatexRunConfigurationSerializer.writeStepTypes(parent, stepTypes)
+        writeStepUiOptionIds(parent, runConfig.stepUiOptionIdsByType)
+    }
+
+    private fun readStepUiOptionIds(parent: Element): MutableMap<String, MutableSet<String>> {
+        val optionsParent = parent.getChild(STEP_UI_OPTIONS) ?: return mutableMapOf()
+        val supportedByType = StepUiOptionIds.supportedOptionIdsByType
+        val result = mutableMapOf<String, MutableSet<String>>()
+
+        for (stepElement in optionsParent.getChildren(STEP_UI_STEP)) {
+            val stepType = stepElement.getAttributeValue(ATTR_TYPE)?.trim()?.takeIf(String::isNotBlank) ?: continue
+            val allowedOptionIds = supportedByType[stepType] ?: continue
+            val optionIds = stepElement.getChildren(STEP_UI_OPTION)
+                .mapNotNull { it.getAttributeValue(ATTR_ID)?.trim()?.takeIf(String::isNotBlank) }
+                .filter { it in allowedOptionIds }
+                .toMutableSet()
+            if (optionIds.isNotEmpty()) {
+                result[stepType] = optionIds
+            }
+        }
+
+        return result
+    }
+
+    private fun writeStepUiOptionIds(parent: Element, optionIdsByType: Map<String, Set<String>>) {
+        if (optionIdsByType.isEmpty()) {
+            return
+        }
+
+        val supportedByType = StepUiOptionIds.supportedOptionIdsByType
+        val optionsParent = Element(STEP_UI_OPTIONS)
+        optionIdsByType.toSortedMap().forEach { (type, ids) ->
+            val allowedOptionIds = supportedByType[type] ?: return@forEach
+            val validIds = ids.filter { it in allowedOptionIds }.toSortedSet()
+            if (validIds.isEmpty()) {
+                return@forEach
+            }
+
+            val step = Element(STEP_UI_STEP).setAttribute(ATTR_TYPE, type)
+            validIds.forEach { id ->
+                step.addContent(Element(STEP_UI_OPTION).setAttribute(ATTR_ID, id))
+            }
+            optionsParent.addContent(step)
+        }
+
+        if (optionsParent.getChildren(STEP_UI_STEP).isNotEmpty()) {
+            parent.addContent(optionsParent)
+        }
     }
 
     private fun inferStepTypesFromLegacyConfiguration(runConfig: LatexRunConfiguration): List<String> {
         val inferred = mutableListOf<String>()
-        if (runConfig.compiler != null) {
-            inferred += "latex-compile"
+        val compileType = when (runConfig.compiler) {
+            LatexCompiler.LATEXMK -> "latexmk-compile"
+            null -> null
+            else -> "latex-compile"
+        }
+        if (compileType != null) {
+            inferred += compileType
         }
         if (runConfig.externalToolRunConfigs.isNotEmpty()) {
             inferred += "legacy-external-tool"
@@ -166,7 +225,7 @@ internal object LatexRunConfigurationPersistence {
         if (runConfig.bibRunConfigs.isNotEmpty()) {
             inferred += "legacy-bibtex"
         }
-        if (runConfig.compileTwice) {
+        if (runConfig.compileTwice && compileType == "latex-compile") {
             inferred += "latex-compile"
         }
         if (runConfig.pdfViewer != null || !runConfig.viewerCommand.isNullOrBlank()) {

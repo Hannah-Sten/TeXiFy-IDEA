@@ -29,14 +29,12 @@ import nl.hannahsten.texifyidea.run.latex.LatexCommandLineOptionsCache
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexPathResolver
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.latex.isInvalidJetBrainsBinPath
 import nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfigurationType
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCitationTool
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
 import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.SumatraViewer
-import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import java.awt.Cursor
 import java.awt.event.ItemEvent
 import java.awt.event.MouseAdapter
@@ -161,7 +159,7 @@ class LegacyLatexSettingsEditor(private var project: Project) : SettingsEditor<L
             }
         }
         updateCompilerSpecificVisibility(runConfiguration.compiler ?: PDFLATEX)
-        updateAuxDirVisibility(runConfiguration.compiler ?: PDFLATEX)
+        updateAuxDirVisibility()
 
         // Reset LaTeX distribution selection
         val selection = LatexDistributionSelection.fromDistributionType(runConfiguration.latexDistribution)
@@ -228,12 +226,6 @@ class LegacyLatexSettingsEditor(private var project: Project) : SettingsEditor<L
 
         runConfiguration.beforeRunCommand = beforeRunCommand.text
 
-        if (!isInvalidJetBrainsBinPath(outputPath.text)) {
-            runConfiguration.setFileOutputPath(outputPath.text)
-        }
-
-        auxilPath?.let { runConfiguration.setFileAuxilPath(it.text) }
-
         runConfiguration.workingDirectory = workingDirectory.text
             .takeUnless { it.isBlank() || it == LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER }
             ?.let { pathOrNull(it) }
@@ -264,15 +256,8 @@ class LegacyLatexSettingsEditor(private var project: Project) : SettingsEditor<L
         runConfiguration.latexDistribution = selectedDistribution?.distributionType
             ?: LatexDistributionType.MODULE_SDK
 
-        if (chosenCompiler == LatexCompiler.ARARA) {
-            outputPathRow.isVisible = false
-            outputFormatRow.isVisible = false
-        }
-        else {
-            outputPathRow.isVisible = true
-            outputFormatRow.isVisible = chosenCompiler != LatexCompiler.LATEXMK
-        }
-        updateAuxDirVisibility(chosenCompiler)
+        outputFormatRow.isVisible = chosenCompiler != LatexCompiler.LATEXMK && chosenCompiler != LatexCompiler.ARARA
+        updateAuxDirVisibility()
     }
 
     override fun createEditor(): JComponent {
@@ -407,7 +392,7 @@ class LegacyLatexSettingsEditor(private var project: Project) : SettingsEditor<L
         bindUiEvents()
         val initialCompiler = compiler.selectedItem as? LatexCompiler ?: PDFLATEX
         updateCompilerSpecificVisibility(initialCompiler)
-        updateAuxDirVisibility(initialCompiler)
+        updateAuxDirVisibility()
     }
 
     private fun bindUiEvents() {
@@ -420,7 +405,7 @@ class LegacyLatexSettingsEditor(private var project: Project) : SettingsEditor<L
             selectedCompiler.outputFormats.forEach { format -> outputFormat.addItem(format) }
             outputFormat.selectedItem = selectedCompiler.outputFormats.firstOrNull() ?: Format.PDF
             updateCompilerSpecificVisibility(selectedCompiler)
-            updateAuxDirVisibility(selectedCompiler)
+            updateAuxDirVisibility()
         }
     }
 
@@ -473,6 +458,9 @@ class LegacyLatexSettingsEditor(private var project: Project) : SettingsEditor<L
         )
         auxilPath = auxilPathField
         auxilPathRow = LabeledComponent.create(auxilPathField, "Directory for auxiliary files")
+        auxilPathField.isEnabled = false
+        auxilPathRow?.isVisible = false
+        auxilPathField.toolTipText = "Moved to the fragment-based editor (Modify options -> Auxiliary directory)."
         panel.add(auxilPathRow)
 
         val outputPathField = TextFieldWithBrowseButton()
@@ -488,6 +476,9 @@ class LegacyLatexSettingsEditor(private var project: Project) : SettingsEditor<L
         )
         outputPath = outputPathField
         outputPathRow = LabeledComponent.create(outputPath, "Directory for output files, you can use ${LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER} or ${LatexPathResolver.PROJECT_DIR_PLACEHOLDER} as placeholders:")
+        outputPath.isEnabled = false
+        outputPathRow.isVisible = false
+        outputPath.toolTipText = "Moved to the fragment-based editor (Modify options -> Output directory)."
         panel.add(outputPathRow)
     }
 
@@ -577,10 +568,7 @@ class LegacyLatexSettingsEditor(private var project: Project) : SettingsEditor<L
         latexmkComponents.forEach { it.isVisible = isLatexmk }
     }
 
-    private fun updateAuxDirVisibility(selectedCompiler: LatexCompiler) {
-        val visibleByMasterRule = LatexSdkUtil.isMiktexAvailable
-        val visibleByLatexmkOverride = selectedCompiler == LatexCompiler.LATEXMK
-        val visible = selectedCompiler != LatexCompiler.ARARA && (visibleByMasterRule || visibleByLatexmkOverride)
-        auxilPathRow?.isVisible = visible
+    private fun updateAuxDirVisibility() {
+        auxilPathRow?.isVisible = false
     }
 }

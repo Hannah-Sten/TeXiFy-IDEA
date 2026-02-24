@@ -5,7 +5,7 @@
 - 分支基线：`new-ui`
 - 参考分支：`run-config-ui`
 - 文档状态：初始化（第 1 版）
-- 最后更新：2026-02-22
+- 最后更新：2026-02-24
 
 ## 迁移目标
 
@@ -193,14 +193,29 @@
 
 ### Phase 7：清理旧路径与收口
 
-- 状态：`TODO`
+- 状态：`DONE`
 - 目标：在新流程稳定后再清理旧实现。
 - 任务：
-  - 标记并逐步移除旧监听器链入口
-  - 精简重复 UI 代码和重复运行配置类型
+  - 标记旧监听器链为 legacy fallback 路径（仅在 schema 缺失/非法时使用）
+  - 将路径配置（aux/out）迁入主碎片区，移除 legacy UI 双入口
+  - 收口 legacy advanced 描述与文案，明确其过渡角色
 - 验收：
-  - 测试覆盖迁移后主路径
-  - 兼容迁移文档和 release note 就绪
+  - `Modify options` 可单独启用 `Output directory` / `Auxiliary directory`
+  - legacy editor 不再写入 aux/out，避免与新碎片重复入口冲突
+  - 回归测试覆盖新碎片挂载与 legacy 收口行为
+
+### Phase 8：三段式编辑器与步骤设置面板
+
+- 状态：`DONE`
+- 目标：重排编辑器为“共通设置 / 编译序列 / 步骤设置”三段式，并引入选中步骤联动设置。
+- 任务：
+  - 顶部改为 `Common settings`：默认只显示 main file，其它共通项通过 `Modify options` 按需启用
+  - 保留中段 `Compile sequence`，并新增步骤选中状态与高亮
+  - 新增下段 `Step settings` 卡片面板（type-level），首批支持 `latex-compile` 与 `pdf-viewer`
+- 验收：
+  - `main file` 位于顶部固定区，`custom working directory/path directories/environment variables` 均可通过 `Modify options` 添加
+  - 编译序列可选中某一步，底部设置面板随选中步骤切换
+  - 不引入新的步骤 schema 持久化字段，兼容执行路径不变
 
 ## 风险清单
 
@@ -232,7 +247,8 @@
 - [x] Phase 4: Fragment UI 外壳
 - [x] Phase 5: 序列碎片与拖拽
 - [x] Phase 6: 自动推断与高级步骤
-- [ ] Phase 7: 清理与收口
+- [x] Phase 7: 清理与收口
+- [x] Phase 8: 三段式 UI 与步骤设置面板
 
 ## 更新日志
 
@@ -288,3 +304,26 @@
   - 新增 `CommandLineRunStep` 与 `CommandLineRunStepParser`，命令行参数解析改用 `ParametersListUtil.parse`，不再使用简单空格切分。
   - 引入 pythontex/makeglossaries/xindy 三个内置模板步骤 provider，并接入步骤 registry 与 UI step 描述。
   - 新增 `LatexRunStepAutoInferenceTest`、`CommandLineRunStepParserTest`，并扩展迁移策略测试覆盖新模板步骤别名映射。
+- 2026-02-23（Phase 7 完成）
+  - 新增主碎片路径配置：`Output directory` 与 `Auxiliary directory`，默认通过 `Modify options` 按需启用。
+  - `LegacyLatexSettingsEditor` 中 aux/out 行收口为隐藏只读过渡态，并停止对 `runConfig.outputPath/auxilPath` 写入，消除双入口冲突。
+  - `LatexCommandLineState` 注释更新为 legacy fallback pipeline，明确新主路径为 `LatexStepRunState`。
+  - 更新运行配置测试，覆盖路径碎片挂载与 legacy 路径入口隐藏行为。
+- 2026-02-24（Phase 8 完成）
+  - `LatexSettingsEditor` 重排为三段式：`Common settings`（main file + modify options）、`Compile sequence`、`Step settings`。
+  - `LatexCompileSequenceComponent` 新增选中状态、选中回调、高亮，以及增删拖拽后的选择保持逻辑。
+  - 新增 `LatexStepSettingsComponent` / `LatexStepSettingsFragment`：基于卡片显示步骤设置，支持 `latex-compile` 与 `pdf-viewer`，其它步骤展示过渡提示。
+  - 新增/更新测试：编辑器结构、编译序列选中行为、步骤设置卡片切换与 reset/apply 回归。
+- 2026-02-24（Phase 8 收口：Step settings 可选项 + latexmk 独立步骤）
+  - `Step settings` 为 compile/viewer 卡片加入 `Modify options` 弹出菜单，可按需隐藏高级字段。
+  - 新增 `latexmk-compile` 独立步骤类型，并接入 provider、UI 类型描述、自动推断与 legacy 推断映射。
+  - 步骤执行层对 `latexmk-compile` 强制使用 `LatexCompiler.LATEXMK`，不依赖当前全局 compiler 选择。
+  - 更新步骤 schema/pipeline/UI 相关测试，覆盖 `latexmk-compile` 映射与推断行为。
+- 2026-02-24（Phase 8 结构解耦）
+  - `Step settings` 拆分为多组件：`LatexCompileStepSettingsComponent`、`LatexmkStepSettingsComponent`、`LatexViewerStepSettingsComponent`、`LatexUnsupportedStepSettingsComponent`。
+  - `LatexStepSettingsComponent` 仅保留路由与卡片切换职责，按步骤类型分发到对应设置组件。
+- 2026-02-24（Phase 8 嵌套子 Editor 路线）
+  - `Step settings` 切换为每个步骤类型一个嵌套 `FragmentedSettingsEditor`：`LatexCompileStepFragmentedEditor`、`LatexmkStepFragmentedEditor`、`LatexViewerStepFragmentedEditor`。
+  - `Modify options` 改为直接复用平台 fragment 行为，移除各卡片手写的 options popup 与显隐状态管理。
+  - 新增 `StepFragmentedState` 隔离子 editor 的 `selectedOptions`，避免与主 `LatexSettingsEditor` fragment 状态互相污染。
+  - 新增 `step-ui-options` 持久化（按 `step type + option id`），并在读取时过滤非法 `type/id`。

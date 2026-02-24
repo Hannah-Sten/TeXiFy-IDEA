@@ -48,7 +48,7 @@ class LatexRunStepSchemaPersistenceTest : BasePlatformTestCase() {
         val steps = parent.getChild("compile-steps") ?: error("Missing compile-steps node")
         val types = steps.getChildren("compile-step").mapNotNull { it.getAttributeValue("type") }
 
-        assertEquals(listOf("latex-compile", "pdf-viewer"), types)
+        assertEquals(listOf("latexmk-compile", "pdf-viewer"), types)
     }
 
     fun testReadExternalInfersStepTypesFromLegacyWhenSchemaMissing() {
@@ -66,7 +66,7 @@ class LatexRunStepSchemaPersistenceTest : BasePlatformTestCase() {
         runConfig.readExternal(root)
 
         assertEquals(StepSchemaReadStatus.MISSING, runConfig.stepSchemaStatus)
-        assertEquals(listOf("latex-compile", "pdf-viewer"), runConfig.stepSchemaTypes)
+        assertEquals(listOf("latexmk-compile", "pdf-viewer"), runConfig.stepSchemaTypes)
     }
 
     fun testReadExternalRetainsInvalidSchemaStatusAndFallsBackToLegacyInference() {
@@ -87,7 +87,7 @@ class LatexRunStepSchemaPersistenceTest : BasePlatformTestCase() {
         runConfig.readExternal(root)
 
         assertEquals(StepSchemaReadStatus.INVALID, runConfig.stepSchemaStatus)
-        assertEquals(listOf("latex-compile", "pdf-viewer"), runConfig.stepSchemaTypes)
+        assertEquals(listOf("latexmk-compile", "pdf-viewer"), runConfig.stepSchemaTypes)
     }
 
     fun testReadExternalUsesExplicitSchemaTypesWhenPresent() {
@@ -143,5 +143,72 @@ class LatexRunStepSchemaPersistenceTest : BasePlatformTestCase() {
             listOf("latex-compile", "legacy-external-tool", "legacy-makeindex", "legacy-bibtex", "latex-compile", "pdf-viewer"),
             types
         )
+    }
+
+    fun testWriteExternalStoresStepUiOptionsByType() {
+        val runConfig = LatexRunConfiguration(
+            project,
+            LatexRunConfigurationProducer().configurationFactory,
+            "Test run config"
+        )
+        runConfig.stepUiOptionIdsByType = mutableMapOf(
+            StepUiOptionIds.LATEX_COMPILE to mutableSetOf(StepUiOptionIds.COMPILE_PATH, StepUiOptionIds.COMPILE_ARGS),
+            StepUiOptionIds.LATEXMK_COMPILE to mutableSetOf(StepUiOptionIds.LATEXMK_MODE),
+            StepUiOptionIds.PDF_VIEWER to mutableSetOf(StepUiOptionIds.VIEWER_COMMAND),
+        )
+
+        val root = Element("configuration")
+        runConfig.writeExternal(root)
+
+        val parent = root.getChild("texify") ?: error("Missing texify node")
+        val uiOptions = parent.getChild("step-ui-options") ?: error("Missing step-ui-options node")
+        val byType = uiOptions.getChildren("step").associate { step ->
+            val type = step.getAttributeValue("type")
+            val ids = step.getChildren("option").mapNotNull { it.getAttributeValue("id") }.toSet()
+            type to ids
+        }
+
+        assertEquals(setOf(StepUiOptionIds.COMPILE_PATH, StepUiOptionIds.COMPILE_ARGS), byType[StepUiOptionIds.LATEX_COMPILE])
+        assertEquals(setOf(StepUiOptionIds.LATEXMK_MODE), byType[StepUiOptionIds.LATEXMK_COMPILE])
+        assertEquals(setOf(StepUiOptionIds.VIEWER_COMMAND), byType[StepUiOptionIds.PDF_VIEWER])
+    }
+
+    fun testReadExternalRestoresStepUiOptionsAndIgnoresInvalidEntries() {
+        val runConfig = LatexRunConfiguration(
+            project,
+            LatexRunConfigurationProducer().configurationFactory,
+            "Test run config"
+        )
+
+        val root = Element("configuration")
+        val parent = Element("texify")
+        parent.addContent(Element("compiler").setText(LatexCompiler.PDFLATEX.name))
+        parent.addContent(Element("main-file").setText("main.tex"))
+        val uiOptions = Element("step-ui-options")
+        uiOptions.addContent(
+            Element("step")
+                .setAttribute("type", StepUiOptionIds.LATEX_COMPILE)
+                .apply {
+                    addContent(Element("option").setAttribute("id", StepUiOptionIds.COMPILE_PATH))
+                    addContent(Element("option").setAttribute("id", "invalid.option"))
+                }
+        )
+        uiOptions.addContent(
+            Element("step")
+                .setAttribute("type", "unknown-step")
+                .apply {
+                    addContent(Element("option").setAttribute("id", StepUiOptionIds.COMPILE_ARGS))
+                }
+        )
+        parent.addContent(uiOptions)
+        root.addContent(parent)
+
+        runConfig.readExternal(root)
+
+        assertEquals(
+            mutableSetOf(StepUiOptionIds.COMPILE_PATH),
+            runConfig.stepUiOptionIdsByType[StepUiOptionIds.LATEX_COMPILE]
+        )
+        assertFalse(runConfig.stepUiOptionIdsByType.containsKey("unknown-step"))
     }
 }

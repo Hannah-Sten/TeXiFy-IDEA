@@ -162,7 +162,7 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         assertFalse(outputFormat.isVisible)
     }
 
-    fun testLatexmkCompilerShowsAuxPathRowInEditor() {
+    fun testLegacyEditorKeepsAuxPathRowHiddenAfterPathMigration() {
         val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
         runConfig.compiler = LatexCompiler.LATEXMK
 
@@ -173,7 +173,7 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         auxPathRowField.isAccessible = true
         val auxPathRow = auxPathRowField.get(editor) as? javax.swing.JComponent
         assertNotNull(auxPathRow)
-        assertTrue(auxPathRow!!.isVisible)
+        assertFalse(auxPathRow!!.isVisible)
     }
 
     fun testAraraCompilerHidesAuxPathRowInEditor() {
@@ -193,6 +193,31 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         val auxPathRow = auxPathRowField.get(editor) as? javax.swing.JComponent
         assertNotNull(auxPathRow)
         assertFalse(auxPathRow!!.isVisible)
+    }
+
+    fun testFragmentedEditorUsesCommonSequenceAndStepSettingsLayout() {
+        val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
+        val editor = LatexSettingsEditor(runConfig)
+        val createRunFragments = LatexSettingsEditor::class.java.getDeclaredMethod("createRunFragments")
+        createRunFragments.isAccessible = true
+        @Suppress("UNCHECKED_CAST")
+        val fragments = createRunFragments.invoke(editor) as MutableList<com.intellij.execution.ui.SettingsEditorFragment<LatexRunConfiguration, *>>
+        val ids = fragments.mapNotNull { fragment ->
+            runCatching {
+                fragment.javaClass.getMethod("getId").invoke(fragment) as? String
+            }.getOrNull()
+        }
+
+        assertTrue(ids.contains("mainFile"))
+        assertTrue(ids.contains("workingDirectory"))
+        assertTrue(ids.contains("pathDirectories"))
+        assertTrue(ids.contains("environmentVariables"))
+        assertTrue(ids.contains("compileSequence"))
+        assertTrue(ids.contains("stepSettings"))
+        assertFalse(ids.contains("latexCompiler"))
+        assertFalse(ids.contains("compilerArguments"))
+        assertTrue(ids.indexOf("mainFile") < ids.indexOf("compileSequence"))
+        assertTrue(ids.indexOf("compileSequence") < ids.indexOf("stepSettings"))
     }
 
     fun testLatexmkCompileModeEditorContainsAuto() {

@@ -18,12 +18,16 @@ import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.fields.ExtendableTextComponent
 import com.intellij.ui.components.fields.ExtendableTextField
+import com.intellij.util.ui.JBUI
 import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.LatexPathResolver
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.isInvalidJetBrainsBinPath
 import nl.hannahsten.texifyidea.run.latex.ui.LegacyLatexSettingsEditor
 import java.awt.BorderLayout
+import java.nio.file.Path
+import javax.swing.BoxLayout
 import javax.swing.JComponent
 import javax.swing.JPanel
 
@@ -125,7 +129,7 @@ internal object LatexBasicFragments {
         return fragment
     }
 
-    fun createWorkingDirectoryFragment(project: Project): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<TextFieldWithBrowseButton>> {
+    fun createWorkingDirectoryFragment(group: String, project: Project): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<TextFieldWithBrowseButton>> {
         val directoryField = TextFieldWithBrowseButton().apply {
             addBrowseFolderListener(
                 TextBrowseFolderListener(
@@ -140,10 +144,10 @@ internal object LatexBasicFragments {
         val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<TextFieldWithBrowseButton>>(
             "workingDirectory",
             "Working directory",
-            null,
+            group,
             component,
             0,
-            { true }
+            { s -> (s.configuration as? LatexRunConfiguration)?.workingDirectory != null }
         ) {
             override fun doReset(s: RunnerAndConfigurationSettingsImpl) {
                 val runConfig = s.configuration as LatexRunConfiguration
@@ -158,7 +162,58 @@ internal object LatexBasicFragments {
             }
         }
 
-        fragment.isRemovable = false
+        fragment.isRemovable = true
+        fragment.isCanBeHidden = true
+        fragment.setHint("Override working directory used by compile/run steps.")
+        fragment.actionHint = "Set custom working directory"
+        return fragment
+    }
+
+    fun createPathDirectoriesFragment(group: String, project: Project): RunConfigurationEditorFragment<LatexRunConfiguration, JComponent> {
+        val outputField = directoryPicker(project, "Output Files Directory")
+        val auxiliaryField = directoryPicker(project, "Auxiliary Files Directory")
+
+        val panel = JPanel().apply {
+            layout = BoxLayout(this, BoxLayout.Y_AXIS)
+            border = JBUI.Borders.empty(0, 0, 4, 0)
+            add(LabeledComponent.create(outputField, "Output directory"))
+            add(LabeledComponent.create(auxiliaryField, "Auxiliary directory"))
+        }
+
+        val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, JComponent>(
+            "pathDirectories",
+            "Path directories",
+            group,
+            panel,
+            10,
+            { s ->
+                val runConfig = s.configuration as? LatexRunConfiguration
+                hasCustomPath(runConfig?.outputPath, LatexPathResolver.defaultOutputPath) ||
+                    hasCustomPath(runConfig?.auxilPath, LatexPathResolver.defaultAuxilPath)
+            }
+        ) {
+            override fun doReset(s: RunnerAndConfigurationSettingsImpl) {
+                val runConfig = s.configuration as LatexRunConfiguration
+                outputField.text = runConfig.outputPath?.toString() ?: LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER
+                auxiliaryField.text = runConfig.auxilPath?.toString() ?: LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER
+            }
+
+            override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
+                val runConfig = s.configuration as LatexRunConfiguration
+                val outputText = outputField.text.trim()
+                if (!isInvalidJetBrainsBinPath(outputText)) {
+                    runConfig.outputPath = parseDirectoryPath(outputText, LatexPathResolver.defaultOutputPath)
+                }
+                runConfig.auxilPath = parseDirectoryPath(auxiliaryField.text.trim(), LatexPathResolver.defaultAuxilPath)
+            }
+        }
+
+        fragment.isRemovable = true
+        fragment.isCanBeHidden = true
+        fragment.setHint(
+            "Configure output/auxiliary directories. Supports ${LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER} and ${LatexPathResolver.PROJECT_DIR_PLACEHOLDER}."
+        )
+        fragment.actionHint = "Set output and auxiliary directories"
         return fragment
     }
 
@@ -223,7 +278,7 @@ internal object LatexBasicFragments {
         Disposer.register(fragment, legacyEditor)
         fragment.isRemovable = true
         fragment.isCanBeHidden = true
-        fragment.actionHint = "Open legacy form for advanced settings not yet migrated to fragments"
+        fragment.actionHint = "Open legacy fallback form for settings not yet migrated to fragments"
         return fragment
     }
 
@@ -251,5 +306,25 @@ internal object LatexBasicFragments {
                 }
             }
         }
+    }
+
+    private fun directoryPicker(project: Project, title: String): TextFieldWithBrowseButton = TextFieldWithBrowseButton().apply {
+        addBrowseFolderListener(
+            TextBrowseFolderListener(
+                FileChooserDescriptor(false, true, false, false, false, false)
+                    .withTitle(title)
+                    .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules.toSet().toTypedArray())
+            )
+        )
+    }
+
+    private fun parseDirectoryPath(value: String, defaultValue: Path): Path = value
+        .takeUnless { it.isBlank() }
+        ?.let { pathOrNull(it) }
+        ?: defaultValue
+
+    private fun hasCustomPath(path: Path?, defaultValue: Path): Boolean {
+        val normalized = path?.toString()?.trim().orEmpty()
+        return normalized.isNotBlank() && normalized != defaultValue.toString()
     }
 }

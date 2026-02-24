@@ -20,6 +20,7 @@ import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.ui.InplaceButton
 import com.intellij.ui.components.labels.LinkLabel
 import com.intellij.util.ui.JBUI
+import com.intellij.util.ui.WrapLayout
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.StepSchemaReadStatus
 import java.awt.Dimension
@@ -28,8 +29,6 @@ import java.awt.Point
 import java.awt.Rectangle
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
-import javax.swing.Box
-import javax.swing.BoxLayout
 import javax.swing.JButton
 import javax.swing.JComponent
 import javax.swing.JLabel
@@ -67,17 +66,19 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
     private lateinit var runConfiguration: LatexRunConfiguration
 
     var changeListener: () -> Unit = {}
+    var onSelectionChanged: (index: Int, type: String?) -> Unit = { _, _ -> }
+    var onStepTypesChanged: (types: List<String>) -> Unit = {}
+
+    private var selectedIndex: Int = -1
 
     init {
         Disposer.register(parentDisposable, this)
-        layout = BoxLayout(this, BoxLayout.Y_AXIS)
+        layout = WrapLayout(FlowLayout.LEFT, 0, 0)
         border = JBUI.Borders.empty(4, 0)
-        add(Box.createVerticalStrut(30))
         add(
             JPanel(FlowLayout(FlowLayout.CENTER, 0, 0)).apply {
                 add(dropFirst)
                 preferredSize = dropFirst.preferredSize
-                alignmentX = LEFT_ALIGNMENT
             }
         )
         DnDManager.getInstance().registerTarget(this, this, this)
@@ -86,22 +87,19 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
     private fun buildPanel() {
         remove(addPanel)
         remove(addLabel)
-        stepButtons.forEach { stepButton ->
-            stepButton.alignmentX = LEFT_ALIGNMENT
-            add(stepButton)
-        }
-        addPanel.alignmentX = LEFT_ALIGNMENT
-        addLabel.alignmentX = LEFT_ALIGNMENT
+        stepButtons.forEach { add(it) }
         add(addPanel)
         add(addLabel)
         addLabel.isVisible = stepButtons.none { it.isVisible }
         revalidate()
         repaint()
+        notifyStepTypesChanged()
     }
 
     private fun addStep(type: String) {
         stepButtons.add(StepButton(type))
         buildPanel()
+        selectStep(stepButtons.lastIndex)
         changeListener()
     }
 
@@ -129,6 +127,7 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
         this.runConfiguration = configuration
         stepButtons.forEach { remove(it) }
         stepButtons.clear()
+        selectedIndex = -1
 
         val stepTypes = configuration.stepSchemaTypes.ifEmpty {
             LatexStepUiSupport.inferStepTypesFromLegacyConfiguration(configuration)
@@ -136,6 +135,7 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
         stepTypes.forEach { stepButtons.add(StepButton(it)) }
 
         buildPanel()
+        normalizeSelection()
     }
 
     fun applyEditorTo(configuration: LatexRunConfiguration) {
@@ -168,6 +168,7 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
         stepButtons.remove(droppedButton)
         stepButtons.add(index, droppedButton)
         buildPanel()
+        selectStep(stepButtons.indexOf(droppedButton))
         changeListener()
         IdeFocusManager.getInstance(runConfiguration.project).requestFocus(droppedButton, false)
     }
@@ -193,17 +194,17 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
             return null
         }
 
-        // In vertical mode we insert before/after based on whether pointer is on upper/lower half.
-        val upperHalf = intersectedButton.bounds.centerY > event.point.y
+        // In horizontal mode we insert before/after based on pointer in left/right half.
+        val leftHalf = intersectedButton.bounds.centerX > event.point.x
         val replaceTarget = if (index < stepButtons.indexOf(event.attachedObject)) {
-            if (!upperHalf) {
+            if (!leftHalf) {
                 indexedSteps.find { (i, button) -> button.isVisible && i > index }
             }
             else {
                 intersected
             }
         }
-        else if (upperHalf) {
+        else if (leftHalf) {
             indexedSteps.findLast { (i, button) -> button.isVisible && i < index }
         }
         else {
@@ -225,6 +226,76 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
     override fun dispose() {
     }
 
+    internal fun selectedStepIndex(): Int = selectedIndex
+
+    internal fun selectedStepType(): String? = stepButtons.getOrNull(selectedIndex)
+        ?.takeIf { it.isVisible }
+        ?.stepType
+
+    internal fun selectStep(index: Int) {
+        if (index !in stepButtons.indices || !stepButtons[index].isVisible) {
+            normalizeSelection()
+            return
+        }
+
+        selectedIndex = index
+        refreshSelectionUi()
+        onSelectionChanged(selectedIndex, stepButtons[selectedIndex].stepType)
+    }
+
+    internal fun removeStepAt(index: Int) {
+        if (index !in stepButtons.indices) {
+            return
+        }
+        val removed = stepButtons.removeAt(index)
+        remove(removed)
+        buildPanel()
+        normalizeSelection()
+        changeListener()
+    }
+
+    internal fun moveStep(from: Int, to: Int) {
+        if (from !in stepButtons.indices || to !in stepButtons.indices || from == to) {
+            return
+        }
+        val step = stepButtons.removeAt(from)
+        stepButtons.add(to, step)
+        buildPanel()
+        selectStep(stepButtons.indexOf(step))
+        changeListener()
+    }
+
+    private fun normalizeSelection() {
+        if (stepButtons.isEmpty()) {
+            selectedIndex = -1
+            refreshSelectionUi()
+            onSelectionChanged(-1, null)
+            return
+        }
+
+        val currentlyVisible = stepButtons.getOrNull(selectedIndex)?.isVisible == true
+        if (currentlyVisible) {
+            refreshSelectionUi()
+            onSelectionChanged(selectedIndex, stepButtons[selectedIndex].stepType)
+            return
+        }
+
+        val fallback = stepButtons.withIndex().firstOrNull { (_, button) -> button.isVisible }?.index ?: -1
+        selectedIndex = fallback
+        refreshSelectionUi()
+        onSelectionChanged(selectedIndex, stepButtons.getOrNull(selectedIndex)?.stepType)
+    }
+
+    private fun refreshSelectionUi() {
+        stepButtons.forEachIndexed { index, button ->
+            button.setSelectedState(index == selectedIndex && button.isVisible)
+        }
+    }
+
+    private fun notifyStepTypesChanged() {
+        onStepTypesChanged(stepButtons.filter { it.isVisible }.map { it.stepType })
+    }
+
     private inner class StepButton(stepType: String) : TagButton("", { changeListener() }), DnDSource {
 
         var stepType: String = stepType
@@ -237,20 +308,41 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
             dropPlace = JLabel(AllIcons.General.DropPlace)
             add(dropPlace, JLayeredPane.DRAG_LAYER)
             dropPlace?.isVisible = false
+            border = JBUI.Borders.empty(1)
 
             updateFromStepType()
 
             myButton.addMouseListener(object : MouseAdapter() {
                 override fun mouseClicked(e: MouseEvent) {
+                    selectStep(stepButtons.indexOf(this@StepButton))
                     if (e.clickCount == 2) {
                         showTypeSelectionPopup(myButton) { selectedType ->
                             this@StepButton.stepType = selectedType
                             updateFromStepType()
+                            if (selectedIndex == stepButtons.indexOf(this@StepButton)) {
+                                onSelectionChanged(selectedIndex, selectedType)
+                            }
+                            notifyStepTypesChanged()
                             changeListener()
                         }
                     }
                 }
             })
+
+            addPropertyChangeListener("visible") {
+                if (!isVisible && this@StepButton in stepButtons) {
+                    val removedSelected = stepButtons.indexOf(this@StepButton) == selectedIndex
+                    stepButtons.remove(this@StepButton)
+                    buildPanel()
+                    if (removedSelected) {
+                        normalizeSelection()
+                    }
+                    else {
+                        refreshSelectionUi()
+                    }
+                    changeListener()
+                }
+            }
 
             DnDManager.getInstance().registerSource(this, myButton, this)
             layoutButtons()
@@ -286,6 +378,15 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
         }
 
         fun getButton(): JButton = myButton
+
+        fun setSelectedState(selected: Boolean) {
+            border = if (selected) {
+                JBUI.Borders.customLine(JBUI.CurrentTheme.Focus.focusColor(), 1)
+            }
+            else {
+                JBUI.Borders.empty(1)
+            }
+        }
     }
 
     private class AddStepAction(

@@ -64,4 +64,33 @@ class LatexRunStepAutoInferenceTest : BasePlatformTestCase() {
 
         assertEquals(listOf("latex-compile", "pythontex-command", "latex-compile", "pdf-viewer"), augmented)
     }
+
+    fun testAugmentStepTypesDoesNotInsertLegacyBibliographyForLatexmkStep() {
+        val mainFile = myFixture.addFileToProject(
+            "main-latexmk-bib.tex",
+            """
+            \documentclass{article}
+            \begin{document}
+            \cite{knuth}
+            \bibliography{references}
+            \end{document}
+            """.trimIndent()
+        ).virtualFile
+
+        val runConfig = LatexRunConfiguration(
+            project,
+            LatexRunConfigurationProducer().configurationFactory,
+            "Test run config"
+        )
+        runConfig.compiler = LatexCompiler.LATEXMK
+        runConfig.mainFilePath = mainFile.path
+
+        val augmented = LatexRunStepAutoInference.augmentStepTypes(
+            runConfig,
+            mainFile,
+            listOf("latexmk-compile", "pdf-viewer")
+        )
+
+        assertEquals(listOf("latexmk-compile", "pdf-viewer"), augmented)
+    }
 }

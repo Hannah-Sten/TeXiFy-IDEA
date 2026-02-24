@@ -102,6 +102,15 @@ class LatexRunStepsMigrationPolicyTest : BasePlatformTestCase() {
         assertTrue(plan.unsupportedTypes.isEmpty())
     }
 
+    fun testStepPlanBuilderMapsLatexmkCompileType() {
+        val plan = LatexRunStepPlanBuilder.build(listOf("latexmk-compile", "pdf-viewer"))
+
+        assertEquals(2, plan.steps.size)
+        assertEquals("latexmk-compile", plan.steps[0].id)
+        assertTrue(plan.steps[1] is PdfViewerRunStep)
+        assertTrue(plan.unsupportedTypes.isEmpty())
+    }
+
     fun testStepPlanBuilderCollectsUnsupportedTypes() {
         val plan = LatexRunStepPlanBuilder.build(listOf("compile-latex", "unknown-step"))
 
@@ -131,6 +140,7 @@ class LatexRunStepsMigrationPolicyTest : BasePlatformTestCase() {
         assertNotNull(LatexRunStepProviders.find("compile-latex"))
         assertNotNull(LatexRunStepProviders.find("LATEX-COMPILE"))
         assertNotNull(LatexRunStepProviders.find("Open-PDF"))
+        assertNotNull(LatexRunStepProviders.find("latexmk-compile"))
         assertNotNull(LatexRunStepProviders.find("PYTHONTEX"))
         assertNotNull(LatexRunStepProviders.find("makeglossaries"))
         assertNotNull(LatexRunStepProviders.find("TexIndy"))
