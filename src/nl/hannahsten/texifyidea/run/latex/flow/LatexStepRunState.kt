@@ -15,6 +15,7 @@ import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepAutoInference
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepPlanBuilder
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepContext
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepPlan
+import nl.hannahsten.texifyidea.run.latex.step.LatexStepPresentation
 import nl.hannahsten.texifyidea.util.Log
 
 internal class LatexStepRunState(
@@ -41,8 +42,15 @@ internal class LatexStepRunState(
             Log.warn("Unsupported compile-step types after auto-inference: ${effectivePlan.unsupportedTypes.joinToString(", ")}")
         }
 
-        val handlers = effectivePlan.steps.map { step -> step.createProcess(context) }
-        if (handlers.isEmpty()) {
+        val executions = effectivePlan.steps.mapIndexed { index, step ->
+            LatexStepExecution(
+                index = index,
+                type = step.id,
+                displayName = LatexStepPresentation.displayName(step.id),
+                processHandler = step.createProcess(context),
+            )
+        }
+        if (executions.isEmpty()) {
             throw ExecutionException("No executable steps found in compile-step schema.")
         }
 
@@ -50,8 +58,8 @@ internal class LatexStepRunState(
         val filter = RegexpFilter(environment.project, $$"^$FILE_PATH$:$LINE$")
         consoleBuilder.addFilter(filter)
         val console = consoleBuilder.console
-        handlers.forEach { console.attachToProcess(it) }
-        val overallHandler = SequentialProcessHandler(handlers)
+        executions.forEach { execution -> console.attachToProcess(execution.processHandler) }
+        val overallHandler = StepAwareSequentialProcessHandler(executions)
 
         return DefaultExecutionResult(console, overallHandler)
     }

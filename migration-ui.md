@@ -217,6 +217,21 @@
   - 编译序列可选中某一步，底部设置面板随选中步骤切换
   - 不引入新的步骤 schema 持久化字段，兼容执行路径不变
 
+### Phase 9：Step-Based Tree Log Tab
+
+- 状态：`DONE`
+- 目标：为 step 执行流程提供“按步骤分组”的树形日志，同时保留原 `Log Messages` 标签。
+- 任务：
+  - 引入 `StepAwareSequentialProcessHandler` 的步骤事件与每步 raw log 分桶
+  - 新增 `LatexStepLogTabComponent`（左树右日志）并按 step type 选择解析器
+  - 新增解析会话层：`LatexStepMessageParserSession`、`BibtexStepMessageParserSession`、`NoopStepMessageParser`
+  - 在 `LatexRunConfiguration.createAdditionalTabComponents` 中对 step 流程增加 `Step Log` 标签
+- 验收：
+  - step 流程运行时出现 `Step Log` 标签（legacy 流程不变）
+  - 树中显示步骤状态，warning/error 挂在对应步骤下
+  - 右侧按步骤查看 raw log，失败后后续步骤标记为 skipped
+  - 现有 `Log Messages` 在 step 流程下继续可用
+
 ## 风险清单
 
 - XML 兼容风险：步骤序列与旧字段并存时可能出现重复执行。
@@ -249,6 +264,7 @@
 - [x] Phase 6: 自动推断与高级步骤
 - [x] Phase 7: 清理与收口
 - [x] Phase 8: 三段式 UI 与步骤设置面板
+- [x] Phase 9: Step-Based Tree Log Tab
 
 ## 更新日志
 
@@ -258,6 +274,10 @@
   - 明确不直接迁移旧分支中未完成的自定义执行控制台实现。
 - 2026-02-22（Phase 0 细化）
   - 冻结了 XML 兼容契约与冲突优先级。
+- 2026-02-24（Phase 9）
+  - 落地 Step 流程专用 `Step Log` 标签，新增树形步骤日志视图（步骤状态 + 结构化消息 + 每步 raw log）。
+  - 执行层新增 step-aware 顺序处理器与步骤事件模型，支持文本转发与分桶缓存。
+  - 解析层新增按步骤类型分派（LaTeX/latexmk、BibTeX、Noop）并补充对应测试。
 - 2026-02-24（Phase 8 收尾优化）
   - `Step settings` 子标题下沉到分割线之后（作为子 editor 内固定说明片段），避免标题区拥挤。
   - `Step settings` 各可选项补齐 hover hint，行为与 `Common settings` 对齐。

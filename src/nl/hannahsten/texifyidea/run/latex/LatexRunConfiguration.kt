@@ -31,7 +31,9 @@ import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
+import nl.hannahsten.texifyidea.run.latex.flow.StepAwareSequentialProcessHandler
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogTabComponent
+import nl.hannahsten.texifyidea.run.latex.steplog.LatexStepLogTabComponent
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCitationTool
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
@@ -193,6 +195,15 @@ class LatexRunConfiguration(
                 AllIcons.Vcs.Changelist,
                 false
             )
+
+            if (startedProcess is StepAwareSequentialProcessHandler) {
+                manager.addAdditionalTabComponent(
+                    LatexStepLogTabComponent(project, executionState.resolvedMainFile, startedProcess),
+                    "Step Log",
+                    AllIcons.Actions.ListFiles,
+                    false
+                )
+            }
         }
     }
 
