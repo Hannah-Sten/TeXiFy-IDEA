@@ -4,14 +4,11 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.options.SettingsEditor
-import com.intellij.util.ui.JBUI
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.StepUiOptionIds
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepProviders
 import java.awt.BorderLayout
 import java.awt.CardLayout
-import java.awt.Font
-import javax.swing.JLabel
 import javax.swing.JPanel
 
 internal class LatexStepSettingsComponent(
@@ -36,10 +33,6 @@ internal class LatexStepSettingsComponent(
     private val cardLayout = CardLayout()
     private val cardsPanel = JPanel(cardLayout)
 
-    private val typeLevelLabel = JLabel("Type-level settings: applies to all steps of this type.").apply {
-        font = JBUI.Fonts.label().deriveFont(Font.ITALIC)
-    }
-
     private val compileState = StepFragmentedState()
     private val latexmkState = StepFragmentedState()
     private val viewerState = StepFragmentedState()
@@ -57,9 +50,6 @@ internal class LatexStepSettingsComponent(
         compileSettings.addSettingsEditorListener { changeListener() }
         latexmkSettings.addSettingsEditorListener { changeListener() }
         viewerSettings.addSettingsEditorListener { changeListener() }
-
-        border = JBUI.Borders.emptyTop(4)
-        add(typeLevelLabel, BorderLayout.NORTH)
 
         cardsPanel.add(wrapEditor(compileSettings), CARD_COMPILE)
         cardsPanel.add(wrapEditor(latexmkSettings), CARD_LATEXMK)

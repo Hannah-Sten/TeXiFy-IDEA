@@ -5,7 +5,6 @@ import com.intellij.execution.ui.RunConfigurationEditorFragment
 import com.intellij.util.ui.JBUI
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import java.awt.BorderLayout
-import java.awt.Color
 import java.awt.Font
 import javax.swing.JComponent
 import javax.swing.JLabel
@@ -25,7 +24,6 @@ internal class LatexCompileSequenceFragment(
     init {
         component.changeListener = { fireEditorStateChanged() }
         isRemovable = false
-        setHint("Arrange compile steps in execution order")
         actionHint = "Add, remove, or reorder compile steps"
     }
 
@@ -40,19 +38,18 @@ internal class LatexCompileSequenceFragment(
     companion object {
 
         private fun wrap(component: LatexCompileSequenceComponent): JComponent {
+            val tooltip = "Drag to reorder. Double-click a step to change its type."
             val panel = JPanel(BorderLayout())
+            panel.toolTipText = tooltip
 
             val label = JLabel("Compile sequence").apply {
                 font = JBUI.Fonts.label().deriveFont(Font.BOLD)
+                toolTipText = tooltip
             }
-            val hintLabel = JLabel("Drag to reorder. Double-click a step to change its type.").apply {
-                font = JBUI.Fonts.label().deriveFont(Font.ITALIC)
-                foreground = Color.LIGHT_GRAY
-            }
+            component.toolTipText = tooltip
 
             panel.add(label, BorderLayout.NORTH)
             panel.add(component, BorderLayout.CENTER)
-            panel.add(hintLabel, BorderLayout.SOUTH)
 
             return panel
         }

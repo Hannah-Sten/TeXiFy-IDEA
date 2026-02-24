@@ -28,9 +28,11 @@ class LatexSettingsEditor(settings: LatexRunConfiguration) : RunConfigurationFra
         }
 
         fragments.add(CommonParameterFragments.createHeader(commonGroupName))
-        fragments.add(LatexBasicFragments.createMainFileFragment(project))
+        fragments.add(LatexBasicFragments.createMainFileFragment(commonGroupName, project))
+        fragments.add(LatexBasicFragments.createLatexDistributionFragment(commonGroupName, project))
         fragments.add(LatexBasicFragments.createWorkingDirectoryFragment(commonGroupName, project))
-        fragments.add(LatexBasicFragments.createPathDirectoriesFragment(commonGroupName, project))
+        fragments.add(LatexBasicFragments.createOutputDirectoryFragment(commonGroupName, project))
+        fragments.add(LatexBasicFragments.createAuxiliaryDirectoryFragment(commonGroupName, project))
         fragments.add(LatexBasicFragments.createEnvironmentVariablesFragment(commonGroupName))
         fragments.add(LatexCompileSequenceFragment(compileSequenceComponent))
         fragments.add(LatexStepSettingsFragment(stepSettingsComponent))

@@ -258,6 +258,15 @@
   - 明确不直接迁移旧分支中未完成的自定义执行控制台实现。
 - 2026-02-22（Phase 0 细化）
   - 冻结了 XML 兼容契约与冲突优先级。
+- 2026-02-24（Phase 8 收尾优化）
+  - `Step settings` 子标题下沉到分割线之后（作为子 editor 内固定说明片段），避免标题区拥挤。
+  - `Step settings` 各可选项补齐 hover hint，行为与 `Common settings` 对齐。
+  - `latex distribution` 从步骤设置迁移到 `Common settings`，作为共通可选项统一管理。
+  - `path directories` 拆分为 `Output directory` 与 `Auxiliary directory` 两个独立单行 fragment。
+  - `Compile sequence` 进入页面默认不选中任何步骤；用户单击步骤即选中，选中联动 `Step settings`。
+  - 移除 `Compile sequence`/`Step settings` 区域底部灰字说明，改为悬停 tooltip 提示（与其他设置页交互风格一致）。
+  - `Common settings` 碎片全部改为 editor 行（不再作为 command-line 横向排版），并统一移除 `setHint` 灰字提示，改为悬停 tooltip。
+  - 删除 step 子 editor 内的 `typeLevelHint` 行，避免重复说明占位。
   - 评估过 feature flag 方案，后续按“直接迁移”决策移除。
   - 增加 Phase 0 的 PR 拆分建议（0A/0B/0C）。
 - 2026-02-22（Phase 0 落地：0A/0B/0C）

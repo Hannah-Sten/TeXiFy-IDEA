@@ -3,7 +3,6 @@ package nl.hannahsten.texifyidea.run.latex.ui.fragments
 import com.intellij.openapi.util.Disposer
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
-import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCitationTool
@@ -78,7 +77,6 @@ class LatexStepSettingsComponentTest : BasePlatformTestCase() {
             compilerPath = "/tmp/latexmk"
             compilerArguments = "-shell-escape"
             outputFormat = LatexCompiler.Format.PDF
-            latexDistribution = LatexDistributionType.TEXLIVE
             latexmkCompileMode = LatexmkCompileMode.CUSTOM
             latexmkCustomEngineCommand = "lualatex"
             latexmkCitationTool = LatexmkCitationTool.BIBER
@@ -117,7 +115,6 @@ class LatexStepSettingsComponentTest : BasePlatformTestCase() {
         assertEquals(LatexCompiler.LATEXMK, target.compiler)
         assertEquals("/tmp/latexmk", target.compilerPath)
         assertEquals("-shell-escape", target.compilerArguments)
-        assertEquals(LatexDistributionType.TEXLIVE, target.latexDistribution)
         assertEquals(LatexmkCompileMode.CUSTOM, target.latexmkCompileMode)
         assertEquals("lualatex", target.latexmkCustomEngineCommand)
         assertEquals(LatexmkCitationTool.BIBER, target.latexmkCitationTool)

@@ -48,6 +48,7 @@ internal class LatexViewerStepFragmentedEditor(
             },
             initiallyVisible = { true },
             removable = false,
+            hint = "PDF viewer used by pdf-viewer steps.",
         )
 
         val focusFragment = fragment(
@@ -63,6 +64,7 @@ internal class LatexViewerStepFragmentedEditor(
             },
             initiallyVisible = { runConfig -> !runConfig.requireFocus },
             removable = true,
+            hint = "Allow the viewer window to gain focus after compilation.",
             actionHint = "Set require focus",
         )
 
@@ -74,6 +76,7 @@ internal class LatexViewerStepFragmentedEditor(
             apply = { runConfig, component -> runConfig.viewerCommand = component.component.text.ifBlank { null } },
             initiallyVisible = { runConfig -> !runConfig.viewerCommand.isNullOrBlank() },
             removable = true,
+            hint = "Command template used when PDF viewer is set to CUSTOM.",
             actionHint = "Set custom viewer command",
         )
 
@@ -98,6 +101,7 @@ internal class LatexViewerStepFragmentedEditor(
         apply: (LatexRunConfiguration, C) -> Unit,
         initiallyVisible: (LatexRunConfiguration) -> Boolean,
         removable: Boolean,
+        hint: String? = null,
         actionHint: String? = null,
     ): SettingsEditorFragment<StepFragmentedState, C> {
         val fragment = SettingsEditorFragment(
@@ -112,7 +116,15 @@ internal class LatexViewerStepFragmentedEditor(
         )
         fragment.isRemovable = removable
         fragment.isCanBeHidden = removable
+        hint?.let { applyTooltip(component, it) }
         actionHint?.let { fragment.actionHint = it }
         return fragment
+    }
+
+    private fun applyTooltip(component: JComponent, tooltip: String) {
+        component.toolTipText = tooltip
+        if (component is LabeledComponent<*>) {
+            component.component.toolTipText = tooltip
+        }
     }
 }

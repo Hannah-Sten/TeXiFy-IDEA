@@ -13,11 +13,8 @@ import com.intellij.openapi.util.NlsContexts
 import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.components.JBTextField
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
-import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.StepUiOptionIds
-import nl.hannahsten.texifyidea.run.latex.ui.LatexDistributionComboBoxRenderer
-import nl.hannahsten.texifyidea.run.latex.ui.LatexDistributionSelection
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCitationTool
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
 import java.awt.event.ItemEvent
@@ -48,11 +45,6 @@ internal class LatexmkStepFragmentedEditor(
         editorField.emptyText.text = "Custom compiler arguments"
     }
     private val compilerArgumentsRow = LabeledComponent.create(compilerArguments, "Compiler arguments")
-
-    private val latexDistribution = ComboBox(LatexDistributionSelection.getAvailableSelections(project).toTypedArray()).apply {
-        renderer = LatexDistributionComboBoxRenderer(project) { null }
-    }
-    private val latexDistributionRow = LabeledComponent.create(latexDistribution, "LaTeX distribution")
 
     private val latexmkCompileMode = ComboBox(LatexmkCompileMode.entries.toTypedArray())
     private val latexmkCompileModeRow = LabeledComponent.create(latexmkCompileMode, "Latexmk compile mode")
@@ -106,6 +98,7 @@ internal class LatexmkStepFragmentedEditor(
             apply = { runConfig, component -> runConfig.compilerPath = component.component.text.ifBlank { null } },
             initiallyVisible = { runConfig -> !runConfig.compilerPath.isNullOrBlank() },
             removable = true,
+            hint = "Compiler executable used by latexmk-compile steps.",
             actionHint = "Set custom compiler path",
         )
 
@@ -117,26 +110,8 @@ internal class LatexmkStepFragmentedEditor(
             apply = { runConfig, component -> runConfig.compilerArguments = component.component.text },
             initiallyVisible = { runConfig -> !runConfig.compilerArguments.isNullOrBlank() },
             removable = true,
+            hint = "Arguments passed to latexmk.",
             actionHint = "Set custom compiler arguments",
-        )
-
-        val distributionFragment = fragment(
-            id = StepUiOptionIds.COMPILE_DISTRIBUTION,
-            name = "LaTeX distribution",
-            component = latexDistributionRow,
-            reset = { runConfig, component ->
-                refreshDistributionSelections(runConfig.latexDistribution)
-                component.component.selectedItem = LatexDistributionSelection.getAvailableSelections(project)
-                    .firstOrNull { it.distributionType == runConfig.latexDistribution }
-                    ?: LatexDistributionSelection.fromDistributionType(runConfig.latexDistribution)
-            },
-            apply = { runConfig, component ->
-                val selected = component.component.selectedItem as? LatexDistributionSelection
-                runConfig.latexDistribution = selected?.distributionType ?: LatexDistributionType.MODULE_SDK
-            },
-            initiallyVisible = { runConfig -> runConfig.latexDistribution != LatexDistributionType.MODULE_SDK },
-            removable = true,
-            actionHint = "Set LaTeX distribution",
         )
 
         val modeFragment = fragment(
@@ -149,6 +124,7 @@ internal class LatexmkStepFragmentedEditor(
             },
             initiallyVisible = { runConfig -> runConfig.latexmkCompileMode != LatexmkCompileMode.AUTO },
             removable = true,
+            hint = "latexmk compile mode used by latexmk-compile steps.",
             actionHint = "Set latexmk compile mode",
         )
 
@@ -167,6 +143,7 @@ internal class LatexmkStepFragmentedEditor(
                 runConfig.latexmkCompileMode == LatexmkCompileMode.CUSTOM || !runConfig.latexmkCustomEngineCommand.isNullOrBlank()
             },
             removable = true,
+            hint = "Custom engine command used when latexmk mode is CUSTOM.",
             actionHint = "Set latexmk custom engine command",
         )
 
@@ -180,6 +157,7 @@ internal class LatexmkStepFragmentedEditor(
             },
             initiallyVisible = { runConfig -> runConfig.latexmkCitationTool != LatexmkCitationTool.AUTO },
             removable = true,
+            hint = "Citation tool used by latexmk.",
             actionHint = "Set latexmk citation tool",
         )
 
@@ -194,6 +172,7 @@ internal class LatexmkStepFragmentedEditor(
                     runConfig.latexmkExtraArguments != LatexRunConfiguration.DEFAULT_LATEXMK_EXTRA_ARGUMENTS
             },
             removable = true,
+            hint = "Additional arguments appended to latexmk invocation.",
             actionHint = "Set latexmk extra arguments",
         )
 
@@ -201,21 +180,11 @@ internal class LatexmkStepFragmentedEditor(
             compilerFragment,
             pathFragment,
             argsFragment,
-            distributionFragment,
             modeFragment,
             customEngineFragment,
             citationFragment,
             extraArgsFragment,
         )
-    }
-
-    private fun refreshDistributionSelections(selected: LatexDistributionType) {
-        val options = LatexDistributionSelection.getAvailableSelections(project).toMutableList()
-        if (options.none { it.distributionType == selected }) {
-            options += LatexDistributionSelection.fromDistributionType(selected)
-        }
-        latexDistribution.removeAllItems()
-        options.forEach(latexDistribution::addItem)
     }
 
     private fun <C : JComponent> fragment(
@@ -241,8 +210,15 @@ internal class LatexmkStepFragmentedEditor(
         )
         fragment.isRemovable = removable
         fragment.isCanBeHidden = removable
-        hint?.let(fragment::setHint)
+        hint?.let { applyTooltip(component, it) }
         actionHint?.let { fragment.actionHint = it }
         return fragment
+    }
+
+    private fun applyTooltip(component: JComponent, tooltip: String) {
+        component.toolTipText = tooltip
+        if (component is LabeledComponent<*>) {
+            component.component.toolTipText = tooltip
+        }
     }
 }

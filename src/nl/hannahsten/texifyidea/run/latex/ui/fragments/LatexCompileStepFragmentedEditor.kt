@@ -13,11 +13,8 @@ import com.intellij.openapi.util.NlsContexts
 import com.intellij.ui.RawCommandLineEditor
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
-import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.StepUiOptionIds
-import nl.hannahsten.texifyidea.run.latex.ui.LatexDistributionComboBoxRenderer
-import nl.hannahsten.texifyidea.run.latex.ui.LatexDistributionSelection
 import java.awt.event.ItemEvent
 import java.util.function.BiConsumer
 import java.util.function.Predicate
@@ -49,11 +46,6 @@ internal class LatexCompileStepFragmentedEditor(
 
     private val outputFormat = ComboBox(Format.entries.toTypedArray())
     private val outputFormatRow = LabeledComponent.create(outputFormat, "Output format")
-
-    private val latexDistribution = ComboBox(LatexDistributionSelection.getAvailableSelections(project).toTypedArray()).apply {
-        renderer = LatexDistributionComboBoxRenderer(project) { null }
-    }
-    private val latexDistributionRow = LabeledComponent.create(latexDistribution, "LaTeX distribution")
 
     init {
         compiler.addItemListener {
@@ -95,6 +87,7 @@ internal class LatexCompileStepFragmentedEditor(
             apply = { runConfig, component -> runConfig.compilerPath = component.component.text.ifBlank { null } },
             initiallyVisible = { runConfig -> !runConfig.compilerPath.isNullOrBlank() },
             removable = true,
+            hint = "Compiler executable used by latex-compile steps.",
             actionHint = "Set custom compiler path",
         )
 
@@ -106,6 +99,7 @@ internal class LatexCompileStepFragmentedEditor(
             apply = { runConfig, component -> runConfig.compilerArguments = component.component.text },
             initiallyVisible = { runConfig -> !runConfig.compilerArguments.isNullOrBlank() },
             removable = true,
+            hint = "Arguments passed to the selected compiler.",
             actionHint = "Set custom compiler arguments",
         )
 
@@ -123,26 +117,8 @@ internal class LatexCompileStepFragmentedEditor(
             },
             initiallyVisible = { runConfig -> runConfig.outputFormat != Format.PDF },
             removable = true,
+            hint = "Output format used by latex-compile steps.",
             actionHint = "Set output format",
-        )
-
-        val distributionFragment = fragment(
-            id = StepUiOptionIds.COMPILE_DISTRIBUTION,
-            name = "LaTeX distribution",
-            component = latexDistributionRow,
-            reset = { runConfig, component ->
-                refreshDistributionSelections(runConfig.latexDistribution)
-                component.component.selectedItem = LatexDistributionSelection.getAvailableSelections(project)
-                    .firstOrNull { it.distributionType == runConfig.latexDistribution }
-                    ?: LatexDistributionSelection.fromDistributionType(runConfig.latexDistribution)
-            },
-            apply = { runConfig, component ->
-                val selected = component.component.selectedItem as? LatexDistributionSelection
-                runConfig.latexDistribution = selected?.distributionType ?: LatexDistributionType.MODULE_SDK
-            },
-            initiallyVisible = { runConfig -> runConfig.latexDistribution != LatexDistributionType.MODULE_SDK },
-            removable = true,
-            actionHint = "Set LaTeX distribution",
         )
 
         return listOf(
@@ -150,7 +126,6 @@ internal class LatexCompileStepFragmentedEditor(
             pathFragment,
             argsFragment,
             formatFragment,
-            distributionFragment,
         )
     }
 
@@ -159,15 +134,6 @@ internal class LatexCompileStepFragmentedEditor(
         outputFormat.removeAllItems()
         supportedFormats.forEach(outputFormat::addItem)
         outputFormat.selectedItem = preferred.takeIf { supportedFormats.contains(it) } ?: supportedFormats.firstOrNull() ?: Format.PDF
-    }
-
-    private fun refreshDistributionSelections(selected: LatexDistributionType) {
-        val options = LatexDistributionSelection.getAvailableSelections(project).toMutableList()
-        if (options.none { it.distributionType == selected }) {
-            options += LatexDistributionSelection.fromDistributionType(selected)
-        }
-        latexDistribution.removeAllItems()
-        options.forEach(latexDistribution::addItem)
     }
 
     private fun <C : JComponent> fragment(
@@ -193,8 +159,15 @@ internal class LatexCompileStepFragmentedEditor(
         )
         fragment.isRemovable = removable
         fragment.isCanBeHidden = removable
-        hint?.let(fragment::setHint)
+        hint?.let { applyTooltip(component, it) }
         actionHint?.let { fragment.actionHint = it }
         return fragment
+    }
+
+    private fun applyTooltip(component: JComponent, tooltip: String) {
+        component.toolTipText = tooltip
+        if (component is LabeledComponent<*>) {
+            component.component.toolTipText = tooltip
+        }
     }
 }

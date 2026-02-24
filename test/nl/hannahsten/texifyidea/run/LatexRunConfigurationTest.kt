@@ -209,8 +209,10 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         }
 
         assertTrue(ids.contains("mainFile"))
+        assertTrue(ids.contains("latexDistribution"))
         assertTrue(ids.contains("workingDirectory"))
-        assertTrue(ids.contains("pathDirectories"))
+        assertTrue(ids.contains("outputDirectory"))
+        assertTrue(ids.contains("auxiliaryDirectory"))
         assertTrue(ids.contains("environmentVariables"))
         assertTrue(ids.contains("compileSequence"))
         assertTrue(ids.contains("stepSettings"))

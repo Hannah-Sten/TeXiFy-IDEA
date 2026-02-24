@@ -51,7 +51,7 @@ class LatexCompileSequenceComponentTest : BasePlatformTestCase() {
         }
     }
 
-    fun testResetSelectsFirstStepAndNotifiesSelection() {
+    fun testResetClearsSelectionAndNotifiesNoSelection() {
         val runConfig = LatexRunConfiguration(
             project,
             LatexRunConfigurationProducer().configurationFactory,
@@ -72,10 +72,10 @@ class LatexCompileSequenceComponentTest : BasePlatformTestCase() {
 
             component.resetEditorFrom(runConfig)
 
-            assertEquals(0, component.selectedStepIndex())
-            assertEquals("latex-compile", component.selectedStepType())
-            assertEquals(0, callbackIndex)
-            assertEquals("latex-compile", callbackType)
+            assertEquals(-1, component.selectedStepIndex())
+            assertNull(component.selectedStepType())
+            assertEquals(-1, callbackIndex)
+            assertNull(callbackType)
         }
         finally {
             Disposer.dispose(disposable)
@@ -131,8 +131,8 @@ class LatexCompileSequenceComponentTest : BasePlatformTestCase() {
 
             component.removeStepAt(1)
 
-            assertEquals(0, component.selectedStepIndex())
-            assertEquals("latex-compile", component.selectedStepType())
+            assertEquals(-1, component.selectedStepIndex())
+            assertNull(component.selectedStepType())
         }
         finally {
             Disposer.dispose(disposable)

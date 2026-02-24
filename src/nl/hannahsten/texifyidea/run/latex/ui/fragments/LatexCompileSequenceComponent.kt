@@ -280,10 +280,9 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
             return
         }
 
-        val fallback = stepButtons.withIndex().firstOrNull { (_, button) -> button.isVisible }?.index ?: -1
-        selectedIndex = fallback
+        selectedIndex = -1
         refreshSelectionUi()
-        onSelectionChanged(selectedIndex, stepButtons.getOrNull(selectedIndex)?.stepType)
+        onSelectionChanged(-1, null)
     }
 
     private fun refreshSelectionUi() {
@@ -313,8 +312,11 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
             updateFromStepType()
 
             myButton.addMouseListener(object : MouseAdapter() {
-                override fun mouseClicked(e: MouseEvent) {
+                override fun mousePressed(e: MouseEvent) {
                     selectStep(stepButtons.indexOf(this@StepButton))
+                }
+
+                override fun mouseClicked(e: MouseEvent) {
                     if (e.clickCount == 2) {
                         showTypeSelectionPopup(myButton) { selectedType ->
                             this@StepButton.stepType = selectedType
