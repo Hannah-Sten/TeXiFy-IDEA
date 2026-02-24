@@ -283,6 +283,11 @@
   - `createAdditionalTabComponents` 收口为仅注册 `Step Log`，不再显示其它运行输出附加页签（legacy 代码保留为回滚入口）。
   - `Step Log` 左侧选中根节点时，右侧 Console 改为汇总回放全部步骤输出（按步骤顺序拼接），不再仅显示当前步骤。
   - 更新 `LatexStepLogTabComponentTest`，覆盖根节点汇总输出断言与 UI 行为回归。
+- 2026-02-24（Framework 对齐：sequence + step）
+  - `LatexRunConfiguration.getState()` 收敛为 step pipeline 主路径：优先使用 `stepSchemaTypes`，无可执行步骤时回退到推断步骤序列，不再回落到 legacy `LatexCommandLineState`。
+  - `LatexStepRunState` 将 `Step Log` 组件作为主运行 console（`DefaultExecutionResult(stepLogConsole, handler)`），避免运行实例出现空白内容页。
+  - `LegacyAuxRunConfigurationsStep` 改为内联执行子 run config（`RunProfileState.execute(...).processHandler`），不再通过 `RunConfigurationBeforeRunProvider` 触发独立运行实例。
+  - 抽取 `LatexRunStepTypeInference` 统一步骤推断逻辑，供 persistence / UI / runtime 共用。
 - 2026-02-24（Phase 8 收尾优化）
   - `Step settings` 子标题下沉到分割线之后（作为子 editor 内固定说明片段），避免标题区拥挤。
   - `Step settings` 各可选项补齐 hover hint，行为与 `Common settings` 对齐。

@@ -29,12 +29,13 @@ class LatexRunStepStateSelectionTest : BasePlatformTestCase() {
         assertTrue(state is LatexStepRunState)
     }
 
-    fun testGetStateFallsBackToLegacyWhenSchemaParsedButUnsupported() {
+    fun testGetStateKeepsStepPipelineWhenSchemaParsedButUnsupported() {
         val runConfig = LatexRunConfiguration(
             myFixture.project,
             LatexRunConfigurationProducer().configurationFactory,
             "Test run config"
         )
+        runConfig.compiler = LatexCompiler.PDFLATEX
         runConfig.stepSchemaStatus = StepSchemaReadStatus.PARSED
         runConfig.stepSchemaTypes = listOf("unsupported-step")
 
@@ -44,7 +45,7 @@ class LatexRunStepStateSelectionTest : BasePlatformTestCase() {
 
         val state = runConfig.getState(executor, environment)
 
-        assertTrue(state is LatexCommandLineState)
+        assertTrue(state is LatexStepRunState)
     }
 
     fun testGetStateUsesStepRunStateForNonLatexmkWhenNoLegacyBridgeStepIsPresent() {

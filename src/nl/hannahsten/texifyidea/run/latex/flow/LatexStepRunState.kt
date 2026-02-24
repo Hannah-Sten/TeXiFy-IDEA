@@ -4,8 +4,6 @@ import com.intellij.execution.DefaultExecutionResult
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.ExecutionResult
 import com.intellij.execution.Executor
-import com.intellij.execution.filters.RegexpFilter
-import com.intellij.execution.filters.TextConsoleBuilderFactory
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.openapi.fileEditor.FileDocumentManager
@@ -16,6 +14,7 @@ import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepPlanBuilder
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepContext
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepPlan
 import nl.hannahsten.texifyidea.run.latex.step.LatexStepPresentation
+import nl.hannahsten.texifyidea.run.latex.steplog.LatexStepLogTabComponent
 import nl.hannahsten.texifyidea.util.Log
 
 internal class LatexStepRunState(
@@ -54,13 +53,9 @@ internal class LatexStepRunState(
             throw ExecutionException("No executable steps found in compile-step schema.")
         }
 
-        val consoleBuilder = TextConsoleBuilderFactory.getInstance().createBuilder(environment.project)
-        val filter = RegexpFilter(environment.project, $$"^$FILE_PATH$:$LINE$")
-        consoleBuilder.addFilter(filter)
-        val console = consoleBuilder.console
-        executions.forEach { execution -> console.attachToProcess(execution.processHandler) }
         val overallHandler = StepAwareSequentialProcessHandler(executions)
+        val stepLogConsole = LatexStepLogTabComponent(environment.project, mainFile, overallHandler)
 
-        return DefaultExecutionResult(console, overallHandler)
+        return DefaultExecutionResult(stepLogConsole, overallHandler)
     }
 }

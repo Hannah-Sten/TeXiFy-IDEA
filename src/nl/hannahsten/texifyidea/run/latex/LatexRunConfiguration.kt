@@ -1,16 +1,13 @@
 package nl.hannahsten.texifyidea.run.latex
 
-import com.intellij.diagnostic.logging.LogConsoleManagerBase
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.Executor
 import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.execution.configurations.*
-import com.intellij.execution.filters.RegexpFilter
 import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
-import com.intellij.icons.AllIcons
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.Sdk
@@ -31,9 +28,10 @@ import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
-import nl.hannahsten.texifyidea.run.latex.flow.StepAwareSequentialProcessHandler
+import nl.hannahsten.texifyidea.run.latex.flow.LatexStepRunState
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogTabComponent
-import nl.hannahsten.texifyidea.run.latex.steplog.LatexStepLogTabComponent
+import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepPlanBuilder
+import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepTypeInference
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCitationTool
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
@@ -58,7 +56,7 @@ class LatexRunConfiguration(
     project: Project,
     factory: ConfigurationFactory,
     name: String
-) : RunConfigurationBase<LatexCommandLineState>(project, factory, name), LocatableConfiguration {
+) : RunConfigurationBase<RunProfileState>(project, factory, name), LocatableConfiguration {
 
     companion object {
 
@@ -187,15 +185,6 @@ class LatexRunConfiguration(
         startedProcess: ProcessHandler?
     ) {
         super.createAdditionalTabComponents(manager, startedProcess)
-
-        if (manager is LogConsoleManagerBase && startedProcess is StepAwareSequentialProcessHandler) {
-            manager.addAdditionalTabComponent(
-                LatexStepLogTabComponent(project, executionState.resolvedMainFile, startedProcess),
-                "Step Log",
-                AllIcons.Actions.ListFiles,
-                false
-            )
-        }
     }
 
     /**
@@ -226,31 +215,26 @@ class LatexRunConfiguration(
             executionState.prepareForManualRun()
         }
 
-        val desiredPipeline = LatexRunStepsMigrationPolicy.chooseExecutionPipeline(stepSchemaStatus)
-        if (desiredPipeline == ExecutionPipelineMode.STEPS) {
-            val plan = nl.hannahsten.texifyidea.run.latex.step.LatexRunStepPlanBuilder.build(stepSchemaTypes)
-            if (plan.steps.isNotEmpty()) {
-                if (plan.unsupportedTypes.isNotEmpty()) {
-                    Log.warn("Unsupported compile-step types in schema: ${plan.unsupportedTypes.joinToString(", ")}")
-                }
-                return nl.hannahsten.texifyidea.run.latex.flow.LatexStepRunState(this, environment, plan)
-            }
-            if (plan.steps.isEmpty()) {
-                Log.warn("Compile-step schema was present but no supported steps were found. Falling back to legacy pipeline.")
-            }
+        val configuredStepTypes = stepSchemaTypes.ifEmpty {
+            LatexRunStepTypeInference.inferFromRunConfiguration(this)
+        }
+        val configuredPlan = LatexRunStepPlanBuilder.build(configuredStepTypes)
+        if (configuredPlan.unsupportedTypes.isNotEmpty()) {
+            Log.warn("Unsupported compile-step types in schema: ${configuredPlan.unsupportedTypes.joinToString(", ")}")
         }
 
-        val filter = RegexpFilter(
-            environment.project,
-            $$"^$FILE_PATH$:$LINE$"
-        )
+        if (configuredPlan.steps.isNotEmpty()) {
+            return LatexStepRunState(this, environment, configuredPlan)
+        }
 
-        val state = LatexCommandLineState(
-            environment,
-            this
-        )
-        state.addConsoleFilters(filter)
-        return state
+        val inferredStepTypes = LatexRunStepTypeInference.inferFromRunConfiguration(this)
+        val inferredPlan = LatexRunStepPlanBuilder.build(inferredStepTypes)
+        if (inferredPlan.steps.isNotEmpty()) {
+            Log.warn("Compile-step sequence had no executable steps, falling back to inferred sequence: ${inferredStepTypes.joinToString(" -> ")}")
+            return LatexStepRunState(this, environment, inferredPlan)
+        }
+
+        throw ExecutionException("No executable compile steps were configured.")
     }
 
     @Throws(InvalidDataException::class)

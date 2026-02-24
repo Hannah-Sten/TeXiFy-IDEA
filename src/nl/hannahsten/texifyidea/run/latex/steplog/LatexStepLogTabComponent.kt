@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.run.latex.steplog
 import com.intellij.diagnostic.logging.AdditionalTabComponent
 import com.intellij.execution.filters.TextConsoleBuilderFactory
 import com.intellij.execution.process.ProcessOutputTypes
+import com.intellij.execution.ui.ExecutionConsole
 import com.intellij.execution.ui.ConsoleView
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.execution.ui.ConsoleViewContentType.NORMAL_OUTPUT
@@ -45,7 +46,7 @@ internal class LatexStepLogTabComponent(
     private val project: Project,
     mainFile: VirtualFile?,
     private val handler: StepAwareSequentialProcessHandler,
-) : AdditionalTabComponent(BorderLayout()), TreeSelectionListener {
+) : AdditionalTabComponent(BorderLayout()), ExecutionConsole, TreeSelectionListener {
 
     companion object {
 

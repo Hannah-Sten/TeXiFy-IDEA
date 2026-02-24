@@ -8,6 +8,7 @@ import nl.hannahsten.texifyidea.run.common.addTextChild
 import nl.hannahsten.texifyidea.run.common.getOrCreateAndClearParent
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
+import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepTypeInference
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCitationTool
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
@@ -117,8 +118,8 @@ internal object LatexRunConfigurationPersistence {
         runConfig.stepSchemaStatus = schemaStatus
         runConfig.stepSchemaTypes = when (schemaStatus) {
             StepSchemaReadStatus.PARSED -> LatexRunConfigurationSerializer.readStepTypes(parent)
-            StepSchemaReadStatus.MISSING -> inferStepTypesFromLegacyConfiguration(runConfig)
-            StepSchemaReadStatus.INVALID -> inferStepTypesFromLegacyConfiguration(runConfig)
+            StepSchemaReadStatus.MISSING -> LatexRunStepTypeInference.inferFromRunConfiguration(runConfig)
+            StepSchemaReadStatus.INVALID -> LatexRunStepTypeInference.inferFromRunConfiguration(runConfig)
         }
         runConfig.stepUiOptionIdsByType = readStepUiOptionIds(parent)
     }
@@ -154,7 +155,7 @@ internal object LatexRunConfigurationPersistence {
         LatexRunConfigurationSerializer.writeRunConfigIds(parent, EXTERNAL_TOOL_RUN_CONFIGS, runConfig.getExternalToolRunConfigIds())
 
         val stepTypes = runConfig.stepSchemaTypes.ifEmpty {
-            inferStepTypesFromLegacyConfiguration(runConfig)
+            LatexRunStepTypeInference.inferFromRunConfiguration(runConfig)
         }
         LatexRunConfigurationSerializer.writeStepTypes(parent, stepTypes)
         writeStepUiOptionIds(parent, runConfig.stepUiOptionIdsByType)
@@ -204,34 +205,6 @@ internal object LatexRunConfigurationPersistence {
         if (optionsParent.getChildren(STEP_UI_STEP).isNotEmpty()) {
             parent.addContent(optionsParent)
         }
-    }
-
-    private fun inferStepTypesFromLegacyConfiguration(runConfig: LatexRunConfiguration): List<String> {
-        val inferred = mutableListOf<String>()
-        val compileType = when (runConfig.compiler) {
-            LatexCompiler.LATEXMK -> "latexmk-compile"
-            null -> null
-            else -> "latex-compile"
-        }
-        if (compileType != null) {
-            inferred += compileType
-        }
-        if (runConfig.externalToolRunConfigs.isNotEmpty()) {
-            inferred += "legacy-external-tool"
-        }
-        if (runConfig.makeindexRunConfigs.isNotEmpty()) {
-            inferred += "legacy-makeindex"
-        }
-        if (runConfig.bibRunConfigs.isNotEmpty()) {
-            inferred += "legacy-bibtex"
-        }
-        if (runConfig.compileTwice && compileType == "latex-compile") {
-            inferred += "latex-compile"
-        }
-        if (runConfig.pdfViewer != null || !runConfig.viewerCommand.isNullOrBlank()) {
-            inferred += "pdf-viewer"
-        }
-        return inferred
     }
 
     private fun migrateSumatraPath(runConfig: LatexRunConfiguration, folder: String) {

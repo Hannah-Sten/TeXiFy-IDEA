@@ -4,7 +4,7 @@ import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.project.DumbService
 
-internal class LegacyBibtexRunStep : LegacyAuxRunConfigurationsStep() {
+internal open class LegacyBibtexRunStep : LegacyAuxRunConfigurationsStep() {
 
     override val id: String = "legacy-bibtex"
 
