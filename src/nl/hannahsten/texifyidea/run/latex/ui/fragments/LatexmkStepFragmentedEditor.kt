@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.run.latex.ui.fragments
 
 import com.intellij.execution.ui.CommonParameterFragments
-import com.intellij.execution.ui.FragmentedSettingsEditor
 import com.intellij.execution.ui.SettingsEditorFragment
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.project.Project
@@ -10,7 +9,6 @@ import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.openapi.ui.TextBrowseFolderListener
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
-import com.intellij.openapi.util.NlsContexts
 import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.components.JBTextField
 import nl.hannahsten.texifyidea.run.latex.LatexmkCompileStepOptions
@@ -19,15 +17,12 @@ import nl.hannahsten.texifyidea.run.latex.StepUiOptionIds
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCitationTool
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
 import java.awt.event.ItemEvent
-import java.util.function.BiConsumer
-import java.util.function.Predicate
-import javax.swing.JComponent
 import javax.swing.JLabel
 
 internal class LatexmkStepFragmentedEditor(
     private val project: Project,
     state: StepFragmentedState = StepFragmentedState(),
-) : FragmentedSettingsEditor<StepFragmentedState>(state) {
+) : AbstractStepFragmentedEditor<LatexmkCompileStepOptions>(state) {
 
     private val compilerRow = LabeledComponent.create(JLabel("latexmk"), "Compiler")
 
@@ -77,7 +72,7 @@ internal class LatexmkStepFragmentedEditor(
     override fun createFragments(): Collection<SettingsEditorFragment<StepFragmentedState, *>> {
         val headerFragment = CommonParameterFragments.createHeader<StepFragmentedState>("latexmk step")
 
-        val compilerFragment = fragment(
+        val compilerFragment = stepFragment(
             id = "step.latexmk.compiler",
             name = "Compiler",
             component = compilerRow,
@@ -88,7 +83,7 @@ internal class LatexmkStepFragmentedEditor(
             hint = "Compiler used by latexmk-compile step type.",
         )
 
-        val pathFragment = fragment(
+        val pathFragment = stepFragment(
             id = StepUiOptionIds.COMPILE_PATH,
             name = "Compiler path",
             component = compilerPathRow,
@@ -100,7 +95,7 @@ internal class LatexmkStepFragmentedEditor(
             actionHint = "Set custom compiler path",
         )
 
-        val argsFragment = fragment(
+        val argsFragment = stepFragment(
             id = StepUiOptionIds.COMPILE_ARGS,
             name = "Compiler arguments",
             component = compilerArgumentsRow,
@@ -112,7 +107,7 @@ internal class LatexmkStepFragmentedEditor(
             actionHint = "Set custom compiler arguments",
         )
 
-        val modeFragment = fragment(
+        val modeFragment = stepFragment(
             id = StepUiOptionIds.LATEXMK_MODE,
             name = "Latexmk compile mode",
             component = latexmkCompileModeRow,
@@ -126,7 +121,7 @@ internal class LatexmkStepFragmentedEditor(
             actionHint = "Set latexmk compile mode",
         )
 
-        val customEngineFragment = fragment(
+        val customEngineFragment = stepFragment(
             id = StepUiOptionIds.LATEXMK_CUSTOM_ENGINE,
             name = "Latexmk custom engine command",
             component = latexmkCustomEngineRow,
@@ -145,7 +140,7 @@ internal class LatexmkStepFragmentedEditor(
             actionHint = "Set latexmk custom engine command",
         )
 
-        val citationFragment = fragment(
+        val citationFragment = stepFragment(
             id = StepUiOptionIds.LATEXMK_CITATION,
             name = "Latexmk citation tool",
             component = latexmkCitationToolRow,
@@ -159,7 +154,7 @@ internal class LatexmkStepFragmentedEditor(
             actionHint = "Set latexmk citation tool",
         )
 
-        val extraArgsFragment = fragment(
+        val extraArgsFragment = stepFragment(
             id = StepUiOptionIds.LATEXMK_EXTRA_ARGS,
             name = "Latexmk extra arguments",
             component = latexmkExtraArgumentsRow,
@@ -186,50 +181,6 @@ internal class LatexmkStepFragmentedEditor(
         )
     }
 
-    private fun <C : JComponent> fragment(
-        id: String,
-        name: String,
-        component: C,
-        reset: (LatexmkCompileStepOptions, C) -> Unit,
-        apply: (LatexmkCompileStepOptions, C) -> Unit,
-        initiallyVisible: (LatexmkCompileStepOptions) -> Boolean,
-        removable: Boolean,
-        @NlsContexts.Tooltip hint: String? = null,
-        actionHint: String? = null,
-    ): SettingsEditorFragment<StepFragmentedState, C> {
-        val fragment = SettingsEditorFragment(
-            id,
-            name,
-            null,
-            component,
-            0,
-            BiConsumer<StepFragmentedState, C> { state, comp ->
-                withSelectedStep(state) { runConfig -> reset(runConfig, comp) }
-            },
-            BiConsumer<StepFragmentedState, C> { state, comp ->
-                withSelectedStep(state) { runConfig -> apply(runConfig, comp) }
-            },
-            Predicate<StepFragmentedState> { state ->
-                withSelectedStep(state) { runConfig -> initiallyVisible(runConfig) }
-            }
-        )
-        fragment.isRemovable = removable
-        fragment.isCanBeHidden = removable
-        hint?.let { applyTooltip(component, it) }
-        actionHint?.let { fragment.actionHint = it }
-        return fragment
-    }
-
-    private fun applyTooltip(component: JComponent, tooltip: String) {
-        component.toolTipText = tooltip
-        if (component is LabeledComponent<*>) {
-            component.component.toolTipText = tooltip
-        }
-    }
-
-    private inline fun <T> withSelectedStep(state: StepFragmentedState, block: (LatexmkCompileStepOptions) -> T): T {
-        val step = state.selectedStepOptions as? LatexmkCompileStepOptions
-            ?: LatexmkCompileStepOptions().also { state.selectedStepOptions = it }
-        return block(step)
-    }
+    override fun selectedStep(state: StepFragmentedState): LatexmkCompileStepOptions = state.selectedStepOptions as? LatexmkCompileStepOptions
+        ?: LatexmkCompileStepOptions().also { state.selectedStepOptions = it }
 }

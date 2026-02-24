@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.run.latex.ui.fragments
 
 import com.intellij.execution.ui.CommonParameterFragments
-import com.intellij.execution.ui.FragmentedSettingsEditor
 import com.intellij.execution.ui.SettingsEditorFragment
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.LabeledComponent
@@ -11,13 +10,10 @@ import nl.hannahsten.texifyidea.run.latex.PdfViewerStepOptions
 import nl.hannahsten.texifyidea.run.latex.StepUiOptionIds
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import java.awt.event.ItemEvent
-import java.util.function.BiConsumer
-import java.util.function.Predicate
-import javax.swing.JComponent
 
 internal class LatexViewerStepFragmentedEditor(
     state: StepFragmentedState = StepFragmentedState(),
-) : FragmentedSettingsEditor<StepFragmentedState>(state) {
+) : AbstractStepFragmentedEditor<PdfViewerStepOptions>(state) {
 
     private val pdfViewer = ComboBox(PdfViewer.availableViewers.toTypedArray())
     private val pdfViewerRow = LabeledComponent.create(pdfViewer, "PDF viewer")
@@ -38,7 +34,7 @@ internal class LatexViewerStepFragmentedEditor(
     override fun createFragments(): Collection<SettingsEditorFragment<StepFragmentedState, *>> {
         val headerFragment = CommonParameterFragments.createHeader<StepFragmentedState>("PDF viewer step")
 
-        val viewerFragment = fragment(
+        val viewerFragment = stepFragment(
             id = "step.viewer.type",
             name = "PDF viewer",
             component = pdfViewerRow,
@@ -55,7 +51,7 @@ internal class LatexViewerStepFragmentedEditor(
             hint = "PDF viewer used by pdf-viewer steps.",
         )
 
-        val focusFragment = fragment(
+        val focusFragment = stepFragment(
             id = StepUiOptionIds.VIEWER_REQUIRE_FOCUS,
             name = "Require focus",
             component = requireFocus,
@@ -72,7 +68,7 @@ internal class LatexViewerStepFragmentedEditor(
             actionHint = "Set require focus",
         )
 
-        val commandFragment = fragment(
+        val commandFragment = stepFragment(
             id = StepUiOptionIds.VIEWER_COMMAND,
             name = "Custom viewer command",
             component = viewerCommandRow,
@@ -98,50 +94,6 @@ internal class LatexViewerStepFragmentedEditor(
         requireFocus.isEnabled = supported
     }
 
-    private fun <C : JComponent> fragment(
-        id: String,
-        name: String,
-        component: C,
-        reset: (PdfViewerStepOptions, C) -> Unit,
-        apply: (PdfViewerStepOptions, C) -> Unit,
-        initiallyVisible: (PdfViewerStepOptions) -> Boolean,
-        removable: Boolean,
-        hint: String? = null,
-        actionHint: String? = null,
-    ): SettingsEditorFragment<StepFragmentedState, C> {
-        val fragment = SettingsEditorFragment(
-            id,
-            name,
-            null,
-            component,
-            0,
-            BiConsumer<StepFragmentedState, C> { state, comp ->
-                withSelectedStep(state) { runConfig -> reset(runConfig, comp) }
-            },
-            BiConsumer<StepFragmentedState, C> { state, comp ->
-                withSelectedStep(state) { runConfig -> apply(runConfig, comp) }
-            },
-            Predicate<StepFragmentedState> { state ->
-                withSelectedStep(state) { runConfig -> initiallyVisible(runConfig) }
-            }
-        )
-        fragment.isRemovable = removable
-        fragment.isCanBeHidden = removable
-        hint?.let { applyTooltip(component, it) }
-        actionHint?.let { fragment.actionHint = it }
-        return fragment
-    }
-
-    private fun applyTooltip(component: JComponent, tooltip: String) {
-        component.toolTipText = tooltip
-        if (component is LabeledComponent<*>) {
-            component.component.toolTipText = tooltip
-        }
-    }
-
-    private inline fun <T> withSelectedStep(state: StepFragmentedState, block: (PdfViewerStepOptions) -> T): T {
-        val step = state.selectedStepOptions as? PdfViewerStepOptions
-            ?: PdfViewerStepOptions().also { state.selectedStepOptions = it }
-        return block(step)
-    }
+    override fun selectedStep(state: StepFragmentedState): PdfViewerStepOptions = state.selectedStepOptions as? PdfViewerStepOptions
+        ?: PdfViewerStepOptions().also { state.selectedStepOptions = it }
 }

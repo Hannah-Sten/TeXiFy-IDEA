@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.run.latex.ui.fragments
 
 import com.intellij.execution.ui.CommonParameterFragments
-import com.intellij.execution.ui.FragmentedSettingsEditor
 import com.intellij.execution.ui.SettingsEditorFragment
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.project.Project
@@ -10,21 +9,17 @@ import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.openapi.ui.TextBrowseFolderListener
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
-import com.intellij.openapi.util.NlsContexts
 import com.intellij.ui.RawCommandLineEditor
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.latex.LatexCompileStepOptions
 import nl.hannahsten.texifyidea.run.latex.StepUiOptionIds
 import java.awt.event.ItemEvent
-import java.util.function.BiConsumer
-import java.util.function.Predicate
-import javax.swing.JComponent
 
 internal class LatexCompileStepFragmentedEditor(
     private val project: Project,
     state: StepFragmentedState = StepFragmentedState(),
-) : FragmentedSettingsEditor<StepFragmentedState>(state) {
+) : AbstractStepFragmentedEditor<LatexCompileStepOptions>(state) {
 
     private val compiler = ComboBox(LatexCompiler.entries.filter { it != LatexCompiler.LATEXMK }.toTypedArray())
     private val compilerRow = LabeledComponent.create(compiler, "Compiler")
@@ -60,7 +55,7 @@ internal class LatexCompileStepFragmentedEditor(
     override fun createFragments(): Collection<SettingsEditorFragment<StepFragmentedState, *>> {
         val headerFragment = CommonParameterFragments.createHeader<StepFragmentedState>("LaTeX compile step")
 
-        val compilerFragment = fragment(
+        val compilerFragment = stepFragment(
             id = "step.compile.compiler",
             name = "Compiler",
             component = compilerRow,
@@ -76,7 +71,7 @@ internal class LatexCompileStepFragmentedEditor(
             hint = "Compiler used by latex-compile step type.",
         )
 
-        val pathFragment = fragment(
+        val pathFragment = stepFragment(
             id = StepUiOptionIds.COMPILE_PATH,
             name = "Compiler path",
             component = compilerPathRow,
@@ -88,7 +83,7 @@ internal class LatexCompileStepFragmentedEditor(
             actionHint = "Set custom compiler path",
         )
 
-        val argsFragment = fragment(
+        val argsFragment = stepFragment(
             id = StepUiOptionIds.COMPILE_ARGS,
             name = "Compiler arguments",
             component = compilerArgumentsRow,
@@ -100,7 +95,7 @@ internal class LatexCompileStepFragmentedEditor(
             actionHint = "Set custom compiler arguments",
         )
 
-        val formatFragment = fragment(
+        val formatFragment = stepFragment(
             id = StepUiOptionIds.COMPILE_OUTPUT_FORMAT,
             name = "Output format",
             component = outputFormatRow,
@@ -134,50 +129,6 @@ internal class LatexCompileStepFragmentedEditor(
         outputFormat.selectedItem = preferred.takeIf { supportedFormats.contains(it) } ?: supportedFormats.firstOrNull() ?: Format.PDF
     }
 
-    private fun <C : JComponent> fragment(
-        id: String,
-        name: String,
-        component: C,
-        reset: (LatexCompileStepOptions, C) -> Unit,
-        apply: (LatexCompileStepOptions, C) -> Unit,
-        initiallyVisible: (LatexCompileStepOptions) -> Boolean,
-        removable: Boolean,
-        @NlsContexts.Tooltip hint: String? = null,
-        actionHint: String? = null,
-    ): SettingsEditorFragment<StepFragmentedState, C> {
-        val fragment = SettingsEditorFragment(
-            id,
-            name,
-            null,
-            component,
-            0,
-            BiConsumer<StepFragmentedState, C> { state, comp ->
-                withSelectedStep(state) { runConfig -> reset(runConfig, comp) }
-            },
-            BiConsumer<StepFragmentedState, C> { state, comp ->
-                withSelectedStep(state) { runConfig -> apply(runConfig, comp) }
-            },
-            Predicate<StepFragmentedState> { state ->
-                withSelectedStep(state) { runConfig -> initiallyVisible(runConfig) }
-            }
-        )
-        fragment.isRemovable = removable
-        fragment.isCanBeHidden = removable
-        hint?.let { applyTooltip(component, it) }
-        actionHint?.let { fragment.actionHint = it }
-        return fragment
-    }
-
-    private fun applyTooltip(component: JComponent, tooltip: String) {
-        component.toolTipText = tooltip
-        if (component is LabeledComponent<*>) {
-            component.component.toolTipText = tooltip
-        }
-    }
-
-    private inline fun <T> withSelectedStep(state: StepFragmentedState, block: (LatexCompileStepOptions) -> T): T {
-        val step = state.selectedStepOptions as? LatexCompileStepOptions
-            ?: LatexCompileStepOptions().also { state.selectedStepOptions = it }
-        return block(step)
-    }
+    override fun selectedStep(state: StepFragmentedState): LatexCompileStepOptions = state.selectedStepOptions as? LatexCompileStepOptions
+        ?: LatexCompileStepOptions().also { state.selectedStepOptions = it }
 }
