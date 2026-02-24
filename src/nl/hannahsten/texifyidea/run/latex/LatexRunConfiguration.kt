@@ -12,14 +12,13 @@ import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.latex.flow.LatexStepRunState
-import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepPlanBuilder
+import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepProviders
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCitationTool
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdk
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
-import nl.hannahsten.texifyidea.util.Log
 import java.nio.file.Path
 
 class LatexRunConfiguration(
@@ -149,16 +148,18 @@ class LatexRunConfiguration(
         configOptions.ensureDefaultSteps()
 
         val configuredSteps = steps.filter { it.enabled }
-        val configuredPlan = LatexRunStepPlanBuilder.build(configuredSteps)
-        if (configuredPlan.unsupportedTypes.isNotEmpty()) {
-            Log.warn("Unsupported compile-step types in schema: ${configuredPlan.unsupportedTypes.joinToString(", ")}")
+        if (configuredSteps.isEmpty()) {
+            throw ExecutionException("No executable compile steps were configured.")
         }
 
-        if (configuredPlan.steps.isNotEmpty()) {
-            return LatexStepRunState(this, environment, configuredPlan, configuredSteps)
+        val hasExecutableStep = configuredSteps.any { step ->
+            LatexRunStepProviders.find(step.type) != null
+        }
+        if (!hasExecutableStep) {
+            throw ExecutionException("No executable compile steps were configured.")
         }
 
-        throw ExecutionException("No executable compile steps were configured.")
+        return LatexStepRunState(this, environment, configuredSteps)
     }
 
     fun hasDefaultWorkingDirectory(): Boolean = workingDirectory == null

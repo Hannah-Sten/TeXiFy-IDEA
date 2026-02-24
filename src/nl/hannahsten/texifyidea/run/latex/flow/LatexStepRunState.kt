@@ -13,7 +13,6 @@ import nl.hannahsten.texifyidea.run.latex.LatexStepRunConfigurationOptions
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepAutoInference
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepPlanBuilder
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepContext
-import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepPlan
 import nl.hannahsten.texifyidea.run.latex.step.LatexStepPresentation
 import nl.hannahsten.texifyidea.run.latex.steplog.LatexStepLogTabComponent
 import nl.hannahsten.texifyidea.util.Log
@@ -21,7 +20,6 @@ import nl.hannahsten.texifyidea.util.Log
 internal class LatexStepRunState(
     private val runConfig: LatexRunConfiguration,
     private val environment: ExecutionEnvironment,
-    private val plan: LatexRunStepPlan,
     private val configuredSteps: List<LatexStepRunConfigurationOptions>,
 ) : com.intellij.execution.configurations.RunProfileState {
 
