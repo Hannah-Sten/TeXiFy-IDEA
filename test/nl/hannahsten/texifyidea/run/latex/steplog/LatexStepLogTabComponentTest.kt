@@ -16,7 +16,7 @@ class LatexStepLogTabComponentTest : BasePlatformTestCase() {
         val compile = TestProcessHandler()
         val handler = StepAwareSequentialProcessHandler(
             listOf(
-                LatexStepExecution(0, "latex-compile", "Compile LaTeX", compile),
+                LatexStepExecution(0, "latex-compile", "Compile LaTeX", "s1", compile),
             )
         )
         val tab = LatexStepLogTabComponent(project, mainFile, handler)
@@ -45,8 +45,8 @@ class LatexStepLogTabComponentTest : BasePlatformTestCase() {
         val viewer = TestProcessHandler()
         val handler = StepAwareSequentialProcessHandler(
             listOf(
-                LatexStepExecution(0, "latex-compile", "Compile LaTeX", compile),
-                LatexStepExecution(1, "pdf-viewer", "Open PDF viewer", viewer),
+                LatexStepExecution(0, "latex-compile", "Compile LaTeX", "s1", compile),
+                LatexStepExecution(1, "pdf-viewer", "Open PDF viewer", "s2", viewer),
             )
         )
         val tab = LatexStepLogTabComponent(project, mainFile, handler)
@@ -93,9 +93,9 @@ class LatexStepLogTabComponentTest : BasePlatformTestCase() {
         val viewer = TestProcessHandler()
         val handler = StepAwareSequentialProcessHandler(
             listOf(
-                LatexStepExecution(0, "latex-compile", "Compile LaTeX", compile),
-                LatexStepExecution(1, "legacy-bibtex", "Run bibliography", bib),
-                LatexStepExecution(2, "pdf-viewer", "Open PDF viewer", viewer),
+                LatexStepExecution(0, "latex-compile", "Compile LaTeX", "s1", compile),
+                LatexStepExecution(1, "bibtex", "Run bibliography", "s2", bib),
+                LatexStepExecution(2, "pdf-viewer", "Open PDF viewer", "s3", viewer),
             )
         )
         val tab = LatexStepLogTabComponent(project, mainFile, handler)

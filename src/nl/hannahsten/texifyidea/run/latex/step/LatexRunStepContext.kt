@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.run.latex.step
 
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.run.latex.LatexCommonSettings
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunExecutionState
 
@@ -10,4 +11,8 @@ internal data class LatexRunStepContext(
     val environment: ExecutionEnvironment,
     val executionState: LatexRunExecutionState,
     val mainFile: VirtualFile,
-)
+) {
+
+    val common: LatexCommonSettings
+        get() = runConfig.model.common
+}

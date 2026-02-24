@@ -15,8 +15,8 @@ class StepAwareSequentialProcessHandlerTest : BasePlatformTestCase() {
         val second = TestProcessHandler()
         val handler = StepAwareSequentialProcessHandler(
             listOf(
-                LatexStepExecution(0, "latex-compile", "Compile LaTeX", first),
-                LatexStepExecution(1, "pdf-viewer", "Open PDF viewer", second),
+                LatexStepExecution(0, "latex-compile", "Compile LaTeX", "s1", first),
+                LatexStepExecution(1, "pdf-viewer", "Open PDF viewer", "s2", second),
             )
         )
 
@@ -73,9 +73,9 @@ class StepAwareSequentialProcessHandlerTest : BasePlatformTestCase() {
         val third = TestProcessHandler()
         val handler = StepAwareSequentialProcessHandler(
             listOf(
-                LatexStepExecution(0, "latex-compile", "Compile LaTeX", first),
-                LatexStepExecution(1, "legacy-bibtex", "Run bibliography", second),
-                LatexStepExecution(2, "pdf-viewer", "Open PDF viewer", third),
+                LatexStepExecution(0, "latex-compile", "Compile LaTeX", "s1", first),
+                LatexStepExecution(1, "bibtex", "Run bibliography", "s2", second),
+                LatexStepExecution(2, "pdf-viewer", "Open PDF viewer", "s3", third),
             )
         )
 

@@ -34,7 +34,7 @@ class LatexCompileSequenceComponentTest : BasePlatformTestCase() {
         }
 
         assertEquals(StepSchemaReadStatus.PARSED, runConfig.stepSchemaStatus)
-        assertEquals(listOf("latex-compile", "latex-compile", "pdf-viewer"), runConfig.stepSchemaTypes)
+        assertEquals(listOf("latex-compile", "pdf-viewer"), runConfig.stepSchemaTypes)
     }
 
     fun testUsesHorizontalWrapLayout() {
@@ -65,7 +65,7 @@ class LatexCompileSequenceComponentTest : BasePlatformTestCase() {
             val component = LatexCompileSequenceComponent(disposable)
             var callbackIndex = -2
             var callbackType: String? = "init"
-            component.onSelectionChanged = { index, type ->
+            component.onSelectionChanged = { index, _, type ->
                 callbackIndex = index
                 callbackType = type
             }
@@ -96,7 +96,7 @@ class LatexCompileSequenceComponentTest : BasePlatformTestCase() {
             val component = LatexCompileSequenceComponent(disposable)
             var callbackIndex = -1
             var callbackType: String? = null
-            component.onSelectionChanged = { index, type ->
+            component.onSelectionChanged = { index, _, type ->
                 callbackIndex = index
                 callbackType = type
             }
@@ -145,7 +145,7 @@ class LatexCompileSequenceComponentTest : BasePlatformTestCase() {
             LatexRunConfigurationProducer().configurationFactory,
             "Test run config"
         )
-        runConfig.stepSchemaTypes = listOf("latex-compile", "legacy-bibtex", "pdf-viewer")
+        runConfig.stepSchemaTypes = listOf("latex-compile", "bibtex", "pdf-viewer")
         runConfig.stepSchemaStatus = StepSchemaReadStatus.PARSED
 
         val disposable = Disposer.newDisposable()

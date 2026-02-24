@@ -22,7 +22,9 @@ import com.intellij.ui.components.labels.LinkLabel
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.WrapLayout
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexStepConfig
 import nl.hannahsten.texifyidea.run.latex.StepSchemaReadStatus
+import nl.hannahsten.texifyidea.run.latex.defaultStepFor
 import java.awt.Dimension
 import java.awt.FlowLayout
 import java.awt.Point
@@ -46,7 +48,6 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
     }
 
     private val addButton: InplaceButton = InplaceButton("Add step", AllIcons.General.Add) {
-        // InplaceButton passes MouseEvent as ActionEvent source, so always anchor to the button itself.
         showTypeSelectionPopup(addButton, ::addStep)
     }
 
@@ -66,8 +67,8 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
     private lateinit var runConfiguration: LatexRunConfiguration
 
     var changeListener: () -> Unit = {}
-    var onSelectionChanged: (index: Int, type: String?) -> Unit = { _, _ -> }
-    var onStepTypesChanged: (types: List<String>) -> Unit = {}
+    var onSelectionChanged: (index: Int, stepId: String?, type: String?) -> Unit = { _, _, _ -> }
+    var onStepsChanged: (steps: List<LatexStepConfig>) -> Unit = {}
 
     private var selectedIndex: Int = -1
 
@@ -93,11 +94,12 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
         addLabel.isVisible = stepButtons.none { it.isVisible }
         revalidate()
         repaint()
-        notifyStepTypesChanged()
+        notifyStepsChanged()
     }
 
     private fun addStep(type: String) {
-        stepButtons.add(StepButton(type))
+        val newStep = defaultStepFor(type) ?: return
+        stepButtons.add(StepButton(newStep))
         buildPanel()
         selectStep(stepButtons.lastIndex)
         changeListener()
@@ -129,10 +131,7 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
         stepButtons.clear()
         selectedIndex = -1
 
-        val stepTypes = configuration.stepSchemaTypes.ifEmpty {
-            LatexStepUiSupport.inferStepTypesFromLegacyConfiguration(configuration)
-        }
-        stepTypes.forEach { stepButtons.add(StepButton(it)) }
+        configuration.model.steps.forEach { step -> stepButtons.add(StepButton(step.deepCopy())) }
 
         buildPanel()
         normalizeSelection()
@@ -140,7 +139,9 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
 
     fun applyEditorTo(configuration: LatexRunConfiguration) {
         stepButtons.removeAll { !it.isVisible }
-        configuration.stepSchemaTypes = stepButtons.map { it.stepType }
+        configuration.model.steps = stepButtons
+            .map { it.stepConfig.deepCopy() }
+            .toMutableList()
         configuration.stepSchemaStatus = StepSchemaReadStatus.PARSED
     }
 
@@ -194,7 +195,6 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
             return null
         }
 
-        // In horizontal mode we insert before/after based on pointer in left/right half.
         val leftHalf = intersectedButton.bounds.centerX > event.point.x
         val replaceTarget = if (index < stepButtons.indexOf(event.attachedObject)) {
             if (!leftHalf) {
@@ -228,9 +228,15 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
 
     internal fun selectedStepIndex(): Int = selectedIndex
 
+    internal fun selectedStepId(): String? = stepButtons.getOrNull(selectedIndex)
+        ?.takeIf { it.isVisible }
+        ?.stepConfig
+        ?.id
+
     internal fun selectedStepType(): String? = stepButtons.getOrNull(selectedIndex)
         ?.takeIf { it.isVisible }
-        ?.stepType
+        ?.stepConfig
+        ?.type
 
     internal fun selectStep(index: Int) {
         if (index !in stepButtons.indices || !stepButtons[index].isVisible) {
@@ -240,7 +246,8 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
 
         selectedIndex = index
         refreshSelectionUi()
-        onSelectionChanged(selectedIndex, stepButtons[selectedIndex].stepType)
+        val selected = stepButtons[selectedIndex].stepConfig
+        onSelectionChanged(selectedIndex, selected.id, selected.type)
     }
 
     internal fun removeStepAt(index: Int) {
@@ -269,35 +276,36 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
         if (stepButtons.isEmpty()) {
             selectedIndex = -1
             refreshSelectionUi()
-            onSelectionChanged(-1, null)
+            onSelectionChanged(-1, null, null)
             return
         }
 
         val currentlyVisible = stepButtons.getOrNull(selectedIndex)?.isVisible == true
         if (currentlyVisible) {
             refreshSelectionUi()
-            onSelectionChanged(selectedIndex, stepButtons[selectedIndex].stepType)
+            val selected = stepButtons[selectedIndex].stepConfig
+            onSelectionChanged(selectedIndex, selected.id, selected.type)
             return
         }
 
         selectedIndex = -1
         refreshSelectionUi()
-        onSelectionChanged(-1, null)
+        onSelectionChanged(-1, null, null)
     }
 
     private fun refreshSelectionUi() {
-//        stepButtons.forEachIndexed { index, button ->
-//            button.setSelectedState(index == selectedIndex && button.isVisible)
-//        }
+        stepButtons.forEachIndexed { index, button ->
+            button.setSelectedState(index == selectedIndex && button.isVisible)
+        }
     }
 
-    private fun notifyStepTypesChanged() {
-        onStepTypesChanged(stepButtons.filter { it.isVisible }.map { it.stepType })
+    private fun notifyStepsChanged() {
+        onStepsChanged(stepButtons.filter { it.isVisible }.map { it.stepConfig.deepCopy() })
     }
 
-    private inner class StepButton(stepType: String) : TagButton("", { changeListener() }), DnDSource {
+    private inner class StepButton(stepConfig: LatexStepConfig) : TagButton("", { changeListener() }), DnDSource {
 
-        var stepType: String = stepType
+        var stepConfig: LatexStepConfig = stepConfig
             private set
 
         private var dropPlace: JLabel? = null
@@ -319,12 +327,13 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
                 override fun mouseClicked(e: MouseEvent) {
                     if (e.clickCount == 2) {
                         showTypeSelectionPopup(myButton) { selectedType ->
-                            this@StepButton.stepType = selectedType
+                            val replacement = defaultStepFor(selectedType) ?: return@showTypeSelectionPopup
+                            this@StepButton.stepConfig = replacement.copyWithIdentity(stepConfig.id, stepConfig.enabled)
                             updateFromStepType()
                             if (selectedIndex == stepButtons.indexOf(this@StepButton)) {
-                                onSelectionChanged(selectedIndex, selectedType)
+                                onSelectionChanged(selectedIndex, stepConfig.id, stepConfig.type)
                             }
-                            notifyStepTypesChanged()
+                            notifyStepsChanged()
                             changeListener()
                         }
                     }
@@ -350,8 +359,17 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
             layoutButtons()
         }
 
+        fun setSelectedState(selected: Boolean) {
+            if (selected) {
+                myButton.border = JBUI.Borders.customLine(com.intellij.ui.JBColor.namedColor("Component.focusColor", com.intellij.ui.JBColor.BLUE), 2)
+            }
+            else {
+                myButton.border = JBUI.Borders.empty(1)
+            }
+        }
+
         private fun updateFromStepType() {
-            updateButton(LatexStepUiSupport.description(stepType), LatexStepUiSupport.icon(stepType))
+            updateButton(LatexStepUiSupport.description(stepConfig.type), LatexStepUiSupport.icon(stepConfig.type))
             myButton.toolTipText = "Double-click to change step type. Drag and drop to reorder."
         }
 
@@ -380,6 +398,18 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
         }
 
         fun getButton(): JButton = myButton
+    }
+
+    private fun LatexStepConfig.copyWithIdentity(stepId: String, enabled: Boolean): LatexStepConfig = when (this) {
+        is nl.hannahsten.texifyidea.run.latex.LatexCompileStepConfig -> copy(id = stepId, enabled = enabled)
+        is nl.hannahsten.texifyidea.run.latex.LatexmkCompileStepConfig -> copy(id = stepId, enabled = enabled)
+        is nl.hannahsten.texifyidea.run.latex.PdfViewerStepConfig -> copy(id = stepId, enabled = enabled)
+        is nl.hannahsten.texifyidea.run.latex.BibtexStepConfig -> copy(id = stepId, enabled = enabled)
+        is nl.hannahsten.texifyidea.run.latex.MakeindexStepConfig -> copy(id = stepId, enabled = enabled)
+        is nl.hannahsten.texifyidea.run.latex.ExternalToolStepConfig -> copy(id = stepId, enabled = enabled)
+        is nl.hannahsten.texifyidea.run.latex.PythontexStepConfig -> copy(id = stepId, enabled = enabled)
+        is nl.hannahsten.texifyidea.run.latex.MakeglossariesStepConfig -> copy(id = stepId, enabled = enabled)
+        is nl.hannahsten.texifyidea.run.latex.XindyStepConfig -> copy(id = stepId, enabled = enabled)
     }
 
     private class AddStepAction(

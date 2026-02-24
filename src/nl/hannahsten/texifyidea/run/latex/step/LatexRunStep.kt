@@ -5,6 +5,7 @@ import com.intellij.execution.process.ProcessHandler
 
 internal interface LatexRunStep {
 
+    val configId: String
     val id: String
 
     @Throws(ExecutionException::class)

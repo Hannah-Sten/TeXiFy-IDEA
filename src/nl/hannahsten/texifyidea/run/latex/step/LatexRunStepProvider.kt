@@ -1,5 +1,7 @@
 package nl.hannahsten.texifyidea.run.latex.step
 
+import nl.hannahsten.texifyidea.run.latex.LatexStepConfig
+
 internal interface LatexRunStepProvider {
 
     /**
@@ -12,5 +14,5 @@ internal interface LatexRunStepProvider {
      */
     val aliases: Set<String>
 
-    fun create(spec: LatexRunStepSpec): LatexRunStep
+    fun create(stepConfig: LatexStepConfig): LatexRunStep
 }

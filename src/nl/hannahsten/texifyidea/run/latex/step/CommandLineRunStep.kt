@@ -7,6 +7,7 @@ import nl.hannahsten.texifyidea.run.common.createCompilationHandler
 import java.nio.file.Path
 
 internal class CommandLineRunStep(
+    override val configId: String,
     override val id: String,
     private val commandLineSupplier: (LatexRunStepContext) -> String,
     private val workingDirectorySupplier: (LatexRunStepContext) -> Path? = { defaultWorkingDirectory(it) },

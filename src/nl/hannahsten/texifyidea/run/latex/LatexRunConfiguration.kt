@@ -5,33 +5,17 @@ import com.intellij.execution.Executor
 import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.execution.configurations.*
-import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.Sdk
-import com.intellij.openapi.util.InvalidDataException
-import com.intellij.openapi.util.WriteExternalException
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiManager
-import nl.hannahsten.texifyidea.index.NewCommandsIndex
-import nl.hannahsten.texifyidea.lang.LatexLib
-import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
-import nl.hannahsten.texifyidea.lang.magic.allParentMagicComments
-import nl.hannahsten.texifyidea.lang.predefined.CommandNames
-import nl.hannahsten.texifyidea.psi.nameWithSlash
-import nl.hannahsten.texifyidea.psi.traverseCommands
-import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
-import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
-import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.latex.flow.LatexStepRunState
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogTabComponent
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepPlanBuilder
-import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepTypeInference
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCitationTool
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
@@ -39,144 +23,295 @@ import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdk
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.Log
-import nl.hannahsten.texifyidea.util.files.findFile
-import nl.hannahsten.texifyidea.util.files.referencedFileSet
-import nl.hannahsten.texifyidea.util.includedPackagesInFileset
-import nl.hannahsten.texifyidea.util.parser.hasBibliography
-import nl.hannahsten.texifyidea.util.parser.usesBiber
-import org.jdom.Element
-import java.io.File
 import java.nio.file.Path
-import java.util.Locale
 
 /**
- * @author Hannah Schellekens, Sten Wessel
+ * LaTeX run configuration backed by V2 model: common + step list + UI state.
  */
 class LatexRunConfiguration(
     project: Project,
     factory: ConfigurationFactory,
     name: String
-) : RunConfigurationBase<RunProfileState>(project, factory, name), LocatableConfiguration {
+) : RunConfigurationBase<LatexRunConfigurationOptions>(project, factory, name), LocatableConfiguration {
 
     companion object {
 
         internal const val DEFAULT_LATEXMK_EXTRA_ARGUMENTS = "-synctex=1"
     }
 
-    var compiler: LatexCompiler? = null
-    var compilerPath: String? = null
-    var pdfViewer: PdfViewer? = null
-    var viewerCommand: String? = null
+    @Transient
+    var executionState: LatexRunExecutionState = LatexRunExecutionState()
 
-    var compilerArguments: String? = null
-        set(compilerArguments) {
-            field = compilerArguments?.trim()
-            if (field?.isEmpty() == true) {
-                field = null
-            }
+    /** Whether the run configuration is currently auto-compiling. */
+    var isAutoCompiling = false
+
+    /**
+     * Legacy marker kept transient while tests are migrated to V2 model assertions.
+     */
+    @Transient
+    internal var stepSchemaStatus: StepSchemaReadStatus = StepSchemaReadStatus.PARSED
+
+    private var activeStepIdForExecution: String? = null
+
+    override fun getOptions(): LatexRunConfigurationOptions =
+        super.getOptions() as LatexRunConfigurationOptions
+
+    internal var model: LatexRunConfigModel
+        get() = options.model
+        set(value) {
+            options.model = value
+            executionState.clearInitialization()
         }
 
-    var expandMacrosEnvVariables = false
-    var environmentVariables: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT
-    var beforeRunCommand: String? = null
-
-    var mainFilePath: String? = null
+    var mainFilePath: String?
+        get() = model.common.mainFilePath
         set(value) {
-            field = value?.trim()?.ifEmpty { null }
+            model.common.mainFilePath = value?.trim()?.ifEmpty { null }
             executionState.clearInitialization()
         }
 
     /** Path to the directory containing the output files. */
-    var outputPath: Path? = LatexPathResolver.defaultOutputPath
+    var outputPath: Path?
+        get() = model.common.outputPath
+        set(value) {
+            model.common.outputPath = value
+            executionState.clearInitialization()
+        }
 
     /** Path to the directory containing the auxiliary files. */
-    var auxilPath: Path? = LatexPathResolver.defaultAuxilPath
-
-    var workingDirectory: Path? = null
-
-    var compileTwice = false
-    var outputFormat: Format = Format.PDF
-    var latexmkCompileMode: LatexmkCompileMode = LatexmkCompileMode.AUTO
-    var latexmkCustomEngineCommand: String? = null
+    var auxilPath: Path?
+        get() = model.common.auxilPath
         set(value) {
-            field = value?.trim()?.ifEmpty { null }
+            model.common.auxilPath = value
+            executionState.clearInitialization()
         }
-    var latexmkCitationTool: LatexmkCitationTool = LatexmkCitationTool.AUTO
-    var latexmkExtraArguments: String? = DEFAULT_LATEXMK_EXTRA_ARGUMENTS
+
+    var workingDirectory: Path?
+        get() = model.common.workingDirectory
         set(value) {
-            field = value?.trim()?.ifEmpty { null }
+            model.common.workingDirectory = value
+            executionState.clearInitialization()
+        }
+
+    var environmentVariables: EnvironmentVariablesData
+        get() = model.common.environmentVariables
+        set(value) {
+            model.common.environmentVariables = value
+        }
+
+    var expandMacrosEnvVariables: Boolean
+        get() = model.common.expandMacrosEnvVariables
+        set(value) {
+            model.common.expandMacrosEnvVariables = value
+        }
+
+    var latexDistribution: LatexDistributionType
+        get() = model.common.latexDistribution
+        set(value) {
+            model.common.latexDistribution = value
+            executionState.clearInitialization()
+        }
+
+    var compiler: LatexCompiler?
+        get() = when (val step = activeOrPrimaryCompileStep()) {
+            is LatexCompileStepConfig -> step.compiler
+            is LatexmkCompileStepConfig -> LatexCompiler.LATEXMK
+            else -> null
+        }
+        set(value) {
+            if (value == null) {
+                return
+            }
+            if (value == LatexCompiler.LATEXMK) {
+                ensurePrimaryCompileStepLatexmk()
+            }
+            else {
+                ensurePrimaryCompileStepClassic().compiler = value
+            }
+        }
+
+    var compilerPath: String?
+        get() = when (val step = activeOrPrimaryCompileStep()) {
+            is LatexCompileStepConfig -> step.compilerPath
+            is LatexmkCompileStepConfig -> step.compilerPath
+            else -> null
+        }
+        set(value) {
+            when (val step = activeOrPrimaryCompileStep()) {
+                is LatexCompileStepConfig -> step.compilerPath = value?.trim()?.ifEmpty { null }
+                is LatexmkCompileStepConfig -> step.compilerPath = value?.trim()?.ifEmpty { null }
+                else -> ensurePrimaryCompileStepClassic().compilerPath = value?.trim()?.ifEmpty { null }
+            }
+        }
+
+    var compilerArguments: String?
+        get() = when (val step = activeOrPrimaryCompileStep()) {
+            is LatexCompileStepConfig -> step.compilerArguments
+            is LatexmkCompileStepConfig -> step.compilerArguments
+            else -> null
+        }
+        set(value) {
+            val normalized = value?.trim()?.ifEmpty { null }
+            when (val step = activeOrPrimaryCompileStep()) {
+                is LatexCompileStepConfig -> step.compilerArguments = normalized
+                is LatexmkCompileStepConfig -> step.compilerArguments = normalized
+                else -> ensurePrimaryCompileStepClassic().compilerArguments = normalized
+            }
+        }
+
+    var outputFormat: Format
+        get() = when (val step = activeOrPrimaryCompileStep()) {
+            is LatexCompileStepConfig -> step.outputFormat
+            else -> Format.PDF
+        }
+        set(value) {
+            ensurePrimaryCompileStepClassic().outputFormat = value
+        }
+
+    var beforeRunCommand: String?
+        get() = when (val step = activeOrPrimaryCompileStep()) {
+            is LatexCompileStepConfig -> step.beforeRunCommand
+            is LatexmkCompileStepConfig -> step.beforeRunCommand
+            else -> null
+        }
+        set(value) {
+            val normalized = value?.trim()?.ifEmpty { null }
+            when (val step = activeOrPrimaryCompileStep()) {
+                is LatexCompileStepConfig -> step.beforeRunCommand = normalized
+                is LatexmkCompileStepConfig -> step.beforeRunCommand = normalized
+                else -> ensurePrimaryCompileStepClassic().beforeRunCommand = normalized
+            }
+        }
+
+    var latexmkCompileMode: LatexmkCompileMode
+        get() = (activeOrPrimaryCompileStep() as? LatexmkCompileStepConfig)?.latexmkCompileMode ?: LatexmkCompileMode.AUTO
+        set(value) {
+            ensurePrimaryCompileStepLatexmk().latexmkCompileMode = value
+        }
+
+    var latexmkCustomEngineCommand: String?
+        get() = (activeOrPrimaryCompileStep() as? LatexmkCompileStepConfig)?.latexmkCustomEngineCommand
+        set(value) {
+            ensurePrimaryCompileStepLatexmk().latexmkCustomEngineCommand = value?.trim()?.ifEmpty { null }
+        }
+
+    var latexmkCitationTool: LatexmkCitationTool
+        get() = (activeOrPrimaryCompileStep() as? LatexmkCompileStepConfig)?.latexmkCitationTool ?: LatexmkCitationTool.AUTO
+        set(value) {
+            ensurePrimaryCompileStepLatexmk().latexmkCitationTool = value
+        }
+
+    var latexmkExtraArguments: String?
+        get() = (activeOrPrimaryCompileStep() as? LatexmkCompileStepConfig)?.latexmkExtraArguments
+            ?: DEFAULT_LATEXMK_EXTRA_ARGUMENTS
+        set(value) {
+            ensurePrimaryCompileStepLatexmk().latexmkExtraArguments = value?.trim()?.ifEmpty { null }
+        }
+
+    @Deprecated("Use explicit repeated compile steps in model.steps")
+    var compileTwice: Boolean
+        get() = model.steps.count { it.enabled && (it.type == LatexStepType.LATEX_COMPILE || it.type == LatexStepType.LATEXMK_COMPILE) } > 1
+        set(value) {
+            val compileIndices = model.steps.withIndex()
+                .filter { (_, step) -> step.enabled && (step.type == LatexStepType.LATEX_COMPILE || step.type == LatexStepType.LATEXMK_COMPILE) }
+                .map { it.index }
+            if (compileIndices.isEmpty()) {
+                model.steps.add(0, LatexCompileStepConfig())
+                if (value) {
+                    model.steps.add(1, LatexCompileStepConfig())
+                }
+                return
+            }
+            if (value && compileIndices.size < 2) {
+                model.steps.add(compileIndices.first() + 1, model.steps[compileIndices.first()].deepCopy())
+            }
+            if (!value && compileIndices.size > 1) {
+                compileIndices.drop(1).asReversed().forEach { index -> model.steps.removeAt(index) }
+            }
+        }
+
+    var pdfViewer: PdfViewer?
+        get() {
+            val viewerName = activeOrPrimaryViewerStep()?.pdfViewerName
+            return PdfViewer.availableViewers.firstOrNull { it.name == viewerName }
+                ?: PdfViewer.firstAvailableViewer
+        }
+        set(value) {
+            val step = ensurePrimaryViewerStep()
+            step.pdfViewerName = value?.name
+        }
+
+    var viewerCommand: String?
+        get() = activeOrPrimaryViewerStep()?.customViewerCommand
+        set(value) {
+            ensurePrimaryViewerStep().customViewerCommand = value?.trim()?.ifEmpty { null }
+        }
+
+    /** Whether the pdf viewer should claim focus after compilation. */
+    var requireFocus: Boolean
+        get() = activeOrPrimaryViewerStep()?.requireFocus ?: true
+        set(value) {
+            ensurePrimaryViewerStep().requireFocus = value
         }
 
     /**
-     * The LaTeX distribution to use for this run configuration.
-     *
-     * SDKs are used as an optional way to provide explicit paths for a distribution type.
-     * When no SDK is configured for a distribution type, the plugin falls back to finding
-     * executables in PATH. This way, we can support also IDE's without explicit SDK configuration
-     * (e.g. PyCharm).
-     *
-     * Note: This approach means you cannot select between multiple SDKs of the same type
-     * (e.g., TeX Live 2023 vs TeX Live 2024) directly in the run configuration. To use a
-     * specific SDK version, configure it as the project SDK or module SDK and select
-     * PROJECT_SDK or MODULE_SDK.
+     * Legacy property kept as adapter while V2 model-based call sites are migrated.
      */
-    var latexDistribution: LatexDistributionType = LatexDistributionType.MODULE_SDK
+    @Deprecated("Use model.steps", ReplaceWith("model.steps.map { it.type }"))
+    internal var stepSchemaTypes: List<String>
+        get() = model.steps.map { it.type }
+        set(value) {
+            model.steps = value.mapNotNull(::defaultStepFor).toMutableList()
+            if (model.steps.isEmpty()) {
+                model.steps += LatexCompileStepConfig()
+                model.steps += PdfViewerStepConfig()
+            }
+        }
 
-    @Transient
-    var executionState: LatexRunExecutionState = LatexRunExecutionState()
+    /**
+     * Legacy adapter: by-type map now materialized over by-step-id map.
+     */
+    @Deprecated("Use model.ui.stepUiOptionIdsByStepId")
+    internal var stepUiOptionIdsByType: MutableMap<String, MutableSet<String>>
+        get() = model.ui.stepUiOptionIdsByStepId.entries
+            .mapNotNull { (stepId, ids) ->
+                val stepType = model.steps.firstOrNull { it.id == stepId }?.type ?: return@mapNotNull null
+                stepType to ids
+            }
+            .groupBy({ it.first }, { it.second })
+            .mapValues { (_, grouped) -> grouped.flatten().toMutableSet() }
+            .toMutableMap()
+        set(value) {
+            val byStep = mutableMapOf<String, MutableSet<String>>()
+            model.steps.forEach { step ->
+                val ids = value[step.type]?.toMutableSet() ?: mutableSetOf()
+                if (ids.isNotEmpty()) {
+                    byStep[step.id] = ids
+                }
+            }
+            model.ui.stepUiOptionIdsByStepId = byStep
+        }
 
-    @Transient
-    internal var stepSchemaStatus: StepSchemaReadStatus = StepSchemaReadStatus.MISSING
+    var stepUiOptionIdsByStepId: MutableMap<String, MutableSet<String>>
+        get() = model.ui.stepUiOptionIdsByStepId
+        set(value) {
+            model.ui.stepUiOptionIdsByStepId = value
+        }
 
-    @Transient
-    internal var stepSchemaTypes: List<String> = emptyList()
-
-    @Transient
-    internal var stepUiOptionIdsByType: MutableMap<String, MutableSet<String>> = mutableMapOf()
-
-    /** Whether the pdf viewer should claim focus after compilation. */
-    var requireFocus = true
-
-    /** Whether the run configuration is currently auto-compiling.     */
-    var isAutoCompiling = false
-
-    @Volatile
-    private var bibRunConfigIds = mutableSetOf<String>()
-
+    @Deprecated("Auxiliary run-config bridge removed; use strong-typed steps in model.steps")
     var bibRunConfigs: Set<RunnerAndConfigurationSettings>
-        get() = bibRunConfigIds.mapNotNull {
-            RunManagerImpl.getInstanceImpl(project).getConfigurationById(it)
-        }.toSet()
-        set(bibRunConfigs) {
-            bibRunConfigIds = mutableSetOf()
-            bibRunConfigs.forEach {
-                bibRunConfigIds.add(it.uniqueID)
-            }
-        }
+        get() = emptySet()
+        set(_) {}
 
-    private var makeindexRunConfigIds = mutableSetOf<String>()
+    @Deprecated("Auxiliary run-config bridge removed; use strong-typed steps in model.steps")
     var makeindexRunConfigs: Set<RunnerAndConfigurationSettings>
-        get() = makeindexRunConfigIds.mapNotNull {
-            RunManagerImpl.getInstanceImpl(project).getConfigurationById(it)
-        }.toSet()
-        set(makeindexRunConfigs) {
-            makeindexRunConfigIds = mutableSetOf()
-            makeindexRunConfigs.forEach {
-                makeindexRunConfigIds.add(it.uniqueID)
-            }
-        }
+        get() = emptySet()
+        set(_) {}
 
-    private var externalToolRunConfigIds = mutableSetOf<String>()
+    @Deprecated("Auxiliary run-config bridge removed; use strong-typed steps in model.steps")
     var externalToolRunConfigs: Set<RunnerAndConfigurationSettings>
-        get() = externalToolRunConfigIds.mapNotNull {
-            RunManagerImpl.getInstanceImpl(project).getConfigurationById(it)
-        }.toSet()
-        set(externalToolRunConfigs) {
-            externalToolRunConfigIds = mutableSetOf()
-            externalToolRunConfigs.forEach {
-                externalToolRunConfigIds.add(it.uniqueID)
-            }
-        }
+        get() = emptySet()
+        set(_) {}
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = LatexSettingsEditor(this)
 
@@ -187,21 +322,17 @@ class LatexRunConfiguration(
         super.createAdditionalTabComponents(manager, startedProcess)
     }
 
-    /**
-     * Legacy log tab construction kept temporarily for quick rollback during migration.
-     */
     @Suppress("unused")
-    private fun createLegacyLogTabComponent(startedProcess: ProcessHandler): LatexLogTabComponent = LatexLogTabComponent(project, executionState.resolvedMainFile, startedProcess)
+    private fun createLegacyLogTabComponent(startedProcess: ProcessHandler): LatexLogTabComponent =
+        LatexLogTabComponent(project, executionState.resolvedMainFile, startedProcess)
 
     @Throws(RuntimeConfigurationException::class)
     override fun checkConfiguration() {
-        if (compiler == null) {
-            throw RuntimeConfigurationError(
-                "Run configuration is invalid: no compiler selected"
-            )
-        }
         if (mainFilePath.isNullOrBlank()) {
             throw RuntimeConfigurationError("Run configuration is invalid: no main LaTeX file path selected")
+        }
+        if (model.steps.none { it.enabled }) {
+            throw RuntimeConfigurationError("Run configuration is invalid: no enabled compile steps")
         }
     }
 
@@ -210,143 +341,55 @@ class LatexRunConfiguration(
         executor: Executor,
         environment: ExecutionEnvironment
     ): RunProfileState {
-        // Manual run boundary: reruns in aux chain set isFirstRunConfig=false, so do not reset there.
         if (executionState.isFirstRunConfig) {
             executionState.prepareForManualRun()
         }
 
-        val configuredStepTypes = stepSchemaTypes.ifEmpty {
-            LatexRunStepTypeInference.inferFromRunConfiguration(this)
+        if (model.steps.none { it.enabled }) {
+            model.steps = mutableListOf(LatexCompileStepConfig(), PdfViewerStepConfig())
         }
-        val configuredPlan = LatexRunStepPlanBuilder.build(configuredStepTypes)
+
+        val configuredSteps = model.steps.filter { it.enabled }
+        val configuredPlan = LatexRunStepPlanBuilder.build(configuredSteps)
         if (configuredPlan.unsupportedTypes.isNotEmpty()) {
             Log.warn("Unsupported compile-step types in schema: ${configuredPlan.unsupportedTypes.joinToString(", ")}")
         }
 
         if (configuredPlan.steps.isNotEmpty()) {
-            return LatexStepRunState(this, environment, configuredPlan)
-        }
-
-        val inferredStepTypes = LatexRunStepTypeInference.inferFromRunConfiguration(this)
-        val inferredPlan = LatexRunStepPlanBuilder.build(inferredStepTypes)
-        if (inferredPlan.steps.isNotEmpty()) {
-            Log.warn("Compile-step sequence had no executable steps, falling back to inferred sequence: ${inferredStepTypes.joinToString(" -> ")}")
-            return LatexStepRunState(this, environment, inferredPlan)
+            return LatexStepRunState(this, environment, configuredPlan, configuredSteps)
         }
 
         throw ExecutionException("No executable compile steps were configured.")
     }
 
-    @Throws(InvalidDataException::class)
-    override fun readExternal(element: Element) {
-        super<RunConfigurationBase>.readExternal(element)
-        LatexRunConfigurationPersistence.readInto(this, element)
-    }
-
-    @Throws(WriteExternalException::class)
-    override fun writeExternal(element: Element) {
-        super<RunConfigurationBase>.writeExternal(element)
-        LatexRunConfigurationPersistence.writeFrom(this, element)
-    }
-
-    /**
-     * Create a new bib run config and add it to the set.
-     */
+    @Deprecated("Auxiliary run-config bridge removed; use strong-typed steps in model.steps")
     internal fun generateBibRunConfig() {
-        val mainFile = executionState.resolvedMainFile ?: LatexRunConfigurationStaticSupport.resolveMainFile(this)
-        val psiFile = mainFile?.let { PsiManager.getInstance(project).findFile(it) }
-            ?: executionState.psiFile?.element
-            ?: return
-        val compilerFromMagicComment: Pair<BibliographyCompiler, String>? by lazy {
-            val runCommand = psiFile.allParentMagicComments()
-                .value(DefaultMagicKeys.BIBTEXCOMPILER) ?: return@lazy null
-            val compilerString = if (runCommand.contains(' ')) {
-                runCommand.let { it.subSequence(0, it.indexOf(' ')) }.trim().toString()
-            }
-            else runCommand
-            val compiler = BibliographyCompiler.valueOf(compilerString.uppercase(Locale.getDefault()))
-            val compilerArguments = runCommand.removePrefix(compilerString).trim()
-            Pair(compiler, compilerArguments)
-        }
-
-        val defaultCompiler = when {
-            compilerFromMagicComment != null -> compilerFromMagicComment!!.first
-            psiFile.hasBibliography() -> BibliographyCompiler.BIBTEX
-            psiFile.usesBiber() -> BibliographyCompiler.BIBER
-            else -> return
-        }
-
-        val usesChapterbib = psiFile.includedPackagesInFileset().contains(LatexLib.CHAPTERBIB)
-        if (!usesChapterbib) {
-            addBibRunConfig(defaultCompiler, mainFile, compilerFromMagicComment?.second)
+        if (model.steps.any { it.type == LatexStepType.BIBTEX }) {
             return
         }
-
-        val allBibliographyCommands = NewCommandsIndex.getByNameInFileSet(CommandNames.BIBLIOGRAPHY, psiFile)
-        psiFile.traverseCommands()
-            .filter { it.nameWithSlash == CommandNames.INCLUDE }
-            .flatMap { command -> command.requiredParametersText() }
-            .forEach { filename ->
-                val chapterMainFile = psiFile.findFile(filename, supportsAnyExtension = true) ?: return@forEach
-                val chapterFiles = chapterMainFile.referencedFileSet().toMutableSet().apply { add(chapterMainFile) }
-                val chapterHasBibliography = allBibliographyCommands.any { it.containingFile in chapterFiles }
-                if (chapterHasBibliography) {
-                    addBibRunConfig(defaultCompiler, chapterMainFile.virtualFile, compilerFromMagicComment?.second)
-                }
-            }
+        val insertAfter = model.steps.indexOfFirst { it.type == LatexStepType.LATEX_COMPILE || it.type == LatexStepType.LATEXMK_COMPILE }
+        val insertIndex = if (insertAfter >= 0) insertAfter + 1 else model.steps.size
+        model.steps.add(insertIndex, BibtexStepConfig())
     }
 
-    /**
-     * All run configs in the chain except the LaTeX ones.
-     */
-    fun getAllAuxiliaryRunConfigs(): Set<RunnerAndConfigurationSettings> = bibRunConfigs + makeindexRunConfigs + externalToolRunConfigs
-
-    private fun addBibRunConfig(
-        defaultCompiler: BibliographyCompiler,
-        mainFile: VirtualFile?,
-        compilerArguments: String? = null
-    ) {
-        val runManager = RunManagerImpl.getInstanceImpl(project)
-        val bibSettings = runManager.createConfiguration("", LatexConfigurationFactory(BibtexRunConfigurationType()))
-        val bibtexRunConfiguration = bibSettings.configuration as BibtexRunConfiguration
-
-        bibtexRunConfiguration.compiler = defaultCompiler
-        if (compilerArguments != null) bibtexRunConfiguration.compilerArguments = compilerArguments
-        bibtexRunConfiguration.mainFile = mainFile
-        bibtexRunConfiguration.setSuggestedName()
-        bibtexRunConfiguration.setDefaultDistribution(getLatexDistributionType())
-
-        if (!getLatexDistributionType().isMiktex(project, mainFile)) {
-            if (mainFile != null && executionState.resolvedOutputDir != mainFile.parent) {
-                bibtexRunConfiguration.environmentVariables = bibtexRunConfiguration.environmentVariables.with(
-                    mapOf(
-                        "BIBINPUTS" to mainFile.parent.path,
-                        "BSTINPUTS" to mainFile.parent.path + File.pathSeparator
-                    )
-                )
-            }
-        }
-
-        runManager.addConfiguration(bibSettings)
-        bibRunConfigs += setOf(bibSettings)
-    }
+    @Deprecated("Auxiliary run-config bridge removed; use strong-typed steps in model.steps")
+    fun getAllAuxiliaryRunConfigs(): Set<RunnerAndConfigurationSettings> = emptySet()
 
     fun hasDefaultWorkingDirectory(): Boolean = workingDirectory == null
 
     fun setDefaultCompiler() {
-        compiler = LatexCompiler.PDFLATEX
+        ensurePrimaryCompileStepClassic().compiler = LatexCompiler.PDFLATEX
     }
 
     fun setDefaultPdfViewer() {
-        pdfViewer = PdfViewer.firstAvailableViewer
+        ensurePrimaryViewerStep().pdfViewerName = PdfViewer.firstAvailableViewer?.name
     }
 
     fun setDefaultOutputFormat() {
-        outputFormat = Format.PDF
+        ensurePrimaryCompileStepClassic().outputFormat = Format.PDF
     }
 
     fun setDefaultLatexDistribution() {
-        // Default to MODULE_SDK which provides the best experience for multi-module projects
         latexDistribution = LatexDistributionType.MODULE_SDK
     }
 
@@ -371,15 +414,10 @@ class LatexRunConfiguration(
 
     /**
      * Get the effective LaTeX distribution type for this run configuration.
-     *
-     * For MODULE_SDK and PROJECT_SDK: resolves to the actual distribution type of the SDK.
-     * For concrete distribution types: returns the type directly.
-     * Returns TEXLIVE as fallback when no SDK is configured.
      */
     fun getLatexDistributionType(): LatexDistributionType {
         val sdk = getLatexSdk()
         val type = (sdk?.sdkType as? LatexSdk?)?.getLatexDistributionType(sdk) ?: latexDistribution
-        // It could be, user has selected module/project SDK but it's not valid, in that case use default
         return if (type == LatexDistributionType.MODULE_SDK || type == LatexDistributionType.PROJECT_SDK) {
             LatexDistributionType.TEXLIVE
         }
@@ -397,56 +435,133 @@ class LatexRunConfiguration(
         return fileNameWithoutExtension == name
     }
 
-    fun setAuxRunConfigIds(ids: Set<String>) {
-        bibRunConfigIds = ids.toMutableSet()
-    }
-
-    fun setMakeindexRunConfigIds(ids: Set<String>) {
-        makeindexRunConfigIds = ids.toMutableSet()
-    }
-
-    fun setExternalToolRunConfigIds(ids: Set<String>) {
-        externalToolRunConfigIds = ids.toMutableSet()
-    }
-
-    fun getBibRunConfigIds(): Set<String> = bibRunConfigIds
-    fun getMakeindexRunConfigIds(): Set<String> = makeindexRunConfigIds
-    fun getExternalToolRunConfigIds(): Set<String> = externalToolRunConfigIds
-
     override fun suggestedName(): String? = LatexRunConfigurationStaticSupport.mainFileNameWithoutExtension(this)
 
-    override fun toString(): String = "LatexRunConfiguration{" + "compiler=" + compiler +
-        ", compilerPath=" + compilerPath +
-        ", mainFilePath=" + mainFilePath +
-        ", outputFormat=" + outputFormat +
+    @Deprecated("Removed in V2")
+    fun setAuxRunConfigIds(ids: Set<String>) {
+    }
+
+    @Deprecated("Removed in V2")
+    fun setMakeindexRunConfigIds(ids: Set<String>) {
+    }
+
+    @Deprecated("Removed in V2")
+    fun setExternalToolRunConfigIds(ids: Set<String>) {
+    }
+
+    @Deprecated("Removed in V2")
+    fun getBibRunConfigIds(): Set<String> = emptySet()
+
+    @Deprecated("Removed in V2")
+    fun getMakeindexRunConfigIds(): Set<String> = emptySet()
+
+    @Deprecated("Removed in V2")
+    fun getExternalToolRunConfigIds(): Set<String> = emptySet()
+
+    override fun toString(): String = "LatexRunConfiguration{" +
+        "mainFilePath=$mainFilePath" +
+        ", steps=${model.steps.map { it.type }}" +
         '}'.toString()
 
     override fun clone(): RunConfiguration {
         val cloned = super.clone() as LatexRunConfiguration
         cloned.executionState = LatexRunExecutionState()
-        cloned.stepSchemaStatus = StepSchemaReadStatus.MISSING
-        cloned.stepSchemaTypes = emptyList()
-        cloned.stepUiOptionIdsByType = mutableMapOf()
+        cloned.stepSchemaStatus = StepSchemaReadStatus.PARSED
+        cloned.model = model.deepCopy()
+        cloned.isAutoCompiling = false
+        cloned.activeStepIdForExecution = null
         return cloned
     }
 
-    /**
-     * Set [outputPath]
-     */
     override fun setFileOutputPath(fileOutputPath: String) {
         if (fileOutputPath.isBlank()) return
         this.outputPath = pathOrNull(fileOutputPath)
     }
 
-    /**
-     * Set [auxilPath]
-     */
     fun setFileAuxilPath(fileAuxilPath: String) {
         if (fileAuxilPath.isBlank()) return
         this.auxilPath = pathOrNull(fileAuxilPath)
     }
 
-    /**
-     * Whether an auxil or out directory is used, i.e. whether not both are set to the directory of the main file
-     */
+    internal fun activateStepForExecution(stepId: String?) {
+        activeStepIdForExecution = stepId
+    }
+
+    private fun activeOrPrimaryCompileStep(): LatexStepConfig? {
+        val active = activeStepIdForExecution
+            ?.let { id -> model.steps.firstOrNull { it.id == id && it.enabled } }
+        if (active is LatexCompileStepConfig || active is LatexmkCompileStepConfig) {
+            return active
+        }
+
+        return model.steps.firstOrNull {
+            it.enabled && (it is LatexCompileStepConfig || it is LatexmkCompileStepConfig)
+        }
+    }
+
+    private fun activeOrPrimaryViewerStep(): PdfViewerStepConfig? {
+        val active = activeStepIdForExecution
+            ?.let { id -> model.steps.firstOrNull { it.id == id && it.enabled } }
+        if (active is PdfViewerStepConfig) {
+            return active
+        }
+
+        return model.steps.firstOrNull { it.enabled && it is PdfViewerStepConfig } as? PdfViewerStepConfig
+    }
+
+    private fun ensurePrimaryCompileStepClassic(): LatexCompileStepConfig {
+        val index = model.steps.indexOfFirst {
+            it.enabled && (it is LatexCompileStepConfig || it is LatexmkCompileStepConfig)
+        }
+        return when {
+            index < 0 -> LatexCompileStepConfig().also { model.steps.add(0, it) }
+            model.steps[index] is LatexCompileStepConfig -> model.steps[index] as LatexCompileStepConfig
+            else -> {
+                val old = model.steps[index] as LatexmkCompileStepConfig
+                LatexCompileStepConfig(
+                    id = old.id,
+                    enabled = old.enabled,
+                    compiler = LatexCompiler.PDFLATEX,
+                    compilerPath = old.compilerPath,
+                    compilerArguments = old.compilerArguments,
+                    outputFormat = Format.PDF,
+                    beforeRunCommand = old.beforeRunCommand,
+                ).also { model.steps[index] = it }
+            }
+        }
+    }
+
+    private fun ensurePrimaryCompileStepLatexmk(): LatexmkCompileStepConfig {
+        val index = model.steps.indexOfFirst {
+            it.enabled && (it is LatexCompileStepConfig || it is LatexmkCompileStepConfig)
+        }
+        return when {
+            index < 0 -> LatexmkCompileStepConfig().also { model.steps.add(0, it) }
+            model.steps[index] is LatexmkCompileStepConfig -> model.steps[index] as LatexmkCompileStepConfig
+            else -> {
+                val old = model.steps[index] as LatexCompileStepConfig
+                LatexmkCompileStepConfig(
+                    id = old.id,
+                    enabled = old.enabled,
+                    compilerPath = old.compilerPath,
+                    compilerArguments = old.compilerArguments,
+                    latexmkCompileMode = LatexmkCompileMode.AUTO,
+                    latexmkCustomEngineCommand = null,
+                    latexmkCitationTool = LatexmkCitationTool.AUTO,
+                    latexmkExtraArguments = DEFAULT_LATEXMK_EXTRA_ARGUMENTS,
+                    beforeRunCommand = old.beforeRunCommand,
+                ).also { model.steps[index] = it }
+            }
+        }
+    }
+
+    private fun ensurePrimaryViewerStep(): PdfViewerStepConfig {
+        val index = model.steps.indexOfFirst { it.enabled && it is PdfViewerStepConfig }
+        return if (index >= 0) {
+            model.steps[index] as PdfViewerStepConfig
+        }
+        else {
+            PdfViewerStepConfig().also { model.steps.add(it) }
+        }
+    }
 }

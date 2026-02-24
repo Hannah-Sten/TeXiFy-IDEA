@@ -1,11 +1,10 @@
 package nl.hannahsten.texifyidea.run.latex.ui.fragments
 
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
-import com.intellij.openapi.options.SettingsEditor
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.latex.StepUiOptionIds
+import nl.hannahsten.texifyidea.run.latex.*
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepProviders
 import java.awt.BorderLayout
 import java.awt.CardLayout
@@ -26,8 +25,11 @@ internal class LatexStepSettingsComponent(
 
     var changeListener: () -> Unit = {}
 
+    private var selectedStepId: String? = null
     private var selectedStepType: String? = null
-    private var stepTypesInSequence: List<String> = emptyList()
+    private var stepsById: Map<String, LatexStepConfig> = emptyMap()
+    private var boundRunConfig: LatexRunConfiguration? = null
+
     private var currentCardId: String = CARD_UNSUPPORTED
 
     private val cardLayout = CardLayout()
@@ -61,51 +63,50 @@ internal class LatexStepSettingsComponent(
     }
 
     fun resetEditorFrom(runConfig: LatexRunConfiguration) {
-        resetState(
-            state = compileState,
-            runConfig = runConfig,
-            stepType = StepUiOptionIds.LATEX_COMPILE
-        )
-        resetState(
-            state = latexmkState,
-            runConfig = runConfig,
-            stepType = StepUiOptionIds.LATEXMK_COMPILE
-        )
-        resetState(
-            state = viewerState,
-            runConfig = runConfig,
-            stepType = StepUiOptionIds.PDF_VIEWER
-        )
-        compileSettings.resetFrom(compileState)
-        latexmkSettings.resetFrom(latexmkState)
-        viewerSettings.resetFrom(viewerState)
-        showCardForStepType(selectedStepType)
-    }
+        boundRunConfig = runConfig
+        stepsById = runConfig.model.steps.associateBy { it.id }
 
-    fun applyEditorTo(runConfig: LatexRunConfiguration) {
         compileState.runConfig = runConfig
         latexmkState.runConfig = runConfig
         viewerState.runConfig = runConfig
 
-        when (activeCompileStepType()) {
-            StepUiOptionIds.LATEXMK_COMPILE -> latexmkSettings.applyTo(latexmkState)
-            StepUiOptionIds.LATEX_COMPILE -> compileSettings.applyTo(compileState)
+        if (selectedStepId !in stepsById.keys) {
+            selectedStepId = null
+            selectedStepType = null
         }
-        viewerSettings.applyTo(viewerState)
-        runConfig.stepUiOptionIdsByType = mutableMapOf<String, MutableSet<String>>().apply {
-            putIfNotEmpty(StepUiOptionIds.LATEX_COMPILE, optionIdsOf(compileState))
-            putIfNotEmpty(StepUiOptionIds.LATEXMK_COMPILE, optionIdsOf(latexmkState))
-            putIfNotEmpty(StepUiOptionIds.PDF_VIEWER, optionIdsOf(viewerState))
-        }
-    }
 
-    fun onStepSelectionChanged(index: Int, type: String?) {
-        selectedStepType = canonicalType(type)
+        bindSelectedStepToState()
         showCardForStepType(selectedStepType)
     }
 
-    fun onStepTypesChanged(types: List<String>) {
-        stepTypesInSequence = types.mapNotNull(::canonicalType)
+    fun applyEditorTo(runConfig: LatexRunConfiguration) {
+        applyStateIfBound(runConfig, compileState, compileSettings)
+        applyStateIfBound(runConfig, latexmkState, latexmkSettings)
+        applyStateIfBound(runConfig, viewerState, viewerSettings)
+    }
+
+    fun onStepSelectionChanged(index: Int, stepId: String?, type: String?) {
+        val runConfig = boundRunConfig ?: return
+        flushCurrentCard(runConfig)
+
+        selectedStepId = stepId
+        selectedStepType = canonicalType(type)
+        bindSelectedStepToState()
+        showCardForStepType(selectedStepType)
+    }
+
+    fun onStepsChanged(steps: List<LatexStepConfig>) {
+        val runConfig = boundRunConfig ?: return
+        flushCurrentCard(runConfig)
+
+        stepsById = steps.associateBy { it.id }
+        if (selectedStepId !in stepsById.keys) {
+            selectedStepId = null
+            selectedStepType = null
+        }
+
+        bindSelectedStepToState()
+        showCardForStepType(selectedStepType)
     }
 
     internal fun currentCardId(): String = currentCardId
@@ -115,23 +116,13 @@ internal class LatexStepSettingsComponent(
 
     private fun showCardForStepType(type: String?) {
         when (type) {
-            StepUiOptionIds.LATEX_COMPILE,
-            -> {
-                showCard(CARD_COMPILE)
-            }
-
-            StepUiOptionIds.LATEXMK_COMPILE -> {
-                showCard(CARD_LATEXMK)
-            }
-
-            StepUiOptionIds.PDF_VIEWER -> {
-                showCard(CARD_VIEWER)
-            }
-
+            LatexStepType.LATEX_COMPILE -> showCard(CARD_COMPILE)
+            LatexStepType.LATEXMK_COMPILE -> showCard(CARD_LATEXMK)
+            LatexStepType.PDF_VIEWER -> showCard(CARD_VIEWER)
             else -> {
                 val message = when {
                     type.isNullOrBlank() -> "Select a step in Compile sequence to configure it."
-                    else -> "${LatexStepUiSupport.description(type)} settings are not available yet. Use Advanced options (legacy)."
+                    else -> "${LatexStepUiSupport.description(type)} settings are not available yet."
                 }
                 unsupportedSettings.setMessage(message)
                 showCard(CARD_UNSUPPORTED)
@@ -153,42 +144,99 @@ internal class LatexStepSettingsComponent(
         return LatexRunStepProviders.find(type)?.type ?: type.trim().lowercase()
     }
 
-    private fun activeCompileStepType(): String? {
-        val firstCompileType = stepTypesInSequence.firstOrNull {
-            it == StepUiOptionIds.LATEX_COMPILE || it == StepUiOptionIds.LATEXMK_COMPILE
-        }
-        return when (firstCompileType) {
-            StepUiOptionIds.LATEXMK_COMPILE -> StepUiOptionIds.LATEXMK_COMPILE
-            StepUiOptionIds.LATEX_COMPILE -> StepUiOptionIds.LATEX_COMPILE
-            else -> selectedStepType
-        }
-    }
-
     private fun wrapEditor(editor: SettingsEditor<StepFragmentedState>): JPanel = JPanel(BorderLayout()).apply {
         add(editor.component, BorderLayout.CENTER)
     }
 
-    private fun resetState(
+    private fun bindSelectedStepToState() {
+        val runConfig = boundRunConfig ?: return
+        val selectedStep = selectedStepId?.let { stepsById[it] }
+
+        when (selectedStep) {
+            is LatexCompileStepConfig -> {
+                bindStateForStep(compileState, runConfig, selectedStep)
+                compileSettings.resetFrom(compileState)
+            }
+
+            is LatexmkCompileStepConfig -> {
+                bindStateForStep(latexmkState, runConfig, selectedStep)
+                latexmkSettings.resetFrom(latexmkState)
+            }
+
+            is PdfViewerStepConfig -> {
+                bindStateForStep(viewerState, runConfig, selectedStep)
+                viewerSettings.resetFrom(viewerState)
+            }
+
+            else -> {
+            }
+        }
+    }
+
+    private fun bindStateForStep(
         state: StepFragmentedState,
         runConfig: LatexRunConfiguration,
-        stepType: String,
+        step: LatexStepConfig,
     ) {
         state.runConfig = runConfig
-        state.selectedOptions = runConfig.stepUiOptionIdsByType[stepType]
+        state.selectedStepConfig = step
+        state.selectedOptions = runConfig.model.ui.stepUiOptionIdsByStepId[step.id]
             .orEmpty()
             .map { com.intellij.execution.ui.FragmentedSettings.Option(it, true) }
             .toMutableList()
     }
 
-    private fun optionIdsOf(state: StepFragmentedState): MutableSet<String> = state.selectedOptions
-        .asSequence()
-        .filter { it.visible }
-        .mapNotNull { it.name?.trim()?.takeIf(String::isNotBlank) }
-        .toMutableSet()
+    private fun flushCurrentCard(runConfig: LatexRunConfiguration) {
+        when (currentCardId) {
+            CARD_COMPILE -> {
+                compileState.runConfig = runConfig
+                compileSettings.applyTo(compileState)
+                persistStepOptions(runConfig, compileState)
+            }
 
-    private fun MutableMap<String, MutableSet<String>>.putIfNotEmpty(type: String, ids: MutableSet<String>) {
-        if (ids.isNotEmpty()) {
-            this[type] = ids
+            CARD_LATEXMK -> {
+                latexmkState.runConfig = runConfig
+                latexmkSettings.applyTo(latexmkState)
+                persistStepOptions(runConfig, latexmkState)
+            }
+
+            CARD_VIEWER -> {
+                viewerState.runConfig = runConfig
+                viewerSettings.applyTo(viewerState)
+                persistStepOptions(runConfig, viewerState)
+            }
         }
+    }
+
+    private fun persistStepOptions(
+        runConfig: LatexRunConfiguration,
+        state: StepFragmentedState,
+    ) {
+        val stepId = state.selectedStepConfig?.id ?: return
+        val optionIds = state.selectedOptions
+            .asSequence()
+            .filter { it.visible }
+            .mapNotNull { it.name?.trim()?.takeIf(String::isNotBlank) }
+            .toMutableSet()
+
+        if (optionIds.isEmpty()) {
+            runConfig.model.ui.stepUiOptionIdsByStepId.remove(stepId)
+        }
+        else {
+            runConfig.model.ui.stepUiOptionIdsByStepId[stepId] = optionIds
+        }
+    }
+
+    private fun applyStateIfBound(
+        runConfig: LatexRunConfiguration,
+        state: StepFragmentedState,
+        editor: SettingsEditor<StepFragmentedState>,
+    ) {
+        if (state.selectedStepConfig == null) {
+            return
+        }
+        state.runConfig = runConfig
+        editor.applyTo(state)
+        persistStepOptions(runConfig, state)
     }
 }

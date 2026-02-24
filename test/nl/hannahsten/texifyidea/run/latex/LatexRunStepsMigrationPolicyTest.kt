@@ -1,12 +1,12 @@
 package nl.hannahsten.texifyidea.run.latex
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import nl.hannahsten.texifyidea.run.latex.step.BibtexRunStep
+import nl.hannahsten.texifyidea.run.latex.step.ExternalToolRunStep
 import nl.hannahsten.texifyidea.run.latex.step.LatexCompileRunStep
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepPlanBuilder
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepProviders
-import nl.hannahsten.texifyidea.run.latex.step.LegacyBibtexRunStep
-import nl.hannahsten.texifyidea.run.latex.step.LegacyExternalToolRunStep
-import nl.hannahsten.texifyidea.run.latex.step.LegacyMakeindexRunStep
+import nl.hannahsten.texifyidea.run.latex.step.MakeindexRunStep
 import nl.hannahsten.texifyidea.run.latex.step.PdfViewerRunStep
 import org.jdom.Element
 
@@ -94,7 +94,7 @@ class LatexRunStepsMigrationPolicyTest : BasePlatformTestCase() {
     }
 
     fun testStepPlanBuilderMapsKnownTypesAndKeepsOrder() {
-        val plan = LatexRunStepPlanBuilder.build(listOf("compile-latex", "pdf-viewer"))
+        val plan = LatexRunStepPlanBuilder.build(listOf(LatexCompileStepConfig(), PdfViewerStepConfig()))
 
         assertEquals(2, plan.steps.size)
         assertTrue(plan.steps[0] is LatexCompileRunStep)
@@ -103,7 +103,7 @@ class LatexRunStepsMigrationPolicyTest : BasePlatformTestCase() {
     }
 
     fun testStepPlanBuilderMapsLatexmkCompileType() {
-        val plan = LatexRunStepPlanBuilder.build(listOf("latexmk-compile", "pdf-viewer"))
+        val plan = LatexRunStepPlanBuilder.build(listOf(LatexmkCompileStepConfig(), PdfViewerStepConfig()))
 
         assertEquals(2, plan.steps.size)
         assertEquals("latexmk-compile", plan.steps[0].id)
@@ -111,29 +111,46 @@ class LatexRunStepsMigrationPolicyTest : BasePlatformTestCase() {
         assertTrue(plan.unsupportedTypes.isEmpty())
     }
 
-    fun testStepPlanBuilderCollectsUnsupportedTypes() {
-        val plan = LatexRunStepPlanBuilder.build(listOf("compile-latex", "unknown-step"))
+    fun testStepPlanBuilderDoesNotCollectUnsupportedForStrongTypedConfigs() {
+        val plan = LatexRunStepPlanBuilder.build(
+            listOf(
+                LatexCompileStepConfig(),
+                PdfViewerStepConfig(),
+            )
+        )
 
-        assertEquals(1, plan.steps.size)
-        assertEquals(listOf("unknown-step"), plan.unsupportedTypes)
+        assertEquals(2, plan.steps.size)
+        assertTrue(plan.unsupportedTypes.isEmpty())
     }
 
     fun testStepPlanBuilderMapsLegacyBridgeStepAliases() {
-        val plan = LatexRunStepPlanBuilder.build(listOf("bibliography", "makeindex", "external-tool"))
+        val plan = LatexRunStepPlanBuilder.build(
+            listOf(
+                BibtexStepConfig(),
+                MakeindexStepConfig(),
+                ExternalToolStepConfig(commandLine = "echo hi"),
+            )
+        )
 
         assertEquals(3, plan.steps.size)
-        assertTrue(plan.steps[0] is LegacyBibtexRunStep)
-        assertTrue(plan.steps[1] is LegacyMakeindexRunStep)
-        assertTrue(plan.steps[2] is LegacyExternalToolRunStep)
+        assertTrue(plan.steps[0] is BibtexRunStep)
+        assertTrue(plan.steps[1] is MakeindexRunStep)
+        assertTrue(plan.steps[2] is ExternalToolRunStep)
     }
 
     fun testStepPlanBuilderMapsTemplateStepAliases() {
-        val plan = LatexRunStepPlanBuilder.build(listOf("pythontex", "makeglossaries", "xindy"))
+        val plan = LatexRunStepPlanBuilder.build(
+            listOf(
+                PythontexStepConfig(),
+                MakeglossariesStepConfig(),
+                XindyStepConfig(),
+            )
+        )
 
         assertEquals(3, plan.steps.size)
-        assertEquals("pythontex-command", plan.steps[0].id)
-        assertEquals("makeglossaries-command", plan.steps[1].id)
-        assertEquals("xindy-command", plan.steps[2].id)
+        assertEquals("pythontex", plan.steps[0].id)
+        assertEquals("makeglossaries", plan.steps[1].id)
+        assertEquals("xindy", plan.steps[2].id)
     }
 
     fun testStepProviderRegistryFindsAliasesCaseInsensitive() {

@@ -5,17 +5,22 @@ import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.OpenCustomPdfViewerListener
+import nl.hannahsten.texifyidea.run.latex.PdfViewerStepConfig
 import nl.hannahsten.texifyidea.run.pdfviewer.OpenViewerListener
 import nl.hannahsten.texifyidea.util.caretOffset
 import nl.hannahsten.texifyidea.util.focusedTextEditor
 import nl.hannahsten.texifyidea.util.selectedTextEditor
 import java.io.OutputStream
 
-internal class PdfViewerRunStep : LatexRunStep {
+internal class PdfViewerRunStep(
+    private val stepConfig: PdfViewerStepConfig,
+) : LatexRunStep {
 
-    override val id: String = "pdf-viewer"
+    override val configId: String = stepConfig.id
+    override val id: String = stepConfig.type
 
     override fun createProcess(context: LatexRunStepContext): ProcessHandler {
+        context.runConfig.activateStepForExecution(configId)
         val process = object : ProcessHandler() {
             override fun destroyProcessImpl() {
                 notifyProcessTerminated(0)
@@ -33,6 +38,7 @@ internal class PdfViewerRunStep : LatexRunStep {
                 super.startNotify()
                 scheduleViewer(context, this)
                 notifyProcessTerminated(0)
+                context.runConfig.activateStepForExecution(null)
             }
         }
         ProcessTerminatedListener.attach(process, context.environment.project)

@@ -1,10 +1,9 @@
 package nl.hannahsten.texifyidea.run.latex.step
 
 import com.intellij.openapi.application.ReadAction
-import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.lang.LatexLib
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.*
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.includedPackagesInFileset
 import nl.hannahsten.texifyidea.util.parser.hasBibliography
@@ -12,45 +11,36 @@ import nl.hannahsten.texifyidea.util.parser.usesBiber
 
 internal object LatexRunStepAutoInference {
 
-    private const val LATEX_COMPILE = "latex-compile"
-    private const val LATEXMK_COMPILE = "latexmk-compile"
-    private const val PDF_VIEWER = "pdf-viewer"
-    private const val LEGACY_BIBTEX = "legacy-bibtex"
-    private const val LEGACY_MAKEINDEX = "legacy-makeindex"
-    private const val LEGACY_EXTERNAL_TOOL = "legacy-external-tool"
-    private const val PYTHONTEX_COMMAND = "pythontex-command"
-    private const val MAKEGLOSSARIES_COMMAND = "makeglossaries-command"
-    private const val XINDY_COMMAND = "xindy-command"
-    private val COMPILE_STEP_TYPES = setOf(LATEX_COMPILE, LATEXMK_COMPILE)
+    private val compileTypes = setOf(LatexStepType.LATEX_COMPILE, LatexStepType.LATEXMK_COMPILE)
 
-    fun augmentStepTypes(
+    fun augmentSteps(
         runConfig: LatexRunConfiguration,
         mainFile: VirtualFile,
-        baseStepTypes: List<String>,
-    ): List<String> {
-        if (baseStepTypes.isEmpty()) {
-            return baseStepTypes
+        baseSteps: List<LatexStepConfig>,
+    ): List<LatexStepConfig> {
+        if (baseSteps.isEmpty()) {
+            return baseSteps
         }
 
-        val stepTypes = baseStepTypes.toMutableList()
-        val inferred = inferRequiredAuxiliarySteps(runConfig, mainFile, stepTypes)
+        val steps = baseSteps.map { it.deepCopy() }.toMutableList()
+        val inferred = inferRequiredAuxiliarySteps(runConfig, mainFile, steps)
         if (inferred.isEmpty()) {
-            return stepTypes
+            return steps
         }
 
-        val insertIndex = preferredAuxInsertIndex(stepTypes)
-        stepTypes.addAll(insertIndex, inferred)
-        ensureCompileAfterAuxSteps(stepTypes, insertIndex + inferred.size - 1)
+        val insertIndex = preferredAuxInsertIndex(steps)
+        steps.addAll(insertIndex, inferred)
+        ensureCompileAfterAuxSteps(steps, insertIndex + inferred.size - 1)
 
-        return stepTypes
+        return steps
     }
 
     private fun inferRequiredAuxiliarySteps(
         runConfig: LatexRunConfiguration,
         mainFile: VirtualFile,
-        stepTypes: List<String>,
-    ): List<String> {
-        val inferred = mutableListOf<String>()
+        steps: List<LatexStepConfig>,
+    ): List<LatexStepConfig> {
+        val inferred = mutableListOf<LatexStepConfig>()
         val mainFileText = ReadAction.compute<String, RuntimeException> {
             mainFile.psiFile(runConfig.project)?.text
                 ?: runCatching { String(mainFile.contentsToByteArray()) }.getOrDefault("")
@@ -60,17 +50,17 @@ internal object LatexRunStepAutoInference {
             mainFile.psiFile(runConfig.project)?.includedPackagesInFileset() ?: emptySet()
         }
 
-        if (shouldAddBibliographyStep(runConfig, mainFile, stepTypes, usedPackages, mainFileText, packageNamesInText)) {
-            inferred += LEGACY_BIBTEX
+        if (shouldAddBibliographyStep(runConfig, mainFile, steps, usedPackages, mainFileText, packageNamesInText)) {
+            inferred += BibtexStepConfig()
         }
-        if (shouldAddPythontexStep(stepTypes, usedPackages, packageNamesInText)) {
-            inferred += PYTHONTEX_COMMAND
+        if (shouldAddPythontexStep(steps, usedPackages, packageNamesInText)) {
+            inferred += PythontexStepConfig()
         }
-        if (shouldAddMakeglossariesStep(runConfig, stepTypes, usedPackages, packageNamesInText)) {
-            inferred += MAKEGLOSSARIES_COMMAND
+        if (shouldAddMakeglossariesStep(steps, usedPackages, packageNamesInText)) {
+            inferred += MakeglossariesStepConfig()
         }
-        if (shouldAddXindyStep(runConfig, stepTypes, mainFileText)) {
-            inferred += XINDY_COMMAND
+        if (shouldAddXindyStep(steps, mainFileText)) {
+            inferred += XindyStepConfig()
         }
 
         return inferred
@@ -79,12 +69,12 @@ internal object LatexRunStepAutoInference {
     private fun shouldAddBibliographyStep(
         runConfig: LatexRunConfiguration,
         mainFile: VirtualFile,
-        stepTypes: List<String>,
+        steps: List<LatexStepConfig>,
         usedPackages: Set<LatexLib>,
         mainFileText: String,
         packageNamesInText: Set<String>,
     ): Boolean {
-        if (LEGACY_BIBTEX in stepTypes || runConfig.compiler?.includesBibtex == true || LATEXMK_COMPILE in stepTypes) {
+        if (steps.any { it.type == LatexStepType.BIBTEX } || steps.any { it.type == LatexStepType.LATEXMK_COMPILE }) {
             return false
         }
         if (LatexLib.CITATION_STYLE_LANGUAGE in usedPackages || "citation-style-language" in packageNamesInText) {
@@ -100,41 +90,30 @@ internal object LatexRunStepAutoInference {
             mainFileText.contains("\\printbibliography")
             ||
             mainFileText.contains("\\addbibresource")
-        val needsBibliographyStep = needsBibliographyFromPsi || needsBibliographyFromText
-        if (!needsBibliographyStep) {
-            return false
-        }
 
-        if (runConfig.bibRunConfigs.isEmpty() && !DumbService.getInstance(runConfig.project).isDumb) {
-            ReadAction.run<RuntimeException> {
-                runConfig.generateBibRunConfig()
-            }
-        }
-
-        return runConfig.bibRunConfigs.isNotEmpty() || needsBibliographyStep
+        return needsBibliographyFromPsi || needsBibliographyFromText
     }
 
     private fun shouldAddPythontexStep(
-        stepTypes: List<String>,
+        steps: List<LatexStepConfig>,
         usedPackages: Set<LatexLib>,
         packageNamesInText: Set<String>,
     ): Boolean {
-        if (PYTHONTEX_COMMAND in stepTypes || LEGACY_EXTERNAL_TOOL in stepTypes) {
+        if (steps.any { it.type == LatexStepType.PYTHONTEX || it.type == LatexStepType.EXTERNAL_TOOL }) {
             return false
         }
         return LatexLib.PYTHONTEX in usedPackages || "pythontex" in packageNamesInText
     }
 
     private fun shouldAddMakeglossariesStep(
-        runConfig: LatexRunConfiguration,
-        stepTypes: List<String>,
+        steps: List<LatexStepConfig>,
         usedPackages: Set<LatexLib>,
         packageNamesInText: Set<String>,
     ): Boolean {
-        if (runConfig.compiler?.includesMakeindex == true || LATEXMK_COMPILE in stepTypes) {
+        if (steps.any { it.type == LatexStepType.LATEXMK_COMPILE }) {
             return false
         }
-        if (LEGACY_MAKEINDEX in stepTypes || MAKEGLOSSARIES_COMMAND in stepTypes) {
+        if (steps.any { it.type == LatexStepType.MAKEINDEX || it.type == LatexStepType.MAKEGLOSSARIES }) {
             return false
         }
 
@@ -148,23 +127,22 @@ internal object LatexRunStepAutoInference {
     }
 
     private fun shouldAddXindyStep(
-        runConfig: LatexRunConfiguration,
-        stepTypes: List<String>,
+        steps: List<LatexStepConfig>,
         mainFileText: String,
     ): Boolean {
-        if (runConfig.compiler?.includesMakeindex == true || LATEXMK_COMPILE in stepTypes) {
+        if (steps.any { it.type == LatexStepType.LATEXMK_COMPILE }) {
             return false
         }
-        if (LEGACY_MAKEINDEX in stepTypes || XINDY_COMMAND in stepTypes) {
+        if (steps.any { it.type == LatexStepType.MAKEINDEX || it.type == LatexStepType.XINDY }) {
             return false
         }
 
         return mainFileText.contains("xindy") || mainFileText.contains("texindy")
     }
 
-    private fun preferredAuxInsertIndex(stepTypes: List<String>): Int {
-        val firstCompileIndex = stepTypes.indexOfFirst { it in COMPILE_STEP_TYPES }
-        val viewerIndex = stepTypes.indexOfFirst { it == PDF_VIEWER }.let { if (it < 0) stepTypes.size else it }
+    private fun preferredAuxInsertIndex(steps: List<LatexStepConfig>): Int {
+        val firstCompileIndex = steps.indexOfFirst { it.type in compileTypes }
+        val viewerIndex = steps.indexOfFirst { it.type == LatexStepType.PDF_VIEWER }.let { if (it < 0) steps.size else it }
         return if (firstCompileIndex >= 0) {
             (firstCompileIndex + 1).coerceAtMost(viewerIndex)
         }
@@ -173,18 +151,17 @@ internal object LatexRunStepAutoInference {
         }
     }
 
-    private fun ensureCompileAfterAuxSteps(stepTypes: MutableList<String>, lastInsertedIndex: Int) {
-        val hasCompileBeforeViewer = stepTypes.withIndex().any { (index, type) ->
-            index > lastInsertedIndex && type in COMPILE_STEP_TYPES
+    private fun ensureCompileAfterAuxSteps(steps: MutableList<LatexStepConfig>, lastInsertedIndex: Int) {
+        val hasCompileAfter = steps.withIndex().any { (index, step) ->
+            index > lastInsertedIndex && step.type in compileTypes
         }
-        if (hasCompileBeforeViewer) {
+        if (hasCompileAfter) {
             return
         }
 
-        val followUpCompileType = stepTypes.firstOrNull { it in COMPILE_STEP_TYPES } ?: return
-
-        val beforeViewer = stepTypes.indexOfFirst { it == PDF_VIEWER }.let { if (it < 0) stepTypes.size else it }
-        stepTypes.add(beforeViewer, followUpCompileType)
+        val followUpCompile = steps.firstOrNull { it.type in compileTypes }?.deepCopy() ?: return
+        val beforeViewer = steps.indexOfFirst { it.type == LatexStepType.PDF_VIEWER }.let { if (it < 0) steps.size else it }
+        steps.add(beforeViewer, followUpCompile)
     }
 
     private fun extractUsedPackageNames(mainFileText: String): Set<String> {

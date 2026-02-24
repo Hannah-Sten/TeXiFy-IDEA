@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.run.latex
 
 import com.intellij.execution.configurations.ConfigurationFactory
 import com.intellij.execution.configurations.ConfigurationType
+import com.intellij.openapi.components.BaseState
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
@@ -37,4 +38,9 @@ class LatexConfigurationFactory(type: ConfigurationType) : ConfigurationFactory(
     override fun getName() = FACTORY_NAME
 
     override fun getId() = FACTORY_NAME
+
+    override fun getOptionsClass(): Class<out BaseState>? = when (type) {
+        is LatexRunConfigurationType -> LatexRunConfigurationOptions::class.java
+        else -> null
+    }
 }

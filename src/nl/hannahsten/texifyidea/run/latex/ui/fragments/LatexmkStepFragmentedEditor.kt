@@ -84,9 +84,6 @@ internal class LatexmkStepFragmentedEditor(
             reset = { _, _ -> },
             apply = { runConfig, _ ->
                 runConfig.compiler = LatexCompiler.LATEXMK
-                runConfig.bibRunConfigs = setOf()
-                runConfig.makeindexRunConfigs = setOf()
-                runConfig.externalToolRunConfigs = setOf()
             },
             initiallyVisible = { true },
             removable = false,
@@ -208,9 +205,15 @@ internal class LatexmkStepFragmentedEditor(
             null,
             component,
             0,
-            BiConsumer<StepFragmentedState, C> { state, comp -> reset(state.runConfig, comp) },
-            BiConsumer<StepFragmentedState, C> { state, comp -> apply(state.runConfig, comp) },
-            Predicate<StepFragmentedState> { state -> initiallyVisible(state.runConfig) }
+            BiConsumer<StepFragmentedState, C> { state, comp ->
+                withSelectedStep(state) { runConfig -> reset(runConfig, comp) }
+            },
+            BiConsumer<StepFragmentedState, C> { state, comp ->
+                withSelectedStep(state) { runConfig -> apply(runConfig, comp) }
+            },
+            Predicate<StepFragmentedState> { state ->
+                withSelectedStep(state) { runConfig -> initiallyVisible(runConfig) }
+            }
         )
         fragment.isRemovable = removable
         fragment.isCanBeHidden = removable
@@ -223,6 +226,17 @@ internal class LatexmkStepFragmentedEditor(
         component.toolTipText = tooltip
         if (component is LabeledComponent<*>) {
             component.component.toolTipText = tooltip
+        }
+    }
+
+    private inline fun <T> withSelectedStep(state: StepFragmentedState, block: (LatexRunConfiguration) -> T): T {
+        val runConfig = state.runConfig
+        runConfig.activateStepForExecution(state.selectedStepConfig?.id)
+        return try {
+            block(runConfig)
+        }
+        finally {
+            runConfig.activateStepForExecution(null)
         }
     }
 }

@@ -20,11 +20,11 @@ class LatexSettingsEditor(settings: LatexRunConfiguration) : RunConfigurationFra
         val fragments = mutableListOf<SettingsEditorFragment<LatexRunConfiguration, *>>()
         val compileSequenceComponent = LatexCompileSequenceComponent(this)
         val stepSettingsComponent = LatexStepSettingsComponent(this, project)
-        compileSequenceComponent.onSelectionChanged = { index, type ->
-            stepSettingsComponent.onStepSelectionChanged(index, type)
+        compileSequenceComponent.onSelectionChanged = { index, stepId, type ->
+            stepSettingsComponent.onStepSelectionChanged(index, stepId, type)
         }
-        compileSequenceComponent.onStepTypesChanged = { types ->
-            stepSettingsComponent.onStepTypesChanged(types)
+        compileSequenceComponent.onStepsChanged = { steps ->
+            stepSettingsComponent.onStepsChanged(steps)
         }
 
         fragments.add(CommonParameterFragments.createHeader(commonGroupName))

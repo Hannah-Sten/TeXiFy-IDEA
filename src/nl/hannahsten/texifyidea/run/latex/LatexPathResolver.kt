@@ -34,7 +34,9 @@ internal object LatexPathResolver {
         runConfig: LatexRunConfiguration,
         mainFile: VirtualFile? = runConfig.executionState.resolvedMainFile,
     ): VirtualFile? {
+        val hasLatexmkStep = runConfig.model.steps.any { it.enabled && it.type == LatexStepType.LATEXMK_COMPILE }
         val supportsAuxDir = runConfig.getLatexDistributionType().isMiktex(runConfig.project, mainFile) ||
+            hasLatexmkStep ||
             runConfig.compiler == LatexCompiler.LATEXMK
         if (!supportsAuxDir) {
             return null

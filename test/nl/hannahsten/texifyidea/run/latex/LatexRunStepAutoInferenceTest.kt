@@ -28,13 +28,13 @@ class LatexRunStepAutoInferenceTest : BasePlatformTestCase() {
         runConfig.mainFilePath = mainFile.path
         runConfig.pdfViewer = PdfViewer.firstAvailableViewer
 
-        val augmented = LatexRunStepAutoInference.augmentStepTypes(
+        val augmented = LatexRunStepAutoInference.augmentSteps(
             runConfig,
             mainFile,
-            listOf("latex-compile", "pdf-viewer")
+            listOf(LatexCompileStepConfig(), PdfViewerStepConfig())
         )
 
-        assertEquals(listOf("latex-compile", "legacy-bibtex", "latex-compile", "pdf-viewer"), augmented)
+        assertEquals(listOf("latex-compile", "bibtex", "latex-compile", "pdf-viewer"), augmented.map { it.type })
     }
 
     fun testAugmentStepTypesAddsPythontexTemplateStep() {
@@ -56,13 +56,13 @@ class LatexRunStepAutoInferenceTest : BasePlatformTestCase() {
         runConfig.compiler = LatexCompiler.PDFLATEX
         runConfig.mainFilePath = mainFile.path
 
-        val augmented = LatexRunStepAutoInference.augmentStepTypes(
+        val augmented = LatexRunStepAutoInference.augmentSteps(
             runConfig,
             mainFile,
-            listOf("latex-compile", "pdf-viewer")
+            listOf(LatexCompileStepConfig(), PdfViewerStepConfig())
         )
 
-        assertEquals(listOf("latex-compile", "pythontex-command", "latex-compile", "pdf-viewer"), augmented)
+        assertEquals(listOf("latex-compile", "pythontex", "latex-compile", "pdf-viewer"), augmented.map { it.type })
     }
 
     fun testAugmentStepTypesDoesNotInsertLegacyBibliographyForLatexmkStep() {
@@ -85,12 +85,12 @@ class LatexRunStepAutoInferenceTest : BasePlatformTestCase() {
         runConfig.compiler = LatexCompiler.LATEXMK
         runConfig.mainFilePath = mainFile.path
 
-        val augmented = LatexRunStepAutoInference.augmentStepTypes(
+        val augmented = LatexRunStepAutoInference.augmentSteps(
             runConfig,
             mainFile,
-            listOf("latexmk-compile", "pdf-viewer")
+            listOf(LatexmkCompileStepConfig(), PdfViewerStepConfig())
         )
 
-        assertEquals(listOf("latexmk-compile", "pdf-viewer"), augmented)
+        assertEquals(listOf("latexmk-compile", "pdf-viewer"), augmented.map { it.type })
     }
 }

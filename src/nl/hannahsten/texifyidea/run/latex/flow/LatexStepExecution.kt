@@ -6,5 +6,6 @@ internal data class LatexStepExecution(
     val index: Int,
     val type: String,
     val displayName: String,
+    val configId: String,
     val processHandler: ProcessHandler,
 )

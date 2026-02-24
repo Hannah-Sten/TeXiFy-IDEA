@@ -17,6 +17,8 @@ import java.util.concurrent.atomic.AtomicInteger
 
 internal abstract class LegacyAuxRunConfigurationsStep : LatexRunStep {
 
+    override val configId: String = "legacy"
+
     abstract fun resolveRunConfigurations(context: LatexRunStepContext): Set<RunnerAndConfigurationSettings>
 
     override fun createProcess(context: LatexRunStepContext): ProcessHandler {

@@ -13,7 +13,7 @@
   - 单一运行配置：一个配置中可组合任意编译步骤，并可调整顺序。
   - 分片式 UI：默认界面精简，复杂选项通过 `Modify options` 按需启用。
 - 不做整分支回滚式迁移，按能力逐步迁移到 `new-ui` 当前代码。
-- 保持向后兼容，避免破坏现有 `LatexRunConfiguration` 的读写与执行流程。
+- 不再以历史配置兼容为约束，直接切换到 `common + steps` 新结构。
 
 ## `run-config-ui` 可迁移能力摘要
 
@@ -232,6 +232,21 @@
   - 右侧按步骤查看 raw log，失败后后续步骤标记为 skipped
   - 现有 `Log Messages` 在 step 流程下继续可用
 
+### Phase 10：`LatexRunConfiguration` 结构化重构（`common + steps`）
+
+- 状态：`IN_PROGRESS`
+- 目标：把运行配置主存储从扁平字段迁移为 `model.common + model.steps + model.ui`。
+- 已完成：
+  - 引入 `LatexRunConfigModel` / `LatexCommonSettings` / `LatexStepConfig`（实例级 step 参数）。
+  - 执行链 `LatexRunStepPlanBuilder` 改为接收 `List<LatexStepConfig>`。
+  - `bibtex/makeindex/external-tool` 改为强类型 step provider（不再依赖辅助 run config 集合）。
+  - `Compile sequence` 改为维护 step 实例（含 `stepId`），`Step settings` 改为按 `stepId` 编辑并保存可见项。
+  - `RunConfigurationOptions` 已承载新 `model` 状态；`LatexRunConfiguration` 以 `model` 为主入口。
+- 待完成：
+  - 清理 legacy/桥接类与旧字段调用路径（当前仍保留 deprecate 适配层）。
+  - 收敛并更新全部旧 schema / migration 测试为 V2 断言。
+  - 完成 `LatexRunConfigurationPersistence` 与 options-only 路线二选一收口。
+
 ## 风险清单
 
 - XML 兼容风险：步骤序列与旧字段并存时可能出现重复执行。
@@ -266,6 +281,7 @@
 - [x] Phase 8: 三段式 UI 与步骤设置面板
 - [x] Phase 9: Step-Based Tree Log Tab
 - [x] Phase 9.1: Step Log 收口（唯一输出页签 + 根节点汇总输出）
+- [ ] Phase 10: `LatexRunConfiguration` 结构化重构
 
 ## 更新日志
 
@@ -288,6 +304,11 @@
   - `LatexStepRunState` 将 `Step Log` 组件作为主运行 console（`DefaultExecutionResult(stepLogConsole, handler)`），避免运行实例出现空白内容页。
   - `LegacyAuxRunConfigurationsStep` 改为内联执行子 run config（`RunProfileState.execute(...).processHandler`），不再通过 `RunConfigurationBeforeRunProvider` 触发独立运行实例。
   - 抽取 `LatexRunStepTypeInference` 统一步骤推断逻辑，供 persistence / UI / runtime 共用。
+- 2026-02-24（Phase 10 进行中）
+  - 引入 `LatexRunConfigModel(common + steps + ui)`，并将 `LatexRunConfiguration` 主数据入口切换到 `model`。
+  - `Compile sequence` 组件改为维护 `LatexStepConfig` 实例（含 stepId），不再只维护 step type 字符串。
+  - `Step settings` 改为按选中 stepId 绑定 `Fragmented` 子 editor，`Modify options` 可见项状态改为按 stepId 保存。
+  - 执行层 `LatexRunStepPlanBuilder` / provider 契约改为基于 `LatexStepConfig`，并新增 `BibtexRunStep` / `MakeindexRunStep` / `ExternalToolRunStep`。
 - 2026-02-24（Phase 8 收尾优化）
   - `Step settings` 子标题下沉到分割线之后（作为子 editor 内固定说明片段），避免标题区拥挤。
   - `Step settings` 各可选项补齐 hover hint，行为与 `Common settings` 对齐。

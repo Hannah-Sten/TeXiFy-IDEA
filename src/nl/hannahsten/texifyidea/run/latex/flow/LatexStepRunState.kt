@@ -9,6 +9,7 @@ import com.intellij.execution.runners.ProgramRunner
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import nl.hannahsten.texifyidea.run.latex.LatexExecutionStateInitializer
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexStepConfig
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepAutoInference
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepPlanBuilder
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepContext
@@ -21,6 +22,7 @@ internal class LatexStepRunState(
     private val runConfig: LatexRunConfiguration,
     private val environment: ExecutionEnvironment,
     private val plan: LatexRunStepPlan,
+    private val configuredSteps: List<LatexStepConfig>,
 ) : com.intellij.execution.configurations.RunProfileState {
 
     @Throws(ExecutionException::class)
@@ -31,12 +33,13 @@ internal class LatexStepRunState(
             ?: throw ExecutionException("Main file cannot be resolved")
         val context = LatexRunStepContext(runConfig, environment, runConfig.executionState, mainFile)
 
-        val baseTypes = plan.steps.map { it.id }
-        val effectiveTypes = LatexRunStepAutoInference.augmentStepTypes(runConfig, mainFile, baseTypes)
-        if (effectiveTypes != baseTypes) {
-            Log.debug("Auto-inferred compile-step sequence: ${effectiveTypes.joinToString(" -> ")}")
+        val effectiveSteps = LatexRunStepAutoInference.augmentSteps(runConfig, mainFile, configuredSteps)
+        val baseTypes = configuredSteps.map { it.type }
+        val effectiveTypes = effectiveSteps.map { it.type }
+        if (effectiveTypes != baseTypes || effectiveSteps.size != configuredSteps.size) {
+            Log.debug("Auto-inferred compile-step sequence: ${effectiveSteps.joinToString(" -> ") { it.type }}")
         }
-        val effectivePlan = LatexRunStepPlanBuilder.build(effectiveTypes)
+        val effectivePlan = LatexRunStepPlanBuilder.build(effectiveSteps)
         if (effectivePlan.unsupportedTypes.isNotEmpty()) {
             Log.warn("Unsupported compile-step types after auto-inference: ${effectivePlan.unsupportedTypes.joinToString(", ")}")
         }
@@ -46,6 +49,7 @@ internal class LatexStepRunState(
                 index = index,
                 type = step.id,
                 displayName = LatexStepPresentation.displayName(step.id),
+                configId = step.configId,
                 processHandler = step.createProcess(context),
             )
         }
