@@ -34,7 +34,6 @@ import java.awt.event.MouseEvent
 import javax.swing.JButton
 import javax.swing.JComponent
 import javax.swing.JLabel
-import javax.swing.JLayeredPane
 import javax.swing.JPanel
 
 internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
@@ -315,7 +314,7 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
             Disposer.register(this@LatexCompileSequenceComponent, this)
             dropPlace = JLabel(AllIcons.General.DropPlace)
             add(dropPlace)
-            setLayer(dropPlace, JLayeredPane.DRAG_LAYER)
+            setLayer(dropPlace, DRAG_LAYER)
             dropPlace?.isVisible = false
             border = JBUI.Borders.empty(1)
 

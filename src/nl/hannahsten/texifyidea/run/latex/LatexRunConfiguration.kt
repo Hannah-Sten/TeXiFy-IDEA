@@ -4,7 +4,6 @@ import com.intellij.execution.ExecutionException
 import com.intellij.execution.Executor
 import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.execution.configurations.*
-import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
@@ -13,7 +12,6 @@ import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.latex.flow.LatexStepRunState
-import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogTabComponent
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepPlanBuilder
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCitationTool
@@ -127,30 +125,7 @@ class LatexRunConfiguration(
             step.pdfViewerName = value?.name
         }
 
-    var viewerCommand: String?
-        get() = activeOrPrimaryViewerStep()?.customViewerCommand
-        set(value) {
-            ensurePrimaryViewerStep().customViewerCommand = value?.trim()?.ifEmpty { null }
-        }
-
-    var requireFocus: Boolean
-        get() = activeOrPrimaryViewerStep()?.requireFocus ?: true
-        set(value) {
-            ensurePrimaryViewerStep().requireFocus = value
-        }
-
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = LatexSettingsEditor(this)
-
-    override fun createAdditionalTabComponents(
-        manager: AdditionalTabComponentManager,
-        startedProcess: ProcessHandler?
-    ) {
-        super.createAdditionalTabComponents(manager, startedProcess)
-    }
-
-    @Suppress("unused")
-    private fun createLegacyLogTabComponent(startedProcess: ProcessHandler): LatexLogTabComponent =
-        LatexLogTabComponent(project, executionState.resolvedMainFile, startedProcess)
 
     @Throws(RuntimeConfigurationException::class)
     override fun checkConfiguration() {

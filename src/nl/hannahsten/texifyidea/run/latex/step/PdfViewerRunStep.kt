@@ -6,6 +6,7 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.OpenCustomPdfViewerListener
 import nl.hannahsten.texifyidea.run.latex.PdfViewerStepOptions
+import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.OpenViewerListener
 import nl.hannahsten.texifyidea.util.caretOffset
 import nl.hannahsten.texifyidea.util.focusedTextEditor
@@ -54,7 +55,7 @@ internal class PdfViewerRunStep(
 
         if (runConfig.isAutoCompiling) return
 
-        val customCommand = runConfig.viewerCommand
+        val customCommand = stepConfig.customViewerCommand
         if (!customCommand.isNullOrBlank()) {
             val commandList = ParametersListUtil.parse(customCommand).toMutableList()
             val containsPlaceholder = commandList.any { it.contains("{pdf}") }
@@ -70,7 +71,9 @@ internal class PdfViewerRunStep(
             return
         }
 
-        val viewer = runConfig.pdfViewer ?: return
+        val viewer = PdfViewer.availableViewers
+            .firstOrNull { it.name == stepConfig.pdfViewerName }
+            ?: PdfViewer.firstAvailableViewer
         val editor = context.environment.project.focusedTextEditor()?.editor
             ?: context.environment.project.selectedTextEditor()?.editor
         val line = editor?.document?.getLineNumber(editor.caretOffset())?.plus(1) ?: 0
@@ -79,7 +82,7 @@ internal class PdfViewerRunStep(
             ?: return
 
         handler.addProcessListener(
-            OpenViewerListener(viewer, runConfig, currentFilePath, line, context.environment.project, runConfig.requireFocus)
+            OpenViewerListener(viewer, runConfig, currentFilePath, line, context.environment.project, stepConfig.requireFocus)
         )
     }
 }
