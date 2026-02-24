@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.run.latex.ui.fragments
 
+import com.intellij.execution.ui.CommonParameterFragments
 import com.intellij.execution.ui.FragmentedSettingsEditor
 import com.intellij.execution.ui.SettingsEditorFragment
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
@@ -74,6 +75,8 @@ internal class LatexmkStepFragmentedEditor(
     }
 
     override fun createFragments(): Collection<SettingsEditorFragment<StepFragmentedState, *>> {
+        val headerFragment = CommonParameterFragments.createHeader<StepFragmentedState>("latexmk step")
+
         val compilerFragment = fragment(
             id = "step.latexmk.compiler",
             name = "Compiler",
@@ -177,6 +180,7 @@ internal class LatexmkStepFragmentedEditor(
         )
 
         return listOf(
+            headerFragment,
             compilerFragment,
             pathFragment,
             argsFragment,

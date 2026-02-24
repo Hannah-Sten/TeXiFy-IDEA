@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.run.latex.ui.fragments
 
+import com.intellij.execution.ui.CommonParameterFragments
 import com.intellij.execution.ui.FragmentedSettingsEditor
 import com.intellij.execution.ui.SettingsEditorFragment
 import com.intellij.openapi.ui.ComboBox
@@ -35,6 +36,8 @@ internal class LatexViewerStepFragmentedEditor(
     }
 
     override fun createFragments(): Collection<SettingsEditorFragment<StepFragmentedState, *>> {
+        val headerFragment = CommonParameterFragments.createHeader<StepFragmentedState>("PDF viewer step")
+
         val viewerFragment = fragment(
             id = "step.viewer.type",
             name = "PDF viewer",
@@ -81,6 +84,7 @@ internal class LatexViewerStepFragmentedEditor(
         )
 
         return listOf(
+            headerFragment,
             viewerFragment,
             focusFragment,
             commandFragment,

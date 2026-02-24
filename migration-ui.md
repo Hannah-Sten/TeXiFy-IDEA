@@ -267,6 +267,7 @@
   - 移除 `Compile sequence`/`Step settings` 区域底部灰字说明，改为悬停 tooltip 提示（与其他设置页交互风格一致）。
   - `Common settings` 碎片全部改为 editor 行（不再作为 command-line 横向排版），并统一移除 `setHint` 灰字提示，改为悬停 tooltip。
   - 删除 step 子 editor 内的 `typeLevelHint` 行，避免重复说明占位。
+  - 为各 step 子 editor 增加独立 header fragment（`LaTeX compile step` / `latexmk step` / `PDF viewer step`）。
   - 评估过 feature flag 方案，后续按“直接迁移”决策移除。
   - 增加 Phase 0 的 PR 拆分建议（0A/0B/0C）。
 - 2026-02-22（Phase 0 落地：0A/0B/0C）

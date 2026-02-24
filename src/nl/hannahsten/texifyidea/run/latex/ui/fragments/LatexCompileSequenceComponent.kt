@@ -286,9 +286,9 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
     }
 
     private fun refreshSelectionUi() {
-        stepButtons.forEachIndexed { index, button ->
-            button.setSelectedState(index == selectedIndex && button.isVisible)
-        }
+//        stepButtons.forEachIndexed { index, button ->
+//            button.setSelectedState(index == selectedIndex && button.isVisible)
+//        }
     }
 
     private fun notifyStepTypesChanged() {
@@ -380,15 +380,6 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
         }
 
         fun getButton(): JButton = myButton
-
-        fun setSelectedState(selected: Boolean) {
-            border = if (selected) {
-                JBUI.Borders.customLine(JBUI.CurrentTheme.Focus.focusColor(), 1)
-            }
-            else {
-                JBUI.Borders.empty(1)
-            }
-        }
     }
 
     private class AddStepAction(
