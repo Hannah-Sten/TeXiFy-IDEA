@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.run
 
+import com.intellij.execution.ui.FragmentedSettings
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.run.latex.*
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
@@ -62,6 +63,42 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         runConfig.configOptions.ensureDefaultSteps()
 
         assertEquals(listOf(LatexStepType.LATEX_COMPILE, LatexStepType.PDF_VIEWER), runConfig.configOptions.steps.map { it.type })
+    }
+
+    fun testCloneDeepCopiesStepsAndEnvironmentVariables() {
+        val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
+        runConfig.mainFilePath = "main.tex"
+        runConfig.configOptions.environmentVariables = mutableListOf(
+            LatexRunConfigurationOptions.EnvironmentVariableEntry().apply {
+                name = "BIBINPUTS"
+                value = "/tmp/bib"
+            }
+        )
+        runConfig.configOptions.steps = mutableListOf(
+            LatexCompileStepOptions().apply {
+                id = "compile-1"
+                compilerArguments = "-shell-escape"
+                selectedOptions.add(FragmentedSettings.Option(StepUiOptionIds.COMPILE_ARGS, true))
+            }
+        )
+
+        val cloned = runConfig.clone() as LatexRunConfiguration
+        val originalStep = runConfig.configOptions.steps.single()
+        val clonedStep = cloned.configOptions.steps.single()
+        val originalEnv = runConfig.configOptions.environmentVariables.single()
+        val clonedEnv = cloned.configOptions.environmentVariables.single()
+
+        assertEquals("main.tex", cloned.mainFilePath)
+        assertNotSame(runConfig.configOptions.steps, cloned.configOptions.steps)
+        assertNotSame(originalStep, clonedStep)
+        assertEquals(originalStep.type, clonedStep.type)
+        assertNotSame(originalStep.selectedOptions, clonedStep.selectedOptions)
+        assertEquals(originalStep.selectedOptions.single().name, clonedStep.selectedOptions.single().name)
+        assertNotSame(originalStep.selectedOptions.single(), clonedStep.selectedOptions.single())
+        assertNotSame(runConfig.configOptions.environmentVariables, cloned.configOptions.environmentVariables)
+        assertNotSame(originalEnv, clonedEnv)
+        assertEquals(originalEnv.name, clonedEnv.name)
+        assertEquals(originalEnv.value, clonedEnv.value)
     }
 
     fun testFragmentedEditorUsesCommonSequenceAndStepSettingsLayout() {

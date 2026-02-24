@@ -26,7 +26,7 @@ internal class XindyStepFragmentedEditor(
     private val workingDirectoryRow = LabeledComponent.create(workingDirectory, "Working directory")
 
     override fun createFragments(): Collection<SettingsEditorFragment<XindyStepOptions, *>> {
-        val header = CommonParameterFragments.createHeader<XindyStepOptions>("Xindy step")
+        val header = CommonParameterFragments.createHeader<XindyStepOptions>("Xindy Step")
 
         val executableFragment = stepFragment(
             id = StepUiOptionIds.COMMAND_EXECUTABLE,

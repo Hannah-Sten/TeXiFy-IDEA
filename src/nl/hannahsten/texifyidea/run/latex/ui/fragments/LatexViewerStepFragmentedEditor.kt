@@ -32,7 +32,7 @@ internal class LatexViewerStepFragmentedEditor(
     }
 
     override fun createFragments(): Collection<SettingsEditorFragment<PdfViewerStepOptions, *>> {
-        val headerFragment = CommonParameterFragments.createHeader<PdfViewerStepOptions>("PDF viewer step")
+        val headerFragment = CommonParameterFragments.createHeader<PdfViewerStepOptions>("PDF Viewer Step")
 
         val viewerFragment = stepFragment(
             id = "step.viewer.type",

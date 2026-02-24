@@ -28,7 +28,7 @@ internal class LatexCompileStepFragmentedEditor(
         addBrowseFolderListener(
             TextBrowseFolderListener(
                 FileChooserDescriptor(true, false, false, false, false, false)
-                    .withTitle("Choose compiler executable")
+                    .withTitle("Choose Compiler Executable")
                     .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules.toSet().toTypedArray())
             )
         )
@@ -53,7 +53,7 @@ internal class LatexCompileStepFragmentedEditor(
     }
 
     override fun createFragments(): Collection<SettingsEditorFragment<LatexCompileStepOptions, *>> {
-        val headerFragment = CommonParameterFragments.createHeader<LatexCompileStepOptions>("LaTeX compile step")
+        val headerFragment = CommonParameterFragments.createHeader<LatexCompileStepOptions>("LaTeX Compile Step")
 
         val compilerFragment = stepFragment(
             id = "step.compile.compiler",

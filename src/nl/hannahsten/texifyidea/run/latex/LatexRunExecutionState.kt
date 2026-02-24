@@ -4,7 +4,6 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPsiElementPointer
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
-import java.io.File
 import java.nio.file.Path
 
 data class LatexRunExecutionState(
@@ -21,8 +20,8 @@ data class LatexRunExecutionState(
     var psiFile: SmartPsiElementPointer<PsiFile>? = null,
     var effectiveLatexmkCompileMode: LatexmkCompileMode? = null,
     var effectiveCompilerArguments: String? = null,
-    val filesToCleanUp: MutableList<File> = mutableListOf(),
-    val directoriesToDeleteIfEmpty: MutableSet<File> = mutableSetOf(),
+    val filesToCleanUp: MutableList<Path> = mutableListOf(),
+    val directoriesToDeleteIfEmpty: MutableSet<Path> = mutableSetOf(),
 ) {
 
     fun beginAuxChain() {
@@ -60,11 +59,11 @@ data class LatexRunExecutionState(
         directoriesToDeleteIfEmpty.clear()
     }
 
-    fun addCleanupFile(file: File) {
+    fun addCleanupFile(file: Path) {
         filesToCleanUp.add(file)
     }
 
-    fun addCleanupDirectoriesIfEmpty(files: Collection<File>) {
+    fun addCleanupDirectoriesIfEmpty(files: Collection<Path>) {
         directoriesToDeleteIfEmpty.addAll(files)
     }
 

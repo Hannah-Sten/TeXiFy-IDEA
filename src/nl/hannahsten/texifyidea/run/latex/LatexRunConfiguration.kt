@@ -228,15 +228,10 @@ class LatexRunConfiguration(
         cloned.executionState = LatexRunExecutionState()
         cloned.isAutoCompiling = false
         cloned.activeStepIdForExecution = null
-        cloned.configOptions.mainFilePath = configOptions.mainFilePath
-        cloned.configOptions.workingDirectoryPath = configOptions.workingDirectoryPath
-        cloned.configOptions.outputPath = configOptions.outputPath
-        cloned.configOptions.auxilPath = configOptions.auxilPath
-        cloned.configOptions.latexDistribution = configOptions.latexDistribution
-        cloned.configOptions.expandMacrosEnvVariables = configOptions.expandMacrosEnvVariables
-        cloned.configOptions.passParentEnvironmentVariables = configOptions.passParentEnvironmentVariables
-        cloned.configOptions.environmentVariables = configOptions.environmentVariables.map { it.deepCopy() }.toMutableList()
-        cloned.configOptions.steps = configOptions.steps.map { it.deepCopy() }.toMutableList()
+        cloned.configOptions.environmentVariables.clear()
+        cloned.configOptions.environmentVariables.addAll(configOptions.environmentVariables.map { it.deepCopy() })
+        cloned.configOptions.steps.clear()
+        cloned.configOptions.steps.addAll(configOptions.steps.map { it.deepCopy() })
         return cloned
     }
 

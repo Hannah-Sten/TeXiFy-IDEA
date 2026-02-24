@@ -12,7 +12,6 @@ import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
 import nl.hannahsten.texifyidea.util.files.FileUtil
 import nl.hannahsten.texifyidea.util.files.allChildDirectories
 import nl.hannahsten.texifyidea.util.files.createExcludedDir
-import java.io.File
 import java.nio.file.Path
 
 internal object LatexPathResolver {
@@ -93,18 +92,18 @@ internal object LatexPathResolver {
         runConfig: LatexRunConfiguration,
         mainFile: VirtualFile? = runConfig.executionState.resolvedMainFile,
         outputDir: VirtualFile? = resolveOutputDir(runConfig, mainFile),
-    ): Set<File> {
+    ): Set<Path> {
         val includeRoot = mainFile?.parent ?: return emptySet()
         val outPath = outputDir?.path ?: return emptySet()
         val files: Set<VirtualFile> = includeRoot.allChildDirectories()
-        val createdDirectories = mutableSetOf<File>()
+        val createdDirectories = mutableSetOf<Path>()
 
         files.asSequence()
             .filter { !it.path.contains(outPath) }
             .mapNotNull { FileUtil.pathRelativeTo(includeRoot.path, it.path) }
             .forEach {
-                val file = File(outPath, it)
-                if (file.mkdirs()) {
+                val file = Path.of(outPath, it)
+                if (file.toFile().mkdirs()) {
                     createdDirectories.add(file)
                 }
             }
@@ -153,7 +152,7 @@ internal object LatexPathResolver {
             ProjectRootManager.getInstance(project).fileIndex.getModuleForFile(file, false)
         }
 
-        if (File(outPath).mkdirs()) {
+        if (Path.of(outPath).toFile().mkdirs()) {
             module?.createExcludedDir(outPath)
             return LocalFileSystem.getInstance().refreshAndFindFileByPath(outPath)
         }

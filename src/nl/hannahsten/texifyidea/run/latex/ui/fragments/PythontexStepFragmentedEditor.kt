@@ -26,7 +26,7 @@ internal class PythontexStepFragmentedEditor(
     private val workingDirectoryRow = LabeledComponent.create(workingDirectory, "Working directory")
 
     override fun createFragments(): Collection<SettingsEditorFragment<PythontexStepOptions, *>> {
-        val header = CommonParameterFragments.createHeader<PythontexStepOptions>("PythonTeX step")
+        val header = CommonParameterFragments.createHeader<PythontexStepOptions>("PythonTeX Step")
 
         val executableFragment = stepFragment(
             id = StepUiOptionIds.COMMAND_EXECUTABLE,

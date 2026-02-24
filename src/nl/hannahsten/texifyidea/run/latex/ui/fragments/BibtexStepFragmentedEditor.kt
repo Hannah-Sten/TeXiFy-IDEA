@@ -26,7 +26,7 @@ internal class BibtexStepFragmentedEditor(
         addBrowseFolderListener(
             TextBrowseFolderListener(
                 FileChooserDescriptor(true, false, false, false, false, false)
-                    .withTitle("Choose bibliography executable")
+                    .withTitle("Choose Bibliography Executable")
                     .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules.toSet().toTypedArray())
             )
         )
@@ -42,7 +42,7 @@ internal class BibtexStepFragmentedEditor(
     private val workingDirectoryRow = LabeledComponent.create(workingDirectory, "Working directory")
 
     override fun createFragments(): Collection<SettingsEditorFragment<BibtexStepOptions, *>> {
-        val header = CommonParameterFragments.createHeader<BibtexStepOptions>("Bibliography step")
+        val header = CommonParameterFragments.createHeader<BibtexStepOptions>("Bibliography Step")
 
         val compilerFragment = stepFragment(
             id = "step.bib.compiler",

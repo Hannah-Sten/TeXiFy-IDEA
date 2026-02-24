@@ -26,7 +26,7 @@ internal class ExternalToolStepFragmentedEditor(
     private val workingDirectoryRow = LabeledComponent.create(workingDirectory, "Working directory")
 
     override fun createFragments(): Collection<SettingsEditorFragment<ExternalToolStepOptions, *>> {
-        val header = CommonParameterFragments.createHeader<ExternalToolStepOptions>("External tool step")
+        val header = CommonParameterFragments.createHeader<ExternalToolStepOptions>("External Tool Step")
 
         val executableFragment = stepFragment(
             id = StepUiOptionIds.COMMAND_EXECUTABLE,

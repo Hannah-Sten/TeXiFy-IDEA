@@ -30,7 +30,7 @@ internal class LatexmkStepFragmentedEditor(
         addBrowseFolderListener(
             TextBrowseFolderListener(
                 FileChooserDescriptor(true, false, false, false, false, false)
-                    .withTitle("Choose compiler executable")
+                    .withTitle("Choose Compiler Executable")
                     .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules.toSet().toTypedArray())
             )
         )
@@ -70,7 +70,7 @@ internal class LatexmkStepFragmentedEditor(
     }
 
     override fun createFragments(): Collection<SettingsEditorFragment<LatexmkCompileStepOptions, *>> {
-        val headerFragment = CommonParameterFragments.createHeader<LatexmkCompileStepOptions>("latexmk step")
+        val headerFragment = CommonParameterFragments.createHeader<LatexmkCompileStepOptions>("Latexmk Step")
 
         val compilerFragment = stepFragment(
             id = "step.latexmk.compiler",
@@ -117,7 +117,7 @@ internal class LatexmkStepFragmentedEditor(
             },
             initiallyVisible = { step -> step.latexmkCompileMode != LatexmkCompileMode.AUTO },
             removable = true,
-            hint = "latexmk compile mode used by latexmk-compile steps.",
+            hint = "Latexmk compile mode used by latexmk-compile steps.",
             actionHint = "Set latexmk compile mode",
         )
 

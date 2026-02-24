@@ -26,7 +26,7 @@ internal class MakeglossariesStepFragmentedEditor(
     private val workingDirectoryRow = LabeledComponent.create(workingDirectory, "Working directory")
 
     override fun createFragments(): Collection<SettingsEditorFragment<MakeglossariesStepOptions, *>> {
-        val header = CommonParameterFragments.createHeader<MakeglossariesStepOptions>("Makeglossaries step")
+        val header = CommonParameterFragments.createHeader<MakeglossariesStepOptions>("Makeglossaries Step")
 
         val executableFragment = stepFragment(
             id = StepUiOptionIds.COMMAND_EXECUTABLE,

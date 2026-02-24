@@ -1,14 +1,15 @@
 package nl.hannahsten.texifyidea.run.latex.step
 
-import com.intellij.openapi.util.io.FileUtil
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
 import nl.hannahsten.texifyidea.run.latex.MakeindexStepOptions
 import nl.hannahsten.texifyidea.run.latex.getMakeindexOptions
 import nl.hannahsten.texifyidea.util.appendExtension
 import nl.hannahsten.texifyidea.util.magic.FileMagic
-import java.io.File
-import java.io.FileNotFoundException
 import java.io.IOException
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.StandardCopyOption
+import kotlin.io.path.*
 
 internal class StepArtifactSync(
     private val context: LatexRunStepContext,
@@ -41,7 +42,7 @@ internal class StepArtifactSync(
         val baseFileName = makeindexBaseFileName(step)
         copyFiles(
             sourceDir = workingDirectory,
-            destinationDir = File(context.mainFile.parent.path),
+            destinationDir = Path(context.mainFile.parent.path),
             baseFileName = baseFileName,
             extensions = FileMagic.indexFileExtensions,
             registerCleanup = true,
@@ -52,25 +53,27 @@ internal class StepArtifactSync(
         }
     }
 
-    private fun moveBib2glsOutputToAuxDirectory(baseFileName: String, workingDirectory: File) {
+    private fun moveBib2glsOutputToAuxDirectory(baseFileName: String, workingDirectory: Path) {
         val destinationDir = auxOrOutputDirectory() ?: return
         if (sameDirectory(destinationDir, workingDirectory)) {
             return
         }
 
         for (extension in setOf("glstex", "glg")) {
-            val source = File(workingDirectory, baseFileName.appendExtension(extension))
+            val source = workingDirectory.resolve(baseFileName.appendExtension(extension))
             if (!source.exists()) {
                 continue
             }
-            val destination = File(destinationDir, source.name)
-            runCatching { FileUtil.rename(source, destination) }
+            val destination = destinationDir.resolve(source.name)
+            runCatching {
+                Files.move(source, destination, StandardCopyOption.REPLACE_EXISTING)
+            }
         }
     }
 
     private fun copyFiles(
-        sourceDir: File,
-        destinationDir: File,
+        sourceDir: Path,
+        destinationDir: Path,
         baseFileName: String,
         extensions: Set<String>,
         registerCleanup: Boolean,
@@ -80,18 +83,16 @@ internal class StepArtifactSync(
         }
         for (extension in extensions) {
             val fileName = baseFileName.appendExtension(extension)
-            val source = File(sourceDir, fileName)
-            if (!source.isFile) {
+            val source = sourceDir.resolve(fileName)
+            if (!source.isRegularFile()) {
                 continue
             }
-            val destination = File(destinationDir, fileName)
+            val destination = destinationDir.resolve(fileName)
             if (registerCleanup && source.exists() && !destination.exists()) {
                 context.executionState.addCleanupFile(destination)
             }
             try {
-                FileUtil.copy(source, destination)
-            }
-            catch (_: FileNotFoundException) {
+                Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING)
             }
             catch (_: IOException) {
             }
@@ -107,15 +108,14 @@ internal class StepArtifactSync(
             ?: context.mainFile.nameWithoutExtension
     }
 
-    private fun makeindexWorkingDirectory(step: MakeindexStepOptions): File? = CommandLineRunStep.resolveWorkingDirectory(
-        context,
-        step.workingDirectoryPath,
-    )?.toFile()
+    private fun makeindexWorkingDirectory(step: MakeindexStepOptions): Path? =
+        CommandLineRunStep.resolveWorkingDirectory(context, step.workingDirectoryPath)
 
-    private fun auxOrOutputDirectory(): File? = context.executionState.resolvedAuxDir?.path?.let(::File)
-        ?: context.executionState.resolvedOutputDir?.path?.let(::File)
+    private fun auxOrOutputDirectory(): Path? =
+        context.executionState.resolvedAuxDir?.path?.let(Path::of)
+            ?: context.executionState.resolvedOutputDir?.path?.let(Path::of)
 
-    private fun sameDirectory(left: File, right: File): Boolean = runCatching {
-        left.canonicalFile == right.canonicalFile
-    }.getOrElse { left.absolutePath == right.absolutePath }
+    private fun sameDirectory(left: Path, right: Path): Boolean = runCatching {
+        left.toRealPath() == right.toRealPath()
+    }.getOrElse { left.absolute() == right.absolute() }
 }

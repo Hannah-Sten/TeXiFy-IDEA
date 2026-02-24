@@ -31,7 +31,7 @@ internal class MakeindexStepFragmentedEditor(
     private val workingDirectoryRow = LabeledComponent.create(workingDirectory, "Working directory")
 
     override fun createFragments(): Collection<SettingsEditorFragment<MakeindexStepOptions, *>> {
-        val header = CommonParameterFragments.createHeader<MakeindexStepOptions>("Makeindex step")
+        val header = CommonParameterFragments.createHeader<MakeindexStepOptions>("Makeindex Step")
 
         val programFragment = stepFragment(
             id = "step.makeindex.program",

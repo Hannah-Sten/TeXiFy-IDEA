@@ -48,12 +48,7 @@ class LatexRunConfigurationOptions : LocatableRunConfigurationOptions() {
         @get:Attribute("value")
         var value by string(null)
 
-        fun deepCopy(): EnvironmentVariableEntry {
-            val copied = EnvironmentVariableEntry()
-            copied.name = name
-            copied.value = value
-            return copied
-        }
+        fun deepCopy(): EnvironmentVariableEntry = EnvironmentVariableEntry().also { it.copyFrom(this) }
     }
 
     @get:XCollection(propertyElementName = "environmentVariables")
@@ -81,20 +76,6 @@ class LatexRunConfigurationOptions : LocatableRunConfigurationOptions() {
             steps = mutableListOf(LatexCompileStepOptions(), PdfViewerStepOptions())
         }
     }
-
-    fun deepCopy(): LatexRunConfigurationOptions {
-        val copied = LatexRunConfigurationOptions()
-        copied.mainFilePath = mainFilePath
-        copied.workingDirectoryPath = workingDirectoryPath
-        copied.outputPath = outputPath
-        copied.auxilPath = auxilPath
-        copied.latexDistribution = latexDistribution
-        copied.expandMacrosEnvVariables = expandMacrosEnvVariables
-        copied.passParentEnvironmentVariables = passParentEnvironmentVariables
-        copied.environmentVariables = environmentVariables.map { it.deepCopy() }.toMutableList()
-        copied.steps = steps.map { it.deepCopy() }.toMutableList()
-        return copied
-    }
 }
 
 abstract class LatexStepRunConfigurationOptions : RunConfigurationOptions() {
@@ -119,13 +100,23 @@ abstract class LatexStepRunConfigurationOptions : RunConfigurationOptions() {
     @get:Attribute("type")
     abstract var type: String
 
-    abstract fun deepCopy(): LatexStepRunConfigurationOptions
-
-    protected fun copySelectedOptionsFrom(other: LatexStepRunConfigurationOptions) {
-        selectedOptions = other.selectedOptions
-            .map { FragmentedSettings.Option(it.name ?: "", it.visible) }
-            .toMutableList()
+    fun deepCopy(): LatexStepRunConfigurationOptions {
+        val copied = newInstance()
+        copied.copyFrom(this)
+        copied.selectedOptions.clear()
+        copied.selectedOptions.addAll(
+            selectedOptions
+                .map { source ->
+                    FragmentedSettings.Option().also { option ->
+                        option.copyFrom(source)
+                    }
+                }
+                .toMutableList()
+        )
+        return copied
     }
+
+    protected abstract fun newInstance(): LatexStepRunConfigurationOptions
 }
 
 @Tag("latexCompile")
@@ -139,19 +130,7 @@ class LatexCompileStepOptions : LatexStepRunConfigurationOptions() {
     var outputFormat by enum(LatexCompiler.Format.PDF)
     var beforeRunCommand by string(null)
 
-    override fun deepCopy(): LatexStepRunConfigurationOptions {
-        val copied = LatexCompileStepOptions()
-        copied.id = id
-        copied.enabled = enabled
-        copied.type = type
-        copied.compiler = compiler
-        copied.compilerPath = compilerPath
-        copied.compilerArguments = compilerArguments
-        copied.outputFormat = outputFormat
-        copied.beforeRunCommand = beforeRunCommand
-        copied.copySelectedOptionsFrom(this)
-        return copied
-    }
+    override fun newInstance(): LatexStepRunConfigurationOptions = LatexCompileStepOptions()
 }
 
 @Tag("latexmkCompile")
@@ -167,21 +146,7 @@ class LatexmkCompileStepOptions : LatexStepRunConfigurationOptions() {
     var latexmkExtraArguments by string(LatexRunConfiguration.DEFAULT_LATEXMK_EXTRA_ARGUMENTS)
     var beforeRunCommand by string(null)
 
-    override fun deepCopy(): LatexStepRunConfigurationOptions {
-        val copied = LatexmkCompileStepOptions()
-        copied.id = id
-        copied.enabled = enabled
-        copied.type = type
-        copied.compilerPath = compilerPath
-        copied.compilerArguments = compilerArguments
-        copied.latexmkCompileMode = latexmkCompileMode
-        copied.latexmkCustomEngineCommand = latexmkCustomEngineCommand
-        copied.latexmkCitationTool = latexmkCitationTool
-        copied.latexmkExtraArguments = latexmkExtraArguments
-        copied.beforeRunCommand = beforeRunCommand
-        copied.copySelectedOptionsFrom(this)
-        return copied
-    }
+    override fun newInstance(): LatexStepRunConfigurationOptions = LatexmkCompileStepOptions()
 }
 
 @Tag("pdfViewer")
@@ -193,17 +158,7 @@ class PdfViewerStepOptions : LatexStepRunConfigurationOptions() {
     var requireFocus by property(true)
     var customViewerCommand by string(null)
 
-    override fun deepCopy(): LatexStepRunConfigurationOptions {
-        val copied = PdfViewerStepOptions()
-        copied.id = id
-        copied.enabled = enabled
-        copied.type = type
-        copied.pdfViewerName = pdfViewerName
-        copied.requireFocus = requireFocus
-        copied.customViewerCommand = customViewerCommand
-        copied.copySelectedOptionsFrom(this)
-        return copied
-    }
+    override fun newInstance(): LatexStepRunConfigurationOptions = PdfViewerStepOptions()
 }
 
 @Tag("bibtex")
@@ -217,19 +172,7 @@ class BibtexStepOptions : LatexStepRunConfigurationOptions() {
     var workingDirectoryPath by string(null)
     var beforeRunCommand by string(null)
 
-    override fun deepCopy(): LatexStepRunConfigurationOptions {
-        val copied = BibtexStepOptions()
-        copied.id = id
-        copied.enabled = enabled
-        copied.type = type
-        copied.bibliographyCompiler = bibliographyCompiler
-        copied.compilerPath = compilerPath
-        copied.compilerArguments = compilerArguments
-        copied.workingDirectoryPath = workingDirectoryPath
-        copied.beforeRunCommand = beforeRunCommand
-        copied.copySelectedOptionsFrom(this)
-        return copied
-    }
+    override fun newInstance(): LatexStepRunConfigurationOptions = BibtexStepOptions()
 }
 
 @Tag("makeindex")
@@ -243,19 +186,7 @@ class MakeindexStepOptions : LatexStepRunConfigurationOptions() {
     var targetBaseNameOverride by string(null)
     var beforeRunCommand by string(null)
 
-    override fun deepCopy(): LatexStepRunConfigurationOptions {
-        val copied = MakeindexStepOptions()
-        copied.id = id
-        copied.enabled = enabled
-        copied.type = type
-        copied.program = program
-        copied.commandLineArguments = commandLineArguments
-        copied.workingDirectoryPath = workingDirectoryPath
-        copied.targetBaseNameOverride = targetBaseNameOverride
-        copied.beforeRunCommand = beforeRunCommand
-        copied.copySelectedOptionsFrom(this)
-        return copied
-    }
+    override fun newInstance(): LatexStepRunConfigurationOptions = MakeindexStepOptions()
 }
 
 @Tag("externalTool")
@@ -268,18 +199,7 @@ class ExternalToolStepOptions : LatexStepRunConfigurationOptions() {
     var workingDirectoryPath by string(null)
     var beforeRunCommand by string(null)
 
-    override fun deepCopy(): LatexStepRunConfigurationOptions {
-        val copied = ExternalToolStepOptions()
-        copied.id = id
-        copied.enabled = enabled
-        copied.type = type
-        copied.executable = executable
-        copied.arguments = arguments
-        copied.workingDirectoryPath = workingDirectoryPath
-        copied.beforeRunCommand = beforeRunCommand
-        copied.copySelectedOptionsFrom(this)
-        return copied
-    }
+    override fun newInstance(): LatexStepRunConfigurationOptions = ExternalToolStepOptions()
 }
 
 @Tag("pythontex")
@@ -292,18 +212,7 @@ class PythontexStepOptions : LatexStepRunConfigurationOptions() {
     var workingDirectoryPath by string(null)
     var beforeRunCommand by string(null)
 
-    override fun deepCopy(): LatexStepRunConfigurationOptions {
-        val copied = PythontexStepOptions()
-        copied.id = id
-        copied.enabled = enabled
-        copied.type = type
-        copied.executable = executable
-        copied.arguments = arguments
-        copied.workingDirectoryPath = workingDirectoryPath
-        copied.beforeRunCommand = beforeRunCommand
-        copied.copySelectedOptionsFrom(this)
-        return copied
-    }
+    override fun newInstance(): LatexStepRunConfigurationOptions = PythontexStepOptions()
 }
 
 @Tag("makeglossaries")
@@ -316,18 +225,7 @@ class MakeglossariesStepOptions : LatexStepRunConfigurationOptions() {
     var workingDirectoryPath by string(null)
     var beforeRunCommand by string(null)
 
-    override fun deepCopy(): LatexStepRunConfigurationOptions {
-        val copied = MakeglossariesStepOptions()
-        copied.id = id
-        copied.enabled = enabled
-        copied.type = type
-        copied.executable = executable
-        copied.arguments = arguments
-        copied.workingDirectoryPath = workingDirectoryPath
-        copied.beforeRunCommand = beforeRunCommand
-        copied.copySelectedOptionsFrom(this)
-        return copied
-    }
+    override fun newInstance(): LatexStepRunConfigurationOptions = MakeglossariesStepOptions()
 }
 
 @Tag("xindy")
@@ -340,18 +238,7 @@ class XindyStepOptions : LatexStepRunConfigurationOptions() {
     var workingDirectoryPath by string(null)
     var beforeRunCommand by string(null)
 
-    override fun deepCopy(): LatexStepRunConfigurationOptions {
-        val copied = XindyStepOptions()
-        copied.id = id
-        copied.enabled = enabled
-        copied.type = type
-        copied.executable = executable
-        copied.arguments = arguments
-        copied.workingDirectoryPath = workingDirectoryPath
-        copied.beforeRunCommand = beforeRunCommand
-        copied.copySelectedOptionsFrom(this)
-        return copied
-    }
+    override fun newInstance(): LatexStepRunConfigurationOptions = XindyStepOptions()
 }
 
 internal fun generateLatexStepId(): String = UUID.randomUUID().toString()
