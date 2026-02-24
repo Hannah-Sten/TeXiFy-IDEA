@@ -50,11 +50,11 @@ fun setUnicodeSupport(project: Project, enabled: Boolean = true) {
     every { project.selectedRunConfig() } returns runConfig
     if (enabled) {
         // Unicode is always supported in lualatex.
-        every { runConfig.compiler } returns LatexCompiler.LUALATEX
+        every { runConfig.activeCompiler() } returns LatexCompiler.LUALATEX
     }
     else {
         // Unicode is not supported on pdflatex on texlive <= 2017.
-        every { runConfig.compiler } returns LatexCompiler.PDFLATEX
+        every { runConfig.activeCompiler() } returns LatexCompiler.PDFLATEX
         mockkObject(TexliveSdk.Cache)
         every { TexliveSdk.Cache.version } returns 2017
         mockkConstructor(MiktexWindowsSdk::class)

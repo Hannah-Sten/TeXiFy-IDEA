@@ -116,124 +116,6 @@ class LatexRunConfiguration(
             executionState.clearInitialization()
         }
 
-    var compiler: LatexCompiler?
-        get() = when (val step = activeOrPrimaryCompileStep()) {
-            is LatexCompileStepOptions -> step.compiler
-            is LatexmkCompileStepOptions -> LatexCompiler.LATEXMK
-            else -> null
-        }
-        set(value) {
-            if (value == null) {
-                return
-            }
-            if (value == LatexCompiler.LATEXMK) {
-                ensurePrimaryCompileStepLatexmk()
-            }
-            else {
-                ensurePrimaryCompileStepClassic().compiler = value
-            }
-        }
-
-    var compilerPath: String?
-        get() = when (val step = activeOrPrimaryCompileStep()) {
-            is LatexCompileStepOptions -> step.compilerPath
-            is LatexmkCompileStepOptions -> step.compilerPath
-            else -> null
-        }
-        set(value) {
-            val normalized = value?.trim()?.ifEmpty { null }
-            when (val step = activeOrPrimaryCompileStep()) {
-                is LatexCompileStepOptions -> step.compilerPath = normalized
-                is LatexmkCompileStepOptions -> step.compilerPath = normalized
-                else -> ensurePrimaryCompileStepClassic().compilerPath = normalized
-            }
-        }
-
-    var compilerArguments: String?
-        get() = when (val step = activeOrPrimaryCompileStep()) {
-            is LatexCompileStepOptions -> step.compilerArguments
-            is LatexmkCompileStepOptions -> step.compilerArguments
-            else -> null
-        }
-        set(value) {
-            val normalized = value?.trim()?.ifEmpty { null }
-            when (val step = activeOrPrimaryCompileStep()) {
-                is LatexCompileStepOptions -> step.compilerArguments = normalized
-                is LatexmkCompileStepOptions -> step.compilerArguments = normalized
-                else -> ensurePrimaryCompileStepClassic().compilerArguments = normalized
-            }
-        }
-
-    var outputFormat: Format
-        get() = when (val step = activeOrPrimaryCompileStep()) {
-            is LatexCompileStepOptions -> step.outputFormat
-            else -> Format.PDF
-        }
-        set(value) {
-            ensurePrimaryCompileStepClassic().outputFormat = value
-        }
-
-    var beforeRunCommand: String?
-        get() = when (val step = activeOrPrimaryCompileStep()) {
-            is LatexCompileStepOptions -> step.beforeRunCommand
-            is LatexmkCompileStepOptions -> step.beforeRunCommand
-            else -> null
-        }
-        set(value) {
-            val normalized = value?.trim()?.ifEmpty { null }
-            when (val step = activeOrPrimaryCompileStep()) {
-                is LatexCompileStepOptions -> step.beforeRunCommand = normalized
-                is LatexmkCompileStepOptions -> step.beforeRunCommand = normalized
-                else -> ensurePrimaryCompileStepClassic().beforeRunCommand = normalized
-            }
-        }
-
-    var latexmkCompileMode: LatexmkCompileMode
-        get() = (activeOrPrimaryCompileStep() as? LatexmkCompileStepOptions)?.latexmkCompileMode ?: LatexmkCompileMode.AUTO
-        set(value) {
-            ensurePrimaryCompileStepLatexmk().latexmkCompileMode = value
-        }
-
-    var latexmkCustomEngineCommand: String?
-        get() = (activeOrPrimaryCompileStep() as? LatexmkCompileStepOptions)?.latexmkCustomEngineCommand
-        set(value) {
-            ensurePrimaryCompileStepLatexmk().latexmkCustomEngineCommand = value?.trim()?.ifEmpty { null }
-        }
-
-    var latexmkCitationTool: LatexmkCitationTool
-        get() = (activeOrPrimaryCompileStep() as? LatexmkCompileStepOptions)?.latexmkCitationTool ?: LatexmkCitationTool.AUTO
-        set(value) {
-            ensurePrimaryCompileStepLatexmk().latexmkCitationTool = value
-        }
-
-    var latexmkExtraArguments: String?
-        get() = (activeOrPrimaryCompileStep() as? LatexmkCompileStepOptions)?.latexmkExtraArguments
-            ?: DEFAULT_LATEXMK_EXTRA_ARGUMENTS
-        set(value) {
-            ensurePrimaryCompileStepLatexmk().latexmkExtraArguments = value?.trim()?.ifEmpty { null }
-        }
-
-    var compileTwice: Boolean
-        get() = steps.count { it.enabled && (it.type == LatexStepType.LATEX_COMPILE || it.type == LatexStepType.LATEXMK_COMPILE) } > 1
-        set(value) {
-            val compileIndices = steps.withIndex()
-                .filter { (_, step) -> step.enabled && (step.type == LatexStepType.LATEX_COMPILE || step.type == LatexStepType.LATEXMK_COMPILE) }
-                .map { it.index }
-            if (compileIndices.isEmpty()) {
-                steps.add(0, LatexCompileStepOptions())
-                if (value) {
-                    steps.add(1, LatexCompileStepOptions())
-                }
-                return
-            }
-            if (value && compileIndices.size < 2) {
-                steps.add(compileIndices.first() + 1, steps[compileIndices.first()].deepCopy())
-            }
-            if (!value && compileIndices.size > 1) {
-                compileIndices.drop(1).asReversed().forEach { index -> steps.removeAt(index) }
-            }
-        }
-
     var pdfViewer: PdfViewer?
         get() {
             val viewerName = activeOrPrimaryViewerStep()?.pdfViewerName
@@ -311,7 +193,7 @@ class LatexRunConfiguration(
     }
 
     fun setDefaultPdfViewer() {
-        ensurePrimaryViewerStep().pdfViewerName = PdfViewer.firstAvailableViewer?.name
+        ensurePrimaryViewerStep().pdfViewerName = PdfViewer.firstAvailableViewer.name
     }
 
     fun setDefaultOutputFormat() {
@@ -387,14 +269,59 @@ class LatexRunConfiguration(
         this.outputPath = pathOrNull(fileOutputPath)
     }
 
-    fun setFileAuxilPath(fileAuxilPath: String) {
-        if (fileAuxilPath.isBlank()) return
-        this.auxilPath = pathOrNull(fileAuxilPath)
-    }
-
     internal fun activateStepForExecution(stepId: String?) {
         activeStepIdForExecution = stepId
     }
+
+    internal fun activeCompileStep(): LatexStepRunConfigurationOptions? = activeOrPrimaryCompileStep()
+
+    internal fun primaryCompileStep(): LatexStepRunConfigurationOptions? =
+        steps.firstOrNull { it.enabled && (it is LatexCompileStepOptions || it is LatexmkCompileStepOptions) }
+
+    internal fun hasEnabledLatexmkStep(): Boolean =
+        steps.any { it.enabled && it is LatexmkCompileStepOptions }
+
+    internal fun activeCompiler(): LatexCompiler? = when (val step = activeOrPrimaryCompileStep()) {
+        is LatexCompileStepOptions -> step.compiler
+        is LatexmkCompileStepOptions -> LatexCompiler.LATEXMK
+        else -> null
+    }
+
+    internal fun activeCompilerPath(): String? = when (val step = activeOrPrimaryCompileStep()) {
+        is LatexCompileStepOptions -> step.compilerPath
+        is LatexmkCompileStepOptions -> step.compilerPath
+        else -> null
+    }
+
+    internal fun activeCompilerArguments(): String? = when (val step = activeOrPrimaryCompileStep()) {
+        is LatexCompileStepOptions -> step.compilerArguments
+        is LatexmkCompileStepOptions -> step.compilerArguments
+        else -> null
+    }
+
+    internal fun activeOutputFormat(): Format = when (val step = activeOrPrimaryCompileStep()) {
+        is LatexCompileStepOptions -> step.outputFormat
+        else -> Format.PDF
+    }
+
+    internal fun activeBeforeRunCommand(): String? = when (val step = activeOrPrimaryCompileStep()) {
+        is LatexCompileStepOptions -> step.beforeRunCommand
+        is LatexmkCompileStepOptions -> step.beforeRunCommand
+        else -> null
+    }
+
+    internal fun activeLatexmkCompileMode(): LatexmkCompileMode =
+        (activeOrPrimaryCompileStep() as? LatexmkCompileStepOptions)?.latexmkCompileMode ?: LatexmkCompileMode.AUTO
+
+    internal fun activeLatexmkCustomEngineCommand(): String? =
+        (activeOrPrimaryCompileStep() as? LatexmkCompileStepOptions)?.latexmkCustomEngineCommand
+
+    internal fun activeLatexmkCitationTool(): LatexmkCitationTool =
+        (activeOrPrimaryCompileStep() as? LatexmkCompileStepOptions)?.latexmkCitationTool ?: LatexmkCitationTool.AUTO
+
+    internal fun activeLatexmkExtraArguments(): String =
+        (activeOrPrimaryCompileStep() as? LatexmkCompileStepOptions)?.latexmkExtraArguments
+            ?: DEFAULT_LATEXMK_EXTRA_ARGUMENTS
 
     private fun activeOrPrimaryCompileStep(): LatexStepRunConfigurationOptions? {
         val active = activeStepIdForExecution
@@ -418,7 +345,7 @@ class LatexRunConfiguration(
         return steps.firstOrNull { it.enabled && it is PdfViewerStepOptions } as? PdfViewerStepOptions
     }
 
-    private fun ensurePrimaryCompileStepClassic(): LatexCompileStepOptions {
+    internal fun ensurePrimaryCompileStepClassic(): LatexCompileStepOptions {
         val index = steps.indexOfFirst {
             it.enabled && (it is LatexCompileStepOptions || it is LatexmkCompileStepOptions)
         }
@@ -442,7 +369,7 @@ class LatexRunConfiguration(
         }
     }
 
-    private fun ensurePrimaryCompileStepLatexmk(): LatexmkCompileStepOptions {
+    internal fun ensurePrimaryCompileStepLatexmk(): LatexmkCompileStepOptions {
         val index = steps.indexOfFirst {
             it.enabled && (it is LatexCompileStepOptions || it is LatexmkCompileStepOptions)
         }

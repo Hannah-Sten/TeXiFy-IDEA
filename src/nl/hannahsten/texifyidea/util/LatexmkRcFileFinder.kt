@@ -5,6 +5,7 @@ import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.run.latex.LatexmkCompileStepOptions
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationStaticSupport
 import java.io.File
@@ -140,7 +141,8 @@ object LatexmkRcFileFinder {
 
         if (runConfig != null) {
             val mainFile = LatexRunConfigurationStaticSupport.resolveMainFile(runConfig)
-            getLocalLatexmkRcFile(runConfig.compilerArguments, mainFile?.parent?.path?.let { Path.of(it) })?.let { return getTexinputs(it) }
+            val latexmkStep = runConfig.primaryCompileStep() as? LatexmkCompileStepOptions
+            getLocalLatexmkRcFile(latexmkStep?.compilerArguments, mainFile?.parent?.path?.let { Path.of(it) })?.let { return getTexinputs(it) }
         }
         if (!directory.isValid) return null
         // File could be anywhere if run configurations are not used, but searching the whole project could be too expensive

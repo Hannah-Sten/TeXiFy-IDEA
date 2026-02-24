@@ -6,6 +6,7 @@ import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
+import nl.hannahsten.texifyidea.run.latex.LatexmkCompileStepOptions
 import nl.hannahsten.texifyidea.run.latex.LatexPathResolver
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer
@@ -16,13 +17,16 @@ import java.nio.file.Path
 
 class LatexmkRunConfigurationTest : BasePlatformTestCase() {
 
+    private fun latexmkStep(runConfig: LatexRunConfiguration): LatexmkCompileStepOptions = runConfig.ensurePrimaryCompileStepLatexmk()
+
     private fun initializeExecutionState(runConfig: LatexRunConfiguration) {
         val mainFile = runConfig.executionState.resolvedMainFile ?: LatexRunConfigurationStaticSupport.resolveMainFile(runConfig) ?: return
+        val step = latexmkStep(runConfig)
         runConfig.executionState.resolvedMainFile = mainFile
         runConfig.executionState.resolvedOutputDir = LatexPathResolver.resolveOutputDir(runConfig, mainFile)
         runConfig.executionState.resolvedAuxDir = LatexPathResolver.resolveAuxDir(runConfig, mainFile)
-        runConfig.executionState.effectiveLatexmkCompileMode = LatexmkModeService.effectiveCompileMode(runConfig)
-        runConfig.executionState.effectiveCompilerArguments = LatexmkModeService.buildArguments(runConfig, runConfig.executionState.effectiveLatexmkCompileMode)
+        runConfig.executionState.effectiveLatexmkCompileMode = LatexmkModeService.effectiveCompileMode(runConfig, step)
+        runConfig.executionState.effectiveCompilerArguments = LatexmkModeService.buildArguments(runConfig, step, runConfig.executionState.effectiveLatexmkCompileMode)
         val extension = (runConfig.executionState.effectiveLatexmkCompileMode ?: LatexmkCompileMode.PDFLATEX_PDF).extension.lowercase()
         runConfig.executionState.resolvedOutputFilePath =
             "${runConfig.executionState.resolvedOutputDir?.path}/${mainFile.nameWithoutExtension}.$extension"
@@ -100,15 +104,15 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
             LatexRunConfigurationProducer().configurationFactory,
             "LaTeX"
         )
-        runConfig.compiler = LatexCompiler.LATEXMK
+        val step = latexmkStep(runConfig)
 
-        runConfig.latexmkCompileMode = LatexmkCompileMode.LUALATEX_PDF
+        step.latexmkCompileMode = LatexmkCompileMode.LUALATEX_PDF
         assertEquals(true, unicodeEngineCompatibility(runConfig))
 
-        runConfig.latexmkCompileMode = LatexmkCompileMode.PDFLATEX_PDF
+        step.latexmkCompileMode = LatexmkCompileMode.PDFLATEX_PDF
         assertEquals(false, unicodeEngineCompatibility(runConfig))
 
-        runConfig.latexmkCompileMode = LatexmkCompileMode.CUSTOM
+        step.latexmkCompileMode = LatexmkCompileMode.CUSTOM
         assertEquals(null, unicodeEngineCompatibility(runConfig))
     }
 
@@ -118,13 +122,12 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
             LatexRunConfigurationProducer().configurationFactory,
             "LaTeX"
         )
-        runConfig.compiler = LatexCompiler.LATEXMK
-        runConfig.latexmkCompileMode = LatexmkCompileMode.LUALATEX_PDF
-        runConfig.latexmkCitationTool = LatexmkCitationTool.AUTO
-        runConfig.latexmkExtraArguments = null
-        runConfig.outputFormat = Format.DVI
+        val step = latexmkStep(runConfig)
+        step.latexmkCompileMode = LatexmkCompileMode.LUALATEX_PDF
+        step.latexmkCitationTool = LatexmkCitationTool.AUTO
+        step.latexmkExtraArguments = null
 
-        val arguments = LatexmkModeService.buildArguments(runConfig)
+        val arguments = LatexmkModeService.buildArguments(runConfig, step)
         assertTrue(arguments.contains("-lualatex"))
         assertFalse(arguments.contains("-output-format"))
     }
@@ -145,15 +148,15 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
             LatexRunConfigurationProducer().configurationFactory,
             "LaTeX"
         )
-        runConfig.compiler = LatexCompiler.LATEXMK
+        val step = latexmkStep(runConfig)
         runConfig.mainFilePath = psi.virtualFile.name
         runConfig.executionState.psiFile = psi.createSmartPointer()
-        runConfig.latexmkCompileMode = LatexmkCompileMode.AUTO
-        runConfig.latexmkCitationTool = LatexmkCitationTool.AUTO
-        runConfig.latexmkExtraArguments = null
+        step.latexmkCompileMode = LatexmkCompileMode.AUTO
+        step.latexmkCitationTool = LatexmkCitationTool.AUTO
+        step.latexmkExtraArguments = null
 
         initializeExecutionState(runConfig)
-        val arguments = LatexmkModeService.buildArguments(runConfig)
+        val arguments = LatexmkModeService.buildArguments(runConfig, step)
         assertTrue(arguments.contains("-xelatex"))
         assertTrue(arguments.contains("-xdv"))
         assertTrue(runConfig.executionState.resolvedOutputFilePath?.endsWith(".xdv") == true)
@@ -175,15 +178,15 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
             LatexRunConfigurationProducer().configurationFactory,
             "LaTeX"
         )
-        runConfig.compiler = LatexCompiler.LATEXMK
+        val step = latexmkStep(runConfig)
         runConfig.mainFilePath = psi.virtualFile.name
         runConfig.executionState.psiFile = psi.createSmartPointer()
-        runConfig.latexmkCompileMode = LatexmkCompileMode.AUTO
-        runConfig.latexmkCitationTool = LatexmkCitationTool.AUTO
-        runConfig.latexmkExtraArguments = null
+        step.latexmkCompileMode = LatexmkCompileMode.AUTO
+        step.latexmkCitationTool = LatexmkCitationTool.AUTO
+        step.latexmkExtraArguments = null
 
-        assertEquals(LatexmkCompileMode.LUALATEX_PDF, LatexmkModeService.effectiveCompileMode(runConfig))
-        assertTrue(LatexmkModeService.buildArguments(runConfig).contains("-lualatex"))
+        assertEquals(LatexmkCompileMode.LUALATEX_PDF, LatexmkModeService.effectiveCompileMode(runConfig, step))
+        assertTrue(LatexmkModeService.buildArguments(runConfig, step).contains("-lualatex"))
     }
 
     fun testLatexRunConfigurationAutoModeFallsBackToPdfLatex() {
@@ -201,15 +204,15 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
             LatexRunConfigurationProducer().configurationFactory,
             "LaTeX"
         )
-        runConfig.compiler = LatexCompiler.LATEXMK
+        val step = latexmkStep(runConfig)
         runConfig.mainFilePath = psi.virtualFile.name
         runConfig.executionState.psiFile = psi.createSmartPointer()
-        runConfig.latexmkCompileMode = LatexmkCompileMode.AUTO
-        runConfig.latexmkCitationTool = LatexmkCitationTool.AUTO
-        runConfig.latexmkExtraArguments = null
+        step.latexmkCompileMode = LatexmkCompileMode.AUTO
+        step.latexmkCitationTool = LatexmkCitationTool.AUTO
+        step.latexmkExtraArguments = null
 
-        assertEquals(LatexmkCompileMode.PDFLATEX_PDF, LatexmkModeService.effectiveCompileMode(runConfig))
-        assertTrue(LatexmkModeService.buildArguments(runConfig).contains("-pdf"))
+        assertEquals(LatexmkCompileMode.PDFLATEX_PDF, LatexmkModeService.effectiveCompileMode(runConfig, step))
+        assertTrue(LatexmkModeService.buildArguments(runConfig, step).contains("-pdf"))
     }
 
     fun testLatexmkCompilerExposesNoOutputFormatSwitch() {
@@ -224,12 +227,11 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
             LatexRunConfigurationProducer().configurationFactory,
             "LaTeX"
         )
-        runConfig.compiler = LatexCompiler.LATEXMK
+        val step = latexmkStep(runConfig)
         runConfig.mainFilePath = mainFile.virtualFile.name
-        runConfig.latexmkCompileMode = LatexmkCompileMode.PDFLATEX_PDF
-        runConfig.latexmkCitationTool = LatexmkCitationTool.AUTO
-        runConfig.latexmkExtraArguments = null
-        runConfig.compilerArguments = LatexmkModeService.buildArguments(runConfig)
+        step.latexmkCompileMode = LatexmkCompileMode.PDFLATEX_PDF
+        step.latexmkCitationTool = LatexmkCitationTool.AUTO
+        step.latexmkExtraArguments = null
         initializeExecutionState(runConfig)
 
         val command = LatexCompiler.LATEXMK.getCommand(runConfig, project) ?: error("No command generated")
@@ -254,9 +256,8 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
             LatexRunConfigurationProducer().configurationFactory,
             "LaTeX"
         )
-        runConfig.compiler = LatexCompiler.LATEXMK
+        latexmkStep(runConfig)
         runConfig.mainFilePath = mainFile.virtualFile.name
-        runConfig.compilerArguments = LatexmkModeService.buildArguments(runConfig)
         initializeExecutionState(runConfig)
 
         val command = LatexCompiler.LATEXMK.getCommand(runConfig, project) ?: error("No command generated")
@@ -273,12 +274,12 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
             LatexRunConfigurationProducer().configurationFactory,
             "LaTeX"
         )
-        runConfig.compiler = LatexCompiler.LATEXMK
+        val step = latexmkStep(runConfig)
         runConfig.latexDistribution = LatexDistributionType.TEXLIVE
         runConfig.mainFilePath = mainFile.virtualFile.name
         runConfig.outputPath = outputDir
         runConfig.auxilPath = auxDir
-        runConfig.compilerArguments = LatexmkModeService.buildArguments(runConfig)
+        step.compilerArguments = LatexmkModeService.buildArguments(runConfig, step)
         initializeExecutionState(runConfig)
 
         val command = LatexCompiler.LATEXMK.getCommand(runConfig, project) ?: error("No command generated")
@@ -297,12 +298,12 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
             LatexRunConfigurationProducer().configurationFactory,
             "LaTeX"
         )
-        runConfig.compiler = LatexCompiler.LATEXMK
+        val step = latexmkStep(runConfig)
         runConfig.latexDistribution = LatexDistributionType.TEXLIVE
         runConfig.mainFilePath = mainFile.virtualFile.name
         runConfig.outputPath = outputDir
         runConfig.auxilPath = auxDir
-        runConfig.compilerArguments = LatexmkModeService.buildArguments(runConfig)
+        step.compilerArguments = LatexmkModeService.buildArguments(runConfig, step)
         initializeExecutionState(runConfig)
 
         val command = LatexCompiler.LATEXMK.getCommand(runConfig, project) ?: error("No command generated")

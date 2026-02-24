@@ -5,7 +5,6 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import io.mockk.every
 import io.mockk.mockk
-import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.flow.LatexStepRunState
 
 class LatexRunStepStateSelectionTest : BasePlatformTestCase() {
@@ -16,7 +15,6 @@ class LatexRunStepStateSelectionTest : BasePlatformTestCase() {
             LatexRunConfigurationProducer().configurationFactory,
             "Test run config"
         )
-        runConfig.compiler = LatexCompiler.LATEXMK
         runConfig.configOptions.steps = mutableListOf(LatexmkCompileStepOptions(), PdfViewerStepOptions())
 
         val environment = mockk<ExecutionEnvironment>(relaxed = true)
@@ -34,7 +32,6 @@ class LatexRunStepStateSelectionTest : BasePlatformTestCase() {
             LatexRunConfigurationProducer().configurationFactory,
             "Test run config"
         )
-        runConfig.compiler = LatexCompiler.PDFLATEX
         runConfig.configOptions.steps = mutableListOf(
             ExternalToolStepOptions().apply { type = "unsupported-step" },
             PdfViewerStepOptions(),

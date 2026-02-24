@@ -55,13 +55,23 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
             command.let { it.subSequence(0, it.indexOf(' ')) }.trim().toString()
         }
         else command
-        runConfiguration.compiler = LatexCompiler.byExecutableName(compiler)
-        runConfiguration.compilerArguments = command.removePrefix(compiler).trim()
-        if (runConfiguration.compiler == LatexCompiler.LATEXMK) {
-            runConfiguration.latexmkCompileMode = LatexmkCompileMode.AUTO
+        val selectedCompiler = LatexCompiler.byExecutableName(compiler)
+        val commandArguments = command.removePrefix(compiler).trim().ifBlank { null }
+        when (selectedCompiler) {
+            LatexCompiler.LATEXMK -> {
+                val step = runConfiguration.ensurePrimaryCompileStepLatexmk()
+                step.compilerArguments = commandArguments
+                step.latexmkCompileMode = LatexmkCompileMode.AUTO
+            }
+
+            else -> {
+                val step = runConfiguration.ensurePrimaryCompileStepClassic()
+                step.compiler = selectedCompiler
+                step.compilerArguments = commandArguments
+            }
         }
 
-        runConfiguration.workingDirectory = if (runConfiguration.compiler == LatexCompiler.TECTONIC && mainFile.hasTectonicTomlFile()) {
+        runConfiguration.workingDirectory = if (selectedCompiler == LatexCompiler.TECTONIC && mainFile.hasTectonicTomlFile()) {
             Path.of(mainFile.findTectonicTomlFile()!!.parent.path)
         }
         else {

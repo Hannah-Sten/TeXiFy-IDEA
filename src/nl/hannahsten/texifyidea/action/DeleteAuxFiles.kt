@@ -3,7 +3,6 @@ package nl.hannahsten.texifyidea.action
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.vfs.LocalFileSystem
-import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCleanUtil
 import nl.hannahsten.texifyidea.util.selectedRunConfig
@@ -21,7 +20,7 @@ class DeleteAuxFiles : AnAction() {
         val project = getEventProject(e) ?: return
 
         val selectedRunConfig = project.selectedRunConfig()
-        if (selectedRunConfig is LatexRunConfiguration && selectedRunConfig.compiler == LatexCompiler.LATEXMK) {
+        if (selectedRunConfig is LatexRunConfiguration && selectedRunConfig.hasEnabledLatexmkStep()) {
             LatexmkCleanUtil.run(project, selectedRunConfig, LatexmkCleanUtil.Mode.CLEAN)
             return
         }

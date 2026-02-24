@@ -17,21 +17,25 @@ import nl.hannahsten.texifyidea.util.includedPackagesInFileset
 
 internal object LatexmkModeService {
 
-    fun buildArguments(runConfig: LatexRunConfiguration, effectiveCompileModeOverride: LatexmkCompileMode? = null): String {
-        val hasRcFile = LatexmkRcFileFinder.hasLatexmkRc(runConfig.compilerArguments, runConfig.executionState.resolvedWorkingDirectory)
-        val effectiveCompileMode = effectiveCompileModeOverride ?: effectiveCompileMode(runConfig)
+    fun buildArguments(
+        runConfig: LatexRunConfiguration,
+        step: LatexmkCompileStepOptions,
+        effectiveCompileModeOverride: LatexmkCompileMode? = null
+    ): String {
+        val hasRcFile = LatexmkRcFileFinder.hasLatexmkRc(step.compilerArguments, runConfig.executionState.resolvedWorkingDirectory)
+        val effectiveCompileMode = effectiveCompileModeOverride ?: effectiveCompileMode(runConfig, step)
         return buildLatexmkStructuredArguments(
             hasRcFile = hasRcFile,
             compileMode = effectiveCompileMode,
-            citationTool = runConfig.latexmkCitationTool,
-            customEngineCommand = runConfig.latexmkCustomEngineCommand,
-            extraArguments = runConfig.latexmkExtraArguments,
+            citationTool = step.latexmkCitationTool,
+            customEngineCommand = step.latexmkCustomEngineCommand,
+            extraArguments = step.latexmkExtraArguments,
         )
     }
 
-    fun effectiveCompileMode(runConfig: LatexRunConfiguration): LatexmkCompileMode {
-        if (runConfig.latexmkCompileMode != LatexmkCompileMode.AUTO) {
-            return runConfig.latexmkCompileMode
+    fun effectiveCompileMode(runConfig: LatexRunConfiguration, step: LatexmkCompileStepOptions): LatexmkCompileMode {
+        if (step.latexmkCompileMode != LatexmkCompileMode.AUTO) {
+            return step.latexmkCompileMode
         }
 
         return ReadAction.compute<LatexmkCompileMode, RuntimeException> {

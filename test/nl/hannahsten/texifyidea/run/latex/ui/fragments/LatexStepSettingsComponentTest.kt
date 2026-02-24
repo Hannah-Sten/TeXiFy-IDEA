@@ -3,7 +3,6 @@ package nl.hannahsten.texifyidea.run.latex.ui.fragments
 import com.intellij.execution.ui.FragmentedSettings
 import com.intellij.openapi.util.Disposer
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.*
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCitationTool
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
@@ -92,18 +91,20 @@ class LatexStepSettingsComponentTest : BasePlatformTestCase() {
             PdfViewerStepOptions().apply {
                 this.selectedOptions.add(FragmentedSettings.Option(StepUiOptionIds.VIEWER_COMMAND, true))
             }
-        ).apply {
-            compiler = LatexCompiler.LATEXMK
-            compilerPath = "/tmp/latexmk"
-            compilerArguments = "-shell-escape"
-            outputFormat = LatexCompiler.Format.PDF
-            latexmkCompileMode = LatexmkCompileMode.CUSTOM
-            latexmkCustomEngineCommand = "lualatex"
-            latexmkCitationTool = LatexmkCitationTool.BIBER
-            latexmkExtraArguments = "-interaction=nonstopmode"
-            pdfViewer = PdfViewer.firstAvailableViewer
-            requireFocus = false
-            viewerCommand = "open {pdf}"
+        ).also { config ->
+            (config.configOptions.steps.first { it.type == LatexStepType.LATEXMK_COMPILE } as LatexmkCompileStepOptions).apply {
+                compilerPath = "/tmp/latexmk"
+                compilerArguments = "-shell-escape"
+                latexmkCompileMode = LatexmkCompileMode.CUSTOM
+                latexmkCustomEngineCommand = "lualatex"
+                latexmkCitationTool = LatexmkCitationTool.BIBER
+                latexmkExtraArguments = "-interaction=nonstopmode"
+            }
+            (config.configOptions.steps.first { it.type == LatexStepType.PDF_VIEWER } as PdfViewerStepOptions).apply {
+                pdfViewerName = PdfViewer.firstAvailableViewer.name
+                requireFocus = false
+                customViewerCommand = "open {pdf}"
+            }
         }
         val target = configWithSteps(
             LatexmkCompileStepOptions(),
@@ -125,16 +126,17 @@ class LatexStepSettingsComponentTest : BasePlatformTestCase() {
             Disposer.dispose(disposable)
         }
 
-        assertEquals(LatexCompiler.LATEXMK, target.compiler)
-        assertEquals("/tmp/latexmk", target.compilerPath)
-        assertEquals("-shell-escape", target.compilerArguments)
-        assertEquals(LatexmkCompileMode.CUSTOM, target.latexmkCompileMode)
-        assertEquals("lualatex", target.latexmkCustomEngineCommand)
-        assertEquals(LatexmkCitationTool.BIBER, target.latexmkCitationTool)
-        assertEquals("-interaction=nonstopmode", target.latexmkExtraArguments)
-        assertEquals(PdfViewer.firstAvailableViewer, target.pdfViewer)
-        assertFalse(target.requireFocus)
-        assertEquals("open {pdf}", target.viewerCommand)
+        val targetLatexmk = target.configOptions.steps.first { it.type == LatexStepType.LATEXMK_COMPILE } as LatexmkCompileStepOptions
+        val targetViewer = target.configOptions.steps.first { it.type == LatexStepType.PDF_VIEWER } as PdfViewerStepOptions
+        assertEquals("/tmp/latexmk", targetLatexmk.compilerPath)
+        assertEquals("-shell-escape", targetLatexmk.compilerArguments)
+        assertEquals(LatexmkCompileMode.CUSTOM, targetLatexmk.latexmkCompileMode)
+        assertEquals("lualatex", targetLatexmk.latexmkCustomEngineCommand)
+        assertEquals(LatexmkCitationTool.BIBER, targetLatexmk.latexmkCitationTool)
+        assertEquals("-interaction=nonstopmode", targetLatexmk.latexmkExtraArguments)
+        assertEquals(PdfViewer.firstAvailableViewer.name, targetViewer.pdfViewerName)
+        assertFalse(targetViewer.requireFocus)
+        assertEquals("open {pdf}", targetViewer.customViewerCommand)
     }
 
     private fun configWithSteps(vararg steps: LatexStepRunConfigurationOptions): LatexRunConfiguration = LatexRunConfiguration(

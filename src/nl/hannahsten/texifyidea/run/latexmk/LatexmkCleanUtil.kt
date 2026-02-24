@@ -9,6 +9,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.io.awaitExit
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
+import nl.hannahsten.texifyidea.run.latex.LatexmkCompileStepOptions
 import nl.hannahsten.texifyidea.run.latex.LatexPathResolver
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationStaticSupport
@@ -25,7 +26,7 @@ object LatexmkCleanUtil {
     }
 
     fun run(project: Project, runConfig: LatexRunConfiguration, mode: Mode) {
-        if (runConfig.compiler != LatexCompiler.LATEXMK) {
+        if (!runConfig.hasEnabledLatexmkStep()) {
             Notification("LaTeX", "Latexmk clean failed", "Selected run configuration is not using latexmk.", NotificationType.ERROR).notify(project)
             return
         }
@@ -77,9 +78,10 @@ object LatexmkCleanUtil {
         }
     }
 
-    private fun buildCleanCommand(runConfig: LatexRunConfiguration, mainFile: VirtualFile, cleanAll: Boolean): List<String> {
+    private fun buildCleanCommand(runConfig: LatexRunConfiguration, mainFile: VirtualFile, cleanAll: Boolean): List<String>? {
+        val latexmkStep = runConfig.primaryCompileStep() as? LatexmkCompileStepOptions ?: return null
         val distributionType = runConfig.getLatexDistributionType()
-        val executable = runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(
+        val executable = latexmkStep.compilerPath ?: LatexSdkUtil.getExecutableName(
             LatexCompiler.LATEXMK.executableName,
             runConfig.project,
             runConfig.getLatexSdk(),
@@ -87,7 +89,7 @@ object LatexmkCleanUtil {
         )
 
         val command = mutableListOf(executable)
-        val compilerArguments = LatexmkModeService.buildArguments(runConfig)
+        val compilerArguments = LatexmkModeService.buildArguments(runConfig, latexmkStep)
         if (compilerArguments.isNotBlank()) {
             command += ParametersListUtil.parse(compilerArguments)
         }

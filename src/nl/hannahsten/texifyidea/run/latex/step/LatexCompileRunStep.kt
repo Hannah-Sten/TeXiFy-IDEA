@@ -5,6 +5,7 @@ import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.util.ProgramParametersConfigurator
+import nl.hannahsten.texifyidea.run.latex.LatexExecutionStateInitializer
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.LatexCompileStepOptions
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
@@ -24,6 +25,7 @@ internal class LatexCompileRunStep(
         val runConfig = context.runConfig
         runConfig.activateStepForExecution(configId)
         try {
+            LatexExecutionStateInitializer.refreshCompileStepDerivedState(runConfig, context.executionState, stepConfig)
             val compiler = resolveCompiler(stepConfig)
             val command = compiler.getCommand(runConfig, context.environment.project)
                 ?: throw ExecutionException("Compile command could not be created.")

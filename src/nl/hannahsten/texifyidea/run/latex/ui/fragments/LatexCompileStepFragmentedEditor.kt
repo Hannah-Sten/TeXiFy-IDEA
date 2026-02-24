@@ -14,7 +14,7 @@ import com.intellij.openapi.util.NlsContexts
 import com.intellij.ui.RawCommandLineEditor
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexCompileStepOptions
 import nl.hannahsten.texifyidea.run.latex.StepUiOptionIds
 import java.awt.event.ItemEvent
 import java.util.function.BiConsumer
@@ -64,12 +64,12 @@ internal class LatexCompileStepFragmentedEditor(
             id = "step.compile.compiler",
             name = "Compiler",
             component = compilerRow,
-            reset = { runConfig, component ->
-                component.component.selectedItem = runConfig.compiler?.takeIf { it != LatexCompiler.LATEXMK } ?: LatexCompiler.PDFLATEX
+            reset = { step, component ->
+                component.component.selectedItem = step.compiler.takeIf { it != LatexCompiler.LATEXMK } ?: LatexCompiler.PDFLATEX
             },
-            apply = { runConfig, component ->
+            apply = { step, component ->
                 val selectedCompiler = component.component.selectedItem as? LatexCompiler ?: LatexCompiler.PDFLATEX
-                runConfig.compiler = selectedCompiler
+                step.compiler = selectedCompiler
             },
             initiallyVisible = { true },
             removable = false,
@@ -80,9 +80,9 @@ internal class LatexCompileStepFragmentedEditor(
             id = StepUiOptionIds.COMPILE_PATH,
             name = "Compiler path",
             component = compilerPathRow,
-            reset = { runConfig, component -> component.component.text = runConfig.compilerPath.orEmpty() },
-            apply = { runConfig, component -> runConfig.compilerPath = component.component.text.ifBlank { null } },
-            initiallyVisible = { runConfig -> !runConfig.compilerPath.isNullOrBlank() },
+            reset = { step, component -> component.component.text = step.compilerPath.orEmpty() },
+            apply = { step, component -> step.compilerPath = component.component.text.ifBlank { null } },
+            initiallyVisible = { step -> !step.compilerPath.isNullOrBlank() },
             removable = true,
             hint = "Compiler executable used by latex-compile steps.",
             actionHint = "Set custom compiler path",
@@ -92,9 +92,9 @@ internal class LatexCompileStepFragmentedEditor(
             id = StepUiOptionIds.COMPILE_ARGS,
             name = "Compiler arguments",
             component = compilerArgumentsRow,
-            reset = { runConfig, component -> component.component.text = runConfig.compilerArguments.orEmpty() },
-            apply = { runConfig, component -> runConfig.compilerArguments = component.component.text },
-            initiallyVisible = { runConfig -> !runConfig.compilerArguments.isNullOrBlank() },
+            reset = { step, component -> component.component.text = step.compilerArguments.orEmpty() },
+            apply = { step, component -> step.compilerArguments = component.component.text },
+            initiallyVisible = { step -> !step.compilerArguments.isNullOrBlank() },
             removable = true,
             hint = "Arguments passed to the selected compiler.",
             actionHint = "Set custom compiler arguments",
@@ -104,15 +104,15 @@ internal class LatexCompileStepFragmentedEditor(
             id = StepUiOptionIds.COMPILE_OUTPUT_FORMAT,
             name = "Output format",
             component = outputFormatRow,
-            reset = { runConfig, component ->
+            reset = { step, component ->
                 val selectedCompiler = compiler.selectedItem as? LatexCompiler ?: LatexCompiler.PDFLATEX
-                syncOutputFormatOptions(selectedCompiler, runConfig.outputFormat)
-                component.component.selectedItem = runConfig.outputFormat
+                syncOutputFormatOptions(selectedCompiler, step.outputFormat)
+                component.component.selectedItem = step.outputFormat
             },
-            apply = { runConfig, component ->
-                runConfig.outputFormat = component.component.selectedItem as? Format ?: Format.PDF
+            apply = { step, component ->
+                step.outputFormat = component.component.selectedItem as? Format ?: Format.PDF
             },
-            initiallyVisible = { runConfig -> runConfig.outputFormat != Format.PDF },
+            initiallyVisible = { step -> step.outputFormat != Format.PDF },
             removable = true,
             hint = "Output format used by latex-compile steps.",
             actionHint = "Set output format",
@@ -138,9 +138,9 @@ internal class LatexCompileStepFragmentedEditor(
         id: String,
         name: String,
         component: C,
-        reset: (LatexRunConfiguration, C) -> Unit,
-        apply: (LatexRunConfiguration, C) -> Unit,
-        initiallyVisible: (LatexRunConfiguration) -> Boolean,
+        reset: (LatexCompileStepOptions, C) -> Unit,
+        apply: (LatexCompileStepOptions, C) -> Unit,
+        initiallyVisible: (LatexCompileStepOptions) -> Boolean,
         removable: Boolean,
         @NlsContexts.Tooltip hint: String? = null,
         actionHint: String? = null,
@@ -175,14 +175,9 @@ internal class LatexCompileStepFragmentedEditor(
         }
     }
 
-    private inline fun <T> withSelectedStep(state: StepFragmentedState, block: (LatexRunConfiguration) -> T): T {
-        val runConfig = state.runConfig
-        runConfig.activateStepForExecution(state.selectedStepOptions?.id)
-        return try {
-            block(runConfig)
-        }
-        finally {
-            runConfig.activateStepForExecution(null)
-        }
+    private inline fun <T> withSelectedStep(state: StepFragmentedState, block: (LatexCompileStepOptions) -> T): T {
+        val step = state.selectedStepOptions as? LatexCompileStepOptions
+            ?: LatexCompileStepOptions().also { state.selectedStepOptions = it }
+        return block(step)
     }
 }

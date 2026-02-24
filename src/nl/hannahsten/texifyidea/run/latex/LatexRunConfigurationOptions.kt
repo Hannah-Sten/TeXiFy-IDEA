@@ -189,7 +189,7 @@ class PdfViewerStepOptions : LatexStepRunConfigurationOptions() {
 
     override var type: String = LatexStepType.PDF_VIEWER
 
-    var pdfViewerName by string(PdfViewer.firstAvailableViewer?.name)
+    var pdfViewerName by string(PdfViewer.firstAvailableViewer.name)
     var requireFocus by property(true)
     var customViewerCommand by string(null)
 

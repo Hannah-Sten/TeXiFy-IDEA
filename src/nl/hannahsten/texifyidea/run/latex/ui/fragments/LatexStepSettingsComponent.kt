@@ -68,10 +68,6 @@ internal class LatexStepSettingsComponent(
         runConfig.configOptions.ensureDefaultSteps()
         stepsById = runConfig.configOptions.steps.associateBy { it.id }
 
-        compileState.runConfig = runConfig
-        latexmkState.runConfig = runConfig
-        viewerState.runConfig = runConfig
-
         if (selectedStepId !in stepsById.keys) {
             selectedStepId = null
             selectedStepType = null
@@ -151,22 +147,22 @@ internal class LatexStepSettingsComponent(
     }
 
     private fun bindSelectedStepToState() {
-        val runConfig = boundRunConfig ?: return
+        boundRunConfig ?: return
         val selectedStep = selectedStepId?.let { stepsById[it] }
 
         when (selectedStep) {
             is LatexCompileStepOptions -> {
-                bindStateForStep(compileState, runConfig, selectedStep)
+                bindStateForStep(compileState, selectedStep)
                 compileSettings.resetFrom(compileState)
             }
 
             is LatexmkCompileStepOptions -> {
-                bindStateForStep(latexmkState, runConfig, selectedStep)
+                bindStateForStep(latexmkState, selectedStep)
                 latexmkSettings.resetFrom(latexmkState)
             }
 
             is PdfViewerStepOptions -> {
-                bindStateForStep(viewerState, runConfig, selectedStep)
+                bindStateForStep(viewerState, selectedStep)
                 viewerSettings.resetFrom(viewerState)
             }
 
@@ -177,10 +173,8 @@ internal class LatexStepSettingsComponent(
 
     private fun bindStateForStep(
         state: StepFragmentedState,
-        runConfig: LatexRunConfiguration,
         step: LatexStepRunConfigurationOptions,
     ) {
-        state.runConfig = runConfig
         state.selectedStepOptions = step
         state.selectedOptions = step.selectedOptions
             .map { FragmentedSettings.Option(it.name ?: "", it.visible) }
@@ -190,19 +184,16 @@ internal class LatexStepSettingsComponent(
     private fun flushCurrentCard(runConfig: LatexRunConfiguration) {
         when (currentCardId) {
             CARD_COMPILE -> {
-                compileState.runConfig = runConfig
                 compileSettings.applyTo(compileState)
                 persistStepOptions(runConfig, compileState)
             }
 
             CARD_LATEXMK -> {
-                latexmkState.runConfig = runConfig
                 latexmkSettings.applyTo(latexmkState)
                 persistStepOptions(runConfig, latexmkState)
             }
 
             CARD_VIEWER -> {
-                viewerState.runConfig = runConfig
                 viewerSettings.applyTo(viewerState)
                 persistStepOptions(runConfig, viewerState)
             }
@@ -229,10 +220,13 @@ internal class LatexStepSettingsComponent(
         state: StepFragmentedState,
         editor: SettingsEditor<StepFragmentedState>,
     ) {
-        if (state.selectedStepOptions == null) {
-            return
-        }
-        state.runConfig = runConfig
+        val selected = state.selectedStepOptions ?: return
+        val targetStep = runConfig.configOptions.steps.firstOrNull { it.id == selected.id }
+            ?: runConfig.configOptions.steps.firstOrNull { it.type == selected.type }
+            ?: defaultStepFor(selected.type)?.also { runConfig.configOptions.steps.add(it) }
+            ?: return
+
+        state.selectedStepOptions = targetStep
         editor.applyTo(state)
         persistStepOptions(runConfig, state)
     }

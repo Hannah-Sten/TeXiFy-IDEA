@@ -6,7 +6,6 @@ import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.SmartPointerManager
-import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
 import nl.hannahsten.texifyidea.run.latexmk.compileModeFromMagicCommand
@@ -46,31 +45,37 @@ internal object LatexExecutionStateInitializer {
             executionState.addCleanupDirectoriesIfEmpty(createdDirectories)
         }
 
-        val effectiveMode = if (runConfig.compiler == LatexCompiler.LATEXMK) {
-            LatexmkModeService.effectiveCompileMode(runConfig)
-        }
-        else {
-            null
-        }
-        executionState.effectiveLatexmkCompileMode = effectiveMode
-        executionState.effectiveCompilerArguments = if (runConfig.compiler == LatexCompiler.LATEXMK) {
-            LatexmkModeService.buildArguments(runConfig, effectiveMode)
-        }
-        else {
-            runConfig.compilerArguments
-        }
-        executionState.resolvedOutputFilePath = computeOutputFilePath(runConfig, executionState, mainFile)
+        refreshCompileStepDerivedState(runConfig, executionState, runConfig.primaryCompileStep())
         executionState.isInitialized = true
     }
 
-    private fun computeOutputFilePath(
+    fun refreshCompileStepDerivedState(
         runConfig: LatexRunConfiguration,
         executionState: LatexRunExecutionState,
+        step: LatexStepRunConfigurationOptions?,
+    ) {
+        val mainFile = executionState.resolvedMainFile ?: return
+        val latexmkStep = step as? LatexmkCompileStepOptions
+        val classicStep = step as? LatexCompileStepOptions
+
+        val effectiveMode = latexmkStep?.let { LatexmkModeService.effectiveCompileMode(runConfig, it) }
+        executionState.effectiveLatexmkCompileMode = effectiveMode
+        executionState.effectiveCompilerArguments = when {
+            latexmkStep != null -> LatexmkModeService.buildArguments(runConfig, latexmkStep, effectiveMode)
+            classicStep != null -> classicStep.compilerArguments
+            else -> null
+        }
+        executionState.resolvedOutputFilePath = computeOutputFilePath(executionState, mainFile, step)
+    }
+
+    private fun computeOutputFilePath(
+        executionState: LatexRunExecutionState,
         mainFile: VirtualFile,
+        step: LatexStepRunConfigurationOptions?,
     ): String? {
         val outputDirPath = executionState.resolvedOutputDir?.path ?: return null
         val baseName = mainFile.nameWithoutExtension
-        val extension = if (runConfig.compiler == LatexCompiler.LATEXMK) {
+        val extension = if (step is LatexmkCompileStepOptions) {
             val modeFromArgs = executionState.effectiveCompilerArguments
                 ?.takeIf(String::isNotBlank)
                 ?.let { compileModeFromMagicCommand("latexmk $it") }
@@ -78,11 +83,11 @@ internal object LatexExecutionStateInitializer {
                 .extension
                 .lowercase(Locale.getDefault())
         }
-        else if (runConfig.outputFormat == Format.DEFAULT) {
+        else if ((step as? LatexCompileStepOptions)?.outputFormat == Format.DEFAULT) {
             "pdf"
         }
         else {
-            runConfig.outputFormat.toString().lowercase(Locale.getDefault())
+            ((step as? LatexCompileStepOptions)?.outputFormat ?: Format.PDF).toString().lowercase(Locale.getDefault())
         }
         return "$outputDirPath/$baseName.$extension"
     }

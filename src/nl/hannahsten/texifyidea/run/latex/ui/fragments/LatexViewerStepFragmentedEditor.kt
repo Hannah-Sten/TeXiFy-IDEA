@@ -7,7 +7,7 @@ import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBTextField
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.PdfViewerStepOptions
 import nl.hannahsten.texifyidea.run.latex.StepUiOptionIds
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import java.awt.event.ItemEvent
@@ -42,12 +42,13 @@ internal class LatexViewerStepFragmentedEditor(
             id = "step.viewer.type",
             name = "PDF viewer",
             component = pdfViewerRow,
-            reset = { runConfig, component ->
-                component.component.selectedItem = runConfig.pdfViewer ?: PdfViewer.firstAvailableViewer
+            reset = { step, component ->
+                component.component.selectedItem = PdfViewer.availableViewers.firstOrNull { it.name == step.pdfViewerName }
+                    ?: PdfViewer.firstAvailableViewer
                 updateRequireFocusEnabled()
             },
-            apply = { runConfig, component ->
-                runConfig.pdfViewer = component.component.selectedItem as? PdfViewer ?: PdfViewer.firstAvailableViewer
+            apply = { step, component ->
+                step.pdfViewerName = (component.component.selectedItem as? PdfViewer ?: PdfViewer.firstAvailableViewer).name
             },
             initiallyVisible = { true },
             removable = false,
@@ -58,14 +59,14 @@ internal class LatexViewerStepFragmentedEditor(
             id = StepUiOptionIds.VIEWER_REQUIRE_FOCUS,
             name = "Require focus",
             component = requireFocus,
-            reset = { runConfig, component ->
-                component.isSelected = runConfig.requireFocus
+            reset = { step, component ->
+                component.isSelected = step.requireFocus
                 updateRequireFocusEnabled()
             },
-            apply = { runConfig, component ->
-                runConfig.requireFocus = component.isSelected
+            apply = { step, component ->
+                step.requireFocus = component.isSelected
             },
-            initiallyVisible = { runConfig -> !runConfig.requireFocus },
+            initiallyVisible = { step -> !step.requireFocus },
             removable = true,
             hint = "Allow the viewer window to gain focus after compilation.",
             actionHint = "Set require focus",
@@ -75,9 +76,9 @@ internal class LatexViewerStepFragmentedEditor(
             id = StepUiOptionIds.VIEWER_COMMAND,
             name = "Custom viewer command",
             component = viewerCommandRow,
-            reset = { runConfig, component -> component.component.text = runConfig.viewerCommand.orEmpty() },
-            apply = { runConfig, component -> runConfig.viewerCommand = component.component.text.ifBlank { null } },
-            initiallyVisible = { runConfig -> !runConfig.viewerCommand.isNullOrBlank() },
+            reset = { step, component -> component.component.text = step.customViewerCommand.orEmpty() },
+            apply = { step, component -> step.customViewerCommand = component.component.text.ifBlank { null } },
+            initiallyVisible = { step -> !step.customViewerCommand.isNullOrBlank() },
             removable = true,
             hint = "Command template used when PDF viewer is set to CUSTOM.",
             actionHint = "Set custom viewer command",
@@ -101,9 +102,9 @@ internal class LatexViewerStepFragmentedEditor(
         id: String,
         name: String,
         component: C,
-        reset: (LatexRunConfiguration, C) -> Unit,
-        apply: (LatexRunConfiguration, C) -> Unit,
-        initiallyVisible: (LatexRunConfiguration) -> Boolean,
+        reset: (PdfViewerStepOptions, C) -> Unit,
+        apply: (PdfViewerStepOptions, C) -> Unit,
+        initiallyVisible: (PdfViewerStepOptions) -> Boolean,
         removable: Boolean,
         hint: String? = null,
         actionHint: String? = null,
@@ -138,14 +139,9 @@ internal class LatexViewerStepFragmentedEditor(
         }
     }
 
-    private inline fun <T> withSelectedStep(state: StepFragmentedState, block: (LatexRunConfiguration) -> T): T {
-        val runConfig = state.runConfig
-        runConfig.activateStepForExecution(state.selectedStepOptions?.id)
-        return try {
-            block(runConfig)
-        }
-        finally {
-            runConfig.activateStepForExecution(null)
-        }
+    private inline fun <T> withSelectedStep(state: StepFragmentedState, block: (PdfViewerStepOptions) -> T): T {
+        val step = state.selectedStepOptions as? PdfViewerStepOptions
+            ?: PdfViewerStepOptions().also { state.selectedStepOptions = it }
+        return block(step)
     }
 }

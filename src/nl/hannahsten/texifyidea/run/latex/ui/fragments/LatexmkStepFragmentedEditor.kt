@@ -13,7 +13,7 @@ import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.util.NlsContexts
 import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.components.JBTextField
-import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
+import nl.hannahsten.texifyidea.run.latex.LatexmkCompileStepOptions
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.StepUiOptionIds
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCitationTool
@@ -82,9 +82,7 @@ internal class LatexmkStepFragmentedEditor(
             name = "Compiler",
             component = compilerRow,
             reset = { _, _ -> },
-            apply = { runConfig, _ ->
-                runConfig.compiler = LatexCompiler.LATEXMK
-            },
+            apply = { _, _ -> },
             initiallyVisible = { true },
             removable = false,
             hint = "Compiler used by latexmk-compile step type.",
@@ -94,9 +92,9 @@ internal class LatexmkStepFragmentedEditor(
             id = StepUiOptionIds.COMPILE_PATH,
             name = "Compiler path",
             component = compilerPathRow,
-            reset = { runConfig, component -> component.component.text = runConfig.compilerPath.orEmpty() },
-            apply = { runConfig, component -> runConfig.compilerPath = component.component.text.ifBlank { null } },
-            initiallyVisible = { runConfig -> !runConfig.compilerPath.isNullOrBlank() },
+            reset = { step, component -> component.component.text = step.compilerPath.orEmpty() },
+            apply = { step, component -> step.compilerPath = component.component.text.ifBlank { null } },
+            initiallyVisible = { step -> !step.compilerPath.isNullOrBlank() },
             removable = true,
             hint = "Compiler executable used by latexmk-compile steps.",
             actionHint = "Set custom compiler path",
@@ -106,9 +104,9 @@ internal class LatexmkStepFragmentedEditor(
             id = StepUiOptionIds.COMPILE_ARGS,
             name = "Compiler arguments",
             component = compilerArgumentsRow,
-            reset = { runConfig, component -> component.component.text = runConfig.compilerArguments.orEmpty() },
-            apply = { runConfig, component -> runConfig.compilerArguments = component.component.text },
-            initiallyVisible = { runConfig -> !runConfig.compilerArguments.isNullOrBlank() },
+            reset = { step, component -> component.component.text = step.compilerArguments.orEmpty() },
+            apply = { step, component -> step.compilerArguments = component.component.text },
+            initiallyVisible = { step -> !step.compilerArguments.isNullOrBlank() },
             removable = true,
             hint = "Arguments passed to latexmk.",
             actionHint = "Set custom compiler arguments",
@@ -118,11 +116,11 @@ internal class LatexmkStepFragmentedEditor(
             id = StepUiOptionIds.LATEXMK_MODE,
             name = "Latexmk compile mode",
             component = latexmkCompileModeRow,
-            reset = { runConfig, component -> component.component.selectedItem = runConfig.latexmkCompileMode },
-            apply = { runConfig, component ->
-                runConfig.latexmkCompileMode = component.component.selectedItem as? LatexmkCompileMode ?: LatexmkCompileMode.AUTO
+            reset = { step, component -> component.component.selectedItem = step.latexmkCompileMode },
+            apply = { step, component ->
+                step.latexmkCompileMode = component.component.selectedItem as? LatexmkCompileMode ?: LatexmkCompileMode.AUTO
             },
-            initiallyVisible = { runConfig -> runConfig.latexmkCompileMode != LatexmkCompileMode.AUTO },
+            initiallyVisible = { step -> step.latexmkCompileMode != LatexmkCompileMode.AUTO },
             removable = true,
             hint = "latexmk compile mode used by latexmk-compile steps.",
             actionHint = "Set latexmk compile mode",
@@ -132,15 +130,15 @@ internal class LatexmkStepFragmentedEditor(
             id = StepUiOptionIds.LATEXMK_CUSTOM_ENGINE,
             name = "Latexmk custom engine command",
             component = latexmkCustomEngineRow,
-            reset = { runConfig, component ->
-                component.component.text = runConfig.latexmkCustomEngineCommand.orEmpty()
-                component.component.isEnabled = runConfig.latexmkCompileMode == LatexmkCompileMode.CUSTOM
+            reset = { step, component ->
+                component.component.text = step.latexmkCustomEngineCommand.orEmpty()
+                component.component.isEnabled = step.latexmkCompileMode == LatexmkCompileMode.CUSTOM
             },
-            apply = { runConfig, component ->
-                runConfig.latexmkCustomEngineCommand = component.component.text
+            apply = { step, component ->
+                step.latexmkCustomEngineCommand = component.component.text
             },
-            initiallyVisible = { runConfig ->
-                runConfig.latexmkCompileMode == LatexmkCompileMode.CUSTOM || !runConfig.latexmkCustomEngineCommand.isNullOrBlank()
+            initiallyVisible = { step ->
+                step.latexmkCompileMode == LatexmkCompileMode.CUSTOM || !step.latexmkCustomEngineCommand.isNullOrBlank()
             },
             removable = true,
             hint = "Custom engine command used when latexmk mode is CUSTOM.",
@@ -151,11 +149,11 @@ internal class LatexmkStepFragmentedEditor(
             id = StepUiOptionIds.LATEXMK_CITATION,
             name = "Latexmk citation tool",
             component = latexmkCitationToolRow,
-            reset = { runConfig, component -> component.component.selectedItem = runConfig.latexmkCitationTool },
-            apply = { runConfig, component ->
-                runConfig.latexmkCitationTool = component.component.selectedItem as? LatexmkCitationTool ?: LatexmkCitationTool.AUTO
+            reset = { step, component -> component.component.selectedItem = step.latexmkCitationTool },
+            apply = { step, component ->
+                step.latexmkCitationTool = component.component.selectedItem as? LatexmkCitationTool ?: LatexmkCitationTool.AUTO
             },
-            initiallyVisible = { runConfig -> runConfig.latexmkCitationTool != LatexmkCitationTool.AUTO },
+            initiallyVisible = { step -> step.latexmkCitationTool != LatexmkCitationTool.AUTO },
             removable = true,
             hint = "Citation tool used by latexmk.",
             actionHint = "Set latexmk citation tool",
@@ -165,11 +163,11 @@ internal class LatexmkStepFragmentedEditor(
             id = StepUiOptionIds.LATEXMK_EXTRA_ARGS,
             name = "Latexmk extra arguments",
             component = latexmkExtraArgumentsRow,
-            reset = { runConfig, component -> component.component.text = runConfig.latexmkExtraArguments.orEmpty() },
-            apply = { runConfig, component -> runConfig.latexmkExtraArguments = component.component.text },
-            initiallyVisible = { runConfig ->
-                !runConfig.latexmkExtraArguments.isNullOrBlank() &&
-                    runConfig.latexmkExtraArguments != LatexRunConfiguration.DEFAULT_LATEXMK_EXTRA_ARGUMENTS
+            reset = { step, component -> component.component.text = step.latexmkExtraArguments.orEmpty() },
+            apply = { step, component -> step.latexmkExtraArguments = component.component.text },
+            initiallyVisible = { step ->
+                !step.latexmkExtraArguments.isNullOrBlank() &&
+                    step.latexmkExtraArguments != LatexRunConfiguration.DEFAULT_LATEXMK_EXTRA_ARGUMENTS
             },
             removable = true,
             hint = "Additional arguments appended to latexmk invocation.",
@@ -192,9 +190,9 @@ internal class LatexmkStepFragmentedEditor(
         id: String,
         name: String,
         component: C,
-        reset: (LatexRunConfiguration, C) -> Unit,
-        apply: (LatexRunConfiguration, C) -> Unit,
-        initiallyVisible: (LatexRunConfiguration) -> Boolean,
+        reset: (LatexmkCompileStepOptions, C) -> Unit,
+        apply: (LatexmkCompileStepOptions, C) -> Unit,
+        initiallyVisible: (LatexmkCompileStepOptions) -> Boolean,
         removable: Boolean,
         @NlsContexts.Tooltip hint: String? = null,
         actionHint: String? = null,
@@ -229,14 +227,9 @@ internal class LatexmkStepFragmentedEditor(
         }
     }
 
-    private inline fun <T> withSelectedStep(state: StepFragmentedState, block: (LatexRunConfiguration) -> T): T {
-        val runConfig = state.runConfig
-        runConfig.activateStepForExecution(state.selectedStepOptions?.id)
-        return try {
-            block(runConfig)
-        }
-        finally {
-            runConfig.activateStepForExecution(null)
-        }
+    private inline fun <T> withSelectedStep(state: StepFragmentedState, block: (LatexmkCompileStepOptions) -> T): T {
+        val step = state.selectedStepOptions as? LatexmkCompileStepOptions
+            ?: LatexmkCompileStepOptions().also { state.selectedStepOptions = it }
+        return block(step)
     }
 }

@@ -255,7 +255,7 @@ object LatexSdkUtil {
         }
 
         // Maybe we're on a Mac but in a non-IntelliJ IDE, in which case the user provided the path to pdflatex in the run config (as it's not possible to configure an SDK)
-        project.getLatexRunConfigurations().mapNotNull { it.compilerPath?.substringBefore("/pdflatex") }.forEach {
+        project.getLatexRunConfigurations().mapNotNull { it.activeCompilerPath()?.substringBefore("/pdflatex") }.forEach {
             val file = File(it, executableName)
             if (file.isFile) return file.path
         }

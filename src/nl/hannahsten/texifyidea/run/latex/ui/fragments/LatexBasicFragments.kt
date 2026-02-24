@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.run.latex.ui.fragments
 
 import com.intellij.execution.configuration.EnvironmentVariablesComponent
 import com.intellij.execution.impl.RunnerAndConfigurationSettingsImpl
-import com.intellij.execution.ui.CommonParameterFragments
 import com.intellij.execution.ui.RunConfigurationEditorFragment
 import com.intellij.ide.macro.MacrosDialog
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
@@ -13,12 +12,10 @@ import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.openapi.ui.TextBrowseFolderListener
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
-import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.fields.ExtendableTextComponent
 import com.intellij.ui.components.fields.ExtendableTextField
 import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
-import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexPathResolver
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
@@ -31,34 +28,6 @@ import javax.swing.JComponent
 import javax.swing.JPanel
 
 internal object LatexBasicFragments {
-
-    fun createCompilerFragment(): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<ComboBox<LatexCompiler>>> {
-        val compiler = ComboBox(LatexCompiler.entries.toTypedArray())
-        val component = LabeledComponent.create(compiler, "Compiler")
-
-        val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<ComboBox<LatexCompiler>>>(
-            "latexCompiler",
-            "Compiler",
-            null,
-            component,
-            0,
-            { true }
-        ) {
-            override fun doReset(s: RunnerAndConfigurationSettingsImpl) {
-                val runConfig = s.configuration as LatexRunConfiguration
-                component.component.selectedItem = runConfig.compiler ?: LatexCompiler.PDFLATEX
-            }
-
-            override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
-                val runConfig = s.configuration as LatexRunConfiguration
-                runConfig.compiler = component.component.selectedItem as? LatexCompiler ?: LatexCompiler.PDFLATEX
-            }
-        }
-
-        fragment.isRemovable = false
-        applyTooltip(component, "LaTeX compiler")
-        return fragment
-    }
 
     fun createMainFileFragment(
         group: String,
@@ -97,37 +66,6 @@ internal object LatexBasicFragments {
 
         fragment.isRemovable = false
         applyTooltip(component, "Main .tex file")
-        return fragment
-    }
-
-    fun createCompilerArgumentsFragment(group: String): RunConfigurationEditorFragment<LatexRunConfiguration, RawCommandLineEditor> {
-        val editor = RawCommandLineEditor()
-        editor.editorField.emptyText.text = "Custom compiler arguments"
-        CommonParameterFragments.setMonospaced(editor.textField)
-
-        val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, RawCommandLineEditor>(
-            "compilerArguments",
-            "Compiler arguments",
-            group,
-            editor,
-            0,
-            { s -> (s.configuration as? LatexRunConfiguration)?.compilerArguments?.isNotBlank() == true }
-        ) {
-            override fun doReset(s: RunnerAndConfigurationSettingsImpl) {
-                val runConfig = s.configuration as LatexRunConfiguration
-                editor.setText(runConfig.compilerArguments.orEmpty())
-            }
-
-            override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
-                val runConfig = s.configuration as LatexRunConfiguration
-                runConfig.compilerArguments = editor.getText()
-            }
-        }
-
-        fragment.isRemovable = true
-        fragment.isCanBeHidden = true
-        applyTooltip(editor, "CLI arguments passed to the selected compiler")
-        fragment.actionHint = "Set custom compiler arguments"
         return fragment
     }
 

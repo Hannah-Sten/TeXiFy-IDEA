@@ -35,12 +35,12 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             // For now only support custom executable for TeX Live
             // At least avoids prepending a full path to a supposed TeX Live executable when in fact it will be prepended by a docker command
             val executable = LatexSdkUtil.getExecutableName(executableName, runConfig.project, runConfig.getLatexSdk(), runConfig.getLatexDistributionType())
-            val command = mutableListOf(runConfig.compilerPath ?: executable)
+            val command = mutableListOf(runConfig.activeCompilerPath() ?: executable)
 
             command.add("-file-line-error")
             command.add("-interaction=nonstopmode")
             command.add("-synctex=1")
-            command.add("-output-format=${runConfig.outputFormat.name.lowercase(Locale.getDefault())}")
+            command.add("-output-format=${runConfig.activeOutputFormat().name.lowercase(Locale.getDefault())}")
 
             command.add("-output-directory=$outputPath")
 
@@ -70,7 +70,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             moduleRoots: Array<VirtualFile>
         ): MutableList<String> {
             val command = mutableListOf(
-                runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(
+                runConfig.activeCompilerPath() ?: LatexSdkUtil.getExecutableName(
                     executableName,
                     runConfig.project,
                     runConfig.getLatexSdk(),
@@ -82,7 +82,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             command.add("-file-line-error")
             command.add("-interaction=nonstopmode")
             command.add("-synctex=1")
-            command.add("-output-format=${runConfig.outputFormat.name.lowercase(Locale.getDefault())}")
+            command.add("-output-format=${runConfig.activeOutputFormat().name.lowercase(Locale.getDefault())}")
 
             command.add("-output-directory=$outputPath")
 
@@ -109,7 +109,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             moduleRoots: Array<VirtualFile>
         ): MutableList<String> {
             val command = mutableListOf(
-                runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(
+                runConfig.activeCompilerPath() ?: LatexSdkUtil.getExecutableName(
                     executableName,
                     runConfig.project,
                     runConfig.getLatexSdk(),
@@ -144,7 +144,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             moduleRoots: Array<VirtualFile>
         ): MutableList<String> {
             val command = mutableListOf(
-                runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(
+                runConfig.activeCompilerPath() ?: LatexSdkUtil.getExecutableName(
                     executableName,
                     runConfig.project,
                     runConfig.getLatexSdk(),
@@ -158,7 +158,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             command.add("-interaction=nonstopmode")
             command.add("-synctex=1")
 
-            if (runConfig.outputFormat == Format.XDV) {
+            if (runConfig.activeOutputFormat() == Format.XDV) {
                 command.add("-no-pdf")
             }
 
@@ -191,7 +191,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             moduleRoots: Array<VirtualFile>
         ): MutableList<String> {
             val command = mutableListOf(
-                runConfig.compilerPath ?: LatexSdkUtil.getExecutableName(
+                runConfig.activeCompilerPath() ?: LatexSdkUtil.getExecutableName(
                     executableName,
                     runConfig.project,
                     runConfig.getLatexSdk(),
@@ -224,14 +224,14 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             moduleRoot: VirtualFile?,
             moduleRoots: Array<VirtualFile>
         ): MutableList<String> {
-            val command = mutableListOf(runConfig.compilerPath ?: executableName)
+            val command = mutableListOf(runConfig.activeCompilerPath() ?: executableName)
 
             // The available command line arguments can be found at https://github.com/tectonic-typesetting/tectonic/blob/d7a8497c90deb08b5e5792a11d6e8b082f53bbb7/src/bin/tectonic.rs#L158
             // The V2 CLI uses a toml file and should not have arguments
             if (runConfig.executionState.resolvedMainFile?.hasTectonicTomlFile() != true) {
                 command.add("--synctex")
 
-                command.add("--outfmt=${runConfig.outputFormat.name.lowercase(Locale.getDefault())}")
+                command.add("--outfmt=${runConfig.activeOutputFormat().name.lowercase(Locale.getDefault())}")
 
                 command.add("--outdir=$outputPath")
             }
@@ -261,7 +261,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         ): MutableList<String> {
             // Arara handles everything as configured by magic comments in the file.
             // We cannot use --verbose because it relies on user input
-            return mutableListOf(runConfig.compilerPath ?: executableName)
+            return mutableListOf(runConfig.activeCompilerPath() ?: executableName)
         }
     },
     ;
@@ -305,7 +305,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         else if (runConfig.getLatexDistributionType() == LatexDistributionType.DOCKER_TEXLIVE) {
             "/out"
         }
-        else if (runConfig.compiler == LATEXMK) {
+        else if (this == LATEXMK) {
             (runConfig.executionState.resolvedOutputDir?.path ?: return null)
                 .toWslPathIfNeeded(runConfig.getLatexDistributionType())
         }
@@ -321,7 +321,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         else if (runConfig.getLatexDistributionType() == LatexDistributionType.DOCKER_TEXLIVE) {
             null
         }
-        else if (runConfig.compiler == LATEXMK) {
+        else if (this == LATEXMK) {
             (runConfig.executionState.resolvedAuxDir?.path)
                 ?.toWslPathIfNeeded(runConfig.getLatexDistributionType())
         }
@@ -364,18 +364,18 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         }
 
         // Run some code before running the document
-        if (runConfig.beforeRunCommand?.isNotBlank() == true) {
-            if (runConfig.compiler == LATEXMK) {
+        if (runConfig.activeBeforeRunCommand()?.isNotBlank() == true) {
+            if (this == LATEXMK) {
                 // latexmk has its own flag to do this
-                command.add("-usepretex=" + runConfig.beforeRunCommand)
+                command.add("-usepretex=" + runConfig.activeBeforeRunCommand())
                 command.add(mainFile.name)
             }
             else {
                 // pdflatex, lualatex and xelatex support this by being able to run on a given string as if it was in a file
-                command.add(runConfig.beforeRunCommand + " \\input{${mainFile.name}}")
+                command.add(runConfig.activeBeforeRunCommand() + " \\input{${mainFile.name}}")
             }
         }
-        else if (runConfig.compiler != TECTONIC || mainFile.hasTectonicTomlFile() != true) {
+        else if (this != TECTONIC || mainFile.hasTectonicTomlFile() != true) {
             if (runConfig.hasDefaultWorkingDirectory()) {
                 command.add(mainFile.name)
             }

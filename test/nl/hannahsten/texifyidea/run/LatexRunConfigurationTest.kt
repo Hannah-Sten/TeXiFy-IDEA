@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.run
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.*
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
@@ -23,11 +22,6 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         runConfig.outputPath = java.nio.file.Path.of("{projectDir}/out")
         runConfig.auxilPath = java.nio.file.Path.of("{projectDir}/aux")
         runConfig.latexDistribution = LatexDistributionType.TEXLIVE
-        runConfig.compiler = LatexCompiler.LATEXMK
-        runConfig.compilerPath = "/usr/bin/latexmk"
-        runConfig.compilerArguments = "-shell-escape"
-        runConfig.latexmkCompileMode = LatexmkCompileMode.CUSTOM
-        runConfig.latexmkCustomEngineCommand = "xelatex"
 
         runConfig.configOptions.steps = mutableListOf(
             LatexmkCompileStepOptions().apply {

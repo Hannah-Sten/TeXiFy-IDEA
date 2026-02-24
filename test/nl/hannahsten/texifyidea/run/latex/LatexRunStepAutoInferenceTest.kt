@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.run.latex
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepAutoInference
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 
@@ -24,7 +23,6 @@ class LatexRunStepAutoInferenceTest : BasePlatformTestCase() {
             LatexRunConfigurationProducer().configurationFactory,
             "Test run config"
         )
-        runConfig.compiler = LatexCompiler.PDFLATEX
         runConfig.mainFilePath = mainFile.path
         runConfig.pdfViewer = PdfViewer.firstAvailableViewer
 
@@ -53,7 +51,6 @@ class LatexRunStepAutoInferenceTest : BasePlatformTestCase() {
             LatexRunConfigurationProducer().configurationFactory,
             "Test run config"
         )
-        runConfig.compiler = LatexCompiler.PDFLATEX
         runConfig.mainFilePath = mainFile.path
 
         val augmented = LatexRunStepAutoInference.augmentSteps(
@@ -82,7 +79,6 @@ class LatexRunStepAutoInferenceTest : BasePlatformTestCase() {
             LatexRunConfigurationProducer().configurationFactory,
             "Test run config"
         )
-        runConfig.compiler = LatexCompiler.LATEXMK
         runConfig.mainFilePath = mainFile.path
 
         val augmented = LatexRunStepAutoInference.augmentSteps(
