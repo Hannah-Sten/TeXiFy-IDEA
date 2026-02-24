@@ -188,24 +188,21 @@ class LatexRunConfiguration(
     ) {
         super.createAdditionalTabComponents(manager, startedProcess)
 
-        if (manager is LogConsoleManagerBase && startedProcess != null) {
+        if (manager is LogConsoleManagerBase && startedProcess is StepAwareSequentialProcessHandler) {
             manager.addAdditionalTabComponent(
-                LatexLogTabComponent(project, executionState.resolvedMainFile, startedProcess),
-                "LaTeX-Log",
-                AllIcons.Vcs.Changelist,
+                LatexStepLogTabComponent(project, executionState.resolvedMainFile, startedProcess),
+                "Step Log",
+                AllIcons.Actions.ListFiles,
                 false
             )
-
-            if (startedProcess is StepAwareSequentialProcessHandler) {
-                manager.addAdditionalTabComponent(
-                    LatexStepLogTabComponent(project, executionState.resolvedMainFile, startedProcess),
-                    "Step Log",
-                    AllIcons.Actions.ListFiles,
-                    false
-                )
-            }
         }
     }
+
+    /**
+     * Legacy log tab construction kept temporarily for quick rollback during migration.
+     */
+    @Suppress("unused")
+    private fun createLegacyLogTabComponent(startedProcess: ProcessHandler): LatexLogTabComponent = LatexLogTabComponent(project, executionState.resolvedMainFile, startedProcess)
 
     @Throws(RuntimeConfigurationException::class)
     override fun checkConfiguration() {

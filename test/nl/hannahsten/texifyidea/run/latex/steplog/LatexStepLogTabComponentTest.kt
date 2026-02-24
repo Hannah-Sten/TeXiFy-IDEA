@@ -11,7 +11,26 @@ import java.io.OutputStream
 
 class LatexStepLogTabComponentTest : BasePlatformTestCase() {
 
-    fun testTreeUpdatesWithStepStatusesAndParsedMessages() {
+    fun testUsesOnePixelSplitterAndConsoleToolbarActions() {
+        val mainFile = myFixture.addFileToProject("main.tex", "\\documentclass{article}").virtualFile
+        val compile = TestProcessHandler()
+        val handler = StepAwareSequentialProcessHandler(
+            listOf(
+                LatexStepExecution(0, "latex-compile", "Compile LaTeX", compile),
+            )
+        )
+        val tab = LatexStepLogTabComponent(project, mainFile, handler)
+        try {
+            assertEquals("OnePixelSplitter", tab.splitterClassNameForTest())
+            assertTrue(tab.hasEmbeddedConsoleToolbarForTest())
+            assertFalse(tab.usesAdditionalTabToolbarForTest())
+        }
+        finally {
+            tab.dispose()
+        }
+    }
+
+    fun testTreeUpdatesWithStepStatusesAndRootMergedOutput() {
         val mainFile = myFixture.addFileToProject(
             "main.tex",
             """
@@ -31,17 +50,39 @@ class LatexStepLogTabComponentTest : BasePlatformTestCase() {
             )
         )
         val tab = LatexStepLogTabComponent(project, mainFile, handler)
+        try {
+            handler.startNotify()
+            compile.emit("compile output\n")
+            compile.emit("LaTeX Warning: Citation 'abc' on page 1 undefined on input line 7.\n")
+            compile.finish(0)
+            viewer.emit("viewer output\n")
+            viewer.finish(0)
 
-        handler.startNotify()
-        compile.emit("LaTeX Warning: Citation 'abc' on page 1 undefined on input line 7.\n")
-        compile.finish(0)
-        viewer.emit("viewer opened\n")
-        viewer.finish(0)
+            flushEdt()
 
-        flushEdt()
+            assertTrue(tab.stepStatus(0) == "WARNING" || tab.stepStatus(0) == "SUCCEEDED")
+            assertEquals("SUCCEEDED", tab.stepStatus(1))
+            assertEquals(1, tab.renderedOutputStepIndex())
+            assertEquals("viewer output\n", tab.renderedOutputForTest())
 
-        assertTrue(tab.stepStatus(0) == "WARNING" || tab.stepStatus(0) == "SUCCEEDED")
-        assertEquals("SUCCEEDED", tab.stepStatus(1))
+            tab.selectStepForTest(0)
+            flushEdt()
+            assertEquals(0, tab.renderedOutputStepIndex())
+            assertTrue(tab.renderedOutputForTest().contains("compile output"))
+
+            tab.selectRootForTest()
+            flushEdt()
+            assertEquals(null, tab.renderedOutputStepIndex())
+            assertEquals(
+                "compile output\n" +
+                    "LaTeX Warning: Citation 'abc' on page 1 undefined on input line 7.\n" +
+                    "viewer output\n",
+                tab.renderedOutputForTest()
+            )
+        }
+        finally {
+            tab.dispose()
+        }
     }
 
     fun testFailedRunMarksPendingStepsAsSkipped() {
@@ -58,16 +99,20 @@ class LatexStepLogTabComponentTest : BasePlatformTestCase() {
             )
         )
         val tab = LatexStepLogTabComponent(project, mainFile, handler)
+        try {
+            handler.startNotify()
+            compile.emit("./main2.tex:4: LaTeX Error: Missing $ inserted.\n")
+            compile.finish(1)
 
-        handler.startNotify()
-        compile.emit("./main2.tex:4: LaTeX Error: Missing $ inserted.\n")
-        compile.finish(1)
+            flushEdt()
 
-        flushEdt()
-
-        assertEquals("FAILED", tab.stepStatus(0))
-        assertEquals("SKIPPED", tab.stepStatus(1))
-        assertEquals("SKIPPED", tab.stepStatus(2))
+            assertEquals("FAILED", tab.stepStatus(0))
+            assertEquals("SKIPPED", tab.stepStatus(1))
+            assertEquals("SKIPPED", tab.stepStatus(2))
+        }
+        finally {
+            tab.dispose()
+        }
     }
 
     private fun flushEdt() {

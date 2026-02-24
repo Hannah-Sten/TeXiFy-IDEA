@@ -265,6 +265,7 @@
 - [x] Phase 7: 清理与收口
 - [x] Phase 8: 三段式 UI 与步骤设置面板
 - [x] Phase 9: Step-Based Tree Log Tab
+- [x] Phase 9.1: Step Log 收口（唯一输出页签 + 根节点汇总输出）
 
 ## 更新日志
 
@@ -278,6 +279,10 @@
   - 落地 Step 流程专用 `Step Log` 标签，新增树形步骤日志视图（步骤状态 + 结构化消息 + 每步 raw log）。
   - 执行层新增 step-aware 顺序处理器与步骤事件模型，支持文本转发与分桶缓存。
   - 解析层新增按步骤类型分派（LaTeX/latexmk、BibTeX、Noop）并补充对应测试。
+- 2026-02-24（Phase 9.1）
+  - `createAdditionalTabComponents` 收口为仅注册 `Step Log`，不再显示其它运行输出附加页签（legacy 代码保留为回滚入口）。
+  - `Step Log` 左侧选中根节点时，右侧 Console 改为汇总回放全部步骤输出（按步骤顺序拼接），不再仅显示当前步骤。
+  - 更新 `LatexStepLogTabComponentTest`，覆盖根节点汇总输出断言与 UI 行为回归。
 - 2026-02-24（Phase 8 收尾优化）
   - `Step settings` 子标题下沉到分割线之后（作为子 editor 内固定说明片段），避免标题区拥挤。
   - `Step settings` 各可选项补齐 hover hint，行为与 `Common settings` 对齐。
