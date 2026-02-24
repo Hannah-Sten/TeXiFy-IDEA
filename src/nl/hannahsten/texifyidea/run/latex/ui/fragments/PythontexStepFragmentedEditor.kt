@@ -11,8 +11,8 @@ import nl.hannahsten.texifyidea.run.latex.StepUiOptionIds
 
 internal class PythontexStepFragmentedEditor(
     private val project: Project,
-    state: StepFragmentedState = StepFragmentedState(),
-) : AbstractStepFragmentedEditor<PythontexStepOptions>(state) {
+    initialStep: PythontexStepOptions = PythontexStepOptions(),
+) : AbstractStepFragmentedEditor<PythontexStepOptions>(initialStep) {
 
     private val executable = JBTextField()
     private val executableRow = LabeledComponent.create(executable, "Executable")
@@ -25,8 +25,8 @@ internal class PythontexStepFragmentedEditor(
     private val workingDirectory = createDirectoryField(project, "Step working directory")
     private val workingDirectoryRow = LabeledComponent.create(workingDirectory, "Working directory")
 
-    override fun createFragments(): Collection<SettingsEditorFragment<StepFragmentedState, *>> {
-        val header = CommonParameterFragments.createHeader<StepFragmentedState>("PythonTeX step")
+    override fun createFragments(): Collection<SettingsEditorFragment<PythontexStepOptions, *>> {
+        val header = CommonParameterFragments.createHeader<PythontexStepOptions>("PythonTeX step")
 
         val executableFragment = stepFragment(
             id = StepUiOptionIds.COMMAND_EXECUTABLE,
@@ -72,7 +72,4 @@ internal class PythontexStepFragmentedEditor(
             workingDirFragment,
         )
     }
-
-    override fun selectedStep(state: StepFragmentedState): PythontexStepOptions = state.selectedStepOptions as? PythontexStepOptions
-        ?: PythontexStepOptions().also { state.selectedStepOptions = it }
 }

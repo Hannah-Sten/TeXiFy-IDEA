@@ -21,8 +21,8 @@ import javax.swing.JLabel
 
 internal class LatexmkStepFragmentedEditor(
     private val project: Project,
-    state: StepFragmentedState = StepFragmentedState(),
-) : AbstractStepFragmentedEditor<LatexmkCompileStepOptions>(state) {
+    initialStep: LatexmkCompileStepOptions = LatexmkCompileStepOptions(),
+) : AbstractStepFragmentedEditor<LatexmkCompileStepOptions>(initialStep) {
 
     private val compilerRow = LabeledComponent.create(JLabel("latexmk"), "Compiler")
 
@@ -69,8 +69,8 @@ internal class LatexmkStepFragmentedEditor(
         }
     }
 
-    override fun createFragments(): Collection<SettingsEditorFragment<StepFragmentedState, *>> {
-        val headerFragment = CommonParameterFragments.createHeader<StepFragmentedState>("latexmk step")
+    override fun createFragments(): Collection<SettingsEditorFragment<LatexmkCompileStepOptions, *>> {
+        val headerFragment = CommonParameterFragments.createHeader<LatexmkCompileStepOptions>("latexmk step")
 
         val compilerFragment = stepFragment(
             id = "step.latexmk.compiler",
@@ -180,7 +180,4 @@ internal class LatexmkStepFragmentedEditor(
             extraArgsFragment,
         )
     }
-
-    override fun selectedStep(state: StepFragmentedState): LatexmkCompileStepOptions = state.selectedStepOptions as? LatexmkCompileStepOptions
-        ?: LatexmkCompileStepOptions().also { state.selectedStepOptions = it }
 }

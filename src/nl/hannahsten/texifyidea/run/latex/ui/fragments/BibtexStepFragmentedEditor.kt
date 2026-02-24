@@ -16,8 +16,8 @@ import nl.hannahsten.texifyidea.run.latex.StepUiOptionIds
 
 internal class BibtexStepFragmentedEditor(
     private val project: Project,
-    state: StepFragmentedState = StepFragmentedState(),
-) : AbstractStepFragmentedEditor<BibtexStepOptions>(state) {
+    initialStep: BibtexStepOptions = BibtexStepOptions(),
+) : AbstractStepFragmentedEditor<BibtexStepOptions>(initialStep) {
 
     private val compiler = ComboBox(BibliographyCompiler.entries.toTypedArray())
     private val compilerRow = LabeledComponent.create(compiler, "Bibliography tool")
@@ -41,8 +41,8 @@ internal class BibtexStepFragmentedEditor(
     private val workingDirectory = createDirectoryField(project, "Step working directory")
     private val workingDirectoryRow = LabeledComponent.create(workingDirectory, "Working directory")
 
-    override fun createFragments(): Collection<SettingsEditorFragment<StepFragmentedState, *>> {
-        val header = CommonParameterFragments.createHeader<StepFragmentedState>("Bibliography step")
+    override fun createFragments(): Collection<SettingsEditorFragment<BibtexStepOptions, *>> {
+        val header = CommonParameterFragments.createHeader<BibtexStepOptions>("Bibliography step")
 
         val compilerFragment = stepFragment(
             id = "step.bib.compiler",
@@ -101,7 +101,4 @@ internal class BibtexStepFragmentedEditor(
             workingDirFragment,
         )
     }
-
-    override fun selectedStep(state: StepFragmentedState): BibtexStepOptions = state.selectedStepOptions as? BibtexStepOptions
-        ?: BibtexStepOptions().also { state.selectedStepOptions = it }
 }

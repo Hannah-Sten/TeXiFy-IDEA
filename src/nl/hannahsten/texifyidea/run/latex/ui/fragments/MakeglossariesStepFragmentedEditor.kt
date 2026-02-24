@@ -11,8 +11,8 @@ import nl.hannahsten.texifyidea.run.latex.StepUiOptionIds
 
 internal class MakeglossariesStepFragmentedEditor(
     private val project: Project,
-    state: StepFragmentedState = StepFragmentedState(),
-) : AbstractStepFragmentedEditor<MakeglossariesStepOptions>(state) {
+    initialStep: MakeglossariesStepOptions = MakeglossariesStepOptions(),
+) : AbstractStepFragmentedEditor<MakeglossariesStepOptions>(initialStep) {
 
     private val executable = JBTextField()
     private val executableRow = LabeledComponent.create(executable, "Executable")
@@ -25,8 +25,8 @@ internal class MakeglossariesStepFragmentedEditor(
     private val workingDirectory = createDirectoryField(project, "Step working directory")
     private val workingDirectoryRow = LabeledComponent.create(workingDirectory, "Working directory")
 
-    override fun createFragments(): Collection<SettingsEditorFragment<StepFragmentedState, *>> {
-        val header = CommonParameterFragments.createHeader<StepFragmentedState>("Makeglossaries step")
+    override fun createFragments(): Collection<SettingsEditorFragment<MakeglossariesStepOptions, *>> {
+        val header = CommonParameterFragments.createHeader<MakeglossariesStepOptions>("Makeglossaries step")
 
         val executableFragment = stepFragment(
             id = StepUiOptionIds.COMMAND_EXECUTABLE,
@@ -72,7 +72,4 @@ internal class MakeglossariesStepFragmentedEditor(
             workingDirFragment,
         )
     }
-
-    override fun selectedStep(state: StepFragmentedState): MakeglossariesStepOptions = state.selectedStepOptions as? MakeglossariesStepOptions
-        ?: MakeglossariesStepOptions().also { state.selectedStepOptions = it }
 }

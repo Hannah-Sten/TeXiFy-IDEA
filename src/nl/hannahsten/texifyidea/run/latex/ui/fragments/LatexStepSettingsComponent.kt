@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.run.latex.ui.fragments
 
-import com.intellij.execution.ui.FragmentedSettings
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
@@ -33,7 +32,9 @@ internal class LatexStepSettingsComponent(
     var changeListener: () -> Unit = {}
 
     private var selectedStepId: String? = null
+    private var selectedStepIndex: Int = -1
     private var selectedStepType: String? = null
+    private var selectedStep: LatexStepRunConfigurationOptions? = null
     private var stepsById: Map<String, LatexStepRunConfigurationOptions> = emptyMap()
     private var boundRunConfig: LatexRunConfiguration? = null
 
@@ -42,25 +43,15 @@ internal class LatexStepSettingsComponent(
     private val cardLayout = CardLayout()
     private val cardsPanel = JPanel(cardLayout)
 
-    private val compileState = StepFragmentedState()
-    private val latexmkState = StepFragmentedState()
-    private val viewerState = StepFragmentedState()
-    private val bibtexState = StepFragmentedState()
-    private val makeindexState = StepFragmentedState()
-    private val externalToolState = StepFragmentedState()
-    private val pythontexState = StepFragmentedState()
-    private val makeglossariesState = StepFragmentedState()
-    private val xindyState = StepFragmentedState()
-
-    private val compileSettings = LatexCompileStepFragmentedEditor(project, compileState)
-    private val latexmkSettings = LatexmkStepFragmentedEditor(project, latexmkState)
-    private val viewerSettings = LatexViewerStepFragmentedEditor(viewerState)
-    private val bibtexSettings = BibtexStepFragmentedEditor(project, bibtexState)
-    private val makeindexSettings = MakeindexStepFragmentedEditor(project, makeindexState)
-    private val externalToolSettings = ExternalToolStepFragmentedEditor(project, externalToolState)
-    private val pythontexSettings = PythontexStepFragmentedEditor(project, pythontexState)
-    private val makeglossariesSettings = MakeglossariesStepFragmentedEditor(project, makeglossariesState)
-    private val xindySettings = XindyStepFragmentedEditor(project, xindyState)
+    private val compileSettings = LatexCompileStepFragmentedEditor(project)
+    private val latexmkSettings = LatexmkStepFragmentedEditor(project)
+    private val viewerSettings = LatexViewerStepFragmentedEditor()
+    private val bibtexSettings = BibtexStepFragmentedEditor(project)
+    private val makeindexSettings = MakeindexStepFragmentedEditor(project)
+    private val externalToolSettings = ExternalToolStepFragmentedEditor(project)
+    private val pythontexSettings = PythontexStepFragmentedEditor(project)
+    private val makeglossariesSettings = MakeglossariesStepFragmentedEditor(project)
+    private val xindySettings = XindyStepFragmentedEditor(project)
     private val unsupportedSettings = LatexUnsupportedStepSettingsComponent()
 
     init {
@@ -103,37 +94,38 @@ internal class LatexStepSettingsComponent(
         boundRunConfig = runConfig
         runConfig.configOptions.ensureDefaultSteps()
         stepsById = runConfig.configOptions.steps.associateBy { it.id }
-        clearStateBindings()
 
         if (selectedStepId !in stepsById.keys) {
             selectedStepId = null
+            selectedStepIndex = -1
             selectedStepType = null
         }
 
-        bindSelectedStepToState()
+        selectedStep = selectedStepId?.let { stepsById[it] }
+        if (selectedStepType == null) {
+            selectedStepType = selectedStep?.type?.let(::canonicalType)
+        }
+        if (selectedStep != null && selectedStepIndex !in runConfig.configOptions.steps.indices) {
+            selectedStepIndex = runConfig.configOptions.steps.indexOfFirst { it.id == selectedStepId }
+        }
         showCardForStepType(selectedStepType)
+        resetCurrentCard()
     }
 
     fun applyEditorTo(runConfig: LatexRunConfiguration) {
-        applyStateIfBound(runConfig, compileState, compileSettings)
-        applyStateIfBound(runConfig, latexmkState, latexmkSettings)
-        applyStateIfBound(runConfig, viewerState, viewerSettings)
-        applyStateIfBound(runConfig, bibtexState, bibtexSettings)
-        applyStateIfBound(runConfig, makeindexState, makeindexSettings)
-        applyStateIfBound(runConfig, externalToolState, externalToolSettings)
-        applyStateIfBound(runConfig, pythontexState, pythontexSettings)
-        applyStateIfBound(runConfig, makeglossariesState, makeglossariesSettings)
-        applyStateIfBound(runConfig, xindyState, xindySettings)
+        flushCurrentCard(runConfig)
     }
 
     fun onStepSelectionChanged(index: Int, stepId: String?, type: String?) {
         val runConfig = boundRunConfig ?: return
         flushCurrentCard(runConfig)
 
+        selectedStepIndex = index
         selectedStepId = stepId
         selectedStepType = canonicalType(type)
-        bindSelectedStepToState()
+        selectedStep = selectedStepId?.let { stepsById[it] }
         showCardForStepType(selectedStepType)
+        resetCurrentCard()
     }
 
     fun onStepsChanged(steps: List<LatexStepRunConfigurationOptions>) {
@@ -141,14 +133,18 @@ internal class LatexStepSettingsComponent(
         flushCurrentCard(runConfig)
 
         stepsById = steps.associateBy { it.id }
-        clearStateBindings()
         if (selectedStepId !in stepsById.keys) {
             selectedStepId = null
+            selectedStepIndex = -1
             selectedStepType = null
         }
 
-        bindSelectedStepToState()
+        selectedStep = selectedStepId?.let { stepsById[it] }
+        if (selectedStepType == null) {
+            selectedStepType = selectedStep?.type?.let(::canonicalType)
+        }
         showCardForStepType(selectedStepType)
+        resetCurrentCard()
     }
 
     internal fun currentCardId(): String = currentCardId
@@ -192,169 +188,78 @@ internal class LatexStepSettingsComponent(
         return LatexRunStepProviders.find(type)?.type ?: type.trim().lowercase()
     }
 
-    private fun wrapEditor(editor: SettingsEditor<StepFragmentedState>): JPanel = JPanel(BorderLayout()).apply {
+    private fun <T : LatexStepRunConfigurationOptions> wrapEditor(editor: SettingsEditor<T>): JPanel = JPanel(BorderLayout()).apply {
         add(editor.component, BorderLayout.CENTER)
     }
 
-    private fun bindSelectedStepToState() {
-        boundRunConfig ?: return
-        val selectedStep = selectedStepId?.let { stepsById[it] }
-
-        when (selectedStep) {
-            is LatexCompileStepOptions -> {
-                bindStateForStep(compileState, selectedStep)
-                compileSettings.resetFrom(compileState)
-            }
-
-            is LatexmkCompileStepOptions -> {
-                bindStateForStep(latexmkState, selectedStep)
-                latexmkSettings.resetFrom(latexmkState)
-            }
-
-            is PdfViewerStepOptions -> {
-                bindStateForStep(viewerState, selectedStep)
-                viewerSettings.resetFrom(viewerState)
-            }
-
-            is BibtexStepOptions -> {
-                bindStateForStep(bibtexState, selectedStep)
-                bibtexSettings.resetFrom(bibtexState)
-            }
-
-            is MakeindexStepOptions -> {
-                bindStateForStep(makeindexState, selectedStep)
-                makeindexSettings.resetFrom(makeindexState)
-            }
-
-            is ExternalToolStepOptions -> {
-                bindStateForStep(externalToolState, selectedStep)
-                externalToolSettings.resetFrom(externalToolState)
-            }
-
-            is PythontexStepOptions -> {
-                bindStateForStep(pythontexState, selectedStep)
-                pythontexSettings.resetFrom(pythontexState)
-            }
-
-            is MakeglossariesStepOptions -> {
-                bindStateForStep(makeglossariesState, selectedStep)
-                makeglossariesSettings.resetFrom(makeglossariesState)
-            }
-
-            is XindyStepOptions -> {
-                bindStateForStep(xindyState, selectedStep)
-                xindySettings.resetFrom(xindyState)
-            }
-
-            else -> {
-            }
-        }
-    }
-
-    private fun bindStateForStep(
-        state: StepFragmentedState,
-        step: LatexStepRunConfigurationOptions,
-    ) {
-        state.selectedStepOptions = step
-        state.selectedOptions = step.selectedOptions
-            .map { FragmentedSettings.Option(it.name ?: "", it.visible) }
-            .toMutableList()
-    }
-
-    private fun clearStateBindings() {
-        listOf(
-            compileState,
-            latexmkState,
-            viewerState,
-            bibtexState,
-            makeindexState,
-            externalToolState,
-            pythontexState,
-            makeglossariesState,
-            xindyState,
-        ).forEach { state ->
-            state.selectedStepOptions = null
-            state.selectedOptions = mutableListOf()
+    private fun resetCurrentCard() {
+        when (currentCardId) {
+            CARD_COMPILE -> resetEditorFromSelected(compileSettings, selectedStep as? LatexCompileStepOptions)
+            CARD_LATEXMK -> resetEditorFromSelected(latexmkSettings, selectedStep as? LatexmkCompileStepOptions)
+            CARD_VIEWER -> resetEditorFromSelected(viewerSettings, selectedStep as? PdfViewerStepOptions)
+            CARD_BIBTEX -> resetEditorFromSelected(bibtexSettings, selectedStep as? BibtexStepOptions)
+            CARD_MAKEINDEX -> resetEditorFromSelected(makeindexSettings, selectedStep as? MakeindexStepOptions)
+            CARD_EXTERNAL_TOOL -> resetEditorFromSelected(externalToolSettings, selectedStep as? ExternalToolStepOptions)
+            CARD_PYTHONTEX -> resetEditorFromSelected(pythontexSettings, selectedStep as? PythontexStepOptions)
+            CARD_MAKEGLOSSARIES -> resetEditorFromSelected(makeglossariesSettings, selectedStep as? MakeglossariesStepOptions)
+            CARD_XINDY -> resetEditorFromSelected(xindySettings, selectedStep as? XindyStepOptions)
         }
     }
 
     private fun flushCurrentCard(runConfig: LatexRunConfiguration) {
+        val targetStep = findTargetStep(runConfig)
+        if (targetStep == null) {
+            selectedStep = null
+            return
+        }
+
         when (currentCardId) {
-            CARD_COMPILE -> {
-                compileSettings.applyTo(compileState)
-                persistStepOptions(runConfig, compileState)
-            }
+            CARD_COMPILE -> applyEditorToSelected(compileSettings, targetStep as? LatexCompileStepOptions)
+            CARD_LATEXMK -> applyEditorToSelected(latexmkSettings, targetStep as? LatexmkCompileStepOptions)
+            CARD_VIEWER -> applyEditorToSelected(viewerSettings, targetStep as? PdfViewerStepOptions)
+            CARD_BIBTEX -> applyEditorToSelected(bibtexSettings, targetStep as? BibtexStepOptions)
+            CARD_MAKEINDEX -> applyEditorToSelected(makeindexSettings, targetStep as? MakeindexStepOptions)
+            CARD_EXTERNAL_TOOL -> applyEditorToSelected(externalToolSettings, targetStep as? ExternalToolStepOptions)
+            CARD_PYTHONTEX -> applyEditorToSelected(pythontexSettings, targetStep as? PythontexStepOptions)
+            CARD_MAKEGLOSSARIES -> applyEditorToSelected(makeglossariesSettings, targetStep as? MakeglossariesStepOptions)
+            CARD_XINDY -> applyEditorToSelected(xindySettings, targetStep as? XindyStepOptions)
+        }
+        selectedStep = targetStep
+    }
 
-            CARD_LATEXMK -> {
-                latexmkSettings.applyTo(latexmkState)
-                persistStepOptions(runConfig, latexmkState)
-            }
-
-            CARD_VIEWER -> {
-                viewerSettings.applyTo(viewerState)
-                persistStepOptions(runConfig, viewerState)
-            }
-
-            CARD_BIBTEX -> {
-                bibtexSettings.applyTo(bibtexState)
-                persistStepOptions(runConfig, bibtexState)
-            }
-
-            CARD_MAKEINDEX -> {
-                makeindexSettings.applyTo(makeindexState)
-                persistStepOptions(runConfig, makeindexState)
-            }
-
-            CARD_EXTERNAL_TOOL -> {
-                externalToolSettings.applyTo(externalToolState)
-                persistStepOptions(runConfig, externalToolState)
-            }
-
-            CARD_PYTHONTEX -> {
-                pythontexSettings.applyTo(pythontexState)
-                persistStepOptions(runConfig, pythontexState)
-            }
-
-            CARD_MAKEGLOSSARIES -> {
-                makeglossariesSettings.applyTo(makeglossariesState)
-                persistStepOptions(runConfig, makeglossariesState)
-            }
-
-            CARD_XINDY -> {
-                xindySettings.applyTo(xindyState)
-                persistStepOptions(runConfig, xindyState)
+    private fun findTargetStep(runConfig: LatexRunConfiguration): LatexStepRunConfigurationOptions? {
+        val steps = runConfig.configOptions.steps
+        selectedStepId?.let { id ->
+            steps.firstOrNull { it.id == id }?.let { return it }
+        }
+        if (selectedStepIndex in steps.indices) {
+            val byIndex = steps[selectedStepIndex]
+            val expectedType = selectedStepType
+            if (expectedType == null || canonicalType(byIndex.type) == expectedType) {
+                return byIndex
             }
         }
+        val expectedType = selectedStepType ?: return null
+        return steps.firstOrNull { canonicalType(it.type) == expectedType }
     }
 
-    private fun persistStepOptions(
-        runConfig: LatexRunConfiguration,
-        state: StepFragmentedState,
+    private fun <T : LatexStepRunConfigurationOptions> resetEditorFromSelected(
+        editor: SettingsEditor<T>,
+        step: T?,
     ) {
-        val stepId = state.selectedStepOptions?.id ?: return
-        val targetStep = runConfig.configOptions.steps.firstOrNull { it.id == stepId } ?: state.selectedStepOptions ?: return
-        targetStep.selectedOptions = state.selectedOptions
-            .filter { it.visible }
-            .mapNotNull { option ->
-                option.name?.trim()?.takeIf(String::isNotBlank)?.let { FragmentedSettings.Option(it, true) }
-            }
-            .toMutableList()
-        state.selectedStepOptions = targetStep
+        if (step == null) {
+            return
+        }
+        editor.resetFrom(step)
     }
 
-    private fun applyStateIfBound(
-        runConfig: LatexRunConfiguration,
-        state: StepFragmentedState,
-        editor: SettingsEditor<StepFragmentedState>,
+    private fun <T : LatexStepRunConfigurationOptions> applyEditorToSelected(
+        editor: SettingsEditor<T>,
+        step: T?,
     ) {
-        val selected = state.selectedStepOptions ?: return
-        val targetStep = runConfig.configOptions.steps.firstOrNull { it.id == selected.id }
-            ?: runConfig.configOptions.steps.firstOrNull { it.type == selected.type }
-            ?: defaultStepFor(selected.type)?.also { runConfig.configOptions.steps.add(it) }
-            ?: return
-
-        state.selectedStepOptions = targetStep
-        editor.applyTo(state)
-        persistStepOptions(runConfig, state)
+        if (step == null) {
+            return
+        }
+        editor.applyTo(step)
     }
 }

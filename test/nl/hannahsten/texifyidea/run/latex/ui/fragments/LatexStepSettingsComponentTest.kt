@@ -130,11 +130,6 @@ class LatexStepSettingsComponentTest : BasePlatformTestCase() {
                 customViewerCommand = "open {pdf}"
             }
         }
-        val target = configWithSteps(
-            LatexmkCompileStepOptions(),
-            PdfViewerStepOptions()
-        )
-
         val disposable = Disposer.newDisposable()
         try {
             val component = LatexStepSettingsComponent(disposable, project)
@@ -144,23 +139,23 @@ class LatexStepSettingsComponentTest : BasePlatformTestCase() {
             component.onStepsChanged(source.configOptions.steps)
             component.onStepSelectionChanged(0, selected.id, selected.type)
             component.onStepSelectionChanged(1, viewer.id, viewer.type)
-            component.applyEditorTo(target)
+            component.applyEditorTo(source)
         }
         finally {
             Disposer.dispose(disposable)
         }
 
-        val targetLatexmk = target.configOptions.steps.first { it.type == LatexStepType.LATEXMK_COMPILE } as LatexmkCompileStepOptions
-        val targetViewer = target.configOptions.steps.first { it.type == LatexStepType.PDF_VIEWER } as PdfViewerStepOptions
-        assertEquals("/tmp/latexmk", targetLatexmk.compilerPath)
-        assertEquals("-shell-escape", targetLatexmk.compilerArguments)
-        assertEquals(LatexmkCompileMode.CUSTOM, targetLatexmk.latexmkCompileMode)
-        assertEquals("lualatex", targetLatexmk.latexmkCustomEngineCommand)
-        assertEquals(LatexmkCitationTool.BIBER, targetLatexmk.latexmkCitationTool)
-        assertEquals("-interaction=nonstopmode", targetLatexmk.latexmkExtraArguments)
-        assertEquals(PdfViewer.firstAvailableViewer.name, targetViewer.pdfViewerName)
-        assertFalse(targetViewer.requireFocus)
-        assertEquals("open {pdf}", targetViewer.customViewerCommand)
+        val appliedLatexmk = source.configOptions.steps.first { it.type == LatexStepType.LATEXMK_COMPILE } as LatexmkCompileStepOptions
+        val appliedViewer = source.configOptions.steps.first { it.type == LatexStepType.PDF_VIEWER } as PdfViewerStepOptions
+        assertEquals("/tmp/latexmk", appliedLatexmk.compilerPath)
+        assertEquals("-shell-escape", appliedLatexmk.compilerArguments)
+        assertEquals(LatexmkCompileMode.CUSTOM, appliedLatexmk.latexmkCompileMode)
+        assertEquals("lualatex", appliedLatexmk.latexmkCustomEngineCommand)
+        assertEquals(LatexmkCitationTool.BIBER, appliedLatexmk.latexmkCitationTool)
+        assertEquals("-interaction=nonstopmode", appliedLatexmk.latexmkExtraArguments)
+        assertEquals(PdfViewer.firstAvailableViewer.name, appliedViewer.pdfViewerName)
+        assertFalse(appliedViewer.requireFocus)
+        assertEquals("open {pdf}", appliedViewer.customViewerCommand)
     }
 
     private fun configWithSteps(vararg steps: LatexStepRunConfigurationOptions): LatexRunConfiguration = LatexRunConfiguration(

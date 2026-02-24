@@ -15,8 +15,8 @@ import java.util.function.Predicate
 import javax.swing.JComponent
 
 internal abstract class AbstractStepFragmentedEditor<TStep : LatexStepRunConfigurationOptions>(
-    state: StepFragmentedState = StepFragmentedState(),
-) : FragmentedSettingsEditor<StepFragmentedState>(state) {
+    initialStep: TStep,
+) : FragmentedSettingsEditor<TStep>(initialStep) {
 
     protected fun <C : JComponent> stepFragment(
         id: String,
@@ -28,22 +28,16 @@ internal abstract class AbstractStepFragmentedEditor<TStep : LatexStepRunConfigu
         removable: Boolean,
         @NlsContexts.Tooltip hint: String? = null,
         actionHint: String? = null,
-    ): SettingsEditorFragment<StepFragmentedState, C> {
-        val fragment = SettingsEditorFragment<StepFragmentedState, C>(
+    ): SettingsEditorFragment<TStep, C> {
+        val fragment = SettingsEditorFragment<TStep, C>(
             id,
             name,
             null,
             component,
             0,
-            BiConsumer { state, comp ->
-                withSelectedStep(state) { step -> reset(step, comp) }
-            },
-            BiConsumer { state, comp ->
-                withSelectedStep(state) { step -> apply(step, comp) }
-            },
-            Predicate { state ->
-                withSelectedStep(state) { step -> initiallyVisible(step) }
-            }
+            BiConsumer { step, comp -> reset(step, comp) },
+            BiConsumer { step, comp -> apply(step, comp) },
+            Predicate { step -> initiallyVisible(step) }
         )
         fragment.isRemovable = removable
         fragment.isCanBeHidden = removable
@@ -51,8 +45,6 @@ internal abstract class AbstractStepFragmentedEditor<TStep : LatexStepRunConfigu
         actionHint?.let { fragment.actionHint = it }
         return fragment
     }
-
-    protected abstract fun selectedStep(state: StepFragmentedState): TStep
 
     protected fun createDirectoryField(project: Project, title: String): TextFieldWithBrowseButton = TextFieldWithBrowseButton().apply {
         addBrowseFolderListener(
@@ -70,6 +62,4 @@ internal abstract class AbstractStepFragmentedEditor<TStep : LatexStepRunConfigu
             component.component.toolTipText = tooltip
         }
     }
-
-    private inline fun <R> withSelectedStep(state: StepFragmentedState, block: (TStep) -> R): R = block(selectedStep(state))
 }

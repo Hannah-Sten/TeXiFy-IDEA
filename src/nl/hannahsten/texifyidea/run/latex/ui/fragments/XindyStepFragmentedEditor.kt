@@ -11,8 +11,8 @@ import nl.hannahsten.texifyidea.run.latex.XindyStepOptions
 
 internal class XindyStepFragmentedEditor(
     private val project: Project,
-    state: StepFragmentedState = StepFragmentedState(),
-) : AbstractStepFragmentedEditor<XindyStepOptions>(state) {
+    initialStep: XindyStepOptions = XindyStepOptions(),
+) : AbstractStepFragmentedEditor<XindyStepOptions>(initialStep) {
 
     private val executable = JBTextField()
     private val executableRow = LabeledComponent.create(executable, "Executable")
@@ -25,8 +25,8 @@ internal class XindyStepFragmentedEditor(
     private val workingDirectory = createDirectoryField(project, "Step working directory")
     private val workingDirectoryRow = LabeledComponent.create(workingDirectory, "Working directory")
 
-    override fun createFragments(): Collection<SettingsEditorFragment<StepFragmentedState, *>> {
-        val header = CommonParameterFragments.createHeader<StepFragmentedState>("Xindy step")
+    override fun createFragments(): Collection<SettingsEditorFragment<XindyStepOptions, *>> {
+        val header = CommonParameterFragments.createHeader<XindyStepOptions>("Xindy step")
 
         val executableFragment = stepFragment(
             id = StepUiOptionIds.COMMAND_EXECUTABLE,
@@ -72,7 +72,4 @@ internal class XindyStepFragmentedEditor(
             workingDirFragment,
         )
     }
-
-    override fun selectedStep(state: StepFragmentedState): XindyStepOptions = state.selectedStepOptions as? XindyStepOptions
-        ?: XindyStepOptions().also { state.selectedStepOptions = it }
 }

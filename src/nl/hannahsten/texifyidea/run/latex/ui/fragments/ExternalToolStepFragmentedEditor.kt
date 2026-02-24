@@ -11,8 +11,8 @@ import nl.hannahsten.texifyidea.run.latex.StepUiOptionIds
 
 internal class ExternalToolStepFragmentedEditor(
     private val project: Project,
-    state: StepFragmentedState = StepFragmentedState(),
-) : AbstractStepFragmentedEditor<ExternalToolStepOptions>(state) {
+    initialStep: ExternalToolStepOptions = ExternalToolStepOptions(),
+) : AbstractStepFragmentedEditor<ExternalToolStepOptions>(initialStep) {
 
     private val executable = JBTextField()
     private val executableRow = LabeledComponent.create(executable, "Executable")
@@ -25,8 +25,8 @@ internal class ExternalToolStepFragmentedEditor(
     private val workingDirectory = createDirectoryField(project, "Step working directory")
     private val workingDirectoryRow = LabeledComponent.create(workingDirectory, "Working directory")
 
-    override fun createFragments(): Collection<SettingsEditorFragment<StepFragmentedState, *>> {
-        val header = CommonParameterFragments.createHeader<StepFragmentedState>("External tool step")
+    override fun createFragments(): Collection<SettingsEditorFragment<ExternalToolStepOptions, *>> {
+        val header = CommonParameterFragments.createHeader<ExternalToolStepOptions>("External tool step")
 
         val executableFragment = stepFragment(
             id = StepUiOptionIds.COMMAND_EXECUTABLE,
@@ -70,7 +70,4 @@ internal class ExternalToolStepFragmentedEditor(
             workingDirFragment,
         )
     }
-
-    override fun selectedStep(state: StepFragmentedState): ExternalToolStepOptions = state.selectedStepOptions as? ExternalToolStepOptions
-        ?: ExternalToolStepOptions().also { state.selectedStepOptions = it }
 }

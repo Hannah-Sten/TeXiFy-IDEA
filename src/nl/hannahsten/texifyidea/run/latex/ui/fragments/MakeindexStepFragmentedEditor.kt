@@ -13,8 +13,8 @@ import nl.hannahsten.texifyidea.run.latex.StepUiOptionIds
 
 internal class MakeindexStepFragmentedEditor(
     private val project: Project,
-    state: StepFragmentedState = StepFragmentedState(),
-) : AbstractStepFragmentedEditor<MakeindexStepOptions>(state) {
+    initialStep: MakeindexStepOptions = MakeindexStepOptions(),
+) : AbstractStepFragmentedEditor<MakeindexStepOptions>(initialStep) {
 
     private val program = ComboBox(MakeindexProgram.entries.toTypedArray())
     private val programRow = LabeledComponent.create(program, "Program")
@@ -30,8 +30,8 @@ internal class MakeindexStepFragmentedEditor(
     private val workingDirectory = createDirectoryField(project, "Step working directory")
     private val workingDirectoryRow = LabeledComponent.create(workingDirectory, "Working directory")
 
-    override fun createFragments(): Collection<SettingsEditorFragment<StepFragmentedState, *>> {
-        val header = CommonParameterFragments.createHeader<StepFragmentedState>("Makeindex step")
+    override fun createFragments(): Collection<SettingsEditorFragment<MakeindexStepOptions, *>> {
+        val header = CommonParameterFragments.createHeader<MakeindexStepOptions>("Makeindex step")
 
         val programFragment = stepFragment(
             id = "step.makeindex.program",
@@ -90,7 +90,4 @@ internal class MakeindexStepFragmentedEditor(
             workingDirFragment,
         )
     }
-
-    override fun selectedStep(state: StepFragmentedState): MakeindexStepOptions = state.selectedStepOptions as? MakeindexStepOptions
-        ?: MakeindexStepOptions().also { state.selectedStepOptions = it }
 }

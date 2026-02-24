@@ -12,8 +12,8 @@ import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import java.awt.event.ItemEvent
 
 internal class LatexViewerStepFragmentedEditor(
-    state: StepFragmentedState = StepFragmentedState(),
-) : AbstractStepFragmentedEditor<PdfViewerStepOptions>(state) {
+    initialStep: PdfViewerStepOptions = PdfViewerStepOptions(),
+) : AbstractStepFragmentedEditor<PdfViewerStepOptions>(initialStep) {
 
     private val pdfViewer = ComboBox(PdfViewer.availableViewers.toTypedArray())
     private val pdfViewerRow = LabeledComponent.create(pdfViewer, "PDF viewer")
@@ -31,8 +31,8 @@ internal class LatexViewerStepFragmentedEditor(
         }
     }
 
-    override fun createFragments(): Collection<SettingsEditorFragment<StepFragmentedState, *>> {
-        val headerFragment = CommonParameterFragments.createHeader<StepFragmentedState>("PDF viewer step")
+    override fun createFragments(): Collection<SettingsEditorFragment<PdfViewerStepOptions, *>> {
+        val headerFragment = CommonParameterFragments.createHeader<PdfViewerStepOptions>("PDF viewer step")
 
         val viewerFragment = stepFragment(
             id = "step.viewer.type",
@@ -93,7 +93,4 @@ internal class LatexViewerStepFragmentedEditor(
         val supported = selectedViewer?.let { it.isForwardSearchSupported && it.isFocusSupported } ?: false
         requireFocus.isEnabled = supported
     }
-
-    override fun selectedStep(state: StepFragmentedState): PdfViewerStepOptions = state.selectedStepOptions as? PdfViewerStepOptions
-        ?: PdfViewerStepOptions().also { state.selectedStepOptions = it }
 }

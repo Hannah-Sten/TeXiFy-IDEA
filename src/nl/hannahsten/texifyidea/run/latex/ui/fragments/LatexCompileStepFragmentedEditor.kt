@@ -18,8 +18,8 @@ import java.awt.event.ItemEvent
 
 internal class LatexCompileStepFragmentedEditor(
     private val project: Project,
-    state: StepFragmentedState = StepFragmentedState(),
-) : AbstractStepFragmentedEditor<LatexCompileStepOptions>(state) {
+    initialStep: LatexCompileStepOptions = LatexCompileStepOptions(),
+) : AbstractStepFragmentedEditor<LatexCompileStepOptions>(initialStep) {
 
     private val compiler = ComboBox(LatexCompiler.entries.filter { it != LatexCompiler.LATEXMK }.toTypedArray())
     private val compilerRow = LabeledComponent.create(compiler, "Compiler")
@@ -52,8 +52,8 @@ internal class LatexCompileStepFragmentedEditor(
         }
     }
 
-    override fun createFragments(): Collection<SettingsEditorFragment<StepFragmentedState, *>> {
-        val headerFragment = CommonParameterFragments.createHeader<StepFragmentedState>("LaTeX compile step")
+    override fun createFragments(): Collection<SettingsEditorFragment<LatexCompileStepOptions, *>> {
+        val headerFragment = CommonParameterFragments.createHeader<LatexCompileStepOptions>("LaTeX compile step")
 
         val compilerFragment = stepFragment(
             id = "step.compile.compiler",
@@ -128,7 +128,4 @@ internal class LatexCompileStepFragmentedEditor(
         supportedFormats.forEach(outputFormat::addItem)
         outputFormat.selectedItem = preferred.takeIf { supportedFormats.contains(it) } ?: supportedFormats.firstOrNull() ?: Format.PDF
     }
-
-    override fun selectedStep(state: StepFragmentedState): LatexCompileStepOptions = state.selectedStepOptions as? LatexCompileStepOptions
-        ?: LatexCompileStepOptions().also { state.selectedStepOptions = it }
 }
