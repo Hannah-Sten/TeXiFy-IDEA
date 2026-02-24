@@ -1,7 +1,7 @@
 package nl.hannahsten.texifyidea.run.latex.step
 
-import nl.hannahsten.texifyidea.run.latex.BibtexStepConfig
-import nl.hannahsten.texifyidea.run.latex.LatexStepConfig
+import nl.hannahsten.texifyidea.run.latex.BibtexStepOptions
+import nl.hannahsten.texifyidea.run.latex.LatexStepRunConfigurationOptions
 import nl.hannahsten.texifyidea.run.latex.LatexStepType
 
 internal object LegacyBibtexRunStepProvider : LatexRunStepProvider {
@@ -14,8 +14,8 @@ internal object LegacyBibtexRunStepProvider : LatexRunStepProvider {
         "bibliography",
     )
 
-    override fun create(stepConfig: LatexStepConfig): LatexRunStep = BibtexRunStep(
-        stepConfig as? BibtexStepConfig
-            ?: error("Expected BibtexStepConfig for $type, but got ${stepConfig::class.simpleName}")
+    override fun create(stepConfig: LatexStepRunConfigurationOptions): LatexRunStep = BibtexRunStep(
+        stepConfig as? BibtexStepOptions
+            ?: error("Expected BibtexStepOptions for $type, but got ${stepConfig::class.simpleName}")
     )
 }

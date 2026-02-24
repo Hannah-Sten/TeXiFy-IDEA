@@ -5,11 +5,11 @@ import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.util.ProgramParametersConfigurator
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.common.createCompilationHandler
-import nl.hannahsten.texifyidea.run.latex.MakeindexStepConfig
+import nl.hannahsten.texifyidea.run.latex.MakeindexStepOptions
 import nl.hannahsten.texifyidea.util.appendExtension
 
 internal class MakeindexRunStep(
-    private val stepConfig: MakeindexStepConfig,
+    private val stepConfig: MakeindexStepOptions,
 ) : LatexRunStep {
 
     override val configId: String = stepConfig.id

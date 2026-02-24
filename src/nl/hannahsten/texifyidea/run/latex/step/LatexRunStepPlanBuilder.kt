@@ -1,6 +1,6 @@
 package nl.hannahsten.texifyidea.run.latex.step
 
-import nl.hannahsten.texifyidea.run.latex.LatexStepConfig
+import nl.hannahsten.texifyidea.run.latex.LatexStepRunConfigurationOptions
 
 internal data class LatexRunStepPlan(
     val steps: List<LatexRunStep>,
@@ -9,7 +9,7 @@ internal data class LatexRunStepPlan(
 
 internal object LatexRunStepPlanBuilder {
 
-    fun build(stepConfigs: List<LatexStepConfig>): LatexRunStepPlan {
+    fun build(stepConfigs: List<LatexStepRunConfigurationOptions>): LatexRunStepPlan {
         val steps = mutableListOf<LatexRunStep>()
         val unsupported = mutableListOf<String>()
 

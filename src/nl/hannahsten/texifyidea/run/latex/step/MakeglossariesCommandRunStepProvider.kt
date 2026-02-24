@@ -1,8 +1,8 @@
 package nl.hannahsten.texifyidea.run.latex.step
 
-import nl.hannahsten.texifyidea.run.latex.LatexStepConfig
+import nl.hannahsten.texifyidea.run.latex.LatexStepRunConfigurationOptions
 import nl.hannahsten.texifyidea.run.latex.LatexStepType
-import nl.hannahsten.texifyidea.run.latex.MakeglossariesStepConfig
+import nl.hannahsten.texifyidea.run.latex.MakeglossariesStepOptions
 
 internal object MakeglossariesCommandRunStepProvider : LatexRunStepProvider {
 
@@ -14,11 +14,11 @@ internal object MakeglossariesCommandRunStepProvider : LatexRunStepProvider {
         "makeglossaries",
     )
 
-    override fun create(stepConfig: LatexStepConfig): LatexRunStep = CommandLineRunStep(
+    override fun create(stepConfig: LatexStepRunConfigurationOptions): LatexRunStep = CommandLineRunStep(
         configId = stepConfig.id,
         id = type,
         commandLineSupplier = { context ->
-            (stepConfig as? MakeglossariesStepConfig)?.commandLine
+            (stepConfig as? MakeglossariesStepOptions)?.commandLine
                 ?.takeIf(String::isNotBlank)
                 ?: "makeglossaries ${context.mainFile.nameWithoutExtension}"
         },

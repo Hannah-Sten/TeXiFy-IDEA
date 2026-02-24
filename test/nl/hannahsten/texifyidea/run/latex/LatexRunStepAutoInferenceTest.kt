@@ -31,7 +31,7 @@ class LatexRunStepAutoInferenceTest : BasePlatformTestCase() {
         val augmented = LatexRunStepAutoInference.augmentSteps(
             runConfig,
             mainFile,
-            listOf(LatexCompileStepConfig(), PdfViewerStepConfig())
+            listOf(LatexCompileStepOptions(), PdfViewerStepOptions())
         )
 
         assertEquals(listOf("latex-compile", "bibtex", "latex-compile", "pdf-viewer"), augmented.map { it.type })
@@ -59,13 +59,13 @@ class LatexRunStepAutoInferenceTest : BasePlatformTestCase() {
         val augmented = LatexRunStepAutoInference.augmentSteps(
             runConfig,
             mainFile,
-            listOf(LatexCompileStepConfig(), PdfViewerStepConfig())
+            listOf(LatexCompileStepOptions(), PdfViewerStepOptions())
         )
 
         assertEquals(listOf("latex-compile", "pythontex", "latex-compile", "pdf-viewer"), augmented.map { it.type })
     }
 
-    fun testAugmentStepTypesDoesNotInsertLegacyBibliographyForLatexmkStep() {
+    fun testAugmentStepTypesDoesNotInsertBibliographyForLatexmkStep() {
         val mainFile = myFixture.addFileToProject(
             "main-latexmk-bib.tex",
             """
@@ -88,7 +88,7 @@ class LatexRunStepAutoInferenceTest : BasePlatformTestCase() {
         val augmented = LatexRunStepAutoInference.augmentSteps(
             runConfig,
             mainFile,
-            listOf(LatexmkCompileStepConfig(), PdfViewerStepConfig())
+            listOf(LatexmkCompileStepOptions(), PdfViewerStepOptions())
         )
 
         assertEquals(listOf("latexmk-compile", "pdf-viewer"), augmented.map { it.type })

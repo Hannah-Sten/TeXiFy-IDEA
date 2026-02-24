@@ -1,7 +1,7 @@
 package nl.hannahsten.texifyidea.run.latex.step
 
-import nl.hannahsten.texifyidea.run.latex.ExternalToolStepConfig
-import nl.hannahsten.texifyidea.run.latex.LatexStepConfig
+import nl.hannahsten.texifyidea.run.latex.ExternalToolStepOptions
+import nl.hannahsten.texifyidea.run.latex.LatexStepRunConfigurationOptions
 import nl.hannahsten.texifyidea.run.latex.LatexStepType
 
 internal object LegacyExternalToolRunStepProvider : LatexRunStepProvider {
@@ -15,8 +15,8 @@ internal object LegacyExternalToolRunStepProvider : LatexRunStepProvider {
         "commandline",
     )
 
-    override fun create(stepConfig: LatexStepConfig): LatexRunStep = ExternalToolRunStep(
-        stepConfig as? ExternalToolStepConfig
-            ?: error("Expected ExternalToolStepConfig for $type, but got ${stepConfig::class.simpleName}")
+    override fun create(stepConfig: LatexStepRunConfigurationOptions): LatexRunStep = ExternalToolRunStep(
+        stepConfig as? ExternalToolStepOptions
+            ?: error("Expected ExternalToolStepOptions for $type, but got ${stepConfig::class.simpleName}")
     )
 }

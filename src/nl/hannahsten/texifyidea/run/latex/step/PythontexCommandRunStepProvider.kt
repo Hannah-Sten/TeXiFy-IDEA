@@ -1,8 +1,8 @@
 package nl.hannahsten.texifyidea.run.latex.step
 
-import nl.hannahsten.texifyidea.run.latex.LatexStepConfig
+import nl.hannahsten.texifyidea.run.latex.LatexStepRunConfigurationOptions
 import nl.hannahsten.texifyidea.run.latex.LatexStepType
-import nl.hannahsten.texifyidea.run.latex.PythontexStepConfig
+import nl.hannahsten.texifyidea.run.latex.PythontexStepOptions
 
 internal object PythontexCommandRunStepProvider : LatexRunStepProvider {
 
@@ -14,11 +14,11 @@ internal object PythontexCommandRunStepProvider : LatexRunStepProvider {
         "pythontex",
     )
 
-    override fun create(stepConfig: LatexStepConfig): LatexRunStep = CommandLineRunStep(
+    override fun create(stepConfig: LatexStepRunConfigurationOptions): LatexRunStep = CommandLineRunStep(
         configId = stepConfig.id,
         id = type,
         commandLineSupplier = { context ->
-            (stepConfig as? PythontexStepConfig)?.commandLine
+            (stepConfig as? PythontexStepOptions)?.commandLine
                 ?.takeIf(String::isNotBlank)
                 ?: "pythontex ${context.mainFile.nameWithoutExtension}"
         },

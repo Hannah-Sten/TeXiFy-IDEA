@@ -16,8 +16,8 @@ internal object LatexRunStepAutoInference {
     fun augmentSteps(
         runConfig: LatexRunConfiguration,
         mainFile: VirtualFile,
-        baseSteps: List<LatexStepConfig>,
-    ): List<LatexStepConfig> {
+        baseSteps: List<LatexStepRunConfigurationOptions>,
+    ): List<LatexStepRunConfigurationOptions> {
         if (baseSteps.isEmpty()) {
             return baseSteps
         }
@@ -38,9 +38,9 @@ internal object LatexRunStepAutoInference {
     private fun inferRequiredAuxiliarySteps(
         runConfig: LatexRunConfiguration,
         mainFile: VirtualFile,
-        steps: List<LatexStepConfig>,
-    ): List<LatexStepConfig> {
-        val inferred = mutableListOf<LatexStepConfig>()
+        steps: List<LatexStepRunConfigurationOptions>,
+    ): List<LatexStepRunConfigurationOptions> {
+        val inferred = mutableListOf<LatexStepRunConfigurationOptions>()
         val mainFileText = ReadAction.compute<String, RuntimeException> {
             mainFile.psiFile(runConfig.project)?.text
                 ?: runCatching { String(mainFile.contentsToByteArray()) }.getOrDefault("")
@@ -51,16 +51,16 @@ internal object LatexRunStepAutoInference {
         }
 
         if (shouldAddBibliographyStep(runConfig, mainFile, steps, usedPackages, mainFileText, packageNamesInText)) {
-            inferred += BibtexStepConfig()
+            inferred += BibtexStepOptions()
         }
         if (shouldAddPythontexStep(steps, usedPackages, packageNamesInText)) {
-            inferred += PythontexStepConfig()
+            inferred += PythontexStepOptions()
         }
         if (shouldAddMakeglossariesStep(steps, usedPackages, packageNamesInText)) {
-            inferred += MakeglossariesStepConfig()
+            inferred += MakeglossariesStepOptions()
         }
         if (shouldAddXindyStep(steps, mainFileText)) {
-            inferred += XindyStepConfig()
+            inferred += XindyStepOptions()
         }
 
         return inferred
@@ -69,7 +69,7 @@ internal object LatexRunStepAutoInference {
     private fun shouldAddBibliographyStep(
         runConfig: LatexRunConfiguration,
         mainFile: VirtualFile,
-        steps: List<LatexStepConfig>,
+        steps: List<LatexStepRunConfigurationOptions>,
         usedPackages: Set<LatexLib>,
         mainFileText: String,
         packageNamesInText: Set<String>,
@@ -95,7 +95,7 @@ internal object LatexRunStepAutoInference {
     }
 
     private fun shouldAddPythontexStep(
-        steps: List<LatexStepConfig>,
+        steps: List<LatexStepRunConfigurationOptions>,
         usedPackages: Set<LatexLib>,
         packageNamesInText: Set<String>,
     ): Boolean {
@@ -106,7 +106,7 @@ internal object LatexRunStepAutoInference {
     }
 
     private fun shouldAddMakeglossariesStep(
-        steps: List<LatexStepConfig>,
+        steps: List<LatexStepRunConfigurationOptions>,
         usedPackages: Set<LatexLib>,
         packageNamesInText: Set<String>,
     ): Boolean {
@@ -127,7 +127,7 @@ internal object LatexRunStepAutoInference {
     }
 
     private fun shouldAddXindyStep(
-        steps: List<LatexStepConfig>,
+        steps: List<LatexStepRunConfigurationOptions>,
         mainFileText: String,
     ): Boolean {
         if (steps.any { it.type == LatexStepType.LATEXMK_COMPILE }) {
@@ -140,7 +140,7 @@ internal object LatexRunStepAutoInference {
         return mainFileText.contains("xindy") || mainFileText.contains("texindy")
     }
 
-    private fun preferredAuxInsertIndex(steps: List<LatexStepConfig>): Int {
+    private fun preferredAuxInsertIndex(steps: List<LatexStepRunConfigurationOptions>): Int {
         val firstCompileIndex = steps.indexOfFirst { it.type in compileTypes }
         val viewerIndex = steps.indexOfFirst { it.type == LatexStepType.PDF_VIEWER }.let { if (it < 0) steps.size else it }
         return if (firstCompileIndex >= 0) {
@@ -151,7 +151,7 @@ internal object LatexRunStepAutoInference {
         }
     }
 
-    private fun ensureCompileAfterAuxSteps(steps: MutableList<LatexStepConfig>, lastInsertedIndex: Int) {
+    private fun ensureCompileAfterAuxSteps(steps: MutableList<LatexStepRunConfigurationOptions>, lastInsertedIndex: Int) {
         val hasCompileAfter = steps.withIndex().any { (index, step) ->
             index > lastInsertedIndex && step.type in compileTypes
         }

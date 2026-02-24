@@ -2,26 +2,18 @@ package nl.hannahsten.texifyidea.run.latex.ui.fragments
 
 import com.intellij.openapi.util.Disposer
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer
-import nl.hannahsten.texifyidea.run.latex.StepSchemaReadStatus
-import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import com.intellij.util.ui.WrapLayout
+import nl.hannahsten.texifyidea.run.latex.*
 
 class LatexCompileSequenceComponentTest : BasePlatformTestCase() {
 
-    fun testApplyWritesInferredStepSchemaToRunConfiguration() {
+    fun testApplyWritesStepListToRunConfiguration() {
         val runConfig = LatexRunConfiguration(
             project,
             LatexRunConfigurationProducer().configurationFactory,
             "Test run config"
         )
-        runConfig.compiler = LatexCompiler.PDFLATEX
-        runConfig.compileTwice = true
-        runConfig.pdfViewer = PdfViewer.firstAvailableViewer
-        runConfig.stepSchemaStatus = StepSchemaReadStatus.MISSING
-        runConfig.stepSchemaTypes = emptyList()
+        runConfig.configOptions.steps = mutableListOf(LatexCompileStepOptions(), PdfViewerStepOptions())
 
         val disposable = Disposer.newDisposable()
         try {
@@ -33,8 +25,7 @@ class LatexCompileSequenceComponentTest : BasePlatformTestCase() {
             Disposer.dispose(disposable)
         }
 
-        assertEquals(StepSchemaReadStatus.PARSED, runConfig.stepSchemaStatus)
-        assertEquals(listOf("latex-compile", "pdf-viewer"), runConfig.stepSchemaTypes)
+        assertEquals(listOf("latex-compile", "pdf-viewer"), runConfig.configOptions.steps.map { it.type })
     }
 
     fun testUsesHorizontalWrapLayout() {
@@ -57,8 +48,7 @@ class LatexCompileSequenceComponentTest : BasePlatformTestCase() {
             LatexRunConfigurationProducer().configurationFactory,
             "Test run config"
         )
-        runConfig.stepSchemaTypes = listOf("latex-compile", "pdf-viewer")
-        runConfig.stepSchemaStatus = StepSchemaReadStatus.PARSED
+        runConfig.configOptions.steps = mutableListOf(LatexCompileStepOptions(), PdfViewerStepOptions())
 
         val disposable = Disposer.newDisposable()
         try {
@@ -88,8 +78,7 @@ class LatexCompileSequenceComponentTest : BasePlatformTestCase() {
             LatexRunConfigurationProducer().configurationFactory,
             "Test run config"
         )
-        runConfig.stepSchemaTypes = listOf("latex-compile", "pdf-viewer")
-        runConfig.stepSchemaStatus = StepSchemaReadStatus.PARSED
+        runConfig.configOptions.steps = mutableListOf(LatexCompileStepOptions(), PdfViewerStepOptions())
 
         val disposable = Disposer.newDisposable()
         try {
@@ -114,39 +103,13 @@ class LatexCompileSequenceComponentTest : BasePlatformTestCase() {
         }
     }
 
-    fun testRemoveSelectedStepFallsBackToFirstVisibleStep() {
-        val runConfig = LatexRunConfiguration(
-            project,
-            LatexRunConfigurationProducer().configurationFactory,
-            "Test run config"
-        )
-        runConfig.stepSchemaTypes = listOf("latex-compile", "pdf-viewer")
-        runConfig.stepSchemaStatus = StepSchemaReadStatus.PARSED
-
-        val disposable = Disposer.newDisposable()
-        try {
-            val component = LatexCompileSequenceComponent(disposable)
-            component.resetEditorFrom(runConfig)
-            component.selectStep(1)
-
-            component.removeStepAt(1)
-
-            assertEquals(-1, component.selectedStepIndex())
-            assertNull(component.selectedStepType())
-        }
-        finally {
-            Disposer.dispose(disposable)
-        }
-    }
-
     fun testMoveStepKeepsSelectionOnMovedStep() {
         val runConfig = LatexRunConfiguration(
             project,
             LatexRunConfigurationProducer().configurationFactory,
             "Test run config"
         )
-        runConfig.stepSchemaTypes = listOf("latex-compile", "bibtex", "pdf-viewer")
-        runConfig.stepSchemaStatus = StepSchemaReadStatus.PARSED
+        runConfig.configOptions.steps = mutableListOf(LatexCompileStepOptions(), BibtexStepOptions(), PdfViewerStepOptions())
 
         val disposable = Disposer.newDisposable()
         try {

@@ -10,15 +10,14 @@ import nl.hannahsten.texifyidea.run.latex.flow.LatexStepRunState
 
 class LatexRunStepStateSelectionTest : BasePlatformTestCase() {
 
-    fun testGetStateUsesStepRunStateWhenSchemaParsedAndSupported() {
+    fun testGetStateUsesStepRunStateWhenConfiguredStepsAreSupported() {
         val runConfig = LatexRunConfiguration(
             myFixture.project,
             LatexRunConfigurationProducer().configurationFactory,
             "Test run config"
         )
         runConfig.compiler = LatexCompiler.LATEXMK
-        runConfig.stepSchemaStatus = StepSchemaReadStatus.PARSED
-        runConfig.stepSchemaTypes = listOf("compile-latex")
+        runConfig.configOptions.steps = mutableListOf(LatexmkCompileStepOptions(), PdfViewerStepOptions())
 
         val environment = mockk<ExecutionEnvironment>(relaxed = true)
         every { environment.project } returns project
@@ -29,15 +28,17 @@ class LatexRunStepStateSelectionTest : BasePlatformTestCase() {
         assertTrue(state is LatexStepRunState)
     }
 
-    fun testGetStateKeepsStepPipelineWhenSchemaParsedButUnsupported() {
+    fun testGetStateKeepsStepPipelineWhenContainsUnsupportedType() {
         val runConfig = LatexRunConfiguration(
             myFixture.project,
             LatexRunConfigurationProducer().configurationFactory,
             "Test run config"
         )
         runConfig.compiler = LatexCompiler.PDFLATEX
-        runConfig.stepSchemaStatus = StepSchemaReadStatus.PARSED
-        runConfig.stepSchemaTypes = listOf("unsupported-step")
+        runConfig.configOptions.steps = mutableListOf(
+            ExternalToolStepOptions().apply { type = "unsupported-step" },
+            PdfViewerStepOptions(),
+        )
 
         val environment = mockk<ExecutionEnvironment>(relaxed = true)
         every { environment.project } returns project
@@ -48,15 +49,13 @@ class LatexRunStepStateSelectionTest : BasePlatformTestCase() {
         assertTrue(state is LatexStepRunState)
     }
 
-    fun testGetStateUsesStepRunStateForNonLatexmkWhenNoLegacyBridgeStepIsPresent() {
+    fun testGetStateInjectsDefaultStepsWhenEmpty() {
         val runConfig = LatexRunConfiguration(
             myFixture.project,
             LatexRunConfigurationProducer().configurationFactory,
             "Test run config"
         )
-        runConfig.compiler = LatexCompiler.PDFLATEX
-        runConfig.stepSchemaStatus = StepSchemaReadStatus.PARSED
-        runConfig.stepSchemaTypes = listOf("compile-latex")
+        runConfig.configOptions.steps = mutableListOf()
 
         val environment = mockk<ExecutionEnvironment>(relaxed = true)
         every { environment.project } returns project
@@ -65,24 +64,6 @@ class LatexRunStepStateSelectionTest : BasePlatformTestCase() {
         val state = runConfig.getState(executor, environment)
 
         assertTrue(state is LatexStepRunState)
-    }
-
-    fun testGetStateUsesStepRunStateWhenPlanContainsLegacyBridgeStep() {
-        val runConfig = LatexRunConfiguration(
-            myFixture.project,
-            LatexRunConfigurationProducer().configurationFactory,
-            "Test run config"
-        )
-        runConfig.compiler = LatexCompiler.PDFLATEX
-        runConfig.stepSchemaStatus = StepSchemaReadStatus.PARSED
-        runConfig.stepSchemaTypes = listOf("compile-latex", "legacy-bibtex")
-
-        val environment = mockk<ExecutionEnvironment>(relaxed = true)
-        every { environment.project } returns project
-        val executor = mockk<Executor>(relaxed = true)
-
-        val state = runConfig.getState(executor, environment)
-
-        assertTrue(state is LatexStepRunState)
+        assertEquals(listOf(LatexStepType.LATEX_COMPILE, LatexStepType.PDF_VIEWER), runConfig.configOptions.steps.map { it.type })
     }
 }

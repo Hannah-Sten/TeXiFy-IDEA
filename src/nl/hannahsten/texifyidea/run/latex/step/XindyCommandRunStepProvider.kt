@@ -1,9 +1,9 @@
 package nl.hannahsten.texifyidea.run.latex.step
 
 import nl.hannahsten.texifyidea.util.appendExtension
-import nl.hannahsten.texifyidea.run.latex.LatexStepConfig
+import nl.hannahsten.texifyidea.run.latex.LatexStepRunConfigurationOptions
 import nl.hannahsten.texifyidea.run.latex.LatexStepType
-import nl.hannahsten.texifyidea.run.latex.XindyStepConfig
+import nl.hannahsten.texifyidea.run.latex.XindyStepOptions
 
 internal object XindyCommandRunStepProvider : LatexRunStepProvider {
 
@@ -16,11 +16,11 @@ internal object XindyCommandRunStepProvider : LatexRunStepProvider {
         "texindy",
     )
 
-    override fun create(stepConfig: LatexStepConfig): LatexRunStep = CommandLineRunStep(
+    override fun create(stepConfig: LatexStepRunConfigurationOptions): LatexRunStep = CommandLineRunStep(
         configId = stepConfig.id,
         id = type,
         commandLineSupplier = { context ->
-            (stepConfig as? XindyStepConfig)?.commandLine
+            (stepConfig as? XindyStepOptions)?.commandLine
                 ?.takeIf(String::isNotBlank)
                 ?: "xindy ${context.mainFile.nameWithoutExtension.appendExtension("idx")}"
         },

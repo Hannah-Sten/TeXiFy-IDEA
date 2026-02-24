@@ -84,8 +84,8 @@ object LatexProjectStructure {
 
     private fun makePreparation(project: Project): ProjectInfo {
         // Get all bibtex input paths from the run configurations
-        val bibInputPaths = project.getBibtexRunConfigurations().mapNotNull { config ->
-            (config.environmentVariables.envs["BIBINPUTS"])?.let {
+        val bibInputPaths = project.getLatexRunConfigurations().mapNotNull { config ->
+            config.environmentVariables.envs["BIBINPUTS"]?.let {
                 LocalFileSystem.getInstance().findFileByPath(it)
             }
         }.toMutableSet()

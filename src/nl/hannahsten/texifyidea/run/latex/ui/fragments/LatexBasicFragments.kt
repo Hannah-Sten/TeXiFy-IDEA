@@ -13,7 +13,6 @@ import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.openapi.ui.TextBrowseFolderListener
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
-import com.intellij.openapi.util.Disposer
 import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.fields.ExtendableTextComponent
@@ -26,7 +25,6 @@ import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.isInvalidJetBrainsBinPath
 import nl.hannahsten.texifyidea.run.latex.ui.LatexDistributionComboBoxRenderer
 import nl.hannahsten.texifyidea.run.latex.ui.LatexDistributionSelection
-import nl.hannahsten.texifyidea.run.latex.ui.LegacyLatexSettingsEditor
 import java.awt.BorderLayout
 import java.nio.file.Path
 import javax.swing.JComponent
@@ -284,37 +282,6 @@ internal object LatexBasicFragments {
         fragment.isRemovable = true
         fragment.isCanBeHidden = true
         fragment.actionHint = "Set custom environment variables"
-        return fragment
-    }
-
-    fun createLegacyAdvancedFragment(project: Project): RunConfigurationEditorFragment<LatexRunConfiguration, JComponent> {
-        val legacyEditor = LegacyLatexSettingsEditor(project)
-        val component = legacyEditor.component
-
-        val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, JComponent>(
-            "legacyAdvancedOptions",
-            "Advanced options (legacy)",
-            "Advanced",
-            component,
-            0,
-            { false }
-        ) {
-            override fun doReset(s: RunnerAndConfigurationSettingsImpl) {
-                legacyEditor.resetFrom(s.configuration as LatexRunConfiguration)
-            }
-
-            override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
-                if (!isSelected) {
-                    return
-                }
-                legacyEditor.applyTo(s.configuration as LatexRunConfiguration)
-            }
-        }
-
-        Disposer.register(fragment, legacyEditor)
-        fragment.isRemovable = true
-        fragment.isCanBeHidden = true
-        fragment.actionHint = "Open legacy fallback form for settings not yet migrated to fragments"
         return fragment
     }
 

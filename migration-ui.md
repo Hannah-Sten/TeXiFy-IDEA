@@ -234,7 +234,7 @@
 
 ### Phase 10：`LatexRunConfiguration` 结构化重构（`common + steps`）
 
-- 状态：`IN_PROGRESS`
+- 状态：`DONE`
 - 目标：把运行配置主存储从扁平字段迁移为 `model.common + model.steps + model.ui`。
 - 已完成：
   - 引入 `LatexRunConfigModel` / `LatexCommonSettings` / `LatexStepConfig`（实例级 step 参数）。
@@ -243,9 +243,23 @@
   - `Compile sequence` 改为维护 step 实例（含 `stepId`），`Step settings` 改为按 `stepId` 编辑并保存可见项。
   - `RunConfigurationOptions` 已承载新 `model` 状态；`LatexRunConfiguration` 以 `model` 为主入口。
 - 待完成：
-  - 清理 legacy/桥接类与旧字段调用路径（当前仍保留 deprecate 适配层）。
-  - 收敛并更新全部旧 schema / migration 测试为 V2 断言。
-  - 完成 `LatexRunConfigurationPersistence` 与 options-only 路线二选一收口。
+  - 无（Phase 10.1 已完成 options-only 收口）。
+
+#### Phase 10.1（Options-only 收口，无 model / 无 legacy 兼容）
+
+- `LatexRunConfigurationOptions` 改为主数据模型：
+  - 顶层扁平 common 字段：`mainFilePath`、`workingDirectoryPath`、`outputPath`、`auxilPath`、`latexDistribution`、environment vars。
+  - `steps` 改为多态 `RunConfigurationOptions` 子类列表（实例级参数）。
+- 删除中间模型与手写持久化：
+  - 删除 `LatexRunConfigModel`、`LatexCommonSettings`、`LatexStepConfig`、`LatexUiState`。
+  - 删除 `LatexRunConfigurationPersistence`、`LatexRunConfigurationSerializer`、`LatexRunStepsMigrationPolicy`。
+- 删除 legacy 入口与桥接执行：
+  - 移除 `LegacyLatexSettingsEditor` 及其 fragment 入口。
+  - 移除 `LatexCommandLineState` 与 legacy aux bridge step 实现。
+- Step settings 可见项状态迁移：
+  - 从 `stepId -> optionIds` map 改为每个 step 自身 `selectedOptions`。
+- 跨模块 bib 依赖调整：
+  - 不再依赖 BibTeX 子 run configuration，统一改为读取 LaTeX 主配置（且包含 bibliography step）的环境变量。
 
 ## 风险清单
 
@@ -309,6 +323,12 @@
   - `Compile sequence` 组件改为维护 `LatexStepConfig` 实例（含 stepId），不再只维护 step type 字符串。
   - `Step settings` 改为按选中 stepId 绑定 `Fragmented` 子 editor，`Modify options` 可见项状态改为按 stepId 保存。
   - 执行层 `LatexRunStepPlanBuilder` / provider 契约改为基于 `LatexStepConfig`，并新增 `BibtexRunStep` / `MakeindexRunStep` / `ExternalToolRunStep`。
+- 2026-02-24（Phase 10.1 收口：Options-only）
+  - 删除 `model/*Config`（`LatexRunConfigModel`、`LatexCommonSettings`、`LatexStepConfig`、`LatexUiState`），改为 `LatexRunConfigurationOptions` 顶层 common 字段 + 多态 step options。
+  - step settings 可见项改为存于每个 step 的 `selectedOptions`，移除 by-step map。
+  - 删除 legacy 执行与 UI 入口（`LatexCommandLineState`、legacy bridge step、`LegacyLatexSettingsEditor`）。
+  - 删除旧 schema 迁移相关实现与测试（serializer/persistence/migration-policy/legacy-bridge tests）。
+  - 更新核心测试到 options-only 断言，并通过关键回归（run config、step pipeline、compile sequence、step settings、step log）。
 - 2026-02-24（Phase 8 收尾优化）
   - `Step settings` 子标题下沉到分割线之后（作为子 editor 内固定说明片段），避免标题区拥挤。
   - `Step settings` 各可选项补齐 hover hint，行为与 `Common settings` 对齐。

@@ -36,7 +36,6 @@ class LatexSettingsEditor(settings: LatexRunConfiguration) : RunConfigurationFra
         fragments.add(LatexBasicFragments.createEnvironmentVariablesFragment(commonGroupName))
         fragments.add(LatexCompileSequenceFragment(compileSequenceComponent))
         fragments.add(LatexStepSettingsFragment(stepSettingsComponent))
-        fragments.add(LatexBasicFragments.createLegacyAdvancedFragment(project))
         fragments.addAll(BeforeRunFragment.createGroup())
         fragments.add(CommonTags.parallelRun())
 

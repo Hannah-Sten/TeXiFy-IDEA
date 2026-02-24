@@ -9,7 +9,7 @@ import com.intellij.execution.runners.ProgramRunner
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import nl.hannahsten.texifyidea.run.latex.LatexExecutionStateInitializer
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.latex.LatexStepConfig
+import nl.hannahsten.texifyidea.run.latex.LatexStepRunConfigurationOptions
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepAutoInference
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepPlanBuilder
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepContext
@@ -22,7 +22,7 @@ internal class LatexStepRunState(
     private val runConfig: LatexRunConfiguration,
     private val environment: ExecutionEnvironment,
     private val plan: LatexRunStepPlan,
-    private val configuredSteps: List<LatexStepConfig>,
+    private val configuredSteps: List<LatexStepRunConfigurationOptions>,
 ) : com.intellij.execution.configurations.RunProfileState {
 
     @Throws(ExecutionException::class)

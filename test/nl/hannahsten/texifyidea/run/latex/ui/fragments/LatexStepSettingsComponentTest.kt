@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.run.latex.ui.fragments
 
+import com.intellij.execution.ui.FragmentedSettings
 import com.intellij.openapi.util.Disposer
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
@@ -14,8 +15,8 @@ class LatexStepSettingsComponentTest : BasePlatformTestCase() {
         val disposable = Disposer.newDisposable()
         try {
             val component = LatexStepSettingsComponent(disposable, project)
-            val runConfig = configWithSteps(LatexCompileStepConfig())
-            val step = runConfig.model.steps.first()
+            val runConfig = configWithSteps(LatexCompileStepOptions())
+            val step = runConfig.configOptions.steps.first()
 
             component.resetEditorFrom(runConfig)
             component.onStepSelectionChanged(0, step.id, step.type)
@@ -31,8 +32,8 @@ class LatexStepSettingsComponentTest : BasePlatformTestCase() {
         val disposable = Disposer.newDisposable()
         try {
             val component = LatexStepSettingsComponent(disposable, project)
-            val runConfig = configWithSteps(LatexmkCompileStepConfig())
-            val step = runConfig.model.steps.first()
+            val runConfig = configWithSteps(LatexmkCompileStepOptions())
+            val step = runConfig.configOptions.steps.first()
 
             component.resetEditorFrom(runConfig)
             component.onStepSelectionChanged(0, step.id, step.type)
@@ -48,8 +49,8 @@ class LatexStepSettingsComponentTest : BasePlatformTestCase() {
         val disposable = Disposer.newDisposable()
         try {
             val component = LatexStepSettingsComponent(disposable, project)
-            val runConfig = configWithSteps(PdfViewerStepConfig())
-            val step = runConfig.model.steps.first()
+            val runConfig = configWithSteps(PdfViewerStepOptions())
+            val step = runConfig.configOptions.steps.first()
 
             component.resetEditorFrom(runConfig)
             component.onStepSelectionChanged(0, step.id, step.type)
@@ -65,8 +66,8 @@ class LatexStepSettingsComponentTest : BasePlatformTestCase() {
         val disposable = Disposer.newDisposable()
         try {
             val component = LatexStepSettingsComponent(disposable, project)
-            val runConfig = configWithSteps(BibtexStepConfig())
-            val step = runConfig.model.steps.first()
+            val runConfig = configWithSteps(BibtexStepOptions())
+            val step = runConfig.configOptions.steps.first()
 
             component.resetEditorFrom(runConfig)
             component.onStepSelectionChanged(0, step.id, step.type)
@@ -79,9 +80,18 @@ class LatexStepSettingsComponentTest : BasePlatformTestCase() {
     }
 
     fun testResetApplyRoundTripPreservesCompileAndViewerSettings() {
+        val selectedOptions = mutableListOf(
+            FragmentedSettings.Option(StepUiOptionIds.COMPILE_PATH, true),
+            FragmentedSettings.Option(StepUiOptionIds.LATEXMK_MODE, true),
+        )
+
         val source = configWithSteps(
-            LatexmkCompileStepConfig(),
-            PdfViewerStepConfig()
+            LatexmkCompileStepOptions().apply {
+                this.selectedOptions.addAll(selectedOptions)
+            },
+            PdfViewerStepOptions().apply {
+                this.selectedOptions.add(FragmentedSettings.Option(StepUiOptionIds.VIEWER_COMMAND, true))
+            }
         ).apply {
             compiler = LatexCompiler.LATEXMK
             compilerPath = "/tmp/latexmk"
@@ -94,28 +104,19 @@ class LatexStepSettingsComponentTest : BasePlatformTestCase() {
             pdfViewer = PdfViewer.firstAvailableViewer
             requireFocus = false
             viewerCommand = "open {pdf}"
-            stepUiOptionIdsByType = mutableMapOf(
-                StepUiOptionIds.LATEXMK_COMPILE to mutableSetOf(
-                    StepUiOptionIds.COMPILE_PATH,
-                    StepUiOptionIds.LATEXMK_MODE,
-                ),
-                StepUiOptionIds.PDF_VIEWER to mutableSetOf(
-                    StepUiOptionIds.VIEWER_COMMAND
-                )
-            )
         }
         val target = configWithSteps(
-            LatexmkCompileStepConfig(),
-            PdfViewerStepConfig()
+            LatexmkCompileStepOptions(),
+            PdfViewerStepOptions()
         )
 
         val disposable = Disposer.newDisposable()
         try {
             val component = LatexStepSettingsComponent(disposable, project)
-            val selected = source.model.steps.first { it.type == LatexStepType.LATEXMK_COMPILE }
-            val viewer = source.model.steps.first { it.type == LatexStepType.PDF_VIEWER }
+            val selected = source.configOptions.steps.first { it.type == LatexStepType.LATEXMK_COMPILE }
+            val viewer = source.configOptions.steps.first { it.type == LatexStepType.PDF_VIEWER }
             component.resetEditorFrom(source)
-            component.onStepsChanged(source.model.steps)
+            component.onStepsChanged(source.configOptions.steps)
             component.onStepSelectionChanged(0, selected.id, selected.type)
             component.onStepSelectionChanged(1, viewer.id, viewer.type)
             component.applyEditorTo(target)
@@ -136,11 +137,11 @@ class LatexStepSettingsComponentTest : BasePlatformTestCase() {
         assertEquals("open {pdf}", target.viewerCommand)
     }
 
-    private fun configWithSteps(vararg steps: LatexStepConfig): LatexRunConfiguration = LatexRunConfiguration(
+    private fun configWithSteps(vararg steps: LatexStepRunConfigurationOptions): LatexRunConfiguration = LatexRunConfiguration(
         project,
         LatexRunConfigurationProducer().configurationFactory,
         "run config"
     ).apply {
-        model = model.copy(steps = steps.toMutableList())
+        configOptions.steps = steps.map { it.deepCopy() }.toMutableList()
     }
 }

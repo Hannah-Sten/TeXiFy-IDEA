@@ -1,7 +1,7 @@
 package nl.hannahsten.texifyidea.run.latex.step
 
-import nl.hannahsten.texifyidea.run.latex.LatexCompileStepConfig
-import nl.hannahsten.texifyidea.run.latex.LatexStepConfig
+import nl.hannahsten.texifyidea.run.latex.LatexCompileStepOptions
+import nl.hannahsten.texifyidea.run.latex.LatexStepRunConfigurationOptions
 import nl.hannahsten.texifyidea.run.latex.LatexStepType
 
 internal object LatexCompileRunStepProvider : LatexRunStepProvider {
@@ -13,8 +13,8 @@ internal object LatexCompileRunStepProvider : LatexRunStepProvider {
         "compile-latex",
     )
 
-    override fun create(stepConfig: LatexStepConfig): LatexRunStep = LatexCompileRunStep(
-        stepConfig as? LatexCompileStepConfig
-            ?: error("Expected LatexCompileStepConfig for $type, but got ${stepConfig::class.simpleName}")
+    override fun create(stepConfig: LatexStepRunConfigurationOptions): LatexRunStep = LatexCompileRunStep(
+        stepConfig as? LatexCompileStepOptions
+            ?: error("Expected LatexCompileStepOptions for $type, but got ${stepConfig::class.simpleName}")
     )
 }

@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.run.latex.ui.fragments
 
+import com.intellij.execution.ui.FragmentedSettings
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
@@ -27,7 +28,7 @@ internal class LatexStepSettingsComponent(
 
     private var selectedStepId: String? = null
     private var selectedStepType: String? = null
-    private var stepsById: Map<String, LatexStepConfig> = emptyMap()
+    private var stepsById: Map<String, LatexStepRunConfigurationOptions> = emptyMap()
     private var boundRunConfig: LatexRunConfiguration? = null
 
     private var currentCardId: String = CARD_UNSUPPORTED
@@ -64,7 +65,8 @@ internal class LatexStepSettingsComponent(
 
     fun resetEditorFrom(runConfig: LatexRunConfiguration) {
         boundRunConfig = runConfig
-        stepsById = runConfig.model.steps.associateBy { it.id }
+        runConfig.configOptions.ensureDefaultSteps()
+        stepsById = runConfig.configOptions.steps.associateBy { it.id }
 
         compileState.runConfig = runConfig
         latexmkState.runConfig = runConfig
@@ -95,7 +97,7 @@ internal class LatexStepSettingsComponent(
         showCardForStepType(selectedStepType)
     }
 
-    fun onStepsChanged(steps: List<LatexStepConfig>) {
+    fun onStepsChanged(steps: List<LatexStepRunConfigurationOptions>) {
         val runConfig = boundRunConfig ?: return
         flushCurrentCard(runConfig)
 
@@ -153,17 +155,17 @@ internal class LatexStepSettingsComponent(
         val selectedStep = selectedStepId?.let { stepsById[it] }
 
         when (selectedStep) {
-            is LatexCompileStepConfig -> {
+            is LatexCompileStepOptions -> {
                 bindStateForStep(compileState, runConfig, selectedStep)
                 compileSettings.resetFrom(compileState)
             }
 
-            is LatexmkCompileStepConfig -> {
+            is LatexmkCompileStepOptions -> {
                 bindStateForStep(latexmkState, runConfig, selectedStep)
                 latexmkSettings.resetFrom(latexmkState)
             }
 
-            is PdfViewerStepConfig -> {
+            is PdfViewerStepOptions -> {
                 bindStateForStep(viewerState, runConfig, selectedStep)
                 viewerSettings.resetFrom(viewerState)
             }
@@ -176,13 +178,12 @@ internal class LatexStepSettingsComponent(
     private fun bindStateForStep(
         state: StepFragmentedState,
         runConfig: LatexRunConfiguration,
-        step: LatexStepConfig,
+        step: LatexStepRunConfigurationOptions,
     ) {
         state.runConfig = runConfig
-        state.selectedStepConfig = step
-        state.selectedOptions = runConfig.model.ui.stepUiOptionIdsByStepId[step.id]
-            .orEmpty()
-            .map { com.intellij.execution.ui.FragmentedSettings.Option(it, true) }
+        state.selectedStepOptions = step
+        state.selectedOptions = step.selectedOptions
+            .map { FragmentedSettings.Option(it.name ?: "", it.visible) }
             .toMutableList()
     }
 
@@ -212,19 +213,15 @@ internal class LatexStepSettingsComponent(
         runConfig: LatexRunConfiguration,
         state: StepFragmentedState,
     ) {
-        val stepId = state.selectedStepConfig?.id ?: return
-        val optionIds = state.selectedOptions
-            .asSequence()
+        val stepId = state.selectedStepOptions?.id ?: return
+        val targetStep = runConfig.configOptions.steps.firstOrNull { it.id == stepId } ?: state.selectedStepOptions ?: return
+        targetStep.selectedOptions = state.selectedOptions
             .filter { it.visible }
-            .mapNotNull { it.name?.trim()?.takeIf(String::isNotBlank) }
-            .toMutableSet()
-
-        if (optionIds.isEmpty()) {
-            runConfig.model.ui.stepUiOptionIdsByStepId.remove(stepId)
-        }
-        else {
-            runConfig.model.ui.stepUiOptionIdsByStepId[stepId] = optionIds
-        }
+            .mapNotNull { option ->
+                option.name?.trim()?.takeIf(String::isNotBlank)?.let { FragmentedSettings.Option(it, true) }
+            }
+            .toMutableList()
+        state.selectedStepOptions = targetStep
     }
 
     private fun applyStateIfBound(
@@ -232,7 +229,7 @@ internal class LatexStepSettingsComponent(
         state: StepFragmentedState,
         editor: SettingsEditor<StepFragmentedState>,
     ) {
-        if (state.selectedStepConfig == null) {
+        if (state.selectedStepOptions == null) {
             return
         }
         state.runConfig = runConfig

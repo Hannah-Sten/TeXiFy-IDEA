@@ -1,8 +1,8 @@
 package nl.hannahsten.texifyidea.run.latex.step
 
-import nl.hannahsten.texifyidea.run.latex.LatexStepConfig
+import nl.hannahsten.texifyidea.run.latex.LatexStepRunConfigurationOptions
 import nl.hannahsten.texifyidea.run.latex.LatexStepType
-import nl.hannahsten.texifyidea.run.latex.PdfViewerStepConfig
+import nl.hannahsten.texifyidea.run.latex.PdfViewerStepOptions
 
 internal object PdfViewerRunStepProvider : LatexRunStepProvider {
 
@@ -14,8 +14,8 @@ internal object PdfViewerRunStepProvider : LatexRunStepProvider {
         "open-pdf-viewer",
     )
 
-    override fun create(stepConfig: LatexStepConfig): LatexRunStep = PdfViewerRunStep(
-        stepConfig as? PdfViewerStepConfig
-            ?: error("Expected PdfViewerStepConfig for $type, but got ${stepConfig::class.simpleName}")
+    override fun create(stepConfig: LatexStepRunConfigurationOptions): LatexRunStep = PdfViewerRunStep(
+        stepConfig as? PdfViewerStepOptions
+            ?: error("Expected PdfViewerStepOptions for $type, but got ${stepConfig::class.simpleName}")
     )
 }

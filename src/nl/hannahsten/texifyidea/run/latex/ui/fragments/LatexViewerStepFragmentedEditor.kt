@@ -140,7 +140,7 @@ internal class LatexViewerStepFragmentedEditor(
 
     private inline fun <T> withSelectedStep(state: StepFragmentedState, block: (LatexRunConfiguration) -> T): T {
         val runConfig = state.runConfig
-        runConfig.activateStepForExecution(state.selectedStepConfig?.id)
+        runConfig.activateStepForExecution(state.selectedStepOptions?.id)
         return try {
             block(runConfig)
         }

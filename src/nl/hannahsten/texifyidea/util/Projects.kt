@@ -21,7 +21,6 @@ import com.intellij.util.concurrency.annotations.RequiresReadLock
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.modules.LatexModuleType
-import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationType
@@ -104,11 +103,6 @@ fun Project.getLatexRunConfigurations(): Collection<LatexRunConfiguration> {
 fun Project.hasLatexRunConfigurations(): Boolean {
     if (isDisposed) return false
     return RunManager.getInstance(this).allConfigurationsList.any { it is LatexRunConfiguration }
-}
-
-fun Project.getBibtexRunConfigurations(): Collection<BibtexRunConfiguration> {
-    if (isDisposed) return emptyList()
-    return RunManager.getInstance(this).allConfigurationsList.filterIsInstance<BibtexRunConfiguration>()
 }
 
 /**

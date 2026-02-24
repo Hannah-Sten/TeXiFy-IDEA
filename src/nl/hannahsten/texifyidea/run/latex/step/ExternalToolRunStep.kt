@@ -4,10 +4,10 @@ import com.intellij.execution.ExecutionException
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.util.ProgramParametersConfigurator
 import nl.hannahsten.texifyidea.run.common.createCompilationHandler
-import nl.hannahsten.texifyidea.run.latex.ExternalToolStepConfig
+import nl.hannahsten.texifyidea.run.latex.ExternalToolStepOptions
 
 internal class ExternalToolRunStep(
-    private val stepConfig: ExternalToolStepConfig,
+    private val stepConfig: ExternalToolStepOptions,
 ) : LatexRunStep {
 
     override val configId: String = stepConfig.id

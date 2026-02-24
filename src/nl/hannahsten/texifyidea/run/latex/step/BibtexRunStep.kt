@@ -5,10 +5,10 @@ import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.util.ProgramParametersConfigurator
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.common.createCompilationHandler
-import nl.hannahsten.texifyidea.run.latex.BibtexStepConfig
+import nl.hannahsten.texifyidea.run.latex.BibtexStepOptions
 
 internal class BibtexRunStep(
-    private val stepConfig: BibtexStepConfig,
+    private val stepConfig: BibtexStepOptions,
 ) : LatexRunStep {
 
     override val configId: String = stepConfig.id

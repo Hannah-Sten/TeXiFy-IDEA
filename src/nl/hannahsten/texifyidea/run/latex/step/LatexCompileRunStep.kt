@@ -6,14 +6,14 @@ import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.util.ProgramParametersConfigurator
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
-import nl.hannahsten.texifyidea.run.latex.LatexCompileStepConfig
+import nl.hannahsten.texifyidea.run.latex.LatexCompileStepOptions
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.latex.LatexStepConfig
-import nl.hannahsten.texifyidea.run.latex.LatexmkCompileStepConfig
+import nl.hannahsten.texifyidea.run.latex.LatexStepRunConfigurationOptions
+import nl.hannahsten.texifyidea.run.latex.LatexmkCompileStepOptions
 import nl.hannahsten.texifyidea.run.common.createCompilationHandler
 
 internal class LatexCompileRunStep(
-    private val stepConfig: LatexStepConfig,
+    private val stepConfig: LatexStepRunConfigurationOptions,
 ) : LatexRunStep {
 
     override val configId: String = stepConfig.id
@@ -56,9 +56,9 @@ internal class LatexCompileRunStep(
         runConfig: LatexRunConfiguration
     ): String = configurator.expandPathAndMacros(value, null, runConfig.project) ?: value
 
-    private fun resolveCompiler(stepConfig: LatexStepConfig): LatexCompiler = when (stepConfig) {
-        is LatexCompileStepConfig -> stepConfig.compiler
-        is LatexmkCompileStepConfig -> LatexCompiler.LATEXMK
+    private fun resolveCompiler(stepConfig: LatexStepRunConfigurationOptions): LatexCompiler = when (stepConfig) {
+        is LatexCompileStepOptions -> stepConfig.compiler
+        is LatexmkCompileStepOptions -> LatexCompiler.LATEXMK
         else -> throw ExecutionException("Step ${stepConfig.type} cannot be executed by LatexCompileRunStep.")
     }
 }

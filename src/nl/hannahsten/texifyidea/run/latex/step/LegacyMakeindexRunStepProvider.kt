@@ -1,8 +1,8 @@
 package nl.hannahsten.texifyidea.run.latex.step
 
-import nl.hannahsten.texifyidea.run.latex.LatexStepConfig
+import nl.hannahsten.texifyidea.run.latex.LatexStepRunConfigurationOptions
 import nl.hannahsten.texifyidea.run.latex.LatexStepType
-import nl.hannahsten.texifyidea.run.latex.MakeindexStepConfig
+import nl.hannahsten.texifyidea.run.latex.MakeindexStepOptions
 
 internal object LegacyMakeindexRunStepProvider : LatexRunStepProvider {
 
@@ -15,8 +15,8 @@ internal object LegacyMakeindexRunStepProvider : LatexRunStepProvider {
         "makeindex-step",
     )
 
-    override fun create(stepConfig: LatexStepConfig): LatexRunStep = MakeindexRunStep(
-        stepConfig as? MakeindexStepConfig
-            ?: error("Expected MakeindexStepConfig for $type, but got ${stepConfig::class.simpleName}")
+    override fun create(stepConfig: LatexStepRunConfigurationOptions): LatexRunStep = MakeindexRunStep(
+        stepConfig as? MakeindexStepOptions
+            ?: error("Expected MakeindexStepOptions for $type, but got ${stepConfig::class.simpleName}")
     )
 }

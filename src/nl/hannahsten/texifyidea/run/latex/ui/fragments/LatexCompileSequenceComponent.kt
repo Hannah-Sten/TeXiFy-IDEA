@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.run.latex.ui.fragments
 
 import com.intellij.execution.ui.TagButton
+import com.intellij.execution.ui.FragmentedSettings
 import com.intellij.icons.AllIcons
 import com.intellij.ide.DataManager
 import com.intellij.ide.dnd.DnDAction
@@ -22,8 +23,7 @@ import com.intellij.ui.components.labels.LinkLabel
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.WrapLayout
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.latex.LatexStepConfig
-import nl.hannahsten.texifyidea.run.latex.StepSchemaReadStatus
+import nl.hannahsten.texifyidea.run.latex.LatexStepRunConfigurationOptions
 import nl.hannahsten.texifyidea.run.latex.defaultStepFor
 import java.awt.Dimension
 import java.awt.FlowLayout
@@ -68,7 +68,7 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
 
     var changeListener: () -> Unit = {}
     var onSelectionChanged: (index: Int, stepId: String?, type: String?) -> Unit = { _, _, _ -> }
-    var onStepsChanged: (steps: List<LatexStepConfig>) -> Unit = {}
+    var onStepsChanged: (steps: List<LatexStepRunConfigurationOptions>) -> Unit = {}
 
     private var selectedIndex: Int = -1
 
@@ -131,7 +131,8 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
         stepButtons.clear()
         selectedIndex = -1
 
-        configuration.model.steps.forEach { step -> stepButtons.add(StepButton(step.deepCopy())) }
+        configuration.configOptions.ensureDefaultSteps()
+        configuration.configOptions.steps.forEach { step -> stepButtons.add(StepButton(step.deepCopy())) }
 
         buildPanel()
         normalizeSelection()
@@ -139,10 +140,10 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
 
     fun applyEditorTo(configuration: LatexRunConfiguration) {
         stepButtons.removeAll { !it.isVisible }
-        configuration.model.steps = stepButtons
+        configuration.configOptions.steps = stepButtons
             .map { it.stepConfig.deepCopy() }
             .toMutableList()
-        configuration.stepSchemaStatus = StepSchemaReadStatus.PARSED
+        configuration.configOptions.ensureDefaultSteps()
     }
 
     override fun update(event: DnDEvent): Boolean {
@@ -303,9 +304,9 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
         onStepsChanged(stepButtons.filter { it.isVisible }.map { it.stepConfig.deepCopy() })
     }
 
-    private inner class StepButton(stepConfig: LatexStepConfig) : TagButton("", { changeListener() }), DnDSource {
+    private inner class StepButton(stepConfig: LatexStepRunConfigurationOptions) : TagButton("", { changeListener() }), DnDSource {
 
-        var stepConfig: LatexStepConfig = stepConfig
+        var stepConfig: LatexStepRunConfigurationOptions = stepConfig
             private set
 
         private var dropPlace: JLabel? = null
@@ -328,7 +329,11 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
                     if (e.clickCount == 2) {
                         showTypeSelectionPopup(myButton) { selectedType ->
                             val replacement = defaultStepFor(selectedType) ?: return@showTypeSelectionPopup
-                            this@StepButton.stepConfig = replacement.copyWithIdentity(stepConfig.id, stepConfig.enabled)
+                            this@StepButton.stepConfig = replacement.copyWithIdentity(
+                                stepId = stepConfig.id,
+                                enabled = stepConfig.enabled,
+                                selectedOptions = stepConfig.selectedOptions,
+                            )
                             updateFromStepType()
                             if (selectedIndex == stepButtons.indexOf(this@StepButton)) {
                                 onSelectionChanged(selectedIndex, stepConfig.id, stepConfig.type)
@@ -400,16 +405,16 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
         fun getButton(): JButton = myButton
     }
 
-    private fun LatexStepConfig.copyWithIdentity(stepId: String, enabled: Boolean): LatexStepConfig = when (this) {
-        is nl.hannahsten.texifyidea.run.latex.LatexCompileStepConfig -> copy(id = stepId, enabled = enabled)
-        is nl.hannahsten.texifyidea.run.latex.LatexmkCompileStepConfig -> copy(id = stepId, enabled = enabled)
-        is nl.hannahsten.texifyidea.run.latex.PdfViewerStepConfig -> copy(id = stepId, enabled = enabled)
-        is nl.hannahsten.texifyidea.run.latex.BibtexStepConfig -> copy(id = stepId, enabled = enabled)
-        is nl.hannahsten.texifyidea.run.latex.MakeindexStepConfig -> copy(id = stepId, enabled = enabled)
-        is nl.hannahsten.texifyidea.run.latex.ExternalToolStepConfig -> copy(id = stepId, enabled = enabled)
-        is nl.hannahsten.texifyidea.run.latex.PythontexStepConfig -> copy(id = stepId, enabled = enabled)
-        is nl.hannahsten.texifyidea.run.latex.MakeglossariesStepConfig -> copy(id = stepId, enabled = enabled)
-        is nl.hannahsten.texifyidea.run.latex.XindyStepConfig -> copy(id = stepId, enabled = enabled)
+    private fun LatexStepRunConfigurationOptions.copyWithIdentity(
+        stepId: String,
+        enabled: Boolean,
+        selectedOptions: MutableList<FragmentedSettings.Option>,
+    ): LatexStepRunConfigurationOptions = deepCopy().also {
+        it.id = stepId
+        it.enabled = enabled
+        it.selectedOptions = selectedOptions
+            .map { option -> FragmentedSettings.Option(option.name ?: "", option.visible) }
+            .toMutableList()
     }
 
     private class AddStepAction(

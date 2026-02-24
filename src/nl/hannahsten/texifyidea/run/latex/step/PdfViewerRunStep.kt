@@ -5,7 +5,7 @@ import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.OpenCustomPdfViewerListener
-import nl.hannahsten.texifyidea.run.latex.PdfViewerStepConfig
+import nl.hannahsten.texifyidea.run.latex.PdfViewerStepOptions
 import nl.hannahsten.texifyidea.run.pdfviewer.OpenViewerListener
 import nl.hannahsten.texifyidea.util.caretOffset
 import nl.hannahsten.texifyidea.util.focusedTextEditor
@@ -13,7 +13,7 @@ import nl.hannahsten.texifyidea.util.selectedTextEditor
 import java.io.OutputStream
 
 internal class PdfViewerRunStep(
-    private val stepConfig: PdfViewerStepConfig,
+    private val stepConfig: PdfViewerStepOptions,
 ) : LatexRunStep {
 
     override val configId: String = stepConfig.id
