@@ -13,8 +13,6 @@ import nl.hannahsten.texifyidea.run.latex.LatexStepRunConfigurationOptions
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepAutoInference
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepPlanBuilder
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepContext
-import nl.hannahsten.texifyidea.run.latex.step.LatexStepPresentation
-import nl.hannahsten.texifyidea.run.latex.step.StepArtifactSync
 import nl.hannahsten.texifyidea.run.latex.steplog.LatexStepLogTabComponent
 import nl.hannahsten.texifyidea.util.Log
 
@@ -44,32 +42,13 @@ internal class LatexStepRunState(
         }
 
         val executions = effectivePlan.steps.mapIndexed { index, step ->
-            LatexStepExecution(
-                index = index,
-                type = step.id,
-                displayName = LatexStepPresentation.displayName(step.id),
-                configId = step.configId,
-                processHandler = step.createProcess(context),
-            )
+            step.createStepExecution(index, context)
         }
         if (executions.isEmpty()) {
             throw ExecutionException("No executable steps found in compile-step schema.")
         }
 
-        val stepsByConfigId = effectiveSteps.associateBy { it.id }
-        val artifactSync = StepArtifactSync(context, stepsByConfigId)
-        val overallHandler = StepAwareSequentialProcessHandler(
-            executions = executions,
-            lifecycleHooks = object : StepExecutionLifecycleHooks {
-                override fun beforeStep(execution: LatexStepExecution) {
-                    artifactSync.beforeStep(execution.configId)
-                }
-
-                override fun afterStep(execution: LatexStepExecution, exitCode: Int) {
-                    artifactSync.afterStep(execution.configId, exitCode)
-                }
-            },
-        )
+        val overallHandler = StepAwareSequentialProcessHandler(executions)
         val stepLogConsole = LatexStepLogTabComponent(environment.project, mainFile, overallHandler)
 
         return DefaultExecutionResult(stepLogConsole, overallHandler)

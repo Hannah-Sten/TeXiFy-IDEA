@@ -297,9 +297,17 @@
 - [x] Phase 9.1: Step Log 收口（唯一输出页签 + 根节点汇总输出）
 - [x] Phase 10: `LatexRunConfiguration` 结构化重构
 - [x] Phase 11: `common + steps` 执行/UI/settings 收口
+- [x] Phase 11.1: `createStepExecution` 内聚 pre/post 动作
 
 ## 更新日志
 
+- 2026-02-24（Phase 11.1）
+  - `LatexRunStep` 契约改为 `createStepExecution(index, context)`，步骤直接产出 `LatexStepExecution`。
+  - `LatexStepExecution` 新增 `beforeStart` / `afterFinish`，顺序执行器直接消费 execution，不再接收外置 lifecycle hooks。
+  - `StepAwareSequentialProcessHandler` 移除 `StepExecutionLifecycleHooks` 与 hook 构造参数，保留 pre/post 异常处理语义（pre 失败终止，post 失败仅记 stderr）。
+  - `MakeindexRunStep` 内聚 `StepArtifactSync` 的 pre/post 行为；`LatexCompileRunStep` 改用 `afterFinish` 标记 `executionState.markHasRun()`。
+  - `LatexStepRunState` 简化为 `step -> execution` 转换，不再拼装外部 artifact hook。
+  - 更新测试覆盖：`StepAwareSequentialProcessHandlerTest`（before/after 语义）、`StepArtifactSyncTest`（单-step API）、`MakeindexRunStepTest`（execution smoke）。
 - 2026-02-24（Phase 11 收口）
   - 执行链补齐 makeindex/bib2gls 旧语义：新增 `StepArtifactSync`，在步骤执行前后做依赖拷贝与产物回填，`FileMagic.indexFileExtensions` 与 `bib2glsDependenciesExtensions` 恢复为有效执行路径的一部分。
   - `MakeindexRunStep` 恢复旧命令生成规则（`name`/target basename、`xindy` 的 `.idx`、`-o` 覆盖时不追加目标文件）。

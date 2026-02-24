@@ -8,4 +8,23 @@ internal data class LatexStepExecution(
     val displayName: String,
     val configId: String,
     val processHandler: ProcessHandler,
-)
+    val beforeStart: () -> Unit = {},
+    val afterFinish: (exitCode: Int) -> Unit = {},
+) {
+
+    constructor(
+        index: Int,
+        type: String,
+        displayName: String,
+        configId: String,
+        processHandler: ProcessHandler,
+    ) : this(
+        index = index,
+        type = type,
+        displayName = displayName,
+        configId = configId,
+        processHandler = processHandler,
+        beforeStart = {},
+        afterFinish = {},
+    )
+}

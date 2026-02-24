@@ -112,6 +112,110 @@ class StepAwareSequentialProcessHandlerTest : BasePlatformTestCase() {
         )
     }
 
+    fun testBeforeStartRunsBeforeProcessStartAndFailureStopsRun() {
+        val first = TestProcessHandler()
+        val second = TestProcessHandler()
+        val beforeCalls = mutableListOf<String>()
+
+        val handler = StepAwareSequentialProcessHandler(
+            listOf(
+                LatexStepExecution(
+                    0,
+                    "makeindex",
+                    "Run makeindex",
+                    "s1",
+                    first,
+                    beforeStart = {
+                        beforeCalls += "s1"
+                        throw IllegalStateException("pre failed")
+                    },
+                ),
+                LatexStepExecution(
+                    1,
+                    "pdf-viewer",
+                    "Open PDF viewer",
+                    "s2",
+                    second,
+                    beforeStart = { beforeCalls += "s2" },
+                ),
+            )
+        )
+
+        val events = mutableListOf<String>()
+        handler.addStepLogListener { event ->
+            when (event) {
+                is StepLogEvent.StepStarted -> events += "start:${event.execution.index}"
+                is StepLogEvent.StepOutput -> events += "out:${event.execution.index}"
+                is StepLogEvent.StepFinished -> events += "finish:${event.execution.index}:${event.exitCode}"
+                is StepLogEvent.RunFinished -> events += "run:${event.exitCode}"
+            }
+        }
+
+        handler.startNotify()
+
+        assertTrue(handler.isProcessTerminated)
+        assertFalse(first.started)
+        assertFalse(second.started)
+        assertEquals(listOf("s1"), beforeCalls)
+        assertTrue(handler.rawLog(0).contains("pre failed"))
+        assertEquals(
+            listOf(
+                "start:0",
+                "out:0",
+                "finish:0:1",
+                "run:1",
+            ),
+            events
+        )
+    }
+
+    fun testAfterFinishReceivesExitCodeAndErrorsAreReportedWithoutChangingRunExitCode() {
+        val first = TestProcessHandler()
+        var observedExit: Int? = null
+
+        val handler = StepAwareSequentialProcessHandler(
+            listOf(
+                LatexStepExecution(
+                    0,
+                    "latex-compile",
+                    "Compile LaTeX",
+                    "s1",
+                    first,
+                    afterFinish = { exitCode ->
+                        observedExit = exitCode
+                        throw IllegalStateException("post failed")
+                    },
+                ),
+            )
+        )
+
+        val events = mutableListOf<String>()
+        handler.addStepLogListener { event ->
+            when (event) {
+                is StepLogEvent.StepStarted -> events += "start:${event.execution.index}"
+                is StepLogEvent.StepOutput -> events += "out:${event.execution.index}"
+                is StepLogEvent.StepFinished -> events += "finish:${event.execution.index}:${event.exitCode}"
+                is StepLogEvent.RunFinished -> events += "run:${event.exitCode}"
+            }
+        }
+
+        handler.startNotify()
+        first.finish(0)
+
+        assertTrue(handler.isProcessTerminated)
+        assertEquals(0, observedExit)
+        assertTrue(handler.rawLog(0).contains("post failed"))
+        assertEquals(
+            listOf(
+                "start:0",
+                "out:0",
+                "finish:0:0",
+                "run:0",
+            ),
+            events
+        )
+    }
+
     private class TestProcessHandler : ProcessHandler() {
 
         var started: Boolean = false

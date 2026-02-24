@@ -14,13 +14,7 @@ import java.util.concurrent.CopyOnWriteArrayList
  */
 internal class StepAwareSequentialProcessHandler(
     val executions: List<LatexStepExecution>,
-    private val lifecycleHooks: StepExecutionLifecycleHooks = StepExecutionLifecycleHooks.NOOP,
 ) : ProcessHandler(), KillableProcess {
-
-    constructor(executions: List<LatexStepExecution>) : this(
-        executions = executions,
-        lifecycleHooks = StepExecutionLifecycleHooks.NOOP,
-    )
 
     private val listeners = CopyOnWriteArrayList<(StepLogEvent) -> Unit>()
     private val rawLogsByStep = linkedMapOf<Int, StringBuilder>()
@@ -47,7 +41,7 @@ internal class StepAwareSequentialProcessHandler(
                 }
 
                 override fun processTerminated(event: ProcessEvent) {
-                    runCatching { lifecycleHooks.afterStep(execution, event.exitCode) }
+                    runCatching { execution.afterFinish(event.exitCode) }
                         .exceptionOrNull()
                         ?.let { error ->
                             emitStepOutput(execution, "[TeXiFy] ${error.message ?: "Step post-processing failed."}\n", ProcessOutputTypes.STDERR)
@@ -126,7 +120,7 @@ internal class StepAwareSequentialProcessHandler(
 
     private fun startStep(execution: LatexStepExecution) {
         currentExecution = execution
-        val preflightError = runCatching { lifecycleHooks.beforeStep(execution) }.exceptionOrNull()
+        val preflightError = runCatching { execution.beforeStart() }.exceptionOrNull()
         if (preflightError != null) {
             fire(StepLogEvent.StepStarted(execution))
             emitStepOutput(execution, "[TeXiFy] ${preflightError.message ?: "Step preflight failed."}\n", ProcessOutputTypes.STDERR)
@@ -145,20 +139,5 @@ internal class StepAwareSequentialProcessHandler(
         rawLogsByStep[execution.index]?.append(text)
         notifyTextAvailable(text, outputType)
         fire(StepLogEvent.StepOutput(execution, text, outputType))
-    }
-}
-
-internal interface StepExecutionLifecycleHooks {
-
-    fun beforeStep(execution: LatexStepExecution)
-
-    fun afterStep(execution: LatexStepExecution, exitCode: Int)
-
-    object NOOP : StepExecutionLifecycleHooks {
-        override fun beforeStep(execution: LatexStepExecution) {
-        }
-
-        override fun afterStep(execution: LatexStepExecution, exitCode: Int) {
-        }
     }
 }

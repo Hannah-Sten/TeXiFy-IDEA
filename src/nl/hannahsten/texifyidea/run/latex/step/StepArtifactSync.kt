@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.run.latex.step
 
 import com.intellij.openapi.util.io.FileUtil
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
-import nl.hannahsten.texifyidea.run.latex.LatexStepRunConfigurationOptions
 import nl.hannahsten.texifyidea.run.latex.MakeindexStepOptions
 import nl.hannahsten.texifyidea.run.latex.getMakeindexOptions
 import nl.hannahsten.texifyidea.util.appendExtension
@@ -13,11 +12,10 @@ import java.io.IOException
 
 internal class StepArtifactSync(
     private val context: LatexRunStepContext,
-    private val stepsByConfigId: Map<String, LatexStepRunConfigurationOptions>,
+    private val step: MakeindexStepOptions,
 ) {
 
-    fun beforeStep(configId: String) {
-        val step = stepsByConfigId[configId] as? MakeindexStepOptions ?: return
+    fun beforeStep() {
         if (step.program != MakeindexProgram.BIB2GLS) {
             return
         }
@@ -34,12 +32,11 @@ internal class StepArtifactSync(
         )
     }
 
-    fun afterStep(configId: String, exitCode: Int) {
+    fun afterStep(exitCode: Int) {
         if (exitCode != 0) {
             return
         }
 
-        val step = stepsByConfigId[configId] as? MakeindexStepOptions ?: return
         val workingDirectory = makeindexWorkingDirectory(step) ?: return
         val baseFileName = makeindexBaseFileName(step)
         copyFiles(

@@ -6,6 +6,7 @@ import com.intellij.execution.util.ProgramParametersConfigurator
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.common.createCompilationHandler
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
+import nl.hannahsten.texifyidea.run.latex.flow.LatexStepExecution
 import nl.hannahsten.texifyidea.run.latex.MakeindexStepOptions
 import nl.hannahsten.texifyidea.run.latex.getMakeindexOptions
 import nl.hannahsten.texifyidea.util.appendExtension
@@ -18,7 +19,21 @@ internal class MakeindexRunStep(
     override val id: String = stepConfig.type
 
     @Throws(ExecutionException::class)
-    override fun createProcess(context: LatexRunStepContext): ProcessHandler {
+    override fun createStepExecution(index: Int, context: LatexRunStepContext): LatexStepExecution {
+        val artifactSync = StepArtifactSync(context, stepConfig)
+        return LatexStepExecution(
+            index = index,
+            type = id,
+            displayName = LatexStepPresentation.displayName(id),
+            configId = configId,
+            processHandler = createProcess(context),
+            beforeStart = { artifactSync.beforeStep() },
+            afterFinish = { exitCode -> artifactSync.afterStep(exitCode) },
+        )
+    }
+
+    @Throws(ExecutionException::class)
+    private fun createProcess(context: LatexRunStepContext): ProcessHandler {
         val command = buildCommand(context)
         val workingDirectory = CommandLineRunStep.resolveWorkingDirectory(context, stepConfig.workingDirectoryPath)
         val configurator = ProgramParametersConfigurator()

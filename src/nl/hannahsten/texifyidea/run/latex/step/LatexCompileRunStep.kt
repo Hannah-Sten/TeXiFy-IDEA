@@ -1,8 +1,6 @@
 package nl.hannahsten.texifyidea.run.latex.step
 
 import com.intellij.execution.ExecutionException
-import com.intellij.execution.process.ProcessAdapter
-import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.util.ProgramParametersConfigurator
 import nl.hannahsten.texifyidea.run.latex.LatexExecutionStateInitializer
@@ -12,6 +10,7 @@ import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexStepRunConfigurationOptions
 import nl.hannahsten.texifyidea.run.latex.LatexmkCompileStepOptions
 import nl.hannahsten.texifyidea.run.common.createCompilationHandler
+import nl.hannahsten.texifyidea.run.latex.flow.LatexStepExecution
 
 internal class LatexCompileRunStep(
     private val stepConfig: LatexStepRunConfigurationOptions,
@@ -21,7 +20,17 @@ internal class LatexCompileRunStep(
     override val id: String = stepConfig.type
 
     @Throws(ExecutionException::class)
-    override fun createProcess(context: LatexRunStepContext): ProcessHandler {
+    override fun createStepExecution(index: Int, context: LatexRunStepContext): LatexStepExecution = LatexStepExecution(
+        index = index,
+        type = id,
+        displayName = LatexStepPresentation.displayName(id),
+        configId = configId,
+        processHandler = createProcess(context),
+        afterFinish = { context.executionState.markHasRun() },
+    )
+
+    @Throws(ExecutionException::class)
+    private fun createProcess(context: LatexRunStepContext): ProcessHandler {
         val runConfig = context.runConfig
         runConfig.activateStepForExecution(configId)
         try {
@@ -39,13 +48,7 @@ internal class LatexCompileRunStep(
                 expandMacrosEnvVariables = runConfig.expandMacrosEnvVariables,
                 envs = runConfig.environmentVariables.envs,
                 expandEnvValue = { value -> expandPathAndMacros(programParamsConfigurator, value, runConfig) },
-            ).also { handler ->
-                handler.addProcessListener(object : ProcessAdapter() {
-                    override fun processTerminated(event: ProcessEvent) {
-                        context.executionState.markHasRun()
-                    }
-                })
-            }
+            )
         }
         finally {
             runConfig.activateStepForExecution(null)

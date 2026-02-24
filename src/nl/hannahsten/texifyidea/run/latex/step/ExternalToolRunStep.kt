@@ -5,6 +5,7 @@ import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.util.ProgramParametersConfigurator
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.common.createCompilationHandler
+import nl.hannahsten.texifyidea.run.latex.flow.LatexStepExecution
 import nl.hannahsten.texifyidea.run.latex.ExternalToolStepOptions
 
 internal class ExternalToolRunStep(
@@ -15,7 +16,16 @@ internal class ExternalToolRunStep(
     override val id: String = stepConfig.type
 
     @Throws(ExecutionException::class)
-    override fun createProcess(context: LatexRunStepContext): ProcessHandler {
+    override fun createStepExecution(index: Int, context: LatexRunStepContext): LatexStepExecution = LatexStepExecution(
+        index = index,
+        type = id,
+        displayName = LatexStepPresentation.displayName(id),
+        configId = configId,
+        processHandler = createProcess(context),
+    )
+
+    @Throws(ExecutionException::class)
+    private fun createProcess(context: LatexRunStepContext): ProcessHandler {
         val executable = stepConfig.executable?.trim()
         val command = if (executable.isNullOrBlank()) {
             emptyList()
