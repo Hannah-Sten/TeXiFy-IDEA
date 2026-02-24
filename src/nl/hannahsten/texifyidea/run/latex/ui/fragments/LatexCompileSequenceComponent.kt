@@ -314,7 +314,8 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
         init {
             Disposer.register(this@LatexCompileSequenceComponent, this)
             dropPlace = JLabel(AllIcons.General.DropPlace)
-            add(dropPlace, JLayeredPane.DRAG_LAYER)
+            add(dropPlace)
+            setLayer(dropPlace, JLayeredPane.DRAG_LAYER)
             dropPlace?.isVisible = false
             border = JBUI.Borders.empty(1)
 
