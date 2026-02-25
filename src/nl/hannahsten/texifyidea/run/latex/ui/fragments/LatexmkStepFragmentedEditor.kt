@@ -17,14 +17,11 @@ import nl.hannahsten.texifyidea.run.latex.StepUiOptionIds
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCitationTool
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
 import java.awt.event.ItemEvent
-import javax.swing.JLabel
 
 internal class LatexmkStepFragmentedEditor(
     private val project: Project,
     initialStep: LatexmkCompileStepOptions = LatexmkCompileStepOptions(),
 ) : AbstractStepFragmentedEditor<LatexmkCompileStepOptions>(initialStep) {
-
-    private val compilerRow = LabeledComponent.create(JLabel("latexmk"), "Compiler")
 
     private val compilerPath = TextFieldWithBrowseButton().apply {
         addBrowseFolderListener(
@@ -72,17 +69,6 @@ internal class LatexmkStepFragmentedEditor(
     override fun createFragments(): Collection<SettingsEditorFragment<LatexmkCompileStepOptions, *>> {
         val headerFragment = CommonParameterFragments.createHeader<LatexmkCompileStepOptions>("Latexmk Step")
 
-        val compilerFragment = stepFragment(
-            id = "step.latexmk.compiler",
-            name = "Compiler",
-            component = compilerRow,
-            reset = { _, _ -> },
-            apply = { _, _ -> },
-            initiallyVisible = { true },
-            removable = false,
-            hint = "Compiler used by latexmk-compile step type.",
-        )
-
         val pathFragment = stepFragment(
             id = StepUiOptionIds.COMPILE_PATH,
             name = "Compiler path",
@@ -115,10 +101,9 @@ internal class LatexmkStepFragmentedEditor(
             apply = { step, component ->
                 step.latexmkCompileMode = component.component.selectedItem as? LatexmkCompileMode ?: LatexmkCompileMode.AUTO
             },
-            initiallyVisible = { step -> step.latexmkCompileMode != LatexmkCompileMode.AUTO },
-            removable = true,
+            initiallyVisible = { true },
+            removable = false,
             hint = "Latexmk compile mode used by latexmk-compile steps.",
-            actionHint = "Set latexmk compile mode",
         )
 
         val customEngineFragment = stepFragment(
@@ -171,10 +156,9 @@ internal class LatexmkStepFragmentedEditor(
 
         return listOf(
             headerFragment,
-            compilerFragment,
+            modeFragment,
             pathFragment,
             argsFragment,
-            modeFragment,
             customEngineFragment,
             citationFragment,
             extraArgsFragment,
