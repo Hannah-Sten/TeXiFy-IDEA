@@ -124,6 +124,42 @@ class LatexStepAutoConfiguratorTest : BasePlatformTestCase() {
         assertEquals(listOf("latexmk-compile", "pdf-viewer"), completed.map { it.type })
     }
 
+    fun testCompleteStepsAddsFollowUpCompileAfterLastAuxBeforeViewer() {
+        val completed = LatexStepAutoConfigurator.completeSteps(
+            null,
+            listOf(
+                LatexCompileStepOptions(),
+                PythontexStepOptions(),
+                PdfViewerStepOptions(),
+            )
+        )
+
+        assertEquals(listOf("latex-compile", "pythontex", "latex-compile", "pdf-viewer"), completed.map { it.type })
+    }
+
+    fun testCompleteStepsKeepsExplicitCompileAfterAuxUnchanged() {
+        val completed = LatexStepAutoConfigurator.completeSteps(
+            null,
+            listOf(
+                LatexCompileStepOptions(),
+                BibtexStepOptions(),
+                LatexCompileStepOptions(),
+                PdfViewerStepOptions(),
+            )
+        )
+
+        assertEquals(listOf("latex-compile", "bibtex", "latex-compile", "pdf-viewer"), completed.map { it.type })
+    }
+
+    fun testCompleteStepsWhenPsiInferenceFailsStillReturnsClosedPipeline() {
+        val completed = LatexStepAutoConfigurator.completeSteps(
+            null,
+            listOf(LatexCompileStepOptions(), PdfViewerStepOptions())
+        )
+
+        assertEquals(listOf("latex-compile", "latex-compile", "pdf-viewer"), completed.map { it.type })
+    }
+
     fun testCompleteStepsIsIdempotent() {
         val mainPsi = myFixture.addFileToProject(
             "main-idempotent.tex",

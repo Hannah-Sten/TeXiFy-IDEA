@@ -204,19 +204,25 @@ class StepAwareSequentialProcessHandlerTest : BasePlatformTestCase() {
             }
         }
 
-        handler.startNotify()
+        val error = try {
+            handler.startNotify()
+            null
+        }
+        catch (t: Throwable) {
+            t
+        }
 
-        assertTrue(handler.isProcessTerminated)
+        assertNotNull(error)
+        assertTrue(error is IllegalStateException)
+        assertTrue(error?.message?.contains("pre failed") == true)
+        assertFalse(handler.isProcessTerminated)
         assertFalse(first.started)
         assertFalse(cleanupRan)
         assertEquals(listOf("s1"), beforeCalls)
-        assertTrue(handler.rawLog(0).contains("pre failed"))
+        assertEquals("", handler.rawLog(0))
         assertEquals(
             listOf(
                 "start:0",
-                "out:0",
-                "finish:0:1",
-                "run:1",
             ),
             events
         )
@@ -287,20 +293,35 @@ class StepAwareSequentialProcessHandlerTest : BasePlatformTestCase() {
         }
 
         handler.startNotify()
-        first.finish(0)
+        val error = try {
+            first.finish(0)
+            null
+        }
+        catch (t: Throwable) {
+            t
+        }
 
-        assertTrue(handler.isProcessTerminated)
+        assertNotNull(error)
+        assertTrue(fullMessage(error!!).contains("post failed"))
+        assertFalse(handler.isProcessTerminated)
         assertEquals(0, observedExit)
-        assertTrue(handler.rawLog(0).contains("post failed"))
+        assertEquals("", handler.rawLog(0))
         assertEquals(
             listOf(
                 "start:0",
-                "out:0",
-                "finish:0:0",
-                "run:0",
             ),
             events
         )
+    }
+
+    private fun fullMessage(throwable: Throwable): String {
+        val parts = mutableListOf<String>()
+        var current: Throwable? = throwable
+        while (current != null) {
+            current.message?.let(parts::add)
+            current = current.cause
+        }
+        return parts.joinToString(" | ")
     }
 
     fun testDestroyProcessSkipsFollowingCleanupStep() {

@@ -21,7 +21,6 @@ import nl.hannahsten.texifyidea.run.latex.PythontexStepOptions
 import nl.hannahsten.texifyidea.run.latex.defaultLatexmkSteps
 import nl.hannahsten.texifyidea.run.latex.generateLatexStepId
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
-import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.files.findTectonicTomlFile
 import nl.hannahsten.texifyidea.util.files.hasTectonicTomlFile
 import nl.hannahsten.texifyidea.util.includedPackagesInFileset
@@ -77,59 +76,59 @@ internal object LatexStepAutoConfigurator {
         mainPsiFile: PsiFile?,
         baseSteps: List<LatexStepRunConfigurationOptions>,
     ): List<LatexStepRunConfigurationOptions> {
-        val steps = if (baseSteps.isEmpty()) {
-            defaultLatexmkSteps()
-        }
-        else {
-            baseSteps.map { it.deepCopy() }.toMutableList()
-        }
-
-        val inferred = if (mainPsiFile != null) {
-            inferRequiredAuxiliarySteps(mainPsiFile, steps)
-        }
-        else {
-            emptyList()
-        }
-        val inferredLastIndex = if (inferred.isNotEmpty()) {
-            val insertIndex = preferredAuxInsertIndex(steps)
-            steps.addAll(insertIndex, inferred)
-            insertIndex + inferred.size - 1
-        }
-        else {
-            null
-        }
-
-        val fallback = if (baseSteps.isEmpty()) {
-            defaultLatexmkSteps()
-        }
-        else {
-            baseSteps.map { it.deepCopy() }
-        }
-
-        return runCatching {
-            ensureStructuralCompletion(steps, inferredLastIndex)
-            steps
-        }
-            .onFailure { error ->
-                Log.warn("Failed to auto-complete compile sequence: ${error.message}")
-            }
-            .getOrDefault(fallback)
+        val normalized = normalizeBaseSteps(baseSteps)
+        val inferred = inferAuxiliarySteps(mainPsiFile, normalized)
+        val withAux = insertInferredAuxSteps(normalized, inferred)
+        return closePipeline(withAux)
     }
 
-    private fun ensureStructuralCompletion(
+    private fun normalizeBaseSteps(
+        baseSteps: List<LatexStepRunConfigurationOptions>,
+    ): MutableList<LatexStepRunConfigurationOptions> = if (baseSteps.isEmpty()) {
+        defaultLatexmkSteps()
+    }
+    else {
+        baseSteps.map { it.deepCopy() }.toMutableList()
+    }
+
+    private fun inferAuxiliarySteps(
+        mainPsiFile: PsiFile?,
+        steps: List<LatexStepRunConfigurationOptions>,
+    ): List<LatexStepRunConfigurationOptions> {
+        if (mainPsiFile == null) {
+            return emptyList()
+        }
+
+        return inferRequiredAuxiliarySteps(mainPsiFile, steps)
+    }
+
+    private fun insertInferredAuxSteps(
         steps: MutableList<LatexStepRunConfigurationOptions>,
-        inferredLastIndex: Int?,
-    ) {
+        inferred: List<LatexStepRunConfigurationOptions>,
+    ): MutableList<LatexStepRunConfigurationOptions> {
+        if (inferred.isEmpty()) {
+            return steps
+        }
+
+        val insertIndex = preferredAuxInsertIndex(steps)
+        steps.addAll(insertIndex, inferred)
+        return steps
+    }
+
+    private fun closePipeline(
+        steps: MutableList<LatexStepRunConfigurationOptions>,
+    ): MutableList<LatexStepRunConfigurationOptions> {
         if (steps.isEmpty()) {
             steps += defaultLatexmkSteps()
-            return
         }
 
         val firstCompile = steps.firstOrNull { it.type in compileTypes }
         when (firstCompile?.type) {
             LatexStepType.LATEXMK_COMPILE -> ensureViewerStep(steps)
-            else -> ensureClassicCompileFlow(steps, inferredLastIndex)
+            else -> ensureClassicCompileFlow(steps)
         }
+
+        return steps
     }
 
     private fun ensureViewerStep(steps: MutableList<LatexStepRunConfigurationOptions>) {
@@ -138,10 +137,7 @@ internal object LatexStepAutoConfigurator {
         }
     }
 
-    private fun ensureClassicCompileFlow(
-        steps: MutableList<LatexStepRunConfigurationOptions>,
-        inferredLastIndex: Int?,
-    ) {
+    private fun ensureClassicCompileFlow(steps: MutableList<LatexStepRunConfigurationOptions>) {
         if (steps.none { it.type == LatexStepType.LATEX_COMPILE }) {
             val viewerIndex = viewerInsertIndex(steps)
             steps.add(viewerIndex, LatexCompileStepOptions())
@@ -154,13 +150,7 @@ internal object LatexStepAutoConfigurator {
             return
         }
 
-        val anchorByInference = inferredLastIndex?.takeIf { it in 0 until viewerIndex }
-        val anchorByAux = steps.withIndex()
-            .lastOrNull { (index, step) ->
-                index < viewerIndex && step.type in followUpCompileAnchorTypes
-            }
-            ?.index
-        val anchorIndex = anchorByInference ?: anchorByAux ?: firstCompileIndex
+        val anchorIndex = lastAuxIndexBeforeViewer(steps) ?: firstCompileIndex
 
         val hasCompileAfter = steps.withIndex().any { (index, step) ->
             index > anchorIndex && index < viewerIndex && step.type == LatexStepType.LATEX_COMPILE
@@ -172,6 +162,15 @@ internal object LatexStepAutoConfigurator {
         val followUpCompile = steps[firstCompileIndex].deepCopy()
         followUpCompile.id = generateLatexStepId()
         steps.add(viewerIndex, followUpCompile)
+    }
+
+    private fun lastAuxIndexBeforeViewer(steps: List<LatexStepRunConfigurationOptions>): Int? {
+        val viewerIndex = viewerInsertIndex(steps)
+        return steps.withIndex()
+            .lastOrNull { (index, step) ->
+                index < viewerIndex && step.type in followUpCompileAnchorTypes
+            }
+            ?.index
     }
 
     private fun viewerInsertIndex(steps: List<LatexStepRunConfigurationOptions>): Int {
@@ -205,7 +204,10 @@ internal object LatexStepAutoConfigurator {
         steps: List<LatexStepRunConfigurationOptions>,
         signals: PsiSignals,
     ): Boolean {
-        if (steps.any { it.type == LatexStepType.BIBTEX } || steps.any { it.type == LatexStepType.LATEXMK_COMPILE }) {
+        if (!canInferAux(steps, disableForLatexmk = true)) {
+            return false
+        }
+        if (steps.any { it.type == LatexStepType.BIBTEX }) {
             return false
         }
         if (LatexLib.CITATION_STYLE_LANGUAGE in signals.usedPackages) {
@@ -219,6 +221,9 @@ internal object LatexStepAutoConfigurator {
         steps: List<LatexStepRunConfigurationOptions>,
         usedPackages: Set<LatexLib>,
     ): Boolean {
+        if (!canInferAux(steps)) {
+            return false
+        }
         if (steps.any { it.type == LatexStepType.PYTHONTEX || it.type == LatexStepType.EXTERNAL_TOOL }) {
             return false
         }
@@ -229,7 +234,7 @@ internal object LatexStepAutoConfigurator {
         steps: List<LatexStepRunConfigurationOptions>,
         usedPackages: Set<LatexLib>,
     ): Boolean {
-        if (steps.any { it.type == LatexStepType.LATEXMK_COMPILE }) {
+        if (!canInferAux(steps, disableForLatexmk = true)) {
             return false
         }
         if (steps.any { it.type == LatexStepType.MAKEINDEX || it.type == LatexStepType.MAKEGLOSSARIES }) {
@@ -248,6 +253,16 @@ internal object LatexStepAutoConfigurator {
         else {
             viewerIndex
         }
+    }
+
+    private fun canInferAux(
+        steps: List<LatexStepRunConfigurationOptions>,
+        disableForLatexmk: Boolean = false,
+    ): Boolean {
+        if (!disableForLatexmk) {
+            return true
+        }
+        return steps.none { it.type == LatexStepType.LATEXMK_COMPILE }
     }
 
     private fun collectPsiSignals(mainPsiFile: PsiFile): PsiSignals = ReadAction.compute<PsiSignals, RuntimeException> {

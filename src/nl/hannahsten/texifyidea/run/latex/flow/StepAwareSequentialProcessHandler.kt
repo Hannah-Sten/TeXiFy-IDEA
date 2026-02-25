@@ -107,13 +107,14 @@ internal class StepAwareSequentialProcessHandler(
         currentProcess = null
 
         fire(StepLogEvent.StepStarted(index, step))
-        val preflightError = runCatching { step.beforeStart(context) }.exceptionOrNull()
-        if (preflightError != null) {
-            emitStepOutput(index, step, "[TeXiFy] ${preflightError.message ?: "Step preflight failed."}\n", ProcessOutputTypes.STDERR)
-            fire(StepLogEvent.StepFinished(index, step, 1))
-            finishRun(1)
-            return
-        }
+        step.beforeStart(context)
+//        val preflightError = runCatching { step.beforeStart(context) }.exceptionOrNull()
+//        if (preflightError != null) {
+//            emitStepOutput(index, step, "[TeXiFy] ${preflightError.message ?: "Step preflight failed."}\n", ProcessOutputTypes.STDERR)
+//            fire(StepLogEvent.StepFinished(index, step, 1))
+//            finishRun(1)
+//            return
+//        }
 
         when (step) {
             is ProcessLatexRunStep -> startProcessStep(index, step)
@@ -127,13 +128,14 @@ internal class StepAwareSequentialProcessHandler(
     }
 
     private fun startProcessStep(index: Int, step: ProcessLatexRunStep) {
-        val processHandler = runCatching { step.createProcess(context) }
-            .getOrElse { error ->
-                emitStepOutput(index, step, "[TeXiFy] ${error.message ?: "Failed to create process."}\n", ProcessOutputTypes.STDERR)
-                fire(StepLogEvent.StepFinished(index, step, 1))
-                finishRun(1)
-                return
-            }
+        val processHandler = step.createProcess(context)
+//        val processHandler = runCatching { step.createProcess(context) }
+//            .getOrElse { error ->
+//                emitStepOutput(index, step, "[TeXiFy] ${error.message ?: "Failed to create process."}\n", ProcessOutputTypes.STDERR)
+//                fire(StepLogEvent.StepFinished(index, step, 1))
+//                finishRun(1)
+//                return
+//            }
 
         currentProcess = processHandler
         processHandler.addProcessListener(object : ProcessAdapter() {
@@ -156,11 +158,12 @@ internal class StepAwareSequentialProcessHandler(
     }
 
     private fun executeInlineStep(index: Int, step: InlineLatexRunStep) {
-        val exitCode = runCatching { step.runInline(context) }
-            .getOrElse { error ->
-                emitStepOutput(index, step, "[TeXiFy] ${error.message ?: "Step action failed."}\n", ProcessOutputTypes.STDERR)
-                1
-            }
+//        val exitCode = runCatching { step.runInline(context) }
+//            .getOrElse { error ->
+//                emitStepOutput(index, step, "[TeXiFy] ${error.message ?: "Step action failed."}\n", ProcessOutputTypes.STDERR)
+//                1
+//            }
+        val exitCode = step.runInline(context)
         completeStep(index, step, exitCode)
     }
 
@@ -168,11 +171,12 @@ internal class StepAwareSequentialProcessHandler(
         if (runFinished) {
             return
         }
-        runCatching { step.afterFinish(context, exitCode) }
-            .exceptionOrNull()
-            ?.let { error ->
-                emitStepOutput(index, step, "[TeXiFy] ${error.message ?: "Step post-processing failed."}\n", ProcessOutputTypes.STDERR)
-            }
+        step.afterFinish(context, exitCode)
+//        runCatching { step.afterFinish(context, exitCode) }
+//            .exceptionOrNull()
+//            ?.let { error ->
+//                emitStepOutput(index, step, "[TeXiFy] ${error.message ?: "Step post-processing failed."}\n", ProcessOutputTypes.STDERR)
+//            }
 
         fire(StepLogEvent.StepFinished(index, step, exitCode))
         if (killed || exitCode != 0) {

@@ -12,7 +12,6 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.platform.ide.progress.runWithModalProgressBlocking
 import nl.hannahsten.texifyidea.util.Log
 import java.nio.file.Path
 import kotlin.io.path.exists
@@ -79,9 +78,7 @@ internal fun createCompilationHandler(
 
     Log.debug("Executing ${commandLine.commandLineString} in ${context.workingDirectory}")
 
-    val handler = runWithModalProgressBlocking(context.environment.project, "Creating command line process...") {
-        KillableProcessHandler(commandLine)
-    }
+    val handler = KillableProcessHandler(commandLine)
     ProcessTerminatedListener.attach(handler, context.environment.project)
 
     return handler
