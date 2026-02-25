@@ -45,7 +45,7 @@ import javax.swing.tree.TreePath
 internal class LatexStepLogTabComponent(
     private val project: Project,
     mainFile: VirtualFile?,
-    private val handler: StepAwareSequentialProcessHandler,
+    handler: StepAwareSequentialProcessHandler,
 ) : AdditionalTabComponent(BorderLayout()), ExecutionConsole, TreeSelectionListener {
 
     companion object {
@@ -155,32 +155,6 @@ internal class LatexStepLogTabComponent(
     override fun valueChanged(e: TreeSelectionEvent?) {
         refreshRawLogView()
     }
-
-    internal fun stepStatus(index: Int): String? = stepNodeData[index]?.status?.name
-
-    internal fun parsedMessageCount(index: Int): Int =
-        stepNodes[index]?.children?.count { it.messageData != null } ?: 0
-
-    internal fun splitterClassNameForTest(): String = splitter.javaClass.simpleName
-
-    internal fun renderedOutputStepIndex(): Int? = renderedStepIndex
-
-    internal fun renderedOutputForTest(): String = renderedOutputText
-
-    internal fun selectRootForTest() {
-        treePathFor(rootNode)?.let { path ->
-            tree.selectionPath = path
-            tree.scrollPathToVisible(path)
-        }
-    }
-
-    internal fun selectStepForTest(stepIndex: Int) {
-        selectStep(stepIndex)
-    }
-
-    internal fun hasEmbeddedConsoleToolbarForTest(): Boolean = consoleToolbar.component.parent == consolePanel
-
-    internal fun usesAdditionalTabToolbarForTest(): Boolean = getToolbarActions() != null
 
     private fun initializeSteps(steps: List<LatexRunStep>, mainFile: VirtualFile?) {
         val mainFileName = mainFile?.name
@@ -384,7 +358,7 @@ internal class LatexStepLogTabComponent(
     private fun extractTreeNode(component: Any?): StepTreeNode? = when (component) {
         is StepTreeNode -> component
         is DefaultMutableTreeNode -> component.userObject as? StepTreeNode
-        is NodeDescriptor<*> -> component as? StepTreeNode
+        // is NodeDescriptor<*> -> component as? StepTreeNode  // This cast is always null
         else -> null
     }
 

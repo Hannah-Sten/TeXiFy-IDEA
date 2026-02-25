@@ -46,8 +46,6 @@ internal class StepAwareSequentialProcessHandler(
 
     fun rawLog(stepIndex: Int): String = rawLogsByStep[stepIndex]?.toString().orEmpty()
 
-    fun rawLogs(): Map<Int, String> = rawLogsByStep.mapValues { (_, value) -> value.toString() }
-
     override fun startNotify() {
         super.startNotify()
         startStep(0)

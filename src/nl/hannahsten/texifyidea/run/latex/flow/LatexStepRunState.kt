@@ -28,7 +28,6 @@ internal class LatexStepRunState(
         LatexExecutionStateInitializer.initialize(runConfig, environment, runConfig.executionState)
         val mainFile = runConfig.executionState.resolvedMainFile
             ?: throw ExecutionException("Main file cannot be resolved")
-        val context = LatexRunStepContext(runConfig, environment, runConfig.executionState, mainFile)
 
         val effectiveSteps = LatexRunStepAutoInference.augmentSteps(runConfig, mainFile, configuredSteps)
         val baseTypes = configuredSteps.map { it.type }
@@ -45,6 +44,7 @@ internal class LatexStepRunState(
             throw ExecutionException("No executable steps found in compile-step schema.")
         }
 
+        val context = LatexRunStepContext(runConfig, environment, runConfig.executionState, mainFile)
         val overallHandler = StepAwareSequentialProcessHandler(effectivePlan.steps, context)
         val stepLogConsole = LatexStepLogTabComponent(environment.project, mainFile, overallHandler)
 

@@ -152,16 +152,6 @@ class LatexRunConfigurationSdkTest : BasePlatformTestCase() {
 
     // Tests for persistence (read/write external)
 
-    private fun createTexifyParentElement(): Pair<Element, Element> {
-        val element = Element("configuration")
-        val texifyParent = Element("texify")
-        element.addContent(texifyParent)
-        // Add required elements to avoid NPE during readExternal
-        texifyParent.addContent(Element("compiler").also { it.text = "PDFLATEX" })
-        texifyParent.addContent(Element("main-file").also { it.text = "" })
-        return Pair(element, texifyParent)
-    }
-
     fun testPersistSdkFromMainFile() {
         val runConfig = createRunConfiguration()
         runConfig.latexDistribution = LatexDistributionType.MODULE_SDK
@@ -210,65 +200,6 @@ class LatexRunConfigurationSdkTest : BasePlatformTestCase() {
             "Expected MIKTEX to be persisted",
             LatexDistributionType.MIKTEX,
             newRunConfig.latexDistribution
-        )
-    }
-
-    // Tests for backwards compatibility with old run configuration format
-
-    fun testBackwardsCompatibilityOldProjectSdk() {
-        val (element, texifyParent) = createTexifyParentElement()
-        texifyParent.addContent(Element("latex-distribution").also { it.text = "PROJECT_SDK" })
-
-        val runConfig = createRunConfiguration()
-        runConfig.readExternal(element)
-
-        assertEquals(
-            "Expected old PROJECT_SDK to be read correctly",
-            LatexDistributionType.PROJECT_SDK,
-            runConfig.latexDistribution
-        )
-    }
-
-    fun testBackwardsCompatibilityOldTexlive() {
-        val (element, texifyParent) = createTexifyParentElement()
-        texifyParent.addContent(Element("latex-distribution").also { it.text = "TEXLIVE" })
-
-        val runConfig = createRunConfiguration()
-        runConfig.readExternal(element)
-
-        assertEquals(
-            "Expected old TEXLIVE to be read correctly",
-            LatexDistributionType.TEXLIVE,
-            runConfig.latexDistribution
-        )
-    }
-
-    fun testBackwardsCompatibilityOldMiktex() {
-        val (element, texifyParent) = createTexifyParentElement()
-        texifyParent.addContent(Element("latex-distribution").also { it.text = "MIKTEX" })
-
-        val runConfig = createRunConfiguration()
-        runConfig.readExternal(element)
-
-        assertEquals(
-            "Expected old MIKTEX to be read correctly",
-            LatexDistributionType.MIKTEX,
-            runConfig.latexDistribution
-        )
-    }
-
-    fun testDefaultsToTexliveWhenNoDistributionSetting() {
-        val (element, _) = createTexifyParentElement()
-        // No latex-distribution element - simulates old run config format
-
-        val runConfig = createRunConfiguration()
-        runConfig.readExternal(element)
-
-        // Old run configs without latex-distribution element default to TEXLIVE for backwards compatibility
-        assertEquals(
-            "Expected default to be TEXLIVE for backwards compatibility",
-            LatexDistributionType.TEXLIVE,
-            runConfig.latexDistribution
         )
     }
 

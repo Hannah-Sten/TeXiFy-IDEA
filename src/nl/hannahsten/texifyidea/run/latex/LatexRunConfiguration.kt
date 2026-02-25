@@ -264,12 +264,6 @@ class LatexRunConfiguration(
         else -> null
     }
 
-    internal fun activeCompilerArguments(): String? = when (val step = activeOrPrimaryCompileStep()) {
-        is LatexCompileStepOptions -> step.compilerArguments
-        is LatexmkCompileStepOptions -> step.compilerArguments
-        else -> null
-    }
-
     internal fun activeOutputFormat(): Format = when (val step = activeOrPrimaryCompileStep()) {
         is LatexCompileStepOptions -> step.outputFormat
         else -> Format.PDF
@@ -280,19 +274,6 @@ class LatexRunConfiguration(
         is LatexmkCompileStepOptions -> step.beforeRunCommand
         else -> null
     }
-
-    internal fun activeLatexmkCompileMode(): LatexmkCompileMode =
-        (activeOrPrimaryCompileStep() as? LatexmkCompileStepOptions)?.latexmkCompileMode ?: LatexmkCompileMode.AUTO
-
-    internal fun activeLatexmkCustomEngineCommand(): String? =
-        (activeOrPrimaryCompileStep() as? LatexmkCompileStepOptions)?.latexmkCustomEngineCommand
-
-    internal fun activeLatexmkCitationTool(): LatexmkCitationTool =
-        (activeOrPrimaryCompileStep() as? LatexmkCompileStepOptions)?.latexmkCitationTool ?: LatexmkCitationTool.AUTO
-
-    internal fun activeLatexmkExtraArguments(): String =
-        (activeOrPrimaryCompileStep() as? LatexmkCompileStepOptions)?.latexmkExtraArguments
-            ?: DEFAULT_LATEXMK_EXTRA_ARGUMENTS
 
     private fun activeOrPrimaryCompileStep(): LatexStepRunConfigurationOptions? {
         val active = activeStepIdForExecution

@@ -1,10 +1,8 @@
 package nl.hannahsten.texifyidea.run.latex.ui.fragments
 
 import com.intellij.icons.AllIcons
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexStepType
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepProviders
-import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepTypeInference
 import javax.swing.Icon
 
 internal object LatexStepUiSupport {
@@ -30,7 +28,4 @@ internal object LatexStepUiSupport {
         LatexRunStepProviders.find(type) != null -> null
         else -> AllIcons.General.Warning
     }
-
-    fun inferStepTypesFromLegacyConfiguration(runConfig: LatexRunConfiguration): List<String> =
-        LatexRunStepTypeInference.inferFromRunConfiguration(runConfig)
 }

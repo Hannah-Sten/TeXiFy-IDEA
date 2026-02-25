@@ -10,7 +10,7 @@ import kotlin.io.path.isDirectory
 import kotlin.io.path.listDirectoryEntries
 
 internal class FileCleanupRunStep(
-    private val stepConfig: FileCleanupStepOptions,
+    stepConfig: FileCleanupStepOptions,
 ) : InlineLatexRunStep {
 
     override val configId: String = stepConfig.id
