@@ -8,12 +8,10 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.Sdk
-import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.latex.flow.LatexStepRunState
-import nl.hannahsten.texifyidea.run.latex.step.LatexStepAutoConfigurator
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepProviders
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCitationTool
@@ -21,7 +19,6 @@ import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdk
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
-import nl.hannahsten.texifyidea.util.files.psiFile
 import java.nio.file.Path
 
 class LatexRunConfiguration(
@@ -166,17 +163,6 @@ class LatexRunConfiguration(
     }
 
     fun hasDefaultWorkingDirectory(): Boolean = workingDirectory == null
-
-    internal fun completeSteps(
-        baseSteps: List<LatexStepRunConfigurationOptions>,
-        mainPsiFile: PsiFile? = LatexRunConfigurationStaticSupport.resolveMainFile(this)?.psiFile(project),
-    ): List<LatexStepRunConfigurationOptions> = LatexStepAutoConfigurator.completeSteps(this, mainPsiFile, baseSteps)
-
-    internal fun applyCompletedSteps(
-        mainPsiFile: PsiFile? = LatexRunConfigurationStaticSupport.resolveMainFile(this)?.psiFile(project),
-    ) {
-        steps = completeSteps(steps, mainPsiFile).toMutableList()
-    }
 
     fun getLatexSdk(): Sdk? = when (latexDistribution) {
         LatexDistributionType.MODULE_SDK -> {

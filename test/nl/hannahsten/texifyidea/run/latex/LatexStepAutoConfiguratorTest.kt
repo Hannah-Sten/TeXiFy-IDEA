@@ -30,7 +30,6 @@ class LatexStepAutoConfiguratorTest : BasePlatformTestCase() {
         runConfig.pdfViewer = PdfViewer.firstAvailableViewer
 
         val augmented = LatexStepAutoConfigurator.completeSteps(
-            runConfig,
             mainPsi,
             listOf(LatexCompileStepOptions(), PdfViewerStepOptions())
         )
@@ -59,7 +58,6 @@ class LatexStepAutoConfiguratorTest : BasePlatformTestCase() {
         runConfig.mainFilePath = mainFile.path
 
         val augmented = LatexStepAutoConfigurator.completeSteps(
-            runConfig,
             mainPsi,
             listOf(LatexCompileStepOptions(), PdfViewerStepOptions())
         )
@@ -89,7 +87,6 @@ class LatexStepAutoConfiguratorTest : BasePlatformTestCase() {
         runConfig.mainFilePath = mainFile.path
 
         val augmented = LatexStepAutoConfigurator.completeSteps(
-            runConfig,
             mainPsi,
             listOf(LatexmkCompileStepOptions(), PdfViewerStepOptions())
         )
@@ -105,7 +102,6 @@ class LatexStepAutoConfiguratorTest : BasePlatformTestCase() {
         )
 
         val completed = LatexStepAutoConfigurator.completeSteps(
-            runConfig,
             null,
             listOf(LatexCompileStepOptions(), PdfViewerStepOptions())
         )
@@ -121,7 +117,6 @@ class LatexStepAutoConfiguratorTest : BasePlatformTestCase() {
         )
 
         val completed = LatexStepAutoConfigurator.completeSteps(
-            runConfig,
             null,
             emptyList()
         )
@@ -152,11 +147,10 @@ class LatexStepAutoConfiguratorTest : BasePlatformTestCase() {
         runConfig.mainFilePath = mainFile.path
 
         val once = LatexStepAutoConfigurator.completeSteps(
-            runConfig,
             mainPsi,
             listOf(LatexCompileStepOptions(), PdfViewerStepOptions())
         )
-        val twice = LatexStepAutoConfigurator.completeSteps(runConfig, mainPsi, once)
+        val twice = LatexStepAutoConfigurator.completeSteps(mainPsi, once)
 
         assertEquals(once.map { it.type }, twice.map { it.type })
     }
@@ -182,7 +176,6 @@ class LatexStepAutoConfiguratorTest : BasePlatformTestCase() {
         )
 
         val completed = LatexStepAutoConfigurator.completeSteps(
-            runConfig,
             mainPsi,
             listOf(LatexCompileStepOptions(), PdfViewerStepOptions())
         )

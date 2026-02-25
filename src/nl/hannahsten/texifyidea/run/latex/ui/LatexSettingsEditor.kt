@@ -7,6 +7,7 @@ import com.intellij.execution.ui.RunConfigurationFragmentedEditor
 import com.intellij.execution.ui.SettingsEditorFragment
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationStaticSupport
+import nl.hannahsten.texifyidea.run.latex.step.LatexStepAutoConfigurator
 import nl.hannahsten.texifyidea.run.latex.ui.fragments.LatexBasicFragments
 import nl.hannahsten.texifyidea.run.latex.ui.fragments.LatexCompileSequenceComponent
 import nl.hannahsten.texifyidea.run.latex.ui.fragments.LatexCompileSequenceFragment
@@ -32,7 +33,7 @@ class LatexSettingsEditor(
         }
         compileSequenceComponent.onAutoConfigureRequested = { currentSteps ->
             val mainFile = LatexRunConfigurationStaticSupport.resolveMainFile(runConfiguration)
-            runConfiguration.completeSteps(currentSteps, mainFile?.psiFile(project))
+            LatexStepAutoConfigurator.completeSteps(mainFile?.psiFile(project), currentSteps)
         }
 
         fragments.add(CommonParameterFragments.createHeader(commonGroupName))

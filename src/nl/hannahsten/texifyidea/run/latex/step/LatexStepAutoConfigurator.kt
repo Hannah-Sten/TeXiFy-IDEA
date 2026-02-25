@@ -39,9 +39,8 @@ internal object LatexStepAutoConfigurator {
         LatexStepType.MAKEGLOSSARIES,
         LatexStepType.XINDY,
     )
-    fun configureTemplate(
-        runConfig: LatexRunConfiguration,
-    ): List<LatexStepRunConfigurationOptions> = completeSteps(runConfig, null, defaultLatexmkSteps())
+
+    fun configureTemplate(): List<LatexStepRunConfigurationOptions> = completeSteps(null, defaultLatexmkSteps())
 
     fun configureFromContext(
         runConfig: LatexRunConfiguration,
@@ -71,11 +70,10 @@ internal object LatexStepAutoConfigurator {
         }
 
         runConfig.workingDirectory = resolveWorkingDirectory(commandSpec.compiler, mainVirtualFile)
-        return completeSteps(runConfig, contextPsiFile, baseSteps)
+        return completeSteps(contextPsiFile, baseSteps)
     }
 
     fun completeSteps(
-        runConfig: LatexRunConfiguration,
         mainPsiFile: PsiFile?,
         baseSteps: List<LatexStepRunConfigurationOptions>,
     ): List<LatexStepRunConfigurationOptions> {
