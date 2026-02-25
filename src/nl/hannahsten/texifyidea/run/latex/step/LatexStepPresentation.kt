@@ -14,6 +14,7 @@ internal object LatexStepPresentation {
         LatexStepType.MAKEGLOSSARIES to "Run makeglossaries",
         LatexStepType.XINDY to "Run xindy",
         LatexStepType.PDF_VIEWER to "Open PDF viewer",
+        LatexStepType.FILE_CLEANUP to "Clean temporary generated files",
     )
 
     fun displayName(type: String): String = descriptions[type] ?: "Step: $type"

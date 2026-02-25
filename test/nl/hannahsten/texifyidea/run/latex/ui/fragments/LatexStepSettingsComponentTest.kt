@@ -65,7 +65,13 @@ class LatexStepSettingsComponentTest : BasePlatformTestCase() {
         val disposable = Disposer.newDisposable()
         try {
             val component = LatexStepSettingsComponent(disposable, project)
-            val runConfig = configWithSteps(ExternalToolStepOptions().apply { type = "unsupported-step" })
+            val runConfig = LatexRunConfiguration(
+                project,
+                LatexRunConfigurationProducer().configurationFactory,
+                "run config"
+            ).apply {
+                configOptions.steps = mutableListOf(ExternalToolStepOptions().apply { type = "unsupported-step" })
+            }
             val step = runConfig.configOptions.steps.first()
 
             component.resetEditorFrom(runConfig)
@@ -100,6 +106,10 @@ class LatexStepSettingsComponentTest : BasePlatformTestCase() {
 
     fun testShowsXindyCardWhenXindyStepIsSelected() {
         assertCardForStep("xindy", XindyStepOptions())
+    }
+
+    fun testShowsFileCleanupCardWhenCleanupStepIsSelected() {
+        assertCardForStep("fileCleanup", FileCleanupStepOptions())
     }
 
     fun testResetApplyRoundTripPreservesCompileAndViewerSettings() {

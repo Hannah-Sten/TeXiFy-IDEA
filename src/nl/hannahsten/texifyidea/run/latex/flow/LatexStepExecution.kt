@@ -2,29 +2,55 @@ package nl.hannahsten.texifyidea.run.latex.flow
 
 import com.intellij.execution.process.ProcessHandler
 
-internal data class LatexStepExecution(
-    val index: Int,
-    val type: String,
-    val displayName: String,
-    val configId: String,
-    val processHandler: ProcessHandler,
-    val beforeStart: () -> Unit = {},
-    val afterFinish: (exitCode: Int) -> Unit = {},
-) {
+internal sealed interface LatexStepExecution {
 
-    constructor(
-        index: Int,
-        type: String,
-        displayName: String,
-        configId: String,
-        processHandler: ProcessHandler,
-    ) : this(
-        index = index,
-        type = type,
-        displayName = displayName,
-        configId = configId,
-        processHandler = processHandler,
-        beforeStart = {},
-        afterFinish = {},
-    )
+    val index: Int
+    val type: String
+    val displayName: String
+    val configId: String
+    val beforeStart: () -> Unit
+    val afterFinish: (exitCode: Int) -> Unit
 }
+
+internal abstract class BaseLatexStepExecution(
+    override val index: Int,
+    override val type: String,
+    override val displayName: String,
+    override val configId: String,
+    override val beforeStart: () -> Unit = {},
+    override val afterFinish: (exitCode: Int) -> Unit = {},
+) : LatexStepExecution
+
+internal class ProcessLatexStepExecution(
+    index: Int,
+    type: String,
+    displayName: String,
+    configId: String,
+    val processHandler: ProcessHandler,
+    beforeStart: () -> Unit = {},
+    afterFinish: (exitCode: Int) -> Unit = {},
+) : BaseLatexStepExecution(
+    index = index,
+    type = type,
+    displayName = displayName,
+    configId = configId,
+    beforeStart = beforeStart,
+    afterFinish = afterFinish,
+)
+
+internal class InlineLatexStepExecution(
+    index: Int,
+    type: String,
+    displayName: String,
+    configId: String,
+    val action: () -> Int = { 0 },
+    beforeStart: () -> Unit = {},
+    afterFinish: (exitCode: Int) -> Unit = {},
+) : BaseLatexStepExecution(
+    index = index,
+    type = type,
+    displayName = displayName,
+    configId = configId,
+    beforeStart = beforeStart,
+    afterFinish = afterFinish,
+)

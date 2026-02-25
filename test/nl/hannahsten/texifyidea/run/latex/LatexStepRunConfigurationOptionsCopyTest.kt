@@ -89,6 +89,10 @@ class LatexStepRunConfigurationOptionsCopyTest : BasePlatformTestCase() {
                 workingDirectoryPath = "/work"
                 beforeRunCommand = "echo xindy"
                 selectedOptions.add(FragmentedSettings.Option("xindy.args", true))
+            },
+            FileCleanupStepOptions().apply {
+                id = "cleanup-1"
+                selectedOptions.add(FragmentedSettings.Option("cleanup.show", true))
             }
         )
 
@@ -190,6 +194,10 @@ class LatexStepRunConfigurationOptionsCopyTest : BasePlatformTestCase() {
                 assertEquals(original.arguments, copied.arguments)
                 assertEquals(original.workingDirectoryPath, copied.workingDirectoryPath)
                 assertEquals(original.beforeRunCommand, copied.beforeRunCommand)
+            }
+
+            original is FileCleanupStepOptions && copied is FileCleanupStepOptions -> {
+                assertEquals(original.type, copied.type)
             }
 
             else -> fail("Unexpected step type pair: ${original::class.simpleName} / ${copied::class.simpleName}")

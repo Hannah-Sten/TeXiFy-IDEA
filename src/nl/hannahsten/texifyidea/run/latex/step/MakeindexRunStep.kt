@@ -6,7 +6,8 @@ import com.intellij.execution.util.ProgramParametersConfigurator
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.common.createCompilationHandler
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
-import nl.hannahsten.texifyidea.run.latex.flow.LatexStepExecution
+import nl.hannahsten.texifyidea.run.latex.flow.BaseLatexStepExecution
+import nl.hannahsten.texifyidea.run.latex.flow.ProcessLatexStepExecution
 import nl.hannahsten.texifyidea.run.latex.MakeindexStepOptions
 import nl.hannahsten.texifyidea.run.latex.getMakeindexOptions
 import nl.hannahsten.texifyidea.util.appendExtension
@@ -19,9 +20,9 @@ internal class MakeindexRunStep(
     override val id: String = stepConfig.type
 
     @Throws(ExecutionException::class)
-    override fun createStepExecution(index: Int, context: LatexRunStepContext): LatexStepExecution {
+    override fun createStepExecution(index: Int, context: LatexRunStepContext): BaseLatexStepExecution {
         val artifactSync = StepArtifactSync(context, stepConfig)
-        return LatexStepExecution(
+        return ProcessLatexStepExecution(
             index = index,
             type = id,
             displayName = LatexStepPresentation.displayName(id),

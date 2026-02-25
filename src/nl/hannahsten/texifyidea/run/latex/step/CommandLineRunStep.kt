@@ -4,7 +4,8 @@ import com.intellij.execution.ExecutionException
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.util.ProgramParametersConfigurator
 import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
-import nl.hannahsten.texifyidea.run.latex.flow.LatexStepExecution
+import nl.hannahsten.texifyidea.run.latex.flow.BaseLatexStepExecution
+import nl.hannahsten.texifyidea.run.latex.flow.ProcessLatexStepExecution
 import nl.hannahsten.texifyidea.run.latex.LatexPathResolver
 import nl.hannahsten.texifyidea.run.common.createCompilationHandler
 import java.nio.file.Path
@@ -17,7 +18,7 @@ internal class CommandLineRunStep(
 ) : LatexRunStep {
 
     @Throws(ExecutionException::class)
-    override fun createStepExecution(index: Int, context: LatexRunStepContext): LatexStepExecution = LatexStepExecution(
+    override fun createStepExecution(index: Int, context: LatexRunStepContext): BaseLatexStepExecution = ProcessLatexStepExecution(
         index = index,
         type = id,
         displayName = LatexStepPresentation.displayName(id),

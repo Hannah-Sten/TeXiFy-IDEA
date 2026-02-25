@@ -65,6 +65,28 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         assertEquals(listOf(LatexStepType.LATEX_COMPILE, LatexStepType.PDF_VIEWER), runConfig.configOptions.steps.map { it.type })
     }
 
+    fun testWriteReadRoundTripPreservesFileCleanupStep() {
+        val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
+        runConfig.mainFilePath = "main.tex"
+        runConfig.configOptions.steps = mutableListOf(
+            LatexCompileStepOptions().apply { id = "compile-1" },
+            FileCleanupStepOptions().apply { id = "cleanup-1" },
+            PdfViewerStepOptions().apply { id = "viewer-1" },
+        )
+
+        val element = Element("configuration", Namespace.getNamespace("", ""))
+        runConfig.writeExternal(element)
+
+        val restored = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Restored")
+        restored.readExternal(element)
+
+        assertEquals(listOf("compile-1", "cleanup-1", "viewer-1"), restored.configOptions.steps.map { it.id })
+        assertEquals(
+            listOf(LatexStepType.LATEX_COMPILE, LatexStepType.FILE_CLEANUP, LatexStepType.PDF_VIEWER),
+            restored.configOptions.steps.map { it.type }
+        )
+    }
+
     fun testCloneDeepCopiesStepsAndEnvironmentVariables() {
         val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
         runConfig.mainFilePath = "main.tex"

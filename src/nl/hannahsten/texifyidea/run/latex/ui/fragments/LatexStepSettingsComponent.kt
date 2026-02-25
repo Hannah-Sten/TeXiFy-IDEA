@@ -26,6 +26,7 @@ internal class LatexStepSettingsComponent(
         private const val CARD_PYTHONTEX = "pythontex"
         private const val CARD_MAKEGLOSSARIES = "makeglossaries"
         private const val CARD_XINDY = "xindy"
+        private const val CARD_FILE_CLEANUP = "fileCleanup"
         private const val CARD_UNSUPPORTED = "unsupported"
     }
 
@@ -52,6 +53,7 @@ internal class LatexStepSettingsComponent(
     private val pythontexSettings = PythontexStepFragmentedEditor(project)
     private val makeglossariesSettings = MakeglossariesStepFragmentedEditor(project)
     private val xindySettings = XindyStepFragmentedEditor(project)
+    private val fileCleanupSettings = FileCleanupStepFragmentedEditor()
     private val unsupportedSettings = LatexUnsupportedStepSettingsComponent()
 
     init {
@@ -65,6 +67,7 @@ internal class LatexStepSettingsComponent(
         Disposer.register(parentDisposable, pythontexSettings)
         Disposer.register(parentDisposable, makeglossariesSettings)
         Disposer.register(parentDisposable, xindySettings)
+        Disposer.register(parentDisposable, fileCleanupSettings)
         compileSettings.addSettingsEditorListener { changeListener() }
         latexmkSettings.addSettingsEditorListener { changeListener() }
         viewerSettings.addSettingsEditorListener { changeListener() }
@@ -74,6 +77,7 @@ internal class LatexStepSettingsComponent(
         pythontexSettings.addSettingsEditorListener { changeListener() }
         makeglossariesSettings.addSettingsEditorListener { changeListener() }
         xindySettings.addSettingsEditorListener { changeListener() }
+        fileCleanupSettings.addSettingsEditorListener { changeListener() }
 
         cardsPanel.add(wrapEditor(compileSettings), CARD_COMPILE)
         cardsPanel.add(wrapEditor(latexmkSettings), CARD_LATEXMK)
@@ -84,6 +88,7 @@ internal class LatexStepSettingsComponent(
         cardsPanel.add(wrapEditor(pythontexSettings), CARD_PYTHONTEX)
         cardsPanel.add(wrapEditor(makeglossariesSettings), CARD_MAKEGLOSSARIES)
         cardsPanel.add(wrapEditor(xindySettings), CARD_XINDY)
+        cardsPanel.add(wrapEditor(fileCleanupSettings), CARD_FILE_CLEANUP)
         cardsPanel.add(unsupportedSettings, CARD_UNSUPPORTED)
         add(cardsPanel, BorderLayout.CENTER)
 
@@ -163,6 +168,7 @@ internal class LatexStepSettingsComponent(
             LatexStepType.PYTHONTEX -> showCard(CARD_PYTHONTEX)
             LatexStepType.MAKEGLOSSARIES -> showCard(CARD_MAKEGLOSSARIES)
             LatexStepType.XINDY -> showCard(CARD_XINDY)
+            LatexStepType.FILE_CLEANUP -> showCard(CARD_FILE_CLEANUP)
             else -> {
                 val message = when {
                     type.isNullOrBlank() -> "Select a step in Compile sequence to configure it."
@@ -203,6 +209,7 @@ internal class LatexStepSettingsComponent(
             CARD_PYTHONTEX -> resetEditorFromSelected(pythontexSettings, selectedStep as? PythontexStepOptions)
             CARD_MAKEGLOSSARIES -> resetEditorFromSelected(makeglossariesSettings, selectedStep as? MakeglossariesStepOptions)
             CARD_XINDY -> resetEditorFromSelected(xindySettings, selectedStep as? XindyStepOptions)
+            CARD_FILE_CLEANUP -> resetEditorFromSelected(fileCleanupSettings, selectedStep as? FileCleanupStepOptions)
         }
     }
 
@@ -223,6 +230,7 @@ internal class LatexStepSettingsComponent(
             CARD_PYTHONTEX -> applyEditorToSelected(pythontexSettings, targetStep as? PythontexStepOptions)
             CARD_MAKEGLOSSARIES -> applyEditorToSelected(makeglossariesSettings, targetStep as? MakeglossariesStepOptions)
             CARD_XINDY -> applyEditorToSelected(xindySettings, targetStep as? XindyStepOptions)
+            CARD_FILE_CLEANUP -> applyEditorToSelected(fileCleanupSettings, targetStep as? FileCleanupStepOptions)
         }
         selectedStep = targetStep
     }

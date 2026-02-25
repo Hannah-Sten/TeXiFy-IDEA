@@ -5,6 +5,7 @@ internal object StepUiOptionIds {
     const val LATEX_COMPILE = "latex-compile"
     const val LATEXMK_COMPILE = "latexmk-compile"
     const val PDF_VIEWER = "pdf-viewer"
+    const val FILE_CLEANUP = "file-cleanup"
 
     const val COMPILE_PATH = "compile.path"
     const val COMPILE_ARGS = "compile.args"
@@ -74,5 +75,6 @@ internal object StepUiOptionIds {
             COMMAND_ARGS,
             STEP_WORKING_DIRECTORY,
         ),
+        LatexStepType.FILE_CLEANUP to emptySet(),
     )
 }

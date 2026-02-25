@@ -11,6 +11,7 @@ internal object LatexRunStepProviders {
         PythontexCommandRunStepProvider,
         MakeglossariesCommandRunStepProvider,
         XindyCommandRunStepProvider,
+        FileCleanupRunStepProvider,
         PdfViewerRunStepProvider,
     )
 

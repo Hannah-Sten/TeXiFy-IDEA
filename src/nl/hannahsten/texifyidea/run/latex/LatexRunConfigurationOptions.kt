@@ -26,6 +26,7 @@ internal object LatexStepType {
     const val PYTHONTEX = "pythontex"
     const val MAKEGLOSSARIES = "makeglossaries"
     const val XINDY = "xindy"
+    const val FILE_CLEANUP = "file-cleanup"
 }
 
 class LatexRunConfigurationOptions : LocatableRunConfigurationOptions() {
@@ -67,6 +68,7 @@ class LatexRunConfigurationOptions : LocatableRunConfigurationOptions() {
             PythontexStepOptions::class,
             MakeglossariesStepOptions::class,
             XindyStepOptions::class,
+            FileCleanupStepOptions::class,
         ]
     )
     var steps: MutableList<LatexStepRunConfigurationOptions> by list()
@@ -241,6 +243,14 @@ class XindyStepOptions : LatexStepRunConfigurationOptions() {
     override fun newInstance(): LatexStepRunConfigurationOptions = XindyStepOptions()
 }
 
+@Tag("fileCleanup")
+class FileCleanupStepOptions : LatexStepRunConfigurationOptions() {
+
+    override var type: String = LatexStepType.FILE_CLEANUP
+
+    override fun newInstance(): LatexStepRunConfigurationOptions = FileCleanupStepOptions()
+}
+
 internal fun generateLatexStepId(): String = UUID.randomUUID().toString()
 
 internal fun defaultStepFor(type: String): LatexStepRunConfigurationOptions? = when (type.trim().lowercase()) {
@@ -253,5 +263,6 @@ internal fun defaultStepFor(type: String): LatexStepRunConfigurationOptions? = w
     LatexStepType.PYTHONTEX -> PythontexStepOptions()
     LatexStepType.MAKEGLOSSARIES -> MakeglossariesStepOptions()
     LatexStepType.XINDY -> XindyStepOptions()
+    LatexStepType.FILE_CLEANUP -> FileCleanupStepOptions()
     else -> null
 }

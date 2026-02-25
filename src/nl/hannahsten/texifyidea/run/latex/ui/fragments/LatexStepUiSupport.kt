@@ -19,6 +19,7 @@ internal object LatexStepUiSupport {
         LatexStepType.MAKEGLOSSARIES to "Run makeglossaries",
         LatexStepType.XINDY to "Run xindy",
         LatexStepType.PDF_VIEWER to "Open PDF viewer",
+        LatexStepType.FILE_CLEANUP to "Clean temporary generated files",
     )
 
     fun availableStepTypes(): List<String> = LatexRunStepProviders.all.map { it.type }

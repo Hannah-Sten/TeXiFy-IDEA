@@ -10,7 +10,8 @@ import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexStepRunConfigurationOptions
 import nl.hannahsten.texifyidea.run.latex.LatexmkCompileStepOptions
 import nl.hannahsten.texifyidea.run.common.createCompilationHandler
-import nl.hannahsten.texifyidea.run.latex.flow.LatexStepExecution
+import nl.hannahsten.texifyidea.run.latex.flow.BaseLatexStepExecution
+import nl.hannahsten.texifyidea.run.latex.flow.ProcessLatexStepExecution
 
 internal class LatexCompileRunStep(
     private val stepConfig: LatexStepRunConfigurationOptions,
@@ -20,7 +21,7 @@ internal class LatexCompileRunStep(
     override val id: String = stepConfig.type
 
     @Throws(ExecutionException::class)
-    override fun createStepExecution(index: Int, context: LatexRunStepContext): LatexStepExecution = LatexStepExecution(
+    override fun createStepExecution(index: Int, context: LatexRunStepContext): BaseLatexStepExecution = ProcessLatexStepExecution(
         index = index,
         type = id,
         displayName = LatexStepPresentation.displayName(id),
