@@ -6,13 +6,17 @@ import com.intellij.execution.ui.CommonTags
 import com.intellij.execution.ui.RunConfigurationFragmentedEditor
 import com.intellij.execution.ui.SettingsEditorFragment
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationStaticSupport
 import nl.hannahsten.texifyidea.run.latex.ui.fragments.LatexBasicFragments
 import nl.hannahsten.texifyidea.run.latex.ui.fragments.LatexCompileSequenceComponent
 import nl.hannahsten.texifyidea.run.latex.ui.fragments.LatexCompileSequenceFragment
 import nl.hannahsten.texifyidea.run.latex.ui.fragments.LatexStepSettingsComponent
 import nl.hannahsten.texifyidea.run.latex.ui.fragments.LatexStepSettingsFragment
+import nl.hannahsten.texifyidea.util.files.psiFile
 
-class LatexSettingsEditor(settings: LatexRunConfiguration) : RunConfigurationFragmentedEditor<LatexRunConfiguration>(settings) {
+class LatexSettingsEditor(
+    private val runConfiguration: LatexRunConfiguration,
+) : RunConfigurationFragmentedEditor<LatexRunConfiguration>(runConfiguration) {
 
     private val commonGroupName = "Common settings"
 
@@ -25,6 +29,10 @@ class LatexSettingsEditor(settings: LatexRunConfiguration) : RunConfigurationFra
         }
         compileSequenceComponent.onStepsChanged = { steps ->
             stepSettingsComponent.onStepsChanged(steps)
+        }
+        compileSequenceComponent.onAutoConfigureRequested = { currentSteps ->
+            val mainFile = LatexRunConfigurationStaticSupport.resolveMainFile(runConfiguration)
+            runConfiguration.completeSteps(currentSteps, mainFile?.psiFile(project))
         }
 
         fragments.add(CommonParameterFragments.createHeader(commonGroupName))

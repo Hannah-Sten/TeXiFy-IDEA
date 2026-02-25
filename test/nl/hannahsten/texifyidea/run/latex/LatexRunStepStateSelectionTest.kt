@@ -63,7 +63,7 @@ class LatexRunStepStateSelectionTest : BasePlatformTestCase() {
         val state = runConfig.getState(executor, environment)
 
         assertTrue(state is LatexStepRunState)
-        assertEquals(listOf(LatexStepType.LATEX_COMPILE, LatexStepType.PDF_VIEWER), runConfig.configOptions.steps.map { it.type })
+        assertEquals(listOf(LatexStepType.LATEXMK_COMPILE, LatexStepType.PDF_VIEWER), runConfig.configOptions.steps.map { it.type })
     }
 
     fun testGetStateFailsEarlyWhenAllConfiguredStepsUnsupported() {

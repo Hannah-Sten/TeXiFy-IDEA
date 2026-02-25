@@ -50,9 +50,17 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
         showTypeSelectionPopup(addButton, ::addStep)
     }
 
+    private val autoConfigureLabel = LinkLabel<Any>("Auto configure", null) { _, _ ->
+        autoConfigureSteps()
+    }.apply {
+        border = JBUI.Borders.emptyRight(5)
+        toolTipText = "Automatically complete compile sequence from current setup."
+    }
+
     private val addPanel = JPanel().apply {
         border = JBUI.Borders.emptyRight(5)
         add(addButton)
+        add(autoConfigureLabel)
     }
 
     private val addLabel = LinkLabel<Any>("Add step", null) { source, _ ->
@@ -68,6 +76,7 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
     var changeListener: () -> Unit = {}
     var onSelectionChanged: (index: Int, stepId: String?, type: String?) -> Unit = { _, _, _ -> }
     var onStepsChanged: (steps: List<LatexStepRunConfigurationOptions>) -> Unit = {}
+    var onAutoConfigureRequested: (steps: List<LatexStepRunConfigurationOptions>) -> List<LatexStepRunConfigurationOptions> = { it }
 
     private var selectedIndex: Int = -1
 
@@ -272,6 +281,12 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
         changeListener()
     }
 
+    internal fun triggerAutoConfigureForTest() {
+        autoConfigureSteps()
+    }
+
+    internal fun currentStepTypesForTest(): List<String> = stepButtons.map { it.stepConfig.type }
+
     private fun normalizeSelection() {
         if (stepButtons.isEmpty()) {
             selectedIndex = -1
@@ -301,6 +316,35 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
 
     private fun notifyStepsChanged() {
         onStepsChanged(stepButtons.filter { it.isVisible }.map { it.stepConfig.deepCopy() })
+    }
+
+    private fun autoConfigureSteps() {
+        val currentSteps = stepButtons
+            .filter { it.isVisible }
+            .map { it.stepConfig.deepCopy() }
+        val autoConfiguredSteps = onAutoConfigureRequested(currentSteps)
+            .map { it.deepCopy() }
+
+        if (autoConfiguredSteps.isEmpty()) {
+            return
+        }
+
+        val previouslySelectedId = selectedStepId()
+        stepButtons.forEach { remove(it) }
+        stepButtons.clear()
+        autoConfiguredSteps.forEach { stepButtons.add(StepButton(it)) }
+
+        buildPanel()
+        val selectedIndexAfterConfigure = previouslySelectedId?.let { selectedId ->
+            stepButtons.indexOfFirst { it.stepConfig.id == selectedId }
+        } ?: -1
+        if (selectedIndexAfterConfigure >= 0) {
+            selectStep(selectedIndexAfterConfigure)
+        }
+        else {
+            normalizeSelection()
+        }
+        changeListener()
     }
 
     private inner class StepButton(stepConfig: LatexStepRunConfigurationOptions) : TagButton("", { changeListener() }), DnDSource {

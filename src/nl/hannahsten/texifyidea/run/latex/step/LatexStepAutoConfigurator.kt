@@ -1,0 +1,377 @@
+package nl.hannahsten.texifyidea.run.latex.step
+
+import com.intellij.openapi.application.ReadAction
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.index.NewCommandsIndex
+import nl.hannahsten.texifyidea.lang.LatexLib
+import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
+import nl.hannahsten.texifyidea.lang.magic.allParentMagicComments
+import nl.hannahsten.texifyidea.lang.predefined.CommandNames
+import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
+import nl.hannahsten.texifyidea.run.latex.BibtexStepOptions
+import nl.hannahsten.texifyidea.run.latex.LatexCompileStepOptions
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexStepRunConfigurationOptions
+import nl.hannahsten.texifyidea.run.latex.LatexStepType
+import nl.hannahsten.texifyidea.run.latex.LatexmkCompileStepOptions
+import nl.hannahsten.texifyidea.run.latex.MakeglossariesStepOptions
+import nl.hannahsten.texifyidea.run.latex.PdfViewerStepOptions
+import nl.hannahsten.texifyidea.run.latex.PythontexStepOptions
+import nl.hannahsten.texifyidea.run.latex.defaultLatexmkSteps
+import nl.hannahsten.texifyidea.run.latex.generateLatexStepId
+import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
+import nl.hannahsten.texifyidea.util.Log
+import nl.hannahsten.texifyidea.util.files.findTectonicTomlFile
+import nl.hannahsten.texifyidea.util.files.hasTectonicTomlFile
+import nl.hannahsten.texifyidea.util.includedPackagesInFileset
+import nl.hannahsten.texifyidea.util.parser.hasBibliography
+import nl.hannahsten.texifyidea.util.parser.usesBiber
+import java.nio.file.Path
+
+internal object LatexStepAutoConfigurator {
+
+    private val compileTypes = setOf(LatexStepType.LATEX_COMPILE, LatexStepType.LATEXMK_COMPILE)
+    private val followUpCompileAnchorTypes = setOf(
+        LatexStepType.BIBTEX,
+        LatexStepType.MAKEINDEX,
+        LatexStepType.PYTHONTEX,
+        LatexStepType.MAKEGLOSSARIES,
+        LatexStepType.XINDY,
+    )
+    fun configureTemplate(
+        runConfig: LatexRunConfiguration,
+    ): List<LatexStepRunConfigurationOptions> = completeSteps(runConfig, null, defaultLatexmkSteps())
+
+    fun configureFromContext(
+        runConfig: LatexRunConfiguration,
+        contextPsiFile: PsiFile,
+        mainVirtualFile: VirtualFile,
+    ): List<LatexStepRunConfigurationOptions> {
+        val baseSteps = if (runConfig.configOptions.steps.isEmpty()) {
+            defaultLatexmkSteps()
+        }
+        else {
+            runConfig.configOptions.steps.map { it.deepCopy() }.toMutableList()
+        }
+
+        val commandSpec = resolveCommandSpec(runConfig, contextPsiFile)
+        when (commandSpec.compiler) {
+            LatexCompiler.LATEXMK -> {
+                val step = ensurePrimaryCompileStepLatexmk(baseSteps)
+                step.compilerArguments = commandSpec.arguments
+                step.latexmkCompileMode = LatexmkCompileMode.AUTO
+            }
+
+            else -> {
+                val step = ensurePrimaryCompileStepClassic(baseSteps)
+                step.compiler = commandSpec.compiler
+                step.compilerArguments = commandSpec.arguments
+            }
+        }
+
+        runConfig.workingDirectory = resolveWorkingDirectory(commandSpec.compiler, mainVirtualFile)
+        return completeSteps(runConfig, contextPsiFile, baseSteps)
+    }
+
+    fun completeSteps(
+        runConfig: LatexRunConfiguration,
+        mainPsiFile: PsiFile?,
+        baseSteps: List<LatexStepRunConfigurationOptions>,
+    ): List<LatexStepRunConfigurationOptions> {
+        val steps = if (baseSteps.isEmpty()) {
+            defaultLatexmkSteps()
+        }
+        else {
+            baseSteps.map { it.deepCopy() }.toMutableList()
+        }
+
+        val inferred = if (mainPsiFile != null) {
+            inferRequiredAuxiliarySteps(mainPsiFile, steps)
+        }
+        else {
+            emptyList()
+        }
+        val inferredLastIndex = if (inferred.isNotEmpty()) {
+            val insertIndex = preferredAuxInsertIndex(steps)
+            steps.addAll(insertIndex, inferred)
+            insertIndex + inferred.size - 1
+        }
+        else {
+            null
+        }
+
+        val fallback = if (baseSteps.isEmpty()) {
+            defaultLatexmkSteps()
+        }
+        else {
+            baseSteps.map { it.deepCopy() }
+        }
+
+        return runCatching {
+            ensureStructuralCompletion(steps, inferredLastIndex)
+            steps
+        }
+            .onFailure { error ->
+                Log.warn("Failed to auto-complete compile sequence: ${error.message}")
+            }
+            .getOrDefault(fallback)
+    }
+
+    private fun ensureStructuralCompletion(
+        steps: MutableList<LatexStepRunConfigurationOptions>,
+        inferredLastIndex: Int?,
+    ) {
+        if (steps.isEmpty()) {
+            steps += defaultLatexmkSteps()
+            return
+        }
+
+        val firstCompile = steps.firstOrNull { it.type in compileTypes }
+        when (firstCompile?.type) {
+            LatexStepType.LATEXMK_COMPILE -> ensureViewerStep(steps)
+            else -> ensureClassicCompileFlow(steps, inferredLastIndex)
+        }
+    }
+
+    private fun ensureViewerStep(steps: MutableList<LatexStepRunConfigurationOptions>) {
+        if (steps.none { it.type == LatexStepType.PDF_VIEWER }) {
+            steps += PdfViewerStepOptions()
+        }
+    }
+
+    private fun ensureClassicCompileFlow(
+        steps: MutableList<LatexStepRunConfigurationOptions>,
+        inferredLastIndex: Int?,
+    ) {
+        if (steps.none { it.type == LatexStepType.LATEX_COMPILE }) {
+            val viewerIndex = viewerInsertIndex(steps)
+            steps.add(viewerIndex, LatexCompileStepOptions())
+        }
+        ensureViewerStep(steps)
+
+        val viewerIndex = viewerInsertIndex(steps)
+        val firstCompileIndex = steps.indexOfFirst { it.type == LatexStepType.LATEX_COMPILE }
+        if (firstCompileIndex < 0) {
+            return
+        }
+
+        val anchorByInference = inferredLastIndex?.takeIf { it in 0 until viewerIndex }
+        val anchorByAux = steps.withIndex()
+            .lastOrNull { (index, step) ->
+                index < viewerIndex && step.type in followUpCompileAnchorTypes
+            }
+            ?.index
+        val anchorIndex = anchorByInference ?: anchorByAux ?: firstCompileIndex
+
+        val hasCompileAfter = steps.withIndex().any { (index, step) ->
+            index > anchorIndex && index < viewerIndex && step.type == LatexStepType.LATEX_COMPILE
+        }
+        if (hasCompileAfter) {
+            return
+        }
+
+        val followUpCompile = steps[firstCompileIndex].deepCopy()
+        followUpCompile.id = generateLatexStepId()
+        steps.add(viewerIndex, followUpCompile)
+    }
+
+    private fun viewerInsertIndex(steps: List<LatexStepRunConfigurationOptions>): Int {
+        val viewerIndex = steps.indexOfFirst { it.type == LatexStepType.PDF_VIEWER }
+        return if (viewerIndex < 0) steps.size else viewerIndex
+    }
+
+    private fun inferRequiredAuxiliarySteps(
+        mainPsiFile: PsiFile,
+        steps: List<LatexStepRunConfigurationOptions>,
+    ): List<LatexStepRunConfigurationOptions> {
+        val inferred = mutableListOf<LatexStepRunConfigurationOptions>()
+        val signals = collectPsiSignals(mainPsiFile)
+
+        if (shouldAddBibliographyStep(steps, signals)) {
+            inferred += BibtexStepOptions()
+        }
+        if (shouldAddPythontexStep(steps, signals.usedPackages)) {
+            inferred += PythontexStepOptions()
+        }
+        if (shouldAddMakeglossariesStep(steps, signals.usedPackages)) {
+            inferred += MakeglossariesStepOptions()
+        }
+        // NOTE: Xindy auto-detection is temporarily disabled.
+        // Keep xindy as an explicit, user-added step only.
+
+        return inferred
+    }
+
+    private fun shouldAddBibliographyStep(
+        steps: List<LatexStepRunConfigurationOptions>,
+        signals: PsiSignals,
+    ): Boolean {
+        if (steps.any { it.type == LatexStepType.BIBTEX } || steps.any { it.type == LatexStepType.LATEXMK_COMPILE }) {
+            return false
+        }
+        if (LatexLib.CITATION_STYLE_LANGUAGE in signals.usedPackages) {
+            return false
+        }
+
+        return signals.hasBibliography || signals.usesBiber || signals.hasAddBibResource
+    }
+
+    private fun shouldAddPythontexStep(
+        steps: List<LatexStepRunConfigurationOptions>,
+        usedPackages: Set<LatexLib>,
+    ): Boolean {
+        if (steps.any { it.type == LatexStepType.PYTHONTEX || it.type == LatexStepType.EXTERNAL_TOOL }) {
+            return false
+        }
+        return LatexLib.PYTHONTEX in usedPackages
+    }
+
+    private fun shouldAddMakeglossariesStep(
+        steps: List<LatexStepRunConfigurationOptions>,
+        usedPackages: Set<LatexLib>,
+    ): Boolean {
+        if (steps.any { it.type == LatexStepType.LATEXMK_COMPILE }) {
+            return false
+        }
+        if (steps.any { it.type == LatexStepType.MAKEINDEX || it.type == LatexStepType.MAKEGLOSSARIES }) {
+            return false
+        }
+
+        return LatexLib.GLOSSARIES in usedPackages || LatexLib.GLOSSARIESEXTRA in usedPackages
+    }
+
+    private fun preferredAuxInsertIndex(steps: List<LatexStepRunConfigurationOptions>): Int {
+        val firstCompileIndex = steps.indexOfFirst { it.type in compileTypes }
+        val viewerIndex = steps.indexOfFirst { it.type == LatexStepType.PDF_VIEWER }.let { if (it < 0) steps.size else it }
+        return if (firstCompileIndex >= 0) {
+            (firstCompileIndex + 1).coerceAtMost(viewerIndex)
+        }
+        else {
+            viewerIndex
+        }
+    }
+
+    private fun collectPsiSignals(mainPsiFile: PsiFile): PsiSignals = ReadAction.compute<PsiSignals, RuntimeException> {
+        val usedPackages = mainPsiFile.includedPackagesInFileset()
+
+        PsiSignals(
+            usedPackages = usedPackages,
+            hasBibliography = mainPsiFile.hasBibliography(),
+            usesBiber = mainPsiFile.usesBiber(),
+            hasAddBibResource = NewCommandsIndex.getByNameInFileSet(CommandNames.ADD_BIB_RESOURCE, mainPsiFile).isNotEmpty(),
+        )
+    }
+
+    private fun resolveCommandSpec(
+        runConfig: LatexRunConfiguration,
+        contextPsiFile: PsiFile,
+    ): CommandSpec {
+        val command = ReadAction.compute<String?, RuntimeException> {
+            val magicComments = contextPsiFile.allParentMagicComments()
+            val runCommand = magicComments.value(DefaultMagicKeys.COMPILER)
+            val runProgram = magicComments.value(DefaultMagicKeys.PROGRAM)
+            val cslFallback = if (contextPsiFile.includedPackagesInFileset().contains(LatexLib.CITATION_STYLE_LANGUAGE)) {
+                LatexCompiler.LUALATEX.name
+            }
+            else {
+                null
+            }
+            runCommand ?: runProgram ?: cslFallback
+        }
+
+        val compilerExecutable = if (command?.contains(' ') == true) {
+            command.substring(0, command.indexOf(' ')).trim()
+        }
+        else {
+            command
+        }
+
+        val selectedCompiler = compilerExecutable?.let { LatexCompiler.byExecutableName(it) }
+            ?: runConfig.activeCompiler()
+            ?: LatexCompiler.PDFLATEX
+
+        val commandArguments = if (command != null) {
+            command.removePrefix(compilerExecutable ?: "").trim().ifBlank { null }
+        }
+        else {
+            null
+        }
+
+        return CommandSpec(selectedCompiler, commandArguments)
+    }
+
+    private fun resolveWorkingDirectory(
+        compiler: LatexCompiler,
+        mainVirtualFile: VirtualFile,
+    ): Path? {
+        if (compiler != LatexCompiler.TECTONIC || !mainVirtualFile.hasTectonicTomlFile()) {
+            return null
+        }
+        val tectonicToml = mainVirtualFile.findTectonicTomlFile() ?: return null
+        return Path.of(tectonicToml.parent.path)
+    }
+
+    private fun ensurePrimaryCompileStepClassic(
+        steps: MutableList<LatexStepRunConfigurationOptions>
+    ): LatexCompileStepOptions {
+        val index = steps.indexOfFirst {
+            it.enabled && (it is LatexCompileStepOptions || it is LatexmkCompileStepOptions)
+        }
+        return when {
+            index < 0 -> LatexCompileStepOptions().also { steps.add(0, it) }
+            steps[index] is LatexCompileStepOptions -> steps[index] as LatexCompileStepOptions
+            else -> {
+                val old = steps[index] as LatexmkCompileStepOptions
+                LatexCompileStepOptions().also {
+                    it.id = old.id
+                    it.enabled = old.enabled
+                    it.compiler = LatexCompiler.PDFLATEX
+                    it.compilerPath = old.compilerPath
+                    it.compilerArguments = old.compilerArguments
+                    it.outputFormat = LatexCompiler.Format.PDF
+                    it.beforeRunCommand = old.beforeRunCommand
+                    it.selectedOptions = old.selectedOptions
+                    steps[index] = it
+                }
+            }
+        }
+    }
+
+    private fun ensurePrimaryCompileStepLatexmk(
+        steps: MutableList<LatexStepRunConfigurationOptions>
+    ): LatexmkCompileStepOptions {
+        val index = steps.indexOfFirst {
+            it.enabled && (it is LatexCompileStepOptions || it is LatexmkCompileStepOptions)
+        }
+        return when {
+            index < 0 -> LatexmkCompileStepOptions().also { steps.add(0, it) }
+            steps[index] is LatexmkCompileStepOptions -> steps[index] as LatexmkCompileStepOptions
+            else -> {
+                val old = steps[index] as LatexCompileStepOptions
+                LatexmkCompileStepOptions().also {
+                    it.id = old.id
+                    it.enabled = old.enabled
+                    it.compilerPath = old.compilerPath
+                    it.compilerArguments = old.compilerArguments
+                    it.latexmkCompileMode = LatexmkCompileMode.AUTO
+                    it.beforeRunCommand = old.beforeRunCommand
+                    it.selectedOptions = old.selectedOptions
+                    steps[index] = it
+                }
+            }
+        }
+    }
+
+    private data class CommandSpec(
+        val compiler: LatexCompiler,
+        val arguments: String?,
+    )
+
+    private data class PsiSignals(
+        val usedPackages: Set<LatexLib>,
+        val hasBibliography: Boolean,
+        val usesBiber: Boolean,
+        val hasAddBibResource: Boolean,
+    )
+}

@@ -8,6 +8,7 @@ import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
 import nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfigurationType
+import nl.hannahsten.texifyidea.run.latex.step.LatexStepAutoConfigurator
 import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfiguration
 import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType
 
@@ -23,11 +24,8 @@ class LatexConfigurationFactory(type: ConfigurationType) : ConfigurationFactory(
 
     override fun createTemplateConfiguration(project: Project) = when (type) {
         is LatexRunConfigurationType -> LatexRunConfiguration(project, this, "LaTeX").apply {
-            setDefaultCompiler()
-            setDefaultPdfViewer()
-            setDefaultOutputFormat()
+            configOptions.steps = LatexStepAutoConfigurator.configureTemplate(this).toMutableList()
             setSuggestedName()
-            setDefaultLatexDistribution()
         }
         is BibtexRunConfigurationType -> BibtexRunConfiguration(project, this, "BibTeX")
         is MakeindexRunConfigurationType -> MakeindexRunConfiguration(project, this, "Makeindex")

@@ -75,7 +75,7 @@ class LatexRunConfigurationOptions : LocatableRunConfigurationOptions() {
 
     fun ensureDefaultSteps() {
         if (steps.none { it.enabled }) {
-            steps = mutableListOf(LatexCompileStepOptions(), PdfViewerStepOptions())
+            steps = defaultLatexmkSteps()
         }
     }
 }
@@ -252,6 +252,16 @@ class FileCleanupStepOptions : LatexStepRunConfigurationOptions() {
 }
 
 internal fun generateLatexStepId(): String = UUID.randomUUID().toString()
+
+internal fun defaultClassicSteps(): MutableList<LatexStepRunConfigurationOptions> = mutableListOf(
+    LatexCompileStepOptions(),
+    PdfViewerStepOptions(),
+)
+
+internal fun defaultLatexmkSteps(): MutableList<LatexStepRunConfigurationOptions> = mutableListOf(
+    LatexmkCompileStepOptions(),
+    PdfViewerStepOptions(),
+)
 
 internal fun defaultStepFor(type: String): LatexStepRunConfigurationOptions? = when (type.trim().lowercase()) {
     LatexStepType.LATEX_COMPILE -> LatexCompileStepOptions()

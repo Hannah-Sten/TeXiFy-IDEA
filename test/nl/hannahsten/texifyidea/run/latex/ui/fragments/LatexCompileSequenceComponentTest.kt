@@ -126,4 +126,37 @@ class LatexCompileSequenceComponentTest : BasePlatformTestCase() {
             Disposer.dispose(disposable)
         }
     }
+
+    fun testAutoConfigureReplacesSequenceAndNotifiesChanges() {
+        val runConfig = LatexRunConfiguration(
+            project,
+            LatexRunConfigurationProducer().configurationFactory,
+            "Test run config"
+        )
+        runConfig.configOptions.steps = mutableListOf(LatexCompileStepOptions(), PdfViewerStepOptions())
+
+        val disposable = Disposer.newDisposable()
+        try {
+            val component = LatexCompileSequenceComponent(disposable)
+            var onStepsChangedCount = 0
+            component.onStepsChanged = { onStepsChangedCount++ }
+            component.onAutoConfigureRequested = {
+                listOf(
+                    LatexCompileStepOptions(),
+                    BibtexStepOptions(),
+                    LatexCompileStepOptions(),
+                    PdfViewerStepOptions()
+                )
+            }
+
+            component.resetEditorFrom(runConfig)
+            component.triggerAutoConfigureForTest()
+
+            assertEquals(listOf("latex-compile", "bibtex", "latex-compile", "pdf-viewer"), component.currentStepTypesForTest())
+            assertTrue(onStepsChangedCount >= 2)
+        }
+        finally {
+            Disposer.dispose(disposable)
+        }
+    }
 }

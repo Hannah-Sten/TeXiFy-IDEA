@@ -62,7 +62,17 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
 
         runConfig.configOptions.ensureDefaultSteps()
 
-        assertEquals(listOf(LatexStepType.LATEX_COMPILE, LatexStepType.PDF_VIEWER), runConfig.configOptions.steps.map { it.type })
+        assertEquals(listOf(LatexStepType.LATEXMK_COMPILE, LatexStepType.PDF_VIEWER), runConfig.configOptions.steps.map { it.type })
+    }
+
+    fun testTemplateConfigurationAppliesAutoCompletionOnCreation() {
+        val template = LatexRunConfigurationProducer().configurationFactory
+            .createTemplateConfiguration(myFixture.project) as LatexRunConfiguration
+
+        assertEquals(
+            listOf(LatexStepType.LATEXMK_COMPILE, LatexStepType.PDF_VIEWER),
+            template.configOptions.steps.map { it.type }
+        )
     }
 
     fun testWriteReadRoundTripPreservesFileCleanupStep() {
