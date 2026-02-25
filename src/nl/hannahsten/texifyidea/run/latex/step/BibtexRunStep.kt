@@ -5,28 +5,17 @@ import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.util.ProgramParametersConfigurator
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.common.createCompilationHandler
-import nl.hannahsten.texifyidea.run.latex.flow.BaseLatexStepExecution
-import nl.hannahsten.texifyidea.run.latex.flow.ProcessLatexStepExecution
 import nl.hannahsten.texifyidea.run.latex.BibtexStepOptions
 
 internal class BibtexRunStep(
     private val stepConfig: BibtexStepOptions,
-) : LatexRunStep {
+) : ProcessLatexRunStep {
 
     override val configId: String = stepConfig.id
     override val id: String = stepConfig.type
 
     @Throws(ExecutionException::class)
-    override fun createStepExecution(index: Int, context: LatexRunStepContext): BaseLatexStepExecution = ProcessLatexStepExecution(
-        index = index,
-        type = id,
-        displayName = LatexStepPresentation.displayName(id),
-        configId = configId,
-        processHandler = createProcess(context),
-    )
-
-    @Throws(ExecutionException::class)
-    private fun createProcess(context: LatexRunStepContext): ProcessHandler {
+    override fun createProcess(context: LatexRunStepContext): ProcessHandler {
         val workingDirectory = CommandLineRunStep.resolveWorkingDirectory(context, stepConfig.workingDirectoryPath)
         val command = mutableListOf(stepConfig.compilerPath ?: stepConfig.bibliographyCompiler.executableName)
         if (stepConfig.bibliographyCompiler.name == "BIBER") {

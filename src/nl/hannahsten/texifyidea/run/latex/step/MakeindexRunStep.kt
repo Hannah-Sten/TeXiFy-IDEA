@@ -6,35 +6,27 @@ import com.intellij.execution.util.ProgramParametersConfigurator
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.common.createCompilationHandler
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
-import nl.hannahsten.texifyidea.run.latex.flow.BaseLatexStepExecution
-import nl.hannahsten.texifyidea.run.latex.flow.ProcessLatexStepExecution
 import nl.hannahsten.texifyidea.run.latex.MakeindexStepOptions
 import nl.hannahsten.texifyidea.run.latex.getMakeindexOptions
 import nl.hannahsten.texifyidea.util.appendExtension
 
 internal class MakeindexRunStep(
     private val stepConfig: MakeindexStepOptions,
-) : LatexRunStep {
+) : ProcessLatexRunStep {
 
     override val configId: String = stepConfig.id
     override val id: String = stepConfig.type
 
-    @Throws(ExecutionException::class)
-    override fun createStepExecution(index: Int, context: LatexRunStepContext): BaseLatexStepExecution {
-        val artifactSync = StepArtifactSync(context, stepConfig)
-        return ProcessLatexStepExecution(
-            index = index,
-            type = id,
-            displayName = LatexStepPresentation.displayName(id),
-            configId = configId,
-            processHandler = createProcess(context),
-            beforeStart = { artifactSync.beforeStep() },
-            afterFinish = { exitCode -> artifactSync.afterStep(exitCode) },
-        )
+    override fun beforeStart(context: LatexRunStepContext) {
+        StepArtifactSync(context, stepConfig).beforeStep()
+    }
+
+    override fun afterFinish(context: LatexRunStepContext, exitCode: Int) {
+        StepArtifactSync(context, stepConfig).afterStep(exitCode)
     }
 
     @Throws(ExecutionException::class)
-    private fun createProcess(context: LatexRunStepContext): ProcessHandler {
+    override fun createProcess(context: LatexRunStepContext): ProcessHandler {
         val command = buildCommand(context)
         val workingDirectory = CommandLineRunStep.resolveWorkingDirectory(context, stepConfig.workingDirectoryPath)
         val configurator = ProgramParametersConfigurator()

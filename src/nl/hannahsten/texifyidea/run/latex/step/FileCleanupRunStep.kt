@@ -3,8 +3,6 @@ package nl.hannahsten.texifyidea.run.latex.step
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import nl.hannahsten.texifyidea.run.latex.FileCleanupStepOptions
-import nl.hannahsten.texifyidea.run.latex.flow.BaseLatexStepExecution
-import nl.hannahsten.texifyidea.run.latex.flow.InlineLatexStepExecution
 import nl.hannahsten.texifyidea.util.runWriteAction
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.deleteExisting
@@ -13,20 +11,12 @@ import kotlin.io.path.listDirectoryEntries
 
 internal class FileCleanupRunStep(
     private val stepConfig: FileCleanupStepOptions,
-) : LatexRunStep {
+) : InlineLatexRunStep {
 
     override val configId: String = stepConfig.id
     override val id: String = stepConfig.type
 
-    override fun createStepExecution(index: Int, context: LatexRunStepContext): BaseLatexStepExecution = InlineLatexStepExecution(
-        index = index,
-        type = id,
-        displayName = LatexStepPresentation.displayName(id),
-        configId = configId,
-        action = { cleanup(context) },
-    )
-
-    private fun cleanup(context: LatexRunStepContext): Int {
+    override fun runInline(context: LatexRunStepContext): Int {
         val state = context.executionState
         val filesToDelete = state.filesToCleanUp.toList()
         val directoriesToDelete = state.directoriesToDeleteIfEmpty.toList().sortedDescending()

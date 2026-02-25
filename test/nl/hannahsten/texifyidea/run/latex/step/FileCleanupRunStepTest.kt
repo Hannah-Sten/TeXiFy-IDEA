@@ -9,7 +9,6 @@ import nl.hannahsten.texifyidea.run.latex.FileCleanupStepOptions
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer
 import nl.hannahsten.texifyidea.run.latex.LatexRunExecutionState
-import nl.hannahsten.texifyidea.run.latex.flow.InlineLatexStepExecution
 import java.nio.file.Files
 
 class FileCleanupRunStepTest : BasePlatformTestCase() {
@@ -29,8 +28,10 @@ class FileCleanupRunStepTest : BasePlatformTestCase() {
         context.executionState.addCleanupFile(toDelete)
         context.executionState.addCleanupDirectoriesIfEmpty(listOf(nestedParent, nestedChild, nonEmpty))
 
-        val execution = FileCleanupRunStep(FileCleanupStepOptions()).createStepExecution(0, context)
-        val exitCode = (execution as InlineLatexStepExecution).action()
+        val step = FileCleanupRunStep(FileCleanupStepOptions())
+        step.beforeStart(context)
+        val exitCode = step.runInline(context)
+        step.afterFinish(context, exitCode)
 
         assertEquals(0, exitCode)
         assertFalse(Files.exists(toDelete))
@@ -50,8 +51,10 @@ class FileCleanupRunStepTest : BasePlatformTestCase() {
         val context = createContext(mainFilePath)
         context.executionState.addCleanupFile(missingFile)
 
-        val execution = FileCleanupRunStep(FileCleanupStepOptions()).createStepExecution(0, context)
-        val exitCode = (execution as InlineLatexStepExecution).action()
+        val step = FileCleanupRunStep(FileCleanupStepOptions())
+        step.beforeStart(context)
+        val exitCode = step.runInline(context)
+        step.afterFinish(context, exitCode)
 
         assertEquals(0, exitCode)
         assertTrue(context.executionState.filesToCleanUp.isEmpty())

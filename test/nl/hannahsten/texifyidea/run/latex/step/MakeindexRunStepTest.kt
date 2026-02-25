@@ -40,7 +40,7 @@ class MakeindexRunStepTest : BasePlatformTestCase() {
         assertEquals(listOf("makeindex", "-o", "result.ind"), command)
     }
 
-    fun testCreateStepExecutionSupportsBeforeAndAfterActions() {
+    fun testLifecycleAndProcessCreationWorkForMakeindexStep() {
         val context = createContext()
         val stepOptions = MakeindexStepOptions().apply {
             program = MakeindexProgram.MAKEINDEX
@@ -48,12 +48,14 @@ class MakeindexRunStepTest : BasePlatformTestCase() {
             workingDirectoryPath = context.mainFile.parent.path
         }
 
-        val execution = MakeindexRunStep(stepOptions).createStepExecution(0, context)
+        val step = MakeindexRunStep(stepOptions)
+        step.beforeStart(context)
+        val process = step.createProcess(context)
+        step.afterFinish(context, 0)
 
-        execution.beforeStart()
-        execution.afterFinish(0)
-        assertEquals("makeindex", execution.type)
-        assertEquals(stepOptions.id, execution.configId)
+        assertNotNull(process)
+        assertEquals("makeindex", step.id)
+        assertEquals(stepOptions.id, step.configId)
     }
 
     private fun createContext(): LatexRunStepContext {

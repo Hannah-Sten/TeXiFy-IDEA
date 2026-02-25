@@ -10,28 +10,20 @@ import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexStepRunConfigurationOptions
 import nl.hannahsten.texifyidea.run.latex.LatexmkCompileStepOptions
 import nl.hannahsten.texifyidea.run.common.createCompilationHandler
-import nl.hannahsten.texifyidea.run.latex.flow.BaseLatexStepExecution
-import nl.hannahsten.texifyidea.run.latex.flow.ProcessLatexStepExecution
 
 internal class LatexCompileRunStep(
     private val stepConfig: LatexStepRunConfigurationOptions,
-) : LatexRunStep {
+) : ProcessLatexRunStep {
 
     override val configId: String = stepConfig.id
     override val id: String = stepConfig.type
 
-    @Throws(ExecutionException::class)
-    override fun createStepExecution(index: Int, context: LatexRunStepContext): BaseLatexStepExecution = ProcessLatexStepExecution(
-        index = index,
-        type = id,
-        displayName = LatexStepPresentation.displayName(id),
-        configId = configId,
-        processHandler = createProcess(context),
-        afterFinish = { context.executionState.markHasRun() },
-    )
+    override fun afterFinish(context: LatexRunStepContext, exitCode: Int) {
+        context.executionState.markHasRun()
+    }
 
     @Throws(ExecutionException::class)
-    private fun createProcess(context: LatexRunStepContext): ProcessHandler {
+    override fun createProcess(context: LatexRunStepContext): ProcessHandler {
         val runConfig = context.runConfig
         runConfig.activateStepForExecution(configId)
         try {

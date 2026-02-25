@@ -2,22 +2,32 @@ package nl.hannahsten.texifyidea.run.latex.steplog
 
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessOutputTypes
+import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.util.Key
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import nl.hannahsten.texifyidea.run.latex.flow.ProcessLatexStepExecution
+import io.mockk.every
+import io.mockk.mockk
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer
+import nl.hannahsten.texifyidea.run.latex.LatexRunExecutionState
 import nl.hannahsten.texifyidea.run.latex.flow.StepAwareSequentialProcessHandler
+import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepContext
+import nl.hannahsten.texifyidea.run.latex.step.ProcessLatexRunStep
 import java.io.OutputStream
 
 class LatexStepLogTabComponentTest : BasePlatformTestCase() {
 
     fun testUsesOnePixelSplitterAndConsoleToolbarActions() {
         val mainFile = myFixture.addFileToProject("main.tex", "\\documentclass{article}").virtualFile
+        val context = createContext(mainFile)
         val compile = TestProcessHandler()
         val handler = StepAwareSequentialProcessHandler(
             listOf(
-                ProcessLatexStepExecution(0, "latex-compile", "Compile LaTeX", "s1", compile),
-            )
+                TestProcessStep("latex-compile", "s1", compile, "Compile LaTeX"),
+            ),
+            context,
         )
         val tab = LatexStepLogTabComponent(project, mainFile, handler)
         try {
@@ -41,13 +51,15 @@ class LatexStepLogTabComponentTest : BasePlatformTestCase() {
             """.trimIndent()
         ).virtualFile
 
+        val context = createContext(mainFile)
         val compile = TestProcessHandler()
         val viewer = TestProcessHandler()
         val handler = StepAwareSequentialProcessHandler(
             listOf(
-                ProcessLatexStepExecution(0, "latex-compile", "Compile LaTeX", "s1", compile),
-                ProcessLatexStepExecution(1, "pdf-viewer", "Open PDF viewer", "s2", viewer),
-            )
+                TestProcessStep("latex-compile", "s1", compile, "Compile LaTeX"),
+                TestProcessStep("pdf-viewer", "s2", viewer, "Open PDF viewer"),
+            ),
+            context,
         )
         val tab = LatexStepLogTabComponent(project, mainFile, handler)
         try {
@@ -88,15 +100,17 @@ class LatexStepLogTabComponentTest : BasePlatformTestCase() {
     fun testFailedRunMarksPendingStepsAsSkipped() {
         val mainFile = myFixture.addFileToProject("main2.tex", "\\documentclass{article}").virtualFile
 
+        val context = createContext(mainFile)
         val compile = TestProcessHandler()
         val bib = TestProcessHandler()
         val viewer = TestProcessHandler()
         val handler = StepAwareSequentialProcessHandler(
             listOf(
-                ProcessLatexStepExecution(0, "latex-compile", "Compile LaTeX", "s1", compile),
-                ProcessLatexStepExecution(1, "bibtex", "Run bibliography", "s2", bib),
-                ProcessLatexStepExecution(2, "pdf-viewer", "Open PDF viewer", "s3", viewer),
-            )
+                TestProcessStep("latex-compile", "s1", compile, "Compile LaTeX"),
+                TestProcessStep("bibtex", "s2", bib, "Run bibliography"),
+                TestProcessStep("pdf-viewer", "s3", viewer, "Open PDF viewer"),
+            ),
+            context,
         )
         val tab = LatexStepLogTabComponent(project, mainFile, handler)
         try {
@@ -115,8 +129,31 @@ class LatexStepLogTabComponentTest : BasePlatformTestCase() {
         }
     }
 
+    private fun createContext(mainFile: VirtualFile): LatexRunStepContext {
+        val runConfig = LatexRunConfiguration(
+            project,
+            LatexRunConfigurationProducer().configurationFactory,
+            "test"
+        )
+        val environment = mockk<ExecutionEnvironment>(relaxed = true).also {
+            every { it.project } returns project
+        }
+        val state = LatexRunExecutionState(resolvedMainFile = mainFile)
+        return LatexRunStepContext(runConfig, environment, state, mainFile)
+    }
+
     private fun flushEdt() {
         ApplicationManager.getApplication().invokeAndWait {}
+    }
+
+    private class TestProcessStep(
+        override val id: String,
+        override val configId: String,
+        private val handler: ProcessHandler,
+        override val displayName: String,
+    ) : ProcessLatexRunStep {
+
+        override fun createProcess(context: LatexRunStepContext): ProcessHandler = handler
     }
 
     private class TestProcessHandler : ProcessHandler() {

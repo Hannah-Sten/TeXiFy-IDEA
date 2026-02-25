@@ -29,9 +29,9 @@ import com.intellij.ui.tree.StructureTreeModel
 import com.intellij.ui.treeStructure.Tree
 import com.intellij.util.ui.EmptyIcon
 import com.intellij.util.ui.tree.TreeUtil
-import nl.hannahsten.texifyidea.run.latex.flow.LatexStepExecution
 import nl.hannahsten.texifyidea.run.latex.flow.StepAwareSequentialProcessHandler
 import nl.hannahsten.texifyidea.run.latex.flow.StepLogEvent
+import nl.hannahsten.texifyidea.run.latex.step.LatexRunStep
 import java.awt.BorderLayout
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
@@ -102,7 +102,7 @@ internal class LatexStepLogTabComponent(
     init {
         add(splitter, BorderLayout.CENTER)
 
-        initializeSteps(handler.executions, mainFile)
+        initializeSteps(handler.steps, mainFile)
         scheduleUpdate(rootNode, structureChanged = true)
         TreeUtil.expand(tree, 2)
 
@@ -182,40 +182,41 @@ internal class LatexStepLogTabComponent(
 
     internal fun usesAdditionalTabToolbarForTest(): Boolean = getToolbarActions() != null
 
-    private fun initializeSteps(executions: List<LatexStepExecution>, mainFile: VirtualFile?) {
+    private fun initializeSteps(steps: List<LatexRunStep>, mainFile: VirtualFile?) {
         val mainFileName = mainFile?.name
-        executions.sortedBy { it.index }.forEach { execution ->
+        steps.forEachIndexed { index, step ->
             val nodeData = StepNodeData(
-                execution = execution,
+                index = index,
+                step = step,
                 status = NodeStatus.UNKNOWN,
                 fileName = mainFileName,
             )
             val stepNode = StepTreeNode(parent = rootNode, stepData = nodeData)
             rootNode.children.add(stepNode)
-            stepNodes[execution.index] = stepNode
-            stepNodeData[execution.index] = nodeData
-            parsers[execution.index] = StepMessageParserFactory.create(execution.type, mainFile)
-            stepOutputChunks[execution.index] = mutableListOf()
+            stepNodes[index] = stepNode
+            stepNodeData[index] = nodeData
+            parsers[index] = StepMessageParserFactory.create(step.id, mainFile)
+            stepOutputChunks[index] = mutableListOf()
         }
     }
 
     private fun handleEvent(event: StepLogEvent) {
         when (event) {
             is StepLogEvent.StepStarted -> {
-                currentStepIndex = event.execution.index
-                updateStepStatus(event.execution.index, NodeStatus.RUNNING)
+                currentStepIndex = event.index
+                updateStepStatus(event.index, NodeStatus.RUNNING)
                 updateRunStatus()
-                selectStep(event.execution.index)
+                selectStep(event.index)
             }
 
             is StepLogEvent.StepOutput -> {
                 val chunk = StepOutputChunk(event.text, event.outputType)
-                stepOutputChunks[event.execution.index]?.add(chunk)
+                stepOutputChunks[event.index]?.add(chunk)
                 when (val selection = selectedRawLogSelection()) {
                     is RawLogSelection.Step -> {
-                        if (selection.stepIndex == event.execution.index) {
+                        if (selection.stepIndex == event.index) {
                             printChunk(chunk)
-                            renderedStepIndex = event.execution.index
+                            renderedStepIndex = event.index
                             renderedOutputText += event.text
                         }
                     }
@@ -230,20 +231,20 @@ internal class LatexStepLogTabComponent(
                     }
                 }
 
-                val parser = parsers[event.execution.index] ?: return
+                val parser = parsers[event.index] ?: return
                 parser.onText(event.text).forEach { parsedMessage ->
-                    addParsedMessage(event.execution.index, parsedMessage)
+                    addParsedMessage(event.index, parsedMessage)
                 }
             }
 
             is StepLogEvent.StepFinished -> {
                 val status = when {
                     event.exitCode != 0 -> NodeStatus.FAILED
-                    event.execution.index in stepHasErrors -> NodeStatus.FAILED
-                    event.execution.index in stepHasWarnings -> NodeStatus.WARNING
+                    event.index in stepHasErrors -> NodeStatus.FAILED
+                    event.index in stepHasWarnings -> NodeStatus.WARNING
                     else -> NodeStatus.SUCCEEDED
                 }
-                updateStepStatus(event.execution.index, status)
+                updateStepStatus(event.index, status)
                 updateRunStatus()
             }
 
@@ -356,7 +357,7 @@ internal class LatexStepLogTabComponent(
 
         val selectedNode = extractTreeNode(tree.lastSelectedPathComponent) ?: return fallbackStepSelection()
         return when {
-            selectedNode.stepData != null -> RawLogSelection.Step(selectedNode.stepData.execution.index)
+            selectedNode.stepData != null -> RawLogSelection.Step(selectedNode.stepData.index)
             selectedNode.messageData != null -> selectedNode.parentStepIndex()?.let { RawLogSelection.Step(it) } ?: fallbackStepSelection()
             selectedNode.runData != null -> RawLogSelection.All
             else -> fallbackStepSelection()
@@ -402,7 +403,8 @@ internal class LatexStepLogTabComponent(
     )
 
     private data class StepNodeData(
-        val execution: LatexStepExecution,
+        val index: Int,
+        val step: LatexRunStep,
         var status: NodeStatus,
         val fileName: String?,
     )
@@ -450,9 +452,9 @@ internal class LatexStepLogTabComponent(
 
                 stepData != null -> {
                     presentation.setIcon(stepData.status.icon())
-                    presentation.addText(stepData.execution.displayName, SimpleTextAttributes.REGULAR_ATTRIBUTES)
+                    presentation.addText(stepData.step.displayName, SimpleTextAttributes.REGULAR_ATTRIBUTES)
                     stepData.fileName?.let { presentation.addText(" $it", SimpleTextAttributes.GRAYED_ATTRIBUTES) }
-                    myName = stepData.execution.displayName
+                    myName = stepData.step.displayName
                 }
 
                 messageData != null -> {
@@ -478,7 +480,7 @@ internal class LatexStepLogTabComponent(
 
         fun parentStepIndex(): Int? {
             val stepNode = if (stepData != null) this else parentDescriptor as? StepTreeNode
-            return stepNode?.stepData?.execution?.index
+            return stepNode?.stepData?.index
         }
 
         private fun messageLocation(message: ParsedStepMessage): String? {

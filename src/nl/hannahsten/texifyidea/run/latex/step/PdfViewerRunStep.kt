@@ -5,8 +5,6 @@ import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.OpenCustomPdfViewerListener
-import nl.hannahsten.texifyidea.run.latex.flow.BaseLatexStepExecution
-import nl.hannahsten.texifyidea.run.latex.flow.ProcessLatexStepExecution
 import nl.hannahsten.texifyidea.run.latex.PdfViewerStepOptions
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.OpenViewerListener
@@ -17,20 +15,12 @@ import java.io.OutputStream
 
 internal class PdfViewerRunStep(
     private val stepConfig: PdfViewerStepOptions,
-) : LatexRunStep {
+) : ProcessLatexRunStep {
 
     override val configId: String = stepConfig.id
     override val id: String = stepConfig.type
 
-    override fun createStepExecution(index: Int, context: LatexRunStepContext): BaseLatexStepExecution = ProcessLatexStepExecution(
-        index = index,
-        type = id,
-        displayName = LatexStepPresentation.displayName(id),
-        configId = configId,
-        processHandler = createProcess(context),
-    )
-
-    private fun createProcess(context: LatexRunStepContext): ProcessHandler {
+    override fun createProcess(context: LatexRunStepContext): ProcessHandler {
         context.runConfig.activateStepForExecution(configId)
         val process = object : ProcessHandler() {
             override fun destroyProcessImpl() {

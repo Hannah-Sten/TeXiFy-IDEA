@@ -41,14 +41,11 @@ internal class LatexStepRunState(
             Log.warn("Unsupported compile-step types after auto-inference: ${effectivePlan.unsupportedTypes.joinToString(", ")}")
         }
 
-        val executions = effectivePlan.steps.mapIndexed { index, step ->
-            step.createStepExecution(index, context)
-        }
-        if (executions.isEmpty()) {
+        if (effectivePlan.steps.isEmpty()) {
             throw ExecutionException("No executable steps found in compile-step schema.")
         }
 
-        val overallHandler = StepAwareSequentialProcessHandler(executions)
+        val overallHandler = StepAwareSequentialProcessHandler(effectivePlan.steps, context)
         val stepLogConsole = LatexStepLogTabComponent(environment.project, mainFile, overallHandler)
 
         return DefaultExecutionResult(stepLogConsole, overallHandler)
