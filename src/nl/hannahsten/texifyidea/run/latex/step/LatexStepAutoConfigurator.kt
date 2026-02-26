@@ -152,16 +152,28 @@ internal object LatexStepAutoConfigurator {
 
         val anchorIndex = lastAuxIndexBeforeViewer(steps) ?: firstCompileIndex
 
-        val hasCompileAfter = steps.withIndex().any { (index, step) ->
+        val existingCompilesAfterAnchor = steps.withIndex().count { (index, step) ->
             index > anchorIndex && index < viewerIndex && step.type == LatexStepType.LATEX_COMPILE
         }
-        if (hasCompileAfter) {
+        val requiredCompilesAfterAnchor = requiredCompilesAfterAnchor(steps)
+        val missingCompiles = requiredCompilesAfterAnchor - existingCompilesAfterAnchor
+        if (missingCompiles <= 0) {
             return
         }
 
-        val followUpCompile = steps[firstCompileIndex].deepCopy()
-        followUpCompile.id = generateLatexStepId()
-        steps.add(viewerIndex, followUpCompile)
+        repeat(missingCompiles) {
+            val followUpCompile = steps[firstCompileIndex].deepCopy()
+            followUpCompile.id = generateLatexStepId()
+            steps.add(viewerInsertIndex(steps), followUpCompile)
+        }
+    }
+
+    private fun requiredCompilesAfterAnchor(steps: List<LatexStepRunConfigurationOptions>): Int {
+        val viewerIndex = viewerInsertIndex(steps)
+        val hasBibliographyStep = steps.withIndex().any { (index, step) ->
+            index < viewerIndex && step.type == LatexStepType.BIBTEX
+        }
+        return if (hasBibliographyStep) 2 else 1
     }
 
     private fun lastAuxIndexBeforeViewer(steps: List<LatexStepRunConfigurationOptions>): Int? {

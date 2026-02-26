@@ -7,7 +7,7 @@ import nl.hannahsten.texifyidea.updateFilesets
 
 class LatexStepAutoConfiguratorTest : BasePlatformTestCase() {
 
-    fun testCompleteStepsAddsBibliographyAndFollowUpCompile() {
+    fun testCompleteStepsAddsBibliographyAndTwoFollowUpCompiles() {
         val mainPsi = myFixture.addFileToProject(
             "main-bib.tex",
             """
@@ -34,7 +34,7 @@ class LatexStepAutoConfiguratorTest : BasePlatformTestCase() {
             listOf(LatexCompileStepOptions(), PdfViewerStepOptions())
         )
 
-        assertEquals(listOf("latex-compile", "bibtex", "latex-compile", "pdf-viewer"), augmented.map { it.type })
+        assertEquals(listOf("latex-compile", "bibtex", "latex-compile", "latex-compile", "pdf-viewer"), augmented.map { it.type })
     }
 
     fun testCompleteStepsAddsPythontexTemplateStep() {
@@ -137,7 +137,7 @@ class LatexStepAutoConfiguratorTest : BasePlatformTestCase() {
         assertEquals(listOf("latex-compile", "pythontex", "latex-compile", "pdf-viewer"), completed.map { it.type })
     }
 
-    fun testCompleteStepsKeepsExplicitCompileAfterAuxUnchanged() {
+    fun testCompleteStepsAddsMissingSecondCompileAfterBibliography() {
         val completed = LatexStepAutoConfigurator.completeSteps(
             null,
             listOf(
@@ -148,7 +148,7 @@ class LatexStepAutoConfiguratorTest : BasePlatformTestCase() {
             )
         )
 
-        assertEquals(listOf("latex-compile", "bibtex", "latex-compile", "pdf-viewer"), completed.map { it.type })
+        assertEquals(listOf("latex-compile", "bibtex", "latex-compile", "latex-compile", "pdf-viewer"), completed.map { it.type })
     }
 
     fun testCompleteStepsWhenPsiInferenceFailsStillReturnsClosedPipeline() {
