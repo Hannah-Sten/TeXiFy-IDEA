@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.run.latex.step
 
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.process.ProcessHandler
-import com.intellij.execution.util.ProgramParametersConfigurator
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.common.createCompilationHandler
 import nl.hannahsten.texifyidea.run.latex.ExternalToolStepOptions
@@ -32,15 +31,10 @@ internal class ExternalToolRunStep(
             throw ExecutionException("External tool step has an empty executable.")
         }
 
-        val configurator = ProgramParametersConfigurator()
         return createCompilationHandler(
-            environment = context.environment,
-            mainFile = context.session.mainFile,
+            context = context,
             command = command,
             workingDirectory = CommandLineRunStep.resolveWorkingDirectory(context, stepConfig.workingDirectoryPath),
-            expandMacrosEnvVariables = context.runConfig.expandMacrosEnvVariables,
-            envs = context.runConfig.environmentVariables.envs,
-            expandEnvValue = { value -> configurator.expandPathAndMacros(value, null, context.runConfig.project) ?: value },
         )
     }
 }

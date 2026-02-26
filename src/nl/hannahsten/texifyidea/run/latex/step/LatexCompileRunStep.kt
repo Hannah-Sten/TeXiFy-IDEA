@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.run.latex.step
 
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.process.ProcessHandler
-import com.intellij.execution.util.ProgramParametersConfigurator
 import nl.hannahsten.texifyidea.run.common.createCompilationHandler
 import nl.hannahsten.texifyidea.run.latex.LatexCompileStepOptions
 import nl.hannahsten.texifyidea.run.latex.LatexSessionInitializer
@@ -20,18 +19,11 @@ internal class LatexCompileRunStep(
         LatexSessionInitializer.updateOutputFilePath(session, stepConfig)
 
         val command = stepConfig.compiler.buildCommand(session, stepConfig)
-        val programParamsConfigurator = ProgramParametersConfigurator()
 
         return createCompilationHandler(
-            environment = context.environment,
-            mainFile = session.mainFile,
+            context = context,
             command = command,
             workingDirectory = session.workingDirectory,
-            expandMacrosEnvVariables = context.runConfig.expandMacrosEnvVariables,
-            envs = context.runConfig.environmentVariables.envs,
-            expandEnvValue = { value ->
-                programParamsConfigurator.expandPathAndMacros(value, null, context.runConfig.project) ?: value
-            },
         )
     }
 }

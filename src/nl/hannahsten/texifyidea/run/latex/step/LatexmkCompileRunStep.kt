@@ -3,7 +3,6 @@ package nl.hannahsten.texifyidea.run.latex.step
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.ProcessHandler
-import com.intellij.execution.util.ProgramParametersConfigurator
 import com.intellij.openapi.application.ReadAction
 import com.intellij.psi.PsiManager
 import com.intellij.util.execution.ParametersListUtil
@@ -41,18 +40,11 @@ internal class LatexmkCompileRunStep(
         val effectiveArguments = buildArguments(context.runConfig, session, stepConfig, effectiveMode)
         session.resolvedOutputFilePath = outputFilePath(session, effectiveMode)
         val command = buildCommand(session, stepConfig, effectiveArguments)
-        val programParamsConfigurator = ProgramParametersConfigurator()
 
         return createCompilationHandler(
-            environment = context.environment,
-            mainFile = session.mainFile,
+            context = context,
             command = command,
             workingDirectory = session.workingDirectory,
-            expandMacrosEnvVariables = context.runConfig.expandMacrosEnvVariables,
-            envs = context.runConfig.environmentVariables.envs,
-            expandEnvValue = { value ->
-                programParamsConfigurator.expandPathAndMacros(value, null, context.runConfig.project) ?: value
-            },
         )
     }
 

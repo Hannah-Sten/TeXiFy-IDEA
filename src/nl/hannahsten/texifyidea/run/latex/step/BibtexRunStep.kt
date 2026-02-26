@@ -2,7 +2,6 @@ package nl.hannahsten.texifyidea.run.latex.step
 
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.process.ProcessHandler
-import com.intellij.execution.util.ProgramParametersConfigurator
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.common.createCompilationHandler
 import nl.hannahsten.texifyidea.run.latex.BibtexStepOptions
@@ -19,23 +18,17 @@ internal class BibtexRunStep(
         val workingDirectory = CommandLineRunStep.resolveWorkingDirectory(context, stepConfig.workingDirectoryPath)
         val command = mutableListOf(stepConfig.compilerPath ?: stepConfig.bibliographyCompiler.executableName)
         if (stepConfig.bibliographyCompiler.name == "BIBER") {
-            command += "--input-directory=${workingDirectory?.toString() ?: context.session.mainFile.parent.path}"
+            command += "--input-directory=$workingDirectory"
         }
         stepConfig.compilerArguments
             ?.takeIf(String::isNotBlank)
             ?.let { command += ParametersListUtil.parse(it) }
         command += context.session.mainFile.nameWithoutExtension
 
-        val configurator = ProgramParametersConfigurator()
-
         return createCompilationHandler(
-            environment = context.environment,
-            mainFile = context.session.mainFile,
+            context = context,
             command = command,
             workingDirectory = workingDirectory,
-            expandMacrosEnvVariables = context.runConfig.expandMacrosEnvVariables,
-            envs = context.runConfig.environmentVariables.envs,
-            expandEnvValue = { value -> configurator.expandPathAndMacros(value, null, context.runConfig.project) ?: value },
         )
     }
 }
