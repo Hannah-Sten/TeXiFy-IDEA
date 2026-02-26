@@ -25,8 +25,6 @@ internal class LatexStepRunState(
     override fun execute(executor: Executor?, runner: ProgramRunner<*>): ExecutionResult {
         FileDocumentManager.getInstance().saveAllDocuments()
         val session = LatexSessionInitializer.initialize(runConfig, environment)
-        val mainFile = session.resolvedMainFile
-            ?: throw ExecutionException("Main file cannot be resolved")
 
         val configuredPlan = LatexRunStepPlanBuilder.build(configuredSteps)
         if (configuredPlan.unsupportedTypes.isNotEmpty()) {
@@ -37,9 +35,9 @@ internal class LatexStepRunState(
             throw ExecutionException("No executable steps found in compile-step schema.")
         }
 
-        val context = LatexRunStepContext(runConfig, environment, session, mainFile)
+        val context = LatexRunStepContext(runConfig, environment, session)
         val overallHandler = StepAwareSequentialProcessHandler(configuredPlan.steps, context)
-        val stepLogConsole = LatexStepLogTabComponent(environment.project, mainFile, overallHandler)
+        val stepLogConsole = LatexStepLogTabComponent(environment.project, session.mainFile, overallHandler)
 
         return DefaultExecutionResult(stepLogConsole, overallHandler)
     }

@@ -13,8 +13,9 @@ internal object LatexCompileRunStepProvider : LatexRunStepProvider {
         "compile-latex",
     )
 
-    override fun create(stepConfig: LatexStepRunConfigurationOptions): LatexRunStep = LatexCompileRunStep(
-        stepConfig as? LatexCompileStepOptions
+    override fun create(stepConfig: LatexStepRunConfigurationOptions): LatexRunStep {
+        val compileStep = stepConfig as? LatexCompileStepOptions
             ?: error("Expected LatexCompileStepOptions for $type, but got ${stepConfig::class.simpleName}")
-    )
+        return LatexCompileRunStep(compileStep)
+    }
 }

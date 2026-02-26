@@ -42,7 +42,7 @@ internal class StepArtifactSync(
         val baseFileName = makeindexBaseFileName(step)
         copyFiles(
             sourceDir = workingDirectory,
-            destinationDir = Path(context.mainFile.parent.path),
+            destinationDir = Path(context.session.mainFile.parent.path),
             baseFileName = baseFileName,
             extensions = FileMagic.indexFileExtensions,
             registerCleanup = true,
@@ -104,16 +104,16 @@ internal class StepArtifactSync(
         if (override != null) {
             return override
         }
-        return getMakeindexOptions(context.mainFile, context.runConfig.project)["name"]
-            ?: context.mainFile.nameWithoutExtension
+        return getMakeindexOptions(context.session.mainFile, context.runConfig.project)["name"]
+            ?: context.session.mainFile.nameWithoutExtension
     }
 
     private fun makeindexWorkingDirectory(step: MakeindexStepOptions): Path? =
         CommandLineRunStep.resolveWorkingDirectory(context, step.workingDirectoryPath)
 
     private fun auxOrOutputDirectory(): Path? =
-        context.session.resolvedAuxDir?.path?.let(Path::of)
-            ?: context.session.resolvedOutputDir?.path?.let(Path::of)
+        context.session.auxDir?.path?.let(Path::of)
+            ?: context.session.outputDir?.path?.let(Path::of)
 
     private fun sameDirectory(left: Path, right: Path): Boolean = runCatching {
         left.toRealPath() == right.toRealPath()

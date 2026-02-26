@@ -20,7 +20,7 @@ internal object MakeglossariesCommandRunStepProvider : LatexRunStepProvider {
             val options = stepConfig as? MakeglossariesStepOptions
                 ?: error("Expected MakeglossariesStepOptions for $type, but got ${stepConfig::class.simpleName}")
             val executable = options.executable?.trim().takeUnless { it.isNullOrBlank() } ?: "makeglossaries"
-            val arguments = options.arguments?.trim().takeUnless { it.isNullOrBlank() } ?: context.mainFile.nameWithoutExtension
+            val arguments = options.arguments?.trim().takeUnless { it.isNullOrBlank() } ?: context.session.mainFile.nameWithoutExtension
             "$executable $arguments"
         },
         workingDirectorySupplier = { context ->

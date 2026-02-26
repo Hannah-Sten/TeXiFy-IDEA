@@ -21,7 +21,7 @@ internal class LatexCompileStepFragmentedEditor(
     initialStep: LatexCompileStepOptions = LatexCompileStepOptions(),
 ) : AbstractStepFragmentedEditor<LatexCompileStepOptions>(initialStep) {
 
-    private val compiler = ComboBox(LatexCompiler.entries.filter { it != LatexCompiler.LATEXMK }.toTypedArray())
+    private val compiler = ComboBox(LatexCompiler.entries.toTypedArray())
     private val compilerRow = LabeledComponent.create(compiler, "Compiler")
 
     private val compilerPath = TextFieldWithBrowseButton().apply {
@@ -60,7 +60,7 @@ internal class LatexCompileStepFragmentedEditor(
             name = "Compiler",
             component = compilerRow,
             reset = { step, component ->
-                component.component.selectedItem = step.compiler.takeIf { it != LatexCompiler.LATEXMK } ?: LatexCompiler.PDFLATEX
+                component.component.selectedItem = step.compiler
             },
             apply = { step, component ->
                 val selectedCompiler = component.component.selectedItem as? LatexCompiler ?: LatexCompiler.PDFLATEX

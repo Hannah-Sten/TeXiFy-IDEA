@@ -8,13 +8,13 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.io.awaitExit
 import com.intellij.util.execution.ParametersListUtil
-import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
+import nl.hannahsten.texifyidea.run.compiler.LatexCompilePrograms
 import nl.hannahsten.texifyidea.run.latex.LatexmkCompileStepOptions
 import nl.hannahsten.texifyidea.run.latex.LatexPathResolver
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationStaticSupport
-import nl.hannahsten.texifyidea.run.latex.LatexRunSessionState
-import nl.hannahsten.texifyidea.run.latex.LatexmkModeService
+import nl.hannahsten.texifyidea.run.latex.LatexSessionInitializer
+import nl.hannahsten.texifyidea.run.latex.step.LatexmkCompileRunStep
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.runInBackgroundWithoutProgress
 import java.nio.file.Path
@@ -81,20 +81,17 @@ object LatexmkCleanUtil {
 
     private fun buildCleanCommand(runConfig: LatexRunConfiguration, mainFile: VirtualFile, cleanAll: Boolean): List<String>? {
         val latexmkStep = runConfig.primaryCompileStep() as? LatexmkCompileStepOptions ?: return null
-        val session = LatexRunSessionState(
-            resolvedMainFile = mainFile,
-            resolvedWorkingDirectory = LatexPathResolver.resolve(runConfig.workingDirectory, mainFile, runConfig.project),
-        )
+        val session = LatexSessionInitializer.initializeForModel(runConfig, mainFile)
         val distributionType = runConfig.getLatexDistributionType()
         val executable = latexmkStep.compilerPath ?: LatexSdkUtil.getExecutableName(
-            LatexCompiler.LATEXMK.executableName,
+            LatexCompilePrograms.LATEXMK_EXECUTABLE,
             runConfig.project,
             runConfig.getLatexSdk(),
             distributionType,
         )
 
         val command = mutableListOf(executable)
-        val compilerArguments = LatexmkModeService.buildArguments(runConfig, session, latexmkStep)
+        val compilerArguments = LatexmkCompileRunStep.buildArguments(runConfig, session, latexmkStep)
         if (compilerArguments.isNotBlank()) {
             command += ParametersListUtil.parse(compilerArguments)
         }

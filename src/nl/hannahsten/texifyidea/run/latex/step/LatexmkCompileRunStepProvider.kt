@@ -14,7 +14,7 @@ internal object LatexmkCompileRunStepProvider : LatexRunStepProvider {
         "latexmk",
     )
 
-    override fun create(stepConfig: LatexStepRunConfigurationOptions): LatexRunStep = LatexCompileRunStep(
+    override fun create(stepConfig: LatexStepRunConfigurationOptions): LatexRunStep = LatexmkCompileRunStep(
         stepConfig as? LatexmkCompileStepOptions
             ?: error("Expected LatexmkCompileStepOptions for $type, but got ${stepConfig::class.simpleName}")
     )

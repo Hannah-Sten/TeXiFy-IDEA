@@ -34,8 +34,6 @@ class LatexRunConfiguration(
 
     var isAutoCompiling = false
 
-    private var activeStepIdForExecution: String? = null
-
     override fun getOptions(): LatexRunConfigurationOptions =
         super.getOptions() as LatexRunConfigurationOptions
 
@@ -106,7 +104,7 @@ class LatexRunConfiguration(
 
     var pdfViewer: PdfViewer?
         get() {
-            val viewerName = activeOrPrimaryViewerStep()?.pdfViewerName
+            val viewerName = primaryViewerStep()?.pdfViewerName
             return PdfViewer.availableViewers.firstOrNull { it.name == viewerName }
                 ?: PdfViewer.firstAvailableViewer
         }
@@ -197,7 +195,6 @@ class LatexRunConfiguration(
     override fun clone(): RunConfiguration {
         val cloned = super.clone() as LatexRunConfiguration
         cloned.isAutoCompiling = false
-        cloned.activeStepIdForExecution = null
         cloned.configOptions.environmentVariables.clear()
         cloned.configOptions.environmentVariables.addAll(configOptions.environmentVariables.map { it.deepCopy() })
         cloned.configOptions.steps.clear()
@@ -210,62 +207,36 @@ class LatexRunConfiguration(
         this.outputPath = pathOrNull(fileOutputPath)
     }
 
-    internal fun activateStepForExecution(stepId: String?) {
-        activeStepIdForExecution = stepId
-    }
-
-    internal fun activeCompileStep(): LatexStepRunConfigurationOptions? = activeOrPrimaryCompileStep()
-
     internal fun primaryCompileStep(): LatexStepRunConfigurationOptions? =
         steps.firstOrNull { it.enabled && (it is LatexCompileStepOptions || it is LatexmkCompileStepOptions) }
 
     internal fun hasEnabledLatexmkStep(): Boolean =
         steps.any { it.enabled && it is LatexmkCompileStepOptions }
 
-    internal fun activeCompiler(): LatexCompiler? = when (val step = activeOrPrimaryCompileStep()) {
+    internal fun primaryCompiler(): LatexCompiler? = when (val step = primaryCompileStep()) {
         is LatexCompileStepOptions -> step.compiler
-        is LatexmkCompileStepOptions -> LatexCompiler.LATEXMK
         else -> null
     }
 
-    internal fun activeCompilerPath(): String? = when (val step = activeOrPrimaryCompileStep()) {
+    internal fun primaryCompilerPath(): String? = when (val step = primaryCompileStep()) {
         is LatexCompileStepOptions -> step.compilerPath
         is LatexmkCompileStepOptions -> step.compilerPath
         else -> null
     }
 
-    internal fun activeOutputFormat(): Format = when (val step = activeOrPrimaryCompileStep()) {
+    internal fun primaryOutputFormat(): Format = when (val step = primaryCompileStep()) {
         is LatexCompileStepOptions -> step.outputFormat
         else -> Format.PDF
     }
 
-    internal fun activeBeforeRunCommand(): String? = when (val step = activeOrPrimaryCompileStep()) {
+    internal fun primaryBeforeRunCommand(): String? = when (val step = primaryCompileStep()) {
         is LatexCompileStepOptions -> step.beforeRunCommand
         is LatexmkCompileStepOptions -> step.beforeRunCommand
         else -> null
     }
 
-    private fun activeOrPrimaryCompileStep(): LatexStepRunConfigurationOptions? {
-        val active = activeStepIdForExecution
-            ?.let { id -> steps.firstOrNull { it.id == id && it.enabled } }
-        if (active is LatexCompileStepOptions || active is LatexmkCompileStepOptions) {
-            return active
-        }
-
-        return steps.firstOrNull {
-            it.enabled && (it is LatexCompileStepOptions || it is LatexmkCompileStepOptions)
-        }
-    }
-
-    private fun activeOrPrimaryViewerStep(): PdfViewerStepOptions? {
-        val active = activeStepIdForExecution
-            ?.let { id -> steps.firstOrNull { it.id == id && it.enabled } }
-        if (active is PdfViewerStepOptions) {
-            return active
-        }
-
-        return steps.firstOrNull { it.enabled && it is PdfViewerStepOptions } as? PdfViewerStepOptions
-    }
+    internal fun primaryViewerStep(): PdfViewerStepOptions? =
+        steps.firstOrNull { it.enabled && it is PdfViewerStepOptions } as? PdfViewerStepOptions
 
     internal fun ensurePrimaryCompileStepClassic(): LatexCompileStepOptions {
         val index = steps.indexOfFirst {

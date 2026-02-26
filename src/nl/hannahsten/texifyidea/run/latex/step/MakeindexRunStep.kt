@@ -32,7 +32,7 @@ internal class MakeindexRunStep(
         val configurator = ProgramParametersConfigurator()
         return createCompilationHandler(
             environment = context.environment,
-            mainFile = context.mainFile,
+            mainFile = context.session.mainFile,
             command = command,
             workingDirectory = workingDirectory,
             expandMacrosEnvVariables = context.runConfig.expandMacrosEnvVariables,
@@ -42,12 +42,12 @@ internal class MakeindexRunStep(
     }
 
     internal fun buildCommand(context: LatexRunStepContext): List<String> {
-        val makeindexOptions = getMakeindexOptions(context.mainFile, context.runConfig.project)
+        val makeindexOptions = getMakeindexOptions(context.session.mainFile, context.runConfig.project)
         val baseFileName = stepConfig.targetBaseNameOverride
             ?.trim()
             ?.takeIf(String::isNotBlank)
             ?: makeindexOptions["name"]
-            ?: context.mainFile.nameWithoutExtension
+            ?: context.session.mainFile.nameWithoutExtension
 
         val command = mutableListOf(stepConfig.program.executableName)
         val parsedArguments = stepConfig.commandLineArguments

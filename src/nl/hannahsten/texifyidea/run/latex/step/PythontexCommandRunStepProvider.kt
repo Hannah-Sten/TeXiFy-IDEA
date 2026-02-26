@@ -20,7 +20,7 @@ internal object PythontexCommandRunStepProvider : LatexRunStepProvider {
             val options = stepConfig as? PythontexStepOptions
                 ?: error("Expected PythontexStepOptions for $type, but got ${stepConfig::class.simpleName}")
             val executable = options.executable?.trim().takeUnless { it.isNullOrBlank() } ?: "pythontex"
-            val arguments = options.arguments?.trim().takeUnless { it.isNullOrBlank() } ?: context.mainFile.nameWithoutExtension
+            val arguments = options.arguments?.trim().takeUnless { it.isNullOrBlank() } ?: context.session.mainFile.nameWithoutExtension
             "$executable $arguments"
         },
         workingDirectorySupplier = { context ->

@@ -23,7 +23,7 @@ internal object XindyCommandRunStepProvider : LatexRunStepProvider {
                 ?: error("Expected XindyStepOptions for $type, but got ${stepConfig::class.simpleName}")
             val executable = options.executable?.trim().takeUnless { it.isNullOrBlank() } ?: "xindy"
             val arguments = options.arguments?.trim().takeUnless { it.isNullOrBlank() }
-                ?: context.mainFile.nameWithoutExtension.appendExtension("idx")
+                ?: context.session.mainFile.nameWithoutExtension.appendExtension("idx")
             "$executable $arguments"
         },
         workingDirectorySupplier = { context ->

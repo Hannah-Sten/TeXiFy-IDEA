@@ -8,6 +8,7 @@ import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.allParentMagicComments
 import nl.hannahsten.texifyidea.lang.predefined.CommandNames
+import nl.hannahsten.texifyidea.run.compiler.LatexCompilePrograms
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.BibtexStepOptions
 import nl.hannahsten.texifyidea.run.latex.LatexCompileStepOptions
@@ -54,18 +55,15 @@ internal object LatexStepAutoConfigurator {
         }
 
         val commandSpec = resolveCommandSpec(runConfig, contextPsiFile)
-        when (commandSpec.compiler) {
-            LatexCompiler.LATEXMK -> {
-                val step = ensurePrimaryCompileStepLatexmk(baseSteps)
-                step.compilerArguments = commandSpec.arguments
-                step.latexmkCompileMode = LatexmkCompileMode.AUTO
-            }
-
-            else -> {
-                val step = ensurePrimaryCompileStepClassic(baseSteps)
-                step.compiler = commandSpec.compiler
-                step.compilerArguments = commandSpec.arguments
-            }
+        if (commandSpec.isLatexmk) {
+            val step = ensurePrimaryCompileStepLatexmk(baseSteps)
+            step.compilerArguments = commandSpec.arguments
+            step.latexmkCompileMode = LatexmkCompileMode.AUTO
+        }
+        else {
+            val step = ensurePrimaryCompileStepClassic(baseSteps)
+            step.compiler = commandSpec.compiler ?: LatexCompiler.PDFLATEX
+            step.compilerArguments = commandSpec.arguments
         }
 
         runConfig.workingDirectory = resolveWorkingDirectory(commandSpec.compiler, mainVirtualFile)
@@ -297,7 +295,7 @@ internal object LatexStepAutoConfigurator {
             val runCommand = magicComments.value(DefaultMagicKeys.COMPILER)
             val runProgram = magicComments.value(DefaultMagicKeys.PROGRAM)
             val cslFallback = if (contextPsiFile.includedPackagesInFileset().contains(LatexLib.CITATION_STYLE_LANGUAGE)) {
-                LatexCompiler.LUALATEX.name
+                LatexCompiler.LUALATEX.executableName
             }
             else {
                 null
@@ -312,9 +310,20 @@ internal object LatexStepAutoConfigurator {
             command
         }
 
-        val selectedCompiler = compilerExecutable?.let { LatexCompiler.byExecutableName(it) }
-            ?: runConfig.activeCompiler()
-            ?: LatexCompiler.PDFLATEX
+        val useLatexmk = when {
+            LatexCompilePrograms.isLatexmkExecutable(compilerExecutable) -> true
+            compilerExecutable == null && runConfig.primaryCompileStep() is LatexmkCompileStepOptions -> true
+            else -> false
+        }
+        val selectedCompiler = if (useLatexmk) {
+            null
+        }
+        else {
+            compilerExecutable
+                ?.let { LatexCompilePrograms.classicByExecutableName(it) }
+                ?: runConfig.primaryCompiler()
+                ?: LatexCompiler.PDFLATEX
+        }
 
         val commandArguments = if (command != null) {
             command.removePrefix(compilerExecutable ?: "").trim().ifBlank { null }
@@ -323,11 +332,11 @@ internal object LatexStepAutoConfigurator {
             null
         }
 
-        return CommandSpec(selectedCompiler, commandArguments)
+        return CommandSpec(selectedCompiler, commandArguments, useLatexmk)
     }
 
     private fun resolveWorkingDirectory(
-        compiler: LatexCompiler,
+        compiler: LatexCompiler?,
         mainVirtualFile: VirtualFile,
     ): Path? {
         if (compiler != LatexCompiler.TECTONIC || !mainVirtualFile.hasTectonicTomlFile()) {
@@ -389,8 +398,9 @@ internal object LatexStepAutoConfigurator {
     }
 
     private data class CommandSpec(
-        val compiler: LatexCompiler,
+        val compiler: LatexCompiler?,
         val arguments: String?,
+        val isLatexmk: Boolean,
     )
 
     private data class PsiSignals(

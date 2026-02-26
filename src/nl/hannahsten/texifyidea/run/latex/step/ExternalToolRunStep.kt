@@ -35,7 +35,7 @@ internal class ExternalToolRunStep(
         val configurator = ProgramParametersConfigurator()
         return createCompilationHandler(
             environment = context.environment,
-            mainFile = context.mainFile,
+            mainFile = context.session.mainFile,
             command = command,
             workingDirectory = CommandLineRunStep.resolveWorkingDirectory(context, stepConfig.workingDirectoryPath),
             expandMacrosEnvVariables = context.runConfig.expandMacrosEnvVariables,

@@ -16,16 +16,6 @@ import nl.hannahsten.texifyidea.util.Log
 import java.nio.file.Path
 import kotlin.io.path.exists
 
-internal data class ProcessContext(
-    val environment: ExecutionEnvironment,
-    val mainFile: VirtualFile,
-    val command: List<String>,
-    val workingDirectory: Path,
-    val expandMacrosEnvVariables: Boolean,
-    val envs: Map<String, String>,
-    val expandEnvValue: (String) -> String,
-)
-
 @Throws(ExecutionException::class)
 internal fun createCompilationHandler(
     environment: ExecutionEnvironment,
@@ -36,50 +26,42 @@ internal fun createCompilationHandler(
     envs: Map<String, String>,
     expandEnvValue: (String) -> String,
 ): KillableProcessHandler {
-    val context = ProcessContext(
-        environment = environment,
-        mainFile = mainFile,
-        command = command,
-        workingDirectory = workingDirectory ?: Path.of(mainFile.parent.path),
-        expandMacrosEnvVariables = expandMacrosEnvVariables,
-        envs = envs,
-        expandEnvValue = expandEnvValue,
-    )
+    val resolvedWorkingDirectory = workingDirectory ?: Path.of(mainFile.parent.path)
 
-    if (context.workingDirectory.exists().not()) {
+    if (resolvedWorkingDirectory.exists().not()) {
         Notification(
             "LaTeX",
             "Could not find working directory",
-            "The directory containing the main file could not be found: ${context.workingDirectory}",
+            "The directory containing the main file could not be found: $resolvedWorkingDirectory",
             NotificationType.ERROR,
-        ).notify(context.environment.project)
-        throw ExecutionException("Could not find working directory ${context.workingDirectory} for file ${context.mainFile}")
+        ).notify(environment.project)
+        throw ExecutionException("Could not find working directory $resolvedWorkingDirectory for file $mainFile")
     }
 
-    val envVariables = if (!context.expandMacrosEnvVariables) {
-        context.envs
+    val envVariables = if (!expandMacrosEnvVariables) {
+        envs
     }
     else {
         ExecutionManagerImpl.withEnvironmentDataContext(
-            SimpleDataContext.getSimpleContext(CommonDataKeys.VIRTUAL_FILE, context.mainFile, context.environment.dataContext),
+            SimpleDataContext.getSimpleContext(CommonDataKeys.VIRTUAL_FILE, mainFile, environment.dataContext),
         ).use {
-            context.envs.mapValues { context.expandEnvValue(it.value) }
+            envs.mapValues { expandEnvValue(it.value) }
         }
     }
 
-    if (SystemInfo.isWindows && context.command.sumOf { it.length } > 10_000) {
-        throw ExecutionException("The following command was too long to run: ${context.command.joinToString(" ")}")
+    if (SystemInfo.isWindows && command.sumOf { it.length } > 10_000) {
+        throw ExecutionException("The following command was too long to run: ${command.joinToString(" ")}")
     }
 
-    val commandLine = GeneralCommandLine(context.command)
-        .withWorkingDirectory(context.workingDirectory)
+    val commandLine = GeneralCommandLine(command)
+        .withWorkingDirectory(resolvedWorkingDirectory)
         .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE)
         .withEnvironment(envVariables)
 
-    Log.debug("Executing ${commandLine.commandLineString} in ${context.workingDirectory}")
+    Log.debug("Executing ${commandLine.commandLineString} in $resolvedWorkingDirectory")
 
     val handler = KillableProcessHandler(commandLine)
-    ProcessTerminatedListener.attach(handler, context.environment.project)
+    ProcessTerminatedListener.attach(handler, environment.project)
 
     return handler
 }

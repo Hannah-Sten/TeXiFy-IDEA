@@ -27,7 +27,7 @@ internal class CommandLineRunStep(
 
         return createCompilationHandler(
             environment = context.environment,
-            mainFile = context.mainFile,
+            mainFile = context.session.mainFile,
             command = command,
             workingDirectory = workingDirectorySupplier(context),
             expandMacrosEnvVariables = runConfig.expandMacrosEnvVariables,
@@ -43,13 +43,13 @@ internal class CommandLineRunStep(
                 ?.trim()
                 ?.takeIf(String::isNotBlank)
                 ?.let(::pathOrNull)
-                ?.let { LatexPathResolver.resolve(it, context.mainFile, context.environment.project) }
+                ?.let { LatexPathResolver.resolve(it, context.session.mainFile, context.environment.project) }
             return configured ?: defaultWorkingDirectory(context)
         }
 
-        fun defaultWorkingDirectory(context: LatexRunStepContext): Path? = context.session.resolvedAuxDir?.let { Path.of(it.path) }
-            ?: context.session.resolvedOutputDir?.let { Path.of(it.path) }
-            ?: context.session.resolvedWorkingDirectory
-            ?: Path.of(context.mainFile.parent.path)
+        fun defaultWorkingDirectory(context: LatexRunStepContext): Path? = context.session.auxDir?.let { Path.of(it.path) }
+            ?: context.session.outputDir?.let { Path.of(it.path) }
+            ?: context.session.workingDirectory
+            ?: Path.of(context.session.mainFile.parent.path)
     }
 }

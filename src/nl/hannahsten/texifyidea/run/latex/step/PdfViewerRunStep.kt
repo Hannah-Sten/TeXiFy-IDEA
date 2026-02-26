@@ -21,7 +21,6 @@ internal class PdfViewerRunStep(
     override val id: String = stepConfig.type
 
     override fun createProcess(context: LatexRunStepContext): ProcessHandler {
-        context.runConfig.activateStepForExecution(configId)
         val process = object : ProcessHandler() {
             override fun destroyProcessImpl() {
                 notifyProcessTerminated(0)
@@ -39,7 +38,6 @@ internal class PdfViewerRunStep(
                 super.startNotify()
                 scheduleViewer(context, this)
                 notifyProcessTerminated(0)
-                context.runConfig.activateStepForExecution(null)
             }
         }
         ProcessTerminatedListener.attach(process, context.environment.project)
@@ -78,8 +76,7 @@ internal class PdfViewerRunStep(
             ?: context.environment.project.selectedTextEditor()?.editor
         val line = editor?.document?.getLineNumber(editor.caretOffset())?.plus(1) ?: 0
         val currentFilePath = editor?.document?.let { FileDocumentManager.getInstance().getFile(it)?.path }
-            ?: context.session.resolvedMainFile?.path
-            ?: return
+            ?: context.session.mainFile.path
 
         handler.addProcessListener(
             OpenViewerListener(

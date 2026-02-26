@@ -2,14 +2,11 @@ package nl.hannahsten.texifyidea.run.compiler
 
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.openapi.module.ModuleUtil
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.rootManager
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.execution.ParametersListUtil
+import nl.hannahsten.texifyidea.run.latex.LatexCompileStepOptions
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
-import nl.hannahsten.texifyidea.run.latex.LatexPathResolver
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationStaticSupport
 import nl.hannahsten.texifyidea.run.latex.LatexRunSessionState
 import nl.hannahsten.texifyidea.settings.sdk.DockerSdk
 import nl.hannahsten.texifyidea.settings.sdk.DockerSdkAdditionalData
@@ -17,120 +14,68 @@ import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.files.hasTectonicTomlFile
 import nl.hannahsten.texifyidea.util.runCommand
-import java.util.*
+import java.util.Locale
 
-/**
- * @author Hannah Schellekens, Sten Wessel
- */
 @Suppress("DuplicatedCode")
 enum class LatexCompiler(private val displayName: String, val executableName: String) {
 
     PDFLATEX("pdfLaTeX", "pdflatex") {
 
         override fun createCommand(
-            runConfig: LatexRunConfiguration,
+            session: LatexRunSessionState,
+            stepConfig: LatexCompileStepOptions,
             auxilPath: String?,
             outputPath: String,
-            moduleRoot: VirtualFile?,
-            moduleRoots: Array<VirtualFile>
+            moduleRoots: Array<VirtualFile>,
         ): MutableList<String> {
-            // For now only support custom executable for TeX Live
-            // At least avoids prepending a full path to a supposed TeX Live executable when in fact it will be prepended by a docker command
-            val executable = LatexSdkUtil.getExecutableName(executableName, runConfig.project, runConfig.getLatexSdk(), runConfig.getLatexDistributionType())
-            val command = mutableListOf(runConfig.activeCompilerPath() ?: executable)
+            val executable = stepConfig.compilerPath ?: LatexSdkUtil.getExecutableName(
+                executableName,
+                session.project,
+                session.latexSdk,
+                session.distributionType,
+            )
+            return mutableListOf(executable).apply {
+                add("-file-line-error")
+                add("-interaction=nonstopmode")
+                add("-synctex=1")
+                add("-output-format=${stepConfig.outputFormat.name.lowercase(Locale.getDefault())}")
+                add("-output-directory=$outputPath")
 
-            command.add("-file-line-error")
-            command.add("-interaction=nonstopmode")
-            command.add("-synctex=1")
-            command.add("-output-format=${runConfig.activeOutputFormat().name.lowercase(Locale.getDefault())}")
+                if (auxilPath != null && session.distributionType.isMiktex(project = session.project)) {
+                    add("-aux-directory=$auxilPath")
+                }
 
-            command.add("-output-directory=$outputPath")
-
-            // -aux-directory only exists on MiKTeX
-            if (auxilPath != null && runConfig.getLatexDistributionType().isMiktex(project = runConfig.project)) {
-                command.add("-aux-directory=$auxilPath")
-            }
-
-            // Prepend root paths to the input search path
-            if (runConfig.getLatexDistributionType().isMiktex(runConfig.project)) {
-                moduleRoots.forEach {
-                    command.add("-include-directory=${it.path}")
+                if (session.distributionType.isMiktex(session.project)) {
+                    moduleRoots.forEach {
+                        add("-include-directory=${it.path}")
+                    }
                 }
             }
-
-            return command
         }
     },
 
     LUALATEX("LuaLaTeX", "lualatex") {
 
         override fun createCommand(
-            runConfig: LatexRunConfiguration,
+            session: LatexRunSessionState,
+            stepConfig: LatexCompileStepOptions,
             auxilPath: String?,
             outputPath: String,
-            moduleRoot: VirtualFile?,
-            moduleRoots: Array<VirtualFile>
+            moduleRoots: Array<VirtualFile>,
         ): MutableList<String> {
-            val command = mutableListOf(
-                runConfig.activeCompilerPath() ?: LatexSdkUtil.getExecutableName(
-                    executableName,
-                    runConfig.project,
-                    runConfig.getLatexSdk(),
-                    runConfig.getLatexDistributionType()
-                )
+            val executable = stepConfig.compilerPath ?: LatexSdkUtil.getExecutableName(
+                executableName,
+                session.project,
+                session.latexSdk,
+                session.distributionType,
             )
-
-            // Some commands are the same as for pdflatex
-            command.add("-file-line-error")
-            command.add("-interaction=nonstopmode")
-            command.add("-synctex=1")
-            command.add("-output-format=${runConfig.activeOutputFormat().name.lowercase(Locale.getDefault())}")
-
-            command.add("-output-directory=$outputPath")
-
-            // Note that lualatex has no -aux-directory
-            return command
-        }
-    },
-
-    LATEXMK("Latexmk", "latexmk") {
-
-        override val includesBibtex = true
-
-        override val includesMakeindex = true
-
-        override val handlesNumberOfCompiles = true
-
-        override val outputFormats = arrayOf(Format.PDF)
-
-        override fun createCommand(
-            runConfig: LatexRunConfiguration,
-            auxilPath: String?,
-            outputPath: String,
-            moduleRoot: VirtualFile?,
-            moduleRoots: Array<VirtualFile>
-        ): MutableList<String> {
-            val command = mutableListOf(
-                runConfig.activeCompilerPath() ?: LatexSdkUtil.getExecutableName(
-                    executableName,
-                    runConfig.project,
-                    runConfig.getLatexSdk(),
-                    runConfig.getLatexDistributionType()
-                )
-            )
-
-            // Keep diagnostic behavior consistent, even when latexmkrc is present.
-            command.add("-file-line-error")
-            command.add("-interaction=nonstopmode")
-
-            command.add("-outdir=$outputPath")
-
-            if (auxilPath != null && auxilPath != outputPath) {
-                command.add("-auxdir=$auxilPath")
+            return mutableListOf(executable).apply {
+                add("-file-line-error")
+                add("-interaction=nonstopmode")
+                add("-synctex=1")
+                add("-output-format=${stepConfig.outputFormat.name.lowercase(Locale.getDefault())}")
+                add("-output-directory=$outputPath")
             }
-
-            // -include-directory does not work with latexmk
-            return command
         }
     },
 
@@ -139,45 +84,39 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         override val outputFormats = arrayOf(Format.PDF, Format.XDV)
 
         override fun createCommand(
-            runConfig: LatexRunConfiguration,
+            session: LatexRunSessionState,
+            stepConfig: LatexCompileStepOptions,
             auxilPath: String?,
             outputPath: String,
-            moduleRoot: VirtualFile?,
-            moduleRoots: Array<VirtualFile>
+            moduleRoots: Array<VirtualFile>,
         ): MutableList<String> {
-            val command = mutableListOf(
-                runConfig.activeCompilerPath() ?: LatexSdkUtil.getExecutableName(
-                    executableName,
-                    runConfig.project,
-                    runConfig.getLatexSdk(),
-                    runConfig.getLatexDistributionType()
-                )
+            val executable = stepConfig.compilerPath ?: LatexSdkUtil.getExecutableName(
+                executableName,
+                session.project,
+                session.latexSdk,
+                session.distributionType,
             )
+            return mutableListOf(executable).apply {
+                add("-file-line-error")
+                add("-interaction=nonstopmode")
+                add("-synctex=1")
 
-            // As usual, available command line options can be viewed with xelatex --help
-            // On TeX Live, installing collection-xetex should be sufficient to get xelatex
-            command.add("-file-line-error")
-            command.add("-interaction=nonstopmode")
-            command.add("-synctex=1")
+                if (stepConfig.outputFormat == Format.XDV) {
+                    add("-no-pdf")
+                }
 
-            if (runConfig.activeOutputFormat() == Format.XDV) {
-                command.add("-no-pdf")
-            }
+                add("-output-directory=$outputPath")
 
-            command.add("-output-directory=$outputPath")
+                if (auxilPath != null && session.distributionType.isMiktex(session.project)) {
+                    add("-aux-directory=$auxilPath")
+                }
 
-            if (auxilPath != null && runConfig.getLatexDistributionType().isMiktex(runConfig.project)) {
-                command.add("-aux-directory=$auxilPath")
-            }
-
-            // Prepend root paths to the input search path
-            if (runConfig.getLatexDistributionType().isMiktex(runConfig.project)) {
-                moduleRoots.forEach {
-                    command.add("-include-directory=${it.path}")
+                if (session.distributionType.isMiktex(session.project)) {
+                    moduleRoots.forEach {
+                        add("-include-directory=${it.path}")
+                    }
                 }
             }
-
-            return command
         }
     },
 
@@ -186,28 +125,21 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         override val outputFormats = arrayOf(Format.PDF)
 
         override fun createCommand(
-            runConfig: LatexRunConfiguration,
+            session: LatexRunSessionState,
+            stepConfig: LatexCompileStepOptions,
             auxilPath: String?,
             outputPath: String,
-            moduleRoot: VirtualFile?,
-            moduleRoots: Array<VirtualFile>
+            moduleRoots: Array<VirtualFile>,
         ): MutableList<String> {
-            val command = mutableListOf(
-                runConfig.activeCompilerPath() ?: LatexSdkUtil.getExecutableName(
-                    executableName,
-                    runConfig.project,
-                    runConfig.getLatexSdk(),
-                    runConfig.getLatexDistributionType()
-                )
+            val executable = stepConfig.compilerPath ?: LatexSdkUtil.getExecutableName(
+                executableName,
+                session.project,
+                session.latexSdk,
+                session.distributionType,
             )
-
-            // texliveonfly is a Python script which calls other compilers (by default pdflatex), main feature is downloading packages automatically
-            // commands can be passed to those compilers with the arguments flag, however apparently IntelliJ cannot handle quotes so we cannot pass multiple arguments to pdflatex.
-            // Fortunately, -synctex=1 and -interaction=nonstopmode are on by default in texliveonfly
-            // Since adding one will work without any quotes, we choose the output directory.
-            command.add("--arguments=--output-directory=$outputPath")
-
-            return command
+            return mutableListOf(executable).apply {
+                add("--arguments=--output-directory=$outputPath")
+            }
         }
     },
 
@@ -220,29 +152,24 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         override val outputFormats = arrayOf(Format.PDF, Format.HTML, Format.XDV, Format.AUX)
 
         override fun createCommand(
-            runConfig: LatexRunConfiguration,
+            session: LatexRunSessionState,
+            stepConfig: LatexCompileStepOptions,
             auxilPath: String?,
             outputPath: String,
-            moduleRoot: VirtualFile?,
-            moduleRoots: Array<VirtualFile>
+            moduleRoots: Array<VirtualFile>,
         ): MutableList<String> {
-            val command = mutableListOf(runConfig.activeCompilerPath() ?: executableName)
-
-            // The available command line arguments can be found at https://github.com/tectonic-typesetting/tectonic/blob/d7a8497c90deb08b5e5792a11d6e8b082f53bbb7/src/bin/tectonic.rs#L158
-            // The V2 CLI uses a toml file and should not have arguments
-            if (LatexRunConfigurationStaticSupport.resolveMainFile(runConfig)?.hasTectonicTomlFile() != true) {
-                command.add("--synctex")
-
-                command.add("--outfmt=${runConfig.activeOutputFormat().name.lowercase(Locale.getDefault())}")
-
-                command.add("--outdir=$outputPath")
+            val executable = stepConfig.compilerPath ?: executableName
+            return mutableListOf(executable).apply {
+                if (!session.mainFile.hasTectonicTomlFile()) {
+                    add("--synctex")
+                    add("--outfmt=${stepConfig.outputFormat.name.lowercase(Locale.getDefault())}")
+                    add("--outdir=$outputPath")
+                }
+                else {
+                    add("-X")
+                    add("build")
+                }
             }
-            else {
-                command.add("-X")
-                command.add("build")
-            }
-
-            return command
         }
     },
 
@@ -255,130 +182,86 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         override val outputFormats = arrayOf(Format.PDF)
 
         override fun createCommand(
-            runConfig: LatexRunConfiguration,
+            session: LatexRunSessionState,
+            stepConfig: LatexCompileStepOptions,
             auxilPath: String?,
             outputPath: String,
-            moduleRoot: VirtualFile?,
-            moduleRoots: Array<VirtualFile>
-        ): MutableList<String> {
-            // Arara handles everything as configured by magic comments in the file.
-            // We cannot use --verbose because it relies on user input
-            return mutableListOf(runConfig.activeCompilerPath() ?: executableName)
-        }
+            moduleRoots: Array<VirtualFile>,
+        ): MutableList<String> = mutableListOf(stepConfig.compilerPath ?: executableName)
     },
     ;
 
-    /**
-     * Get the execution command for the latex compiler.
-     *
-     * @param runConfig
-     *          The run configuration object to get the command for.
-     * @param project
-     *          The current project.
-     */
-    fun getCommand(runConfig: LatexRunConfiguration, project: Project, session: LatexRunSessionState): List<String>? {
-        val mainFile = session.resolvedMainFile ?: return null
-        // Getting the content root is an expensive operation (See WorkspaceFileIndexDataImpl#ensureIsUpToDate), and since it probably won't change often we reuse a cached value
-        val moduleRoot = LatexPathResolver.getMainFileContentRoot(mainFile, project)
-        // For now we disable module roots with Docker
-        // Could be improved by mounting them to the right directory
-        val moduleRoots = if (runConfig.getLatexDistributionType().isDocker()) {
+    fun buildCommand(
+        session: LatexRunSessionState,
+        stepConfig: LatexCompileStepOptions,
+    ): List<String> {
+        val mainFile = session.mainFile
+        val moduleRoots = if (session.distributionType.isDocker()) {
             emptyArray()
         }
         else {
-            // If the project contains other non-LaTeX modules ignore them, we are only interested in source roots relevant to this file
-            // Limit the number of roots, in case the user has hundreds of roots it can exceed the maximum command line length on Windows
-            val allRoots = ModuleUtil.findModuleForFile(mainFile, runConfig.project)?.rootManager?.sourceRoots ?: emptyArray()
+            val allRoots = ModuleUtil.findModuleForFile(mainFile, session.project)?.rootManager?.sourceRoots ?: emptyArray()
             var totalLength = 0
             val roots = mutableListOf<VirtualFile>()
             for (root in allRoots) {
                 totalLength += root.toString().length + " -include-directory=".length
-                // See LatexCommandLineState
                 if (totalLength > 10_000) break
                 roots.add(root)
             }
             roots.toTypedArray()
         }
 
-        val outputPath = if (runConfig.getLatexDistributionType() == LatexDistributionType.DOCKER_MIKTEX) {
-            // If we used /miktex/work/out, an out directory would appear in the src folder on the host system
-            "/miktex/out"
-        }
-        else if (runConfig.getLatexDistributionType() == LatexDistributionType.DOCKER_TEXLIVE) {
-            "/out"
-        }
-        else if (this == LATEXMK) {
-            (session.resolvedOutputDir?.path ?: return null)
-                .toWslPathIfNeeded(runConfig.getLatexDistributionType())
-        }
-        else {
-            (session.resolvedOutputDir ?: return null)
-                .path
-                .toWslPathIfNeeded(runConfig.getLatexDistributionType())
+        val outputPath = when (session.distributionType) {
+            LatexDistributionType.DOCKER_MIKTEX -> "/miktex/out"
+            LatexDistributionType.DOCKER_TEXLIVE -> "/out"
+            else -> session.outputDir.path.toWslPathIfNeeded(session.distributionType)
         }
 
-        val auxilPath = if (runConfig.getLatexDistributionType() == LatexDistributionType.DOCKER_MIKTEX) {
-            "/miktex/auxil"
-        }
-        else if (runConfig.getLatexDistributionType() == LatexDistributionType.DOCKER_TEXLIVE) {
-            null
-        }
-        else if (this == LATEXMK) {
-            (session.resolvedAuxDir?.path)
-                ?.toWslPathIfNeeded(runConfig.getLatexDistributionType())
-        }
-        else {
-            (session.resolvedAuxDir)
-                ?.path
-                ?.toWslPathIfNeeded(runConfig.getLatexDistributionType())
+        val auxilPath = when (session.distributionType) {
+            LatexDistributionType.DOCKER_MIKTEX -> "/miktex/auxil"
+            LatexDistributionType.DOCKER_TEXLIVE -> null
+            else -> session.auxDir?.path?.toWslPathIfNeeded(session.distributionType)
         }
 
         val command = createCommand(
-            runConfig,
-            auxilPath,
-            outputPath,
-            moduleRoot,
-            moduleRoots
+            session = session,
+            stepConfig = stepConfig,
+            auxilPath = auxilPath,
+            outputPath = outputPath,
+            moduleRoots = moduleRoots,
         )
 
-        if (runConfig.getLatexDistributionType() == LatexDistributionType.WSL_TEXLIVE) {
+        if (session.distributionType == LatexDistributionType.WSL_TEXLIVE) {
             var wslCommand = GeneralCommandLine(command).commandLineString
-
-            // Custom compiler arguments specified by the user
-            session.effectiveCompilerArguments?.let { arguments ->
-                ParametersListUtil.parse(arguments)
-                    .forEach { wslCommand += " $it" }
-            }
-
-            wslCommand += " ${mainFile.path.toWslPathIfNeeded(runConfig.getLatexDistributionType())}"
-
+            stepConfig.compilerArguments
+                ?.takeIf(String::isNotBlank)
+                ?.let { arguments ->
+                    ParametersListUtil.parse(arguments).forEach { wslCommand += " $it" }
+                }
+            wslCommand += " ${mainFile.path.toWslPathIfNeeded(session.distributionType)}"
             return mutableListOf(*SystemEnvironment.wslCommand, wslCommand)
         }
 
-        if (runConfig.getLatexDistributionType().isDocker()) {
-            createDockerCommand(runConfig, session, auxilPath, outputPath, mainFile, command)
+        if (session.distributionType.isDocker()) {
+            createDockerCommand(
+                session = session,
+                dockerAuxilDir = auxilPath,
+                dockerOutputDir = outputPath,
+                command = command,
+            )
         }
 
-        // Custom compiler arguments specified by the user
-        session.effectiveCompilerArguments?.let { arguments ->
-            ParametersListUtil.parse(arguments)
-                .forEach { command.add(it) }
-        }
+        stepConfig.compilerArguments
+            ?.takeIf(String::isNotBlank)
+            ?.let { arguments ->
+                ParametersListUtil.parse(arguments).forEach(command::add)
+            }
 
-        // Run some code before running the document
-        if (runConfig.activeBeforeRunCommand()?.isNotBlank() == true) {
-            if (this == LATEXMK) {
-                // latexmk has its own flag to do this
-                command.add("-usepretex=" + runConfig.activeBeforeRunCommand())
-                command.add(mainFile.name)
-            }
-            else {
-                // pdflatex, lualatex and xelatex support this by being able to run on a given string as if it was in a file
-                command.add(runConfig.activeBeforeRunCommand() + " \\input{${mainFile.name}}")
-            }
+        if (stepConfig.beforeRunCommand?.isNotBlank() == true) {
+            command.add(stepConfig.beforeRunCommand + " \\input{${mainFile.name}}")
         }
-        else if (this != TECTONIC || mainFile.hasTectonicTomlFile() != true) {
-            if (runConfig.hasDefaultWorkingDirectory()) {
+        else if (this != TECTONIC || !mainFile.hasTectonicTomlFile()) {
+            if (session.usesDefaultWorkingDirectory) {
                 command.add(mainFile.name)
             }
             else {
@@ -389,27 +272,28 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         return command
     }
 
-    @Suppress("SameParameterValue")
     private fun createDockerCommand(
-        runConfig: LatexRunConfiguration,
         session: LatexRunSessionState,
         dockerAuxilDir: String?,
         dockerOutputDir: String?,
-        mainFile: VirtualFile,
-        command: MutableList<String>
+        command: MutableList<String>,
     ) {
-        val isMiktex = runConfig.getLatexDistributionType() == LatexDistributionType.DOCKER_MIKTEX
+        val isMiktex = session.distributionType == LatexDistributionType.DOCKER_MIKTEX
 
         if (isMiktex) {
-            // See https://hub.docker.com/r/miktex/miktex
             "docker volume create --name miktex".runCommand()
         }
 
-        // Find the sdk corresponding to the type the user has selected in the run config
         val sdk = LatexSdkUtil.getAllLatexSdks().firstOrNull { it.sdkType is DockerSdk }
+        val dockerExecutable = if (sdk == null) {
+            "docker"
+        }
+        else {
+            (sdk.sdkType as DockerSdk).getExecutableName("docker", sdk.homePath!!)
+        }
 
         val parameterList = mutableListOf(
-            if (sdk == null) "docker" else (sdk.sdkType as DockerSdk).getExecutableName("docker", sdk.homePath!!),
+            dockerExecutable,
             "run",
             "--rm",
         )
@@ -419,28 +303,26 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
                 "-v",
                 "miktex:/miktex/.miktex",
                 "-v",
-                "${mainFile.parent.path}:/miktex/work"
+                "${session.mainFile.parent.path}:/miktex/work",
             )
         }
         else {
             listOf(
                 "-v",
-                "${mainFile.parent.path}:/workdir"
+                "${session.mainFile.parent.path}:/workdir",
             )
         }
 
         if (dockerOutputDir != null) {
-            // Avoid mounting the mainfile parent also to /miktex/work/out,
-            // because there may be a good reason to make the output directory the same as the source directory
-            val outPath = session.resolvedOutputDir
-            if (outPath?.path != null && outPath != mainFile.parent) {
+            val outPath = session.outputDir
+            if (outPath != session.mainFile.parent) {
                 parameterList.addAll(listOf("-v", "${outPath.path}:$dockerOutputDir"))
             }
         }
 
         if (dockerAuxilDir != null) {
-            val auxilPath = session.resolvedAuxDir
-            if (auxilPath?.path != null && auxilPath != mainFile.parent) {
+            val auxilPath = session.auxDir
+            if (auxilPath != null && auxilPath != session.mainFile.parent) {
                 parameterList.addAll(listOf("-v", "${auxilPath.path}:$dockerAuxilDir"))
             }
         }
@@ -452,41 +334,20 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         command.addAll(0, parameterList)
     }
 
-    /**
-     * Create the command to execute to use the compiler.
-     *
-     * @param runConfig LaTeX run configuration which initiated the action of creating this command.
-     * @param moduleRoot Module root.
-     * @param moduleRoots List of source roots.
-     *
-     * @return The command to be executed.
-     */
     abstract fun createCommand(
-        runConfig: LatexRunConfiguration,
+        session: LatexRunSessionState,
+        stepConfig: LatexCompileStepOptions,
         auxilPath: String?,
         outputPath: String,
-        moduleRoot: VirtualFile?,
-        moduleRoots: Array<VirtualFile>
+        moduleRoots: Array<VirtualFile>,
     ): MutableList<String>
 
-    /**
-     * Whether the compiler includes running bibtex/biber.
-     */
     open val includesBibtex = false
 
-    /**
-     * Whether the compiler includes running index programs.
-     */
     open val includesMakeindex = false
 
-    /**
-     * Whether the compiler automatically determines the number of compiles needed.
-     */
     open val handlesNumberOfCompiles = false
 
-    /**
-     * List of output formats supported by this compiler.
-     */
     open val outputFormats: Array<Format> = arrayOf(Format.PDF, Format.DVI)
 
     override fun toString() = this.displayName
@@ -497,9 +358,6 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             it.executableName.equals(exe, true)
         } ?: PDFLATEX
 
-        /**
-         * Convert Windows paths to WSL paths.
-         */
         fun String.toWslPathIfNeeded(distributionType: LatexDistributionType): String =
             if (distributionType == LatexDistributionType.WSL_TEXLIVE) {
                 runCommand("wsl", "wslpath", "-a", this) ?: this
@@ -507,12 +365,9 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             else this
     }
 
-    /**
-     * @author Hannah Schellekens
-     */
     enum class Format {
 
-        DEFAULT, // Means: don't overwite the default, e.g. a default from the latexmkrc, i.e. don't add any command line parameters
+        DEFAULT,
         PDF,
         DVI,
         HTML,

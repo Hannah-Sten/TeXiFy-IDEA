@@ -19,18 +19,18 @@ internal class BibtexRunStep(
         val workingDirectory = CommandLineRunStep.resolveWorkingDirectory(context, stepConfig.workingDirectoryPath)
         val command = mutableListOf(stepConfig.compilerPath ?: stepConfig.bibliographyCompiler.executableName)
         if (stepConfig.bibliographyCompiler.name == "BIBER") {
-            command += "--input-directory=${workingDirectory?.toString() ?: context.mainFile.parent.path}"
+            command += "--input-directory=${workingDirectory?.toString() ?: context.session.mainFile.parent.path}"
         }
         stepConfig.compilerArguments
             ?.takeIf(String::isNotBlank)
             ?.let { command += ParametersListUtil.parse(it) }
-        command += context.mainFile.nameWithoutExtension
+        command += context.session.mainFile.nameWithoutExtension
 
         val configurator = ProgramParametersConfigurator()
 
         return createCompilationHandler(
             environment = context.environment,
-            mainFile = context.mainFile,
+            mainFile = context.session.mainFile,
             command = command,
             workingDirectory = workingDirectory,
             expandMacrosEnvVariables = context.runConfig.expandMacrosEnvVariables,
