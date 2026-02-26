@@ -10,7 +10,7 @@ import nl.hannahsten.texifyidea.run.latex.StepUiOptionIds
 import nl.hannahsten.texifyidea.run.latex.XindyStepOptions
 
 internal class XindyStepFragmentedEditor(
-    private val project: Project,
+    project: Project,
     initialStep: XindyStepOptions = XindyStepOptions(),
 ) : AbstractStepFragmentedEditor<XindyStepOptions>(initialStep) {
 

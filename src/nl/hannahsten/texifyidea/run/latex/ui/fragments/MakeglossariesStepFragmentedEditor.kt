@@ -10,7 +10,7 @@ import nl.hannahsten.texifyidea.run.latex.MakeglossariesStepOptions
 import nl.hannahsten.texifyidea.run.latex.StepUiOptionIds
 
 internal class MakeglossariesStepFragmentedEditor(
-    private val project: Project,
+    project: Project,
     initialStep: MakeglossariesStepOptions = MakeglossariesStepOptions(),
 ) : AbstractStepFragmentedEditor<MakeglossariesStepOptions>(initialStep) {
 

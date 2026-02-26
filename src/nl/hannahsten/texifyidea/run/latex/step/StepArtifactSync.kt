@@ -22,7 +22,7 @@ internal class StepArtifactSync(
         }
 
         val sourceDir = auxOrOutputDirectory() ?: return
-        val workingDirectory = makeindexWorkingDirectory(step) ?: return
+        val workingDirectory = makeindexWorkingDirectory(step)
         val baseFileName = makeindexBaseFileName(step)
         copyFiles(
             sourceDir = sourceDir,
@@ -38,7 +38,7 @@ internal class StepArtifactSync(
             return
         }
 
-        val workingDirectory = makeindexWorkingDirectory(step) ?: return
+        val workingDirectory = makeindexWorkingDirectory(step)
         val baseFileName = makeindexBaseFileName(step)
         copyFiles(
             sourceDir = workingDirectory,
@@ -113,7 +113,7 @@ internal class StepArtifactSync(
 
     private fun auxOrOutputDirectory(): Path? =
         context.session.auxDir?.path?.let(Path::of)
-            ?: context.session.outputDir?.path?.let(Path::of)
+            ?: context.session.outputDir.path.let(Path::of)
 
     private fun sameDirectory(left: Path, right: Path): Boolean = runCatching {
         left.toRealPath() == right.toRealPath()

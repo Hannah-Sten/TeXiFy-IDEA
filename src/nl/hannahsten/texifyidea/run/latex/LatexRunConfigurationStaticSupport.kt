@@ -45,12 +45,4 @@ internal object LatexRunConfigurationStaticSupport {
         val name = if (slashIndex >= 0) path.substring(slashIndex + 1) else path
         return name.substringBeforeLast('.', name)
     }
-
-    fun usesAuxilOrOutDirectory(runConfig: LatexRunConfiguration): Boolean {
-        val mainFile = resolveMainFile(runConfig)
-        val mainParent = mainFile?.parent
-        val usesAuxilDir = LatexPathResolver.resolveAuxDir(runConfig, mainFile) != mainParent
-        val usesOutDir = LatexPathResolver.resolveOutputDir(runConfig, mainFile) != mainParent
-        return usesAuxilDir || usesOutDir
-    }
 }

@@ -462,7 +462,7 @@ internal class LatexStepLogTabComponent(
         private fun messageLocation(message: ParsedStepMessage): String? {
             val raw = message.file?.name ?: message.fileName ?: return null
             val fileName = raw.substringAfterLast('/').substringAfterLast('\\')
-            return if (fileName.isBlank()) null else fileName
+            return fileName.ifBlank { null }
         }
     }
 

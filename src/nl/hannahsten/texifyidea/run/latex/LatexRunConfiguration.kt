@@ -10,7 +10,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.Sdk
 import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
-import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
 import nl.hannahsten.texifyidea.run.latex.flow.LatexStepRunState
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepProviders
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
@@ -224,43 +223,8 @@ class LatexRunConfiguration(
         else -> null
     }
 
-    internal fun primaryOutputFormat(): Format = when (val step = primaryCompileStep()) {
-        is LatexCompileStepOptions -> step.outputFormat
-        else -> Format.PDF
-    }
-
-    internal fun primaryBeforeRunCommand(): String? = when (val step = primaryCompileStep()) {
-        is LatexCompileStepOptions -> step.beforeRunCommand
-        is LatexmkCompileStepOptions -> step.beforeRunCommand
-        else -> null
-    }
-
     internal fun primaryViewerStep(): PdfViewerStepOptions? =
         steps.firstOrNull { it.enabled && it is PdfViewerStepOptions } as? PdfViewerStepOptions
-
-    internal fun ensurePrimaryCompileStepClassic(): LatexCompileStepOptions {
-        val index = steps.indexOfFirst {
-            it.enabled && (it is LatexCompileStepOptions || it is LatexmkCompileStepOptions)
-        }
-        return when {
-            index < 0 -> LatexCompileStepOptions().also { steps.add(0, it) }
-            steps[index] is LatexCompileStepOptions -> steps[index] as LatexCompileStepOptions
-            else -> {
-                val old = steps[index] as LatexmkCompileStepOptions
-                LatexCompileStepOptions().also {
-                    it.id = old.id
-                    it.enabled = old.enabled
-                    it.compiler = LatexCompiler.PDFLATEX
-                    it.compilerPath = old.compilerPath
-                    it.compilerArguments = old.compilerArguments
-                    it.outputFormat = Format.PDF
-                    it.beforeRunCommand = old.beforeRunCommand
-                    it.selectedOptions = old.selectedOptions
-                    steps[index] = it
-                }
-            }
-        }
-    }
 
     internal fun ensurePrimaryCompileStepLatexmk(): LatexmkCompileStepOptions {
         val index = steps.indexOfFirst {

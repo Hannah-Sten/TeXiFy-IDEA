@@ -12,7 +12,7 @@ import nl.hannahsten.texifyidea.run.latex.MakeindexStepOptions
 import nl.hannahsten.texifyidea.run.latex.StepUiOptionIds
 
 internal class MakeindexStepFragmentedEditor(
-    private val project: Project,
+    project: Project,
     initialStep: MakeindexStepOptions = MakeindexStepOptions(),
 ) : AbstractStepFragmentedEditor<MakeindexStepOptions>(initialStep) {
 

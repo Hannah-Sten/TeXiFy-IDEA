@@ -35,11 +35,11 @@ class StepAwareSequentialProcessHandlerTest : BasePlatformTestCase() {
 
         val eventOrder = mutableListOf<String>()
         handler.addStepLogListener { event ->
-            when (event) {
-                is StepLogEvent.StepStarted -> eventOrder += "start:${event.index}"
-                is StepLogEvent.StepOutput -> eventOrder += "out:${event.index}"
-                is StepLogEvent.StepFinished -> eventOrder += "finish:${event.index}:${event.exitCode}"
-                is StepLogEvent.RunFinished -> eventOrder += "run:${event.exitCode}"
+            eventOrder += when (event) {
+                is StepLogEvent.StepStarted -> "start:${event.index}"
+                is StepLogEvent.StepOutput -> "out:${event.index}"
+                is StepLogEvent.StepFinished -> "finish:${event.index}:${event.exitCode}"
+                is StepLogEvent.RunFinished -> "run:${event.exitCode}"
             }
         }
 
@@ -95,11 +95,11 @@ class StepAwareSequentialProcessHandlerTest : BasePlatformTestCase() {
 
         val eventOrder = mutableListOf<String>()
         handler.addStepLogListener { event ->
-            when (event) {
-                is StepLogEvent.StepStarted -> eventOrder += "start:${event.index}"
-                is StepLogEvent.StepOutput -> eventOrder += "out:${event.index}"
-                is StepLogEvent.StepFinished -> eventOrder += "finish:${event.index}:${event.exitCode}"
-                is StepLogEvent.RunFinished -> eventOrder += "run:${event.exitCode}"
+            eventOrder += when (event) {
+                is StepLogEvent.StepStarted -> "start:${event.index}"
+                is StepLogEvent.StepOutput -> "out:${event.index}"
+                is StepLogEvent.StepFinished -> "finish:${event.index}:${event.exitCode}"
+                is StepLogEvent.RunFinished -> "run:${event.exitCode}"
             }
         }
 
@@ -145,11 +145,11 @@ class StepAwareSequentialProcessHandlerTest : BasePlatformTestCase() {
 
         val events = mutableListOf<String>()
         handler.addStepLogListener { event ->
-            when (event) {
-                is StepLogEvent.StepStarted -> events += "start:${event.index}"
-                is StepLogEvent.StepOutput -> events += "out:${event.index}"
-                is StepLogEvent.StepFinished -> events += "finish:${event.index}:${event.exitCode}"
-                is StepLogEvent.RunFinished -> events += "run:${event.exitCode}"
+            events += when (event) {
+                is StepLogEvent.StepStarted -> "start:${event.index}"
+                is StepLogEvent.StepOutput -> "out:${event.index}"
+                is StepLogEvent.StepFinished -> "finish:${event.index}:${event.exitCode}"
+                is StepLogEvent.RunFinished -> "run:${event.exitCode}"
             }
         }
 
@@ -198,11 +198,11 @@ class StepAwareSequentialProcessHandlerTest : BasePlatformTestCase() {
 
         val events = mutableListOf<String>()
         handler.addStepLogListener { event ->
-            when (event) {
-                is StepLogEvent.StepStarted -> events += "start:${event.index}"
-                is StepLogEvent.StepOutput -> events += "out:${event.index}"
-                is StepLogEvent.StepFinished -> events += "finish:${event.index}:${event.exitCode}"
-                is StepLogEvent.RunFinished -> events += "run:${event.exitCode}"
+            events += when (event) {
+                is StepLogEvent.StepStarted -> "start:${event.index}"
+                is StepLogEvent.StepOutput -> "out:${event.index}"
+                is StepLogEvent.StepFinished -> "finish:${event.index}:${event.exitCode}"
+                is StepLogEvent.RunFinished -> "run:${event.exitCode}"
             }
         }
 
@@ -280,11 +280,11 @@ class StepAwareSequentialProcessHandlerTest : BasePlatformTestCase() {
 
         val events = mutableListOf<String>()
         handler.addStepLogListener { event ->
-            when (event) {
-                is StepLogEvent.StepStarted -> events += "start:${event.index}"
-                is StepLogEvent.StepOutput -> events += "out:${event.index}"
-                is StepLogEvent.StepFinished -> events += "finish:${event.index}:${event.exitCode}"
-                is StepLogEvent.RunFinished -> events += "run:${event.exitCode}"
+            events += when (event) {
+                is StepLogEvent.StepStarted -> "start:${event.index}"
+                is StepLogEvent.StepOutput -> "out:${event.index}"
+                is StepLogEvent.StepFinished -> "finish:${event.index}:${event.exitCode}"
+                is StepLogEvent.RunFinished -> "run:${event.exitCode}"
             }
         }
 

@@ -151,7 +151,7 @@ internal object LatexStepAutoConfigurator {
         val anchorIndex = lastAuxIndexBeforeViewer(steps) ?: firstCompileIndex
 
         val existingCompilesAfterAnchor = steps.withIndex().count { (index, step) ->
-            index > anchorIndex && index < viewerIndex && step.type == LatexStepType.LATEX_COMPILE
+            index in (anchorIndex + 1)..<viewerIndex && step.type == LatexStepType.LATEX_COMPILE
         }
         val requiredCompilesAfterAnchor = requiredCompilesAfterAnchor(steps)
         val missingCompiles = requiredCompilesAfterAnchor - existingCompilesAfterAnchor

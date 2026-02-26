@@ -10,7 +10,7 @@ import nl.hannahsten.texifyidea.run.latex.ExternalToolStepOptions
 import nl.hannahsten.texifyidea.run.latex.StepUiOptionIds
 
 internal class ExternalToolStepFragmentedEditor(
-    private val project: Project,
+    project: Project,
     initialStep: ExternalToolStepOptions = ExternalToolStepOptions(),
 ) : AbstractStepFragmentedEditor<ExternalToolStepOptions>(initialStep) {
 

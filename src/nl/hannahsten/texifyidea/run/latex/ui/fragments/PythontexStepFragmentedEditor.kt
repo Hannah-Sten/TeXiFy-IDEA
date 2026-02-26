@@ -10,7 +10,7 @@ import nl.hannahsten.texifyidea.run.latex.PythontexStepOptions
 import nl.hannahsten.texifyidea.run.latex.StepUiOptionIds
 
 internal class PythontexStepFragmentedEditor(
-    private val project: Project,
+    project: Project,
     initialStep: PythontexStepOptions = PythontexStepOptions(),
 ) : AbstractStepFragmentedEditor<PythontexStepOptions>(initialStep) {
 

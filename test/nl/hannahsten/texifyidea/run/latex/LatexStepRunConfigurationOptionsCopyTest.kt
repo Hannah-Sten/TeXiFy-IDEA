@@ -127,8 +127,8 @@ class LatexStepRunConfigurationOptionsCopyTest : BasePlatformTestCase() {
         original: LatexStepRunConfigurationOptions,
         copied: LatexStepRunConfigurationOptions,
     ) {
-        when {
-            original is LatexCompileStepOptions && copied is LatexCompileStepOptions -> {
+        when (original) {
+            is LatexCompileStepOptions if copied is LatexCompileStepOptions -> {
                 assertEquals(original.compiler, copied.compiler)
                 assertEquals(original.compilerPath, copied.compilerPath)
                 assertEquals(original.compilerArguments, copied.compilerArguments)
@@ -136,7 +136,7 @@ class LatexStepRunConfigurationOptionsCopyTest : BasePlatformTestCase() {
                 assertEquals(original.beforeRunCommand, copied.beforeRunCommand)
             }
 
-            original is LatexmkCompileStepOptions && copied is LatexmkCompileStepOptions -> {
+            is LatexmkCompileStepOptions if copied is LatexmkCompileStepOptions -> {
                 assertEquals(original.compilerPath, copied.compilerPath)
                 assertEquals(original.compilerArguments, copied.compilerArguments)
                 assertEquals(original.latexmkCompileMode, copied.latexmkCompileMode)
@@ -146,13 +146,13 @@ class LatexStepRunConfigurationOptionsCopyTest : BasePlatformTestCase() {
                 assertEquals(original.beforeRunCommand, copied.beforeRunCommand)
             }
 
-            original is PdfViewerStepOptions && copied is PdfViewerStepOptions -> {
+            is PdfViewerStepOptions if copied is PdfViewerStepOptions -> {
                 assertEquals(original.pdfViewerName, copied.pdfViewerName)
                 assertEquals(original.requireFocus, copied.requireFocus)
                 assertEquals(original.customViewerCommand, copied.customViewerCommand)
             }
 
-            original is BibtexStepOptions && copied is BibtexStepOptions -> {
+            is BibtexStepOptions if copied is BibtexStepOptions -> {
                 assertEquals(original.bibliographyCompiler, copied.bibliographyCompiler)
                 assertEquals(original.compilerPath, copied.compilerPath)
                 assertEquals(original.compilerArguments, copied.compilerArguments)
@@ -160,7 +160,7 @@ class LatexStepRunConfigurationOptionsCopyTest : BasePlatformTestCase() {
                 assertEquals(original.beforeRunCommand, copied.beforeRunCommand)
             }
 
-            original is MakeindexStepOptions && copied is MakeindexStepOptions -> {
+            is MakeindexStepOptions if copied is MakeindexStepOptions -> {
                 assertEquals(original.program, copied.program)
                 assertEquals(original.commandLineArguments, copied.commandLineArguments)
                 assertEquals(original.workingDirectoryPath, copied.workingDirectoryPath)
@@ -168,35 +168,35 @@ class LatexStepRunConfigurationOptionsCopyTest : BasePlatformTestCase() {
                 assertEquals(original.beforeRunCommand, copied.beforeRunCommand)
             }
 
-            original is ExternalToolStepOptions && copied is ExternalToolStepOptions -> {
+            is ExternalToolStepOptions if copied is ExternalToolStepOptions -> {
                 assertEquals(original.executable, copied.executable)
                 assertEquals(original.arguments, copied.arguments)
                 assertEquals(original.workingDirectoryPath, copied.workingDirectoryPath)
                 assertEquals(original.beforeRunCommand, copied.beforeRunCommand)
             }
 
-            original is PythontexStepOptions && copied is PythontexStepOptions -> {
+            is PythontexStepOptions if copied is PythontexStepOptions -> {
                 assertEquals(original.executable, copied.executable)
                 assertEquals(original.arguments, copied.arguments)
                 assertEquals(original.workingDirectoryPath, copied.workingDirectoryPath)
                 assertEquals(original.beforeRunCommand, copied.beforeRunCommand)
             }
 
-            original is MakeglossariesStepOptions && copied is MakeglossariesStepOptions -> {
+            is MakeglossariesStepOptions if copied is MakeglossariesStepOptions -> {
                 assertEquals(original.executable, copied.executable)
                 assertEquals(original.arguments, copied.arguments)
                 assertEquals(original.workingDirectoryPath, copied.workingDirectoryPath)
                 assertEquals(original.beforeRunCommand, copied.beforeRunCommand)
             }
 
-            original is XindyStepOptions && copied is XindyStepOptions -> {
+            is XindyStepOptions if copied is XindyStepOptions -> {
                 assertEquals(original.executable, copied.executable)
                 assertEquals(original.arguments, copied.arguments)
                 assertEquals(original.workingDirectoryPath, copied.workingDirectoryPath)
                 assertEquals(original.beforeRunCommand, copied.beforeRunCommand)
             }
 
-            original is FileCleanupStepOptions && copied is FileCleanupStepOptions -> {
+            is FileCleanupStepOptions if copied is FileCleanupStepOptions -> {
                 assertEquals(original.type, copied.type)
             }
 
