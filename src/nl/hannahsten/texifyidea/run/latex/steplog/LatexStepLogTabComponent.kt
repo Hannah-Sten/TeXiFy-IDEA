@@ -18,6 +18,7 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.AnimatedIcon
@@ -68,7 +69,9 @@ internal class LatexStepLogTabComponent(
         addTreeSelectionListener(this@LatexStepLogTabComponent)
     }
 
-    private val console: ConsoleView = TextConsoleBuilderFactory.getInstance().createBuilder(project).console
+    private val console: ConsoleView = TextConsoleBuilderFactory.getInstance().createBuilder(project).console.also {
+        Disposer.register(this, it)
+    }
     private val consoleToolbarGroup = DefaultActionGroup(console.createConsoleActions().toList())
     private val consoleToolbar = ActionManager.getInstance().createActionToolbar(
         "TeXiFy.StepLog.ConsoleToolbar",
@@ -136,7 +139,6 @@ internal class LatexStepLogTabComponent(
     override fun getTabTitle(): String = "Step Log"
 
     override fun dispose() {
-        console.dispose()
     }
 
     override fun getPreferredFocusableComponent(): JComponent = tree
