@@ -41,7 +41,7 @@ internal class LatexmkCompileRunStep(
         val effectiveMode = effectiveCompileMode(context.runConfig, session, stepConfig)
         val effectiveArguments = buildArguments(context.runConfig, session, stepConfig, effectiveMode)
         session.resolvedOutputFilePath = outputFilePath(session, effectiveMode)
-        val command = buildCommand(context.runConfig, session, stepConfig, effectiveArguments)
+        val command = buildCommand(session, stepConfig, effectiveArguments)
         val programParamsConfigurator = ProgramParametersConfigurator()
 
         return createCompilationHandler(
@@ -58,7 +58,6 @@ internal class LatexmkCompileRunStep(
     }
 
     internal fun buildCommand(
-        runConfig: LatexRunConfiguration,
         session: LatexRunSessionState,
         step: LatexmkCompileStepOptions,
         effectiveArguments: String,

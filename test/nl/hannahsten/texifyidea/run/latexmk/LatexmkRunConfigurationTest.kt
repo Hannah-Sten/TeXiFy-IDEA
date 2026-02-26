@@ -25,7 +25,7 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
         val step = latexmkStep(runConfig)
         val effectiveMode = LatexmkCompileRunStep.effectiveCompileMode(runConfig, session, step)
         val effectiveArguments = LatexmkCompileRunStep.buildArguments(runConfig, session, step, effectiveMode)
-        return LatexmkCompileRunStep(step).buildCommand(runConfig, session, step, effectiveArguments)
+        return LatexmkCompileRunStep(step).buildCommand(session, step, effectiveArguments)
     }
 
     fun testCompileModeContainsAuto() {

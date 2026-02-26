@@ -10,7 +10,7 @@ import java.nio.file.Path
 class LatexOutputPathTest : BasePlatformTestCase() {
 
     fun testOutputPathCreate() {
-        val mainFile = myFixture.addFileToProject(
+        myFixture.addFileToProject(
             "main.tex",
             """
             \documentclass{article}
@@ -53,7 +53,7 @@ class LatexOutputPathTest : BasePlatformTestCase() {
     }
 
     fun testUnresolvedRelativeOutputPathFallsBackWithoutCrash() {
-        val mainFile = myFixture.addFileToProject(
+        myFixture.addFileToProject(
             "sub/main.tex",
             """
             \documentclass{article}

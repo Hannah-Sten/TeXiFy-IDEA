@@ -38,7 +38,7 @@ internal class CommandLineRunStep(
 
     companion object {
 
-        fun resolveWorkingDirectory(context: LatexRunStepContext, configuredPath: String?): Path? {
+        fun resolveWorkingDirectory(context: LatexRunStepContext, configuredPath: String?): Path {
             val configured = configuredPath
                 ?.trim()
                 ?.takeIf(String::isNotBlank)
@@ -47,9 +47,8 @@ internal class CommandLineRunStep(
             return configured ?: defaultWorkingDirectory(context)
         }
 
-        fun defaultWorkingDirectory(context: LatexRunStepContext): Path? = context.session.auxDir?.let { Path.of(it.path) }
-            ?: context.session.outputDir?.let { Path.of(it.path) }
+        fun defaultWorkingDirectory(context: LatexRunStepContext): Path = context.session.auxDir?.let { Path.of(it.path) }
+            ?: context.session.outputDir.let { Path.of(it.path) }
             ?: context.session.workingDirectory
-            ?: Path.of(context.session.mainFile.parent.path)
     }
 }

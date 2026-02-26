@@ -95,7 +95,7 @@ class LatexStepAutoConfiguratorTest : BasePlatformTestCase() {
     }
 
     fun testCompleteStepsAddsSecondClassicCompileWhenMainFileUnavailable() {
-        val runConfig = LatexRunConfiguration(
+        LatexRunConfiguration(
             project,
             LatexRunConfigurationProducer().configurationFactory,
             "Test run config"
@@ -110,7 +110,7 @@ class LatexStepAutoConfiguratorTest : BasePlatformTestCase() {
     }
 
     fun testCompleteStepsUsesLatexmkDefaultsWhenBaseStepsEmpty() {
-        val runConfig = LatexRunConfiguration(
+        LatexRunConfiguration(
             project,
             LatexRunConfigurationProducer().configurationFactory,
             "Test run config"
@@ -205,7 +205,7 @@ class LatexStepAutoConfiguratorTest : BasePlatformTestCase() {
         )
         myFixture.updateFilesets()
 
-        val runConfig = LatexRunConfiguration(
+        LatexRunConfiguration(
             project,
             LatexRunConfigurationProducer().configurationFactory,
             "Test run config"
