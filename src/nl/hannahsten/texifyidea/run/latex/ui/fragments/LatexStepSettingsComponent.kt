@@ -182,9 +182,7 @@ internal class LatexStepSettingsComponent(
         }
 
         selectedStep = selectedStepId?.let { stepsById[it] }
-        if (selectedStepType == null) {
-            selectedStepType = selectedStep?.type?.let(::canonicalType)
-        }
+        selectedStepType = selectedStep?.type?.let(::canonicalType) ?: selectedStepType
         if (
             realignSelectedIndex &&
             selectedStep != null &&

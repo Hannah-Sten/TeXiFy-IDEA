@@ -208,6 +208,31 @@ class LatexStepSettingsComponentTest : BasePlatformTestCase() {
         assertEquals("open {pdf}", appliedViewer.customViewerCommand)
     }
 
+    fun testOnStepsChangedUpdatesCardWhenSelectedStepTypeChanges() {
+        val disposable = Disposer.newDisposable()
+        try {
+            val component = LatexStepSettingsComponent(disposable, project)
+            val runConfig = configWithSteps(LatexCompileStepOptions())
+            val selected = runConfig.configOptions.steps.first()
+
+            component.resetEditorFrom(runConfig)
+            component.onStepSelectionChanged(0, selected.id, selected.type)
+            assertEquals("compile", component.currentCardId())
+
+            val replacement = PdfViewerStepOptions().apply {
+                id = selected.id
+                enabled = selected.enabled
+                selectedOptions = selected.selectedOptions
+            }
+            component.onStepsChanged(listOf(replacement))
+
+            assertEquals("viewer", component.currentCardId())
+        }
+        finally {
+            Disposer.dispose(disposable)
+        }
+    }
+
     private fun configWithSteps(vararg steps: LatexStepRunConfigurationOptions): LatexRunConfiguration = LatexRunConfiguration(
         project,
         LatexRunConfigurationProducer().configurationFactory,

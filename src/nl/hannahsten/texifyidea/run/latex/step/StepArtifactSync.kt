@@ -108,7 +108,7 @@ internal class StepArtifactSync(
             ?: context.session.mainFile.nameWithoutExtension
     }
 
-    private fun makeindexWorkingDirectory(step: MakeindexStepOptions): Path? =
+    private fun makeindexWorkingDirectory(step: MakeindexStepOptions): Path =
         CommandLineRunStep.resolveWorkingDirectory(context, step.workingDirectoryPath)
 
     private fun auxOrOutputDirectory(): Path? =

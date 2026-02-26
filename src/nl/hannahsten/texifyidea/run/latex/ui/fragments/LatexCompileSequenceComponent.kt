@@ -31,7 +31,6 @@ import java.awt.Point
 import java.awt.Rectangle
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
-import javax.swing.JButton
 import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JPanel
@@ -259,17 +258,6 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
         onSelectionChanged(selectedIndex, selected.id, selected.type)
     }
 
-    internal fun removeStepAt(index: Int) {
-        if (index !in stepButtons.indices) {
-            return
-        }
-        val removed = stepButtons.removeAt(index)
-        remove(removed)
-        buildPanel()
-        normalizeSelection()
-        changeListener()
-    }
-
     internal fun moveStep(from: Int, to: Int) {
         if (from !in stepButtons.indices || to !in stepButtons.indices || from == to) {
             return
@@ -444,8 +432,6 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
         fun showDropPlace(show: Boolean) {
             dropPlace?.isVisible = show
         }
-
-        fun getButton(): JButton = myButton
     }
 
     private fun LatexStepRunConfigurationOptions.copyWithIdentity(

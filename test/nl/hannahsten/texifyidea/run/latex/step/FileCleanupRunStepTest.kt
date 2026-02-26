@@ -63,7 +63,7 @@ class FileCleanupRunStepTest : BasePlatformTestCase() {
         assertTrue(context.session.directoriesToDeleteIfEmpty.isEmpty())
     }
 
-    private fun createContext(mainFilePath: java.nio.file.Path): LatexRunStepContext {
+    private fun createContext(mainFilePath: Path): LatexRunStepContext {
         val mainFile = LocalFileSystem.getInstance().refreshAndFindFileByPath(mainFilePath.toString())!!
         val runConfig = LatexRunConfiguration(
             project,
