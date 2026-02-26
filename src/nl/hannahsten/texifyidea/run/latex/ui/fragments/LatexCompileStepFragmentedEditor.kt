@@ -9,11 +9,14 @@ import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.openapi.ui.TextBrowseFolderListener
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
-import com.intellij.ui.RawCommandLineEditor
+import com.intellij.openapi.fileTypes.PlainTextFileType
+import com.intellij.ui.EditorTextField
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Format
+import nl.hannahsten.texifyidea.run.latex.LatexCommandLineOptionsCache
 import nl.hannahsten.texifyidea.run.latex.LatexCompileStepOptions
 import nl.hannahsten.texifyidea.run.latex.StepUiOptionIds
+import nl.hannahsten.texifyidea.run.latex.ui.LatexArgumentsCompletionProvider
 import java.awt.event.ItemEvent
 
 internal class LatexCompileStepFragmentedEditor(
@@ -35,10 +38,12 @@ internal class LatexCompileStepFragmentedEditor(
     }
     private val compilerPathRow = LabeledComponent.create(compilerPath, "Compiler path")
 
-    private val compilerArguments = RawCommandLineEditor().apply {
-        editorField.emptyText.text = "Custom compiler arguments"
+    private val compilerArguments = EditorTextField("", project, PlainTextFileType.INSTANCE).apply {
+        setPlaceholder("Custom compiler arguments")
+        setOneLineMode(true)
     }
     private val compilerArgumentsRow = LabeledComponent.create(compilerArguments, "Compiler arguments")
+    private var completionCompilerExecutable: String? = null
 
     private val outputFormat = ComboBox(Format.entries.toTypedArray())
     private val outputFormatRow = LabeledComponent.create(outputFormat, "Output format")
@@ -46,10 +51,13 @@ internal class LatexCompileStepFragmentedEditor(
     init {
         compiler.addItemListener {
             if (it.stateChange == ItemEvent.SELECTED) {
-                syncOutputFormatOptions(it.item as? LatexCompiler ?: LatexCompiler.PDFLATEX)
+                val selectedCompiler = it.item as? LatexCompiler ?: LatexCompiler.PDFLATEX
+                syncOutputFormatOptions(selectedCompiler)
+                syncCompilerArgumentCompletion(selectedCompiler)
                 fireEditorStateChanged()
             }
         }
+        syncCompilerArgumentCompletion(compiler.selectedItem as? LatexCompiler ?: LatexCompiler.PDFLATEX)
     }
 
     override fun createFragments(): Collection<SettingsEditorFragment<LatexCompileStepOptions, *>> {
@@ -61,6 +69,7 @@ internal class LatexCompileStepFragmentedEditor(
             component = compilerRow,
             reset = { step, component ->
                 component.component.selectedItem = step.compiler
+                syncCompilerArgumentCompletion(step.compiler)
             },
             apply = { step, component ->
                 val selectedCompiler = component.component.selectedItem as? LatexCompiler ?: LatexCompiler.PDFLATEX
@@ -127,5 +136,16 @@ internal class LatexCompileStepFragmentedEditor(
         outputFormat.removeAllItems()
         supportedFormats.forEach(outputFormat::addItem)
         outputFormat.selectedItem = preferred.takeIf { supportedFormats.contains(it) } ?: supportedFormats.firstOrNull() ?: Format.PDF
+    }
+
+    private fun syncCompilerArgumentCompletion(selectedCompiler: LatexCompiler) {
+        val executable = selectedCompiler.executableName
+        if (completionCompilerExecutable == executable) {
+            return
+        }
+
+        val options = LatexCommandLineOptionsCache.getOptionsOrFillCache(executable, project)
+        LatexArgumentsCompletionProvider(options).apply(compilerArguments)
+        completionCompilerExecutable = executable
     }
 }

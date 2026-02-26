@@ -10,17 +10,20 @@ import nl.hannahsten.texifyidea.lang.magic.allParentMagicComments
 import nl.hannahsten.texifyidea.lang.predefined.CommandNames
 import nl.hannahsten.texifyidea.run.compiler.LatexCompilePrograms
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
+import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
 import nl.hannahsten.texifyidea.run.latex.BibtexStepOptions
 import nl.hannahsten.texifyidea.run.latex.LatexCompileStepOptions
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexStepRunConfigurationOptions
 import nl.hannahsten.texifyidea.run.latex.LatexStepType
 import nl.hannahsten.texifyidea.run.latex.LatexmkCompileStepOptions
+import nl.hannahsten.texifyidea.run.latex.MakeindexStepOptions
 import nl.hannahsten.texifyidea.run.latex.MakeglossariesStepOptions
 import nl.hannahsten.texifyidea.run.latex.PdfViewerStepOptions
 import nl.hannahsten.texifyidea.run.latex.PythontexStepOptions
 import nl.hannahsten.texifyidea.run.latex.defaultLatexmkSteps
 import nl.hannahsten.texifyidea.run.latex.generateLatexStepId
+import nl.hannahsten.texifyidea.run.latex.getDefaultMakeindexPrograms
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
 import nl.hannahsten.texifyidea.util.files.findTectonicTomlFile
 import nl.hannahsten.texifyidea.util.files.hasTectonicTomlFile
@@ -201,11 +204,7 @@ internal object LatexStepAutoConfigurator {
         if (shouldAddPythontexStep(steps, signals.usedPackages)) {
             inferred += PythontexStepOptions()
         }
-        if (shouldAddMakeglossariesStep(steps, signals.usedPackages)) {
-            inferred += MakeglossariesStepOptions()
-        }
-        // NOTE: Xindy auto-detection is temporarily disabled.
-        // Keep xindy as an explicit, user-added step only.
+        inferred += inferIndexSteps(mainPsiFile, steps, signals.usedPackages)
 
         return inferred
     }
@@ -240,18 +239,40 @@ internal object LatexStepAutoConfigurator {
         return LatexLib.PYTHONTEX in usedPackages
     }
 
-    private fun shouldAddMakeglossariesStep(
+    private fun inferIndexSteps(
+        mainPsiFile: PsiFile,
         steps: List<LatexStepRunConfigurationOptions>,
         usedPackages: Set<LatexLib>,
-    ): Boolean {
+    ): List<LatexStepRunConfigurationOptions> {
         if (!canInferAux(steps, disableForLatexmk = true)) {
-            return false
+            return emptyList()
         }
-        if (steps.any { it.type == LatexStepType.MAKEINDEX || it.type == LatexStepType.MAKEGLOSSARIES }) {
-            return false
+        if (hasExplicitIndexStep(steps)) {
+            return emptyList()
         }
 
-        return LatexLib.GLOSSARIES in usedPackages || LatexLib.GLOSSARIESEXTRA in usedPackages
+        val mainFile = mainPsiFile.virtualFile ?: return emptyList()
+        val programs = runCatching {
+            getDefaultMakeindexPrograms(mainFile, mainPsiFile.project, usedPackages)
+        }.getOrElse {
+            return emptyList()
+        }
+        return programs.map { program ->
+            when (program) {
+                MakeindexProgram.MAKEGLOSSARIES,
+                MakeindexProgram.MAKEGLOSSARIESLITE -> MakeglossariesStepOptions().also { it.executable = program.executableName }
+                else -> MakeindexStepOptions().also { it.program = program }
+            }
+        }
+    }
+
+    private fun hasExplicitIndexStep(steps: List<LatexStepRunConfigurationOptions>): Boolean {
+        val explicitIndexStepTypes = setOf(
+            LatexStepType.MAKEINDEX,
+            LatexStepType.MAKEGLOSSARIES,
+            LatexStepType.XINDY,
+        )
+        return steps.any { it.type in explicitIndexStepTypes }
     }
 
     private fun preferredAuxInsertIndex(steps: List<LatexStepRunConfigurationOptions>): Int {

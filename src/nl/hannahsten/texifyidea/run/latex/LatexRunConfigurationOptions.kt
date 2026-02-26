@@ -253,11 +253,6 @@ class FileCleanupStepOptions : LatexStepRunConfigurationOptions() {
 
 internal fun generateLatexStepId(): String = UUID.randomUUID().toString()
 
-internal fun defaultClassicSteps(): MutableList<LatexStepRunConfigurationOptions> = mutableListOf(
-    LatexCompileStepOptions(),
-    PdfViewerStepOptions(),
-)
-
 internal fun defaultLatexmkSteps(): MutableList<LatexStepRunConfigurationOptions> = mutableListOf(
     LatexmkCompileStepOptions(),
     PdfViewerStepOptions(),

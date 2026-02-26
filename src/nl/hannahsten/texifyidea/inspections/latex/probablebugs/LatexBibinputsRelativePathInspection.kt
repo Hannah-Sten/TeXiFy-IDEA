@@ -12,7 +12,6 @@ import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.lang.predefined.CommandNames
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationStaticSupport
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.files.findRootFile
@@ -72,7 +71,6 @@ class LatexBibinputsRelativePathInspection : TexifyInspectionBase() {
             project
                 .getLatexRunConfigurations()
                 .asSequence()
-                .filterIsInstance<LatexRunConfiguration>()
                 .filter { LatexRunConfigurationStaticSupport.resolveMainFile(it) == descriptor.psiElement.containingFile.findRootFile().virtualFile }
                 .forEach { config ->
                     val envs = config.environmentVariables.envs.toMutableMap()

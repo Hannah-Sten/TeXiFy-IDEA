@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.run.latex
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
 import nl.hannahsten.texifyidea.run.latex.step.LatexStepAutoConfigurator
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.updateFilesets
@@ -191,7 +192,7 @@ class LatexStepAutoConfiguratorTest : BasePlatformTestCase() {
         assertEquals(once.map { it.type }, twice.map { it.type })
     }
 
-    fun testCompleteStepsDoesNotAddXindyAutomatically() {
+    fun testCompleteStepsAddsMakeindexStepForXindyPackages() {
         val mainPsi = myFixture.addFileToProject(
             "main-xindy.tex",
             """
@@ -216,6 +217,104 @@ class LatexStepAutoConfiguratorTest : BasePlatformTestCase() {
             listOf(LatexCompileStepOptions(), PdfViewerStepOptions())
         )
 
-        assertEquals(listOf("latex-compile", "latex-compile", "pdf-viewer"), completed.map { it.type })
+        assertEquals(listOf("latex-compile", "makeindex", "latex-compile", "pdf-viewer"), completed.map { it.type })
+        val makeindex = completed.filterIsInstance<MakeindexStepOptions>().single()
+        assertEquals(MakeindexProgram.XINDY, makeindex.program)
+    }
+
+    fun testCompleteStepsAddsMakeglossariesStepForGlossariesPackage() {
+        val mainPsi = myFixture.addFileToProject(
+            "main-glossaries.tex",
+            """
+            \documentclass{article}
+            \usepackage{glossaries}
+            \makeglossaries
+            \begin{document}
+            \end{document}
+            """.trimIndent()
+        )
+        myFixture.updateFilesets()
+
+        val completed = LatexStepAutoConfigurator.completeSteps(
+            mainPsi,
+            listOf(LatexCompileStepOptions(), PdfViewerStepOptions())
+        )
+
+        assertEquals(listOf("latex-compile", "makeglossaries", "latex-compile", "pdf-viewer"), completed.map { it.type })
+        val makeglossaries = completed.filterIsInstance<MakeglossariesStepOptions>().single()
+        assertTrue(makeglossaries.executable in setOf("makeglossaries", "makeglossaries-lite"))
+    }
+
+    fun testCompleteStepsAddsBib2glsForGlossariesExtraRecordOption() {
+        val mainPsi = myFixture.addFileToProject(
+            "main-bib2gls.tex",
+            """
+            \documentclass{article}
+            \usepackage[record]{glossaries-extra}
+            \begin{document}
+            \end{document}
+            """.trimIndent()
+        )
+        myFixture.updateFilesets()
+
+        val completed = LatexStepAutoConfigurator.completeSteps(
+            mainPsi,
+            listOf(LatexCompileStepOptions(), PdfViewerStepOptions())
+        )
+
+        assertEquals(listOf("latex-compile", "makeindex", "latex-compile", "pdf-viewer"), completed.map { it.type })
+        val makeindex = completed.filterIsInstance<MakeindexStepOptions>().single()
+        assertEquals(MakeindexProgram.BIB2GLS, makeindex.program)
+    }
+
+    fun testCompleteStepsDoesNotAddIndexStepsForLatexmkPipeline() {
+        val mainPsi = myFixture.addFileToProject(
+            "main-latexmk-xindy.tex",
+            """
+            \documentclass{article}
+            \usepackage[xindy]{imakeidx}
+            \makeindex[xindy]
+            \begin{document}
+            \printindex
+            \end{document}
+            """.trimIndent()
+        )
+        myFixture.updateFilesets()
+
+        val completed = LatexStepAutoConfigurator.completeSteps(
+            mainPsi,
+            listOf(LatexmkCompileStepOptions(), PdfViewerStepOptions())
+        )
+
+        assertEquals(listOf("latexmk-compile", "pdf-viewer"), completed.map { it.type })
+        assertTrue(completed.none { it.type == LatexStepType.MAKEINDEX || it.type == LatexStepType.MAKEGLOSSARIES })
+    }
+
+    fun testCompleteStepsDoesNotDuplicateExplicitIndexSteps() {
+        val mainPsi = myFixture.addFileToProject(
+            "main-existing-index-step.tex",
+            """
+            \documentclass{article}
+            \usepackage[xindy]{imakeidx}
+            \makeindex[xindy]
+            \begin{document}
+            \printindex
+            \end{document}
+            """.trimIndent()
+        )
+        myFixture.updateFilesets()
+
+        val explicitStep = MakeindexStepOptions().apply {
+            program = MakeindexProgram.MAKEINDEX
+        }
+        val completed = LatexStepAutoConfigurator.completeSteps(
+            mainPsi,
+            listOf(LatexCompileStepOptions(), explicitStep, PdfViewerStepOptions())
+        )
+
+        assertEquals(listOf("latex-compile", "makeindex", "latex-compile", "pdf-viewer"), completed.map { it.type })
+        val makeindexSteps = completed.filterIsInstance<MakeindexStepOptions>()
+        assertEquals(1, makeindexSteps.size)
+        assertEquals(MakeindexProgram.MAKEINDEX, makeindexSteps.single().program)
     }
 }

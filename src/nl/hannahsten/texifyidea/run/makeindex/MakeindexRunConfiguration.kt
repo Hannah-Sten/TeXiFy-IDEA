@@ -108,8 +108,4 @@ class MakeindexRunConfiguration(
     override fun isGeneratedName() = name == suggestedName()
 
     override fun suggestedName() = mainFile?.nameWithoutExtension + " " + makeindexProgram.name.lowercase(Locale.getDefault())
-
-    fun setSuggestedName() {
-        name = suggestedName()
-    }
 }

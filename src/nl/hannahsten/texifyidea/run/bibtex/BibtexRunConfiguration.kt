@@ -140,15 +140,6 @@ class BibtexRunConfiguration(
 
     override fun suggestedName() = mainFile?.nameWithoutExtension.plus(" bibliography")
 
-    fun setSuggestedName() {
-        name = suggestedName()
-    }
-
-    // Similar to LatexRunConfiguration
-    fun setDefaultDistribution(distributionType: LatexDistributionType) {
-        latexDistribution = distributionType
-    }
-
     fun getLatexDistributionType(): LatexDistributionType = if (latexDistribution != LatexDistributionType.PROJECT_SDK) {
         latexDistribution
     }

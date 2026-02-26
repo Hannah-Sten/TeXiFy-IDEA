@@ -9,11 +9,16 @@ import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.openapi.ui.TextBrowseFolderListener
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
+import com.intellij.openapi.fileTypes.PlainTextFileType
+import com.intellij.ui.EditorTextField
 import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.components.JBTextField
+import nl.hannahsten.texifyidea.run.compiler.LatexCompilePrograms
+import nl.hannahsten.texifyidea.run.latex.LatexCommandLineOptionsCache
 import nl.hannahsten.texifyidea.run.latex.LatexmkCompileStepOptions
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.StepUiOptionIds
+import nl.hannahsten.texifyidea.run.latex.ui.LatexArgumentsCompletionProvider
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCitationTool
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
 import java.awt.event.ItemEvent
@@ -34,10 +39,12 @@ internal class LatexmkStepFragmentedEditor(
     }
     private val compilerPathRow = LabeledComponent.create(compilerPath, "Compiler path")
 
-    private val compilerArguments = RawCommandLineEditor().apply {
-        editorField.emptyText.text = "Custom compiler arguments"
+    private val compilerArguments = EditorTextField("", project, PlainTextFileType.INSTANCE).apply {
+        setPlaceholder("Custom compiler arguments")
+        setOneLineMode(true)
     }
     private val compilerArgumentsRow = LabeledComponent.create(compilerArguments, "Compiler arguments")
+    private var completionInstalled = false
 
     private val latexmkCompileMode = ComboBox(LatexmkCompileMode.entries.toTypedArray())
     private val latexmkCompileModeRow = LabeledComponent.create(latexmkCompileMode, "Latexmk compile mode")
@@ -64,6 +71,7 @@ internal class LatexmkStepFragmentedEditor(
             }
             fireEditorStateChanged()
         }
+        ensureCompilerArgumentCompletionInstalled()
     }
 
     override fun createFragments(): Collection<SettingsEditorFragment<LatexmkCompileStepOptions, *>> {
@@ -163,5 +171,15 @@ internal class LatexmkStepFragmentedEditor(
             citationFragment,
             extraArgsFragment,
         )
+    }
+
+    private fun ensureCompilerArgumentCompletionInstalled() {
+        if (completionInstalled) {
+            return
+        }
+
+        val options = LatexCommandLineOptionsCache.getOptionsOrFillCache(LatexCompilePrograms.LATEXMK_EXECUTABLE, project)
+        LatexArgumentsCompletionProvider(options).apply(compilerArguments)
+        completionInstalled = true
     }
 }

@@ -12,11 +12,16 @@ import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.util.treeView.AbstractTreeStructure
 import com.intellij.ide.util.treeView.NodeDescriptor
 import com.intellij.ide.util.treeView.PresentableNodeDescriptor
+import com.intellij.openapi.actionSystem.ActionUpdateThread
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.actionSystem.ToggleAction
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
+import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
@@ -30,12 +35,15 @@ import com.intellij.ui.tree.StructureTreeModel
 import com.intellij.ui.treeStructure.Tree
 import com.intellij.util.ui.EmptyIcon
 import com.intellij.util.ui.tree.TreeUtil
+import nl.hannahsten.texifyidea.TexifyIcons
+import nl.hannahsten.texifyidea.run.latex.LatexStepType
 import nl.hannahsten.texifyidea.run.latex.flow.StepAwareSequentialProcessHandler
 import nl.hannahsten.texifyidea.run.latex.flow.StepLogEvent
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStep
 import java.awt.BorderLayout
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
+import java.util.Locale
 import javax.swing.JComponent
 import javax.swing.JPanel
 import javax.swing.event.TreeSelectionEvent
@@ -52,7 +60,43 @@ internal class LatexStepLogTabComponent(
     companion object {
 
         private const val SPLITTER_PROPORTION_PROPERTY = "TeXiFy.StepLog.Splitter.Proportion"
+
+        private val OVERFULL_UNDERFULL_TRIGGERS = listOf(
+            "overfull \\hbox",
+            "underfull \\hbox",
+            "overfull \\vbox",
+            "underfull \\vbox",
+        )
+
+        internal fun splitOutputForParsing(text: String): List<String> {
+            if (text.isEmpty()) {
+                return emptyList()
+            }
+
+            val chunks = mutableListOf<String>()
+            var start = 0
+            text.forEachIndexed { index, char ->
+                if (char == '\n') {
+                    chunks += text.substring(start, index + 1)
+                    start = index + 1
+                }
+            }
+            if (start < text.length) {
+                chunks += text.substring(start)
+            }
+            return chunks
+        }
+
+        internal fun isOverfullUnderfullMessage(message: String): Boolean {
+            val normalized = message.lowercase(Locale.getDefault())
+            return OVERFULL_UNDERFULL_TRIGGERS.any { normalized.contains(it) }
+        }
     }
+
+    private val treeConfig = LatexStepLogUiConfiguration.getInstance(project)
+    private var isTreeExpanded = treeConfig.expanded
+    private var showBibtexMessages = treeConfig.showBibtexMessages
+    private var showOverfullUnderfullMessages = treeConfig.showOverfullUnderfullMessages
 
     private val runNodeData = RunNodeData(
         title = mainFile?.nameWithoutExtension ?: "Run",
@@ -67,6 +111,23 @@ internal class LatexStepLogTabComponent(
         isRootVisible = true
         showsRootHandles = true
         addTreeSelectionListener(this@LatexStepLogTabComponent)
+    }
+    private val treeToolbarGroup = DefaultActionGroup(
+        ShowBibtexMessagesAction(),
+        ShowOverfullUnderfullMessagesAction(),
+        ExpandAllAction(),
+        CollapseAllAction(),
+    )
+    private val treeToolbar = ActionManager.getInstance().createActionToolbar(
+        "TeXiFy.StepLog.TreeToolbar",
+        treeToolbarGroup,
+        true,
+    ).apply {
+        targetComponent = tree
+    }
+    private val treePanel = JPanel(BorderLayout()).apply {
+        add(treeToolbar.component, BorderLayout.NORTH)
+        add(JBScrollPane(tree), BorderLayout.CENTER)
     }
 
     private val console: ConsoleView = TextConsoleBuilderFactory.getInstance().createBuilder(project).console.also {
@@ -86,7 +147,7 @@ internal class LatexStepLogTabComponent(
     }
 
     private val splitter = OnePixelSplitter(SPLITTER_PROPORTION_PROPERTY, 0.5f).apply {
-        firstComponent = JBScrollPane(tree)
+        firstComponent = treePanel
         secondComponent = consolePanel
     }
 
@@ -94,6 +155,8 @@ internal class LatexStepLogTabComponent(
     private val stepNodeData = linkedMapOf<Int, StepNodeData>()
     private val parsers = linkedMapOf<Int, StepMessageParserSession>()
     private val stepOutputChunks = linkedMapOf<Int, MutableList<StepOutputChunk>>()
+    private val stepOutputLengths = linkedMapOf<Int, Int>()
+    private val parsedRecordsByStep = linkedMapOf<Int, MutableList<ParsedRecord>>()
     private val stepHasWarnings = mutableSetOf<Int>()
     private val stepHasErrors = mutableSetOf<Int>()
 
@@ -107,7 +170,7 @@ internal class LatexStepLogTabComponent(
 
         initializeSteps(handler.steps, mainFile)
         scheduleUpdate(rootNode, structureChanged = true)
-        TreeUtil.expand(tree, 2)
+        applyConfiguredTreeExpansion()
 
         tree.addMouseListener(object : MouseAdapter() {
             override fun mouseClicked(e: MouseEvent) {
@@ -155,6 +218,12 @@ internal class LatexStepLogTabComponent(
     override fun isContentBuiltIn(): Boolean = false
 
     override fun valueChanged(e: TreeSelectionEvent?) {
+        val selectedNode = extractTreeNode(tree.lastSelectedPathComponent)
+        val selectedMessage = selectedNode?.messageData
+        if (selectedMessage != null) {
+            tryJumpMessageInConsole(selectedMessage)
+            return
+        }
         refreshRawLogView()
     }
 
@@ -173,6 +242,8 @@ internal class LatexStepLogTabComponent(
             stepNodeData[index] = nodeData
             parsers[index] = StepMessageParserFactory.create(step.id, mainFile)
             stepOutputChunks[index] = mutableListOf()
+            stepOutputLengths[index] = 0
+            parsedRecordsByStep[index] = mutableListOf()
         }
     }
 
@@ -188,6 +259,22 @@ internal class LatexStepLogTabComponent(
             is StepLogEvent.StepOutput -> {
                 val chunk = StepOutputChunk(event.text, event.outputType)
                 stepOutputChunks[event.index]?.add(chunk)
+                val parser = parsers[event.index]
+                var stepOffset = stepOutputLengths[event.index] ?: 0
+                if (parser != null) {
+                    splitOutputForParsing(event.text).forEach { piece ->
+                        val pieceStartOffset = stepOffset
+                        parser.onText(piece).forEach { parsedMessage ->
+                            addParsedMessage(stepIndex = event.index, message = parsedMessage, logOffset = pieceStartOffset)
+                        }
+                        stepOffset += piece.length
+                    }
+                }
+                else {
+                    stepOffset += event.text.length
+                }
+                stepOutputLengths[event.index] = stepOffset
+
                 when (val selection = selectedRawLogSelection()) {
                     is RawLogSelection.Step -> {
                         if (selection.stepIndex == event.index) {
@@ -205,11 +292,6 @@ internal class LatexStepLogTabComponent(
 
                     RawLogSelection.None -> {
                     }
-                }
-
-                val parser = parsers[event.index] ?: return
-                parser.onText(event.text).forEach { parsedMessage ->
-                    addParsedMessage(event.index, parsedMessage)
                 }
             }
 
@@ -239,16 +321,33 @@ internal class LatexStepLogTabComponent(
         }
     }
 
-    private fun addParsedMessage(stepIndex: Int, message: ParsedStepMessage) {
+    private fun addParsedMessage(stepIndex: Int, message: ParsedStepMessage, logOffset: Int?) {
         when (message.level) {
             ParsedStepMessageLevel.ERROR -> stepHasErrors += stepIndex
             ParsedStepMessageLevel.WARNING -> stepHasWarnings += stepIndex
         }
+        val record = ParsedRecord(message, logOffset)
+        parsedRecordsByStep.getOrPut(stepIndex) { mutableListOf() }.add(record)
+
+        if (!shouldShowMessageInTree(stepIndex, message)) {
+            return
+        }
 
         val stepNode = stepNodes[stepIndex] ?: return
-        stepNode.children.add(StepTreeNode(parent = stepNode, messageData = MessageNodeData(message)))
+        stepNode.children.add(
+            StepTreeNode(
+                parent = stepNode,
+                messageData = MessageNodeData(
+                    message = message,
+                    stepIndex = stepIndex,
+                    logOffset = logOffset,
+                ),
+            )
+        )
         scheduleUpdate(stepNode, structureChanged = true)
-        TreeUtil.expand(tree, 3)
+        if (isTreeExpanded) {
+            TreeUtil.expand(tree, 3)
+        }
     }
 
     private fun selectStep(stepIndex: Int) {
@@ -282,31 +381,54 @@ internal class LatexStepLogTabComponent(
 
     private fun refreshRawLogView() {
         when (val selection = selectedRawLogSelection()) {
-            RawLogSelection.None -> {
-                console.clear()
-                renderedStepIndex = null
-                renderedOutputText = ""
-            }
-
-            RawLogSelection.All -> {
-                console.clear()
-                val chunks = stepOutputChunks
-                    .toSortedMap()
-                    .values
-                    .flatten()
-                chunks.forEach { chunk -> printChunk(chunk) }
-                renderedStepIndex = null
-                renderedOutputText = chunks.joinToString(separator = "") { it.text }
-            }
-
-            is RawLogSelection.Step -> {
-                console.clear()
-                val chunks = stepOutputChunks[selection.stepIndex].orEmpty()
-                chunks.forEach { chunk -> printChunk(chunk) }
-                renderedStepIndex = selection.stepIndex
-                renderedOutputText = chunks.joinToString(separator = "") { it.text }
-            }
+            RawLogSelection.None -> clearRawLogView()
+            RawLogSelection.All -> renderAllRawLog()
+            is RawLogSelection.Step -> renderStepRawLog(selection.stepIndex)
         }
+    }
+
+    private fun tryJumpMessageInConsole(messageData: MessageNodeData): Boolean {
+        val logOffset = messageData.logOffset ?: return false
+        val stepContentSize = stepOutputLengths[messageData.stepIndex] ?: return false
+        if (logOffset !in 0..stepContentSize) {
+            return false
+        }
+
+        if (renderedStepIndex != messageData.stepIndex) {
+            renderStepRawLog(messageData.stepIndex)
+        }
+
+        if (logOffset !in 0..console.getContentSize()) {
+            return false
+        }
+
+        console.scrollTo(logOffset)
+        return true
+    }
+
+    private fun clearRawLogView() {
+        console.clear()
+        renderedStepIndex = null
+        renderedOutputText = ""
+    }
+
+    private fun renderAllRawLog() {
+        console.clear()
+        val chunks = stepOutputChunks
+            .toSortedMap()
+            .values
+            .flatten()
+        chunks.forEach { chunk -> printChunk(chunk) }
+        renderedStepIndex = null
+        renderedOutputText = chunks.joinToString(separator = "") { it.text }
+    }
+
+    private fun renderStepRawLog(stepIndex: Int) {
+        console.clear()
+        val chunks = stepOutputChunks[stepIndex].orEmpty()
+        chunks.forEach { chunk -> printChunk(chunk) }
+        renderedStepIndex = stepIndex
+        renderedOutputText = chunks.joinToString(separator = "") { it.text }
     }
 
     private fun printChunk(chunk: StepOutputChunk) {
@@ -334,7 +456,7 @@ internal class LatexStepLogTabComponent(
         val selectedNode = extractTreeNode(tree.lastSelectedPathComponent) ?: return fallbackStepSelection()
         return when {
             selectedNode.stepData != null -> RawLogSelection.Step(selectedNode.stepData.index)
-            selectedNode.messageData != null -> selectedNode.parentStepIndex()?.let { RawLogSelection.Step(it) } ?: fallbackStepSelection()
+            selectedNode.messageData != null -> RawLogSelection.Step(selectedNode.messageData.stepIndex)
             selectedNode.runData != null -> RawLogSelection.All
             else -> fallbackStepSelection()
         }
@@ -342,6 +464,81 @@ internal class LatexStepLogTabComponent(
 
     private fun scheduleUpdate(node: StepTreeNode, structureChanged: Boolean = false) {
         structureTreeModel.invalidate(node, structureChanged)
+    }
+
+    private fun shouldShowMessageInTree(stepIndex: Int, message: ParsedStepMessage): Boolean {
+        if (!showBibtexMessages && isBibtexStep(stepIndex)) {
+            return false
+        }
+        return showOverfullUnderfullMessages || !isOverfullUnderfullMessage(message.message)
+    }
+
+    private fun isBibtexStep(stepIndex: Int): Boolean =
+        stepNodeData[stepIndex]?.step?.id == LatexStepType.BIBTEX
+
+    private fun rebuildMessageNodes() {
+        stepNodes.values.forEach { stepNode ->
+            stepNode.children.removeAll { it.messageData != null }
+        }
+
+        parsedRecordsByStep.forEach { (stepIndex, records) ->
+            val stepNode = stepNodes[stepIndex] ?: return@forEach
+            records.filter { shouldShowMessageInTree(stepIndex, it.message) }.forEach { record ->
+                stepNode.children.add(
+                    StepTreeNode(
+                        parent = stepNode,
+                        messageData = MessageNodeData(
+                            message = record.message,
+                            stepIndex = stepIndex,
+                            logOffset = record.logOffset,
+                        ),
+                    )
+                )
+            }
+            scheduleUpdate(stepNode, structureChanged = true)
+        }
+
+        applyConfiguredTreeExpansion()
+    }
+
+    private fun applyConfiguredTreeExpansion() {
+        if (isTreeExpanded) {
+            expandAllTreeNodes()
+        }
+        else {
+            collapseAllTreeNodesExceptRoot()
+        }
+    }
+
+    private fun setTreeExpanded(expanded: Boolean) {
+        isTreeExpanded = expanded
+        treeConfig.expanded = expanded
+        if (expanded) {
+            expandAllTreeNodes()
+        }
+        else {
+            collapseAllTreeNodesExceptRoot()
+        }
+    }
+
+    private fun setShowBibtexMessages(enabled: Boolean) {
+        showBibtexMessages = enabled
+        treeConfig.showBibtexMessages = enabled
+        rebuildMessageNodes()
+    }
+
+    private fun setShowOverfullUnderfullMessages(enabled: Boolean) {
+        showOverfullUnderfullMessages = enabled
+        treeConfig.showOverfullUnderfullMessages = enabled
+        rebuildMessageNodes()
+    }
+
+    private fun expandAllTreeNodes() {
+        TreeUtil.expandAll(tree)
+    }
+
+    private fun collapseAllTreeNodesExceptRoot() {
+        TreeUtil.collapseAll(tree, 1)
     }
 
     private fun treePathFor(node: StepTreeNode): TreePath? {
@@ -387,6 +584,13 @@ internal class LatexStepLogTabComponent(
 
     private data class MessageNodeData(
         val message: ParsedStepMessage,
+        val stepIndex: Int,
+        val logOffset: Int?,
+    )
+
+    private data class ParsedRecord(
+        val message: ParsedStepMessage,
+        val logOffset: Int?,
     )
 
     private data class StepOutputChunk(
@@ -403,6 +607,58 @@ internal class LatexStepLogTabComponent(
         data class Step(
             val stepIndex: Int
         ) : RawLogSelection
+    }
+
+    private inner class ShowBibtexMessagesAction :
+        ToggleAction(
+            "Show Bibtex Messages",
+            "Toggle messages generated by Bibtex steps in the tree",
+            TexifyIcons.DOT_BIB,
+        ),
+        DumbAware {
+
+        override fun isSelected(e: AnActionEvent): Boolean = showBibtexMessages
+
+        override fun setSelected(e: AnActionEvent, state: Boolean) {
+            setShowBibtexMessages(state)
+        }
+
+        override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.EDT
+    }
+
+    private inner class ShowOverfullUnderfullMessagesAction :
+        ToggleAction(
+            "Show Overfull/Underfull Box Messages",
+            "Toggle overfull/underfull hbox/vbox warnings in the tree",
+            AllIcons.General.ArrowSplitCenterH,
+        ),
+        DumbAware {
+
+        override fun isSelected(e: AnActionEvent): Boolean = showOverfullUnderfullMessages
+
+        override fun setSelected(e: AnActionEvent, state: Boolean) {
+            setShowOverfullUnderfullMessages(state)
+        }
+
+        override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.EDT
+    }
+
+    private inner class ExpandAllAction : AnAction("Expand All", "", AllIcons.Actions.Expandall), DumbAware {
+
+        override fun actionPerformed(e: AnActionEvent) {
+            setTreeExpanded(true)
+        }
+
+        override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.EDT
+    }
+
+    private inner class CollapseAllAction : AnAction("Collapse All", "", AllIcons.Actions.Collapseall), DumbAware {
+
+        override fun actionPerformed(e: AnActionEvent) {
+            setTreeExpanded(false)
+        }
+
+        override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.EDT
     }
 
     private inner class StepTreeNode(
@@ -452,11 +708,6 @@ internal class LatexStepLogTabComponent(
                     myName = ""
                 }
             }
-        }
-
-        fun parentStepIndex(): Int? {
-            val stepNode = if (stepData != null) this else parentDescriptor as? StepTreeNode
-            return stepNode?.stepData?.index
         }
 
         private fun messageLocation(message: ParsedStepMessage): String? {
