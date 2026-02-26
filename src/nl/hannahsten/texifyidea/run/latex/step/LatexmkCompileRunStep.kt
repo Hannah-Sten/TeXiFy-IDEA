@@ -9,9 +9,11 @@ import com.intellij.psi.PsiManager
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.allParentMagicComments
+import nl.hannahsten.texifyidea.run.common.DockerCommandSupport
 import nl.hannahsten.texifyidea.run.common.createCompilationHandler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompilePrograms
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Companion.toWslPathIfNeeded
+import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunSessionState
 import nl.hannahsten.texifyidea.run.latex.LatexmkCompileStepOptions
@@ -19,13 +21,10 @@ import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
 import nl.hannahsten.texifyidea.run.latexmk.buildLatexmkStructuredArguments
 import nl.hannahsten.texifyidea.run.latexmk.compileModeFromMagicCommand
 import nl.hannahsten.texifyidea.run.latexmk.preferredCompileModeForPackages
-import nl.hannahsten.texifyidea.settings.sdk.DockerSdk
-import nl.hannahsten.texifyidea.settings.sdk.DockerSdkAdditionalData
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.LatexmkRcFileFinder
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.includedPackagesInFileset
-import nl.hannahsten.texifyidea.util.runCommand
 import java.util.Locale
 
 internal class LatexmkCompileRunStep(
@@ -69,13 +68,13 @@ internal class LatexmkCompileRunStep(
             session.distributionType,
         )
         val outputPath = when (session.distributionType) {
-            nl.hannahsten.texifyidea.run.latex.LatexDistributionType.DOCKER_MIKTEX -> "/miktex/out"
-            nl.hannahsten.texifyidea.run.latex.LatexDistributionType.DOCKER_TEXLIVE -> "/out"
+            LatexDistributionType.DOCKER_MIKTEX -> "/miktex/out"
+            LatexDistributionType.DOCKER_TEXLIVE -> "/out"
             else -> session.outputDir.path.toWslPathIfNeeded(session.distributionType)
         }
         val auxPath = when (session.distributionType) {
-            nl.hannahsten.texifyidea.run.latex.LatexDistributionType.DOCKER_MIKTEX -> "/miktex/auxil"
-            nl.hannahsten.texifyidea.run.latex.LatexDistributionType.DOCKER_TEXLIVE -> null
+            LatexDistributionType.DOCKER_MIKTEX -> "/miktex/auxil"
+            LatexDistributionType.DOCKER_TEXLIVE -> null
             else -> session.auxDir?.path?.toWslPathIfNeeded(session.distributionType)
         }
 
@@ -89,7 +88,7 @@ internal class LatexmkCompileRunStep(
             command += "-auxdir=$auxPath"
         }
 
-        if (session.distributionType == nl.hannahsten.texifyidea.run.latex.LatexDistributionType.WSL_TEXLIVE) {
+        if (session.distributionType == LatexDistributionType.WSL_TEXLIVE) {
             var wslCommand = GeneralCommandLine(command).commandLineString
             if (effectiveArguments.isNotBlank()) {
                 ParametersListUtil.parse(effectiveArguments).forEach { wslCommand += " $it" }
@@ -99,7 +98,12 @@ internal class LatexmkCompileRunStep(
         }
 
         if (session.distributionType.isDocker()) {
-            createDockerCommand(session, outputPath, auxPath, command)
+            DockerCommandSupport.prependDockerRunCommand(
+                session = session,
+                command = command,
+                dockerOutputDir = outputPath,
+                dockerAuxDir = auxPath,
+            )
         }
 
         if (effectiveArguments.isNotBlank()) {
@@ -118,59 +122,6 @@ internal class LatexmkCompileRunStep(
         }
 
         return command
-    }
-
-    private fun createDockerCommand(
-        session: LatexRunSessionState,
-        dockerOutputDir: String,
-        dockerAuxDir: String?,
-        command: MutableList<String>,
-    ) {
-        val isMiktex = session.distributionType == nl.hannahsten.texifyidea.run.latex.LatexDistributionType.DOCKER_MIKTEX
-        if (isMiktex) {
-            "docker volume create --name miktex".runCommand()
-        }
-
-        val sdk = LatexSdkUtil.getAllLatexSdks().firstOrNull { it.sdkType is DockerSdk }
-        val dockerExecutable = if (sdk == null) {
-            "docker"
-        }
-        else {
-            (sdk.sdkType as DockerSdk).getExecutableName("docker", sdk.homePath!!)
-        }
-
-        val parameterList = mutableListOf(
-            dockerExecutable,
-            "run",
-            "--rm",
-        )
-        parameterList += if (isMiktex) {
-            listOf(
-                "-v",
-                "miktex:/miktex/.miktex",
-                "-v",
-                "${session.mainFile.parent.path}:/miktex/work",
-            )
-        }
-        else {
-            listOf(
-                "-v",
-                "${session.mainFile.parent.path}:/workdir",
-            )
-        }
-
-        if (session.outputDir != session.mainFile.parent) {
-            parameterList += listOf("-v", "${session.outputDir.path}:$dockerOutputDir")
-        }
-        val auxDir = session.auxDir
-        if (dockerAuxDir != null && auxDir != null && auxDir != session.mainFile.parent) {
-            parameterList += listOf("-v", "${auxDir.path}:$dockerAuxDir")
-        }
-
-        val sdkImage = (sdk?.sdkAdditionalData as? DockerSdkAdditionalData)?.imageName
-        val defaultImage = if (isMiktex) "miktex/miktex:latest" else "texlive/texlive:latest"
-        parameterList += sdkImage ?: defaultImage
-        command.addAll(0, parameterList)
     }
 
     companion object {

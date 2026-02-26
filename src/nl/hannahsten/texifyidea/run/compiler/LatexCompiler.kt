@@ -5,11 +5,10 @@ import com.intellij.openapi.module.ModuleUtil
 import com.intellij.openapi.project.rootManager
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.execution.ParametersListUtil
+import nl.hannahsten.texifyidea.run.common.DockerCommandSupport
 import nl.hannahsten.texifyidea.run.latex.LatexCompileStepOptions
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexRunSessionState
-import nl.hannahsten.texifyidea.settings.sdk.DockerSdk
-import nl.hannahsten.texifyidea.settings.sdk.DockerSdkAdditionalData
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.files.hasTectonicTomlFile
@@ -243,9 +242,9 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         }
 
         if (session.distributionType.isDocker()) {
-            createDockerCommand(
+            DockerCommandSupport.prependDockerRunCommand(
                 session = session,
-                dockerAuxilDir = auxilPath,
+                dockerAuxDir = auxilPath,
                 dockerOutputDir = outputPath,
                 command = command,
             )
@@ -272,68 +271,6 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         return command
     }
 
-    private fun createDockerCommand(
-        session: LatexRunSessionState,
-        dockerAuxilDir: String?,
-        dockerOutputDir: String?,
-        command: MutableList<String>,
-    ) {
-        val isMiktex = session.distributionType == LatexDistributionType.DOCKER_MIKTEX
-
-        if (isMiktex) {
-            "docker volume create --name miktex".runCommand()
-        }
-
-        val sdk = LatexSdkUtil.getAllLatexSdks().firstOrNull { it.sdkType is DockerSdk }
-        val dockerExecutable = if (sdk == null) {
-            "docker"
-        }
-        else {
-            (sdk.sdkType as DockerSdk).getExecutableName("docker", sdk.homePath!!)
-        }
-
-        val parameterList = mutableListOf(
-            dockerExecutable,
-            "run",
-            "--rm",
-        )
-
-        parameterList += if (isMiktex) {
-            listOf(
-                "-v",
-                "miktex:/miktex/.miktex",
-                "-v",
-                "${session.mainFile.parent.path}:/miktex/work",
-            )
-        }
-        else {
-            listOf(
-                "-v",
-                "${session.mainFile.parent.path}:/workdir",
-            )
-        }
-
-        if (dockerOutputDir != null) {
-            val outPath = session.outputDir
-            if (outPath != session.mainFile.parent) {
-                parameterList.addAll(listOf("-v", "${outPath.path}:$dockerOutputDir"))
-            }
-        }
-
-        if (dockerAuxilDir != null) {
-            val auxilPath = session.auxDir
-            if (auxilPath != null && auxilPath != session.mainFile.parent) {
-                parameterList.addAll(listOf("-v", "${auxilPath.path}:$dockerAuxilDir"))
-            }
-        }
-
-        val sdkImage = (sdk?.sdkAdditionalData as? DockerSdkAdditionalData)?.imageName
-        val default = if (isMiktex) "miktex/miktex:latest" else "texlive/texlive:latest"
-        parameterList.add(sdkImage ?: default)
-
-        command.addAll(0, parameterList)
-    }
-
     abstract fun createCommand(
         session: LatexRunSessionState,
         stepConfig: LatexCompileStepOptions,
@@ -344,8 +281,6 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
     open val includesBibtex = false
 
-    open val includesMakeindex = false
-
     open val handlesNumberOfCompiles = false
 
     open val outputFormats: Array<Format> = arrayOf(Format.PDF, Format.DVI)
@@ -353,10 +288,6 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
     override fun toString() = this.displayName
 
     companion object {
-
-        fun byExecutableName(exe: String): LatexCompiler = entries.firstOrNull {
-            it.executableName.equals(exe, true)
-        } ?: PDFLATEX
 
         fun String.toWslPathIfNeeded(distributionType: LatexDistributionType): String =
             if (distributionType == LatexDistributionType.WSL_TEXLIVE) {
@@ -372,13 +303,6 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         DVI,
         HTML,
         XDV,
-        AUX;
-
-        companion object {
-
-            fun byNameIgnoreCase(name: String?): Format = entries.firstOrNull {
-                it.name.equals(name, ignoreCase = true)
-            } ?: PDF
-        }
+        AUX
     }
 }
