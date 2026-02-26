@@ -27,17 +27,35 @@ internal class LatexCompileRunStep(
         val runConfig = context.runConfig
         runConfig.activateStepForExecution(configId)
         try {
-            LatexExecutionStateInitializer.refreshCompileStepDerivedState(runConfig, context.executionState, stepConfig)
+            val executionState = context.executionState
+            // Keep command construction on the same execution snapshot used by this step context.
+            if (runConfig.executionState !== executionState) {
+                runConfig.executionState = executionState
+            }
+            if (!executionState.isInitialized || executionState.resolvedMainFile == null || executionState.resolvedOutputDir == null) {
+                LatexExecutionStateInitializer.initialize(runConfig, context.environment, executionState)
+            }
+
+            LatexExecutionStateInitializer.refreshCompileStepDerivedState(runConfig, executionState, stepConfig)
             val compiler = resolveCompiler(stepConfig)
             val command = compiler.getCommand(runConfig, context.environment.project)
-                ?: throw ExecutionException("Compile command could not be created.")
+                ?: throw ExecutionException(
+                    buildString {
+                        append("Compile command could not be created. ")
+                        append("stepType=").append(stepConfig.type).append(", ")
+                        append("isInitialized=").append(executionState.isInitialized).append(", ")
+                        append("mainFile=").append(executionState.resolvedMainFile?.path ?: "<null>").append(", ")
+                        append("outputDir=").append(executionState.resolvedOutputDir?.path ?: "<null>").append(", ")
+                        append("workingDir=").append(executionState.resolvedWorkingDirectory?.toString() ?: "<null>")
+                    }
+                )
             val programParamsConfigurator = ProgramParametersConfigurator()
 
             return createCompilationHandler(
                 environment = context.environment,
                 mainFile = context.mainFile,
                 command = command,
-                workingDirectory = context.executionState.resolvedWorkingDirectory,
+                workingDirectory = executionState.resolvedWorkingDirectory,
                 expandMacrosEnvVariables = runConfig.expandMacrosEnvVariables,
                 envs = runConfig.environmentVariables.envs,
                 expandEnvValue = { value -> expandPathAndMacros(programParamsConfigurator, value, runConfig) },
