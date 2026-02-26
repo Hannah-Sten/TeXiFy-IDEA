@@ -5,12 +5,14 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import io.mockk.every
 import io.mockk.mockk
+import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer
 import nl.hannahsten.texifyidea.run.latex.LatexRunSessionState
 import nl.hannahsten.texifyidea.run.latex.MakeindexStepOptions
 import java.nio.file.Files
+import java.nio.file.Path
 
 class MakeindexRunStepTest : BasePlatformTestCase() {
 
@@ -45,7 +47,7 @@ class MakeindexRunStepTest : BasePlatformTestCase() {
         val stepOptions = MakeindexStepOptions().apply {
             program = MakeindexProgram.MAKEINDEX
             targetBaseNameOverride = "custom-name"
-            workingDirectoryPath = context.mainFile.parent.path
+            workingDirectoryPath = context.session.mainFile.parent.path
         }
 
         val step = MakeindexRunStep(stepOptions)
@@ -72,7 +74,16 @@ class MakeindexRunStepTest : BasePlatformTestCase() {
         val environment = mockk<ExecutionEnvironment>(relaxed = true).also {
             every { it.project } returns project
         }
-        val state = LatexRunSessionState(resolvedMainFile = mainFile)
-        return LatexRunStepContext(runConfig, environment, state, mainFile)
+        val state = LatexRunSessionState(
+            project = project,
+            mainFile = mainFile,
+            outputDir = mainFile.parent,
+            workingDirectory = Path.of(mainFile.parent.path),
+            distributionType = LatexDistributionType.TEXLIVE,
+            usesDefaultWorkingDirectory = true,
+            latexSdk = null,
+            auxDir = mainFile.parent,
+        )
+        return LatexRunStepContext(runConfig, environment, state)
     }
 }

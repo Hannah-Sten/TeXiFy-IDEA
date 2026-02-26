@@ -6,10 +6,12 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import io.mockk.every
 import io.mockk.mockk
 import nl.hannahsten.texifyidea.run.latex.FileCleanupStepOptions
+import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer
 import nl.hannahsten.texifyidea.run.latex.LatexRunSessionState
 import java.nio.file.Files
+import java.nio.file.Path
 
 class FileCleanupRunStepTest : BasePlatformTestCase() {
 
@@ -71,7 +73,16 @@ class FileCleanupRunStepTest : BasePlatformTestCase() {
         val environment = mockk<ExecutionEnvironment>(relaxed = true).also {
             every { it.project } returns project
         }
-        val state = LatexRunSessionState(resolvedMainFile = mainFile)
-        return LatexRunStepContext(runConfig, environment, state, mainFile)
+        val state = LatexRunSessionState(
+            project = project,
+            mainFile = mainFile,
+            outputDir = mainFile.parent,
+            workingDirectory = Path.of(mainFile.parent.path),
+            distributionType = LatexDistributionType.TEXLIVE,
+            usesDefaultWorkingDirectory = true,
+            latexSdk = null,
+            auxDir = mainFile.parent,
+        )
+        return LatexRunStepContext(runConfig, environment, state)
     }
 }

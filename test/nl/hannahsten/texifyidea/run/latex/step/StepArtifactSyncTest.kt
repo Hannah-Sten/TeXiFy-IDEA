@@ -6,11 +6,13 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import io.mockk.every
 import io.mockk.mockk
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
+import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer
 import nl.hannahsten.texifyidea.run.latex.LatexRunSessionState
 import nl.hannahsten.texifyidea.run.latex.MakeindexStepOptions
 import java.nio.file.Files
+import java.nio.file.Path
 
 class StepArtifactSyncTest : BasePlatformTestCase() {
 
@@ -39,11 +41,16 @@ class StepArtifactSyncTest : BasePlatformTestCase() {
             every { it.project } returns project
         }
         val executionState = LatexRunSessionState(
-            resolvedMainFile = mainFile,
-            resolvedAuxDir = auxVirtual,
-            resolvedOutputDir = outputVirtual,
+            project = project,
+            mainFile = mainFile,
+            outputDir = outputVirtual,
+            workingDirectory = Path.of(mainFile.parent.path),
+            distributionType = LatexDistributionType.TEXLIVE,
+            usesDefaultWorkingDirectory = true,
+            latexSdk = null,
+            auxDir = auxVirtual,
         )
-        val context = LatexRunStepContext(runConfig, environment, executionState, mainFile)
+        val context = LatexRunStepContext(runConfig, environment, executionState)
         val step = MakeindexStepOptions().apply {
             program = MakeindexProgram.BIB2GLS
             targetBaseNameOverride = "main"

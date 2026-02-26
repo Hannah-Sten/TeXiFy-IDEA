@@ -36,6 +36,7 @@ internal class LatexStepSettingsComponent(
     private var selectedStepIndex: Int = -1
     private var selectedStepType: String? = null
     private var selectedStep: LatexStepRunConfigurationOptions? = null
+    private var steps: List<LatexStepRunConfigurationOptions> = emptyList()
     private var stepsById: Map<String, LatexStepRunConfigurationOptions> = emptyMap()
     private var boundRunConfig: LatexRunConfiguration? = null
 
@@ -98,32 +99,19 @@ internal class LatexStepSettingsComponent(
     fun resetEditorFrom(runConfig: LatexRunConfiguration) {
         boundRunConfig = runConfig
         runConfig.configOptions.ensureDefaultSteps()
-        stepsById = runConfig.configOptions.steps.associateBy { it.id }
-
-        if (selectedStepId !in stepsById.keys) {
-            selectedStepId = null
-            selectedStepIndex = -1
-            selectedStepType = null
-        }
-
-        selectedStep = selectedStepId?.let { stepsById[it] }
-        if (selectedStepType == null) {
-            selectedStepType = selectedStep?.type?.let(::canonicalType)
-        }
-        if (selectedStep != null && selectedStepIndex !in runConfig.configOptions.steps.indices) {
-            selectedStepIndex = runConfig.configOptions.steps.indexOfFirst { it.id == selectedStepId }
-        }
+        steps = runConfig.configOptions.steps
+        syncSelectionWithCurrentSteps(realignSelectedIndex = true)
         showCardForStepType(selectedStepType)
         resetCurrentCard()
     }
 
-    fun applyEditorTo(runConfig: LatexRunConfiguration) {
-        flushCurrentCard(runConfig)
+    fun applyEditorTo(@Suppress("UNUSED_PARAMETER") runConfig: LatexRunConfiguration) {
+        flushCurrentCard()
     }
 
     fun onStepSelectionChanged(index: Int, stepId: String?, type: String?) {
-        val runConfig = boundRunConfig ?: return
-        flushCurrentCard(runConfig)
+        if (boundRunConfig == null) return
+        flushCurrentCard()
 
         selectedStepIndex = index
         selectedStepId = stepId
@@ -134,20 +122,11 @@ internal class LatexStepSettingsComponent(
     }
 
     fun onStepsChanged(steps: List<LatexStepRunConfigurationOptions>) {
-        val runConfig = boundRunConfig ?: return
-        flushCurrentCard(runConfig)
+        if (boundRunConfig == null) return
+        flushCurrentCard()
 
-        stepsById = steps.associateBy { it.id }
-        if (selectedStepId !in stepsById.keys) {
-            selectedStepId = null
-            selectedStepIndex = -1
-            selectedStepType = null
-        }
-
-        selectedStep = selectedStepId?.let { stepsById[it] }
-        if (selectedStepType == null) {
-            selectedStepType = selectedStep?.type?.let(::canonicalType)
-        }
+        this.steps = steps
+        syncSelectionWithCurrentSteps(realignSelectedIndex = false)
         showCardForStepType(selectedStepType)
         resetCurrentCard()
     }
@@ -194,6 +173,27 @@ internal class LatexStepSettingsComponent(
         return LatexRunStepProviders.find(type)?.type ?: type.trim().lowercase()
     }
 
+    private fun syncSelectionWithCurrentSteps(realignSelectedIndex: Boolean) {
+        stepsById = steps.associateBy { it.id }
+        if (selectedStepId !in stepsById.keys) {
+            selectedStepId = null
+            selectedStepIndex = -1
+            selectedStepType = null
+        }
+
+        selectedStep = selectedStepId?.let { stepsById[it] }
+        if (selectedStepType == null) {
+            selectedStepType = selectedStep?.type?.let(::canonicalType)
+        }
+        if (
+            realignSelectedIndex &&
+            selectedStep != null &&
+            selectedStepIndex !in steps.indices
+        ) {
+            selectedStepIndex = steps.indexOfFirst { it.id == selectedStepId }
+        }
+    }
+
     private fun <T : LatexStepRunConfigurationOptions> wrapEditor(editor: SettingsEditor<T>): JPanel = JPanel(BorderLayout()).apply {
         add(editor.component, BorderLayout.CENTER)
     }
@@ -213,8 +213,8 @@ internal class LatexStepSettingsComponent(
         }
     }
 
-    private fun flushCurrentCard(runConfig: LatexRunConfiguration) {
-        val targetStep = findTargetStep(runConfig)
+    private fun flushCurrentCard() {
+        val targetStep = findTargetStep()
         if (targetStep == null) {
             selectedStep = null
             return
@@ -235,8 +235,7 @@ internal class LatexStepSettingsComponent(
         selectedStep = targetStep
     }
 
-    private fun findTargetStep(runConfig: LatexRunConfiguration): LatexStepRunConfigurationOptions? {
-        val steps = runConfig.configOptions.steps
+    private fun findTargetStep(): LatexStepRunConfigurationOptions? {
         selectedStepId?.let { id ->
             steps.firstOrNull { it.id == id }?.let { return it }
         }

@@ -7,6 +7,7 @@ import com.intellij.execution.Executor
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.openapi.fileEditor.FileDocumentManager
+import nl.hannahsten.texifyidea.editor.autocompile.AutoCompileDoneListener
 import nl.hannahsten.texifyidea.run.latex.LatexSessionInitializer
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexStepRunConfigurationOptions
@@ -37,6 +38,9 @@ internal class LatexStepRunState(
 
         val context = LatexRunStepContext(runConfig, environment, session)
         val overallHandler = StepAwareSequentialProcessHandler(configuredPlan.steps, context)
+        if (runConfig.isAutoCompiling) {
+            overallHandler.addProcessListener(AutoCompileDoneListener(runConfig))
+        }
         val stepLogConsole = LatexStepLogTabComponent(environment.project, session.mainFile, overallHandler)
 
         return DefaultExecutionResult(stepLogConsole, overallHandler)

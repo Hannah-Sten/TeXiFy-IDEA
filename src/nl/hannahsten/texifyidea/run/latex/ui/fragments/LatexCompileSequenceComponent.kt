@@ -315,7 +315,7 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
     }
 
     private fun notifyStepsChanged() {
-        onStepsChanged(stepButtons.filter { it.isVisible }.map { it.stepConfig.deepCopy() })
+        onStepsChanged(stepButtons.filter { it.isVisible }.map { it.stepConfig })
     }
 
     private fun autoConfigureSteps() {

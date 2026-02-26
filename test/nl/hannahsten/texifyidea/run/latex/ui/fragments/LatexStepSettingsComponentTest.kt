@@ -3,6 +3,8 @@ package nl.hannahsten.texifyidea.run.latex.ui.fragments
 import com.intellij.execution.ui.FragmentedSettings
 import com.intellij.openapi.util.Disposer
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import com.intellij.ui.RawCommandLineEditor
+import com.intellij.ui.components.JBTextField
 import nl.hannahsten.texifyidea.run.latex.*
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCitationTool
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
@@ -168,6 +170,44 @@ class LatexStepSettingsComponentTest : BasePlatformTestCase() {
         assertEquals("open {pdf}", appliedViewer.customViewerCommand)
     }
 
+    fun testStepEditsPersistWhenSequenceWritesBackCopiedStepList() {
+        val source = configWithSteps(
+            LatexCompileStepOptions(),
+            PdfViewerStepOptions(),
+        )
+        val sequenceSteps = source.configOptions.steps.map { it.deepCopy() }
+
+        val disposable = Disposer.newDisposable()
+        try {
+            val component = LatexStepSettingsComponent(disposable, project)
+            component.resetEditorFrom(source)
+            component.onStepsChanged(sequenceSteps)
+
+            val compileStep = sequenceSteps.first { it.type == LatexStepType.LATEX_COMPILE }
+            val viewerStep = sequenceSteps.first { it.type == LatexStepType.PDF_VIEWER }
+
+            component.onStepSelectionChanged(0, compileStep.id, compileStep.type)
+            val compileSettings = privateField<Any>(component, "compileSettings")
+            privateField<RawCommandLineEditor>(compileSettings, "compilerArguments").text = "-shell-escape"
+
+            component.onStepSelectionChanged(1, viewerStep.id, viewerStep.type)
+            val viewerSettings = privateField<Any>(component, "viewerSettings")
+            privateField<JBTextField>(viewerSettings, "viewerCommand").text = "open {pdf}"
+
+            component.applyEditorTo(source)
+            // Emulate compile-sequence fragment writing back its own current step list.
+            source.configOptions.steps = sequenceSteps.map { it.deepCopy() }.toMutableList()
+        }
+        finally {
+            Disposer.dispose(disposable)
+        }
+
+        val appliedCompile = source.configOptions.steps.first { it.type == LatexStepType.LATEX_COMPILE } as LatexCompileStepOptions
+        val appliedViewer = source.configOptions.steps.first { it.type == LatexStepType.PDF_VIEWER } as PdfViewerStepOptions
+        assertEquals("-shell-escape", appliedCompile.compilerArguments)
+        assertEquals("open {pdf}", appliedViewer.customViewerCommand)
+    }
+
     private fun configWithSteps(vararg steps: LatexStepRunConfigurationOptions): LatexRunConfiguration = LatexRunConfiguration(
         project,
         LatexRunConfigurationProducer().configurationFactory,
@@ -191,5 +231,12 @@ class LatexStepSettingsComponentTest : BasePlatformTestCase() {
         finally {
             Disposer.dispose(disposable)
         }
+    }
+
+    private fun <T> privateField(instance: Any, name: String): T {
+        val field = instance.javaClass.getDeclaredField(name)
+        field.isAccessible = true
+        @Suppress("UNCHECKED_CAST")
+        return field.get(instance) as T
     }
 }

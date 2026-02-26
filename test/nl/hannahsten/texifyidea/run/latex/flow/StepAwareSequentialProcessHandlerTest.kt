@@ -9,6 +9,7 @@ import com.intellij.openapi.util.Key
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import io.mockk.every
 import io.mockk.mockk
+import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer
 import nl.hannahsten.texifyidea.run.latex.LatexRunSessionState
@@ -16,6 +17,7 @@ import nl.hannahsten.texifyidea.run.latex.step.InlineLatexRunStep
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepContext
 import nl.hannahsten.texifyidea.run.latex.step.ProcessLatexRunStep
 import java.io.OutputStream
+import java.nio.file.Path
 
 class StepAwareSequentialProcessHandlerTest : BasePlatformTestCase() {
 
@@ -49,17 +51,17 @@ class StepAwareSequentialProcessHandlerTest : BasePlatformTestCase() {
         })
 
         handler.startNotify()
-        assertTrue(first.started)
+        waitUntil { first.started }
         assertFalse(second.started)
 
         first.emit("first-step\n")
         first.finish(0)
 
-        assertTrue(second.started)
+        waitUntil { second.started }
         second.emit("second-step\n")
         second.finish(0)
 
-        assertTrue(handler.isProcessTerminated)
+        waitUntil { handler.isProcessTerminated }
         assertEquals("first-step\n", handler.rawLog(0))
         assertEquals("second-step\n", handler.rawLog(1))
         assertEquals(listOf("first-step\n", "second-step\n"), forwardedText)
@@ -105,7 +107,7 @@ class StepAwareSequentialProcessHandlerTest : BasePlatformTestCase() {
         first.emit("boom\n")
         first.finish(2)
 
-        assertTrue(handler.isProcessTerminated)
+        waitUntil { handler.isProcessTerminated }
         assertFalse(second.started)
         assertFalse(third.started)
         assertEquals("boom\n", handler.rawLog(0))
@@ -153,7 +155,7 @@ class StepAwareSequentialProcessHandlerTest : BasePlatformTestCase() {
 
         handler.startNotify()
 
-        assertTrue(handler.isProcessTerminated)
+        waitUntil { handler.isProcessTerminated }
         assertEquals(listOf("before", "run", "after"), lifecycle)
         assertEquals(
             listOf(
@@ -204,25 +206,19 @@ class StepAwareSequentialProcessHandlerTest : BasePlatformTestCase() {
             }
         }
 
-        val error = try {
-            handler.startNotify()
-            null
-        }
-        catch (t: Throwable) {
-            t
-        }
+        handler.startNotify()
+        waitUntil { handler.isProcessTerminated }
 
-        assertNotNull(error)
-        assertTrue(error is IllegalStateException)
-        assertTrue(error?.message?.contains("pre failed") == true)
-        assertFalse(handler.isProcessTerminated)
         assertFalse(first.started)
         assertFalse(cleanupRan)
         assertEquals(listOf("s1"), beforeCalls)
-        assertEquals("", handler.rawLog(0))
+        assertTrue(handler.rawLog(0).contains("pre failed"))
         assertEquals(
             listOf(
                 "start:0",
+                "out:0",
+                "finish:0:1",
+                "run:1",
             ),
             events
         )
@@ -256,7 +252,7 @@ class StepAwareSequentialProcessHandlerTest : BasePlatformTestCase() {
 
         handler.startNotify()
 
-        assertTrue(handler.isProcessTerminated)
+        waitUntil { handler.isProcessTerminated }
         assertTrue(firstRan)
         assertFalse(secondRan)
         assertEquals("", handler.rawLog(1))
@@ -293,6 +289,7 @@ class StepAwareSequentialProcessHandlerTest : BasePlatformTestCase() {
         }
 
         handler.startNotify()
+        waitUntil { first.started }
         val error = try {
             first.finish(0)
             null
@@ -301,27 +298,14 @@ class StepAwareSequentialProcessHandlerTest : BasePlatformTestCase() {
             t
         }
 
-        assertNotNull(error)
-        assertTrue(fullMessage(error!!).contains("post failed"))
-        assertFalse(handler.isProcessTerminated)
+        assertNull(error)
+        waitUntil { handler.isProcessTerminated }
+        assertTrue(handler.rawLog(0).contains("post failed"))
         assertEquals(0, observedExit)
-        assertEquals("", handler.rawLog(0))
-        assertEquals(
-            listOf(
-                "start:0",
-            ),
-            events
-        )
-    }
-
-    private fun fullMessage(throwable: Throwable): String {
-        val parts = mutableListOf<String>()
-        var current: Throwable? = throwable
-        while (current != null) {
-            current.message?.let(parts::add)
-            current = current.cause
-        }
-        return parts.joinToString(" | ")
+        assertTrue(events.contains("start:0"))
+        assertTrue(events.contains("out:0"))
+        assertTrue(events.contains("finish:0:1"))
+        assertTrue(events.contains("run:1"))
     }
 
     fun testDestroyProcessSkipsFollowingCleanupStep() {
@@ -344,13 +328,23 @@ class StepAwareSequentialProcessHandlerTest : BasePlatformTestCase() {
         )
 
         handler.startNotify()
-        assertTrue(compile.started)
+        waitUntil { compile.started }
 
         handler.destroyProcess()
 
-        assertTrue(handler.isProcessTerminated)
+        waitUntil { handler.isProcessTerminated }
         assertTrue(compile.destroyed)
         assertFalse(cleanupRan)
+    }
+
+    private fun waitUntil(timeoutMs: Long = 5_000, condition: () -> Boolean) {
+        val deadline = System.currentTimeMillis() + timeoutMs
+        while (!condition()) {
+            if (System.currentTimeMillis() >= deadline) {
+                fail("Condition was not met within ${timeoutMs}ms")
+            }
+            Thread.sleep(10)
+        }
     }
 
     private fun createContext(mainFileName: String): LatexRunStepContext {
@@ -363,8 +357,17 @@ class StepAwareSequentialProcessHandlerTest : BasePlatformTestCase() {
         val environment = mockk<ExecutionEnvironment>(relaxed = true).also {
             every { it.project } returns project
         }
-        val state = LatexRunSessionState(resolvedMainFile = mainFile)
-        return LatexRunStepContext(runConfig, environment, state, mainFile)
+        val state = LatexRunSessionState(
+            project = project,
+            mainFile = mainFile,
+            outputDir = mainFile.parent,
+            workingDirectory = Path.of(mainFile.parent.path),
+            distributionType = LatexDistributionType.TEXLIVE,
+            usesDefaultWorkingDirectory = true,
+            latexSdk = null,
+            auxDir = mainFile.parent,
+        )
+        return LatexRunStepContext(runConfig, environment, state)
     }
 
     private class TestProcessStep(
