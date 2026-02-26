@@ -24,13 +24,13 @@ internal object LatexPathResolver {
 
     fun resolveOutputDir(
         runConfig: LatexRunConfiguration,
-        mainFile: VirtualFile? = runConfig.executionState.resolvedMainFile,
+        mainFile: VirtualFile? = LatexRunConfigurationStaticSupport.resolveMainFile(runConfig),
     ): VirtualFile? =
         ensureDir(runConfig.outputPath ?: defaultOutputPath, mainFile, runConfig.project, "out")
 
     fun resolveAuxDir(
         runConfig: LatexRunConfiguration,
-        mainFile: VirtualFile? = runConfig.executionState.resolvedMainFile,
+        mainFile: VirtualFile? = LatexRunConfigurationStaticSupport.resolveMainFile(runConfig),
     ): VirtualFile? {
         val hasLatexmkStep = runConfig.configOptions.steps.any { it.enabled && it.type == LatexStepType.LATEXMK_COMPILE }
         val supportsAuxDir = runConfig.getLatexDistributionType().isMiktex(runConfig.project, mainFile) ||
@@ -90,7 +90,7 @@ internal object LatexPathResolver {
     @Throws(ExecutionException::class)
     fun updateOutputSubDirs(
         runConfig: LatexRunConfiguration,
-        mainFile: VirtualFile? = runConfig.executionState.resolvedMainFile,
+        mainFile: VirtualFile? = LatexRunConfigurationStaticSupport.resolveMainFile(runConfig),
         outputDir: VirtualFile? = resolveOutputDir(runConfig, mainFile),
     ): Set<Path> {
         val includeRoot = mainFile?.parent ?: return emptySet()

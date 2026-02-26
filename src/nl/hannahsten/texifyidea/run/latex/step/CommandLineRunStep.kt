@@ -47,9 +47,9 @@ internal class CommandLineRunStep(
             return configured ?: defaultWorkingDirectory(context)
         }
 
-        fun defaultWorkingDirectory(context: LatexRunStepContext): Path? = context.executionState.resolvedAuxDir?.let { Path.of(it.path) }
-            ?: context.executionState.resolvedOutputDir?.let { Path.of(it.path) }
-            ?: context.executionState.resolvedWorkingDirectory
+        fun defaultWorkingDirectory(context: LatexRunStepContext): Path? = context.session.resolvedAuxDir?.let { Path.of(it.path) }
+            ?: context.session.resolvedOutputDir?.let { Path.of(it.path) }
+            ?: context.session.resolvedWorkingDirectory
             ?: Path.of(context.mainFile.parent.path)
     }
 }

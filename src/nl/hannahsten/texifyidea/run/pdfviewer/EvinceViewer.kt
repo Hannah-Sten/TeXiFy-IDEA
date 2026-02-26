@@ -4,6 +4,7 @@ import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.TeXception
+import nl.hannahsten.texifyidea.run.latex.LatexRunSessionState
 import org.freedesktop.dbus.connections.impl.DBusConnectionBuilder
 import org.freedesktop.dbus.errors.NoReply
 import org.freedesktop.dbus.errors.ServiceUnknown
@@ -69,7 +70,7 @@ object EvinceViewer : SystemPdfViewer("Evince", "evince") {
      * @param sourceFilePath Full path to the LaTeX source file.
      * @param line Line number in the source file to highlight in the pdf.
      */
-    override fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
+    override fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean, session: LatexRunSessionState?) {
         // If we are not allowed to change focus, we cannot open the pdf or do forward search because this will always change focus with Evince
         if (!focusAllowed) {
             return

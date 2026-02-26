@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.run.latex.step
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.util.ProgramParametersConfigurator
-import nl.hannahsten.texifyidea.run.latex.LatexExecutionStateInitializer
+import nl.hannahsten.texifyidea.run.latex.LatexSessionInitializer
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.LatexCompileStepOptions
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
@@ -18,35 +18,29 @@ internal class LatexCompileRunStep(
     override val configId: String = stepConfig.id
     override val id: String = stepConfig.type
 
-    override fun afterFinish(context: LatexRunStepContext, exitCode: Int) {
-        context.executionState.markHasRun()
-    }
+    override fun afterFinish(context: LatexRunStepContext, exitCode: Int) {}
 
     @Throws(ExecutionException::class)
     override fun createProcess(context: LatexRunStepContext): ProcessHandler {
         val runConfig = context.runConfig
         runConfig.activateStepForExecution(configId)
         try {
-            val executionState = context.executionState
-            // Keep command construction on the same execution snapshot used by this step context.
-            if (runConfig.executionState !== executionState) {
-                runConfig.executionState = executionState
-            }
-            if (!executionState.isInitialized || executionState.resolvedMainFile == null || executionState.resolvedOutputDir == null) {
-                LatexExecutionStateInitializer.initialize(runConfig, context.environment, executionState)
+            val session = context.session
+            if (!session.isInitialized || session.resolvedMainFile == null || session.resolvedOutputDir == null) {
+                LatexSessionInitializer.initialize(runConfig, context.environment, session)
             }
 
-            LatexExecutionStateInitializer.refreshCompileStepDerivedState(runConfig, executionState, stepConfig)
+            LatexSessionInitializer.refreshCompileStepDerivedState(runConfig, session, stepConfig)
             val compiler = resolveCompiler(stepConfig)
-            val command = compiler.getCommand(runConfig, context.environment.project)
+            val command = compiler.getCommand(runConfig, context.environment.project, session)
                 ?: throw ExecutionException(
                     buildString {
                         append("Compile command could not be created. ")
                         append("stepType=").append(stepConfig.type).append(", ")
-                        append("isInitialized=").append(executionState.isInitialized).append(", ")
-                        append("mainFile=").append(executionState.resolvedMainFile?.path ?: "<null>").append(", ")
-                        append("outputDir=").append(executionState.resolvedOutputDir?.path ?: "<null>").append(", ")
-                        append("workingDir=").append(executionState.resolvedWorkingDirectory?.toString() ?: "<null>")
+                        append("isInitialized=").append(session.isInitialized).append(", ")
+                        append("mainFile=").append(session.resolvedMainFile?.path ?: "<null>").append(", ")
+                        append("outputDir=").append(session.resolvedOutputDir?.path ?: "<null>").append(", ")
+                        append("workingDir=").append(session.resolvedWorkingDirectory?.toString() ?: "<null>")
                     }
                 )
             val programParamsConfigurator = ProgramParametersConfigurator()
@@ -55,7 +49,7 @@ internal class LatexCompileRunStep(
                 environment = context.environment,
                 mainFile = context.mainFile,
                 command = command,
-                workingDirectory = executionState.resolvedWorkingDirectory,
+                workingDirectory = session.resolvedWorkingDirectory,
                 expandMacrosEnvVariables = runConfig.expandMacrosEnvVariables,
                 envs = runConfig.environmentVariables.envs,
                 expandEnvValue = { value -> expandPathAndMacros(programParamsConfigurator, value, runConfig) },

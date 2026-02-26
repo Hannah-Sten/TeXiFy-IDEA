@@ -5,7 +5,7 @@
 - Branch baseline: `new-ui`
 - Migration mode: direct migration (no legacy compatibility guarantee)
 - Core architecture: `common + steps` (options-only)
-- Last updated: 2026-02-25
+- Last updated: 2026-02-26
 
 ## Target Principles (from `run-config-ui`)
 
@@ -86,6 +86,7 @@
 - [x] Phase 11.3: unify `deepCopy` with `BaseState.copyFrom` template pattern
 - [x] Phase 11.4: file cleanup migrated to explicit step model
 - [x] Phase 11.5: remove `LatexStepExecution`, move lifecycle to `LatexRunStep` Process/Inline interfaces
+- [x] Phase 12: `LatexRunExecutionState` removed, full run-session state propagation
 
 ## Removed / Deprecated Paths (Completed)
 
@@ -138,3 +139,16 @@
   - Step pre/post behaviors were moved into step-level execution composition.
 - Phase 11 / 10.1 completed:
   - Options-only `common + steps` model became the single active configuration model.
+
+### 2026-02-26
+
+- Phase 12 completed:
+  - Replaced shared `LatexRunExecutionState` with per-run `LatexRunSessionState`.
+  - `LatexRunStepContext` now carries `session`; step chain no longer reads mutable run-config runtime state.
+  - `LatexExecutionStateInitializer` renamed to `LatexSessionInitializer`.
+  - `LatexCompiler.getCommand(...)` and `LatexmkModeService` switched to explicit `session` input.
+  - Viewer forward-search API now accepts optional `session`; Zathura prefers session-resolved output path, then falls back to config-based guessing.
+  - Removed legacy aux listener path files:
+    - `src/nl/hannahsten/texifyidea/run/latex/RunLatexListener.kt`
+    - `src/nl/hannahsten/texifyidea/run/bibtex/RunBibtexListener.kt`
+    - `src/nl/hannahsten/texifyidea/run/latex/LatexRerunScheduler.kt`

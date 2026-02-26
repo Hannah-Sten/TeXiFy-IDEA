@@ -11,6 +11,7 @@ import com.pretty_tools.dde.DDEException
 import com.pretty_tools.dde.DDEMLException
 import com.pretty_tools.dde.client.DDEClientConversation
 import nl.hannahsten.texifyidea.TeXception
+import nl.hannahsten.texifyidea.run.latex.LatexRunSessionState
 import nl.hannahsten.texifyidea.util.int
 import nl.hannahsten.texifyidea.util.runCommand
 import java.nio.file.Files
@@ -234,7 +235,7 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
             .start()
     }
 
-    override fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
+    override fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean, session: LatexRunSessionState?) {
         if (!isAvailable()) return
         forwardSearch(outputPath, sourceFilePath, line, focus = focusAllowed)
     }

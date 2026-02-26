@@ -8,7 +8,7 @@ import io.mockk.mockk
 import nl.hannahsten.texifyidea.run.latex.FileCleanupStepOptions
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer
-import nl.hannahsten.texifyidea.run.latex.LatexRunExecutionState
+import nl.hannahsten.texifyidea.run.latex.LatexRunSessionState
 import java.nio.file.Files
 
 class FileCleanupRunStepTest : BasePlatformTestCase() {
@@ -25,8 +25,8 @@ class FileCleanupRunStepTest : BasePlatformTestCase() {
         Files.writeString(nonEmpty.resolve("keep.txt"), "keep")
 
         val context = createContext(mainFilePath)
-        context.executionState.addCleanupFile(toDelete)
-        context.executionState.addCleanupDirectoriesIfEmpty(listOf(nestedParent, nestedChild, nonEmpty))
+        context.session.addCleanupFile(toDelete)
+        context.session.addCleanupDirectoriesIfEmpty(listOf(nestedParent, nestedChild, nonEmpty))
 
         val step = FileCleanupRunStep(FileCleanupStepOptions())
         step.beforeStart(context)
@@ -38,8 +38,8 @@ class FileCleanupRunStepTest : BasePlatformTestCase() {
         assertFalse(Files.exists(nestedChild))
         assertFalse(Files.exists(nestedParent))
         assertTrue(Files.exists(nonEmpty))
-        assertTrue(context.executionState.filesToCleanUp.isEmpty())
-        assertTrue(context.executionState.directoriesToDeleteIfEmpty.isEmpty())
+        assertTrue(context.session.filesToCleanUp.isEmpty())
+        assertTrue(context.session.directoriesToDeleteIfEmpty.isEmpty())
     }
 
     fun testCleanupIgnoresMissingFiles() {
@@ -49,7 +49,7 @@ class FileCleanupRunStepTest : BasePlatformTestCase() {
         val missingFile = root.resolve("does-not-exist.tmp")
 
         val context = createContext(mainFilePath)
-        context.executionState.addCleanupFile(missingFile)
+        context.session.addCleanupFile(missingFile)
 
         val step = FileCleanupRunStep(FileCleanupStepOptions())
         step.beforeStart(context)
@@ -57,8 +57,8 @@ class FileCleanupRunStepTest : BasePlatformTestCase() {
         step.afterFinish(context, exitCode)
 
         assertEquals(0, exitCode)
-        assertTrue(context.executionState.filesToCleanUp.isEmpty())
-        assertTrue(context.executionState.directoriesToDeleteIfEmpty.isEmpty())
+        assertTrue(context.session.filesToCleanUp.isEmpty())
+        assertTrue(context.session.directoriesToDeleteIfEmpty.isEmpty())
     }
 
     private fun createContext(mainFilePath: java.nio.file.Path): LatexRunStepContext {
@@ -71,7 +71,7 @@ class FileCleanupRunStepTest : BasePlatformTestCase() {
         val environment = mockk<ExecutionEnvironment>(relaxed = true).also {
             every { it.project } returns project
         }
-        val state = LatexRunExecutionState(resolvedMainFile = mainFile)
+        val state = LatexRunSessionState(resolvedMainFile = mainFile)
         return LatexRunStepContext(runConfig, environment, state, mainFile)
     }
 }

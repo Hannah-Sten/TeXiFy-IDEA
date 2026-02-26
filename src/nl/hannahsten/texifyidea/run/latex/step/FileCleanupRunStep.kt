@@ -17,7 +17,7 @@ internal class FileCleanupRunStep(
     override val id: String = stepConfig.type
 
     override fun runInline(context: LatexRunStepContext): Int {
-        val state = context.executionState
+        val state = context.session
         val filesToDelete = state.filesToCleanUp.toList()
         val directoriesToDelete = state.directoriesToDeleteIfEmpty.toList().sortedDescending()
 

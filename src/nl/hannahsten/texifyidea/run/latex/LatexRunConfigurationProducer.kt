@@ -6,7 +6,6 @@ import com.intellij.execution.configurations.ConfigurationFactory
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
-import com.intellij.psi.createSmartPointer
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.run.latex.step.LatexStepAutoConfigurator
 
@@ -33,7 +32,6 @@ class LatexRunConfigurationProducer : LazyRunConfigurationProducer<LatexRunConfi
 
         // Change the main file as given by the template run configuration to the current file
         runConfiguration.mainFilePath = LatexRunConfigurationStaticSupport.toProjectRelativePathOrAbsolute(runConfiguration, mainFile)
-        runConfiguration.executionState.psiFile = container.createSmartPointer()
         runConfiguration.setSuggestedName()
 
         runConfiguration.configOptions.steps = LatexStepAutoConfigurator.configureFromContext(

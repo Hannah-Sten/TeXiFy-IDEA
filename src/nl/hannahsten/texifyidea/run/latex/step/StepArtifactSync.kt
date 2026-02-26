@@ -89,7 +89,7 @@ internal class StepArtifactSync(
             }
             val destination = destinationDir.resolve(fileName)
             if (registerCleanup && source.exists() && !destination.exists()) {
-                context.executionState.addCleanupFile(destination)
+                context.session.addCleanupFile(destination)
             }
             try {
                 Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING)
@@ -112,8 +112,8 @@ internal class StepArtifactSync(
         CommandLineRunStep.resolveWorkingDirectory(context, step.workingDirectoryPath)
 
     private fun auxOrOutputDirectory(): Path? =
-        context.executionState.resolvedAuxDir?.path?.let(Path::of)
-            ?: context.executionState.resolvedOutputDir?.path?.let(Path::of)
+        context.session.resolvedAuxDir?.path?.let(Path::of)
+            ?: context.session.resolvedOutputDir?.path?.let(Path::of)
 
     private fun sameDirectory(left: Path, right: Path): Boolean = runCatching {
         left.toRealPath() == right.toRealPath()

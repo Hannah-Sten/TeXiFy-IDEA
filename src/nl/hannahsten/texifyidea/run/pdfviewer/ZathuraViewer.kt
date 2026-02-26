@@ -12,6 +12,8 @@ import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.psi.PsiManager
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationStaticSupport
+import nl.hannahsten.texifyidea.run.latex.LatexRunSessionState
+import nl.hannahsten.texifyidea.run.latex.LatexPathResolver
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.selectedRunConfig
@@ -21,8 +23,8 @@ object ZathuraViewer : SystemPdfViewer("Zathura", "zathura") {
     override val isFocusSupported: Boolean
         get() = true
 
-    override fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
-        val pdfPathGuess = outputPath ?: guessPdfPath(project, sourceFilePath)
+    override fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean, session: LatexRunSessionState?) {
+        val pdfPathGuess = outputPath ?: guessPdfPath(project, sourceFilePath, session)
 
         if (pdfPathGuess != null) {
             if(!focusAllowed) {
@@ -44,7 +46,11 @@ object ZathuraViewer : SystemPdfViewer("Zathura", "zathura") {
      * Guess the path of the pdf file to forward search to based on the currently selected run configuration (as this is
      * often the last configuration that is run).
      */
-    private fun guessPdfPath(project: Project, sourceFilePath: String): String? {
+    private fun guessPdfPath(project: Project, sourceFilePath: String, session: LatexRunSessionState?): String? {
+        if (session?.resolvedOutputFilePath != null) {
+            return session.resolvedOutputFilePath
+        }
+
         val sourceVirtualFile = VirtualFileManager.getInstance().findFileByUrl("file://$sourceFilePath") ?: return null
         val sourcePsiFile = PsiManager.getInstance(project).findFile(sourceVirtualFile) ?: return null
 
@@ -53,13 +59,19 @@ object ZathuraViewer : SystemPdfViewer("Zathura", "zathura") {
         val runConfig = project.selectedRunConfig() ?: return null
         val runConfigMainFile = LatexRunConfigurationStaticSupport.resolveMainFile(runConfig)
         return if (runConfigMainFile?.psiFile(project)?.referencedFileSet()?.contains(sourcePsiFile) == true) {
-            runConfig.executionState.resolvedOutputFilePath
+            guessPdfPathFromConfig(runConfig)
         }
         // If not, search for a run configuration that compiles the root file of the current file,
         // and use the output path that is specified there.
         else {
-            runConfigThatCompilesFile(sourceVirtualFile, project)?.executionState?.resolvedOutputFilePath ?: return null
+            runConfigThatCompilesFile(sourceVirtualFile, project)?.let(::guessPdfPathFromConfig)
         }
+    }
+
+    private fun guessPdfPathFromConfig(runConfig: LatexRunConfiguration): String? {
+        val mainFile = LatexRunConfigurationStaticSupport.resolveMainFile(runConfig) ?: return null
+        val outputDir = LatexPathResolver.resolveOutputDir(runConfig, mainFile) ?: return null
+        return "${outputDir.path}/${mainFile.nameWithoutExtension}.pdf"
     }
 
     /**

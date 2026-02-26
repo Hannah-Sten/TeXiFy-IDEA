@@ -7,8 +7,9 @@ import com.intellij.execution.Executor
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.openapi.fileEditor.FileDocumentManager
-import nl.hannahsten.texifyidea.run.latex.LatexExecutionStateInitializer
+import nl.hannahsten.texifyidea.run.latex.LatexSessionInitializer
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexRunSessionState
 import nl.hannahsten.texifyidea.run.latex.LatexStepRunConfigurationOptions
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepPlanBuilder
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepContext
@@ -24,8 +25,9 @@ internal class LatexStepRunState(
     @Throws(ExecutionException::class)
     override fun execute(executor: Executor?, runner: ProgramRunner<*>): ExecutionResult {
         FileDocumentManager.getInstance().saveAllDocuments()
-        LatexExecutionStateInitializer.initialize(runConfig, environment, runConfig.executionState)
-        val mainFile = runConfig.executionState.resolvedMainFile
+        val session = LatexRunSessionState()
+        LatexSessionInitializer.initialize(runConfig, environment, session)
+        val mainFile = session.resolvedMainFile
             ?: throw ExecutionException("Main file cannot be resolved")
 
         val configuredPlan = LatexRunStepPlanBuilder.build(configuredSteps)
@@ -37,7 +39,7 @@ internal class LatexStepRunState(
             throw ExecutionException("No executable steps found in compile-step schema.")
         }
 
-        val context = LatexRunStepContext(runConfig, environment, runConfig.executionState, mainFile)
+        val context = LatexRunStepContext(runConfig, environment, session, mainFile)
         val overallHandler = StepAwareSequentialProcessHandler(configuredPlan.steps, context)
         val stepLogConsole = LatexStepLogTabComponent(environment.project, mainFile, overallHandler)
 

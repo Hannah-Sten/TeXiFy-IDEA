@@ -32,9 +32,6 @@ class LatexRunConfiguration(
         internal const val DEFAULT_LATEXMK_EXTRA_ARGUMENTS = "-synctex=1"
     }
 
-    @Transient
-    var executionState: LatexRunExecutionState = LatexRunExecutionState()
-
     var isAutoCompiling = false
 
     private var activeStepIdForExecution: String? = null
@@ -49,35 +46,30 @@ class LatexRunConfiguration(
         get() = configOptions.steps
         set(value) {
             configOptions.steps = value
-            executionState.clearInitialization()
         }
 
     var mainFilePath: String?
         get() = configOptions.mainFilePath
         set(value) {
             configOptions.mainFilePath = value?.trim()?.ifEmpty { null }
-            executionState.clearInitialization()
         }
 
     var outputPath: Path?
         get() = configOptions.outputPath?.let(::pathOrNull)
         set(value) {
             configOptions.outputPath = value?.toString() ?: LatexPathResolver.defaultOutputPath.toString()
-            executionState.clearInitialization()
         }
 
     var auxilPath: Path?
         get() = configOptions.auxilPath?.let(::pathOrNull)
         set(value) {
             configOptions.auxilPath = value?.toString() ?: LatexPathResolver.defaultAuxilPath.toString()
-            executionState.clearInitialization()
         }
 
     var workingDirectory: Path?
         get() = configOptions.workingDirectoryPath?.let(::pathOrNull)
         set(value) {
             configOptions.workingDirectoryPath = value?.toString()
-            executionState.clearInitialization()
         }
 
     var environmentVariables: EnvironmentVariablesData
@@ -110,7 +102,6 @@ class LatexRunConfiguration(
         get() = configOptions.latexDistribution
         set(value) {
             configOptions.latexDistribution = value
-            executionState.clearInitialization()
         }
 
     var pdfViewer: PdfViewer?
@@ -141,10 +132,6 @@ class LatexRunConfiguration(
         executor: Executor,
         environment: ExecutionEnvironment
     ): RunProfileState {
-        if (executionState.isFirstRunConfig) {
-            executionState.prepareForManualRun()
-        }
-
         configOptions.ensureDefaultSteps()
 
         val configuredSteps = steps.filter { it.enabled }
@@ -166,7 +153,7 @@ class LatexRunConfiguration(
 
     fun getLatexSdk(): Sdk? = when (latexDistribution) {
         LatexDistributionType.MODULE_SDK -> {
-            val mainFile = executionState.resolvedMainFile
+            val mainFile = LatexRunConfigurationStaticSupport.resolveMainFile(this)
             val sdk = mainFile?.let { LatexSdkUtil.getLatexSdkForFile(it, project) }
                 ?: LatexSdkUtil.getLatexProjectSdk(project)
             if (sdk?.sdkType is LatexSdk) sdk else null
@@ -209,7 +196,6 @@ class LatexRunConfiguration(
 
     override fun clone(): RunConfiguration {
         val cloned = super.clone() as LatexRunConfiguration
-        cloned.executionState = LatexRunExecutionState()
         cloned.isAutoCompiling = false
         cloned.activeStepIdForExecution = null
         cloned.configOptions.environmentVariables.clear()

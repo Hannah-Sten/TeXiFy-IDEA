@@ -12,13 +12,13 @@ import nl.hannahsten.texifyidea.run.latexmk.compileModeFromMagicCommand
 import java.nio.file.Path
 import java.util.Locale
 
-internal object LatexExecutionStateInitializer {
+internal object LatexSessionInitializer {
 
     @Throws(ExecutionException::class)
     fun initialize(
         runConfig: LatexRunConfiguration,
         environment: ExecutionEnvironment,
-        executionState: LatexRunExecutionState,
+        executionState: LatexRunSessionState,
     ) {
         if (executionState.isInitialized) {
             return
@@ -27,11 +27,9 @@ internal object LatexExecutionStateInitializer {
         val mainFile = LatexRunConfigurationStaticSupport.resolveMainFile(runConfig)
             ?: throw ExecutionException("Main file cannot be resolved")
         executionState.resolvedMainFile = mainFile
-        val mainPsiFile = ReadAction.compute<com.intellij.psi.PsiFile?, RuntimeException> {
-            PsiManager.getInstance(runConfig.project).findFile(mainFile)
-        }
-        if (mainPsiFile != null) {
-            executionState.psiFile = SmartPointerManager.getInstance(runConfig.project).createSmartPsiElementPointer(mainPsiFile)
+        executionState.psiFile = ReadAction.compute<com.intellij.psi.SmartPsiElementPointer<com.intellij.psi.PsiFile>?, RuntimeException> {
+            val mainPsiFile = PsiManager.getInstance(runConfig.project).findFile(mainFile) ?: return@compute null
+            SmartPointerManager.getInstance(runConfig.project).createSmartPsiElementPointer(mainPsiFile)
         }
         executionState.resolvedWorkingDirectory = LatexPathResolver.resolve(runConfig.workingDirectory, mainFile, environment.project)
             ?: Path.of(mainFile.parent.path)
@@ -51,17 +49,17 @@ internal object LatexExecutionStateInitializer {
 
     fun refreshCompileStepDerivedState(
         runConfig: LatexRunConfiguration,
-        executionState: LatexRunExecutionState,
+        executionState: LatexRunSessionState,
         step: LatexStepRunConfigurationOptions?,
     ) {
         val mainFile = executionState.resolvedMainFile ?: return
         val latexmkStep = step as? LatexmkCompileStepOptions
         val classicStep = step as? LatexCompileStepOptions
 
-        val effectiveMode = latexmkStep?.let { LatexmkModeService.effectiveCompileMode(runConfig, it) }
+        val effectiveMode = latexmkStep?.let { LatexmkModeService.effectiveCompileMode(runConfig, executionState, it) }
         executionState.effectiveLatexmkCompileMode = effectiveMode
         executionState.effectiveCompilerArguments = when {
-            latexmkStep != null -> LatexmkModeService.buildArguments(runConfig, latexmkStep, effectiveMode)
+            latexmkStep != null -> LatexmkModeService.buildArguments(runConfig, executionState, latexmkStep, effectiveMode)
             classicStep != null -> classicStep.compilerArguments
             else -> null
         }
@@ -69,7 +67,7 @@ internal object LatexExecutionStateInitializer {
     }
 
     private fun computeOutputFilePath(
-        executionState: LatexRunExecutionState,
+        executionState: LatexRunSessionState,
         mainFile: VirtualFile,
         step: LatexStepRunConfigurationOptions?,
     ): String? {

@@ -13,6 +13,7 @@ import nl.hannahsten.texifyidea.run.latex.LatexmkCompileStepOptions
 import nl.hannahsten.texifyidea.run.latex.LatexPathResolver
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationStaticSupport
+import nl.hannahsten.texifyidea.run.latex.LatexRunSessionState
 import nl.hannahsten.texifyidea.run.latex.LatexmkModeService
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.runInBackgroundWithoutProgress
@@ -80,6 +81,10 @@ object LatexmkCleanUtil {
 
     private fun buildCleanCommand(runConfig: LatexRunConfiguration, mainFile: VirtualFile, cleanAll: Boolean): List<String>? {
         val latexmkStep = runConfig.primaryCompileStep() as? LatexmkCompileStepOptions ?: return null
+        val session = LatexRunSessionState(
+            resolvedMainFile = mainFile,
+            resolvedWorkingDirectory = LatexPathResolver.resolve(runConfig.workingDirectory, mainFile, runConfig.project),
+        )
         val distributionType = runConfig.getLatexDistributionType()
         val executable = latexmkStep.compilerPath ?: LatexSdkUtil.getExecutableName(
             LatexCompiler.LATEXMK.executableName,
@@ -89,7 +94,7 @@ object LatexmkCleanUtil {
         )
 
         val command = mutableListOf(executable)
-        val compilerArguments = LatexmkModeService.buildArguments(runConfig, latexmkStep)
+        val compilerArguments = LatexmkModeService.buildArguments(runConfig, session, latexmkStep)
         if (compilerArguments.isNotBlank()) {
             command += ParametersListUtil.parse(compilerArguments)
         }

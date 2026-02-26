@@ -7,13 +7,6 @@ import com.intellij.openapi.vfs.VirtualFile
 internal object LatexRunConfigurationStaticSupport {
 
     fun resolveMainFile(runConfig: LatexRunConfiguration, path: String? = runConfig.mainFilePath): VirtualFile? {
-        if (path == null || path == runConfig.mainFilePath) {
-            runConfig.executionState.resolvedMainFile?.let { return it }
-            if (runConfig.executionState.isInitialized) {
-                return null
-            }
-        }
-
         val candidate = path?.trim()?.takeIf { it.isNotBlank() } ?: return null
         val fileSystem = LocalFileSystem.getInstance()
         val absolute = fileSystem.findFileByPath(candidate)
@@ -43,7 +36,7 @@ internal object LatexRunConfigurationStaticSupport {
     }
 
     fun mainFileNameWithoutExtension(runConfig: LatexRunConfiguration): String? {
-        val resolved = if (runConfig.executionState.isInitialized) runConfig.executionState.resolvedMainFile else resolveMainFile(runConfig)
+        val resolved = resolveMainFile(runConfig)
         if (resolved != null) {
             return resolved.nameWithoutExtension
         }
@@ -54,13 +47,6 @@ internal object LatexRunConfigurationStaticSupport {
     }
 
     fun usesAuxilOrOutDirectory(runConfig: LatexRunConfiguration): Boolean {
-        if (runConfig.executionState.isInitialized) {
-            val mainParent = runConfig.executionState.resolvedMainFile?.parent
-            val usesAuxilDir = (runConfig.executionState.resolvedAuxDir ?: runConfig.executionState.resolvedOutputDir) != mainParent
-            val usesOutDir = runConfig.executionState.resolvedOutputDir != mainParent
-            return usesAuxilDir || usesOutDir
-        }
-
         val mainFile = resolveMainFile(runConfig)
         val mainParent = mainFile?.parent
         val usesAuxilDir = LatexPathResolver.resolveAuxDir(runConfig, mainFile) != mainParent

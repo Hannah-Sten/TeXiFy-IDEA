@@ -11,7 +11,7 @@ import io.mockk.every
 import io.mockk.mockk
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer
-import nl.hannahsten.texifyidea.run.latex.LatexRunExecutionState
+import nl.hannahsten.texifyidea.run.latex.LatexRunSessionState
 import nl.hannahsten.texifyidea.run.latex.step.InlineLatexRunStep
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepContext
 import nl.hannahsten.texifyidea.run.latex.step.ProcessLatexRunStep
@@ -363,7 +363,7 @@ class StepAwareSequentialProcessHandlerTest : BasePlatformTestCase() {
         val environment = mockk<ExecutionEnvironment>(relaxed = true).also {
             every { it.project } returns project
         }
-        val state = LatexRunExecutionState(resolvedMainFile = mainFile)
+        val state = LatexRunSessionState(resolvedMainFile = mainFile)
         return LatexRunStepContext(runConfig, environment, state, mainFile)
     }
 

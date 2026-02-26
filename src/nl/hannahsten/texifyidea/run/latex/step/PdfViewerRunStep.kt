@@ -51,7 +51,7 @@ internal class PdfViewerRunStep(
         handler: ProcessHandler
     ) {
         val runConfig = context.runConfig
-        val outputFilePath = context.executionState.resolvedOutputFilePath ?: return
+        val outputFilePath = context.session.resolvedOutputFilePath ?: return
 
         if (runConfig.isAutoCompiling) return
 
@@ -78,11 +78,19 @@ internal class PdfViewerRunStep(
             ?: context.environment.project.selectedTextEditor()?.editor
         val line = editor?.document?.getLineNumber(editor.caretOffset())?.plus(1) ?: 0
         val currentFilePath = editor?.document?.let { FileDocumentManager.getInstance().getFile(it)?.path }
-            ?: context.executionState.resolvedMainFile?.path
+            ?: context.session.resolvedMainFile?.path
             ?: return
 
         handler.addProcessListener(
-            OpenViewerListener(viewer, runConfig, currentFilePath, line, context.environment.project, stepConfig.requireFocus)
+            OpenViewerListener(
+                viewer = viewer,
+                outputPath = outputFilePath,
+                session = context.session,
+                sourceFilePath = currentFilePath,
+                line = line,
+                project = context.environment.project,
+                focusAllowed = stepConfig.requireFocus,
+            )
         )
     }
 }

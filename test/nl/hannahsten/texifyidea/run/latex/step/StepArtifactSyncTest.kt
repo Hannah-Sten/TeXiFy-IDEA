@@ -8,7 +8,7 @@ import io.mockk.mockk
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer
-import nl.hannahsten.texifyidea.run.latex.LatexRunExecutionState
+import nl.hannahsten.texifyidea.run.latex.LatexRunSessionState
 import nl.hannahsten.texifyidea.run.latex.MakeindexStepOptions
 import java.nio.file.Files
 
@@ -38,7 +38,7 @@ class StepArtifactSyncTest : BasePlatformTestCase() {
         val environment = mockk<ExecutionEnvironment>(relaxed = true).also {
             every { it.project } returns project
         }
-        val executionState = LatexRunExecutionState(
+        val executionState = LatexRunSessionState(
             resolvedMainFile = mainFile,
             resolvedAuxDir = auxVirtual,
             resolvedOutputDir = outputVirtual,

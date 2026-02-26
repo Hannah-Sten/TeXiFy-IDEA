@@ -9,6 +9,8 @@ import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexPathResolver
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationStaticSupport
+import nl.hannahsten.texifyidea.run.latex.LatexRunSessionState
 import nl.hannahsten.texifyidea.settings.sdk.DockerSdk
 import nl.hannahsten.texifyidea.settings.sdk.DockerSdkAdditionalData
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
@@ -228,7 +230,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
             // The available command line arguments can be found at https://github.com/tectonic-typesetting/tectonic/blob/d7a8497c90deb08b5e5792a11d6e8b082f53bbb7/src/bin/tectonic.rs#L158
             // The V2 CLI uses a toml file and should not have arguments
-            if (runConfig.executionState.resolvedMainFile?.hasTectonicTomlFile() != true) {
+            if (LatexRunConfigurationStaticSupport.resolveMainFile(runConfig)?.hasTectonicTomlFile() != true) {
                 command.add("--synctex")
 
                 command.add("--outfmt=${runConfig.activeOutputFormat().name.lowercase(Locale.getDefault())}")
@@ -274,8 +276,8 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
      * @param project
      *          The current project.
      */
-    fun getCommand(runConfig: LatexRunConfiguration, project: Project): List<String>? {
-        val mainFile = runConfig.executionState.resolvedMainFile ?: return null
+    fun getCommand(runConfig: LatexRunConfiguration, project: Project, session: LatexRunSessionState): List<String>? {
+        val mainFile = session.resolvedMainFile ?: return null
         // Getting the content root is an expensive operation (See WorkspaceFileIndexDataImpl#ensureIsUpToDate), and since it probably won't change often we reuse a cached value
         val moduleRoot = LatexPathResolver.getMainFileContentRoot(mainFile, project)
         // For now we disable module roots with Docker
@@ -306,11 +308,11 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             "/out"
         }
         else if (this == LATEXMK) {
-            (runConfig.executionState.resolvedOutputDir?.path ?: return null)
+            (session.resolvedOutputDir?.path ?: return null)
                 .toWslPathIfNeeded(runConfig.getLatexDistributionType())
         }
         else {
-            (runConfig.executionState.resolvedOutputDir ?: return null)
+            (session.resolvedOutputDir ?: return null)
                 .path
                 .toWslPathIfNeeded(runConfig.getLatexDistributionType())
         }
@@ -322,11 +324,11 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             null
         }
         else if (this == LATEXMK) {
-            (runConfig.executionState.resolvedAuxDir?.path)
+            (session.resolvedAuxDir?.path)
                 ?.toWslPathIfNeeded(runConfig.getLatexDistributionType())
         }
         else {
-            (runConfig.executionState.resolvedAuxDir)
+            (session.resolvedAuxDir)
                 ?.path
                 ?.toWslPathIfNeeded(runConfig.getLatexDistributionType())
         }
@@ -343,7 +345,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             var wslCommand = GeneralCommandLine(command).commandLineString
 
             // Custom compiler arguments specified by the user
-            runConfig.executionState.effectiveCompilerArguments?.let { arguments ->
+            session.effectiveCompilerArguments?.let { arguments ->
                 ParametersListUtil.parse(arguments)
                     .forEach { wslCommand += " $it" }
             }
@@ -354,11 +356,11 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         }
 
         if (runConfig.getLatexDistributionType().isDocker()) {
-            createDockerCommand(runConfig, auxilPath, outputPath, mainFile, command)
+            createDockerCommand(runConfig, session, auxilPath, outputPath, mainFile, command)
         }
 
         // Custom compiler arguments specified by the user
-        runConfig.executionState.effectiveCompilerArguments?.let { arguments ->
+        session.effectiveCompilerArguments?.let { arguments ->
             ParametersListUtil.parse(arguments)
                 .forEach { command.add(it) }
         }
@@ -388,7 +390,14 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
     }
 
     @Suppress("SameParameterValue")
-    private fun createDockerCommand(runConfig: LatexRunConfiguration, dockerAuxilDir: String?, dockerOutputDir: String?, mainFile: VirtualFile, command: MutableList<String>) {
+    private fun createDockerCommand(
+        runConfig: LatexRunConfiguration,
+        session: LatexRunSessionState,
+        dockerAuxilDir: String?,
+        dockerOutputDir: String?,
+        mainFile: VirtualFile,
+        command: MutableList<String>
+    ) {
         val isMiktex = runConfig.getLatexDistributionType() == LatexDistributionType.DOCKER_MIKTEX
 
         if (isMiktex) {
@@ -423,14 +432,14 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
         if (dockerOutputDir != null) {
             // Avoid mounting the mainfile parent also to /miktex/work/out,
             // because there may be a good reason to make the output directory the same as the source directory
-            val outPath = runConfig.executionState.resolvedOutputDir
+            val outPath = session.resolvedOutputDir
             if (outPath?.path != null && outPath != mainFile.parent) {
                 parameterList.addAll(listOf("-v", "${outPath.path}:$dockerOutputDir"))
             }
         }
 
         if (dockerAuxilDir != null) {
-            val auxilPath = runConfig.executionState.resolvedAuxDir
+            val auxilPath = session.resolvedAuxDir
             if (auxilPath?.path != null && auxilPath != mainFile.parent) {
                 parameterList.addAll(listOf("-v", "${auxilPath.path}:$dockerAuxilDir"))
             }
