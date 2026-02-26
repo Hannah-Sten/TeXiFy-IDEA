@@ -33,7 +33,6 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
         session.effectiveCompilerArguments = LatexmkModeService.buildArguments(runConfig, session, step, session.effectiveLatexmkCompileMode)
         val extension = (session.effectiveLatexmkCompileMode ?: LatexmkCompileMode.PDFLATEX_PDF).extension.lowercase()
         session.resolvedOutputFilePath = "${session.resolvedOutputDir?.path}/${mainFile.nameWithoutExtension}.$extension"
-        session.isInitialized = true
         return session
     }
 

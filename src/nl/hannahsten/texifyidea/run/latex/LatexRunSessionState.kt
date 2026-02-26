@@ -7,7 +7,6 @@ import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
 import java.nio.file.Path
 
 data class LatexRunSessionState(
-    var isInitialized: Boolean = false,
     var resolvedMainFile: VirtualFile? = null,
     var resolvedOutputDir: VirtualFile? = null,
     var resolvedAuxDir: VirtualFile? = null,
@@ -20,19 +19,6 @@ data class LatexRunSessionState(
     val filesToCleanUp: MutableList<Path> = mutableListOf(),
     val directoriesToDeleteIfEmpty: MutableSet<Path> = mutableSetOf(),
 ) {
-
-    fun clearInitialization() {
-        isInitialized = false
-        resolvedMainFile = null
-        resolvedOutputDir = null
-        resolvedAuxDir = null
-        resolvedWorkingDirectory = null
-        resolvedOutputFilePath = null
-        effectiveLatexmkCompileMode = null
-        effectiveCompilerArguments = null
-        filesToCleanUp.clear()
-        directoriesToDeleteIfEmpty.clear()
-    }
 
     fun addCleanupFile(file: Path) {
         filesToCleanUp.add(file)

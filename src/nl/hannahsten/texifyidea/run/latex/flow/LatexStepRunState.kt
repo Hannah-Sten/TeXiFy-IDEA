@@ -9,7 +9,6 @@ import com.intellij.execution.runners.ProgramRunner
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import nl.hannahsten.texifyidea.run.latex.LatexSessionInitializer
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.latex.LatexRunSessionState
 import nl.hannahsten.texifyidea.run.latex.LatexStepRunConfigurationOptions
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepPlanBuilder
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepContext
@@ -25,8 +24,7 @@ internal class LatexStepRunState(
     @Throws(ExecutionException::class)
     override fun execute(executor: Executor?, runner: ProgramRunner<*>): ExecutionResult {
         FileDocumentManager.getInstance().saveAllDocuments()
-        val session = LatexRunSessionState()
-        LatexSessionInitializer.initialize(runConfig, environment, session)
+        val session = LatexSessionInitializer.initialize(runConfig, environment)
         val mainFile = session.resolvedMainFile
             ?: throw ExecutionException("Main file cannot be resolved")
 

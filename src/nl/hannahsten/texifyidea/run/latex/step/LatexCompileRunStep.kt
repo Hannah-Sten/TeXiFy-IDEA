@@ -26,8 +26,8 @@ internal class LatexCompileRunStep(
         runConfig.activateStepForExecution(configId)
         try {
             val session = context.session
-            if (!session.isInitialized || session.resolvedMainFile == null || session.resolvedOutputDir == null) {
-                LatexSessionInitializer.initialize(runConfig, context.environment, session)
+            if (session.resolvedMainFile == null || session.resolvedOutputDir == null) {
+                throw ExecutionException("Session is not initialized for compile step.")
             }
 
             LatexSessionInitializer.refreshCompileStepDerivedState(runConfig, session, stepConfig)
@@ -37,7 +37,6 @@ internal class LatexCompileRunStep(
                     buildString {
                         append("Compile command could not be created. ")
                         append("stepType=").append(stepConfig.type).append(", ")
-                        append("isInitialized=").append(session.isInitialized).append(", ")
                         append("mainFile=").append(session.resolvedMainFile?.path ?: "<null>").append(", ")
                         append("outputDir=").append(session.resolvedOutputDir?.path ?: "<null>").append(", ")
                         append("workingDir=").append(session.resolvedWorkingDirectory?.toString() ?: "<null>")

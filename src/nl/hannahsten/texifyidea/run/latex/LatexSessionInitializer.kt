@@ -18,33 +18,30 @@ internal object LatexSessionInitializer {
     fun initialize(
         runConfig: LatexRunConfiguration,
         environment: ExecutionEnvironment,
-        executionState: LatexRunSessionState,
-    ) {
-        if (executionState.isInitialized) {
-            return
-        }
+    ): LatexRunSessionState {
+        val session = LatexRunSessionState()
 
         val mainFile = LatexRunConfigurationStaticSupport.resolveMainFile(runConfig)
             ?: throw ExecutionException("Main file cannot be resolved")
-        executionState.resolvedMainFile = mainFile
-        executionState.psiFile = ReadAction.compute<com.intellij.psi.SmartPsiElementPointer<com.intellij.psi.PsiFile>?, RuntimeException> {
+        session.resolvedMainFile = mainFile
+        session.psiFile = ReadAction.compute<com.intellij.psi.SmartPsiElementPointer<com.intellij.psi.PsiFile>?, RuntimeException> {
             val mainPsiFile = PsiManager.getInstance(runConfig.project).findFile(mainFile) ?: return@compute null
             SmartPointerManager.getInstance(runConfig.project).createSmartPsiElementPointer(mainPsiFile)
         }
-        executionState.resolvedWorkingDirectory = LatexPathResolver.resolve(runConfig.workingDirectory, mainFile, environment.project)
+        session.resolvedWorkingDirectory = LatexPathResolver.resolve(runConfig.workingDirectory, mainFile, environment.project)
             ?: Path.of(mainFile.parent.path)
 
-        executionState.resolvedOutputDir = LatexPathResolver.resolveOutputDir(runConfig, mainFile)
+        session.resolvedOutputDir = LatexPathResolver.resolveOutputDir(runConfig, mainFile)
             ?: throw ExecutionException("Output directory cannot be resolved")
-        executionState.resolvedAuxDir = LatexPathResolver.resolveAuxDir(runConfig, mainFile)
+        session.resolvedAuxDir = LatexPathResolver.resolveAuxDir(runConfig, mainFile)
 
         if (!runConfig.getLatexDistributionType().isMiktex(runConfig.project, mainFile)) {
-            val createdDirectories = LatexPathResolver.updateOutputSubDirs(runConfig, mainFile, executionState.resolvedOutputDir)
-            executionState.addCleanupDirectoriesIfEmpty(createdDirectories)
+            val createdDirectories = LatexPathResolver.updateOutputSubDirs(runConfig, mainFile, session.resolvedOutputDir)
+            session.addCleanupDirectoriesIfEmpty(createdDirectories)
         }
 
-        refreshCompileStepDerivedState(runConfig, executionState, runConfig.primaryCompileStep())
-        executionState.isInitialized = true
+        refreshCompileStepDerivedState(runConfig, session, runConfig.primaryCompileStep())
+        return session
     }
 
     fun refreshCompileStepDerivedState(
