@@ -8,6 +8,7 @@ import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
 import nl.hannahsten.texifyidea.run.latex.MakeindexStepOptions
 import nl.hannahsten.texifyidea.run.latex.getMakeindexOptions
 import nl.hannahsten.texifyidea.util.appendExtension
+import java.nio.file.Path
 
 internal class MakeindexRunStep(
     private val stepConfig: MakeindexStepOptions,
@@ -27,12 +28,20 @@ internal class MakeindexRunStep(
     @Throws(ExecutionException::class)
     override fun createProcess(context: LatexRunStepContext): ProcessHandler {
         val command = buildCommand(context)
-        val workingDirectory = CommandLineRunStep.resolveWorkingDirectory(context, stepConfig.workingDirectoryPath)
+        val workingDirectory = resolveWorkingDirectory(context)
         return createCompilationHandler(
             context = context,
             command = command,
             workingDirectory = workingDirectory,
         )
+    }
+
+    internal fun resolveWorkingDirectory(context: LatexRunStepContext): Path {
+        val configuredPath = stepConfig.workingDirectoryPath
+        if (stepConfig.program == MakeindexProgram.BIB2GLS && configuredPath.isNullOrBlank()) {
+            return Path.of(context.session.mainFile.parent.path)
+        }
+        return CommandLineRunStep.resolveWorkingDirectory(context, configuredPath)
     }
 
     internal fun buildCommand(context: LatexRunStepContext): List<String> {

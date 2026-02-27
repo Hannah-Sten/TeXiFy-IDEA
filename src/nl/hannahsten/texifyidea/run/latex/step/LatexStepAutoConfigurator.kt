@@ -129,7 +129,7 @@ internal object LatexStepAutoConfigurator {
 
         val firstCompile = steps.firstOrNull { it.type in compileTypes }
         when (firstCompile?.type) {
-            LatexStepType.LATEXMK_COMPILE -> ensureViewerStep(steps)
+            LatexStepType.LATEXMK_COMPILE -> ensureLatexmkCompileFlow(steps)
             else -> ensureClassicCompileFlow(steps)
         }
 
@@ -149,18 +149,35 @@ internal object LatexStepAutoConfigurator {
         }
         ensureViewerStep(steps)
 
-        val viewerIndex = viewerInsertIndex(steps)
         val firstCompileIndex = steps.indexOfFirst { it.type == LatexStepType.LATEX_COMPILE }
         if (firstCompileIndex < 0) {
             return
         }
+        ensureFollowUpCompiles(steps, LatexStepType.LATEX_COMPILE, firstCompileIndex)
+    }
 
+    private fun ensureLatexmkCompileFlow(steps: MutableList<LatexStepRunConfigurationOptions>) {
+        ensureViewerStep(steps)
+
+        val firstCompileIndex = steps.indexOfFirst { it.type == LatexStepType.LATEXMK_COMPILE }
+        if (firstCompileIndex < 0) {
+            return
+        }
+        ensureFollowUpCompiles(steps, LatexStepType.LATEXMK_COMPILE, firstCompileIndex)
+    }
+
+    private fun ensureFollowUpCompiles(
+        steps: MutableList<LatexStepRunConfigurationOptions>,
+        compileType: String,
+        firstCompileIndex: Int,
+    ) {
+        val viewerIndex = viewerInsertIndex(steps)
         val anchorIndex = lastAuxIndexBeforeViewer(steps) ?: firstCompileIndex
 
         val existingCompilesAfterAnchor = steps.withIndex().count { (index, step) ->
-            index in (anchorIndex + 1)..<viewerIndex && step.type == LatexStepType.LATEX_COMPILE
+            index in (anchorIndex + 1)..<viewerIndex && step.type == compileType
         }
-        val requiredCompilesAfterAnchor = requiredCompilesAfterAnchor(steps)
+        val requiredCompilesAfterAnchor = requiredCompilesAfterAnchor(steps, compileType)
         val missingCompiles = requiredCompilesAfterAnchor - existingCompilesAfterAnchor
         if (missingCompiles <= 0) {
             return
@@ -173,12 +190,22 @@ internal object LatexStepAutoConfigurator {
         }
     }
 
-    private fun requiredCompilesAfterAnchor(steps: List<LatexStepRunConfigurationOptions>): Int {
-        val viewerIndex = viewerInsertIndex(steps)
-        val hasBibliographyStep = steps.withIndex().any { (index, step) ->
-            index < viewerIndex && step.type == LatexStepType.BIBTEX
+    private fun requiredCompilesAfterAnchor(
+        steps: List<LatexStepRunConfigurationOptions>,
+        compileType: String,
+    ): Int {
+        val hasAuxiliaryStep = hasAuxiliaryStepBeforeViewer(steps)
+        return when (compileType) {
+            LatexStepType.LATEXMK_COMPILE -> if (hasAuxiliaryStep) 1 else 0
+            else -> if (hasAuxiliaryStep) 2 else 1
         }
-        return if (hasBibliographyStep) 2 else 1
+    }
+
+    private fun hasAuxiliaryStepBeforeViewer(steps: List<LatexStepRunConfigurationOptions>): Boolean {
+        val viewerIndex = viewerInsertIndex(steps)
+        return steps.withIndex().any { (index, step) ->
+            index < viewerIndex && step.type in followUpCompileAnchorTypes
+        }
     }
 
     private fun lastAuxIndexBeforeViewer(steps: List<LatexStepRunConfigurationOptions>): Int? {

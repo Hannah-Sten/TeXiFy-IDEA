@@ -63,7 +63,7 @@ class LatexStepAutoConfiguratorTest : BasePlatformTestCase() {
             listOf(LatexCompileStepOptions(), PdfViewerStepOptions())
         )
 
-        assertEquals(listOf("latex-compile", "pythontex", "latex-compile", "pdf-viewer"), augmented.map { it.type })
+        assertEquals(listOf("latex-compile", "pythontex", "latex-compile", "latex-compile", "pdf-viewer"), augmented.map { it.type })
     }
 
     fun testCompleteStepsDoesNotInsertBibliographyForLatexmkStep() {
@@ -135,7 +135,7 @@ class LatexStepAutoConfiguratorTest : BasePlatformTestCase() {
             )
         )
 
-        assertEquals(listOf("latex-compile", "pythontex", "latex-compile", "pdf-viewer"), completed.map { it.type })
+        assertEquals(listOf("latex-compile", "pythontex", "latex-compile", "latex-compile", "pdf-viewer"), completed.map { it.type })
     }
 
     fun testCompleteStepsAddsMissingSecondCompileAfterBibliography() {
@@ -217,7 +217,7 @@ class LatexStepAutoConfiguratorTest : BasePlatformTestCase() {
             listOf(LatexCompileStepOptions(), PdfViewerStepOptions())
         )
 
-        assertEquals(listOf("latex-compile", "makeindex", "latex-compile", "pdf-viewer"), completed.map { it.type })
+        assertEquals(listOf("latex-compile", "makeindex", "latex-compile", "latex-compile", "pdf-viewer"), completed.map { it.type })
         val makeindex = completed.filterIsInstance<MakeindexStepOptions>().single()
         assertEquals(MakeindexProgram.XINDY, makeindex.program)
     }
@@ -240,7 +240,7 @@ class LatexStepAutoConfiguratorTest : BasePlatformTestCase() {
             listOf(LatexCompileStepOptions(), PdfViewerStepOptions())
         )
 
-        assertEquals(listOf("latex-compile", "makeglossaries", "latex-compile", "pdf-viewer"), completed.map { it.type })
+        assertEquals(listOf("latex-compile", "makeglossaries", "latex-compile", "latex-compile", "pdf-viewer"), completed.map { it.type })
         val makeglossaries = completed.filterIsInstance<MakeglossariesStepOptions>().single()
         assertTrue(makeglossaries.executable in setOf("makeglossaries", "makeglossaries-lite"))
     }
@@ -262,9 +262,29 @@ class LatexStepAutoConfiguratorTest : BasePlatformTestCase() {
             listOf(LatexCompileStepOptions(), PdfViewerStepOptions())
         )
 
-        assertEquals(listOf("latex-compile", "makeindex", "latex-compile", "pdf-viewer"), completed.map { it.type })
+        assertEquals(listOf("latex-compile", "makeindex", "latex-compile", "latex-compile", "pdf-viewer"), completed.map { it.type })
         val makeindex = completed.filterIsInstance<MakeindexStepOptions>().single()
         assertEquals(MakeindexProgram.BIB2GLS, makeindex.program)
+    }
+
+    fun testCompleteStepsAddsSingleLatexmkCompileAfterPythontex() {
+        val mainPsi = myFixture.addFileToProject(
+            "main-latexmk-pythontex.tex",
+            """
+            \documentclass{article}
+            \usepackage{pythontex}
+            \begin{document}
+            \end{document}
+            """.trimIndent()
+        )
+        myFixture.updateFilesets()
+
+        val completed = LatexStepAutoConfigurator.completeSteps(
+            mainPsi,
+            listOf(LatexmkCompileStepOptions(), PdfViewerStepOptions())
+        )
+
+        assertEquals(listOf("latexmk-compile", "pythontex", "latexmk-compile", "pdf-viewer"), completed.map { it.type })
     }
 
     fun testCompleteStepsDoesNotAddIndexStepsForLatexmkPipeline() {
@@ -312,7 +332,7 @@ class LatexStepAutoConfiguratorTest : BasePlatformTestCase() {
             listOf(LatexCompileStepOptions(), explicitStep, PdfViewerStepOptions())
         )
 
-        assertEquals(listOf("latex-compile", "makeindex", "latex-compile", "pdf-viewer"), completed.map { it.type })
+        assertEquals(listOf("latex-compile", "makeindex", "latex-compile", "latex-compile", "pdf-viewer"), completed.map { it.type })
         val makeindexSteps = completed.filterIsInstance<MakeindexStepOptions>()
         assertEquals(1, makeindexSteps.size)
         assertEquals(MakeindexProgram.MAKEINDEX, makeindexSteps.single().program)

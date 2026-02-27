@@ -42,6 +42,17 @@ class MakeindexRunStepTest : BasePlatformTestCase() {
         assertEquals(listOf("makeindex", "-o", "result.ind"), command)
     }
 
+    fun testBib2glsDefaultsWorkingDirectoryToMainFileDirectory() {
+        val context = createContext(separateAuxDir = true)
+        val stepOptions = MakeindexStepOptions().apply {
+            program = MakeindexProgram.BIB2GLS
+        }
+
+        val workingDirectory = MakeindexRunStep(stepOptions).resolveWorkingDirectory(context)
+
+        assertEquals(Path.of(context.session.mainFile.parent.path), workingDirectory)
+    }
+
     fun testLifecycleAndProcessCreationWorkForMakeindexStep() {
         val context = createContext()
         val stepOptions = MakeindexStepOptions().apply {
@@ -60,11 +71,19 @@ class MakeindexRunStepTest : BasePlatformTestCase() {
         assertEquals(stepOptions.id, step.configId)
     }
 
-    private fun createContext(): LatexRunStepContext {
+    private fun createContext(separateAuxDir: Boolean = false): LatexRunStepContext {
         val root = Files.createTempDirectory("texify-makeindex-command")
         val mainFilePath = root.resolve("main.tex")
         Files.writeString(mainFilePath, "\\\\documentclass{article}")
         val mainFile = LocalFileSystem.getInstance().refreshAndFindFileByPath(mainFilePath.toString())!!
+        val auxDir = if (separateAuxDir) {
+            val auxDirPath = root.resolve("aux")
+            Files.createDirectories(auxDirPath)
+            LocalFileSystem.getInstance().refreshAndFindFileByPath(auxDirPath.toString())!!
+        }
+        else {
+            mainFile.parent
+        }
 
         val runConfig = LatexRunConfiguration(
             project,
@@ -77,12 +96,12 @@ class MakeindexRunStepTest : BasePlatformTestCase() {
         val state = LatexRunSessionState(
             project = project,
             mainFile = mainFile,
-            outputDir = mainFile.parent,
+            outputDir = auxDir,
             workingDirectory = Path.of(mainFile.parent.path),
             distributionType = LatexDistributionType.TEXLIVE,
             usesDefaultWorkingDirectory = true,
             latexSdk = null,
-            auxDir = mainFile.parent,
+            auxDir = auxDir,
         )
         return LatexRunStepContext(runConfig, environment, state)
     }
