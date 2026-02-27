@@ -21,6 +21,7 @@ import nl.hannahsten.texifyidea.run.latex.MakeindexStepOptions
 import nl.hannahsten.texifyidea.run.latex.MakeglossariesStepOptions
 import nl.hannahsten.texifyidea.run.latex.PdfViewerStepOptions
 import nl.hannahsten.texifyidea.run.latex.PythontexStepOptions
+import nl.hannahsten.texifyidea.run.latex.LatexPathResolver
 import nl.hannahsten.texifyidea.run.latex.defaultLatexmkSteps
 import nl.hannahsten.texifyidea.run.latex.generateLatexStepId
 import nl.hannahsten.texifyidea.run.latex.getDefaultMakeindexPrograms
@@ -42,6 +43,7 @@ internal object LatexStepAutoConfigurator {
         LatexStepType.MAKEGLOSSARIES,
         LatexStepType.XINDY,
     )
+    private const val MAKE_NO_IDX_GLOSSARIES = "\\makenoidxglossaries"
 
     fun configureTemplate(): List<LatexStepRunConfigurationOptions> = completeSteps(null, defaultLatexmkSteps())
 
@@ -70,15 +72,16 @@ internal object LatexStepAutoConfigurator {
         }
 
         runConfig.workingDirectory = resolveWorkingDirectory(commandSpec.compiler, mainVirtualFile)
-        return completeSteps(contextPsiFile, baseSteps)
+        return completeSteps(contextPsiFile, baseSteps, runConfig)
     }
 
     fun completeSteps(
         mainPsiFile: PsiFile?,
         baseSteps: List<LatexStepRunConfigurationOptions>,
+        runConfig: LatexRunConfiguration? = null,
     ): List<LatexStepRunConfigurationOptions> {
         val normalized = normalizeBaseSteps(baseSteps)
-        val inferred = inferAuxiliarySteps(mainPsiFile, normalized)
+        val inferred = inferAuxiliarySteps(mainPsiFile, normalized, runConfig)
         val withAux = insertInferredAuxSteps(normalized, inferred)
         return closePipeline(withAux)
     }
@@ -95,12 +98,13 @@ internal object LatexStepAutoConfigurator {
     private fun inferAuxiliarySteps(
         mainPsiFile: PsiFile?,
         steps: List<LatexStepRunConfigurationOptions>,
+        runConfig: LatexRunConfiguration?,
     ): List<LatexStepRunConfigurationOptions> {
         if (mainPsiFile == null) {
             return emptyList()
         }
 
-        return inferRequiredAuxiliarySteps(mainPsiFile, steps)
+        return inferRequiredAuxiliarySteps(mainPsiFile, steps, runConfig)
     }
 
     private fun insertInferredAuxSteps(
@@ -194,6 +198,7 @@ internal object LatexStepAutoConfigurator {
     private fun inferRequiredAuxiliarySteps(
         mainPsiFile: PsiFile,
         steps: List<LatexStepRunConfigurationOptions>,
+        runConfig: LatexRunConfiguration?,
     ): List<LatexStepRunConfigurationOptions> {
         val inferred = mutableListOf<LatexStepRunConfigurationOptions>()
         val signals = collectPsiSignals(mainPsiFile)
@@ -204,7 +209,9 @@ internal object LatexStepAutoConfigurator {
         if (shouldAddPythontexStep(steps, signals.usedPackages)) {
             inferred += PythontexStepOptions()
         }
-        inferred += inferIndexSteps(mainPsiFile, steps, signals.usedPackages)
+        if (!signals.hasMakeNoIdxGlossaries) {
+            inferred += inferIndexSteps(mainPsiFile, steps, signals.usedPackages, runConfig)
+        }
 
         return inferred
     }
@@ -243,11 +250,15 @@ internal object LatexStepAutoConfigurator {
         mainPsiFile: PsiFile,
         steps: List<LatexStepRunConfigurationOptions>,
         usedPackages: Set<LatexLib>,
+        runConfig: LatexRunConfiguration?,
     ): List<LatexStepRunConfigurationOptions> {
         if (!canInferAux(steps, disableForLatexmk = true)) {
             return emptyList()
         }
         if (hasExplicitIndexStep(steps)) {
+            return emptyList()
+        }
+        if (LatexLib.IMAKEIDX in usedPackages && !usesAuxilOrOutDirectory(mainPsiFile, runConfig)) {
             return emptyList()
         }
 
@@ -257,11 +268,17 @@ internal object LatexStepAutoConfigurator {
         }.getOrElse {
             return emptyList()
         }
+        val baseName = mainFile.nameWithoutExtension
         return programs.map { program ->
             when (program) {
                 MakeindexProgram.MAKEGLOSSARIES,
                 MakeindexProgram.MAKEGLOSSARIESLITE -> MakeglossariesStepOptions().also { it.executable = program.executableName }
-                else -> MakeindexStepOptions().also { it.program = program }
+                else -> MakeindexStepOptions().also {
+                    it.program = program
+                    if (program == MakeindexProgram.MAKEINDEX && LatexLib.NOMENCL in usedPackages) {
+                        it.commandLineArguments = "$baseName.nlo -s nomencl.ist -o $baseName.nls"
+                    }
+                }
             }
         }
     }
@@ -304,7 +321,22 @@ internal object LatexStepAutoConfigurator {
             hasBibliography = mainPsiFile.hasBibliography(),
             usesBiber = mainPsiFile.usesBiber(),
             hasAddBibResource = NewCommandsIndex.getByNameInFileSet(CommandNames.ADD_BIB_RESOURCE, mainPsiFile).isNotEmpty(),
+            hasMakeNoIdxGlossaries = NewCommandsIndex.getByNameInFileSet(MAKE_NO_IDX_GLOSSARIES, mainPsiFile).isNotEmpty(),
         )
+    }
+
+    private fun usesAuxilOrOutDirectory(
+        mainPsiFile: PsiFile,
+        runConfig: LatexRunConfiguration?,
+    ): Boolean {
+        if (runConfig == null) {
+            return true
+        }
+        val mainFile = mainPsiFile.virtualFile ?: return true
+        val mainParent = Path.of(mainFile.parent.path).normalize()
+        val outputPath = LatexPathResolver.resolve(runConfig.outputPath, mainFile, runConfig.project)?.normalize() ?: mainParent
+        val auxPath = LatexPathResolver.resolve(runConfig.auxilPath, mainFile, runConfig.project)?.normalize() ?: mainParent
+        return outputPath != mainParent || auxPath != mainParent
     }
 
     private fun resolveCommandSpec(
@@ -429,5 +461,6 @@ internal object LatexStepAutoConfigurator {
         val hasBibliography: Boolean,
         val usesBiber: Boolean,
         val hasAddBibResource: Boolean,
+        val hasMakeNoIdxGlossaries: Boolean,
     )
 }

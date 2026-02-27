@@ -317,4 +317,78 @@ class LatexStepAutoConfiguratorTest : BasePlatformTestCase() {
         assertEquals(1, makeindexSteps.size)
         assertEquals(MakeindexProgram.MAKEINDEX, makeindexSteps.single().program)
     }
+
+    fun testCompleteStepsAddsNomenclArgumentsForInferredMakeindexStep() {
+        val mainPsi = myFixture.addFileToProject(
+            "main-nomencl.tex",
+            """
+            \documentclass{article}
+            \usepackage{nomencl}
+            \makenomenclature
+            \begin{document}
+            \end{document}
+            """.trimIndent()
+        )
+        myFixture.updateFilesets()
+
+        val completed = LatexStepAutoConfigurator.completeSteps(
+            mainPsi,
+            listOf(LatexCompileStepOptions(), PdfViewerStepOptions())
+        )
+
+        val makeindex = completed.filterIsInstance<MakeindexStepOptions>().single()
+        assertEquals(MakeindexProgram.MAKEINDEX, makeindex.program)
+        assertEquals("main-nomencl.nlo -s nomencl.ist -o main-nomencl.nls", makeindex.commandLineArguments)
+    }
+
+    fun testCompleteStepsDoesNotAddIndexStepsForMakeNoIdxGlossaries() {
+        val mainPsi = myFixture.addFileToProject(
+            "main-noidx-glossaries.tex",
+            """
+            \documentclass{article}
+            \usepackage{glossaries}
+            \makenoidxglossaries
+            \begin{document}
+            \end{document}
+            """.trimIndent()
+        )
+        myFixture.updateFilesets()
+
+        val completed = LatexStepAutoConfigurator.completeSteps(
+            mainPsi,
+            listOf(LatexCompileStepOptions(), PdfViewerStepOptions())
+        )
+
+        assertTrue(completed.none { it.type == LatexStepType.MAKEINDEX || it.type == LatexStepType.MAKEGLOSSARIES || it.type == LatexStepType.XINDY })
+    }
+
+    fun testCompleteStepsDoesNotAddIndexStepsForImakeidxWithoutAuxOrOutDirectory() {
+        val mainPsi = myFixture.addFileToProject(
+            "main-imakeidx-default-paths.tex",
+            """
+            \documentclass{article}
+            \usepackage{imakeidx}
+            \makeindex
+            \begin{document}
+            \printindex
+            \end{document}
+            """.trimIndent()
+        )
+        myFixture.updateFilesets()
+
+        val runConfig = LatexRunConfiguration(
+            project,
+            LatexRunConfigurationProducer().configurationFactory,
+            "Test run config"
+        )
+        runConfig.mainFilePath = mainPsi.virtualFile.path
+
+        val completed = LatexStepAutoConfigurator.completeSteps(
+            mainPsi,
+            listOf(LatexCompileStepOptions(), PdfViewerStepOptions()),
+            runConfig
+        )
+
+        assertTrue(completed.none { it.type == LatexStepType.MAKEINDEX || it.type == LatexStepType.MAKEGLOSSARIES || it.type == LatexStepType.XINDY })
+    }
 }
