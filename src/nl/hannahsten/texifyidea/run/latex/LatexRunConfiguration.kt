@@ -18,6 +18,7 @@ import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdk
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
+import org.jdom.Element
 import java.nio.file.Path
 
 class LatexRunConfiguration(
@@ -113,6 +114,11 @@ class LatexRunConfiguration(
         }
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> = LatexSettingsEditor(this)
+
+    override fun readExternal(element: Element) {
+        super<RunConfigurationBase>.readExternal(element)
+        LegacyLatexRunConfigMigration.migrateIfNeeded(this, element)
+    }
 
     @Throws(RuntimeConfigurationException::class)
     override fun checkConfiguration() {
