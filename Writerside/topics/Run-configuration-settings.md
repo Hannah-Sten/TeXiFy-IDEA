@@ -95,7 +95,7 @@ When a `latexmkrc` is detected, TeXiFy avoids overriding your latexmkrc behavior
 With latexmk `-pvc`, files are watched and recompiled on save.
 
 For automatic PDF viewer startup with latexmk itself, configure `$HOME/.latexmkrc` (Linux/macOS) or
-`%USERPROFILE%\.latexmkrc` (Windows):
+<code ignore-vars="true">\%USERPROFILE%\\.latexmkrc</code> (Windows):
 
 ```
 $pdf_previewer = '"/path to/your/favorite/viewer" %O %S';
