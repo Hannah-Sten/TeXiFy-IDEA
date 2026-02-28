@@ -167,19 +167,13 @@ _Since b0.6.8_
 See [Support for automatic compilation](Running-a-LaTeX-file.md#automatic-compilation).
 
 ## Run configuration mode
-Choose what type of run configurations TeXiFy should automatically create or recommend from context:
+This setting was removed with the step-based run configuration flow.
 
-* `Run/LaTeX + Bib only`: only create/recommend the classic LaTeX run configuration flow (LaTeX + BibTeX/Biber run configs when needed).
-* `Latexmk only`: only create/recommend Latexmk run configurations.
-* `Both`: allow both (default).
+TeXiFy now always creates a LaTeX run configuration and you choose the strategy in its compile sequence
+(for example `latex-compile` or `latexmk-compile` step).
 
-This setting affects only creating/recommending new run configurations and template preference.
-It does not modify or remove existing run configurations.
-
-See also:
-
-* [Latexmk run configuration](Run-configuration-settings.md#latexmk-run-configuration)
-* [Template run configurations](Running-a-LaTeX-file.md#template-run-configurations)
+To control defaults for new configurations, edit the LaTeX run configuration template:
+[Template run configurations](Running-a-LaTeX-file.md#template-run-configurations)
 
 ## Fileset refresh period
 _Since b0.11.0_
