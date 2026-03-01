@@ -430,7 +430,7 @@ internal object LatexStepAutoConfigurator {
         steps: MutableList<LatexStepRunConfigurationOptions>
     ): LatexCompileStepOptions {
         val index = steps.indexOfFirst {
-            it.enabled && (it is LatexCompileStepOptions || it is LatexmkCompileStepOptions)
+            it is LatexCompileStepOptions || it is LatexmkCompileStepOptions
         }
         return when {
             index < 0 -> LatexCompileStepOptions().also { steps.add(0, it) }
@@ -439,7 +439,6 @@ internal object LatexStepAutoConfigurator {
                 val old = steps[index] as LatexmkCompileStepOptions
                 LatexCompileStepOptions().also {
                     it.id = old.id
-                    it.enabled = old.enabled
                     it.compiler = LatexCompiler.PDFLATEX
                     it.compilerPath = old.compilerPath
                     it.compilerArguments = old.compilerArguments
@@ -456,7 +455,7 @@ internal object LatexStepAutoConfigurator {
         steps: MutableList<LatexStepRunConfigurationOptions>
     ): LatexmkCompileStepOptions {
         val index = steps.indexOfFirst {
-            it.enabled && (it is LatexCompileStepOptions || it is LatexmkCompileStepOptions)
+            it is LatexCompileStepOptions || it is LatexmkCompileStepOptions
         }
         return when {
             index < 0 -> LatexmkCompileStepOptions().also { steps.add(0, it) }
@@ -465,7 +464,6 @@ internal object LatexStepAutoConfigurator {
                 val old = steps[index] as LatexCompileStepOptions
                 LatexmkCompileStepOptions().also {
                     it.id = old.id
-                    it.enabled = old.enabled
                     it.compilerPath = old.compilerPath
                     it.compilerArguments = old.compilerArguments
                     it.latexmkCompileMode = LatexmkCompileMode.AUTO

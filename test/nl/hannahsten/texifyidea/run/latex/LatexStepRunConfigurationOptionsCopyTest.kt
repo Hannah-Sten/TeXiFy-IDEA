@@ -14,7 +14,6 @@ class LatexStepRunConfigurationOptionsCopyTest : BasePlatformTestCase() {
         val originals = listOf(
             LatexCompileStepOptions().apply {
                 id = "compile-1"
-                enabled = false
                 compiler = LatexCompiler.LUALATEX
                 compilerPath = "/usr/bin/lualatex"
                 compilerArguments = "-shell-escape"
@@ -101,7 +100,6 @@ class LatexStepRunConfigurationOptionsCopyTest : BasePlatformTestCase() {
             assertNotSame(original, copied)
             assertEquals(original.type, copied.type)
             assertEquals(original.id, copied.id)
-            assertEquals(original.enabled, copied.enabled)
             assertEquals(original.selectedOptions.single().name, copied.selectedOptions.single().name)
             assertNotSame(original.selectedOptions, copied.selectedOptions)
             assertNotSame(original.selectedOptions.single(), copied.selectedOptions.single())

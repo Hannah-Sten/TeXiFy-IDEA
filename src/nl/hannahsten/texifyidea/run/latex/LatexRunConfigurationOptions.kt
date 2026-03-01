@@ -74,7 +74,7 @@ class LatexRunConfigurationOptions : LocatableRunConfigurationOptions() {
     var steps: MutableList<LatexStepRunConfigurationOptions> by list()
 
     fun ensureDefaultSteps() {
-        if (steps.none { it.enabled }) {
+        if (steps.isEmpty()) {
             steps = defaultLatexmkSteps()
         }
     }
@@ -95,9 +95,6 @@ abstract class LatexStepRunConfigurationOptions : RunConfigurationOptions() {
         set(value) {
             persistedId = value
         }
-
-    @get:Attribute("enabled")
-    var enabled by property(true)
 
     @get:Attribute("type")
     abstract var type: String

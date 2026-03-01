@@ -125,8 +125,11 @@ class LatexRunConfiguration(
         if (mainFilePath.isNullOrBlank()) {
             throw RuntimeConfigurationError("Run configuration is invalid: no main LaTeX file path selected")
         }
-        if (steps.none { it.enabled }) {
-            throw RuntimeConfigurationError("Run configuration is invalid: no enabled compile steps")
+        if (LatexRunConfigurationStaticSupport.resolveMainFile(this) == null) {
+            throw RuntimeConfigurationError("Run configuration is invalid: no valid main LaTeX file selected")
+        }
+        if (steps.isEmpty()) {
+            throw RuntimeConfigurationError("Run configuration is invalid: no compile steps")
         }
     }
 
@@ -137,7 +140,7 @@ class LatexRunConfiguration(
     ): RunProfileState {
         configOptions.ensureDefaultSteps()
 
-        val configuredSteps = steps.filter { it.enabled }
+        val configuredSteps = steps
         if (configuredSteps.isEmpty()) {
             throw ExecutionException("No executable compile steps were configured.")
         }
@@ -213,10 +216,10 @@ class LatexRunConfiguration(
     }
 
     internal fun primaryCompileStep(): LatexStepRunConfigurationOptions? =
-        steps.firstOrNull { it.enabled && (it is LatexCompileStepOptions || it is LatexmkCompileStepOptions) }
+        steps.firstOrNull { it is LatexCompileStepOptions || it is LatexmkCompileStepOptions }
 
     internal fun hasEnabledLatexmkStep(): Boolean =
-        steps.any { it.enabled && it is LatexmkCompileStepOptions }
+        steps.any { it is LatexmkCompileStepOptions }
 
     internal fun primaryCompiler(): LatexCompiler? = when (val step = primaryCompileStep()) {
         is LatexCompileStepOptions -> step.compiler
@@ -230,11 +233,11 @@ class LatexRunConfiguration(
     }
 
     internal fun primaryViewerStep(): PdfViewerStepOptions? =
-        steps.firstOrNull { it.enabled && it is PdfViewerStepOptions } as? PdfViewerStepOptions
+        steps.firstOrNull { it is PdfViewerStepOptions } as? PdfViewerStepOptions
 
     internal fun ensurePrimaryCompileStepLatexmk(): LatexmkCompileStepOptions {
         val index = steps.indexOfFirst {
-            it.enabled && (it is LatexCompileStepOptions || it is LatexmkCompileStepOptions)
+            it is LatexCompileStepOptions || it is LatexmkCompileStepOptions
         }
         return when {
             index < 0 -> LatexmkCompileStepOptions().also { steps.add(0, it) }
@@ -243,7 +246,6 @@ class LatexRunConfiguration(
                 val old = steps[index] as LatexCompileStepOptions
                 LatexmkCompileStepOptions().also {
                     it.id = old.id
-                    it.enabled = old.enabled
                     it.compilerPath = old.compilerPath
                     it.compilerArguments = old.compilerArguments
                     it.latexmkCompileMode = LatexmkCompileMode.AUTO
@@ -259,7 +261,7 @@ class LatexRunConfiguration(
     }
 
     private fun ensurePrimaryViewerStep(): PdfViewerStepOptions {
-        val index = steps.indexOfFirst { it.enabled && it is PdfViewerStepOptions }
+        val index = steps.indexOfFirst { it is PdfViewerStepOptions }
         return if (index >= 0) {
             steps[index] as PdfViewerStepOptions
         }

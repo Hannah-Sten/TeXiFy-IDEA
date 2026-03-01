@@ -158,13 +158,13 @@ fun PsiFile.openedTextEditor(): Editor? = openedEditor()?.let {
 fun PsiFile.definitions(): Collection<LatexCommands> = NewSpecialCommandsIndex.getByName(SpecialKeys.ALL_DEFINITIONS, this)
 
 /**
- * Get all LaTeX run configurations for this root file that have an enabled bibliography step.
+ * Get all LaTeX run configurations for this root file that have a bibliography step.
  */
 fun PsiFile.getBibtexRunConfigurations() = project
     .getLatexRunConfigurations()
     .asSequence()
     .filter { LatexRunConfigurationStaticSupport.resolveMainFile(it) == findRootFile().virtualFile }
-    .filter { runConfig -> runConfig.configOptions.steps.any { it.enabled && it.type == LatexStepType.BIBTEX } }
+    .filter { runConfig -> runConfig.configOptions.steps.any { it.type == LatexStepType.BIBTEX } }
 
 /**
  * Gets the smallest extractable expression at the given offset

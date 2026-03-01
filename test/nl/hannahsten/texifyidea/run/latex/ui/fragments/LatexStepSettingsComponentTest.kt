@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.run.latex.ui.fragments
 import com.intellij.execution.ui.FragmentedSettings
 import com.intellij.openapi.util.Disposer
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import com.intellij.ui.RawCommandLineEditor
+import com.intellij.ui.EditorTextField
 import com.intellij.ui.components.JBTextField
 import nl.hannahsten.texifyidea.run.latex.*
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCitationTool
@@ -188,7 +188,7 @@ class LatexStepSettingsComponentTest : BasePlatformTestCase() {
 
             component.onStepSelectionChanged(0, compileStep.id, compileStep.type)
             val compileSettings = privateField<Any>(component, "compileSettings")
-            privateField<RawCommandLineEditor>(compileSettings, "compilerArguments").text = "-shell-escape"
+            privateField<EditorTextField>(compileSettings, "compilerArguments").text = "-shell-escape"
 
             component.onStepSelectionChanged(1, viewerStep.id, viewerStep.type)
             val viewerSettings = privateField<Any>(component, "viewerSettings")
@@ -221,7 +221,6 @@ class LatexStepSettingsComponentTest : BasePlatformTestCase() {
 
             val replacement = PdfViewerStepOptions().apply {
                 id = selected.id
-                enabled = selected.enabled
                 selectedOptions = selected.selectedOptions
             }
             component.onStepsChanged(listOf(replacement))

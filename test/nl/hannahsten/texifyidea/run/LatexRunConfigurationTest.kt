@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.run
 
 import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.execution.ui.FragmentedSettings
+import com.intellij.execution.configurations.RuntimeConfigurationError
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
@@ -167,6 +168,28 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         assertTrue(ids.indexOf("mainFile") < ids.indexOf("compileSequence"))
         assertTrue(ids.indexOf("compileSequence") < ids.indexOf("stepSettings"))
         assertFalse(ids.contains("legacyAdvancedOptions"))
+    }
+
+    fun testCheckConfigurationRejectsUnresolvableMainFilePath() {
+        val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
+        runConfig.mainFilePath = "missing-main.tex"
+        runConfig.configOptions.steps = mutableListOf(LatexmkCompileStepOptions(), PdfViewerStepOptions())
+
+        try {
+            runConfig.checkConfiguration()
+            fail("Expected RuntimeConfigurationError for invalid main file path")
+        }
+        catch (_: RuntimeConfigurationError) {
+        }
+    }
+
+    fun testCheckConfigurationAcceptsResolvableMainFilePath() {
+        val mainFile = myFixture.addFileToProject("valid-main.tex", "\\documentclass{article}")
+        val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
+        runConfig.mainFilePath = mainFile.virtualFile.name
+        runConfig.configOptions.steps = mutableListOf(LatexmkCompileStepOptions(), PdfViewerStepOptions())
+
+        runConfig.checkConfiguration()
     }
 
     fun testLegacyClassicConfigMigratesToCompileAndViewer() {

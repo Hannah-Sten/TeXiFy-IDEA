@@ -32,7 +32,7 @@ internal object LatexPathResolver {
         runConfig: LatexRunConfiguration,
         mainFile: VirtualFile? = LatexRunConfigurationStaticSupport.resolveMainFile(runConfig),
     ): VirtualFile? {
-        val hasLatexmkStep = runConfig.configOptions.steps.any { it.enabled && it.type == LatexStepType.LATEXMK_COMPILE }
+        val hasLatexmkStep = runConfig.configOptions.steps.any { it.type == LatexStepType.LATEXMK_COMPILE }
         val supportsAuxDir = runConfig.getLatexDistributionType().isMiktex(runConfig.project, mainFile) ||
             hasLatexmkStep ||
             runConfig.hasEnabledLatexmkStep()

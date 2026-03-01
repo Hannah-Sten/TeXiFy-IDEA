@@ -362,7 +362,6 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
                             val replacement = defaultStepFor(selectedType) ?: return@showTypeSelectionPopup
                             this@StepButton.stepConfig = replacement.copyWithIdentity(
                                 stepId = stepConfig.id,
-                                enabled = stepConfig.enabled,
                                 selectedOptions = stepConfig.selectedOptions,
                             )
                             updateFromStepType()
@@ -436,11 +435,9 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
 
     private fun LatexStepRunConfigurationOptions.copyWithIdentity(
         stepId: String,
-        enabled: Boolean,
         selectedOptions: MutableList<FragmentedSettings.Option>,
     ): LatexStepRunConfigurationOptions = deepCopy().also {
         it.id = stepId
-        it.enabled = enabled
         it.selectedOptions = selectedOptions
             .map { option -> FragmentedSettings.Option(option.name ?: "", option.visible) }
             .toMutableList()
