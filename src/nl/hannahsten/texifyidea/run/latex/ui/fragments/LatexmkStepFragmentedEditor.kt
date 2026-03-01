@@ -41,6 +41,7 @@ internal class LatexmkStepFragmentedEditor(
 
     private val compilerArguments = EditorTextField("", project, PlainTextFileType.INSTANCE).apply {
         setPlaceholder("Custom compiler arguments")
+        @Suppress("UsePropertyAccessSyntax")
         setOneLineMode(true)
     }
     private val compilerArgumentsRow = LabeledComponent.create(compilerArguments, "Compiler arguments")

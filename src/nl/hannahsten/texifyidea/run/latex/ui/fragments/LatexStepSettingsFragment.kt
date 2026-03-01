@@ -26,7 +26,7 @@ internal class LatexStepSettingsFragment(
     }
 
     override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
-        component.applyEditorTo(s.configuration as LatexRunConfiguration)
+        component.applyEditorTo()
     }
 
     companion object {

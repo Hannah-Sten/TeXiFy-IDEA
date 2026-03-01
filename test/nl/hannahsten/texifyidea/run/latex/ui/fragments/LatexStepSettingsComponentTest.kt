@@ -151,7 +151,7 @@ class LatexStepSettingsComponentTest : BasePlatformTestCase() {
             component.onStepsChanged(source.configOptions.steps)
             component.onStepSelectionChanged(0, selected.id, selected.type)
             component.onStepSelectionChanged(1, viewer.id, viewer.type)
-            component.applyEditorTo(source)
+            component.applyEditorTo()
         }
         finally {
             Disposer.dispose(disposable)
@@ -194,7 +194,7 @@ class LatexStepSettingsComponentTest : BasePlatformTestCase() {
             val viewerSettings = privateField<Any>(component, "viewerSettings")
             privateField<JBTextField>(viewerSettings, "viewerCommand").text = "open {pdf}"
 
-            component.applyEditorTo(source)
+            component.applyEditorTo()
             // Emulate compile-sequence fragment writing back its own current step list.
             source.configOptions.steps = sequenceSteps.map { it.deepCopy() }.toMutableList()
         }

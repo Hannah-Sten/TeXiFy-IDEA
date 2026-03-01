@@ -105,7 +105,7 @@ internal class LatexStepSettingsComponent(
         resetCurrentCard()
     }
 
-    fun applyEditorTo(@Suppress("UNUSED_PARAMETER") runConfig: LatexRunConfiguration) {
+    fun applyEditorTo() {
         flushCurrentCard()
     }
 

@@ -398,7 +398,7 @@ internal class LatexStepLogTabComponent(
             renderStepRawLog(messageData.stepIndex)
         }
 
-        if (logOffset !in 0..console.getContentSize()) {
+        if (logOffset !in 0..console.contentSize) {
             return false
         }
 

@@ -17,5 +17,5 @@ internal object LatexStepPresentation {
         LatexStepType.FILE_CLEANUP to "Clean temporary generated files",
     )
 
-    fun displayName(type: String): String = descriptions[type] ?: "Step: $type"
+    fun displayName(type: String): String = descriptions[type] ?: "Unsupported step: $type"
 }

@@ -93,7 +93,8 @@ const val PROGRESS_SIZE = 1000
  * We should use suspend functions like
  * [com.intellij.openapi.application.readAction], [com.intellij.openapi.application.smartReadAction]
  */
-fun runInBackgroundNonBlocking(project: Project, description: String, function: suspend (ProgressReporter) -> Unit) {
+@Suppress("unused")
+internal fun runInBackgroundNonBlocking(project: Project, description: String, function: suspend (ProgressReporter) -> Unit) {
     // We don't need to block until it finished
     TexifyCoroutine.runInBackground {
         withBackgroundProgress(project, description) {
