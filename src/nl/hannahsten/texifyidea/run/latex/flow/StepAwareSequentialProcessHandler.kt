@@ -209,6 +209,7 @@ internal class StepAwareSequentialProcessHandler(
         }
         catch (error: Exception) {
             failRunForException(index, step, error)
+            return
         }
         fire(StepLogEvent.StepFinished(index, step, exitCode))
         if (killed || exitCode != 0) {

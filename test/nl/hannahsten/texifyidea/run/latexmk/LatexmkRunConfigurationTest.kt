@@ -11,6 +11,7 @@ import nl.hannahsten.texifyidea.run.latex.LatexSessionInitializer
 import nl.hannahsten.texifyidea.run.latex.LatexmkCompileStepOptions
 import nl.hannahsten.texifyidea.run.latex.step.LatexmkCompileRunStep
 import nl.hannahsten.texifyidea.updateFilesets
+import nl.hannahsten.texifyidea.util.SystemEnvironment
 import java.nio.file.Files
 import java.nio.file.Path
 
@@ -314,6 +315,50 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
         val command = latexmkCommand(runConfig, session)
         assertTrue(command.contains("-outdir=$outputDir"))
         assertTrue(command.contains("-auxdir=$auxDir"))
+    }
+
+    fun testLatexmkCleanCommandUsesWslWrapperWhenUsingWslDistribution() {
+        val mainFile = myFixture.addFileToProject("main.tex", "\\documentclass{article}")
+        val runConfig = LatexRunConfiguration(
+            myFixture.project,
+            LatexRunConfigurationProducer().configurationFactory,
+            "LaTeX"
+        )
+        val step = latexmkStep(runConfig)
+        runConfig.latexDistribution = LatexDistributionType.WSL_TEXLIVE
+        runConfig.mainFilePath = mainFile.virtualFile.name
+        step.compilerPath = LatexCompilePrograms.LATEXMK_EXECUTABLE
+
+        val command = LatexmkCleanUtil.buildCleanCommandForModel(runConfig, mainFile.virtualFile, cleanAll = false)
+        assertNotNull(command)
+        val resolvedCommand = command!!
+
+        assertEquals(SystemEnvironment.wslCommand.toList(), resolvedCommand.take(SystemEnvironment.wslCommand.size))
+        assertTrue(resolvedCommand.last().contains("-c"))
+        assertTrue(resolvedCommand.last().contains("-outdir="))
+    }
+
+    fun testLatexmkCleanCommandUsesDockerWrapperWhenUsingDockerDistribution() {
+        val mainFile = myFixture.addFileToProject("main.tex", "\\documentclass{article}")
+        val runConfig = LatexRunConfiguration(
+            myFixture.project,
+            LatexRunConfigurationProducer().configurationFactory,
+            "LaTeX"
+        )
+        val step = latexmkStep(runConfig)
+        runConfig.latexDistribution = LatexDistributionType.DOCKER_TEXLIVE
+        runConfig.mainFilePath = mainFile.virtualFile.name
+        step.compilerPath = LatexCompilePrograms.LATEXMK_EXECUTABLE
+
+        val command = LatexmkCleanUtil.buildCleanCommandForModel(runConfig, mainFile.virtualFile, cleanAll = true)
+        assertNotNull(command)
+        val resolvedCommand = command!!
+
+        assertTrue(resolvedCommand.size >= 3)
+        assertEquals("run", resolvedCommand[1])
+        assertEquals("--rm", resolvedCommand[2])
+        assertTrue(resolvedCommand.contains("-C"))
+        assertTrue(resolvedCommand.contains("-outdir=/out"))
     }
 
     fun testRunConfigurationsXmlRegistersOnlyLatexProducer() {

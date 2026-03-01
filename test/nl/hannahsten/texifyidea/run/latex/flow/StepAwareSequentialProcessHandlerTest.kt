@@ -302,9 +302,10 @@ class StepAwareSequentialProcessHandlerTest : BasePlatformTestCase() {
         waitUntil { handler.isProcessTerminated }
         assertTrue(handler.rawLog(0).contains("post failed"))
         assertEquals(0, observedExit)
+        val finishEvents = events.filter { it.startsWith("finish:0:") }
         assertTrue(events.contains("start:0"))
         assertTrue(events.contains("out:0"))
-        assertTrue(events.contains("finish:0:1"))
+        assertEquals(listOf("finish:0:1"), finishEvents)
         assertTrue(events.contains("run:1"))
     }
 
