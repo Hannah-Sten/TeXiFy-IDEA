@@ -5,6 +5,7 @@ import com.intellij.execution.ui.CommonParameterFragments
 import com.intellij.execution.ui.CommonTags
 import com.intellij.execution.ui.RunConfigurationFragmentedEditor
 import com.intellij.execution.ui.SettingsEditorFragment
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationStaticSupport
 import nl.hannahsten.texifyidea.run.latex.step.LatexStepAutoConfigurator
@@ -19,9 +20,13 @@ class LatexSettingsEditor(
     private val runConfiguration: LatexRunConfiguration,
 ) : RunConfigurationFragmentedEditor<LatexRunConfiguration>(runConfiguration) {
 
-    private val commonGroupName = "Common settings"
+    private companion object {
+
+        private const val COMMON_GROUP_KEY = "run.step.ui.group.common.settings"
+    }
 
     override fun createRunFragments(): MutableList<SettingsEditorFragment<LatexRunConfiguration, *>> {
+        val commonGroupName = TexifyBundle.message(COMMON_GROUP_KEY)
         val fragments = mutableListOf<SettingsEditorFragment<LatexRunConfiguration, *>>()
         val compileSequenceComponent = LatexCompileSequenceComponent(this)
         val stepSettingsComponent = LatexStepSettingsComponent(this, project)
