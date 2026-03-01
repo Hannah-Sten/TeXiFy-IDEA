@@ -4,13 +4,16 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import io.mockk.every
+import io.mockk.mockkStatic
 import io.mockk.mockk
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
+import nl.hannahsten.texifyidea.run.common.createCompilationHandler
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer
 import nl.hannahsten.texifyidea.run.latex.LatexRunSessionState
 import nl.hannahsten.texifyidea.run.latex.MakeindexStepOptions
+import com.intellij.execution.process.KillableProcessHandler
 import java.nio.file.Files
 import java.nio.file.Path
 
@@ -60,13 +63,16 @@ class MakeindexRunStepTest : BasePlatformTestCase() {
             targetBaseNameOverride = "custom-name"
             workingDirectoryPath = context.session.mainFile.parent.path
         }
+        val expectedHandler = mockk<KillableProcessHandler>(relaxed = true)
+        mockkStatic("nl.hannahsten.texifyidea.run.common.CompilationProcessFactoryKt")
+        every { createCompilationHandler(any(), any(), any()) } returns expectedHandler
 
         val step = MakeindexRunStep(stepOptions)
         step.beforeStart(context)
         val process = step.createProcess(context)
         step.afterFinish(context, 0)
 
-        assertNotNull(process)
+        assertEquals(expectedHandler, process)
         assertEquals("makeindex", step.id)
         assertEquals(stepOptions.id, step.configId)
     }
