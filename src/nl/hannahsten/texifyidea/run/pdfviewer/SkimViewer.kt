@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.run.pdfviewer
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
+import nl.hannahsten.texifyidea.run.latex.LatexRunSessionState
 
 /**
  * Execute Skim commands.
@@ -30,7 +31,7 @@ object SkimViewer : SystemPdfViewer("Skim", "skim") {
      * @param sourceFilePath Full path of the tex file.
      * @param line Line number in the source file to navigate to in the pdf.
      */
-    override fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
+    override fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean, session: LatexRunSessionState?) {
         if (outputPath != null) {
             pdfFilePath = outputPath
         }

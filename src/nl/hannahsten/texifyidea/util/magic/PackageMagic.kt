@@ -54,4 +54,30 @@ object PackageMagic {
             (old + new).toSet()
         }
     }
+
+    /**
+     * Libraries that are generally better served by XeLaTeX.
+     */
+    val preferredXeEngineLibraries = setOf(
+        LatexLib.Package("ctex"),
+        LatexLib.Package("xecjk"),
+        LatexLib.Class("ctexart"),
+        LatexLib.Class("ctexrep"),
+        LatexLib.Class("ctexbook"),
+        LatexLib.Class("ctexbeamer"),
+    )
+
+    /**
+     * Libraries that are generally better served by LuaLaTeX.
+     */
+    val preferredLuaEngineLibraries = setOf(
+        LatexLib.CITATION_STYLE_LANGUAGE,
+        LatexLib.FONTSPEC,
+        LatexLib.Package("unicode-math"),
+        LatexLib.Package("polyglossia"),
+        LatexLib.Package("luatexja"),
+        LatexLib.Package("luatexja-fontspec"),
+        LatexLib.Package("luatexja-preset"),
+        LatexLib.Package("zxjatype"),
+    )
 }

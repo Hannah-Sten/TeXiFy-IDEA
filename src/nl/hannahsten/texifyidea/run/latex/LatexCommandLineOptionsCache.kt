@@ -5,7 +5,7 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task.Backgroundable
 import com.intellij.openapi.project.Project
-import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
+import nl.hannahsten.texifyidea.run.compiler.LatexCompilePrograms
 import nl.hannahsten.texifyidea.util.remove
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import org.apache.commons.cli.Option
@@ -49,14 +49,14 @@ object LatexCommandLineOptionsCache {
         ProgressManager.getInstance().run(object : Backgroundable(project, "Retrieving available command line options for LaTeX compilers...") {
             override fun run(indicator: ProgressIndicator) {
                 try {
-                    for (compiler in LatexCompiler.entries) {
-                        val (output, _) = runCommandWithExitCode(compiler.executableName, "--help")
+                    for (compiler in LatexCompilePrograms.allExecutableNames) {
+                        val (output, _) = runCommandWithExitCode(compiler, "--help")
                         if (output != null) {
-                            val optionsList = parseHelpOutput(compiler.executableName, output)
-                            cache[compiler.executableName] = getOptions(optionsList)
+                            val optionsList = parseHelpOutput(compiler, output)
+                            cache[compiler] = getOptions(optionsList)
                         }
                         else {
-                            cache[compiler.executableName] = Options()
+                            cache[compiler] = Options()
                         }
                     }
                 }

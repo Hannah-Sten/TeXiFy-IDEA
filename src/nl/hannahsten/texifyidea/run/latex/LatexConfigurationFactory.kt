@@ -2,11 +2,13 @@ package nl.hannahsten.texifyidea.run.latex
 
 import com.intellij.execution.configurations.ConfigurationFactory
 import com.intellij.execution.configurations.ConfigurationType
+import com.intellij.openapi.components.BaseState
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfigurationType
 import nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.externaltool.ExternalToolRunConfigurationType
+import nl.hannahsten.texifyidea.run.latex.step.LatexStepAutoConfigurator
 import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfiguration
 import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType
 
@@ -22,11 +24,8 @@ class LatexConfigurationFactory(type: ConfigurationType) : ConfigurationFactory(
 
     override fun createTemplateConfiguration(project: Project) = when (type) {
         is LatexRunConfigurationType -> LatexRunConfiguration(project, this, "LaTeX").apply {
-            setDefaultCompiler()
-            setDefaultPdfViewer()
-            setDefaultOutputFormat()
+            configOptions.steps = LatexStepAutoConfigurator.configureTemplate().toMutableList()
             setSuggestedName()
-            setDefaultLatexDistribution()
         }
         is BibtexRunConfigurationType -> BibtexRunConfiguration(project, this, "BibTeX")
         is MakeindexRunConfigurationType -> MakeindexRunConfiguration(project, this, "Makeindex")
@@ -37,4 +36,9 @@ class LatexConfigurationFactory(type: ConfigurationType) : ConfigurationFactory(
     override fun getName() = FACTORY_NAME
 
     override fun getId() = FACTORY_NAME
+
+    override fun getOptionsClass(): Class<out BaseState>? = when (type) {
+        is LatexRunConfigurationType -> LatexRunConfigurationOptions::class.java
+        else -> null
+    }
 }

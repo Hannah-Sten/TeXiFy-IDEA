@@ -10,8 +10,13 @@ import com.intellij.openapi.ui.showOkCancelDialog
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.openapi.vfs.InvalidVirtualFileAccessException
 import com.intellij.openapi.vfs.LocalFileSystem
+import nl.hannahsten.texifyidea.run.latex.LatexPathResolver
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationStaticSupport
+import nl.hannahsten.texifyidea.run.latexmk.LatexmkCleanUtil
 import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
+import nl.hannahsten.texifyidea.util.selectedRunConfig
 import nl.hannahsten.texifyidea.util.magic.FileMagic
 import nl.hannahsten.texifyidea.util.runWriteAction
 import java.io.File
@@ -43,9 +48,21 @@ class DeleteGeneratedFiles : AnAction() {
         val project = getEventProject(e) ?: return
         val basePath = project.basePath ?: return
 
+        val selectedRunConfig = project.selectedRunConfig()
+        if (selectedRunConfig is LatexRunConfiguration && selectedRunConfig.hasEnabledLatexmkStep()) {
+            LatexmkCleanUtil.run(project, selectedRunConfig, LatexmkCleanUtil.Mode.CLEAN_ALL)
+            return
+        }
+
         // Custom output folders
         val customOutput = project.getLatexRunConfigurations()
-            .flatMap { listOf(it.outputPath.getAndCreatePath(), it.auxilPath.getAndCreatePath()) }
+            .flatMap { config ->
+                val mainFile = LatexRunConfigurationStaticSupport.resolveMainFile(config)
+                listOf(
+                    LatexPathResolver.resolveOutputDir(config, mainFile),
+                    LatexPathResolver.resolveAuxDir(config, mainFile)
+                )
+            }
             // There's no reason to delete files outside the project
             .filter { it?.path?.contains(project.basePath!!) == true }
             .filterNotNull()

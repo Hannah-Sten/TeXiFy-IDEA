@@ -12,3 +12,4 @@ gen/
 **/node_modules
 .intellijPlatform
 .kotlin
+.DS_Store

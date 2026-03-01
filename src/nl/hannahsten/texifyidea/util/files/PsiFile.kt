@@ -18,7 +18,8 @@ import nl.hannahsten.texifyidea.file.StyleFileType
 import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.index.SpecialKeys
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexStepType
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationStaticSupport
 import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
 import nl.hannahsten.texifyidea.util.isTestProject
 import nl.hannahsten.texifyidea.util.magic.FileMagic
@@ -157,14 +158,13 @@ fun PsiFile.openedTextEditor(): Editor? = openedEditor()?.let {
 fun PsiFile.definitions(): Collection<LatexCommands> = NewSpecialCommandsIndex.getByName(SpecialKeys.ALL_DEFINITIONS, this)
 
 /**
- * Get all bibtex run configurations that are probably used to compile this file.
+ * Get all LaTeX run configurations for this root file that have a bibliography step.
  */
 fun PsiFile.getBibtexRunConfigurations() = project
     .getLatexRunConfigurations()
-    .filter { it.mainFile == findRootFile().virtualFile }
-    .flatMap { it.bibRunConfigs }
-    .map { it.configuration }
-    .filterIsInstance<BibtexRunConfiguration>()
+    .asSequence()
+    .filter { LatexRunConfigurationStaticSupport.resolveMainFile(it) == findRootFile().virtualFile }
+    .filter { runConfig -> runConfig.configOptions.steps.any { it.type == LatexStepType.BIBTEX } }
 
 /**
  * Gets the smallest extractable expression at the given offset
