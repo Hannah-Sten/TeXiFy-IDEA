@@ -3,6 +3,18 @@
 ## [Unreleased]
 
 ### Added
+
+### Fixed
+
+## [0.11.8] - 2026-03-01
+
+Welcome to TeXiFy IDEA 0.11.8! This release contains improvements from many different contributors, including better autocompletion support for many packages.
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
+
+### Added
+
 * Add support for unicode-math, by @Ezrnest
 * Add support for the acro and zref packages, by @Ezrnest
 * Add support for autocompletion of dimensions and positions, e.g. in \vspace, by @Ezrnest
@@ -18,6 +30,7 @@
 * Add basic support for the citation-style-language package, by @slideclimb
 
 ### Fixed
+
 * Don't override command highlighting in label definitions
 * Package imports now resolve to only the local package if it exists, by @jandermoreira 
 * Fix bug in retrieving texmfhome directory on Linux
@@ -752,7 +765,8 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.7...HEAD
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.8...HEAD
+[0.11.8]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.7...v0.11.8
 [0.11.7]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.6...v0.11.7
 [0.11.6]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.5...v0.11.6
 [0.11.5]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.4...v0.11.5
