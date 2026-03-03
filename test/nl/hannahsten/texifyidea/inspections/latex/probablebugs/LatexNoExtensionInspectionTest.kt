@@ -31,19 +31,23 @@ class LatexNoExtensionInspectionTest : TexifyInspectionTestBase(LatexNoExtension
         myFixture.configureByText(
             LatexFileType,
             """
-            \bibliography{test.bib}
+            \begin{document}
+            \bibliography{test.bib,test2.bib}
+            \end{document}
             """.trimIndent()
         )
 
         val quickFixes = myFixture.getAllQuickFixes()
-        assertEquals(1, quickFixes.size)
+        assertEquals(2, quickFixes.size)
         writeCommand(myFixture.project) {
             quickFixes.first().invoke(myFixture.project, myFixture.editor, myFixture.file)
         }
 
         myFixture.checkResult(
             """
-            \bibliography{test}
+            \begin{document}
+            \bibliography{test,test2}
+            \end{document}
             """.trimIndent()
         )
     }
