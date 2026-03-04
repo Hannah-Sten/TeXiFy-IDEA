@@ -29,8 +29,7 @@ import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
 import nl.hannahsten.texifyidea.util.files.findTectonicTomlFile
 import nl.hannahsten.texifyidea.util.files.hasTectonicTomlFile
 import nl.hannahsten.texifyidea.util.includedPackagesInFileset
-import nl.hannahsten.texifyidea.util.parser.hasBibliography
-import nl.hannahsten.texifyidea.util.parser.usesBiber
+import nl.hannahsten.texifyidea.util.magic.PackageMagic
 import java.nio.file.Path
 
 internal object LatexStepAutoConfigurator {
@@ -44,6 +43,7 @@ internal object LatexStepAutoConfigurator {
         LatexStepType.XINDY,
     )
     private const val MAKE_NO_IDX_GLOSSARIES = "\\makenoidxglossaries"
+    private const val PRINT_BIBLIOGRAPHY = "\\printbibliography"
 
     fun configureTemplate(): List<LatexStepRunConfigurationOptions> = completeSteps(null, defaultLatexmkSteps())
 
@@ -72,16 +72,15 @@ internal object LatexStepAutoConfigurator {
         }
 
         runConfig.workingDirectory = resolveWorkingDirectory(commandSpec.compiler, mainVirtualFile)
-        return completeSteps(contextPsiFile, baseSteps, runConfig)
+        return completeSteps(contextPsiFile, baseSteps)
     }
 
     fun completeSteps(
         mainPsiFile: PsiFile?,
         baseSteps: List<LatexStepRunConfigurationOptions>,
-        runConfig: LatexRunConfiguration? = null,
     ): List<LatexStepRunConfigurationOptions> {
         val normalized = normalizeBaseSteps(baseSteps)
-        val inferred = inferAuxiliarySteps(mainPsiFile, normalized, runConfig)
+        val inferred = inferAuxiliarySteps(mainPsiFile, normalized)
         val withAux = insertInferredAuxSteps(normalized, inferred)
         return closePipeline(withAux)
     }
@@ -98,13 +97,12 @@ internal object LatexStepAutoConfigurator {
     private fun inferAuxiliarySteps(
         mainPsiFile: PsiFile?,
         steps: List<LatexStepRunConfigurationOptions>,
-        runConfig: LatexRunConfiguration?,
     ): List<LatexStepRunConfigurationOptions> {
         if (mainPsiFile == null) {
             return emptyList()
         }
 
-        return inferRequiredAuxiliarySteps(mainPsiFile, steps, runConfig)
+        return inferRequiredAuxiliarySteps(mainPsiFile, steps)
     }
 
     private fun insertInferredAuxSteps(
@@ -225,15 +223,19 @@ internal object LatexStepAutoConfigurator {
     private fun inferRequiredAuxiliarySteps(
         mainPsiFile: PsiFile,
         steps: List<LatexStepRunConfigurationOptions>,
-        runConfig: LatexRunConfiguration?,
     ): List<LatexStepRunConfigurationOptions> {
         val inferred = mutableListOf<LatexStepRunConfigurationOptions>()
         val signals = collectPsiSignals(mainPsiFile)
+        val preferredBibCompiler = preferredBibCompiler(signals.usedPackages)
+        val hasBibliographyPackage = preferredBibCompiler != null
 
-        if (shouldAddBibliographyStep(steps, signals)) {
+        if (shouldAddBibliographyStep(steps, signals, hasBibliographyPackage)) {
             inferred += BibtexStepOptions().also { step ->
                 if (signals.usesBiber || signals.hasAddBibResource) {
                     step.bibliographyCompiler = BibliographyCompiler.BIBER
+                }
+                else if (preferredBibCompiler != null) {
+                    step.bibliographyCompiler = preferredBibCompiler
                 }
             }
         }
@@ -241,7 +243,7 @@ internal object LatexStepAutoConfigurator {
             inferred += PythontexStepOptions()
         }
         if (!signals.hasMakeNoIdxGlossaries) {
-            inferred += inferIndexSteps(mainPsiFile, steps, signals.usedPackages, runConfig)
+            inferred += inferIndexSteps(mainPsiFile, steps, signals.usedPackages)
         }
 
         return inferred
@@ -250,6 +252,7 @@ internal object LatexStepAutoConfigurator {
     private fun shouldAddBibliographyStep(
         steps: List<LatexStepRunConfigurationOptions>,
         signals: PsiSignals,
+        hasBibliographyPackage: Boolean,
     ): Boolean {
         if (!canInferAux(steps, disableForLatexmk = true)) {
             return false
@@ -261,7 +264,10 @@ internal object LatexStepAutoConfigurator {
             return false
         }
 
-        return signals.hasBibliography || signals.usesBiber || signals.hasAddBibResource
+        return signals.hasBibliography ||
+            signals.usesBiber ||
+            signals.hasAddBibResource ||
+            hasBibliographyPackage
     }
 
     private fun shouldAddPythontexStep(
@@ -281,7 +287,6 @@ internal object LatexStepAutoConfigurator {
         mainPsiFile: PsiFile,
         steps: List<LatexStepRunConfigurationOptions>,
         usedPackages: Set<LatexLib>,
-        runConfig: LatexRunConfiguration?,
     ): List<LatexStepRunConfigurationOptions> {
         if (!canInferAux(steps, disableForLatexmk = true)) {
             return emptyList()
@@ -346,12 +351,16 @@ internal object LatexStepAutoConfigurator {
 
         PsiSignals(
             usedPackages = usedPackages,
-            hasBibliography = mainPsiFile.hasBibliography(),
-            usesBiber = mainPsiFile.usesBiber(),
-            hasAddBibResource = NewCommandsIndex.getByNameInFileSet(CommandNames.ADD_BIB_RESOURCE, mainPsiFile).isNotEmpty(),
-            hasMakeNoIdxGlossaries = NewCommandsIndex.getByNameInFileSet(MAKE_NO_IDX_GLOSSARIES, mainPsiFile).isNotEmpty(),
+            hasBibliography = NewCommandsIndex.existsByNameInFileSet(CommandNames.BIBLIOGRAPHY, mainPsiFile),
+            usesBiber = NewCommandsIndex.existsByNameInFileSet(PRINT_BIBLIOGRAPHY, mainPsiFile),
+            hasAddBibResource = NewCommandsIndex.existsByNameInFileSet(CommandNames.ADD_BIB_RESOURCE, mainPsiFile),
+            hasMakeNoIdxGlossaries = NewCommandsIndex.existsByNameInFileSet(MAKE_NO_IDX_GLOSSARIES, mainPsiFile),
         )
     }
+
+    private fun preferredBibCompiler(usedPackages: Set<LatexLib>): BibliographyCompiler? = PackageMagic.libToPreferredBibCompiler.entries
+        .firstOrNull { (lib, _) -> lib in usedPackages }
+        ?.value
 
     private fun resolveCommandSpec(
         runConfig: LatexRunConfiguration,
@@ -468,6 +477,9 @@ internal object LatexStepAutoConfigurator {
         val isLatexmk: Boolean,
     )
 
+    /**
+     * Signals collected from the PSI in a batched read action.
+     */
     private data class PsiSignals(
         val usedPackages: Set<LatexLib>,
         val hasBibliography: Boolean,

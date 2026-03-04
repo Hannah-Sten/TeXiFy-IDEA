@@ -33,7 +33,7 @@ class LatexSettingsEditor(
         }
         compileSequenceComponent.onAutoConfigureRequested = { currentSteps ->
             val mainFile = LatexRunConfigurationStaticSupport.resolveMainFile(runConfiguration)
-            LatexStepAutoConfigurator.completeSteps(mainFile?.psiFile(project), currentSteps, runConfiguration)
+            LatexStepAutoConfigurator.completeSteps(mainFile?.psiFile(project), currentSteps)
         }
 
         fragments.add(CommonParameterFragments.createHeader(commonGroupName))

@@ -64,6 +64,50 @@ class LatexStepAutoConfiguratorTest : BasePlatformTestCase() {
         assertEquals(BibliographyCompiler.BIBER, bibStep.bibliographyCompiler)
     }
 
+    fun testCompleteStepsAddsBiberStepForBiblatexPackageImport() {
+        val mainPsi = myFixture.addFileToProject(
+            "main-biblatex-package.tex",
+            """
+            \documentclass{article}
+            \usepackage{biblatex}
+            \begin{document}
+            \end{document}
+            """.trimIndent()
+        )
+        myFixture.updateFilesets()
+
+        val augmented = LatexStepAutoConfigurator.completeSteps(
+            mainPsi,
+            listOf(LatexCompileStepOptions(), PdfViewerStepOptions())
+        )
+
+        assertEquals(listOf("latex-compile", "bibtex", "latex-compile", "latex-compile", "pdf-viewer"), augmented.map { it.type })
+        val bibStep = augmented.filterIsInstance<BibtexStepOptions>().single()
+        assertEquals(BibliographyCompiler.BIBER, bibStep.bibliographyCompiler)
+    }
+
+    fun testCompleteStepsAddsBibtexStepForNatbibPackageImport() {
+        val mainPsi = myFixture.addFileToProject(
+            "main-natbib-package.tex",
+            """
+            \documentclass{article}
+            \usepackage{natbib}
+            \begin{document}
+            \end{document}
+            """.trimIndent()
+        )
+        myFixture.updateFilesets()
+
+        val augmented = LatexStepAutoConfigurator.completeSteps(
+            mainPsi,
+            listOf(LatexCompileStepOptions(), PdfViewerStepOptions())
+        )
+
+        assertEquals(listOf("latex-compile", "bibtex", "latex-compile", "latex-compile", "pdf-viewer"), augmented.map { it.type })
+        val bibStep = augmented.filterIsInstance<BibtexStepOptions>().single()
+        assertEquals(BibliographyCompiler.BIBTEX, bibStep.bibliographyCompiler)
+    }
+
     fun testCompleteStepsAddsPythontexTemplateStep() {
         val mainPsi = myFixture.addFileToProject(
             "main-pythontex.tex",
@@ -431,8 +475,7 @@ class LatexStepAutoConfiguratorTest : BasePlatformTestCase() {
 
         val completed = LatexStepAutoConfigurator.completeSteps(
             mainPsi,
-            listOf(LatexCompileStepOptions(), PdfViewerStepOptions()),
-            runConfig
+            listOf(LatexCompileStepOptions(), PdfViewerStepOptions())
         )
 
         assertEquals(listOf("latex-compile", "makeindex", "latex-compile", "latex-compile", "pdf-viewer"), completed.map { it.type })
