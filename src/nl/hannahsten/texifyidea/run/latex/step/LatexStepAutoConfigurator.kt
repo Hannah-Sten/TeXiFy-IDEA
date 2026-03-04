@@ -22,7 +22,6 @@ import nl.hannahsten.texifyidea.run.latex.MakeindexStepOptions
 import nl.hannahsten.texifyidea.run.latex.MakeglossariesStepOptions
 import nl.hannahsten.texifyidea.run.latex.PdfViewerStepOptions
 import nl.hannahsten.texifyidea.run.latex.PythontexStepOptions
-import nl.hannahsten.texifyidea.run.latex.LatexPathResolver
 import nl.hannahsten.texifyidea.run.latex.defaultLatexmkSteps
 import nl.hannahsten.texifyidea.run.latex.generateLatexStepId
 import nl.hannahsten.texifyidea.run.latex.getDefaultMakeindexPrograms
@@ -290,9 +289,6 @@ internal object LatexStepAutoConfigurator {
         if (hasExplicitIndexStep(steps)) {
             return emptyList()
         }
-        if (LatexLib.IMAKEIDX in usedPackages && !usesAuxilOrOutDirectory(mainPsiFile, runConfig)) {
-            return emptyList()
-        }
 
         val mainFile = mainPsiFile.virtualFile ?: return emptyList()
         val programs = runCatching {
@@ -355,20 +351,6 @@ internal object LatexStepAutoConfigurator {
             hasAddBibResource = NewCommandsIndex.getByNameInFileSet(CommandNames.ADD_BIB_RESOURCE, mainPsiFile).isNotEmpty(),
             hasMakeNoIdxGlossaries = NewCommandsIndex.getByNameInFileSet(MAKE_NO_IDX_GLOSSARIES, mainPsiFile).isNotEmpty(),
         )
-    }
-
-    private fun usesAuxilOrOutDirectory(
-        mainPsiFile: PsiFile,
-        runConfig: LatexRunConfiguration?,
-    ): Boolean {
-        if (runConfig == null) {
-            return true
-        }
-        val mainFile = mainPsiFile.virtualFile ?: return true
-        val mainParent = Path.of(mainFile.parent.path).normalize()
-        val outputPath = LatexPathResolver.resolve(runConfig.outputPath, mainFile, runConfig.project)?.normalize() ?: mainParent
-        val auxPath = LatexPathResolver.resolve(runConfig.auxilPath, mainFile, runConfig.project)?.normalize() ?: mainParent
-        return outputPath != mainParent || auxPath != mainParent
     }
 
     private fun resolveCommandSpec(

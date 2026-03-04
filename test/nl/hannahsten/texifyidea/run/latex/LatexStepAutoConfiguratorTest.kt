@@ -408,7 +408,7 @@ class LatexStepAutoConfiguratorTest : BasePlatformTestCase() {
         assertTrue(completed.none { it.type == LatexStepType.MAKEINDEX || it.type == LatexStepType.MAKEGLOSSARIES || it.type == LatexStepType.XINDY })
     }
 
-    fun testCompleteStepsDoesNotAddIndexStepsForImakeidxWithoutAuxOrOutDirectory() {
+    fun testCompleteStepsAddsIndexStepsForImakeidxWithoutAuxOrOutDirectory() {
         val mainPsi = myFixture.addFileToProject(
             "main-imakeidx-default-paths.tex",
             """
@@ -435,6 +435,8 @@ class LatexStepAutoConfiguratorTest : BasePlatformTestCase() {
             runConfig
         )
 
-        assertTrue(completed.none { it.type == LatexStepType.MAKEINDEX || it.type == LatexStepType.MAKEGLOSSARIES || it.type == LatexStepType.XINDY })
+        assertEquals(listOf("latex-compile", "makeindex", "latex-compile", "latex-compile", "pdf-viewer"), completed.map { it.type })
+        val makeindex = completed.filterIsInstance<MakeindexStepOptions>().single()
+        assertEquals(MakeindexProgram.MAKEINDEX, makeindex.program)
     }
 }
