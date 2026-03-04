@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.run.latex
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import java.nio.file.Path
 
 /**
  * Provides stateless helpers for resolving files and names used by LaTeX run configurations.
@@ -12,17 +13,47 @@ internal object LatexRunConfigurationStaticSupport {
 
     fun resolveMainFile(runConfig: LatexRunConfiguration, path: String? = runConfig.mainFilePath): VirtualFile? {
         val candidate = path?.trim()?.takeIf { it.isNotBlank() } ?: return null
+        val macroExpanded = LatexPathMacroSupport.expandPath(candidate, runConfig.project).trim()
+        val candidatePaths = buildList {
+            add(candidate)
+            if (macroExpanded.isNotBlank() && macroExpanded != candidate) {
+                add(macroExpanded)
+            }
+        }
         val fileSystem = LocalFileSystem.getInstance()
-        val absolute = fileSystem.findFileByPath(candidate)
-        if (absolute?.extension == "tex") {
-            return absolute
+        candidatePaths.forEach { pathCandidate ->
+            val absolute = fileSystem.findFileByPath(pathCandidate) ?: fileSystem.refreshAndFindFileByPath(pathCandidate)
+            if (absolute?.extension == "tex") {
+                return absolute
+            }
         }
 
         val contentRoots = ProjectRootManager.getInstance(runConfig.project).contentRoots
-        for (contentRoot in contentRoots) {
-            val file = contentRoot.findFileByRelativePath(candidate)
-            if (file?.extension == "tex") {
-                return file
+        for (pathCandidate in candidatePaths) {
+            val isAbsoluteCandidate = runCatching { Path.of(pathCandidate).isAbsolute }.getOrDefault(false)
+            if (!isAbsoluteCandidate) {
+                continue
+            }
+            val normalizedCandidate = pathCandidate.replace('\\', '/')
+            for (contentRoot in contentRoots) {
+                val normalizedRoot = contentRoot.path.replace('\\', '/')
+                if (!normalizedCandidate.startsWith("$normalizedRoot/")) {
+                    continue
+                }
+                val relativePath = normalizedCandidate.removePrefix(normalizedRoot).trimStart('/')
+                val file = contentRoot.findFileByRelativePath(relativePath)
+                if (file?.extension == "tex") {
+                    return file
+                }
+            }
+        }
+
+        for (pathCandidate in candidatePaths) {
+            for (contentRoot in contentRoots) {
+                val file = contentRoot.findFileByRelativePath(pathCandidate)
+                if (file?.extension == "tex") {
+                    return file
+                }
             }
         }
         return null

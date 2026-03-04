@@ -13,8 +13,10 @@ import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.openapi.ui.TextBrowseFolderListener
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.ui.components.JBCheckBox
+import com.intellij.ui.components.labels.LinkLabel
 import com.intellij.ui.components.fields.ExtendableTextComponent
 import com.intellij.ui.components.fields.ExtendableTextField
+import com.intellij.util.ui.JBUI
 import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexPathResolver
@@ -32,7 +34,7 @@ internal object LatexBasicFragments {
     fun createMainFileFragment(
         group: String,
         project: Project
-    ): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<TextFieldWithBrowseButton>> {
+    ): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<JComponent>> {
         val mainFile = TextFieldWithBrowseButton().apply {
             addBrowseFolderListener(
                 TextBrowseFolderListener(
@@ -43,9 +45,9 @@ internal object LatexBasicFragments {
                 )
             )
         }
-        val component = LabeledComponent.create(mainFile, "Main file")
+        val component = LabeledComponent.create(pathFieldWithMacroSupport(mainFile), "Main file")
 
-        val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<TextFieldWithBrowseButton>>(
+        val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<JComponent>>(
             "mainFile",
             "Main file",
             group,
@@ -55,12 +57,12 @@ internal object LatexBasicFragments {
         ) {
             override fun doReset(s: RunnerAndConfigurationSettingsImpl) {
                 val runConfig = s.configuration as LatexRunConfiguration
-                component.component.text = runConfig.mainFilePath.orEmpty()
+                mainFile.text = runConfig.mainFilePath.orEmpty()
             }
 
             override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
                 val runConfig = s.configuration as LatexRunConfiguration
-                runConfig.mainFilePath = component.component.text
+                runConfig.mainFilePath = mainFile.text
             }
         }
 
@@ -69,7 +71,7 @@ internal object LatexBasicFragments {
         return fragment
     }
 
-    fun createWorkingDirectoryFragment(group: String, project: Project): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<TextFieldWithBrowseButton>> {
+    fun createWorkingDirectoryFragment(group: String, project: Project): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<JComponent>> {
         val directoryField = TextFieldWithBrowseButton().apply {
             addBrowseFolderListener(
                 TextBrowseFolderListener(
@@ -79,9 +81,9 @@ internal object LatexBasicFragments {
                 )
             )
         }
-        val component = LabeledComponent.create(directoryField, "Working directory")
+        val component = LabeledComponent.create(pathFieldWithMacroSupport(directoryField), "Working directory")
 
-        val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<TextFieldWithBrowseButton>>(
+        val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<JComponent>>(
             "workingDirectory",
             "Working directory",
             group,
@@ -91,12 +93,12 @@ internal object LatexBasicFragments {
         ) {
             override fun doReset(s: RunnerAndConfigurationSettingsImpl) {
                 val runConfig = s.configuration as LatexRunConfiguration
-                component.component.text = runConfig.workingDirectory?.toString() ?: LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER
+                directoryField.text = runConfig.workingDirectory?.toString() ?: LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER
             }
 
             override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
                 val runConfig = s.configuration as LatexRunConfiguration
-                runConfig.workingDirectory = component.component.text
+                runConfig.workingDirectory = directoryField.text
                     .takeUnless { it.isBlank() || it == LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER }
                     ?.let { pathOrNull(it) }
             }
@@ -151,7 +153,7 @@ internal object LatexBasicFragments {
     fun createOutputDirectoryFragment(
         group: String,
         project: Project
-    ): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<TextFieldWithBrowseButton>> = directoryFragment(
+    ): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<JComponent>> = directoryFragment(
         id = "outputDirectory",
         name = "Output directory",
         group = group,
@@ -173,7 +175,7 @@ internal object LatexBasicFragments {
     fun createAuxiliaryDirectoryFragment(
         group: String,
         project: Project
-    ): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<TextFieldWithBrowseButton>> = directoryFragment(
+    ): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<JComponent>> = directoryFragment(
         id = "auxiliaryDirectory",
         name = "Auxiliary directory",
         group = group,
@@ -269,11 +271,11 @@ internal object LatexBasicFragments {
         reset: (LatexRunConfiguration, TextFieldWithBrowseButton) -> Unit,
         apply: (LatexRunConfiguration, TextFieldWithBrowseButton) -> Unit,
         actionHint: String,
-    ): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<TextFieldWithBrowseButton>> {
+    ): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<JComponent>> {
         val field = directoryPicker(project, chooserTitle)
-        val component = LabeledComponent.create(field, name)
+        val component = LabeledComponent.create(pathFieldWithMacroSupport(field), name)
 
-        val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<TextFieldWithBrowseButton>>(
+        val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<JComponent>>(
             id,
             name,
             group,
@@ -282,19 +284,35 @@ internal object LatexBasicFragments {
             { s -> initiallyVisible(s.configuration as LatexRunConfiguration) }
         ) {
             override fun doReset(s: RunnerAndConfigurationSettingsImpl) {
-                reset(s.configuration as LatexRunConfiguration, component.component)
+                reset(s.configuration as LatexRunConfiguration, field)
             }
 
             override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
-                apply(s.configuration as LatexRunConfiguration, component.component)
+                apply(s.configuration as LatexRunConfiguration, field)
             }
         }
 
         fragment.isRemovable = true
         fragment.isCanBeHidden = true
-        applyTooltip(component, "Supports ${LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER} and ${LatexPathResolver.PROJECT_DIR_PLACEHOLDER}.")
+        applyTooltip(component, "Supports IDE macros (for example \$PROJECT_DIR\$). Legacy placeholders also work.")
         fragment.actionHint = actionHint
         return fragment
+    }
+
+    private fun pathFieldWithMacroSupport(field: TextFieldWithBrowseButton): JComponent {
+        val pathMacros = MacrosDialog.getPathMacros(true)
+        val macroLink = LinkLabel<Any>("Insert macro", null) { _, _ ->
+            MacrosDialog.show(field.textField, { macro -> pathMacros.containsKey(macro.name) || macro.name.lowercase().contains("dir") }, pathMacros)
+        }.apply {
+            border = JBUI.Borders.emptyLeft(6)
+            toolTipText = "Insert IDE path macro"
+        }
+
+        return JPanel(BorderLayout()).apply {
+            isOpaque = false
+            add(field, BorderLayout.CENTER)
+            add(macroLink, BorderLayout.EAST)
+        }
     }
 
     private fun refreshDistributionSelections(

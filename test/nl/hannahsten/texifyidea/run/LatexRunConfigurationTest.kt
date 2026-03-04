@@ -18,6 +18,7 @@ import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import org.jdom.Element
 import org.jdom.Namespace
 import java.nio.file.Files
+import java.nio.file.Path
 
 class LatexRunConfigurationTest : BasePlatformTestCase() {
 
