@@ -52,13 +52,24 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
     private val autoConfigureLabel = LinkLabel<Any>("Auto configure", null) { _, _ ->
         autoConfigureSteps()
     }.apply {
-        border = JBUI.Borders.emptyRight(5)
+        border = JBUI.Borders.empty(0, 0, 0, 5)
         toolTipText = "Automatically complete compile sequence from current setup."
     }
 
     private val addPanel = JPanel().apply {
         border = JBUI.Borders.emptyRight(5)
         add(addButton)
+    }
+
+    private val autoConfigureRow = object : JPanel(FlowLayout(FlowLayout.LEFT, 0, 0)) {
+        override fun getPreferredSize(): Dimension {
+            val base = super.getPreferredSize()
+            val rowWidth = (parent?.width ?: this@LatexCompileSequenceComponent.width).takeIf { it > 0 } ?: base.width
+            return Dimension(rowWidth, base.height)
+        }
+    }.apply {
+        isOpaque = false
+        border = JBUI.Borders.emptyTop(4)
         add(autoConfigureLabel)
     }
 
@@ -94,9 +105,11 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
 
     private fun buildPanel() {
         remove(addPanel)
+        remove(autoConfigureRow)
         remove(addLabel)
         stepButtons.forEach { add(it) }
         add(addPanel)
+        add(autoConfigureRow)
         add(addLabel)
         addLabel.isVisible = stepButtons.none { it.isVisible }
         revalidate()
