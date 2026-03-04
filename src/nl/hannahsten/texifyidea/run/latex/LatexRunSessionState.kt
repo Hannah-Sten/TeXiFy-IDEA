@@ -20,14 +20,9 @@ data class LatexRunSessionState(
     /** Absolute path to the compiled document output file (for example the generated PDF/XDV). */
     var resolvedOutputFilePath: String? = null,
     val filesToCleanUp: MutableList<Path> = mutableListOf(),
-    val directoriesToDeleteIfEmpty: MutableSet<Path> = mutableSetOf(),
 ) {
 
     fun addCleanupFile(file: Path) {
         filesToCleanUp.add(file)
-    }
-
-    fun addCleanupDirectoriesIfEmpty(files: Collection<Path>) {
-        directoriesToDeleteIfEmpty.addAll(files)
     }
 }

@@ -77,4 +77,59 @@ class StepArtifactSyncTest : BasePlatformTestCase() {
         assertTrue(Files.exists(auxDir.resolve("main.glg")))
         assertFalse(Files.exists(workDir.resolve("main.glstex")))
     }
+
+    fun testBib2glsUsesMainDirectoryAsDefaultSyncDirectory() {
+        val root = Files.createTempDirectory("texify-step-sync-default")
+        val mainDir = Files.createDirectories(root.resolve("main"))
+        val auxDir = Files.createDirectories(root.resolve("aux"))
+        val mainFilePath = mainDir.resolve("main.tex")
+        Files.writeString(mainFilePath, "\\\\documentclass{article}\\n\\\\begin{document}x\\\\end{document}")
+
+        Files.writeString(auxDir.resolve("main.aux"), "aux")
+        Files.writeString(auxDir.resolve("main.glg"), "glg")
+        Files.writeString(auxDir.resolve("main.log"), "log")
+
+        val mainFile = LocalFileSystem.getInstance().refreshAndFindFileByPath(mainFilePath.toString())!!
+        val auxVirtual = LocalFileSystem.getInstance().refreshAndFindFileByPath(auxDir.toString())!!
+
+        val runConfig = LatexRunConfiguration(
+            project,
+            LatexRunConfigurationProducer().configurationFactory,
+            "test"
+        )
+        val environment = mockk<ExecutionEnvironment>(relaxed = true).also {
+            every { it.project } returns project
+        }
+        val executionState = LatexRunSessionState(
+            project = project,
+            mainFile = mainFile,
+            outputDir = auxVirtual,
+            workingDirectory = Path.of(mainFile.parent.path),
+            distributionType = LatexDistributionType.TEXLIVE,
+            usesDefaultWorkingDirectory = true,
+            latexSdk = null,
+            auxDir = auxVirtual,
+        )
+        val context = LatexRunStepContext(runConfig, environment, executionState)
+        val step = MakeindexStepOptions().apply {
+            program = MakeindexProgram.BIB2GLS
+            targetBaseNameOverride = "main"
+        }
+        val sync = StepArtifactSync(context, step)
+
+        sync.beforeStep()
+
+        assertTrue(Files.exists(mainDir.resolve("main.aux")))
+        assertTrue(Files.exists(mainDir.resolve("main.glg")))
+        assertTrue(Files.exists(mainDir.resolve("main.log")))
+
+        Files.writeString(mainDir.resolve("main.glstex"), "glstex")
+        Files.writeString(mainDir.resolve("main.glg"), "glg-updated")
+
+        sync.afterStep(0)
+
+        assertTrue(Files.exists(auxDir.resolve("main.glstex")))
+        assertTrue(Files.exists(auxDir.resolve("main.glg")))
+        assertFalse(Files.exists(mainDir.resolve("main.glstex")))
+    }
 }

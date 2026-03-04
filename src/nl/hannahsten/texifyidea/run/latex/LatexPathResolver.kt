@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.run.latex
 
-import com.intellij.execution.ExecutionException
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.ReadAction
@@ -9,8 +8,6 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
-import nl.hannahsten.texifyidea.util.files.FileUtil
-import nl.hannahsten.texifyidea.util.files.allChildDirectories
 import nl.hannahsten.texifyidea.util.files.createExcludedDir
 import java.nio.file.Path
 
@@ -90,30 +87,6 @@ internal object LatexPathResolver {
                 }
             }
         }.getOrNull()
-    }
-
-    @Throws(ExecutionException::class)
-    fun updateOutputSubDirs(
-        runConfig: LatexRunConfiguration,
-        mainFile: VirtualFile? = LatexRunConfigurationStaticSupport.resolveMainFile(runConfig),
-        outputDir: VirtualFile? = resolveOutputDir(runConfig, mainFile),
-    ): Set<Path> {
-        val includeRoot = mainFile?.parent ?: return emptySet()
-        val outPath = outputDir?.path ?: return emptySet()
-        val files: Set<VirtualFile> = includeRoot.allChildDirectories()
-        val createdDirectories = mutableSetOf<Path>()
-
-        files.asSequence()
-            .filter { !it.path.contains(outPath) }
-            .mapNotNull { FileUtil.pathRelativeTo(includeRoot.path, it.path) }
-            .forEach {
-                val file = Path.of(outPath, it)
-                if (file.toFile().mkdirs()) {
-                    createdDirectories.add(file)
-                }
-            }
-
-        return createdDirectories
     }
 
     private fun ensureDir(path: Path, mainFile: VirtualFile?, project: Project, variant: String): VirtualFile? {
