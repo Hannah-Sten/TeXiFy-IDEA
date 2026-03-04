@@ -82,7 +82,6 @@ internal class PdfViewerRunStep(
             OpenViewerListener(
                 viewer = viewer,
                 outputPath = outputFilePath,
-                session = context.session,
                 sourceFilePath = currentFilePath,
                 line = line,
                 project = context.environment.project,
