@@ -99,8 +99,4 @@ class ExternalToolRunConfiguration(
         val main = if (mainFile != null) mainFile?.nameWithoutExtension + " " else ""
         return main + this.program.name.lowercase(Locale.getDefault())
     }
-
-    fun setSuggestedName() {
-        name = suggestedName()
-    }
 }

@@ -2,5 +2,6 @@
     <extensions defaultExtensionNs="com.intellij">
         <postStartupActivity implementation="nl.hannahsten.texifyidea.startup.StartEvinceInverseSearchListener"/>
         <postStartupActivity implementation="nl.hannahsten.texifyidea.startup.LatexProjectCacheInitializer"/>
+        <postStartupActivity implementation="nl.hannahsten.texifyidea.startup.LatexIgnoredMasksPromptActivity"/>
     </extensions>
 </idea-plugin>
