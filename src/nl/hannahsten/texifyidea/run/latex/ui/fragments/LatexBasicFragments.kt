@@ -24,6 +24,7 @@ import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.isInvalidJetBrainsBinPath
 import nl.hannahsten.texifyidea.run.latex.ui.LatexDistributionComboBoxRenderer
 import nl.hannahsten.texifyidea.run.latex.ui.LatexDistributionSelection
+import org.jetbrains.jps.model.serialization.PathMacroUtil
 import java.awt.BorderLayout
 import java.nio.file.Path
 import javax.swing.JComponent
@@ -34,7 +35,7 @@ internal object LatexBasicFragments {
     fun createMainFileFragment(
         group: String,
         project: Project
-    ): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<JComponent>> {
+    ): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<TextFieldWithBrowseButton>> {
         val mainFile = TextFieldWithBrowseButton().apply {
             addBrowseFolderListener(
                 TextBrowseFolderListener(
@@ -45,9 +46,9 @@ internal object LatexBasicFragments {
                 )
             )
         }
-        val component = LabeledComponent.create(pathFieldWithMacroSupport(mainFile), "Main file")
+        val component = LabeledComponent.create(mainFile, "Main file")
 
-        val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<JComponent>>(
+        val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<TextFieldWithBrowseButton>>(
             "mainFile",
             "Main file",
             group,
@@ -81,7 +82,7 @@ internal object LatexBasicFragments {
                 )
             )
         }
-        val component = LabeledComponent.create(pathFieldWithMacroSupport(directoryField), "Working directory")
+        val component = LabeledComponent.create(pathFieldWithMacroSupport(directoryField, project), "Working directory")
 
         val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<JComponent>>(
             "workingDirectory",
@@ -273,7 +274,7 @@ internal object LatexBasicFragments {
         actionHint: String,
     ): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<JComponent>> {
         val field = directoryPicker(project, chooserTitle)
-        val component = LabeledComponent.create(pathFieldWithMacroSupport(field), name)
+        val component = LabeledComponent.create(pathFieldWithMacroSupport(field, project), name)
 
         val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<JComponent>>(
             id,
@@ -299,10 +300,12 @@ internal object LatexBasicFragments {
         return fragment
     }
 
-    private fun pathFieldWithMacroSupport(field: TextFieldWithBrowseButton): JComponent {
-        val pathMacros = MacrosDialog.getPathMacros(true)
+    private fun pathFieldWithMacroSupport(field: TextFieldWithBrowseButton, project: Project): JComponent {
+        val pathMacros = MacrosDialog.getPathMacros(true).apply {
+            project.basePath?.let { putIfAbsent(PathMacroUtil.PROJECT_DIR_MACRO_NAME, it) }
+        }
         val macroLink = LinkLabel<Any>("Insert macro", null) { _, _ ->
-            MacrosDialog.show(field.textField, { macro -> pathMacros.containsKey(macro.name) || macro.name.lowercase().contains("dir") }, pathMacros)
+            MacrosDialog.show(field.textField, MacrosDialog.Filters.ANY_PATH, pathMacros)
         }.apply {
             border = JBUI.Borders.emptyLeft(6)
             toolTipText = "Insert IDE path macro"

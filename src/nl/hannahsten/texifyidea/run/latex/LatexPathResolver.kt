@@ -50,7 +50,7 @@ internal object LatexPathResolver {
         val raw = path?.toString()?.trim().orEmpty()
         if (raw.isBlank()) return null
 
-        val ideExpandedRaw = LatexPathMacroSupport.expandPath(raw, project).trim().ifBlank { raw }
+        val ideExpandedRaw = LatexPathMacroSupport.expandPath(raw, project, mainFile).trim().ifBlank { raw }
         val moduleRoot = getMainFileContentRoot(mainFile, project)
         val projectRootPath = moduleRoot?.path ?: mainFile?.parent?.path
         val mainFileParentPath = mainFile?.parent?.path ?: projectRootPath

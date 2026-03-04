@@ -13,28 +13,16 @@ internal object LatexRunConfigurationStaticSupport {
 
     fun resolveMainFile(runConfig: LatexRunConfiguration, path: String? = runConfig.mainFilePath): VirtualFile? {
         val candidate = path?.trim()?.takeIf { it.isNotBlank() } ?: return null
-        val macroExpanded = LatexPathMacroSupport.expandPath(candidate, runConfig.project).trim()
-        val candidatePaths = buildList {
-            add(candidate)
-            if (macroExpanded.isNotBlank() && macroExpanded != candidate) {
-                add(macroExpanded)
-            }
-        }
         val fileSystem = LocalFileSystem.getInstance()
-        candidatePaths.forEach { pathCandidate ->
-            val absolute = fileSystem.findFileByPath(pathCandidate) ?: fileSystem.refreshAndFindFileByPath(pathCandidate)
-            if (absolute?.extension == "tex") {
-                return absolute
-            }
+        val absolute = fileSystem.findFileByPath(candidate) ?: fileSystem.refreshAndFindFileByPath(candidate)
+        if (absolute?.extension == "tex") {
+            return absolute
         }
 
         val contentRoots = ProjectRootManager.getInstance(runConfig.project).contentRoots
-        for (pathCandidate in candidatePaths) {
-            val isAbsoluteCandidate = runCatching { Path.of(pathCandidate).isAbsolute }.getOrDefault(false)
-            if (!isAbsoluteCandidate) {
-                continue
-            }
-            val normalizedCandidate = pathCandidate.replace('\\', '/')
+        val isAbsoluteCandidate = runCatching { Path.of(candidate).isAbsolute }.getOrDefault(false)
+        if (isAbsoluteCandidate) {
+            val normalizedCandidate = candidate.replace('\\', '/')
             for (contentRoot in contentRoots) {
                 val normalizedRoot = contentRoot.path.replace('\\', '/')
                 if (!normalizedCandidate.startsWith("$normalizedRoot/")) {
@@ -48,12 +36,10 @@ internal object LatexRunConfigurationStaticSupport {
             }
         }
 
-        for (pathCandidate in candidatePaths) {
-            for (contentRoot in contentRoots) {
-                val file = contentRoot.findFileByRelativePath(pathCandidate)
-                if (file?.extension == "tex") {
-                    return file
-                }
+        for (contentRoot in contentRoots) {
+            val file = contentRoot.findFileByRelativePath(candidate)
+            if (file?.extension == "tex") {
+                return file
             }
         }
         return null
