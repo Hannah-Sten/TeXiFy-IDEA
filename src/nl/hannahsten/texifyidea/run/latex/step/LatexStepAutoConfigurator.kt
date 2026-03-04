@@ -8,6 +8,7 @@ import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
 import nl.hannahsten.texifyidea.lang.magic.allParentMagicComments
 import nl.hannahsten.texifyidea.lang.predefined.CommandNames
+import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompilePrograms
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
@@ -231,7 +232,11 @@ internal object LatexStepAutoConfigurator {
         val signals = collectPsiSignals(mainPsiFile)
 
         if (shouldAddBibliographyStep(steps, signals)) {
-            inferred += BibtexStepOptions()
+            inferred += BibtexStepOptions().also { step ->
+                if (signals.usesBiber || signals.hasAddBibResource) {
+                    step.bibliographyCompiler = BibliographyCompiler.BIBER
+                }
+            }
         }
         if (shouldAddPythontexStep(steps, signals.usedPackages)) {
             inferred += PythontexStepOptions()

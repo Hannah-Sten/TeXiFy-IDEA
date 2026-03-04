@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.run.latex
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
 import nl.hannahsten.texifyidea.run.latex.step.LatexStepAutoConfigurator
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
@@ -36,6 +37,31 @@ class LatexStepAutoConfiguratorTest : BasePlatformTestCase() {
         )
 
         assertEquals(listOf("latex-compile", "bibtex", "latex-compile", "latex-compile", "pdf-viewer"), augmented.map { it.type })
+    }
+
+    fun testCompleteStepsUsesBiberForBiblatex() {
+        val mainPsi = myFixture.addFileToProject(
+            "main-biber.tex",
+            """
+            \documentclass{article}
+            \usepackage{biblatex}
+            \addbibresource{references.bib}
+            \begin{document}
+            \cite{knuth}
+            \printbibliography
+            \end{document}
+            """.trimIndent()
+        )
+        myFixture.updateFilesets()
+
+        val augmented = LatexStepAutoConfigurator.completeSteps(
+            mainPsi,
+            listOf(LatexCompileStepOptions(), PdfViewerStepOptions())
+        )
+
+        assertEquals(listOf("latex-compile", "bibtex", "latex-compile", "latex-compile", "pdf-viewer"), augmented.map { it.type })
+        val bibStep = augmented.filterIsInstance<BibtexStepOptions>().single()
+        assertEquals(BibliographyCompiler.BIBER, bibStep.bibliographyCompiler)
     }
 
     fun testCompleteStepsAddsPythontexTemplateStep() {
