@@ -295,7 +295,7 @@ internal object LatexBasicFragments {
 
         fragment.isRemovable = true
         fragment.isCanBeHidden = true
-        applyTooltip(component, "Supports IDE macros (for example \$PROJECT_DIR\$). Legacy placeholders also work.")
+        applyTooltip(component, "Supports IDE path macros (for example PROJECT_DIR). Legacy placeholders also work.")
         fragment.actionHint = actionHint
         return fragment
     }

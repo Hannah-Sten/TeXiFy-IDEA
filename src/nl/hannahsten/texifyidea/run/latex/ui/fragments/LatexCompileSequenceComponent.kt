@@ -52,7 +52,7 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
     private val autoConfigureLabel = LinkLabel<Any>("Auto configure", null) { _, _ ->
         autoConfigureSteps()
     }.apply {
-        border = JBUI.Borders.empty(0, 0, 0, 5)
+        border = JBUI.Borders.emptyRight(5)
         toolTipText = "Automatically complete compile sequence from current setup."
     }
 
