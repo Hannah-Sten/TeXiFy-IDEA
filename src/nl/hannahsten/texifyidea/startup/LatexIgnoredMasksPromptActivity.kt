@@ -1,8 +1,5 @@
 package nl.hannahsten.texifyidea.startup
 
-import com.intellij.notification.Notification
-import com.intellij.notification.NotificationAction
-import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.readAction
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
@@ -14,37 +11,20 @@ import nl.hannahsten.texifyidea.util.isLatexProject
 class LatexIgnoredMasksPromptActivity : ProjectActivity, DumbAware {
 
     override suspend fun execute(project: Project) {
-        if (!shouldPrompt(project)) return
+        if (!shouldApply(project)) return
 
-        Notification(
-            "LaTeX",
-            "TeXiFy: Ignore LaTeX intermediate files?",
-            "TeXiFy can add ignored file masks for LaTeX intermediate files. Existing ignored rules will be kept.",
-            NotificationType.INFORMATION,
-        )
-            .addAction(
-                NotificationAction.createSimpleExpiring("Apply now") {
-                    val mergedMasks = LatexIgnoredFileMasks.mergeWithPreset(LatexIgnoredFileMasks.getCurrentMasks())
-                    LatexIgnoredFileMasks.applyMasks(mergedMasks)
-                }
-            )
-            .addAction(
-                NotificationAction.createSimpleExpiring("Not now") {}
-            )
-            .addAction(
-                NotificationAction.createSimpleExpiring("Don't ask again") {
-                    TexifySettings.getState().suppressIgnoredMasksPrompt = true
-                }
-            )
-            .notify(project)
+        val mergedMasks = LatexIgnoredFileMasks.mergeWithPreset(LatexIgnoredFileMasks.getCurrentMasks())
+        LatexIgnoredFileMasks.applyMasks(mergedMasks)
     }
 
-    internal suspend fun shouldPrompt(project: Project): Boolean {
+    internal suspend fun shouldApply(project: Project): Boolean {
+        if (!TexifySettings.getState().autoApplyIgnoredLatexMasks) return false
+
         val isLatex = readAction {
             project.isLatexProject()
         }
         if (!isLatex) return false
-        if (TexifySettings.getState().suppressIgnoredMasksPrompt) return false
+
         return LatexIgnoredFileMasks.findMissingMasks(LatexIgnoredFileMasks.getCurrentMasks()).isNotEmpty()
     }
 }

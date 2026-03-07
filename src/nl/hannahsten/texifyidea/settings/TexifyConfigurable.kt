@@ -39,6 +39,7 @@ class TexifyConfigurable : SearchableConfigurable {
     private var enableExternalIndex: JBCheckBox? = null
     private var enableSpellcheckEverywhere: JBCheckBox? = null
     private var enableTextidote: JBCheckBox? = null
+    private var autoApplyIgnoredLatexMasks: JBCheckBox? = null
     private var textidoteOptions: RawCommandLineEditor? = null
     private var latexIndentOptions: RawCommandLineEditor? = null
     private var bibtexTidyOptions: RawCommandLineEditor? = null
@@ -79,6 +80,7 @@ class TexifyConfigurable : SearchableConfigurable {
             Pair(::enableExternalIndex, state::enableExternalIndex),
             Pair(::enableSpellcheckEverywhere, state::enableSpellcheckEverywhere),
             Pair(::enableTextidote, state::enableTextidote),
+            Pair(::autoApplyIgnoredLatexMasks, state::autoApplyIgnoredLatexMasks),
         )
     }
 
@@ -114,6 +116,7 @@ class TexifyConfigurable : SearchableConfigurable {
                 enableExternalIndex = addCheckbox("Enable indexing of MiKTeX/TeX Live package files (requires restart)")
                 enableSpellcheckEverywhere = addCheckbox("Enable spellcheck inspection in all scopes")
                 enableTextidote = addCheckbox("Enable the Textidote linter")
+                autoApplyIgnoredLatexMasks = addCheckbox("Automatically add ignored file masks for LaTeX intermediate files")
                 textidoteOptions = addCommandLineEditor("Textidote", TexifySettings.DEFAULT_TEXTIDOTE_OPTIONS)
                 latexIndentOptions = addCommandLineEditor("Latexindent", "")
                 bibtexTidyOptions = addCommandLineEditor("bibtex-tidy", "")

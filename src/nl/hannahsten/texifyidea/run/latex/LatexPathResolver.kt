@@ -19,15 +19,23 @@ internal object LatexPathResolver {
 
     const val PROJECT_DIR_PLACEHOLDER = "{projectDir}"
     const val MAIN_FILE_PARENT_PLACEHOLDER = "{mainFileParent}"
+    private const val OUTPUT_DIR_NAME = "out"
+    private const val AUX_DIR_NAME = "auxil"
 
-    val defaultOutputPath: Path = Path.of(MAIN_FILE_PARENT_PLACEHOLDER)
-    val defaultAuxilPath: Path = Path.of(MAIN_FILE_PARENT_PLACEHOLDER)
+    val defaultOutputPath: Path = Path.of(MAIN_FILE_PARENT_PLACEHOLDER, OUTPUT_DIR_NAME)
+    val defaultAuxilPath: Path = Path.of(MAIN_FILE_PARENT_PLACEHOLDER, AUX_DIR_NAME)
 
     fun resolveOutputDir(
         runConfig: LatexRunConfiguration,
         mainFile: VirtualFile? = LatexRunConfigurationStaticSupport.resolveMainFile(runConfig),
     ): VirtualFile? =
-        ensureDir(runConfig.outputPath ?: defaultOutputPath, mainFile, runConfig.project, "out")
+        ensureDir(
+            path = runConfig.outputPath ?: defaultOutputPath,
+            defaultPath = defaultOutputPath,
+            mainFile = mainFile,
+            project = runConfig.project,
+            variant = OUTPUT_DIR_NAME,
+        )
 
     fun resolveAuxDir(
         runConfig: LatexRunConfiguration,
@@ -40,7 +48,13 @@ internal object LatexPathResolver {
         if (!supportsAuxDir) {
             return null
         }
-        return ensureDir(runConfig.auxilPath ?: defaultAuxilPath, mainFile, runConfig.project, "auxil")
+        return ensureDir(
+            path = runConfig.auxilPath ?: defaultAuxilPath,
+            defaultPath = defaultAuxilPath,
+            mainFile = mainFile,
+            project = runConfig.project,
+            variant = AUX_DIR_NAME,
+        )
     }
 
     fun resolve(path: Path?, mainFile: VirtualFile?, project: Project): Path? {
@@ -89,10 +103,17 @@ internal object LatexPathResolver {
         }.getOrNull()
     }
 
-    private fun ensureDir(path: Path, mainFile: VirtualFile?, project: Project, variant: String): VirtualFile? {
+    private fun ensureDir(
+        path: Path,
+        defaultPath: Path,
+        mainFile: VirtualFile?,
+        project: Project,
+        variant: String,
+    ): VirtualFile? {
         val resolvedPathString = resolve(path, mainFile, project)?.toString()
+        val resolvedDefaultPathString = resolve(defaultPath, mainFile, project)?.toString()
         if (resolvedPathString == null || isInvalidJetBrainsBinPath(resolvedPathString)) {
-            return mainFile?.parent
+            return fallbackDirectory(resolvedDefaultPathString, mainFile, project)
         }
 
         val resolvedPath = LocalFileSystem.getInstance().findFileByPath(resolvedPathString)
@@ -105,21 +126,33 @@ internal object LatexPathResolver {
             return created
         }
 
-        val fallback = getMainFileContentRoot(mainFile, project)
+        val fallback = resolvedDefaultPathString ?: "${mainFile?.parent?.path}/$variant"
         Notification(
             "LaTeX",
             "Invalid output path",
-            "Output path $resolvedPathString could not be created, trying default path ${fallback?.path}/$variant",
+            "Output path $resolvedPathString could not be created, trying default path $fallback",
             NotificationType.WARNING
         ).notify(project)
 
-        if (fallback != null) {
-            val defaultPath = fallback.path + "/" + variant
-            createOutputPath(defaultPath, mainFile, project)?.let { return it }
-            return fallback
+        return fallbackDirectory(resolvedDefaultPathString, mainFile, project)
+    }
+
+    private fun fallbackDirectory(
+        defaultPath: String?,
+        mainFile: VirtualFile?,
+        project: Project,
+    ): VirtualFile? {
+        val mainFileParent = mainFile?.parent
+        if (defaultPath.isNullOrBlank()) {
+            return mainFileParent
         }
 
-        return mainFile?.parent
+        LocalFileSystem.getInstance().findFileByPath(defaultPath)?.takeIf { it.isDirectory }?.let { return it }
+        if (defaultPath != mainFileParent?.path) {
+            createOutputPath(defaultPath, mainFile, project)?.let { return it }
+            LocalFileSystem.getInstance().refreshAndFindFileByPath(defaultPath)?.takeIf { it.isDirectory }?.let { return it }
+        }
+        return mainFileParent
     }
 
     private fun createOutputPath(outPath: String, mainFile: VirtualFile?, project: Project): VirtualFile? {

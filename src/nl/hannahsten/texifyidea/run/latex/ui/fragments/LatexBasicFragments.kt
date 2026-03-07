@@ -139,7 +139,7 @@ internal object LatexBasicFragments {
         chooserTitle = "Output Files Directory",
         initiallyVisible = { runConfig -> hasCustomPath(runConfig.outputPath, LatexPathResolver.defaultOutputPath) },
         reset = { runConfig, field ->
-            field.text = runConfig.outputPath?.toString() ?: LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER
+            field.text = runConfig.outputPath?.toString() ?: LatexPathResolver.defaultOutputPath.toString()
         },
         apply = { runConfig, field ->
             val text = field.text.trim()
@@ -161,7 +161,7 @@ internal object LatexBasicFragments {
         chooserTitle = "Auxiliary Files Directory",
         initiallyVisible = { runConfig -> hasCustomPath(runConfig.auxilPath, LatexPathResolver.defaultAuxilPath) },
         reset = { runConfig, field ->
-            field.text = runConfig.auxilPath?.toString() ?: LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER
+            field.text = runConfig.auxilPath?.toString() ?: LatexPathResolver.defaultAuxilPath.toString()
         },
         apply = { runConfig, field ->
             runConfig.auxilPath = parseDirectoryPath(field.text.trim(), LatexPathResolver.defaultAuxilPath)
