@@ -119,7 +119,6 @@ class TexifyConfigurable : SearchableConfigurable {
                 enableExternalIndex = addCheckbox("Enable indexing of MiKTeX/TeX Live package files (requires restart)")
                 enableSpellcheckEverywhere = addCheckbox("Enable spellcheck inspection in all scopes")
                 enableTextidote = addCheckbox("Enable the Textidote linter")
-                addIgnoredLatexMasksAction()
                 textidoteOptions = addCommandLineEditor("Textidote", TexifySettings.DEFAULT_TEXTIDOTE_OPTIONS)
                 latexIndentOptions = addCommandLineEditor("Latexindent", "")
                 bibtexTidyOptions = addCommandLineEditor("bibtex-tidy", "")
@@ -128,6 +127,7 @@ class TexifyConfigurable : SearchableConfigurable {
                 htmlPasteTranslator = addComboBox("HTML paste translator", "Built-in", "Pandoc", "Disabled")
                 autoCompileOption = addComboBox("Automatic compilation", "Off", "Always", "After document save", "Disable in power save mode")
                 addFilesetExpirationTimeMs(this)
+                addIgnoredLatexMasksAction()
             }
         )
     }
@@ -213,10 +213,9 @@ class TexifyConfigurable : SearchableConfigurable {
             "Add Ignored File Masks",
             buildString {
                 appendLine("Add the following file masks to the IDE ignored file types list?")
+                appendLine("This only changes file visibility. It does not delete any files.")
                 appendLine()
                 missingMasks.forEach { appendLine(it) }
-                appendLine()
-                append("This only changes file visibility. It does not delete any files.")
             },
             "Add"
         )
