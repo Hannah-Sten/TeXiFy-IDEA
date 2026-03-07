@@ -22,8 +22,8 @@ internal object LatexPathResolver {
     private const val OUTPUT_DIR_NAME = "out"
     private const val AUX_DIR_NAME = "auxil"
 
-    val defaultOutputPath: Path = Path.of(MAIN_FILE_PARENT_PLACEHOLDER, OUTPUT_DIR_NAME)
-    val defaultAuxilPath: Path = Path.of(MAIN_FILE_PARENT_PLACEHOLDER, AUX_DIR_NAME)
+    val defaultOutputPath: Path = Path.of(PROJECT_DIR_PLACEHOLDER, OUTPUT_DIR_NAME)
+    val defaultAuxilPath: Path = Path.of(PROJECT_DIR_PLACEHOLDER, AUX_DIR_NAME)
 
     fun resolveOutputDir(
         runConfig: LatexRunConfiguration,
