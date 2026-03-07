@@ -174,7 +174,7 @@ class LatexStepLogTabComponentTest : BasePlatformTestCase() {
         }
     }
 
-    fun testNavigateToAdjacentMessageSelectsVisibleMessages() {
+    fun testGoNextOccurenceSelectsVisibleMessages() {
         val fixture = createFixture()
         try {
             addParsedMessage(
@@ -190,10 +190,43 @@ class LatexStepLogTabComponentTest : BasePlatformTestCase() {
                 logOffset = 12,
             )
 
-            invokeIntMethod(fixture.component, "navigateToAdjacentMessage", 1)
+            val first = fixture.component.goNextOccurence()
+
+            assertEquals(1, first?.occurenceNumber)
+            assertEquals(2, first?.occurencesCount)
             assertEquals(0, selectedMessageOffset(fixture.component))
 
-            invokeIntMethod(fixture.component, "navigateToAdjacentMessage", 1)
+            val second = fixture.component.goNextOccurence()
+
+            assertEquals(2, second?.occurenceNumber)
+            assertEquals(2, second?.occurencesCount)
+            assertEquals(12, selectedMessageOffset(fixture.component))
+        }
+        finally {
+            Disposer.dispose(fixture.component)
+        }
+    }
+
+    fun testGoPreviousOccurenceSelectsVisibleMessages() {
+        val fixture = createFixture()
+        try {
+            addParsedMessage(
+                fixture.component,
+                stepIndex = 0,
+                message = ParsedStepMessage(message = "first", level = ParsedStepMessageLevel.WARNING),
+                logOffset = 0,
+            )
+            addParsedMessage(
+                fixture.component,
+                stepIndex = 0,
+                message = ParsedStepMessage(message = "second", level = ParsedStepMessageLevel.WARNING),
+                logOffset = 12,
+            )
+
+            val previous = fixture.component.goPreviousOccurence()
+
+            assertEquals(2, previous?.occurenceNumber)
+            assertEquals(2, previous?.occurencesCount)
             assertEquals(12, selectedMessageOffset(fixture.component))
         }
         finally {
@@ -321,12 +354,6 @@ class LatexStepLogTabComponentTest : BasePlatformTestCase() {
 
     private fun invokeNoArgBooleanSetter(instance: Any, methodName: String, value: Boolean) {
         val method = instance.javaClass.getDeclaredMethod(methodName, Boolean::class.javaPrimitiveType)
-        method.isAccessible = true
-        method.invoke(instance, value)
-    }
-
-    private fun invokeIntMethod(instance: Any, methodName: String, value: Int) {
-        val method = instance.javaClass.getDeclaredMethod(methodName, Int::class.javaPrimitiveType)
         method.isAccessible = true
         method.invoke(instance, value)
     }

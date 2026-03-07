@@ -8,6 +8,9 @@ import com.intellij.execution.ui.ConsoleView
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.execution.ui.ConsoleViewContentType.NORMAL_OUTPUT
 import com.intellij.icons.AllIcons
+import com.intellij.ide.OccurenceNavigator
+import com.intellij.ide.actions.NextOccurenceToolbarAction
+import com.intellij.ide.actions.PreviousOccurenceToolbarAction
 import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.util.treeView.AbstractTreeStructure
 import com.intellij.ide.util.treeView.NodeDescriptor
@@ -19,6 +22,7 @@ import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.ToggleAction
+import com.intellij.openapi.editor.actions.ScrollToTheEndToolbarAction
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.project.DumbAware
@@ -55,7 +59,7 @@ internal class LatexStepLogTabComponent(
     private val project: Project,
     mainFile: VirtualFile?,
     handler: StepAwareSequentialProcessHandler,
-) : AdditionalTabComponent(BorderLayout()), ExecutionConsole, TreeSelectionListener {
+) : AdditionalTabComponent(BorderLayout()), ExecutionConsole, TreeSelectionListener, OccurenceNavigator {
 
     companion object {
 
@@ -133,11 +137,7 @@ internal class LatexStepLogTabComponent(
     private val console: ConsoleView = TextConsoleBuilderFactory.getInstance().createBuilder(project).console.also {
         Disposer.register(this, it)
     }
-    private val consoleToolbarGroup = DefaultActionGroup(
-        PreviousMessageAction(),
-        NextMessageAction(),
-        ScrollToEndAction(),
-    )
+    private val consoleToolbarGroup = DefaultActionGroup(createConsoleToolbarActions())
     private val consoleToolbar = ActionManager.getInstance().createActionToolbar(
         "TeXiFy.StepLog.ConsoleToolbar",
         consoleToolbarGroup,
@@ -438,22 +438,25 @@ internal class LatexStepLogTabComponent(
         }
     }
 
-    private fun navigateToAdjacentMessage(direction: Int) {
-        adjacentMessageNode(direction)?.let(::selectTreeNode)
-    }
-
-    private fun scrollRawLogToEnd() {
-        refreshRawLogView()
-        val contentSize = currentRawLogLength()
-        if (contentSize > 0) {
-            console.scrollTo(contentSize)
-        }
-    }
-
     private fun currentRawLogLength(selection: RawLogSelection = selectedRawLogSelection()): Int = when (selection) {
         RawLogSelection.None -> 0
         RawLogSelection.All -> stepOutputLengths.values.sum()
         is RawLogSelection.Step -> stepOutputLengths[selection.stepIndex] ?: 0
+    }
+
+    private fun scrollRawLogToEnd() {
+        refreshRawLogView()
+        console.requestScrollingToEnd()
+    }
+
+    private fun selectMessageNode(node: StepTreeNode, messageNodes: List<StepTreeNode>): OccurenceNavigator.OccurenceInfo? {
+        val index = messageNodes.indexOf(node)
+        if (index < 0) {
+            return null
+        }
+
+        selectTreeNode(node)
+        return OccurenceNavigator.OccurenceInfo.position(index + 1, messageNodes.size)
     }
 
     private fun tryJumpMessageInConsole(messageData: MessageNodeData): Boolean {
@@ -528,6 +531,15 @@ internal class LatexStepLogTabComponent(
             selectedNode.messageData != null -> RawLogSelection.Step(selectedNode.messageData.stepIndex)
             selectedNode.runData != null -> RawLogSelection.All
             else -> fallbackStepSelection()
+        }
+    }
+
+    private fun createConsoleToolbarActions(): List<AnAction> = console.createConsoleActions().map { action ->
+        when (action) {
+            is PreviousOccurenceToolbarAction -> PreviousOccurenceToolbarAction(this)
+            is NextOccurenceToolbarAction -> NextOccurenceToolbarAction(this)
+            is ScrollToTheEndToolbarAction -> StepLogScrollToEndAction()
+            else -> action
         }
     }
 
@@ -637,6 +649,28 @@ internal class LatexStepLogTabComponent(
         else -> null
     }
 
+    override fun hasNextOccurence(): Boolean = adjacentMessageNode(direction = 1) != null
+
+    override fun hasPreviousOccurence(): Boolean = adjacentMessageNode(direction = -1) != null
+
+    override fun goNextOccurence(): OccurenceNavigator.OccurenceInfo? {
+        val messageNodes = visibleMessageNodes()
+        val target = adjacentMessageNode(direction = 1) ?: return null
+        return selectMessageNode(target, messageNodes)
+    }
+
+    override fun goPreviousOccurence(): OccurenceNavigator.OccurenceInfo? {
+        val messageNodes = visibleMessageNodes()
+        val target = adjacentMessageNode(direction = -1) ?: return null
+        return selectMessageNode(target, messageNodes)
+    }
+
+    override fun getNextOccurenceActionName(): String = "Next Message"
+
+    override fun getPreviousOccurenceActionName(): String = "Previous Message"
+
+    override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.EDT
+
     private enum class NodeStatus {
         UNKNOWN,
         RUNNING,
@@ -737,43 +771,16 @@ internal class LatexStepLogTabComponent(
         override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.EDT
     }
 
-    private inner class PreviousMessageAction : AnAction("Previous Message"), DumbAware {
-
-        override fun actionPerformed(e: AnActionEvent) {
-            navigateToAdjacentMessage(direction = -1)
-        }
-
-        override fun update(e: AnActionEvent) {
-            e.presentation.isEnabled = adjacentMessageNode(direction = -1) != null
-        }
-
-        override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.EDT
-    }
-
-    private inner class NextMessageAction : AnAction("Next Message"), DumbAware {
-
-        override fun actionPerformed(e: AnActionEvent) {
-            navigateToAdjacentMessage(direction = 1)
-        }
-
-        override fun update(e: AnActionEvent) {
-            e.presentation.isEnabled = adjacentMessageNode(direction = 1) != null
-        }
-
-        override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.EDT
-    }
-
-    private inner class ScrollToEndAction : AnAction("Scroll To End"), DumbAware {
+    private inner class StepLogScrollToEndAction : ScrollToTheEndToolbarAction(null), DumbAware {
 
         override fun actionPerformed(e: AnActionEvent) {
             scrollRawLogToEnd()
         }
 
         override fun update(e: AnActionEvent) {
+            super.update(e)
             e.presentation.isEnabled = currentRawLogLength() > 0
         }
-
-        override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.EDT
     }
 
     private inner class StepTreeNode(
