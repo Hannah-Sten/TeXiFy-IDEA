@@ -86,10 +86,8 @@ class TexifySettings : SimplePersistentStateComponent<TexifySettings.State>(Stat
         var automaticQuoteReplacement by enum(QuoteReplacement.NONE)
         var htmlPasteTranslator by enum(HtmlPasteTranslator.BUILTIN)
         var autoCompileOption by enum<AutoCompile>(AutoCompile.OFF)
-        var autoApplyIgnoredLatexMasks by property(false)
         var pathToSumatra by string(null)
         var hasApprovedDetexify by property(false)
-        var suppressIgnoredMasksPrompt by property(false)
         var filesetExpirationTimeMs by property(DEFAULT_FILESET_EXPIRATION_TIME_MS)
         var completionMode by enum(CompletionMode.SMART)
     }
