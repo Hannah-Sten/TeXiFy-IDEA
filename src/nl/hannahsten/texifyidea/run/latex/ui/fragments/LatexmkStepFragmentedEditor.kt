@@ -95,7 +95,7 @@ internal class LatexmkStepFragmentedEditor(
             name = "Compiler arguments",
             component = compilerArgumentsRow,
             reset = { step, component -> component.component.text = step.compilerArguments.orEmpty() },
-            apply = { step, component -> step.compilerArguments = component.component.text },
+            apply = { step, component -> step.compilerArguments = component.component.text.ifBlank { null } },
             initiallyVisible = { step -> !step.compilerArguments.isNullOrBlank() },
             removable = true,
             hint = "Arguments passed to latexmk.",

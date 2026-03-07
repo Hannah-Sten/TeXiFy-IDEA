@@ -270,6 +270,24 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
         assertEquals(1, command.count { it == "-synctex=1" })
     }
 
+    fun testLatexmkCompilerArgumentsAreAppendedToCommand() {
+        val mainFile = myFixture.addFileToProject("main.tex", "\\documentclass{article}")
+        val runConfig = LatexRunConfiguration(
+            myFixture.project,
+            LatexRunConfigurationProducer().configurationFactory,
+            "LaTeX"
+        )
+        val step = latexmkStep(runConfig)
+        runConfig.mainFilePath = mainFile.virtualFile.name
+        step.compilerArguments = "-g"
+
+        val session = initializeSessionState(runConfig)
+        val command = latexmkCommand(runConfig, session)
+
+        assertTrue(command.contains("-g"))
+        assertTrue(command.indexOf("-g") > command.indexOf("-synctex=1"))
+    }
+
     fun testLatexmkOnTexliveUsesAuxdirWhenAuxPathDiffersFromOutdir() {
         val mainFile = myFixture.addFileToProject("main.tex", "\\documentclass{article}")
         val outputDir = Files.createTempDirectory("texify-latexmk-out")

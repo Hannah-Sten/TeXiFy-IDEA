@@ -124,15 +124,28 @@ internal class LatexmkCompileRunStep(
             step: LatexmkCompileStepOptions,
             effectiveCompileModeOverride: LatexmkCompileMode? = null,
         ): String {
-            val hasRcFile = LatexmkRcFileFinder.hasLatexmkRc(step.compilerArguments, session.workingDirectory)
+            val hasRcFile = LatexmkRcFileFinder.hasLatexmkRc(
+                compilerArguments = step.compilerArguments,
+                extraArguments = step.latexmkExtraArguments,
+                workingDirectory = session.workingDirectory,
+            )
             val effectiveCompileMode = effectiveCompileModeOverride ?: effectiveCompileMode(runConfig, session, step)
-            return buildLatexmkStructuredArguments(
+            val structuredArguments = buildLatexmkStructuredArguments(
                 hasRcFile = hasRcFile,
                 compileMode = effectiveCompileMode,
                 citationTool = step.latexmkCitationTool,
                 customEngineCommand = step.latexmkCustomEngineCommand,
                 extraArguments = step.latexmkExtraArguments,
             )
+            val commandArguments = mutableListOf<String>()
+            if (structuredArguments.isNotBlank()) {
+                commandArguments += ParametersListUtil.parse(structuredArguments)
+            }
+            val compilerArguments = step.compilerArguments
+            if (!compilerArguments.isNullOrBlank()) {
+                commandArguments += ParametersListUtil.parse(compilerArguments)
+            }
+            return ParametersListUtil.join(commandArguments)
         }
 
         fun effectiveCompileMode(

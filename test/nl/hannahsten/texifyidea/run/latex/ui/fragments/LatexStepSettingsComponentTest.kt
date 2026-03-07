@@ -232,6 +232,32 @@ class LatexStepSettingsComponentTest : BasePlatformTestCase() {
         }
     }
 
+    fun testLatexmkCompilerArgumentsBlankValueAppliesAsNull() {
+        val source = configWithSteps(
+            LatexmkCompileStepOptions().apply {
+                compilerArguments = "-g"
+            }
+        )
+        val disposable = Disposer.newDisposable()
+        try {
+            val component = LatexStepSettingsComponent(disposable, project)
+            val selected = source.configOptions.steps.first { it.type == LatexStepType.LATEXMK_COMPILE }
+            component.resetEditorFrom(source)
+            component.onStepsChanged(source.configOptions.steps)
+            component.onStepSelectionChanged(0, selected.id, selected.type)
+
+            val latexmkSettings = privateField<Any>(component, "latexmkSettings")
+            privateField<EditorTextField>(latexmkSettings, "compilerArguments").text = ""
+            component.applyEditorTo()
+        }
+        finally {
+            Disposer.dispose(disposable)
+        }
+
+        val appliedLatexmk = source.configOptions.steps.first { it.type == LatexStepType.LATEXMK_COMPILE } as LatexmkCompileStepOptions
+        assertNull(appliedLatexmk.compilerArguments)
+    }
+
     private fun configWithSteps(vararg steps: LatexStepRunConfigurationOptions): LatexRunConfiguration = LatexRunConfiguration(
         project,
         LatexRunConfigurationProducer().configurationFactory,
