@@ -29,7 +29,7 @@ internal class BibtexStepMessageParserSession(
     private var currentFile: String = ""
     private var collectingOutputLine: String = ""
 
-    override fun onText(text: String): List<ParsedStepMessage> {
+    override fun onText(text: String): List<ParsedStepEvent> {
         if (text.isEmpty()) {
             return emptyList()
         }
@@ -45,14 +45,14 @@ internal class BibtexStepMessageParserSession(
             lines.dropLast(1)
         }
 
-        val result = mutableListOf<ParsedStepMessage>()
+        val result = mutableListOf<ParsedStepEvent>()
         completeLines.forEach { line ->
             result += processLine(line)
         }
         return result
     }
 
-    private fun processLine(newText: String): List<ParsedStepMessage> {
+    private fun processLine(newText: String): List<ParsedStepEvent> {
         window += newText
         while (window.size > 5) {
             window.removeFirst()
@@ -71,12 +71,14 @@ internal class BibtexStepMessageParserSession(
             BibtexLogMessageType.WARNING -> ParsedStepMessageLevel.WARNING
         }
         return listOf(
-            ParsedStepMessage(
-                message = withFile.message,
-                level = level,
-                fileName = withFile.fileName,
-                line = withFile.line,
-                file = withFile.file,
+            ParsedStepEvent.Message(
+                ParsedStepMessage(
+                    message = withFile.message,
+                    level = level,
+                    fileName = withFile.fileName,
+                    line = withFile.line,
+                    file = withFile.file,
+                )
             )
         )
     }

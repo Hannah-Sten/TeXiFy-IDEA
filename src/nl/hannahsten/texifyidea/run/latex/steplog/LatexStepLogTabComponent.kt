@@ -133,7 +133,11 @@ internal class LatexStepLogTabComponent(
     private val console: ConsoleView = TextConsoleBuilderFactory.getInstance().createBuilder(project).console.also {
         Disposer.register(this, it)
     }
-    private val consoleToolbarGroup = DefaultActionGroup(console.createConsoleActions().toList())
+    private val consoleToolbarGroup = DefaultActionGroup(
+        PreviousMessageAction(),
+        NextMessageAction(),
+        ScrollToEndAction(),
+    )
     private val consoleToolbar = ActionManager.getInstance().createActionToolbar(
         "TeXiFy.StepLog.ConsoleToolbar",
         consoleToolbarGroup,
@@ -264,8 +268,16 @@ internal class LatexStepLogTabComponent(
                 if (parser != null) {
                     splitOutputForParsing(event.text).forEach { piece ->
                         val pieceStartOffset = stepOffset
-                        parser.onText(piece).forEach { parsedMessage ->
-                            addParsedMessage(stepIndex = event.index, message = parsedMessage, logOffset = pieceStartOffset)
+                        parser.onText(piece).forEach { parsedEvent ->
+                            when (parsedEvent) {
+                                is ParsedStepEvent.Message -> addParsedMessage(
+                                    stepIndex = event.index,
+                                    message = parsedEvent.message,
+                                    logOffset = pieceStartOffset,
+                                )
+
+                                ParsedStepEvent.ResetLatexMessages -> resetParsedMessages(stepIndex = event.index)
+                            }
                         }
                         stepOffset += piece.length
                     }
@@ -350,12 +362,26 @@ internal class LatexStepLogTabComponent(
         }
     }
 
+    private fun resetParsedMessages(stepIndex: Int) {
+        parsedRecordsByStep[stepIndex]?.clear()
+        stepHasWarnings.remove(stepIndex)
+        stepHasErrors.remove(stepIndex)
+
+        val stepNode = stepNodes[stepIndex] ?: return
+        val selectedMessageStepIndex = extractTreeNode(tree.lastSelectedPathComponent)?.messageData?.stepIndex
+        stepNode.children.removeAll { it.messageData != null }
+        scheduleUpdate(stepNode, structureChanged = true)
+        if (selectedMessageStepIndex == stepIndex) {
+            selectStep(stepIndex)
+        }
+        else {
+            refreshRawLogView()
+        }
+    }
+
     private fun selectStep(stepIndex: Int) {
         val node = stepNodes[stepIndex] ?: return
-        treePathFor(node)?.let { path ->
-            tree.selectionPath = path
-            tree.scrollPathToVisible(path)
-        }
+        selectTreeNode(node)
     }
 
     private fun updateStepStatus(stepIndex: Int, status: NodeStatus) {
@@ -385,6 +411,49 @@ internal class LatexStepLogTabComponent(
             RawLogSelection.All -> renderAllRawLog()
             is RawLogSelection.Step -> renderStepRawLog(selection.stepIndex)
         }
+    }
+
+    private fun visibleMessageNodes(selection: RawLogSelection = selectedRawLogSelection()): List<StepTreeNode> = when (selection) {
+        RawLogSelection.None -> emptyList()
+        RawLogSelection.All -> stepNodes.values.flatMap { node ->
+            node.children.filter { it.messageData != null }
+        }
+        is RawLogSelection.Step -> stepNodes[selection.stepIndex]
+            ?.children
+            ?.filter { it.messageData != null }
+            .orEmpty()
+    }
+
+    private fun adjacentMessageNode(direction: Int): StepTreeNode? {
+        val messageNodes = visibleMessageNodes()
+        if (messageNodes.isEmpty()) {
+            return null
+        }
+
+        val selectedNode = extractTreeNode(tree.lastSelectedPathComponent)
+        val selectedIndex = messageNodes.indexOf(selectedNode)
+        return when {
+            selectedIndex < 0 -> if (direction > 0) messageNodes.first() else messageNodes.last()
+            else -> messageNodes.getOrNull(selectedIndex + direction)
+        }
+    }
+
+    private fun navigateToAdjacentMessage(direction: Int) {
+        adjacentMessageNode(direction)?.let(::selectTreeNode)
+    }
+
+    private fun scrollRawLogToEnd() {
+        refreshRawLogView()
+        val contentSize = currentRawLogLength()
+        if (contentSize > 0) {
+            console.scrollTo(contentSize)
+        }
+    }
+
+    private fun currentRawLogLength(selection: RawLogSelection = selectedRawLogSelection()): Int = when (selection) {
+        RawLogSelection.None -> 0
+        RawLogSelection.All -> stepOutputLengths.values.sum()
+        is RawLogSelection.Step -> stepOutputLengths[selection.stepIndex] ?: 0
     }
 
     private fun tryJumpMessageInConsole(messageData: MessageNodeData): Boolean {
@@ -554,6 +623,13 @@ internal class LatexStepLogTabComponent(
         return TreePath(chain.reversed().toTypedArray())
     }
 
+    private fun selectTreeNode(node: StepTreeNode) {
+        treePathFor(node)?.let { path ->
+            tree.selectionPath = path
+            tree.scrollPathToVisible(path)
+        }
+    }
+
     private fun extractTreeNode(component: Any?): StepTreeNode? = when (component) {
         is StepTreeNode -> component
         is DefaultMutableTreeNode -> component.userObject as? StepTreeNode
@@ -656,6 +732,45 @@ internal class LatexStepLogTabComponent(
 
         override fun actionPerformed(e: AnActionEvent) {
             setTreeExpanded(false)
+        }
+
+        override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.EDT
+    }
+
+    private inner class PreviousMessageAction : AnAction("Previous Message"), DumbAware {
+
+        override fun actionPerformed(e: AnActionEvent) {
+            navigateToAdjacentMessage(direction = -1)
+        }
+
+        override fun update(e: AnActionEvent) {
+            e.presentation.isEnabled = adjacentMessageNode(direction = -1) != null
+        }
+
+        override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.EDT
+    }
+
+    private inner class NextMessageAction : AnAction("Next Message"), DumbAware {
+
+        override fun actionPerformed(e: AnActionEvent) {
+            navigateToAdjacentMessage(direction = 1)
+        }
+
+        override fun update(e: AnActionEvent) {
+            e.presentation.isEnabled = adjacentMessageNode(direction = 1) != null
+        }
+
+        override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.EDT
+    }
+
+    private inner class ScrollToEndAction : AnAction("Scroll To End"), DumbAware {
+
+        override fun actionPerformed(e: AnActionEvent) {
+            scrollRawLogToEnd()
+        }
+
+        override fun update(e: AnActionEvent) {
+            e.presentation.isEnabled = currentRawLogLength() > 0
         }
 
         override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.EDT

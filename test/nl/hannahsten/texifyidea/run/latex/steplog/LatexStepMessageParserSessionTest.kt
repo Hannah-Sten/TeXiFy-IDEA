@@ -23,4 +23,14 @@ class LatexStepMessageParserSessionTest : BasePlatformTestCase() {
         assertTrue(first.isEmpty())
         assertNotNull(second)
     }
+
+    fun testSecondLatexmkRunEmitsResetEvent() {
+        val session = LatexStepMessageParserSession(mainFile = null)
+
+        val firstRun = session.onText("Run number 1 of rule 'pdflatex'\n")
+        val secondRun = session.onText("Run number 2 of rule 'pdflatex'\n")
+
+        assertTrue(firstRun.isEmpty())
+        assertEquals(listOf(ParsedStepEvent.ResetLatexMessages), secondRun)
+    }
 }

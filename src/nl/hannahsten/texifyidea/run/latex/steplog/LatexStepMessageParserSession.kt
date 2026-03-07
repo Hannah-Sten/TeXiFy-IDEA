@@ -15,6 +15,11 @@ internal class LatexStepMessageParserSession(
     private val mainFile: VirtualFile?,
 ) : StepMessageParserSession {
 
+    private companion object {
+
+        val latexmkRunNumberRegex = Regex("""Run number\s+(?<run>\d+)\s+of rule '(?<engine>(pdf|xe|lua)?latex)'""", RegexOption.IGNORE_CASE)
+    }
+
     override val supportsStructuredMessages: Boolean = true
 
     private val emittedMessages = linkedSetOf<LatexLogMessage>()
@@ -25,7 +30,7 @@ internal class LatexStepMessageParserSession(
     private var fileStack = LatexFileStack()
     private var collectingOutputLine: String = ""
 
-    override fun onText(text: String): List<ParsedStepMessage> {
+    override fun onText(text: String): List<ParsedStepEvent> {
         if (text.isEmpty()) {
             return emptyList()
         }
@@ -38,15 +43,16 @@ internal class LatexStepMessageParserSession(
         val collectedLine = collectingOutputLine + text
         collectingOutputLine = ""
 
-        val parsedMessages = mutableListOf<ParsedStepMessage>()
+        val parsedMessages = mutableListOf<ParsedStepEvent>()
         collectedLine.chunked(LatexLogMagicRegex.LINE_WIDTH).forEach { chunk ->
             parsedMessages += processChunk(chunk)
         }
         return parsedMessages
     }
 
-    private fun processChunk(newText: String): List<ParsedStepMessage> {
-        val output = mutableListOf<ParsedStepMessage>()
+    private fun processChunk(newText: String): List<ParsedStepEvent> {
+        val output = mutableListOf<ParsedStepEvent>()
+        latexmkResetEvent(newText)?.let(output::add)
         window += newText
         while (window.size > 2) {
             window.removeFirst()
@@ -76,7 +82,7 @@ internal class LatexStepMessageParserSession(
         return output
     }
 
-    private fun addOrCollectMessage(text: String, newText: String, logMessage: LatexLogMessage): List<ParsedStepMessage> {
+    private fun addOrCollectMessage(text: String, newText: String, logMessage: LatexLogMessage): List<ParsedStepEvent> {
         if (logMessage.message.isEmpty()) {
             return emptyList()
         }
@@ -91,7 +97,7 @@ internal class LatexStepMessageParserSession(
         return emitIfNew(finalized)
     }
 
-    private fun collectMessageLine(text: String, newText: String): List<ParsedStepMessage> {
+    private fun collectMessageLine(text: String, newText: String): List<ParsedStepEvent> {
         val current = currentLogMessage ?: return emptyList()
 
         if (current.message.endsWith(newText.trim()).not() && !LatexOutputListener.isLineEndOfMessage(newText, text.removeSuffix(newText))) {
@@ -126,7 +132,7 @@ internal class LatexStepMessageParserSession(
         return emitIfNew(finalized)
     }
 
-    private fun emitIfNew(message: LatexLogMessage): List<ParsedStepMessage> {
+    private fun emitIfNew(message: LatexLogMessage): List<ParsedStepEvent> {
         if (!emittedMessages.add(message)) {
             return emptyList()
         }
@@ -136,14 +142,26 @@ internal class LatexStepMessageParserSession(
             LatexLogMessageType.WARNING -> ParsedStepMessageLevel.WARNING
         }
         return listOf(
-            ParsedStepMessage(
-                message = message.message,
-                level = level,
-                fileName = message.fileName,
-                line = message.line.takeIf { it >= 0 },
-                file = message.file,
+            ParsedStepEvent.Message(
+                ParsedStepMessage(
+                    message = message.message,
+                    level = level,
+                    fileName = message.fileName,
+                    line = message.line.takeIf { it >= 0 },
+                    file = message.file,
+                )
             )
         )
+    }
+
+    private fun latexmkResetEvent(newText: String): ParsedStepEvent? {
+        val runNumber = latexmkRunNumberRegex.find(newText.trim())
+            ?.groups
+            ?.get("run")
+            ?.value
+            ?.toIntOrNull()
+            ?: return null
+        return if (runNumber > 1) ParsedStepEvent.ResetLatexMessages else null
     }
 
     private fun findProjectFileRelativeToMain(fileName: String?): VirtualFile? =

@@ -145,6 +145,77 @@ class LatexStepLogTabComponentTest : BasePlatformTestCase() {
         }
     }
 
+    fun testLatexmkSecondPassClearsExistingMessages() {
+        val fixture = createFixture(LatexStepType.LATEXMK_COMPILE)
+        try {
+            addParsedMessage(
+                fixture.component,
+                stepIndex = 0,
+                message = ParsedStepMessage(
+                    message = "Reference `fig:bla' on page 1 undefined on input line 10.",
+                    level = ParsedStepMessageLevel.WARNING,
+                ),
+                logOffset = 0,
+            )
+            assertEquals(1, parsedRecordCount(fixture.component, 0))
+            assertEquals(1, messageNodeCount(fixture.component, 0))
+
+            emitStepOutput(
+                fixture.component,
+                fixture.step,
+                "Run number 2 of rule 'pdflatex'\n",
+            )
+
+            assertEquals(0, parsedRecordCount(fixture.component, 0))
+            assertEquals(0, messageNodeCount(fixture.component, 0))
+        }
+        finally {
+            Disposer.dispose(fixture.component)
+        }
+    }
+
+    fun testNavigateToAdjacentMessageSelectsVisibleMessages() {
+        val fixture = createFixture()
+        try {
+            addParsedMessage(
+                fixture.component,
+                stepIndex = 0,
+                message = ParsedStepMessage(message = "first", level = ParsedStepMessageLevel.WARNING),
+                logOffset = 0,
+            )
+            addParsedMessage(
+                fixture.component,
+                stepIndex = 0,
+                message = ParsedStepMessage(message = "second", level = ParsedStepMessageLevel.WARNING),
+                logOffset = 12,
+            )
+
+            invokeIntMethod(fixture.component, "navigateToAdjacentMessage", 1)
+            assertEquals(0, selectedMessageOffset(fixture.component))
+
+            invokeIntMethod(fixture.component, "navigateToAdjacentMessage", 1)
+            assertEquals(12, selectedMessageOffset(fixture.component))
+        }
+        finally {
+            Disposer.dispose(fixture.component)
+        }
+    }
+
+    fun testScrollRawLogToEndRendersCurrentStepOutput() {
+        val fixture = createFixture()
+        try {
+            emitStepOutput(fixture.component, fixture.step, "alpha\nbeta\n")
+
+            invokeNoArgMethod(fixture.component, "scrollRawLogToEnd")
+
+            assertEquals(0, privateField<Int?>(fixture.component, "renderedStepIndex"))
+            assertEquals("alpha\nbeta\n", privateField<String>(fixture.component, "renderedOutputText"))
+        }
+        finally {
+            Disposer.dispose(fixture.component)
+        }
+    }
+
     private fun createFixture(stepType: String = LatexStepType.LATEX_COMPILE): StepLogFixture {
         val mainFile = myFixture.addFileToProject("step-log-main.tex", "\\documentclass{article}").virtualFile
         val runConfig = LatexRunConfiguration(
@@ -252,6 +323,28 @@ class LatexStepLogTabComponentTest : BasePlatformTestCase() {
         val method = instance.javaClass.getDeclaredMethod(methodName, Boolean::class.javaPrimitiveType)
         method.isAccessible = true
         method.invoke(instance, value)
+    }
+
+    private fun invokeIntMethod(instance: Any, methodName: String, value: Int) {
+        val method = instance.javaClass.getDeclaredMethod(methodName, Int::class.javaPrimitiveType)
+        method.isAccessible = true
+        method.invoke(instance, value)
+    }
+
+    private fun invokeNoArgMethod(instance: Any, methodName: String) {
+        val method = instance.javaClass.getDeclaredMethod(methodName)
+        method.isAccessible = true
+        method.invoke(instance)
+    }
+
+    private fun selectedMessageOffset(component: LatexStepLogTabComponent): Int? {
+        val tree = privateField<Any>(component, "tree")
+        val selectedNode = tree.javaClass.getMethod("getLastSelectedPathComponent").invoke(tree)
+        val extracted = component.javaClass.getDeclaredMethod("extractTreeNode", Any::class.java)
+        extracted.isAccessible = true
+        val node = extracted.invoke(component, selectedNode) ?: return null
+        val messageData = privateField<Any?>(node, "messageData") ?: return null
+        return privateField<Int?>(messageData, "logOffset")
     }
 
     private fun <T> privateField(instance: Any, name: String): T {
