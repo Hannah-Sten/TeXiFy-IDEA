@@ -61,18 +61,6 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
         add(addButton)
     }
 
-    private val autoConfigureRow = object : JPanel(FlowLayout(FlowLayout.LEFT, 0, 0)) {
-        override fun getPreferredSize(): Dimension {
-            val base = super.getPreferredSize()
-            val rowWidth = (parent?.width ?: this@LatexCompileSequenceComponent.width).takeIf { it > 0 } ?: base.width
-            return Dimension(rowWidth, base.height)
-        }
-    }.apply {
-        isOpaque = false
-        border = JBUI.Borders.emptyTop(4)
-        add(autoConfigureLabel)
-    }
-
     private val addLabel = LinkLabel<Any>("Add step", null) { source, _ ->
         showTypeSelectionPopup(source, ::addStep)
     }.apply {
@@ -103,13 +91,13 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
         DnDManager.getInstance().registerTarget(this, this, this)
     }
 
+    internal fun headerActionComponent(): JComponent = autoConfigureLabel
+
     private fun buildPanel() {
         remove(addPanel)
-        remove(autoConfigureRow)
         remove(addLabel)
         stepButtons.forEach { add(it) }
         add(addPanel)
-        add(autoConfigureRow)
         add(addLabel)
         addLabel.isVisible = stepButtons.none { it.isVisible }
         revalidate()

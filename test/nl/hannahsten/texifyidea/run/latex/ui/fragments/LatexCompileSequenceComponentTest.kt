@@ -4,6 +4,8 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.util.ui.WrapLayout
 import nl.hannahsten.texifyidea.run.latex.*
+import javax.swing.JComponent
+import javax.swing.JLabel
 
 class LatexCompileSequenceComponentTest : BasePlatformTestCase() {
 
@@ -157,6 +159,28 @@ class LatexCompileSequenceComponentTest : BasePlatformTestCase() {
         }
         finally {
             Disposer.dispose(disposable)
+        }
+    }
+
+    fun testWrappedComponentShowsAutoConfigureWithoutSelection() {
+        val disposable = Disposer.newDisposable()
+        try {
+            val component = LatexCompileSequenceComponent(disposable)
+            val wrapped = LatexCompileSequenceFragment.createWrappedComponent(component)
+
+            assertTrue(containsButtonText(wrapped, "Auto configure"))
+        }
+        finally {
+            Disposer.dispose(disposable)
+        }
+    }
+
+    private fun containsButtonText(component: JComponent, text: String): Boolean {
+        if (component is JLabel && component.text == text) {
+            return true
+        }
+        return component.components.any { child ->
+            child is JComponent && containsButtonText(child, text)
         }
     }
 }

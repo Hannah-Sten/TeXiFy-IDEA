@@ -37,6 +37,8 @@ internal class LatexCompileSequenceFragment(
 
     companion object {
 
+        internal fun createWrappedComponent(component: LatexCompileSequenceComponent): JComponent = wrap(component)
+
         private fun wrap(component: LatexCompileSequenceComponent): JComponent {
             val tooltip = "Drag to reorder. Double-click a step to change its type."
             val panel = JPanel(BorderLayout())
@@ -46,9 +48,21 @@ internal class LatexCompileSequenceFragment(
                 font = JBUI.Fonts.label().deriveFont(Font.BOLD)
                 toolTipText = tooltip
             }
+            val header = JPanel(BorderLayout()).apply {
+                add(label, BorderLayout.WEST)
+                add(
+                    JPanel(BorderLayout()).apply {
+                        isOpaque = false
+                        border = JBUI.Borders.emptyLeft(12)
+                        add(component.headerActionComponent(), BorderLayout.EAST)
+                    },
+                    BorderLayout.EAST,
+                )
+            }
             component.toolTipText = tooltip
+            component.headerActionComponent().toolTipText = tooltip
 
-            panel.add(label, BorderLayout.NORTH)
+            panel.add(header, BorderLayout.NORTH)
             panel.add(component, BorderLayout.CENTER)
 
             return panel
