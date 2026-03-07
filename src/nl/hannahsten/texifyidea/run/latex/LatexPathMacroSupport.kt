@@ -20,6 +20,7 @@ import com.intellij.openapi.vfs.VirtualFile
 internal object LatexPathMacroSupport {
 
     private val macroPattern = Regex("""\$([A-Za-z0-9_.-]+)\$""")
+    private const val MAIN_FILE_DIR_MACRO = "MainFileDir"
 
     fun expandPath(raw: String, project: Project, mainFile: VirtualFile?): String {
         if (raw.isBlank()) {
@@ -28,11 +29,12 @@ internal object LatexPathMacroSupport {
 
         val module = moduleForFile(mainFile, project)
         val configuratorExpanded = expandWithProgramParameters(raw, project, module, mainFile)
-        if (!configuratorExpanded.contains('$')) {
-            return configuratorExpanded
+        val customExpanded = expandCustomMacros(configuratorExpanded, mainFile)
+        if (!customExpanded.contains('$')) {
+            return customExpanded
         }
 
-        val pathExpanded = PathMacroManager.getInstance(project).expandPath(configuratorExpanded)
+        val pathExpanded = PathMacroManager.getInstance(project).expandPath(customExpanded)
         if (!pathExpanded.contains('$')) {
             return pathExpanded
         }
@@ -70,6 +72,16 @@ internal object LatexPathMacroSupport {
         }
         return ExecutionManagerImpl.withEnvironmentDataContext(context).use {
             configurator.expandPathAndMacros(value, module, project) ?: value
+        }
+    }
+
+    private fun expandCustomMacros(
+        value: String,
+        mainFile: VirtualFile?,
+    ): String = macroPattern.replace(value) { match ->
+        when (match.groupValues[1]) {
+            MAIN_FILE_DIR_MACRO -> mainFile?.parent?.path ?: match.value
+            else -> match.value
         }
     }
 }

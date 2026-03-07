@@ -3,10 +3,17 @@ package nl.hannahsten.texifyidea.run.latex.ui.fragments
 import com.intellij.execution.configuration.EnvironmentVariablesComponent
 import com.intellij.execution.impl.RunnerAndConfigurationSettingsImpl
 import com.intellij.execution.ui.RunConfigurationEditorFragment
+import com.intellij.icons.AllIcons
 import com.intellij.ide.macro.MacrosDialog
+import com.intellij.ide.DataManager
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.popup.JBPopupFactory
+import com.intellij.openapi.util.Conditions
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.LabeledComponent
@@ -279,14 +286,79 @@ internal object LatexBasicFragments {
     }
 
     private fun pathFieldWithMacroSupport(field: TextFieldWithBrowseButton, project: Project): JComponent {
-        val pathMacros = MacrosDialog.getPathMacros(true).apply {
-            project.basePath?.let { putIfAbsent(PathMacroUtil.PROJECT_DIR_MACRO_NAME, it) }
-        }
         (field.textField as? ExtendableTextField)?.let { textField ->
-            MacrosDialog.addTextFieldExtension(textField, MacrosDialog.Filters.ANY_PATH, pathMacros)
+            val extension = createPathMacroExtension(textField, project)
+            if (textField.extensions.none { it.tooltip == extension.tooltip }) {
+                textField.addExtension(extension)
+            }
         }
         return field
     }
+
+    private fun createPathMacroExtension(
+        textField: ExtendableTextField,
+        project: Project,
+    ): ExtendableTextComponent.Extension = object : ExtendableTextComponent.Extension {
+
+        override fun getIcon(hovered: Boolean) = AllIcons.General.Add
+
+        override fun getTooltip(): String = "Insert path macro"
+
+        override fun getActionOnClick(): Runnable = Runnable {
+            val group = DefaultActionGroup().apply {
+                pathMacroOptions(project).forEach { macro ->
+                    add(object : AnAction(macro.token, macro.description, null) {
+                        override fun actionPerformed(e: AnActionEvent) {
+                            insertMacroToken(textField, macro.token)
+                        }
+                    })
+                }
+            }
+            JBPopupFactory.getInstance().createActionGroupPopup(
+                "Insert Macro",
+                group,
+                DataManager.getInstance().getDataContext(textField),
+                false,
+                false,
+                false,
+                null,
+                -1,
+                Conditions.alwaysTrue()
+            ).showUnderneathOf(textField)
+        }
+    }
+
+    private fun pathMacroOptions(project: Project): List<PathMacroOption> {
+        val macros = linkedMapOf(
+            PathMacroUtil.PROJECT_DIR_MACRO_NAME to "Project directory",
+            "FileDir" to "Selected file directory",
+            "MainFileDir" to "Configured main file directory",
+        )
+        MacrosDialog.getPathMacros(true).forEach { (name, _) ->
+            macros.putIfAbsent(name, "IDE path macro")
+        }
+        project.basePath?.let { macros.putIfAbsent(PathMacroUtil.PROJECT_DIR_MACRO_NAME, "Project directory") }
+        return macros.map { (name, description) ->
+            PathMacroOption(token = "\$$name\$", description = description)
+        }
+    }
+
+    private fun insertMacroToken(
+        textField: ExtendableTextField,
+        token: String,
+    ) {
+        val selectionStart = textField.selectionStart.coerceAtLeast(0)
+        val selectionEnd = textField.selectionEnd.coerceAtLeast(selectionStart)
+        val current = textField.text.orEmpty()
+        textField.text = current.substring(0, selectionStart) + token + current.substring(selectionEnd)
+        textField.caretPosition = selectionStart + token.length
+        textField.requestFocusInWindow()
+    }
+
+    private data class PathMacroOption(
+        val token: String,
+        val description: String,
+    )
 
     private fun refreshDistributionSelections(
         comboBox: ComboBox<LatexDistributionSelection>,

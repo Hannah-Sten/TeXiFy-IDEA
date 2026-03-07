@@ -53,6 +53,26 @@ class LatexOutputPathTest : BasePlatformTestCase() {
         assertEquals(Path.of("${mainFile.virtualFile.parent.path}/auxil"), auxDir)
     }
 
+    fun testMainFileDirMacroResolvesToConfiguredMainFileParent() {
+        val mainFile = myFixture.addFileToProject(
+            "sub/main.tex",
+            """
+            \documentclass{article}
+            \begin{document}
+                main
+            \end{document}
+            """.trimIndent()
+        )
+
+        val resolved = LatexPathResolver.resolve(
+            Path.of("\$MainFileDir\$/out"),
+            mainFile.virtualFile,
+            project
+        )
+
+        assertEquals(Path.of("${mainFile.virtualFile.parent.path}/out"), resolved)
+    }
+
     fun testRelativeOutputPathResolvesViaContentRoot() {
         val mainFile = myFixture.addFileToProject(
             "sub/main.tex",
