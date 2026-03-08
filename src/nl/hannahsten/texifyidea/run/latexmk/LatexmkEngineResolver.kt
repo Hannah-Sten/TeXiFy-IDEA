@@ -1,9 +1,11 @@
 package nl.hannahsten.texifyidea.run.latexmk
 
+import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.LatexCompileStepOptions
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.latex.LatexSessionInitializer
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationStaticSupport
+import nl.hannahsten.texifyidea.run.latex.LatexRunSessionState
 import nl.hannahsten.texifyidea.run.latex.LatexmkCompileStepOptions
 import nl.hannahsten.texifyidea.run.latex.step.LatexmkCompileRunStep
 
@@ -21,7 +23,7 @@ fun unicodeEngineCompatibility(runConfig: LatexRunConfiguration?): Boolean? {
         is LatexmkCompileStepOptions -> {
             val effectiveMode = when (step.latexmkCompileMode) {
                 LatexmkCompileMode.AUTO -> runCatching {
-                    val session = LatexSessionInitializer.initializeForModel(runConfig)
+                    val session = compileModeSession(runConfig) ?: return@runCatching LatexmkCompileMode.PDFLATEX_PDF
                     LatexmkCompileRunStep.effectiveCompileMode(runConfig, session, step)
                 }.getOrElse { LatexmkCompileMode.PDFLATEX_PDF }
                 else -> step.latexmkCompileMode
@@ -39,4 +41,20 @@ fun unicodeEngineCompatibility(runConfig: LatexRunConfiguration?): Boolean? {
         }
         else -> null
     }
+}
+
+private fun compileModeSession(runConfig: LatexRunConfiguration): LatexRunSessionState? {
+    val mainFile = LatexRunConfigurationStaticSupport.resolveMainFile(runConfig) ?: return null
+    val workingDirectory = pathOrNull(mainFile.parent.path) ?: return null
+    return LatexRunSessionState(
+        project = runConfig.project,
+        mainFile = mainFile,
+        outputDir = mainFile.parent,
+        workingDirectory = workingDirectory,
+        distributionType = runConfig.getLatexDistributionType(),
+        usesDefaultWorkingDirectory = runConfig.hasDefaultWorkingDirectory(),
+        latexSdk = runConfig.getLatexSdk(),
+        auxDir = null,
+        psiFile = null,
+    )
 }

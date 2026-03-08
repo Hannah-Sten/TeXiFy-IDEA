@@ -112,6 +112,36 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
         assertEquals(null, unicodeEngineCompatibility(runConfig))
     }
 
+    fun testUnicodeEngineCompatibilityDoesNotCreateMissingOutputDir() {
+        val psi = myFixture.addFileToProject(
+            "main.tex",
+            """
+            \documentclass{article}
+            \usepackage{fontspec}
+            \begin{document}
+            hi
+            \end{document}
+            """.trimIndent()
+        )
+        myFixture.updateFilesets()
+
+        val runConfig = LatexRunConfiguration(
+            myFixture.project,
+            LatexRunConfigurationProducer().configurationFactory,
+            "LaTeX"
+        )
+        val step = latexmkStep(runConfig)
+        val missingOutputDir = Files.createTempDirectory("texify-missing-output-root").resolve("missing-out")
+
+        runConfig.mainFilePath = psi.virtualFile.name
+        runConfig.outputPath = missingOutputDir
+        step.latexmkCompileMode = LatexmkCompileMode.AUTO
+
+        assertFalse(Files.exists(missingOutputDir))
+        assertEquals(true, unicodeEngineCompatibility(runConfig))
+        assertFalse(Files.exists(missingOutputDir))
+    }
+
     fun testLatexRunConfigurationLatexmkArgumentsIgnoreOutputFormat() {
         val mainFile = myFixture.addFileToProject("main.tex", "\\documentclass{article}")
         val runConfig = LatexRunConfiguration(
