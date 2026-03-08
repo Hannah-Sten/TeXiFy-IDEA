@@ -1,8 +1,8 @@
 package nl.hannahsten.texifyidea.run.latex.ui.fragments
 
-import com.intellij.openapi.util.Disposer
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.run.latex.*
+import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 
 class LatexStepSettingsComponentTest : BasePlatformTestCase() {
 
@@ -132,14 +132,9 @@ class LatexStepSettingsComponentTest : BasePlatformTestCase() {
         runConfig: LatexRunConfiguration,
         action: (LatexStepSettingsComponent, MutableList<LatexStepRunConfigurationOptions>) -> Unit,
     ) {
-        val disposable = Disposer.newDisposable()
-        try {
-            val shadowSteps = runConfig.copyStepsForUi()
-            val component = LatexStepSettingsComponent(disposable, project, shadowSteps)
-            action(component, shadowSteps)
-        }
-        finally {
-            Disposer.dispose(disposable)
-        }
+        val editor = LatexSettingsEditor(runConfig)
+        editor.shadowSteps.clear()
+        editor.shadowSteps.addAll(runConfig.copyStepsForUi())
+        action(editor.stepSettingsComponent, editor.shadowSteps)
     }
 }

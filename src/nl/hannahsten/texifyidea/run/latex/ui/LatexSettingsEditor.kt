@@ -65,24 +65,13 @@ class LatexSettingsEditor(
 ) : RunConfigurationFragmentedEditor<LatexRunConfiguration>(runConfiguration) {
 
     private val commonGroupName = "Common settings"
-    private val shadowSteps = mutableListOf<LatexStepRunConfigurationOptions>()
-    private val compileSequenceComponent = LatexCompileSequenceComponent(this, shadowSteps, project)
-    private val stepSettingsComponent = LatexStepSettingsComponent(this, project, shadowSteps)
+    internal val shadowSteps = mutableListOf<LatexStepRunConfigurationOptions>()
+    internal val compileSequenceComponent: LatexCompileSequenceComponent
+    internal val stepSettingsComponent: LatexStepSettingsComponent
 
     init {
-        compileSequenceComponent.beforeStructureChange = {
-            stepSettingsComponent.flushCurrentStep()
-        }
-        compileSequenceComponent.onSelectionChanged = { index, stepId, type ->
-            stepSettingsComponent.onStepSelectionChanged(index, stepId, type)
-        }
-        compileSequenceComponent.onStepsChanged = {
-            stepSettingsComponent.onStepsChanged()
-        }
-        compileSequenceComponent.onAutoConfigureRequested = { currentSteps ->
-            val mainFile = LatexRunConfigurationStaticSupport.resolveMainFile(runConfiguration)
-            LatexStepAutoConfigurator.completeSteps(mainFile?.psiFile(project), currentSteps)
-        }
+        compileSequenceComponent = LatexCompileSequenceComponent(this, project)
+        stepSettingsComponent = LatexStepSettingsComponent(project, this)
     }
 
     override fun createRunFragments(): MutableList<SettingsEditorFragment<LatexRunConfiguration, *>> {
@@ -120,5 +109,25 @@ class LatexSettingsEditor(
     override fun applyEditorTo(settings: LatexRunConfiguration) {
         super.applyEditorTo(settings)
         settings.replaceStepsFromUi(shadowSteps)
+    }
+
+    internal fun beforeSequenceStructureChange() {
+        stepSettingsComponent.flushCurrentStep()
+    }
+
+    internal fun onCompileSequenceSelectionChanged(index: Int, stepId: String?, type: String?) {
+        stepSettingsComponent.onStepSelectionChanged(index, stepId, type)
+    }
+
+    internal fun onCompileSequenceStepsChanged() {
+        stepSettingsComponent.onStepsChanged()
+    }
+
+    internal fun autoConfigureCurrentSteps(): List<LatexStepRunConfigurationOptions> {
+        val mainFile = LatexRunConfigurationStaticSupport.resolveMainFile(runConfiguration)
+        val configuredSteps = LatexStepAutoConfigurator.completeSteps(mainFile?.psiFile(project), shadowSteps)
+        shadowSteps.clear()
+        shadowSteps.addAll(configuredSteps)
+        return shadowSteps
     }
 }

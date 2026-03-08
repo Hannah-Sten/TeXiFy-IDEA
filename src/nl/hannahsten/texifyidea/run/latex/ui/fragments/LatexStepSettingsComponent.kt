@@ -6,14 +6,14 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import nl.hannahsten.texifyidea.run.latex.*
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepProviders
+import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import java.awt.BorderLayout
 import java.awt.CardLayout
 import javax.swing.JPanel
 
 internal class LatexStepSettingsComponent(
-    parentDisposable: Disposable,
     project: Project,
-    private val shadowSteps: MutableList<LatexStepRunConfigurationOptions>,
+    private val editor: LatexSettingsEditor,
 ) : JPanel(BorderLayout()), Disposable {
 
     private companion object {
@@ -43,6 +43,8 @@ internal class LatexStepSettingsComponent(
 
     private val cardLayout = CardLayout()
     private val cardsPanel = JPanel(cardLayout)
+    private val shadowSteps: MutableList<LatexStepRunConfigurationOptions>
+        get() = editor.shadowSteps
 
     private val compileSettings = LatexCompileStepFragmentedEditor(project)
     private val latexmkSettings = LatexmkStepFragmentedEditor(project)
@@ -57,17 +59,17 @@ internal class LatexStepSettingsComponent(
     private val unsupportedSettings = LatexUnsupportedStepSettingsComponent()
 
     init {
-        Disposer.register(parentDisposable, this)
-        Disposer.register(parentDisposable, compileSettings)
-        Disposer.register(parentDisposable, latexmkSettings)
-        Disposer.register(parentDisposable, viewerSettings)
-        Disposer.register(parentDisposable, bibtexSettings)
-        Disposer.register(parentDisposable, makeindexSettings)
-        Disposer.register(parentDisposable, externalToolSettings)
-        Disposer.register(parentDisposable, pythontexSettings)
-        Disposer.register(parentDisposable, makeglossariesSettings)
-        Disposer.register(parentDisposable, xindySettings)
-        Disposer.register(parentDisposable, fileCleanupSettings)
+        Disposer.register(editor, this)
+        Disposer.register(editor, compileSettings)
+        Disposer.register(editor, latexmkSettings)
+        Disposer.register(editor, viewerSettings)
+        Disposer.register(editor, bibtexSettings)
+        Disposer.register(editor, makeindexSettings)
+        Disposer.register(editor, externalToolSettings)
+        Disposer.register(editor, pythontexSettings)
+        Disposer.register(editor, makeglossariesSettings)
+        Disposer.register(editor, xindySettings)
+        Disposer.register(editor, fileCleanupSettings)
         compileSettings.addSettingsEditorListener { changeListener() }
         latexmkSettings.addSettingsEditorListener { changeListener() }
         viewerSettings.addSettingsEditorListener { changeListener() }
