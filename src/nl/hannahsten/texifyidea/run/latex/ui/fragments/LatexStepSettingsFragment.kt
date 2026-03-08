@@ -11,7 +11,7 @@ internal class LatexStepSettingsFragment(
     "stepSettings",
     "Step settings",
     null,
-    wrap(component),
+    component,
     0,
     { true }
 ) {
@@ -22,28 +22,10 @@ internal class LatexStepSettingsFragment(
     }
 
     override fun doReset(s: RunnerAndConfigurationSettingsImpl) {
-        component.resetEditorFrom(s.configuration as LatexRunConfiguration)
+        component.resetEditorFrom()
     }
 
     override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
         component.applyEditorTo()
-    }
-
-    companion object {
-
-        private fun wrap(component: LatexStepSettingsComponent): JComponent {
-//            val tooltip = "Select a step above to edit its type-level settings."
-//            val panel = JPanel(BorderLayout())
-//            panel.toolTipText = tooltip
-// //            val label = JLabel("Step settings").apply {
-// //                font = JBUI.Fonts.label().deriveFont(Font.BOLD)
-// //                toolTipText = tooltip
-// //            }
-// //            component.toolTipText = tooltip
-// //
-// //            panel.add(label, BorderLayout.NORTH)
-//            panel.add(component, BorderLayout.CENTER)
-            return component
-        }
     }
 }

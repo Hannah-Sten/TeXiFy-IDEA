@@ -28,11 +28,11 @@ internal class LatexCompileSequenceFragment(
     }
 
     override fun doReset(s: RunnerAndConfigurationSettingsImpl) {
-        component.resetEditorFrom(s.configuration as LatexRunConfiguration)
+        component.resetEditorFrom()
     }
 
     override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
-        component.applyEditorTo(s.configuration as LatexRunConfiguration)
+        component.applyEditorTo()
     }
 
     companion object {

@@ -30,7 +30,7 @@ import java.nio.file.Path
  * 1. Creation: [LatexRunConfigurationProducer] selects a `.tex` file and initializes step options.
  * 2. Persistence: options are serialized by IntelliJ; [readExternal] applies [LegacyLatexRunConfigMigration] when needed.
  * 3. Validation: [checkConfiguration] verifies main-file path presence/resolution and non-empty step list.
- * 4. State building: [getState] ensures default steps, checks executable providers, then creates [LatexStepRunState].
+ * 4. State building: [getState] validates configured steps, checks executable providers, then creates [LatexStepRunState].
  * 5. Step abstraction: [nl.hannahsten.texifyidea.run.latex.step.LatexRunStepPlanBuilder] maps persisted step options
  *    to executable [nl.hannahsten.texifyidea.run.latex.step.LatexRunStep] instances.
  * 6. Runtime execution: [LatexStepRunState] initializes a [LatexRunSessionState], builds a step plan, and runs it
@@ -59,12 +59,6 @@ class LatexRunConfiguration(
 
     internal val configOptions: LatexRunConfigurationOptions
         get() = getOptions()
-
-    private var steps: MutableList<LatexStepRunConfigurationOptions>
-        get() = configOptions.steps
-        set(value) {
-            configOptions.steps = value
-        }
 
     var mainFilePath: String?
         get() = configOptions.mainFilePath
@@ -148,7 +142,7 @@ class LatexRunConfiguration(
         if (LatexRunConfigurationStaticSupport.resolveMainFile(this) == null) {
             throw RuntimeConfigurationError("Run configuration is invalid: no valid main LaTeX file selected")
         }
-        if (steps.isEmpty()) {
+        if (configOptions.steps.isEmpty()) {
             throw RuntimeConfigurationError("Run configuration is invalid: no compile steps")
         }
     }
@@ -158,9 +152,7 @@ class LatexRunConfiguration(
         executor: Executor,
         environment: ExecutionEnvironment
     ): RunProfileState {
-        configOptions.ensureDefaultSteps()
-
-        val configuredSteps = steps
+        val configuredSteps = configOptions.steps
         if (configuredSteps.isEmpty()) {
             throw ExecutionException("No executable compile steps were configured.")
         }
@@ -173,6 +165,13 @@ class LatexRunConfiguration(
         }
 
         return LatexStepRunState(this, environment, configuredSteps)
+    }
+
+    internal fun copyStepsForUi(): MutableList<LatexStepRunConfigurationOptions> =
+        configOptions.steps.mapTo(mutableListOf()) { it.deepCopy() }
+
+    internal fun replaceStepsFromUi(steps: List<LatexStepRunConfigurationOptions>) {
+        configOptions.steps = steps.mapTo(mutableListOf()) { it.deepCopy() }
     }
 
     fun hasDefaultWorkingDirectory(): Boolean = workingDirectory == null
@@ -217,7 +216,7 @@ class LatexRunConfiguration(
 
     override fun toString(): String = "LatexRunConfiguration{" +
         "mainFilePath=$mainFilePath" +
-        ", steps=${steps.map { it.type }}" +
+        ", steps=${configOptions.steps.map { it.type }}" +
         '}'.toString()
 
     override fun clone(): RunConfiguration {
@@ -236,10 +235,10 @@ class LatexRunConfiguration(
     }
 
     internal fun primaryCompileStep(): LatexStepRunConfigurationOptions? =
-        steps.firstOrNull { it is LatexCompileStepOptions || it is LatexmkCompileStepOptions }
+        configOptions.steps.firstOrNull { it is LatexCompileStepOptions || it is LatexmkCompileStepOptions }
 
     internal fun hasEnabledLatexmkStep(): Boolean =
-        steps.any { it is LatexmkCompileStepOptions }
+        configOptions.steps.any { it is LatexmkCompileStepOptions }
 
     internal fun primaryCompiler(): LatexCompiler? = when (val step = primaryCompileStep()) {
         is LatexCompileStepOptions -> step.compiler
@@ -253,17 +252,17 @@ class LatexRunConfiguration(
     }
 
     internal fun primaryViewerStep(): PdfViewerStepOptions? =
-        steps.firstOrNull { it is PdfViewerStepOptions } as? PdfViewerStepOptions
+        configOptions.steps.firstOrNull { it is PdfViewerStepOptions } as? PdfViewerStepOptions
 
     internal fun ensurePrimaryCompileStepLatexmk(): LatexmkCompileStepOptions {
-        val index = steps.indexOfFirst {
+        val index = configOptions.steps.indexOfFirst {
             it is LatexCompileStepOptions || it is LatexmkCompileStepOptions
         }
         return when {
-            index < 0 -> LatexmkCompileStepOptions().also { steps.add(0, it) }
-            steps[index] is LatexmkCompileStepOptions -> steps[index] as LatexmkCompileStepOptions
+            index < 0 -> LatexmkCompileStepOptions().also { configOptions.steps.add(0, it) }
+            configOptions.steps[index] is LatexmkCompileStepOptions -> configOptions.steps[index] as LatexmkCompileStepOptions
             else -> {
-                val old = steps[index] as LatexCompileStepOptions
+                val old = configOptions.steps[index] as LatexCompileStepOptions
                 LatexmkCompileStepOptions().also {
                     it.id = old.id
                     it.compilerPath = old.compilerPath
@@ -274,19 +273,19 @@ class LatexRunConfiguration(
                     it.latexmkExtraArguments = DEFAULT_LATEXMK_EXTRA_ARGUMENTS
                     it.beforeRunCommand = old.beforeRunCommand
                     it.selectedOptions = old.selectedOptions
-                    steps[index] = it
+                    configOptions.steps[index] = it
                 }
             }
         }
     }
 
     private fun ensurePrimaryViewerStep(): PdfViewerStepOptions {
-        val index = steps.indexOfFirst { it is PdfViewerStepOptions }
+        val index = configOptions.steps.indexOfFirst { it is PdfViewerStepOptions }
         return if (index >= 0) {
-            steps[index] as PdfViewerStepOptions
+            configOptions.steps[index] as PdfViewerStepOptions
         }
         else {
-            PdfViewerStepOptions().also { steps.add(it) }
+            PdfViewerStepOptions().also { configOptions.steps.add(it) }
         }
     }
 }

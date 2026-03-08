@@ -44,7 +44,6 @@ class LatexOutputPathTest : BasePlatformTestCase() {
         runBlocking {
             runConfig.mainFilePath = "sub/main.tex"
         }
-        runConfig.configOptions.ensureDefaultSteps()
 
         val projectRoot = requireNotNull(LatexPathResolver.getMainFileContentRoot(mainFile.virtualFile, project)).path
         val outputDir = LatexPathResolver.resolve(runConfig.outputPath, mainFile.virtualFile, project)

@@ -9,31 +9,32 @@ import javax.swing.JLabel
 
 class LatexCompileSequenceComponentTest : BasePlatformTestCase() {
 
-    fun testApplyWritesStepListToRunConfiguration() {
+    fun testAddStepUpdatesSharedShadowSteps() {
         val runConfig = LatexRunConfiguration(
             project,
             LatexRunConfigurationProducer().configurationFactory,
             "Test run config"
         )
         runConfig.configOptions.steps = mutableListOf(LatexCompileStepOptions(), PdfViewerStepOptions())
+        val shadowSteps = runConfig.copyStepsForUi()
 
         val disposable = Disposer.newDisposable()
         try {
-            val component = LatexCompileSequenceComponent(disposable)
-            component.resetEditorFrom(runConfig)
-            component.applyEditorTo(runConfig)
+            val component = LatexCompileSequenceComponent(disposable, shadowSteps, project)
+            component.resetEditorFrom()
+            component.addStepForTest(LatexStepType.BIBTEX)
         }
         finally {
             Disposer.dispose(disposable)
         }
 
-        assertEquals(listOf("latex-compile", "pdf-viewer"), runConfig.configOptions.steps.map { it.type })
+        assertEquals(listOf("latex-compile", "pdf-viewer", "bibtex"), shadowSteps.map { it.type })
     }
 
     fun testUsesHorizontalWrapLayout() {
         val disposable = Disposer.newDisposable()
         try {
-            val component = LatexCompileSequenceComponent(disposable)
+            val component = LatexCompileSequenceComponent(disposable, mutableListOf(), project)
             val layout = component.layout as? WrapLayout
 
             assertNotNull(layout)
@@ -54,7 +55,8 @@ class LatexCompileSequenceComponentTest : BasePlatformTestCase() {
 
         val disposable = Disposer.newDisposable()
         try {
-            val component = LatexCompileSequenceComponent(disposable)
+            val shadowSteps = runConfig.copyStepsForUi()
+            val component = LatexCompileSequenceComponent(disposable, shadowSteps, project)
             var callbackIndex = -2
             var callbackType: String? = "init"
             component.onSelectionChanged = { index, _, type ->
@@ -62,7 +64,7 @@ class LatexCompileSequenceComponentTest : BasePlatformTestCase() {
                 callbackType = type
             }
 
-            component.resetEditorFrom(runConfig)
+            component.resetEditorFrom()
 
             assertEquals(-1, component.selectedStepIndex())
             assertNull(component.selectedStepType())
@@ -84,7 +86,8 @@ class LatexCompileSequenceComponentTest : BasePlatformTestCase() {
 
         val disposable = Disposer.newDisposable()
         try {
-            val component = LatexCompileSequenceComponent(disposable)
+            val shadowSteps = runConfig.copyStepsForUi()
+            val component = LatexCompileSequenceComponent(disposable, shadowSteps, project)
             var callbackIndex = -1
             var callbackType: String? = null
             component.onSelectionChanged = { index, _, type ->
@@ -92,7 +95,7 @@ class LatexCompileSequenceComponentTest : BasePlatformTestCase() {
                 callbackType = type
             }
 
-            component.resetEditorFrom(runConfig)
+            component.resetEditorFrom()
             component.selectStep(1)
 
             assertEquals(1, component.selectedStepIndex())
@@ -115,14 +118,16 @@ class LatexCompileSequenceComponentTest : BasePlatformTestCase() {
 
         val disposable = Disposer.newDisposable()
         try {
-            val component = LatexCompileSequenceComponent(disposable)
-            component.resetEditorFrom(runConfig)
+            val shadowSteps = runConfig.copyStepsForUi()
+            val component = LatexCompileSequenceComponent(disposable, shadowSteps, project)
+            component.resetEditorFrom()
             component.selectStep(2)
 
             component.moveStep(from = 2, to = 0)
 
             assertEquals(0, component.selectedStepIndex())
             assertEquals("pdf-viewer", component.selectedStepType())
+            assertEquals(listOf("pdf-viewer", "latex-compile", "bibtex"), shadowSteps.map { it.type })
         }
         finally {
             Disposer.dispose(disposable)
@@ -139,7 +144,8 @@ class LatexCompileSequenceComponentTest : BasePlatformTestCase() {
 
         val disposable = Disposer.newDisposable()
         try {
-            val component = LatexCompileSequenceComponent(disposable)
+            val shadowSteps = runConfig.copyStepsForUi()
+            val component = LatexCompileSequenceComponent(disposable, shadowSteps, project)
             var onStepsChangedCount = 0
             component.onStepsChanged = { onStepsChangedCount++ }
             component.onAutoConfigureRequested = {
@@ -151,10 +157,11 @@ class LatexCompileSequenceComponentTest : BasePlatformTestCase() {
                 )
             }
 
-            component.resetEditorFrom(runConfig)
+            component.resetEditorFrom()
             component.triggerAutoConfigureForTest()
 
             assertEquals(listOf("latex-compile", "bibtex", "latex-compile", "pdf-viewer"), component.currentStepTypesForTest())
+            assertEquals(listOf("latex-compile", "bibtex", "latex-compile", "pdf-viewer"), shadowSteps.map { it.type })
             assertTrue(onStepsChangedCount >= 2)
         }
         finally {
@@ -165,7 +172,7 @@ class LatexCompileSequenceComponentTest : BasePlatformTestCase() {
     fun testWrappedComponentShowsAutoConfigureWithoutSelection() {
         val disposable = Disposer.newDisposable()
         try {
-            val component = LatexCompileSequenceComponent(disposable)
+            val component = LatexCompileSequenceComponent(disposable, mutableListOf(), project)
             val wrapped = LatexCompileSequenceFragment.createWrappedComponent(component)
 
             assertTrue(containsButtonText(wrapped, "Auto configure"))

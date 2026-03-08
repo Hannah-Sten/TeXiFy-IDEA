@@ -48,7 +48,7 @@ class LatexRunStepStateSelectionTest : BasePlatformTestCase() {
         assertTrue(state is LatexStepRunState)
     }
 
-    fun testGetStateInjectsDefaultStepsWhenEmpty() {
+    fun testGetStateFailsWhenNoStepsConfigured() {
         val runConfig = LatexRunConfiguration(
             myFixture.project,
             LatexRunConfigurationProducer().configurationFactory,
@@ -60,10 +60,12 @@ class LatexRunStepStateSelectionTest : BasePlatformTestCase() {
         every { environment.project } returns project
         val executor = mockk<Executor>(relaxed = true)
 
-        val state = runConfig.getState(executor, environment)
+        val error = assertFailsWith<ExecutionException> {
+            runConfig.getState(executor, environment)
+        }
 
-        assertTrue(state is LatexStepRunState)
-        assertEquals(listOf(LatexStepType.LATEXMK_COMPILE, LatexStepType.PDF_VIEWER), runConfig.configOptions.steps.map { it.type })
+        assertEquals("No executable compile steps were configured.", error.message)
+        assertTrue(runConfig.configOptions.steps.isEmpty())
     }
 
     fun testGetStateFailsEarlyWhenAllConfiguredStepsUnsupported() {
