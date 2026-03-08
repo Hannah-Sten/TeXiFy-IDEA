@@ -84,12 +84,6 @@ class LatexRunConfigurationOptions : LocatableRunConfigurationOptions() {
         ]
     )
     var steps: MutableList<LatexStepRunConfigurationOptions> by list()
-
-    fun ensureDefaultSteps() {
-        if (steps.isEmpty()) {
-            steps = defaultLatexmkSteps()
-        }
-    }
 }
 
 /**

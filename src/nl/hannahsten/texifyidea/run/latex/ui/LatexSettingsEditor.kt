@@ -66,13 +66,8 @@ class LatexSettingsEditor(
 
     private val commonGroupName = "Common settings"
     internal val shadowSteps = mutableListOf<LatexStepRunConfigurationOptions>()
-    internal val compileSequenceComponent: LatexCompileSequenceComponent
-    internal val stepSettingsComponent: LatexStepSettingsComponent
-
-    init {
-        compileSequenceComponent = LatexCompileSequenceComponent(this, project)
-        stepSettingsComponent = LatexStepSettingsComponent(project, this)
-    }
+    internal val compileSequenceComponent = LatexCompileSequenceComponent(this, project)
+    internal val stepSettingsComponent = LatexStepSettingsComponent(project, this)
 
     override fun createRunFragments(): MutableList<SettingsEditorFragment<LatexRunConfiguration, *>> {
         val fragments = mutableListOf<SettingsEditorFragment<LatexRunConfiguration, *>>()
