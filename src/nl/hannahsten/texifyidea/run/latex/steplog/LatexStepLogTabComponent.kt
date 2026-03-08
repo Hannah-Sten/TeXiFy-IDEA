@@ -40,7 +40,6 @@ import com.intellij.ui.treeStructure.Tree
 import com.intellij.util.ui.EmptyIcon
 import com.intellij.util.ui.tree.TreeUtil
 import nl.hannahsten.texifyidea.TexifyIcons
-import nl.hannahsten.texifyidea.run.latex.LatexStepType
 import nl.hannahsten.texifyidea.run.latex.flow.StepAwareSequentialProcessHandler
 import nl.hannahsten.texifyidea.run.latex.flow.StepLogEvent
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStep
@@ -363,15 +362,14 @@ internal class LatexStepLogTabComponent(
     }
 
     private fun resetParsedMessages(stepIndex: Int) {
-        parsedRecordsByStep[stepIndex]?.clear()
-        stepHasWarnings.remove(stepIndex)
-        stepHasErrors.remove(stepIndex)
+        parsedRecordsByStep[stepIndex]?.removeAll { it.message.source == ParsedStepMessageSource.LATEX }
+        recomputeStepMessageLevels(stepIndex)
 
         val stepNode = stepNodes[stepIndex] ?: return
-        val selectedMessageStepIndex = extractTreeNode(tree.lastSelectedPathComponent)?.messageData?.stepIndex
-        stepNode.children.removeAll { it.messageData != null }
+        val selectedMessageData = extractTreeNode(tree.lastSelectedPathComponent)?.messageData
+        stepNode.children.removeAll { it.messageData?.message?.source == ParsedStepMessageSource.LATEX }
         scheduleUpdate(stepNode, structureChanged = true)
-        if (selectedMessageStepIndex == stepIndex) {
+        if (selectedMessageData?.stepIndex == stepIndex && selectedMessageData.message.source == ParsedStepMessageSource.LATEX) {
             selectStep(stepIndex)
         }
         else {
@@ -548,14 +546,23 @@ internal class LatexStepLogTabComponent(
     }
 
     private fun shouldShowMessageInTree(stepIndex: Int, message: ParsedStepMessage): Boolean {
-        if (!showBibtexMessages && isBibtexStep(stepIndex)) {
+        if (!showBibtexMessages && message.source == ParsedStepMessageSource.BIBTEX) {
             return false
         }
         return showOverfullUnderfullMessages || !isOverfullUnderfullMessage(message.message)
     }
 
-    private fun isBibtexStep(stepIndex: Int): Boolean =
-        stepNodeData[stepIndex]?.step?.id == LatexStepType.BIBTEX
+    private fun recomputeStepMessageLevels(stepIndex: Int) {
+        stepHasWarnings.remove(stepIndex)
+        stepHasErrors.remove(stepIndex)
+
+        parsedRecordsByStep[stepIndex].orEmpty().forEach { record ->
+            when (record.message.level) {
+                ParsedStepMessageLevel.ERROR -> stepHasErrors += stepIndex
+                ParsedStepMessageLevel.WARNING -> stepHasWarnings += stepIndex
+            }
+        }
+    }
 
     private fun rebuildMessageNodes() {
         stepNodes.values.forEach { stepNode ->

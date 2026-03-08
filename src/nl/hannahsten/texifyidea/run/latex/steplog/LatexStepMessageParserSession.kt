@@ -17,6 +17,7 @@ internal class LatexStepMessageParserSession(
 
     private companion object {
 
+        val latexmkAppliedRuleRegex = Regex("""Latexmk: applying rule '(?<program>\w+)""", RegexOption.IGNORE_CASE)
         val latexmkRunNumberRegex = Regex("""Run number\s+(?<run>\d+)\s+of rule '(?<engine>(pdf|xe|lua)?latex)'""", RegexOption.IGNORE_CASE)
     }
 
@@ -29,6 +30,8 @@ internal class LatexStepMessageParserSession(
     private var currentLogMessage: LatexLogMessage? = null
     private var fileStack = LatexFileStack()
     private var collectingOutputLine: String = ""
+    private var isCollectingBib = false
+    private var bibtexParser = BibtexStepMessageParserSession(mainFile)
 
     override fun onText(text: String): List<ParsedStepEvent> {
         if (text.isEmpty()) {
@@ -44,15 +47,25 @@ internal class LatexStepMessageParserSession(
         collectingOutputLine = ""
 
         val parsedMessages = mutableListOf<ParsedStepEvent>()
-        collectedLine.chunked(LatexLogMagicRegex.LINE_WIDTH).forEach { chunk ->
-            parsedMessages += processChunk(chunk)
+        if (isCollectingBib) {
+            parsedMessages += bibtexParser.onText(collectedLine)
         }
+        else {
+            collectedLine.chunked(LatexLogMagicRegex.LINE_WIDTH).forEach { chunk ->
+                parsedMessages += processChunk(chunk)
+            }
+        }
+        updateLatexmkMode(collectedLine)
         return parsedMessages
     }
 
     private fun processChunk(newText: String): List<ParsedStepEvent> {
         val output = mutableListOf<ParsedStepEvent>()
-        latexmkResetEvent(newText)?.let(output::add)
+        latexmkResetEvent(newText)?.let {
+            resetLatexmkPassState()
+            output += it
+            return output
+        }
         window += newText
         while (window.size > 2) {
             window.removeFirst()
@@ -149,6 +162,7 @@ internal class LatexStepMessageParserSession(
                     fileName = message.fileName,
                     line = message.line.takeIf { it >= 0 },
                     file = message.file,
+                    source = ParsedStepMessageSource.LATEX,
                 )
             )
         )
@@ -162,6 +176,32 @@ internal class LatexStepMessageParserSession(
             ?.toIntOrNull()
             ?: return null
         return if (runNumber > 1) ParsedStepEvent.ResetLatexMessages else null
+    }
+
+    private fun resetLatexmkPassState() {
+        emittedMessages.clear()
+        window.clear()
+        isCollectingMessage = false
+        currentLogMessage = null
+        fileStack = LatexFileStack()
+        collectingOutputLine = ""
+    }
+
+    private fun updateLatexmkMode(newText: String) {
+        val program = latexmkAppliedRuleRegex.find(newText.trim())
+            ?.groups
+            ?.get("program")
+            ?.value
+            ?.lowercase()
+            ?: return
+
+        if (program in setOf("biber", "bibtex")) {
+            isCollectingBib = true
+            bibtexParser = BibtexStepMessageParserSession(mainFile)
+        }
+        else {
+            isCollectingBib = false
+        }
     }
 
     private fun findProjectFileRelativeToMain(fileName: String?): VirtualFile? =

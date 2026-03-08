@@ -8,6 +8,7 @@ internal data class ParsedStepMessage(
     val fileName: String? = null,
     val line: Int? = null,
     val file: VirtualFile? = null,
+    val source: ParsedStepMessageSource = ParsedStepMessageSource.LATEX,
 )
 
 internal sealed interface ParsedStepEvent {
@@ -23,4 +24,10 @@ internal enum class ParsedStepMessageLevel {
 
     ERROR,
     WARNING,
+}
+
+internal enum class ParsedStepMessageSource {
+
+    LATEX,
+    BIBTEX,
 }

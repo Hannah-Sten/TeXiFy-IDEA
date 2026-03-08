@@ -78,6 +78,7 @@ internal class BibtexStepMessageParserSession(
                     fileName = withFile.fileName,
                     line = withFile.line,
                     file = withFile.file,
+                    source = ParsedStepMessageSource.BIBTEX,
                 )
             )
         )

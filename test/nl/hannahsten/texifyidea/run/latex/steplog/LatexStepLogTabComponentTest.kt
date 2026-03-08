@@ -87,6 +87,7 @@ class LatexStepLogTabComponentTest : BasePlatformTestCase() {
                 message = ParsedStepMessage(
                     message = "Warning-- I found no database entries",
                     level = ParsedStepMessageLevel.WARNING,
+                    source = ParsedStepMessageSource.BIBTEX,
                 ),
                 logOffset = 0,
             )
@@ -168,6 +169,56 @@ class LatexStepLogTabComponentTest : BasePlatformTestCase() {
 
             assertEquals(0, parsedRecordCount(fixture.component, 0))
             assertEquals(0, messageNodeCount(fixture.component, 0))
+        }
+        finally {
+            Disposer.dispose(fixture.component)
+        }
+    }
+
+    fun testLatexmkSecondPassKeepsBibtexMessages() {
+        val fixture = createFixture(LatexStepType.LATEXMK_COMPILE)
+        try {
+            addParsedMessage(
+                fixture.component,
+                stepIndex = 0,
+                message = ParsedStepMessage(
+                    message = "I'm ignoring knuth1990's extra \"author\" field",
+                    level = ParsedStepMessageLevel.WARNING,
+                    source = ParsedStepMessageSource.BIBTEX,
+                ),
+                logOffset = 0,
+            )
+
+            emitStepOutput(
+                fixture.component,
+                fixture.step,
+                "Run number 2 of rule 'pdflatex'\n",
+            )
+
+            assertEquals(1, parsedRecordCount(fixture.component, 0))
+            assertEquals(1, messageNodeCount(fixture.component, 0))
+        }
+        finally {
+            Disposer.dispose(fixture.component)
+        }
+    }
+
+    fun testLatexmkBibtexWarningIsShownInStepLog() {
+        val fixture = createFixture(LatexStepType.LATEXMK_COMPILE)
+        try {
+            emitStepOutput(fixture.component, fixture.step, "Latexmk: applying rule 'bibtex bibtex-mwe'...\n")
+            emitStepOutput(fixture.component, fixture.step, "For rule 'bibtex bibtex-mwe', running '&run_bibtex(  )' ...\n")
+            emitStepOutput(fixture.component, fixture.step, "This is BibTeX, Version 0.99d (TeX Live 2020)\n")
+            emitStepOutput(fixture.component, fixture.step, "The top-level auxiliary file: bibtex-mwe.aux\n")
+            emitStepOutput(fixture.component, fixture.step, "The style file: plain.bst\n")
+            emitStepOutput(fixture.component, fixture.step, "Database file #1: references.bib\n")
+            emitStepOutput(fixture.component, fixture.step, "Warning--I'm ignoring knuth1990's extra \"author\" field\n")
+            emitStepOutput(fixture.component, fixture.step, "--line 5 of file references.bib\n")
+            emitStepOutput(fixture.component, fixture.step, "(There was 1 warning)\n")
+
+            assertEquals(1, parsedRecordCount(fixture.component, 0))
+            assertEquals(1, messageNodeCount(fixture.component, 0))
+            assertEquals(ParsedStepMessageSource.BIBTEX, firstParsedMessageSource(fixture.component, 0))
         }
         finally {
             Disposer.dispose(fixture.component)
@@ -344,6 +395,13 @@ class LatexStepLogTabComponentTest : BasePlatformTestCase() {
         return children.count { child ->
             privateField<Any?>(child, "messageData") != null
         }
+    }
+
+    private fun firstParsedMessageSource(component: LatexStepLogTabComponent, stepIndex: Int): ParsedStepMessageSource? {
+        val map = privateField<Map<Int, List<*>>>(component, "parsedRecordsByStep")
+        val record = map[stepIndex]?.firstOrNull() ?: return null
+        val message = privateField<ParsedStepMessage>(record, "message")
+        return message.source
     }
 
     private fun setPrivateField(instance: Any, name: String, value: Any?) {
