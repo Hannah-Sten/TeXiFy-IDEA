@@ -80,7 +80,7 @@ class TextidoteAnnotator : DumbAware, ExternalAnnotator<TextidoteAnnotatorInitia
         // Since the user has explicitly enabled this inspection, we should raise an error if we cannot actually run textidote
         if (output == null) {
             Notification(
-                TexifyBundle.message("notification.group.latex"),
+                "LaTeX",
                 TexifyBundle.message("notification.textidote.could.not.run.title"),
                 NotificationType.ERROR
             ).notify(collectedInfo.project)
@@ -106,7 +106,7 @@ class TextidoteAnnotator : DumbAware, ExternalAnnotator<TextidoteAnnotatorInitia
         // Exit code is nonzero when warnings are found
         if (warnings.isEmpty() && exitCode != 0) {
             Notification(
-                TexifyBundle.message("notification.group.latex"),
+                "LaTeX",
                 TexifyBundle.message("notification.textidote.results.failed.title"),
                 TexifyBundle.message("notification.textidote.results.failed.content", output),
                 NotificationType.ERROR

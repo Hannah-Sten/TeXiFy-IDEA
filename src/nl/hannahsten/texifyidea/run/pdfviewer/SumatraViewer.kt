@@ -310,7 +310,7 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
         val sumatraRunnable = this.sumatraPath
         if (sumatraRunnable == null) {
             Notification(
-                TexifyBundle.message("notification.group.latex"),
+                "LaTeX",
                 TexifyBundle.message("run.notification.sumatra.not.found.title"),
                 TexifyBundle.message("run.notification.sumatra.not.found.message"),
                 NotificationType.WARNING

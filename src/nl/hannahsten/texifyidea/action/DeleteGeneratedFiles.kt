@@ -42,7 +42,7 @@ class DeleteGeneratedFiles : AnAction() {
         }
         catch (e: PrivilegedActionException) {
             Notification(
-                TexifyBundle.message("notification.group.latex"),
+                "LaTeX",
                 TexifyBundle.message("notification.delete.generated.files.failed.title"),
                 e.message ?: "",
                 NotificationType.ERROR
@@ -123,7 +123,7 @@ class DeleteGeneratedFiles : AnAction() {
 
         if (notDeleted.isNotEmpty()) {
             Notification(
-                TexifyBundle.message("notification.group.latex"),
+                "LaTeX",
                 TexifyBundle.message("notification.delete.generated.files.failed.title"),
                 TexifyBundle.message("notification.delete.generated.files.manual.delete.required", notDeleted),
                 NotificationType.WARNING

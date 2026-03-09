@@ -44,7 +44,7 @@ open class ImageHtmlToLatexConverter : HtmlToLatexConverter {
         val url = URI(htmlIn.attr("src")).toURL()
         fun sendNotification(e: Exception) {
             Notification(
-                TexifyBundle.message("notification.group.latex"),
+                "LaTeX",
                 TexifyBundle.message("notification.image.download.failed.title", url.toString()),
                 e.message ?: "",
                 NotificationType.ERROR

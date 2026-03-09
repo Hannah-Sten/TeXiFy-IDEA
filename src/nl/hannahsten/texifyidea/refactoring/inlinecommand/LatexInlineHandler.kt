@@ -32,7 +32,7 @@ abstract class LatexInlineHandler : InlineActionHandler() {
         }
         else {
             Notification(
-                TexifyBundle.message("notification.group.latex"),
+                "LaTeX",
                 TexifyBundle.message("notification.inline.no.usages.found.title"),
                 TexifyBundle.message("notification.inline.no.usages.found.content", inlineElementName),
                 NotificationType.ERROR

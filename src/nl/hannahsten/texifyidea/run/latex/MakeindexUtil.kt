@@ -84,7 +84,7 @@ fun getMakeindexOptions(mainFile: VirtualFile?, project: Project): Map<String, S
     val mainPsiFile = ReadAction.compute<com.intellij.psi.PsiFile?, RuntimeException> { mainFile?.psiFile(project) }
     if (mainPsiFile == null) {
         Notification(
-            TexifyBundle.message("notification.group.latex"),
+            "LaTeX",
             TexifyBundle.message("run.notification.main.file.not.found.title", mainFile?.path ?: ""),
             TexifyBundle.message("run.notification.main.file.not.found.message"),
             NotificationType.ERROR

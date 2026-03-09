@@ -125,7 +125,7 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
 
                         if (tlname == null) {
                             Notification(
-                                TexifyBundle.message("notification.group.latex"),
+                                "LaTeX",
                                 TexifyBundle.message("notification.inspection.package.not.installed.title", packageName),
                                 TexifyBundle.message("notification.inspection.package.not.installed.content", packageName),
                                 NotificationType.ERROR

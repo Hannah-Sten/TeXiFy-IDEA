@@ -64,7 +64,7 @@ open class BibtexCommandLineState(
         }
         if (workingDirectory.exists().not()) {
             Notification(
-                TexifyBundle.message("notification.group.latex"),
+                "LaTeX",
                 TexifyBundle.message("run.error.working.directory.not.found.title"),
                 TexifyBundle.message("run.error.working.directory.not.found.message", workingDirectory.toString()),
                 NotificationType.ERROR

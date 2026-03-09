@@ -85,7 +85,7 @@ class LatexMissingImportInspection : LatexMissingImportInspectionBase("MissingIm
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             if (!PackageUtils.insertUsepackage(descriptor.psiElement.containingFile, LatexLib.Package(packName))) {
                 Notification(
-                    TexifyBundle.message("notification.group.latex"),
+                    "LaTeX",
                     TexifyBundle.message("notification.inspection.conflicting.package.title"),
                     TexifyBundle.message("notification.inspection.conflicting.package.content", packName),
                     NotificationType.INFORMATION

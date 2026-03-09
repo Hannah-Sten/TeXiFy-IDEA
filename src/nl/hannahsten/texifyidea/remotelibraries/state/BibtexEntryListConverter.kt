@@ -25,7 +25,7 @@ class BibtexEntryListConverter : Converter<List<BibtexEntry>>() {
 
         if (file.children.any { it is PsiErrorElement }) {
             Notification(
-                TexifyBundle.message("notification.group.latex"),
+                "LaTeX",
                 TexifyBundle.message("notification.remotelibraries.import.incomplete.title"),
                 TexifyBundle.message("notification.remotelibraries.import.incomplete.content"),
                 NotificationType.WARNING

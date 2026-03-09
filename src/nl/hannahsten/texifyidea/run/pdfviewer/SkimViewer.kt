@@ -37,7 +37,7 @@ object SkimViewer : SystemPdfViewer("Skim", "skim") {
         }
         if (pdfFilePath == null) {
             Notification(
-                TexifyBundle.message("notification.group.latex"),
+                "LaTeX",
                 TexifyBundle.message("run.notification.forward.search.failed.title"),
                 TexifyBundle.message("run.notification.forward.search.failed.compile.first"),
                 NotificationType.ERROR

@@ -134,7 +134,7 @@ fun Project.selectedTextEditor(): TextEditor? = FileEditorManager.getInstance(th
 fun Project.selectedTextEditorOrWarning(): TextEditor? {
     selectedTextEditor()?.let { return it }
     Notification(
-        TexifyBundle.message("notification.group.latex"),
+        "LaTeX",
         TexifyBundle.message("notification.project.open.editor.not.found.title"),
         TexifyBundle.message("notification.project.open.editor.not.found.content"),
         NotificationType.ERROR

@@ -36,7 +36,7 @@ object EvinceInverseSearchListener {
         // The exact version required is not know, but 3.28 works and 3.0.2 does not (#2087), even though dbus is supported since 2.32
         if (SystemEnvironment.evinceVersion.majorVersion <= 3 && SystemEnvironment.evinceVersion.minorVersion <= 28) {
             Notification(
-                TexifyBundle.message("notification.group.latex"),
+                "LaTeX",
                 TexifyBundle.message("run.notification.evince.old.version.title"),
                 TexifyBundle.message("run.notification.evince.old.version.message"),
                 NotificationType.ERROR
@@ -51,7 +51,7 @@ object EvinceInverseSearchListener {
             }
             catch (e: Exception) {
                 Notification(
-                    TexifyBundle.message("notification.group.latex"),
+                    "LaTeX",
                     TexifyBundle.message("run.notification.evince.dbus.connection.failed.title"),
                     TexifyBundle.message("run.notification.evince.dbus.connection.failed.message"),
                     NotificationType.ERROR

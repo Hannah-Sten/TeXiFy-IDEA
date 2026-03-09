@@ -33,7 +33,7 @@ object LatexmkCleanUtil {
     fun run(project: Project, runConfig: LatexRunConfiguration, mode: Mode) {
         if (!runConfig.hasEnabledLatexmkStep()) {
             Notification(
-                TexifyBundle.message("notification.group.latex"),
+                "LaTeX",
                 TexifyBundle.message("run.latexmk.clean.failed.title"),
                 TexifyBundle.message("run.latexmk.clean.failed.not.latexmk"),
                 NotificationType.ERROR
@@ -44,7 +44,7 @@ object LatexmkCleanUtil {
         val mainFile = LatexRunConfigurationStaticSupport.resolveMainFile(runConfig)
         if (mainFile == null) {
             Notification(
-                TexifyBundle.message("notification.group.latex"),
+                "LaTeX",
                 TexifyBundle.message("run.latexmk.clean.failed.title"),
                 TexifyBundle.message("run.latexmk.clean.failed.no.main.file"),
                 NotificationType.ERROR
@@ -55,7 +55,7 @@ object LatexmkCleanUtil {
         val command = buildCleanCommandForModel(runConfig, mainFile, mode == Mode.CLEAN_ALL)
         if (command == null) {
             Notification(
-                TexifyBundle.message("notification.group.latex"),
+                "LaTeX",
                 TexifyBundle.message("run.latexmk.clean.failed.title"),
                 TexifyBundle.message("run.latexmk.clean.failed.command.not.built"),
                 NotificationType.ERROR
@@ -92,7 +92,7 @@ object LatexmkCleanUtil {
                         Mode.CLEAN_ALL -> TexifyBundle.message("run.latexmk.clean.mode.all.generated")
                     }
                     Notification(
-                        TexifyBundle.message("notification.group.latex"),
+                        "LaTeX",
                         TexifyBundle.message("run.latexmk.clean.completed.title"),
                         TexifyBundle.message("run.latexmk.clean.completed.message", modeText, mainFile.name),
                         NotificationType.INFORMATION
@@ -100,7 +100,7 @@ object LatexmkCleanUtil {
                 }
                 else {
                     Notification(
-                        TexifyBundle.message("notification.group.latex"),
+                        "LaTeX",
                         TexifyBundle.message("run.latexmk.clean.failed.title"),
                         TexifyBundle.message("run.latexmk.clean.failed.exit.code", exitCode),
                         NotificationType.ERROR
@@ -108,7 +108,7 @@ object LatexmkCleanUtil {
                 }
             }.onFailure {
                 Notification(
-                    TexifyBundle.message("notification.group.latex"),
+                    "LaTeX",
                     TexifyBundle.message("run.latexmk.clean.failed.title"),
                     it.message ?: TexifyBundle.message("run.error.unknown"),
                     NotificationType.ERROR

@@ -90,7 +90,7 @@ abstract class LatexAddLabelIntention(name: String) : TexifyIntentionBase(name) 
 
         if (parameter == null) {
             Notification(
-                TexifyBundle.message("notification.group.latex"),
+                "LaTeX",
                 TexifyBundle.message("notification.intentions.add.label.failed.title"),
                 TexifyBundle.message("notification.intentions.add.label.failed.content", label.labelText, command.getName() ?: ""),
                 NotificationType.WARNING

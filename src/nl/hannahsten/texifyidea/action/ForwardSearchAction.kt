@@ -32,7 +32,7 @@ open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
         catch (e: TeXception) {
             // Show a notification if the forward search fails, but only catch TeXception and let other unexpected exceptions bubble up.
             Notification(
-                TexifyBundle.message("notification.group.latex"),
+                "LaTeX",
                 TexifyBundle.message("notification.forward.search.error.title"),
                 e.message ?: "",
                 NotificationType.WARNING

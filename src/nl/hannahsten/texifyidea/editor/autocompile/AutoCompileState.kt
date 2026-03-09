@@ -67,7 +67,7 @@ object AutoCompileState {
         val proj = this.project
         if (proj == null) {
             Notification(
-                TexifyBundle.message("notification.group.latex"),
+                "LaTeX",
                 TexifyBundle.message("notification.autocompile.failed.title"),
                 TexifyBundle.message("notification.autocompile.compile.first.content"),
                 NotificationType.WARNING
@@ -85,7 +85,7 @@ object AutoCompileState {
         val runConfig = runConfigSettings?.configuration
         if (runConfig !is LatexRunConfiguration) {
             Notification(
-                TexifyBundle.message("notification.group.latex"),
+                "LaTeX",
                 TexifyBundle.message("notification.autocompile.failed.title"),
                 TexifyBundle.message("notification.autocompile.select.configuration.content"),
                 NotificationType.WARNING

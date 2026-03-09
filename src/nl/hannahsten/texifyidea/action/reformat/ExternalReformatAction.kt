@@ -73,7 +73,7 @@ abstract class ExternalReformatAction(val isValidFile: (file: PsiFile) -> Boolea
         }
         catch (e: ProcessNotCreatedException) {
             Notification(
-                TexifyBundle.message("notification.group.latex"),
+                "LaTeX",
                 TexifyBundle.message("notification.reformat.could.not.run.title", command.first()),
                 TexifyBundle.message("notification.reformat.could.not.run.message", command.first(), e.message ?: ""),
                 NotificationType.ERROR
@@ -90,7 +90,7 @@ abstract class ExternalReformatAction(val isValidFile: (file: PsiFile) -> Boolea
         }
         if (process.exitValue() != 0) {
             Notification(
-                TexifyBundle.message("notification.group.latex"),
+                "LaTeX",
                 TexifyBundle.message("notification.reformat.failed.title", command.first()),
                 output ?: TexifyBundle.message("notification.reformat.failed.exit.value", process.exitValue()),
                 NotificationType.ERROR

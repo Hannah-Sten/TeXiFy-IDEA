@@ -94,7 +94,7 @@ object EvinceViewer : SystemPdfViewer("Evince", "evince") {
                     catch (ignored: NoReply) {}
                     catch (e: ServiceUnknown) {
                         Notification(
-                            TexifyBundle.message("notification.group.latex"),
+                            "LaTeX",
                             TexifyBundle.message("run.notification.evince.sync.position.failed.title"),
                             TexifyBundle.message("run.notification.evince.update.and.retry"),
                             NotificationType.ERROR
@@ -104,7 +104,7 @@ object EvinceViewer : SystemPdfViewer("Evince", "evince") {
             }
             catch (e: DBusException) {
                 Notification(
-                    TexifyBundle.message("notification.group.latex"),
+                    "LaTeX",
                     TexifyBundle.message("run.notification.evince.sync.position.failed.title"),
                     TexifyBundle.message("run.notification.connection.not.established"),
                     NotificationType.ERROR
@@ -115,7 +115,7 @@ object EvinceViewer : SystemPdfViewer("Evince", "evince") {
             // If the user used the forward search menu action
             if (outputPath == null) {
                 Notification(
-                    TexifyBundle.message("notification.group.latex"),
+                    "LaTeX",
                     TexifyBundle.message("run.notification.forward.search.failed.title"),
                     TexifyBundle.message("run.notification.forward.search.failed.compile.first.and.no.spaces"),
                     NotificationType.ERROR
@@ -149,7 +149,7 @@ object EvinceViewer : SystemPdfViewer("Evince", "evince") {
                 catch (ignored: NoReply) {}
                 catch (e: ServiceUnknown) {
                     Notification(
-                        TexifyBundle.message("notification.group.latex"),
+                        "LaTeX",
                         TexifyBundle.message("run.notification.evince.communication.failed.title"),
                         TexifyBundle.message("run.notification.evince.update.and.retry"),
                         NotificationType.ERROR
@@ -159,7 +159,7 @@ object EvinceViewer : SystemPdfViewer("Evince", "evince") {
         }
         catch (e: DBusException) {
             Notification(
-                TexifyBundle.message("notification.group.latex"),
+                "LaTeX",
                 TexifyBundle.message("run.notification.evince.communication.failed.title"),
                 TexifyBundle.message("run.notification.connection.not.established.lowercase"),
                 NotificationType.ERROR

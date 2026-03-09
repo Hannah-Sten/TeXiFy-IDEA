@@ -23,7 +23,7 @@ class OpenCustomPdfViewerListener(val command: Array<String>, val failSilently: 
                 if (!failSilently) {
                     // Probably user error
                     Notification(
-                        TexifyBundle.message("notification.group.latex"),
+                        "LaTeX",
                         TexifyBundle.message("run.notification.open.pdf.failed.title"),
                         TexifyBundle.message("run.notification.open.pdf.failed.message", command.joinToString(" "), e.message ?: ""),
                         NotificationType.ERROR

@@ -19,7 +19,7 @@ abstract class RemoteBibLibrary(open val identifier: String, open val displayNam
 
         fun showNotification(project: Project, libraryName: String, statusMessage: String) {
             val title = "Something went wrong when retrieving library from $libraryName"
-            Notification(nl.hannahsten.texifyidea.TexifyBundle.message("notification.group.latex"), title, statusMessage, NotificationType.ERROR).notify(project)
+            Notification("LaTeX", title, statusMessage, NotificationType.ERROR).notify(project)
         }
     }
 

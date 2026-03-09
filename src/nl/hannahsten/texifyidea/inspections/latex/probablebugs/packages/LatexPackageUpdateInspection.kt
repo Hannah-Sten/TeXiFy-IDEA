@@ -108,7 +108,7 @@ class LatexPackageUpdateInspection : TexifyInspectionBase() {
                         val (tlmgrOutput, tlmgrExitCode) = runCommandWithExitCode(tlmgrExecutable, "update", "--self", returnExceptionMessage = true, timeout = 20)
                         if (tlmgrExitCode != 0) {
                             Notification(
-                                TexifyBundle.message("notification.group.latex"),
+                                "LaTeX",
                                 TexifyBundle.message("notification.inspection.package.not.updated.title", packageName),
                                 TexifyBundle.message("notification.inspection.tlmgr.update.failed.content", tlmgrOutput ?: ""),
                                 NotificationType.ERROR
@@ -129,7 +129,7 @@ class LatexPackageUpdateInspection : TexifyInspectionBase() {
                             "notification.inspection.package.update.failed.content"
                         }
                         Notification(
-                            TexifyBundle.message("notification.group.latex"),
+                            "LaTeX",
                             if (packageName == "--all") {
                                 TexifyBundle.message("notification.inspection.packages.update.failed.title")
                             }
