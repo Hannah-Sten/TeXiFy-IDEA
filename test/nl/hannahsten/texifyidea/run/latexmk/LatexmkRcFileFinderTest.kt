@@ -12,15 +12,28 @@ class LatexmkRcFileFinderTest : BasePlatformTestCase() {
         val tempDir = Files.createTempDirectory("texify-latexmkrc")
         Files.createFile(tempDir.resolve(".latexmkrc"))
 
-        val hasRc = LatexmkRcFileFinder.hasLatexmkRc(compilerArguments = null, workingDirectory = tempDir)
+        val hasRc = LatexmkRcFileFinder.hasLatexmkRc(compilerArguments = null, extraArguments = null, workingDirectory = tempDir)
         assertTrue(hasRc)
     }
 
     fun testHasLatexmkRcReturnsFalseWithoutRc() {
         val tempDir = Files.createTempDirectory("texify-latexmkrc-empty")
 
-        val hasRc = LatexmkRcFileFinder.hasLatexmkRc(compilerArguments = null, workingDirectory = tempDir)
+        val hasRc = LatexmkRcFileFinder.hasLatexmkRc(compilerArguments = null, extraArguments = null, workingDirectory = tempDir)
         assertFalse(hasRc)
+    }
+
+    fun testHasLatexmkRcFindsConfiguredRcFromExtraArguments() {
+        val rcFile = Files.createTempFile("texify-latexmk-extra", ".rc")
+        val tempDir = Files.createTempDirectory("texify-latexmkrc-extra-dir")
+
+        val hasRc = LatexmkRcFileFinder.hasLatexmkRc(
+            compilerArguments = null,
+            extraArguments = "-r ${rcFile.toAbsolutePath()}",
+            workingDirectory = tempDir,
+        )
+
+        assertTrue(hasRc)
     }
 
     fun testLocalLatexmkRcPathForRunConfigUsesConfiguredWorkingDirectory() {

@@ -14,6 +14,7 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.util.Conditions
 import com.intellij.openapi.util.Disposer
@@ -23,9 +24,9 @@ import com.intellij.ui.components.labels.LinkLabel
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.WrapLayout
 import nl.hannahsten.texifyidea.TexifyBundle
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexStepRunConfigurationOptions
 import nl.hannahsten.texifyidea.run.latex.defaultStepFor
+import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import java.awt.Dimension
 import java.awt.FlowLayout
 import java.awt.Point
@@ -36,7 +37,10 @@ import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JPanel
 
-internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
+internal class LatexCompileSequenceComponent(
+    private val editor: LatexSettingsEditor,
+    private val project: Project,
+) :
     JPanel(),
     DnDTarget,
     Disposable {
@@ -60,7 +64,6 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
     private val addPanel = JPanel().apply {
         border = JBUI.Borders.emptyRight(5)
         add(addButton)
-        add(autoConfigureLabel)
     }
 
     private val addLabel = LinkLabel<Any>(TexifyBundle.message("run.step.ui.compile.sequence.add.step"), null) { source, _ ->
@@ -70,18 +73,14 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
     }
 
     private val stepButtons = mutableListOf<StepButton>()
-
-    private lateinit var runConfiguration: LatexRunConfiguration
+    private val shadowSteps: MutableList<LatexStepRunConfigurationOptions>
+        get() = editor.shadowSteps
 
     var changeListener: () -> Unit = {}
-    var onSelectionChanged: (index: Int, stepId: String?, type: String?) -> Unit = { _, _, _ -> }
-    var onStepsChanged: (steps: List<LatexStepRunConfigurationOptions>) -> Unit = {}
-    var onAutoConfigureRequested: (steps: List<LatexStepRunConfigurationOptions>) -> List<LatexStepRunConfigurationOptions> = { it }
-
     private var selectedIndex: Int = -1
 
     init {
-        Disposer.register(parentDisposable, this)
+        Disposer.register(editor, this)
         layout = WrapLayout(FlowLayout.LEFT, 0, 0)
         border = JBUI.Borders.empty(4, 0)
         add(
@@ -92,6 +91,8 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
         )
         DnDManager.getInstance().registerTarget(this, this, this)
     }
+
+    internal fun headerActionComponent(): JComponent = autoConfigureLabel
 
     private fun buildPanel() {
         remove(addPanel)
@@ -106,7 +107,9 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
     }
 
     private fun addStep(type: String) {
+        editor.beforeSequenceStructureChange()
         val newStep = defaultStepFor(type) ?: return
+        shadowSteps.add(newStep)
         stepButtons.add(StepButton(newStep))
         buildPanel()
         selectStep(stepButtons.lastIndex)
@@ -133,25 +136,20 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
         ).showUnderneathOf(anchor)
     }
 
-    fun resetEditorFrom(configuration: LatexRunConfiguration) {
-        this.runConfiguration = configuration
+    fun resetEditorFrom() {
         stepButtons.forEach { remove(it) }
         stepButtons.clear()
         selectedIndex = -1
 
-        configuration.configOptions.ensureDefaultSteps()
-        configuration.configOptions.steps.forEach { step -> stepButtons.add(StepButton(step.deepCopy())) }
+        shadowSteps.forEach { step -> stepButtons.add(StepButton(step)) }
 
         buildPanel()
         normalizeSelection()
     }
 
-    fun applyEditorTo(configuration: LatexRunConfiguration) {
+    fun applyEditorTo() {
         stepButtons.removeAll { !it.isVisible }
-        configuration.configOptions.steps = stepButtons
-            .map { it.stepConfig.deepCopy() }
-            .toMutableList()
-        configuration.configOptions.ensureDefaultSteps()
+        synchronizeShadowStepsFromButtons()
     }
 
     override fun update(event: DnDEvent): Boolean {
@@ -175,12 +173,14 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
         val (index, _) = findButtonToReplace(event) ?: return
         val droppedButton = event.attachedObject as? StepButton ?: return
 
+        editor.beforeSequenceStructureChange()
         stepButtons.remove(droppedButton)
         stepButtons.add(index, droppedButton)
+        synchronizeShadowStepsFromButtons()
         buildPanel()
         selectStep(stepButtons.indexOf(droppedButton))
         changeListener()
-        IdeFocusManager.getInstance(runConfiguration.project).requestFocus(droppedButton, false)
+        IdeFocusManager.getInstance(project).requestFocus(droppedButton, false)
     }
 
     override fun cleanUpOnLeave() {
@@ -256,15 +256,17 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
         selectedIndex = index
         refreshSelectionUi()
         val selected = stepButtons[selectedIndex].stepConfig
-        onSelectionChanged(selectedIndex, selected.id, selected.type)
+        editor.onCompileSequenceSelectionChanged(selectedIndex, selected.id, selected.type)
     }
 
     internal fun moveStep(from: Int, to: Int) {
         if (from !in stepButtons.indices || to !in stepButtons.indices || from == to) {
             return
         }
+        editor.beforeSequenceStructureChange()
         val step = stepButtons.removeAt(from)
         stepButtons.add(to, step)
+        synchronizeShadowStepsFromButtons()
         buildPanel()
         selectStep(stepButtons.indexOf(step))
         changeListener()
@@ -274,13 +276,17 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
         autoConfigureSteps()
     }
 
+    internal fun addStepForTest(type: String) {
+        addStep(type)
+    }
+
     internal fun currentStepTypesForTest(): List<String> = stepButtons.map { it.stepConfig.type }
 
     private fun normalizeSelection() {
         if (stepButtons.isEmpty()) {
             selectedIndex = -1
             refreshSelectionUi()
-            onSelectionChanged(-1, null, null)
+            editor.onCompileSequenceSelectionChanged(-1, null, null)
             return
         }
 
@@ -288,13 +294,13 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
         if (currentlyVisible) {
             refreshSelectionUi()
             val selected = stepButtons[selectedIndex].stepConfig
-            onSelectionChanged(selectedIndex, selected.id, selected.type)
+            editor.onCompileSequenceSelectionChanged(selectedIndex, selected.id, selected.type)
             return
         }
 
         selectedIndex = -1
         refreshSelectionUi()
-        onSelectionChanged(-1, null, null)
+        editor.onCompileSequenceSelectionChanged(-1, null, null)
     }
 
     private fun refreshSelectionUi() {
@@ -304,15 +310,12 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
     }
 
     private fun notifyStepsChanged() {
-        onStepsChanged(stepButtons.filter { it.isVisible }.map { it.stepConfig })
+        editor.onCompileSequenceStepsChanged()
     }
 
     private fun autoConfigureSteps() {
-        val currentSteps = stepButtons
-            .filter { it.isVisible }
-            .map { it.stepConfig.deepCopy() }
-        val autoConfiguredSteps = onAutoConfigureRequested(currentSteps)
-            .map { it.deepCopy() }
+        editor.beforeSequenceStructureChange()
+        val autoConfiguredSteps = editor.autoConfigureCurrentSteps()
 
         if (autoConfiguredSteps.isEmpty()) {
             return
@@ -334,6 +337,11 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
             normalizeSelection()
         }
         changeListener()
+    }
+
+    private fun synchronizeShadowStepsFromButtons() {
+        editor.shadowSteps.clear()
+        editor.shadowSteps.addAll(stepButtons.filter { it.isVisible }.map { it.stepConfig })
     }
 
     private inner class StepButton(stepConfig: LatexStepRunConfigurationOptions) : TagButton("", { changeListener() }), DnDSource {
@@ -360,14 +368,19 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
                 override fun mouseClicked(e: MouseEvent) {
                     if (e.clickCount == 2) {
                         showTypeSelectionPopup(myButton) { selectedType ->
+                            editor.beforeSequenceStructureChange()
                             val replacement = defaultStepFor(selectedType) ?: return@showTypeSelectionPopup
+                            val buttonIndex = stepButtons.indexOf(this@StepButton)
                             this@StepButton.stepConfig = replacement.copyWithIdentity(
                                 stepId = stepConfig.id,
                                 selectedOptions = stepConfig.selectedOptions,
                             )
+                            if (buttonIndex in shadowSteps.indices) {
+                                shadowSteps[buttonIndex] = this@StepButton.stepConfig
+                            }
                             updateFromStepType()
-                            if (selectedIndex == stepButtons.indexOf(this@StepButton)) {
-                                onSelectionChanged(selectedIndex, stepConfig.id, stepConfig.type)
+                            if (selectedIndex == buttonIndex) {
+                                editor.onCompileSequenceSelectionChanged(selectedIndex, stepConfig.id, stepConfig.type)
                             }
                             notifyStepsChanged()
                             changeListener()
@@ -378,8 +391,10 @@ internal class LatexCompileSequenceComponent(parentDisposable: Disposable) :
 
             addPropertyChangeListener("visible") {
                 if (!isVisible && this@StepButton in stepButtons) {
+                    editor.beforeSequenceStructureChange()
                     val removedSelected = stepButtons.indexOf(this@StepButton) == selectedIndex
                     stepButtons.remove(this@StepButton)
+                    shadowSteps.remove(this@StepButton.stepConfig)
                     buildPanel()
                     if (removedSelected) {
                         normalizeSelection()

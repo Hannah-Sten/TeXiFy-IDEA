@@ -14,7 +14,6 @@ import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.run.latex.LatexPathResolver
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationStaticSupport
-import nl.hannahsten.texifyidea.run.latex.LatexRunSessionState
 import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.files.referencedFileSet
 import nl.hannahsten.texifyidea.util.selectedRunConfig
@@ -24,8 +23,8 @@ object ZathuraViewer : SystemPdfViewer("Zathura", "zathura") {
     override val isFocusSupported: Boolean
         get() = true
 
-    override fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean, session: LatexRunSessionState?) {
-        val pdfPathGuess = outputPath ?: guessPdfPath(project, sourceFilePath, session)
+    override fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
+        val pdfPathGuess = outputPath ?: guessPdfPath(project, sourceFilePath)
 
         if (pdfPathGuess != null) {
             if(!focusAllowed) {
@@ -52,11 +51,7 @@ object ZathuraViewer : SystemPdfViewer("Zathura", "zathura") {
      * Guess the path of the pdf file to forward search to based on the currently selected run configuration (as this is
      * often the last configuration that is run).
      */
-    private fun guessPdfPath(project: Project, sourceFilePath: String, session: LatexRunSessionState?): String? {
-        if (session?.resolvedOutputFilePath != null) {
-            return session.resolvedOutputFilePath
-        }
-
+    private fun guessPdfPath(project: Project, sourceFilePath: String): String? {
         val sourceVirtualFile = VirtualFileManager.getInstance().findFileByUrl("file://$sourceFilePath") ?: return null
         val sourcePsiFile = PsiManager.getInstance(project).findFile(sourceVirtualFile) ?: return null
 

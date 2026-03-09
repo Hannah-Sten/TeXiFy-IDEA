@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.run.latex
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
 import nl.hannahsten.texifyidea.run.latex.step.LatexStepAutoConfigurator
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
@@ -36,6 +37,75 @@ class LatexStepAutoConfiguratorTest : BasePlatformTestCase() {
         )
 
         assertEquals(listOf("latex-compile", "bibtex", "latex-compile", "latex-compile", "pdf-viewer"), augmented.map { it.type })
+    }
+
+    fun testCompleteStepsUsesBiberForBiblatex() {
+        val mainPsi = myFixture.addFileToProject(
+            "main-biber.tex",
+            """
+            \documentclass{article}
+            \usepackage{biblatex}
+            \addbibresource{references.bib}
+            \begin{document}
+            \cite{knuth}
+            \printbibliography
+            \end{document}
+            """.trimIndent()
+        )
+        myFixture.updateFilesets()
+
+        val augmented = LatexStepAutoConfigurator.completeSteps(
+            mainPsi,
+            listOf(LatexCompileStepOptions(), PdfViewerStepOptions())
+        )
+
+        assertEquals(listOf("latex-compile", "bibtex", "latex-compile", "latex-compile", "pdf-viewer"), augmented.map { it.type })
+        val bibStep = augmented.filterIsInstance<BibtexStepOptions>().single()
+        assertEquals(BibliographyCompiler.BIBER, bibStep.bibliographyCompiler)
+    }
+
+    fun testCompleteStepsAddsBiberStepForBiblatexPackageImport() {
+        val mainPsi = myFixture.addFileToProject(
+            "main-biblatex-package.tex",
+            """
+            \documentclass{article}
+            \usepackage{biblatex}
+            \begin{document}
+            \end{document}
+            """.trimIndent()
+        )
+        myFixture.updateFilesets()
+
+        val augmented = LatexStepAutoConfigurator.completeSteps(
+            mainPsi,
+            listOf(LatexCompileStepOptions(), PdfViewerStepOptions())
+        )
+
+        assertEquals(listOf("latex-compile", "bibtex", "latex-compile", "latex-compile", "pdf-viewer"), augmented.map { it.type })
+        val bibStep = augmented.filterIsInstance<BibtexStepOptions>().single()
+        assertEquals(BibliographyCompiler.BIBER, bibStep.bibliographyCompiler)
+    }
+
+    fun testCompleteStepsAddsBibtexStepForNatbibPackageImport() {
+        val mainPsi = myFixture.addFileToProject(
+            "main-natbib-package.tex",
+            """
+            \documentclass{article}
+            \usepackage{natbib}
+            \begin{document}
+            \end{document}
+            """.trimIndent()
+        )
+        myFixture.updateFilesets()
+
+        val augmented = LatexStepAutoConfigurator.completeSteps(
+            mainPsi,
+            listOf(LatexCompileStepOptions(), PdfViewerStepOptions())
+        )
+
+        assertEquals(listOf("latex-compile", "bibtex", "latex-compile", "latex-compile", "pdf-viewer"), augmented.map { it.type })
+        val bibStep = augmented.filterIsInstance<BibtexStepOptions>().single()
+        assertEquals(BibliographyCompiler.BIBTEX, bibStep.bibliographyCompiler)
     }
 
     fun testCompleteStepsAddsPythontexTemplateStep() {
@@ -382,7 +452,7 @@ class LatexStepAutoConfiguratorTest : BasePlatformTestCase() {
         assertTrue(completed.none { it.type == LatexStepType.MAKEINDEX || it.type == LatexStepType.MAKEGLOSSARIES || it.type == LatexStepType.XINDY })
     }
 
-    fun testCompleteStepsDoesNotAddIndexStepsForImakeidxWithoutAuxOrOutDirectory() {
+    fun testCompleteStepsAddsIndexStepsForImakeidxWithoutAuxOrOutDirectory() {
         val mainPsi = myFixture.addFileToProject(
             "main-imakeidx-default-paths.tex",
             """
@@ -405,10 +475,11 @@ class LatexStepAutoConfiguratorTest : BasePlatformTestCase() {
 
         val completed = LatexStepAutoConfigurator.completeSteps(
             mainPsi,
-            listOf(LatexCompileStepOptions(), PdfViewerStepOptions()),
-            runConfig
+            listOf(LatexCompileStepOptions(), PdfViewerStepOptions())
         )
 
-        assertTrue(completed.none { it.type == LatexStepType.MAKEINDEX || it.type == LatexStepType.MAKEGLOSSARIES || it.type == LatexStepType.XINDY })
+        assertEquals(listOf("latex-compile", "makeindex", "latex-compile", "latex-compile", "pdf-viewer"), completed.map { it.type })
+        val makeindex = completed.filterIsInstance<MakeindexStepOptions>().single()
+        assertEquals(MakeindexProgram.MAKEINDEX, makeindex.program)
     }
 }

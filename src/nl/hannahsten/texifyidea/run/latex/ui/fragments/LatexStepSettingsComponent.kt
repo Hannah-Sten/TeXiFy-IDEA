@@ -7,13 +7,14 @@ import com.intellij.openapi.util.Disposer
 import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.run.latex.*
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepProviders
+import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import java.awt.BorderLayout
 import java.awt.CardLayout
 import javax.swing.JPanel
 
 internal class LatexStepSettingsComponent(
-    parentDisposable: Disposable,
     project: Project,
+    private val editor: LatexSettingsEditor,
 ) : JPanel(BorderLayout()), Disposable {
 
     private companion object {
@@ -37,14 +38,14 @@ internal class LatexStepSettingsComponent(
     private var selectedStepIndex: Int = -1
     private var selectedStepType: String? = null
     private var selectedStep: LatexStepRunConfigurationOptions? = null
-    private var steps: List<LatexStepRunConfigurationOptions> = emptyList()
     private var stepsById: Map<String, LatexStepRunConfigurationOptions> = emptyMap()
-    private var boundRunConfig: LatexRunConfiguration? = null
 
     private var currentCardId: String = CARD_UNSUPPORTED
 
     private val cardLayout = CardLayout()
     private val cardsPanel = JPanel(cardLayout)
+    private val shadowSteps: MutableList<LatexStepRunConfigurationOptions>
+        get() = editor.shadowSteps
 
     private val compileSettings = LatexCompileStepFragmentedEditor(project)
     private val latexmkSettings = LatexmkStepFragmentedEditor(project)
@@ -59,17 +60,17 @@ internal class LatexStepSettingsComponent(
     private val unsupportedSettings = LatexUnsupportedStepSettingsComponent()
 
     init {
-        Disposer.register(parentDisposable, this)
-        Disposer.register(parentDisposable, compileSettings)
-        Disposer.register(parentDisposable, latexmkSettings)
-        Disposer.register(parentDisposable, viewerSettings)
-        Disposer.register(parentDisposable, bibtexSettings)
-        Disposer.register(parentDisposable, makeindexSettings)
-        Disposer.register(parentDisposable, externalToolSettings)
-        Disposer.register(parentDisposable, pythontexSettings)
-        Disposer.register(parentDisposable, makeglossariesSettings)
-        Disposer.register(parentDisposable, xindySettings)
-        Disposer.register(parentDisposable, fileCleanupSettings)
+        Disposer.register(editor, this)
+        Disposer.register(editor, compileSettings)
+        Disposer.register(editor, latexmkSettings)
+        Disposer.register(editor, viewerSettings)
+        Disposer.register(editor, bibtexSettings)
+        Disposer.register(editor, makeindexSettings)
+        Disposer.register(editor, externalToolSettings)
+        Disposer.register(editor, pythontexSettings)
+        Disposer.register(editor, makeglossariesSettings)
+        Disposer.register(editor, xindySettings)
+        Disposer.register(editor, fileCleanupSettings)
         compileSettings.addSettingsEditorListener { changeListener() }
         latexmkSettings.addSettingsEditorListener { changeListener() }
         viewerSettings.addSettingsEditorListener { changeListener() }
@@ -97,10 +98,7 @@ internal class LatexStepSettingsComponent(
         showCard(CARD_UNSUPPORTED)
     }
 
-    fun resetEditorFrom(runConfig: LatexRunConfiguration) {
-        boundRunConfig = runConfig
-        runConfig.configOptions.ensureDefaultSteps()
-        steps = runConfig.configOptions.steps
+    fun resetEditorFrom() {
         syncSelectionWithCurrentSteps(realignSelectedIndex = true)
         showCardForStepType(selectedStepType)
         resetCurrentCard()
@@ -110,8 +108,11 @@ internal class LatexStepSettingsComponent(
         flushCurrentCard()
     }
 
+    fun flushCurrentStep() {
+        flushCurrentCard()
+    }
+
     fun onStepSelectionChanged(index: Int, stepId: String?, type: String?) {
-        if (boundRunConfig == null) return
         flushCurrentCard()
 
         selectedStepIndex = index
@@ -122,11 +123,7 @@ internal class LatexStepSettingsComponent(
         resetCurrentCard()
     }
 
-    fun onStepsChanged(steps: List<LatexStepRunConfigurationOptions>) {
-        if (boundRunConfig == null) return
-        flushCurrentCard()
-
-        this.steps = steps
+    fun onStepsChanged() {
         syncSelectionWithCurrentSteps(realignSelectedIndex = false)
         showCardForStepType(selectedStepType)
         resetCurrentCard()
@@ -175,7 +172,7 @@ internal class LatexStepSettingsComponent(
     }
 
     private fun syncSelectionWithCurrentSteps(realignSelectedIndex: Boolean) {
-        stepsById = steps.associateBy { it.id }
+        stepsById = shadowSteps.associateBy { it.id }
         if (selectedStepId !in stepsById.keys) {
             selectedStepId = null
             selectedStepIndex = -1
@@ -187,9 +184,9 @@ internal class LatexStepSettingsComponent(
         if (
             realignSelectedIndex &&
             selectedStep != null &&
-            selectedStepIndex !in steps.indices
+            selectedStepIndex !in shadowSteps.indices
         ) {
-            selectedStepIndex = steps.indexOfFirst { it.id == selectedStepId }
+            selectedStepIndex = shadowSteps.indexOfFirst { it.id == selectedStepId }
         }
     }
 
@@ -197,18 +194,18 @@ internal class LatexStepSettingsComponent(
         add(editor.component, BorderLayout.CENTER)
     }
 
-    private fun resetCurrentCard() {
+    private fun resetCurrentCard(targetStep: LatexStepRunConfigurationOptions? = selectedStep) {
         when (currentCardId) {
-            CARD_COMPILE -> resetEditorFromSelected(compileSettings, selectedStep as? LatexCompileStepOptions)
-            CARD_LATEXMK -> resetEditorFromSelected(latexmkSettings, selectedStep as? LatexmkCompileStepOptions)
-            CARD_VIEWER -> resetEditorFromSelected(viewerSettings, selectedStep as? PdfViewerStepOptions)
-            CARD_BIBTEX -> resetEditorFromSelected(bibtexSettings, selectedStep as? BibtexStepOptions)
-            CARD_MAKEINDEX -> resetEditorFromSelected(makeindexSettings, selectedStep as? MakeindexStepOptions)
-            CARD_EXTERNAL_TOOL -> resetEditorFromSelected(externalToolSettings, selectedStep as? ExternalToolStepOptions)
-            CARD_PYTHONTEX -> resetEditorFromSelected(pythontexSettings, selectedStep as? PythontexStepOptions)
-            CARD_MAKEGLOSSARIES -> resetEditorFromSelected(makeglossariesSettings, selectedStep as? MakeglossariesStepOptions)
-            CARD_XINDY -> resetEditorFromSelected(xindySettings, selectedStep as? XindyStepOptions)
-            CARD_FILE_CLEANUP -> resetEditorFromSelected(fileCleanupSettings, selectedStep as? FileCleanupStepOptions)
+            CARD_COMPILE -> resetEditorFromSelected(compileSettings, targetStep as? LatexCompileStepOptions)
+            CARD_LATEXMK -> resetEditorFromSelected(latexmkSettings, targetStep as? LatexmkCompileStepOptions)
+            CARD_VIEWER -> resetEditorFromSelected(viewerSettings, targetStep as? PdfViewerStepOptions)
+            CARD_BIBTEX -> resetEditorFromSelected(bibtexSettings, targetStep as? BibtexStepOptions)
+            CARD_MAKEINDEX -> resetEditorFromSelected(makeindexSettings, targetStep as? MakeindexStepOptions)
+            CARD_EXTERNAL_TOOL -> resetEditorFromSelected(externalToolSettings, targetStep as? ExternalToolStepOptions)
+            CARD_PYTHONTEX -> resetEditorFromSelected(pythontexSettings, targetStep as? PythontexStepOptions)
+            CARD_MAKEGLOSSARIES -> resetEditorFromSelected(makeglossariesSettings, targetStep as? MakeglossariesStepOptions)
+            CARD_XINDY -> resetEditorFromSelected(xindySettings, targetStep as? XindyStepOptions)
+            CARD_FILE_CLEANUP -> resetEditorFromSelected(fileCleanupSettings, targetStep as? FileCleanupStepOptions)
         }
     }
 
@@ -218,7 +215,6 @@ internal class LatexStepSettingsComponent(
             selectedStep = null
             return
         }
-
         when (currentCardId) {
             CARD_COMPILE -> applyEditorToSelected(compileSettings, targetStep as? LatexCompileStepOptions)
             CARD_LATEXMK -> applyEditorToSelected(latexmkSettings, targetStep as? LatexmkCompileStepOptions)
@@ -236,17 +232,17 @@ internal class LatexStepSettingsComponent(
 
     private fun findTargetStep(): LatexStepRunConfigurationOptions? {
         selectedStepId?.let { id ->
-            steps.firstOrNull { it.id == id }?.let { return it }
+            shadowSteps.firstOrNull { it.id == id }?.let { return it }
         }
-        if (selectedStepIndex in steps.indices) {
-            val byIndex = steps[selectedStepIndex]
+        if (selectedStepIndex in shadowSteps.indices) {
+            val byIndex = shadowSteps[selectedStepIndex]
             val expectedType = selectedStepType
             if (expectedType == null || canonicalType(byIndex.type) == expectedType) {
                 return byIndex
             }
         }
         val expectedType = selectedStepType ?: return null
-        return steps.firstOrNull { canonicalType(it.type) == expectedType }
+        return shadowSteps.firstOrNull { canonicalType(it.type) == expectedType }
     }
 
     private fun <T : LatexStepRunConfigurationOptions> resetEditorFromSelected(

@@ -8,6 +8,9 @@ import com.intellij.execution.ui.ConsoleView
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.execution.ui.ConsoleViewContentType.NORMAL_OUTPUT
 import com.intellij.icons.AllIcons
+import com.intellij.ide.OccurenceNavigator
+import com.intellij.ide.actions.NextOccurenceToolbarAction
+import com.intellij.ide.actions.PreviousOccurenceToolbarAction
 import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.util.treeView.AbstractTreeStructure
 import com.intellij.ide.util.treeView.NodeDescriptor
@@ -19,6 +22,7 @@ import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.ToggleAction
+import com.intellij.openapi.editor.actions.ScrollToTheEndToolbarAction
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.project.DumbAware
@@ -37,7 +41,6 @@ import com.intellij.util.ui.EmptyIcon
 import com.intellij.util.ui.tree.TreeUtil
 import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.TexifyIcons
-import nl.hannahsten.texifyidea.run.latex.LatexStepType
 import nl.hannahsten.texifyidea.run.latex.flow.StepAwareSequentialProcessHandler
 import nl.hannahsten.texifyidea.run.latex.flow.StepLogEvent
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStep
@@ -56,7 +59,7 @@ internal class LatexStepLogTabComponent(
     private val project: Project,
     mainFile: VirtualFile?,
     handler: StepAwareSequentialProcessHandler,
-) : AdditionalTabComponent(BorderLayout()), ExecutionConsole, TreeSelectionListener {
+) : AdditionalTabComponent(BorderLayout()), ExecutionConsole, TreeSelectionListener, OccurenceNavigator {
 
     companion object {
 
@@ -134,7 +137,7 @@ internal class LatexStepLogTabComponent(
     private val console: ConsoleView = TextConsoleBuilderFactory.getInstance().createBuilder(project).console.also {
         Disposer.register(this, it)
     }
-    private val consoleToolbarGroup = DefaultActionGroup(console.createConsoleActions().toList())
+    private val consoleToolbarGroup = DefaultActionGroup(createConsoleToolbarActions())
     private val consoleToolbar = ActionManager.getInstance().createActionToolbar(
         "TeXiFy.StepLog.ConsoleToolbar",
         consoleToolbarGroup,
@@ -265,8 +268,16 @@ internal class LatexStepLogTabComponent(
                 if (parser != null) {
                     splitOutputForParsing(event.text).forEach { piece ->
                         val pieceStartOffset = stepOffset
-                        parser.onText(piece).forEach { parsedMessage ->
-                            addParsedMessage(stepIndex = event.index, message = parsedMessage, logOffset = pieceStartOffset)
+                        parser.onText(piece).forEach { parsedEvent ->
+                            when (parsedEvent) {
+                                is ParsedStepEvent.Message -> addParsedMessage(
+                                    stepIndex = event.index,
+                                    message = parsedEvent.message,
+                                    logOffset = pieceStartOffset,
+                                )
+
+                                ParsedStepEvent.ResetLatexMessages -> resetParsedMessages(stepIndex = event.index)
+                            }
                         }
                         stepOffset += piece.length
                     }
@@ -351,12 +362,25 @@ internal class LatexStepLogTabComponent(
         }
     }
 
+    private fun resetParsedMessages(stepIndex: Int) {
+        parsedRecordsByStep[stepIndex]?.removeAll { it.message.source == ParsedStepMessageSource.LATEX }
+        recomputeStepMessageLevels(stepIndex)
+
+        val stepNode = stepNodes[stepIndex] ?: return
+        val selectedMessageData = extractTreeNode(tree.lastSelectedPathComponent)?.messageData
+        stepNode.children.removeAll { it.messageData?.message?.source == ParsedStepMessageSource.LATEX }
+        scheduleUpdate(stepNode, structureChanged = true)
+        if (selectedMessageData?.stepIndex == stepIndex && selectedMessageData.message.source == ParsedStepMessageSource.LATEX) {
+            selectStep(stepIndex)
+        }
+        else {
+            refreshRawLogView()
+        }
+    }
+
     private fun selectStep(stepIndex: Int) {
         val node = stepNodes[stepIndex] ?: return
-        treePathFor(node)?.let { path ->
-            tree.selectionPath = path
-            tree.scrollPathToVisible(path)
-        }
+        selectTreeNode(node)
     }
 
     private fun updateStepStatus(stepIndex: Int, status: NodeStatus) {
@@ -386,6 +410,52 @@ internal class LatexStepLogTabComponent(
             RawLogSelection.All -> renderAllRawLog()
             is RawLogSelection.Step -> renderStepRawLog(selection.stepIndex)
         }
+    }
+
+    private fun visibleMessageNodes(selection: RawLogSelection = selectedRawLogSelection()): List<StepTreeNode> = when (selection) {
+        RawLogSelection.None -> emptyList()
+        RawLogSelection.All -> stepNodes.values.flatMap { node ->
+            node.children.filter { it.messageData != null }
+        }
+        is RawLogSelection.Step -> stepNodes[selection.stepIndex]
+            ?.children
+            ?.filter { it.messageData != null }
+            .orEmpty()
+    }
+
+    private fun adjacentMessageNode(direction: Int): StepTreeNode? {
+        val messageNodes = visibleMessageNodes()
+        if (messageNodes.isEmpty()) {
+            return null
+        }
+
+        val selectedNode = extractTreeNode(tree.lastSelectedPathComponent)
+        val selectedIndex = messageNodes.indexOf(selectedNode)
+        return when {
+            selectedIndex < 0 -> if (direction > 0) messageNodes.first() else messageNodes.last()
+            else -> messageNodes.getOrNull(selectedIndex + direction)
+        }
+    }
+
+    private fun currentRawLogLength(selection: RawLogSelection = selectedRawLogSelection()): Int = when (selection) {
+        RawLogSelection.None -> 0
+        RawLogSelection.All -> stepOutputLengths.values.sum()
+        is RawLogSelection.Step -> stepOutputLengths[selection.stepIndex] ?: 0
+    }
+
+    private fun scrollRawLogToEnd() {
+        refreshRawLogView()
+        console.requestScrollingToEnd()
+    }
+
+    private fun selectMessageNode(node: StepTreeNode, messageNodes: List<StepTreeNode>): OccurenceNavigator.OccurenceInfo? {
+        val index = messageNodes.indexOf(node)
+        if (index < 0) {
+            return null
+        }
+
+        selectTreeNode(node)
+        return OccurenceNavigator.OccurenceInfo.position(index + 1, messageNodes.size)
     }
 
     private fun tryJumpMessageInConsole(messageData: MessageNodeData): Boolean {
@@ -463,19 +533,37 @@ internal class LatexStepLogTabComponent(
         }
     }
 
+    private fun createConsoleToolbarActions(): List<AnAction> = console.createConsoleActions().map { action ->
+        when (action) {
+            is PreviousOccurenceToolbarAction -> PreviousOccurenceToolbarAction(this)
+            is NextOccurenceToolbarAction -> NextOccurenceToolbarAction(this)
+            is ScrollToTheEndToolbarAction -> StepLogScrollToEndAction()
+            else -> action
+        }
+    }
+
     private fun scheduleUpdate(node: StepTreeNode, structureChanged: Boolean = false) {
         structureTreeModel.invalidate(node, structureChanged)
     }
 
     private fun shouldShowMessageInTree(stepIndex: Int, message: ParsedStepMessage): Boolean {
-        if (!showBibtexMessages && isBibtexStep(stepIndex)) {
+        if (!showBibtexMessages && message.source == ParsedStepMessageSource.BIBTEX) {
             return false
         }
         return showOverfullUnderfullMessages || !isOverfullUnderfullMessage(message.message)
     }
 
-    private fun isBibtexStep(stepIndex: Int): Boolean =
-        stepNodeData[stepIndex]?.step?.id == LatexStepType.BIBTEX
+    private fun recomputeStepMessageLevels(stepIndex: Int) {
+        stepHasWarnings.remove(stepIndex)
+        stepHasErrors.remove(stepIndex)
+
+        parsedRecordsByStep[stepIndex].orEmpty().forEach { record ->
+            when (record.message.level) {
+                ParsedStepMessageLevel.ERROR -> stepHasErrors += stepIndex
+                ParsedStepMessageLevel.WARNING -> stepHasWarnings += stepIndex
+            }
+        }
+    }
 
     private fun rebuildMessageNodes() {
         stepNodes.values.forEach { stepNode ->
@@ -555,12 +643,41 @@ internal class LatexStepLogTabComponent(
         return TreePath(chain.reversed().toTypedArray())
     }
 
+    private fun selectTreeNode(node: StepTreeNode) {
+        treePathFor(node)?.let { path ->
+            tree.selectionPath = path
+            tree.scrollPathToVisible(path)
+        }
+    }
+
     private fun extractTreeNode(component: Any?): StepTreeNode? = when (component) {
         is StepTreeNode -> component
         is DefaultMutableTreeNode -> component.userObject as? StepTreeNode
         // is NodeDescriptor<*> -> component as? StepTreeNode  // This cast is always null
         else -> null
     }
+
+    override fun hasNextOccurence(): Boolean = adjacentMessageNode(direction = 1) != null
+
+    override fun hasPreviousOccurence(): Boolean = adjacentMessageNode(direction = -1) != null
+
+    override fun goNextOccurence(): OccurenceNavigator.OccurenceInfo? {
+        val messageNodes = visibleMessageNodes()
+        val target = adjacentMessageNode(direction = 1) ?: return null
+        return selectMessageNode(target, messageNodes)
+    }
+
+    override fun goPreviousOccurence(): OccurenceNavigator.OccurenceInfo? {
+        val messageNodes = visibleMessageNodes()
+        val target = adjacentMessageNode(direction = -1) ?: return null
+        return selectMessageNode(target, messageNodes)
+    }
+
+    override fun getNextOccurenceActionName(): String = TexifyBundle.message("run.step.log.action.next.message")
+
+    override fun getPreviousOccurenceActionName(): String = TexifyBundle.message("run.step.log.action.previous.message")
+
+    override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.EDT
 
     private enum class NodeStatus {
         UNKNOWN,
@@ -660,6 +777,18 @@ internal class LatexStepLogTabComponent(
         }
 
         override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.EDT
+    }
+
+    private inner class StepLogScrollToEndAction : ScrollToTheEndToolbarAction(null), DumbAware {
+
+        override fun actionPerformed(e: AnActionEvent) {
+            scrollRawLogToEnd()
+        }
+
+        override fun update(e: AnActionEvent) {
+            super.update(e)
+            e.presentation.isEnabled = currentRawLogLength() > 0
+        }
     }
 
     private inner class StepTreeNode(

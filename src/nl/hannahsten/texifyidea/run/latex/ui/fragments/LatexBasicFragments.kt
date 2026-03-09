@@ -56,12 +56,12 @@ internal object LatexBasicFragments {
         ) {
             override fun doReset(s: RunnerAndConfigurationSettingsImpl) {
                 val runConfig = s.configuration as LatexRunConfiguration
-                component.component.text = runConfig.mainFilePath.orEmpty()
+                mainFile.text = runConfig.mainFilePath.orEmpty()
             }
 
             override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
                 val runConfig = s.configuration as LatexRunConfiguration
-                runConfig.mainFilePath = component.component.text
+                runConfig.mainFilePath = mainFile.text
             }
         }
 
@@ -70,45 +70,24 @@ internal object LatexBasicFragments {
         return fragment
     }
 
-    fun createWorkingDirectoryFragment(group: String, project: Project): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<TextFieldWithBrowseButton>> {
-        val directoryField = TextFieldWithBrowseButton().apply {
-            addBrowseFolderListener(
-                TextBrowseFolderListener(
-                    FileChooserDescriptor(false, true, false, false, false, false)
-                        .withTitle(TexifyBundle.message("run.latex.settings.working.directory.title"))
-                        .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules)
-                )
-            )
-        }
-        val component = LabeledComponent.create(directoryField, TexifyBundle.message("run.latex.settings.working.directory"))
-
-        val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<TextFieldWithBrowseButton>>(
-            "workingDirectory",
-            TexifyBundle.message("run.latex.settings.working.directory"),
-            group,
-            component,
-            0,
-            { s -> (s.configuration as? LatexRunConfiguration)?.workingDirectory != null }
-        ) {
-            override fun doReset(s: RunnerAndConfigurationSettingsImpl) {
-                val runConfig = s.configuration as LatexRunConfiguration
-                component.component.text = runConfig.workingDirectory?.toString() ?: LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER
-            }
-
-            override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
-                val runConfig = s.configuration as LatexRunConfiguration
-                runConfig.workingDirectory = component.component.text
-                    .takeUnless { it.isBlank() || it == LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER }
-                    ?.let { pathOrNull(it) }
-            }
-        }
-
-        fragment.isRemovable = true
-        fragment.isCanBeHidden = true
-        applyTooltip(component, TexifyBundle.message("run.step.ui.field.working.directory.tooltip"))
-        fragment.actionHint = TexifyBundle.message("run.step.ui.action.set.custom.working.directory")
-        return fragment
-    }
+    fun createWorkingDirectoryFragment(group: String, project: Project): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<JComponent>> = directoryFragment(
+        id = "workingDirectory",
+        name = TexifyBundle.message("run.step.ui.field.working.directory"),
+        group = group,
+        project = project,
+        chooserTitle = TexifyBundle.message("run.latex.settings.working.directory.title"),
+        initiallyVisible = { runConfig -> runConfig.workingDirectory != null },
+        reset = { runConfig, field ->
+            field.text = runConfig.workingDirectory?.toString() ?: LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER
+        },
+        apply = { runConfig, field ->
+            runConfig.workingDirectory = field.text
+                .takeUnless { it.isBlank() || it == LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER }
+                ?.let { pathOrNull(it) }
+        },
+        actionHint = TexifyBundle.message("run.step.ui.action.set.custom.working.directory"),
+        tooltip = TexifyBundle.message("run.step.ui.field.working.directory.tooltip"),
+    )
 
     fun createLatexDistributionFragment(
         group: String,
@@ -152,7 +131,7 @@ internal object LatexBasicFragments {
     fun createOutputDirectoryFragment(
         group: String,
         project: Project
-    ): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<TextFieldWithBrowseButton>> = directoryFragment(
+    ): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<JComponent>> = directoryFragment(
         id = "outputDirectory",
         name = TexifyBundle.message("run.step.ui.field.output.directory"),
         group = group,
@@ -160,7 +139,7 @@ internal object LatexBasicFragments {
         chooserTitle = TexifyBundle.message("run.latex.settings.output.files.directory.title"),
         initiallyVisible = { runConfig -> hasCustomPath(runConfig.outputPath, LatexPathResolver.defaultOutputPath) },
         reset = { runConfig, field ->
-            field.text = runConfig.outputPath?.toString() ?: LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER
+            field.text = runConfig.outputPath?.toString() ?: LatexPathResolver.defaultOutputPath.toString()
         },
         apply = { runConfig, field ->
             val text = field.text.trim()
@@ -174,7 +153,7 @@ internal object LatexBasicFragments {
     fun createAuxiliaryDirectoryFragment(
         group: String,
         project: Project
-    ): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<TextFieldWithBrowseButton>> = directoryFragment(
+    ): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<JComponent>> = directoryFragment(
         id = "auxiliaryDirectory",
         name = TexifyBundle.message("run.step.ui.field.auxiliary.directory"),
         group = group,
@@ -182,7 +161,7 @@ internal object LatexBasicFragments {
         chooserTitle = TexifyBundle.message("run.latex.settings.aux.files.directory.title"),
         initiallyVisible = { runConfig -> hasCustomPath(runConfig.auxilPath, LatexPathResolver.defaultAuxilPath) },
         reset = { runConfig, field ->
-            field.text = runConfig.auxilPath?.toString() ?: LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER
+            field.text = runConfig.auxilPath?.toString() ?: LatexPathResolver.defaultAuxilPath.toString()
         },
         apply = { runConfig, field ->
             runConfig.auxilPath = parseDirectoryPath(field.text.trim(), LatexPathResolver.defaultAuxilPath)
@@ -270,11 +249,12 @@ internal object LatexBasicFragments {
         reset: (LatexRunConfiguration, TextFieldWithBrowseButton) -> Unit,
         apply: (LatexRunConfiguration, TextFieldWithBrowseButton) -> Unit,
         actionHint: String,
-    ): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<TextFieldWithBrowseButton>> {
+        tooltip: String? = null,
+    ): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<JComponent>> {
         val field = directoryPicker(project, chooserTitle)
-        val component = LabeledComponent.create(field, name)
+        val component = LabeledComponent.create(pathFieldWithMacroSupport(field, project), name)
 
-        val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<TextFieldWithBrowseButton>>(
+        val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<JComponent>>(
             id,
             name,
             group,
@@ -283,11 +263,11 @@ internal object LatexBasicFragments {
             { s -> initiallyVisible(s.configuration as LatexRunConfiguration) }
         ) {
             override fun doReset(s: RunnerAndConfigurationSettingsImpl) {
-                reset(s.configuration as LatexRunConfiguration, component.component)
+                reset(s.configuration as LatexRunConfiguration, field)
             }
 
             override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
-                apply(s.configuration as LatexRunConfiguration, component.component)
+                apply(s.configuration as LatexRunConfiguration, field)
             }
         }
 
@@ -295,7 +275,7 @@ internal object LatexBasicFragments {
         fragment.isCanBeHidden = true
         applyTooltip(
             component,
-            TexifyBundle.message(
+            tooltip ?: TexifyBundle.message(
                 "run.step.ui.field.directory.placeholders",
                 LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER,
                 LatexPathResolver.PROJECT_DIR_PLACEHOLDER
@@ -303,6 +283,14 @@ internal object LatexBasicFragments {
         )
         fragment.actionHint = actionHint
         return fragment
+    }
+
+    private fun pathFieldWithMacroSupport(field: TextFieldWithBrowseButton, project: Project): JComponent {
+        val pathMacros = MacrosDialog.getPathMacros(true)
+        (field.textField as? ExtendableTextField)?.let { textField ->
+            MacrosDialog.addTextFieldExtension(textField, MacrosDialog.Filters.ANY_PATH, pathMacros)
+        }
+        return field
     }
 
     private fun refreshDistributionSelections(

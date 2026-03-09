@@ -4,7 +4,6 @@ import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.TexifyBundle
-import nl.hannahsten.texifyidea.run.latex.LatexRunSessionState
 
 /**
  * Execute Okular commands.
@@ -29,7 +28,7 @@ object OkularViewer : SystemPdfViewer("Okular", "okular") {
      * @param sourceFilePath Full path of the tex file.
      * @param line Line number in the source file to navigate to in the pdf.
      */
-    override fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean, session: LatexRunSessionState?) {
+    override fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
         if(outputPath != null) {
             pdfFilePath = outputPath
         }

@@ -8,7 +8,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ModuleRootManager
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.io.FileUtilRt
-import com.intellij.openapi.util.io.toNioPathOrNull
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDocumentManager
@@ -65,9 +64,6 @@ object FileUtil {
      * @return The relative path of the file to the root, or `null` if the file is no child of
      * the root.
      */
-    @JvmStatic
-    fun pathRelativeTo(rootPath: String, filePath: String): String? = pathRelativeTo(rootPath.toNioPathOrNull(), filePath.toNioPathOrNull())?.pathString
-
     fun pathRelativeTo(rootPath: Path?, filePath: Path?): Path? {
         if (rootPath == null || filePath == null) return null
         return runCatching { rootPath.relativize(filePath) }.getOrNull()

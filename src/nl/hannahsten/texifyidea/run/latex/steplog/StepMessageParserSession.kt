@@ -4,5 +4,5 @@ internal interface StepMessageParserSession {
 
     val supportsStructuredMessages: Boolean
 
-    fun onText(text: String): List<ParsedStepMessage>
+    fun onText(text: String): List<ParsedStepEvent>
 }

@@ -5,9 +5,6 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import nl.hannahsten.texifyidea.run.latex.FileCleanupStepOptions
 import nl.hannahsten.texifyidea.util.runWriteAction
 import kotlin.io.path.absolutePathString
-import kotlin.io.path.deleteExisting
-import kotlin.io.path.isDirectory
-import kotlin.io.path.listDirectoryEntries
 
 internal class FileCleanupRunStep(
     stepConfig: FileCleanupStepOptions,
@@ -19,16 +16,13 @@ internal class FileCleanupRunStep(
     override fun runInline(context: LatexRunStepContext): Int {
         val state = context.session
         val filesToDelete = state.filesToCleanUp.toList()
-        val directoriesToDelete = state.directoriesToDeleteIfEmpty.toList().sortedDescending()
 
         return try {
             deleteFilesViaVfs(filesToDelete)
-            deleteDirectoriesIfEmpty(directoriesToDelete)
             0
         }
         finally {
             state.filesToCleanUp.clear()
-            state.directoriesToDeleteIfEmpty.clear()
         }
     }
 
@@ -54,16 +48,6 @@ internal class FileCleanupRunStep(
         else {
             application.invokeAndWait {
                 runWriteAction(deleteAction)
-            }
-        }
-    }
-
-    private fun deleteDirectoriesIfEmpty(directories: List<java.nio.file.Path>) {
-        directories.forEach { directory ->
-            runCatching {
-                if (directory.isDirectory() && directory.listDirectoryEntries().isEmpty()) {
-                    directory.deleteExisting()
-                }
             }
         }
     }

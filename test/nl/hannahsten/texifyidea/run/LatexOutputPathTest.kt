@@ -30,6 +30,29 @@ class LatexOutputPathTest : BasePlatformTestCase() {
         assertTrue(outPath!!.path.startsWith("/src"))
     }
 
+    fun testDefaultOutputAndAuxPathsResolveUnderProjectDir() {
+        val mainFile = myFixture.addFileToProject(
+            "sub/main.tex",
+            """
+            \documentclass{article}
+            \begin{document}
+                main
+            \end{document}
+            """.trimIndent()
+        )
+        val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
+        runBlocking {
+            runConfig.mainFilePath = "sub/main.tex"
+        }
+
+        val projectRoot = requireNotNull(LatexPathResolver.getMainFileContentRoot(mainFile.virtualFile, project)).path
+        val outputDir = LatexPathResolver.resolve(runConfig.outputPath, mainFile.virtualFile, project)
+        val auxDir = LatexPathResolver.resolve(runConfig.auxilPath, mainFile.virtualFile, project)
+
+        assertEquals(Path.of(projectRoot, "out"), outputDir)
+        assertEquals(Path.of(projectRoot, "auxil"), auxDir)
+    }
+
     fun testRelativeOutputPathResolvesViaContentRoot() {
         val mainFile = myFixture.addFileToProject(
             "sub/main.tex",

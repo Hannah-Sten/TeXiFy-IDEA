@@ -87,6 +87,7 @@ class LatexStepLogTabComponentTest : BasePlatformTestCase() {
                 message = ParsedStepMessage(
                     message = "Warning-- I found no database entries",
                     level = ParsedStepMessageLevel.WARNING,
+                    source = ParsedStepMessageSource.BIBTEX,
                 ),
                 logOffset = 0,
             )
@@ -139,6 +140,160 @@ class LatexStepLogTabComponentTest : BasePlatformTestCase() {
             assertFalse(config.expanded)
             assertFalse(config.showBibtexMessages)
             assertFalse(config.showOverfullUnderfullMessages)
+        }
+        finally {
+            Disposer.dispose(fixture.component)
+        }
+    }
+
+    fun testLatexmkSecondPassClearsExistingMessages() {
+        val fixture = createFixture(LatexStepType.LATEXMK_COMPILE)
+        try {
+            addParsedMessage(
+                fixture.component,
+                stepIndex = 0,
+                message = ParsedStepMessage(
+                    message = "Reference `fig:bla' on page 1 undefined on input line 10.",
+                    level = ParsedStepMessageLevel.WARNING,
+                ),
+                logOffset = 0,
+            )
+            assertEquals(1, parsedRecordCount(fixture.component, 0))
+            assertEquals(1, messageNodeCount(fixture.component, 0))
+
+            emitStepOutput(
+                fixture.component,
+                fixture.step,
+                "Run number 2 of rule 'pdflatex'\n",
+            )
+
+            assertEquals(0, parsedRecordCount(fixture.component, 0))
+            assertEquals(0, messageNodeCount(fixture.component, 0))
+        }
+        finally {
+            Disposer.dispose(fixture.component)
+        }
+    }
+
+    fun testLatexmkSecondPassKeepsBibtexMessages() {
+        val fixture = createFixture(LatexStepType.LATEXMK_COMPILE)
+        try {
+            addParsedMessage(
+                fixture.component,
+                stepIndex = 0,
+                message = ParsedStepMessage(
+                    message = "I'm ignoring knuth1990's extra \"author\" field",
+                    level = ParsedStepMessageLevel.WARNING,
+                    source = ParsedStepMessageSource.BIBTEX,
+                ),
+                logOffset = 0,
+            )
+
+            emitStepOutput(
+                fixture.component,
+                fixture.step,
+                "Run number 2 of rule 'pdflatex'\n",
+            )
+
+            assertEquals(1, parsedRecordCount(fixture.component, 0))
+            assertEquals(1, messageNodeCount(fixture.component, 0))
+        }
+        finally {
+            Disposer.dispose(fixture.component)
+        }
+    }
+
+    fun testLatexmkBibtexWarningIsShownInStepLog() {
+        val fixture = createFixture(LatexStepType.LATEXMK_COMPILE)
+        try {
+            emitStepOutput(fixture.component, fixture.step, "Latexmk: applying rule 'bibtex bibtex-mwe'...\n")
+            emitStepOutput(fixture.component, fixture.step, "For rule 'bibtex bibtex-mwe', running '&run_bibtex(  )' ...\n")
+            emitStepOutput(fixture.component, fixture.step, "This is BibTeX, Version 0.99d (TeX Live 2020)\n")
+            emitStepOutput(fixture.component, fixture.step, "The top-level auxiliary file: bibtex-mwe.aux\n")
+            emitStepOutput(fixture.component, fixture.step, "The style file: plain.bst\n")
+            emitStepOutput(fixture.component, fixture.step, "Database file #1: references.bib\n")
+            emitStepOutput(fixture.component, fixture.step, "Warning--I'm ignoring knuth1990's extra \"author\" field\n")
+            emitStepOutput(fixture.component, fixture.step, "--line 5 of file references.bib\n")
+            emitStepOutput(fixture.component, fixture.step, "(There was 1 warning)\n")
+
+            assertEquals(1, parsedRecordCount(fixture.component, 0))
+            assertEquals(1, messageNodeCount(fixture.component, 0))
+            assertEquals(ParsedStepMessageSource.BIBTEX, firstParsedMessageSource(fixture.component, 0))
+        }
+        finally {
+            Disposer.dispose(fixture.component)
+        }
+    }
+
+    fun testGoNextOccurenceSelectsVisibleMessages() {
+        val fixture = createFixture()
+        try {
+            addParsedMessage(
+                fixture.component,
+                stepIndex = 0,
+                message = ParsedStepMessage(message = "first", level = ParsedStepMessageLevel.WARNING),
+                logOffset = 0,
+            )
+            addParsedMessage(
+                fixture.component,
+                stepIndex = 0,
+                message = ParsedStepMessage(message = "second", level = ParsedStepMessageLevel.WARNING),
+                logOffset = 12,
+            )
+
+            val first = fixture.component.goNextOccurence()
+
+            assertEquals(1, first?.occurenceNumber)
+            assertEquals(2, first?.occurencesCount)
+            assertEquals(0, selectedMessageOffset(fixture.component))
+
+            val second = fixture.component.goNextOccurence()
+
+            assertEquals(2, second?.occurenceNumber)
+            assertEquals(2, second?.occurencesCount)
+            assertEquals(12, selectedMessageOffset(fixture.component))
+        }
+        finally {
+            Disposer.dispose(fixture.component)
+        }
+    }
+
+    fun testGoPreviousOccurenceSelectsVisibleMessages() {
+        val fixture = createFixture()
+        try {
+            addParsedMessage(
+                fixture.component,
+                stepIndex = 0,
+                message = ParsedStepMessage(message = "first", level = ParsedStepMessageLevel.WARNING),
+                logOffset = 0,
+            )
+            addParsedMessage(
+                fixture.component,
+                stepIndex = 0,
+                message = ParsedStepMessage(message = "second", level = ParsedStepMessageLevel.WARNING),
+                logOffset = 12,
+            )
+
+            val previous = fixture.component.goPreviousOccurence()
+
+            assertEquals(2, previous?.occurenceNumber)
+            assertEquals(2, previous?.occurencesCount)
+            assertEquals(12, selectedMessageOffset(fixture.component))
+        }
+        finally {
+            Disposer.dispose(fixture.component)
+        }
+    }
+
+    fun testScrollRawLogToEndRendersCurrentStepOutput() {
+        val fixture = createFixture()
+        try {
+            emitStepOutput(fixture.component, fixture.step, "alpha\nbeta\n")
+
+            invokeNoArgMethod(fixture.component, "scrollRawLogToEnd")
+
+            assertEquals(0, privateField<Int?>(fixture.component, "renderedStepIndex"))
+            assertEquals("alpha\nbeta\n", privateField<String>(fixture.component, "renderedOutputText"))
         }
         finally {
             Disposer.dispose(fixture.component)
@@ -242,6 +397,13 @@ class LatexStepLogTabComponentTest : BasePlatformTestCase() {
         }
     }
 
+    private fun firstParsedMessageSource(component: LatexStepLogTabComponent, stepIndex: Int): ParsedStepMessageSource? {
+        val map = privateField<Map<Int, List<*>>>(component, "parsedRecordsByStep")
+        val record = map[stepIndex]?.firstOrNull() ?: return null
+        val message = privateField<ParsedStepMessage>(record, "message")
+        return message.source
+    }
+
     private fun setPrivateField(instance: Any, name: String, value: Any?) {
         val field = instance.javaClass.getDeclaredField(name)
         field.isAccessible = true
@@ -252,6 +414,22 @@ class LatexStepLogTabComponentTest : BasePlatformTestCase() {
         val method = instance.javaClass.getDeclaredMethod(methodName, Boolean::class.javaPrimitiveType)
         method.isAccessible = true
         method.invoke(instance, value)
+    }
+
+    private fun invokeNoArgMethod(instance: Any, methodName: String) {
+        val method = instance.javaClass.getDeclaredMethod(methodName)
+        method.isAccessible = true
+        method.invoke(instance)
+    }
+
+    private fun selectedMessageOffset(component: LatexStepLogTabComponent): Int? {
+        val tree = privateField<Any>(component, "tree")
+        val selectedNode = tree.javaClass.getMethod("getLastSelectedPathComponent").invoke(tree)
+        val extracted = component.javaClass.getDeclaredMethod("extractTreeNode", Any::class.java)
+        extracted.isAccessible = true
+        val node = extracted.invoke(component, selectedNode) ?: return null
+        val messageData = privateField<Any?>(node, "messageData") ?: return null
+        return privateField<Int?>(messageData, "logOffset")
     }
 
     private fun <T> privateField(instance: Any, name: String): T {

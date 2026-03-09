@@ -12,6 +12,7 @@ import nl.hannahsten.texifyidea.lang.LatexLib.Companion.NOMENCL
 import nl.hannahsten.texifyidea.lang.LatexLib.Companion.REPEATINDEX
 import nl.hannahsten.texifyidea.lang.LatexLib.Companion.SPLITIDX
 import nl.hannahsten.texifyidea.lang.LatexLib.Companion.SPLITINDEX
+import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 
 object PackageMagic {
 
@@ -79,5 +80,11 @@ object PackageMagic {
         LatexLib.Package("luatexja-fontspec"),
         LatexLib.Package("luatexja-preset"),
         LatexLib.Package("zxjatype"),
+    )
+
+    // Order matters: if both are present, prefer biblatex's compiler.
+    val libToPreferredBibCompiler = linkedMapOf(
+        LatexLib.BIBLATEX to BibliographyCompiler.BIBER,
+        LatexLib.NATBIB to BibliographyCompiler.BIBTEX,
     )
 }

@@ -2,11 +2,6 @@ package nl.hannahsten.texifyidea.run.latex
 
 internal object StepUiOptionIds {
 
-    const val LATEX_COMPILE = "latex-compile"
-    const val LATEXMK_COMPILE = "latexmk-compile"
-    const val PDF_VIEWER = "pdf-viewer"
-    // Unused: const val FILE_CLEANUP = "file-cleanup"
-
     const val COMPILE_PATH = "compile.path"
     const val COMPILE_ARGS = "compile.args"
     const val COMPILE_OUTPUT_FORMAT = "compile.outputFormat"

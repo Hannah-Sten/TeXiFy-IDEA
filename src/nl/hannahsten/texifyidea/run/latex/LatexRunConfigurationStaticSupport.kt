@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.run.latex
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import java.nio.file.Path
 
 /**
  * Provides stateless helpers for resolving files and names used by LaTeX run configurations.
@@ -13,12 +14,28 @@ internal object LatexRunConfigurationStaticSupport {
     fun resolveMainFile(runConfig: LatexRunConfiguration, path: String? = runConfig.mainFilePath): VirtualFile? {
         val candidate = path?.trim()?.takeIf { it.isNotBlank() } ?: return null
         val fileSystem = LocalFileSystem.getInstance()
-        val absolute = fileSystem.findFileByPath(candidate)
+        val absolute = fileSystem.findFileByPath(candidate) ?: fileSystem.refreshAndFindFileByPath(candidate)
         if (absolute?.extension == "tex") {
             return absolute
         }
 
         val contentRoots = ProjectRootManager.getInstance(runConfig.project).contentRoots
+        val isAbsoluteCandidate = runCatching { Path.of(candidate).isAbsolute }.getOrDefault(false)
+        if (isAbsoluteCandidate) {
+            val normalizedCandidate = candidate.replace('\\', '/')
+            for (contentRoot in contentRoots) {
+                val normalizedRoot = contentRoot.path.replace('\\', '/')
+                if (!normalizedCandidate.startsWith("$normalizedRoot/")) {
+                    continue
+                }
+                val relativePath = normalizedCandidate.removePrefix(normalizedRoot).trimStart('/')
+                val file = contentRoot.findFileByRelativePath(relativePath)
+                if (file?.extension == "tex") {
+                    return file
+                }
+            }
+        }
+
         for (contentRoot in contentRoots) {
             val file = contentRoot.findFileByRelativePath(candidate)
             if (file?.extension == "tex") {

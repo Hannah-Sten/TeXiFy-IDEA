@@ -18,6 +18,7 @@ import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import org.jdom.Element
 import org.jdom.Namespace
 import java.nio.file.Files
+import java.nio.file.Path
 
 class LatexRunConfigurationTest : BasePlatformTestCase() {
 
@@ -30,9 +31,9 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
     fun testWriteReadRoundTripPreservesCommonAndSteps() {
         val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
         runConfig.mainFilePath = "main.tex"
-        runConfig.workingDirectory = java.nio.file.Path.of("{mainFileParent}")
-        runConfig.outputPath = java.nio.file.Path.of("{projectDir}/out")
-        runConfig.auxilPath = java.nio.file.Path.of("{projectDir}/aux")
+        runConfig.workingDirectory = Path.of("{mainFileParent}")
+        runConfig.outputPath = Path.of("{projectDir}/out")
+        runConfig.auxilPath = Path.of("{projectDir}/aux")
         runConfig.latexDistribution = LatexDistributionType.TEXLIVE
 
         runConfig.configOptions.steps = mutableListOf(
@@ -67,13 +68,11 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         assertEquals("viewer-1", restored.configOptions.steps[1].id)
     }
 
-    fun testEmptyStepListFallsBackToDefaultSteps() {
+    fun testEmptyStepListRemainsEmpty() {
         val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
         runConfig.configOptions.steps = mutableListOf()
 
-        runConfig.configOptions.ensureDefaultSteps()
-
-        assertEquals(listOf(LatexStepType.LATEXMK_COMPILE, LatexStepType.PDF_VIEWER), runConfig.configOptions.steps.map { it.type })
+        assertTrue(runConfig.configOptions.steps.isEmpty())
     }
 
     fun testTemplateConfigurationAppliesAutoCompletionOnCreation() {
@@ -84,6 +83,13 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
             listOf(LatexStepType.LATEXMK_COMPILE, LatexStepType.PDF_VIEWER),
             template.configOptions.steps.map { it.type }
         )
+    }
+
+    fun testDefaultOutputAndAuxPathsUseProjectDirPlaceholders() {
+        val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
+
+        assertEquals("{projectDir}/out", runConfig.outputPath.toString())
+        assertEquals("{projectDir}/auxil", runConfig.auxilPath.toString())
     }
 
     fun testWriteReadRoundTripPreservesFileCleanupStep() {

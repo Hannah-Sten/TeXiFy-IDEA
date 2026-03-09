@@ -109,7 +109,12 @@ internal class StepArtifactSync(
     }
 
     private fun makeindexWorkingDirectory(step: MakeindexStepOptions): Path =
-        CommandLineRunStep.resolveWorkingDirectory(context, step.workingDirectoryPath)
+        if (step.program == MakeindexProgram.BIB2GLS && step.workingDirectoryPath.isNullOrBlank()) {
+            Path.of(context.session.mainFile.parent.path)
+        }
+        else {
+            CommandLineRunStep.resolveWorkingDirectory(context, step.workingDirectoryPath)
+        }
 
     private fun auxOrOutputDirectory(): Path? =
         context.session.auxDir?.path?.let(Path::of)

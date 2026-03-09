@@ -29,14 +29,16 @@ internal class LatexCompileSequenceFragment(
     }
 
     override fun doReset(s: RunnerAndConfigurationSettingsImpl) {
-        component.resetEditorFrom(s.configuration as LatexRunConfiguration)
+        component.resetEditorFrom()
     }
 
     override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
-        component.applyEditorTo(s.configuration as LatexRunConfiguration)
+        component.applyEditorTo()
     }
 
     companion object {
+
+        internal fun createWrappedComponent(component: LatexCompileSequenceComponent): JComponent = wrap(component)
 
         private fun wrap(component: LatexCompileSequenceComponent): JComponent {
             val tooltip = TexifyBundle.message("run.step.ui.compile.sequence.tooltip")
@@ -47,9 +49,21 @@ internal class LatexCompileSequenceFragment(
                 font = JBUI.Fonts.label().deriveFont(Font.BOLD)
                 toolTipText = tooltip
             }
+            val header = JPanel(BorderLayout()).apply {
+                add(label, BorderLayout.WEST)
+                add(
+                    JPanel(BorderLayout()).apply {
+                        isOpaque = false
+                        border = JBUI.Borders.emptyLeft(12)
+                        add(component.headerActionComponent(), BorderLayout.EAST)
+                    },
+                    BorderLayout.EAST,
+                )
+            }
             component.toolTipText = tooltip
+            component.headerActionComponent().toolTipText = tooltip
 
-            panel.add(label, BorderLayout.NORTH)
+            panel.add(header, BorderLayout.NORTH)
             panel.add(component, BorderLayout.CENTER)
 
             return panel

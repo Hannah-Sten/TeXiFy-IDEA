@@ -5,6 +5,7 @@ import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.latex.LatexPathResolver
 import nl.hannahsten.texifyidea.run.latex.LatexmkCompileStepOptions
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
@@ -73,7 +74,7 @@ object LatexmkRcFileFinder {
         return null
     }
 
-    private fun getLocalLatexmkRcPath(compilerArguments: String?, workingDir: Path?): Path? {
+    private fun getLocalLatexmkRcPath(argumentSources: Iterable<String?>, workingDir: Path?): Path? {
         // 3
         if (workingDir != null) {
             listOf(
@@ -85,9 +86,13 @@ object LatexmkRcFileFinder {
         }
 
         // 4
-        if (compilerArguments != null) {
-            val arguments = compilerArguments.split(Regex("\\s+")).filter { it.isNotBlank() }
-            if (arguments.contains("-r") && arguments.last() != "-r") {
+        val arguments = argumentSources
+            .asSequence()
+            .filterNotNull()
+            .flatMap { ParametersListUtil.parse(it).asSequence() }
+            .toList()
+        if (arguments.contains("-r") && arguments.last() != "-r") {
+            if (arguments.indexOf("-r") + 1 < arguments.size) {
                 val path = runCatching { Path.of(arguments[arguments.indexOf("-r") + 1]) }.getOrNull() ?: return null
                 if (Files.exists(path)) return path
             }
@@ -96,17 +101,24 @@ object LatexmkRcFileFinder {
         return null
     }
 
-    private fun isLocalLatexmkRcFilePresent(compilerArguments: String?, workingDir: Path?) = getLocalLatexmkRcPath(compilerArguments, workingDir) != null
+    private fun isLocalLatexmkRcFilePresent(
+        compilerArguments: String?,
+        extraArguments: String?,
+        workingDir: Path?,
+    ) = getLocalLatexmkRcPath(listOf(compilerArguments, extraArguments), workingDir) != null
 
-    fun hasLatexmkRc(compilerArguments: String?, workingDirectory: Path?): Boolean =
-        isSystemLatexmkRcFilePresent || isLocalLatexmkRcFilePresent(compilerArguments, workingDirectory)
+    fun hasLatexmkRc(
+        compilerArguments: String?,
+        extraArguments: String?,
+        workingDirectory: Path?,
+    ): Boolean = isSystemLatexmkRcFilePresent || isLocalLatexmkRcFilePresent(compilerArguments, extraArguments, workingDirectory)
 
     internal fun localLatexmkRcPathForRunConfig(runConfig: LatexRunConfiguration): Path? {
         val mainFile = LatexRunConfigurationStaticSupport.resolveMainFile(runConfig)
         val latexmkStep = runConfig.primaryCompileStep() as? LatexmkCompileStepOptions
         val workingDirectory = LatexPathResolver.resolve(runConfig.workingDirectory, mainFile, runConfig.project)
             ?: mainFile?.parent?.path?.let { Path.of(it) }
-        return getLocalLatexmkRcPath(latexmkStep?.compilerArguments, workingDirectory)
+        return getLocalLatexmkRcPath(listOf(latexmkStep?.compilerArguments, latexmkStep?.latexmkExtraArguments), workingDirectory)
     }
 
     /**

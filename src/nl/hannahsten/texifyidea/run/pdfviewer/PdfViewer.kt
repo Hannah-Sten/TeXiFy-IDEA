@@ -3,7 +3,6 @@ package nl.hannahsten.texifyidea.run.pdfviewer
 import com.intellij.openapi.extensions.ExtensionPointName
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
-import nl.hannahsten.texifyidea.run.latex.LatexRunSessionState
 import nl.hannahsten.texifyidea.util.runCommand
 
 /**
@@ -59,7 +58,6 @@ interface PdfViewer {
         line: Int,
         project: Project,
         focusAllowed: Boolean,
-        session: LatexRunSessionState? = null,
     ) {
         // Default implementation does nothing.
     }

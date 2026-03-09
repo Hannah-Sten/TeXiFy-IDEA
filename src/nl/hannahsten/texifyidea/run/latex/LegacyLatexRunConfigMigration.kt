@@ -61,7 +61,6 @@ internal object LegacyLatexRunConfigMigration {
         val completed = LatexStepAutoConfigurator.completeSteps(
             mainPsiFile = null,
             baseSteps = stepBundle.baseSteps,
-            runConfig = runConfig,
         )
         runConfig.configOptions.steps = completed.toMutableList()
     }

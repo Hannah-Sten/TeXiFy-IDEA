@@ -24,7 +24,6 @@ internal object LatexSessionInitializer {
         runConfig = runConfig,
         mainFile = LatexRunConfigurationStaticSupport.resolveMainFile(runConfig),
         workingDirectoryProject = environment.project,
-        createOutputSubDirs = true,
     )
 
     @Throws(ExecutionException::class)
@@ -35,7 +34,6 @@ internal object LatexSessionInitializer {
         runConfig = runConfig,
         mainFile = mainFile,
         workingDirectoryProject = runConfig.project,
-        createOutputSubDirs = false,
     )
 
     @Throws(ExecutionException::class)
@@ -43,7 +41,6 @@ internal object LatexSessionInitializer {
         runConfig: LatexRunConfiguration,
         mainFile: com.intellij.openapi.vfs.VirtualFile?,
         workingDirectoryProject: com.intellij.openapi.project.Project,
-        createOutputSubDirs: Boolean,
     ): LatexRunSessionState {
         val resolvedMainFile = mainFile ?: throw ExecutionException(TexifyBundle.message("run.error.main.file.not.resolved"))
 
@@ -70,11 +67,6 @@ internal object LatexSessionInitializer {
             auxDir = auxDir,
             psiFile = psiPointer,
         )
-
-        if (createOutputSubDirs && !distributionType.isMiktex(runConfig.project, resolvedMainFile)) {
-            val createdDirectories = LatexPathResolver.updateOutputSubDirs(runConfig, resolvedMainFile, outputDir)
-            session.addCleanupDirectoriesIfEmpty(createdDirectories)
-        }
 
         updateOutputFilePath(session, runConfig.primaryCompileStep())
         return session

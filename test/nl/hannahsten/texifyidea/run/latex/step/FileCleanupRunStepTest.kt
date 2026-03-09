@@ -19,16 +19,11 @@ class FileCleanupRunStepTest : BasePlatformTestCase() {
         val root = Files.createTempDirectory("texify-cleanup-step")
         val mainFilePath = root.resolve("main.tex")
         val toDelete = root.resolve("generated.tmp")
-        val nestedParent = Files.createDirectories(root.resolve("tmp/parent"))
-        val nestedChild = Files.createDirectories(nestedParent.resolve("child"))
-        val nonEmpty = Files.createDirectories(root.resolve("tmp/non-empty"))
         Files.writeString(mainFilePath, "\\\\documentclass{article}")
         Files.writeString(toDelete, "temp")
-        Files.writeString(nonEmpty.resolve("keep.txt"), "keep")
 
         val context = createContext(mainFilePath)
         context.session.addCleanupFile(toDelete)
-        context.session.addCleanupDirectoriesIfEmpty(listOf(nestedParent, nestedChild, nonEmpty))
 
         val step = FileCleanupRunStep(FileCleanupStepOptions())
         step.beforeStart(context)
@@ -37,11 +32,7 @@ class FileCleanupRunStepTest : BasePlatformTestCase() {
 
         assertEquals(0, exitCode)
         assertFalse(Files.exists(toDelete))
-        assertFalse(Files.exists(nestedChild))
-        assertFalse(Files.exists(nestedParent))
-        assertTrue(Files.exists(nonEmpty))
         assertTrue(context.session.filesToCleanUp.isEmpty())
-        assertTrue(context.session.directoriesToDeleteIfEmpty.isEmpty())
     }
 
     fun testCleanupIgnoresMissingFiles() {
@@ -60,7 +51,6 @@ class FileCleanupRunStepTest : BasePlatformTestCase() {
 
         assertEquals(0, exitCode)
         assertTrue(context.session.filesToCleanUp.isEmpty())
-        assertTrue(context.session.directoriesToDeleteIfEmpty.isEmpty())
     }
 
     private fun createContext(mainFilePath: Path): LatexRunStepContext {
