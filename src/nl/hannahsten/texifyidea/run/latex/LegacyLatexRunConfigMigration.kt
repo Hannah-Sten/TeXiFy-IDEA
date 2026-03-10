@@ -172,7 +172,7 @@ internal object LegacyLatexRunConfigMigration {
         if (compilerText.equals(LEGACY_LATEXMK, ignoreCase = true)) {
             return LatexmkCompileStepOptions().apply {
                 this.compilerPath = compilerPath
-                this.compilerArguments = compilerArguments
+                this.latexmkExtraArguments = compilerArguments ?: LatexRunConfiguration.DEFAULT_LATEXMK_EXTRA_ARGUMENTS
                 this.beforeRunCommand = beforeRunCommand
                 this.latexmkCompileMode = legacyOutputFormatToLatexmkMode(outputFormatRaw)
             }
@@ -197,7 +197,7 @@ internal object LegacyLatexRunConfigMigration {
 
         return LatexmkCompileStepOptions().apply {
             this.compilerPath = compilerPath
-            this.compilerArguments = compilerArguments
+            this.latexmkExtraArguments = compilerArguments ?: LatexRunConfiguration.DEFAULT_LATEXMK_EXTRA_ARGUMENTS
             this.beforeRunCommand = beforeRunCommand
         }
     }

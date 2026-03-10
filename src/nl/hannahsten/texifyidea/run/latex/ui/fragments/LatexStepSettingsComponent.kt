@@ -47,7 +47,7 @@ internal class LatexStepSettingsComponent(
         get() = editor.shadowSteps
 
     private val compileSettings = LatexCompileStepFragmentedEditor(project)
-    private val latexmkSettings = LatexmkStepFragmentedEditor(project)
+    private val latexmkSettings = LatexmkStepFragmentedEditor()
     private val viewerSettings = LatexViewerStepFragmentedEditor()
     private val bibtexSettings = BibtexStepFragmentedEditor(project)
     private val makeindexSettings = MakeindexStepFragmentedEditor(project)

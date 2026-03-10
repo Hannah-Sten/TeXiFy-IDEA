@@ -74,11 +74,20 @@ internal class MakeindexStepFragmentedEditor(
             id = StepUiOptionIds.STEP_WORKING_DIRECTORY,
             name = "Working directory",
             component = workingDirectoryRow,
-            reset = { step, component -> component.component.text = step.workingDirectoryPath.orEmpty() },
+            reset = { step, component ->
+                component.component.text = step.workingDirectoryPath.orEmpty()
+                component.component.textField.putClientProperty(
+                    "JTextField.placeholderText",
+                    when (step.program) {
+                        MakeindexProgram.BIB2GLS -> "Defaults to main file directory"
+                        else -> "Defaults to output directory"
+                    }
+                )
+            },
             apply = { step, component -> step.workingDirectoryPath = component.component.text.ifBlank { null } },
             initiallyVisible = { step -> !step.workingDirectoryPath.isNullOrBlank() },
             removable = true,
-            hint = "Override working directory for this makeindex step.",
+            hint = "Leave empty to use the default working directory for this makeindex step.",
             actionHint = "Set step working directory",
         )
 

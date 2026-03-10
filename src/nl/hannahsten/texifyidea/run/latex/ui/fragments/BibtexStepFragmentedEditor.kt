@@ -4,7 +4,6 @@ import com.intellij.execution.ui.CommonParameterFragments
 import com.intellij.execution.ui.SettingsEditorFragment
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.openapi.ui.TextBrowseFolderListener
@@ -27,7 +26,6 @@ internal class BibtexStepFragmentedEditor(
             TextBrowseFolderListener(
                 FileChooserDescriptor(true, false, false, false, false, false)
                     .withTitle("Choose Bibliography Executable")
-                    .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules.toSet().toTypedArray())
             )
         )
     }
@@ -85,11 +83,20 @@ internal class BibtexStepFragmentedEditor(
             id = StepUiOptionIds.STEP_WORKING_DIRECTORY,
             name = "Working directory",
             component = workingDirectoryRow,
-            reset = { step, component -> component.component.text = step.workingDirectoryPath.orEmpty() },
+            reset = { step, component ->
+                component.component.text = step.workingDirectoryPath.orEmpty()
+                val defaultDirectory = if (step.bibliographyCompiler == BibliographyCompiler.BIBER) {
+                    "Defaults to output directory"
+                }
+                else {
+                    "Defaults to auxiliary/output directory"
+                }
+                component.component.textField.putClientProperty("JTextField.placeholderText", defaultDirectory)
+            },
             apply = { step, component -> step.workingDirectoryPath = component.component.text.ifBlank { null } },
             initiallyVisible = { step -> !step.workingDirectoryPath.isNullOrBlank() },
             removable = true,
-            hint = "Override working directory for this bibliography step.",
+            hint = "Leave empty to use the default auxiliary/output directory for this bibliography step.",
             actionHint = "Set step working directory",
         )
 

@@ -40,7 +40,7 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
             LatexmkCompileStepOptions().apply {
                 id = "compile-1"
                 compilerPath = "/usr/bin/latexmk"
-                compilerArguments = "-shell-escape"
+                latexmkExtraArguments = "-shell-escape"
                 latexmkCompileMode = LatexmkCompileMode.CUSTOM
                 latexmkCustomEngineCommand = "xelatex"
             },
@@ -66,6 +66,7 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         assertEquals("pdf-viewer", restored.configOptions.steps[1].type)
         assertEquals("compile-1", restored.configOptions.steps[0].id)
         assertEquals("viewer-1", restored.configOptions.steps[1].id)
+        assertEquals("-shell-escape", (restored.configOptions.steps[0] as LatexmkCompileStepOptions).latexmkExtraArguments)
     }
 
     fun testEmptyStepListRemainsEmpty() {
@@ -251,6 +252,19 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
 
         val compile = restored.configOptions.steps.filterIsInstance<LatexmkCompileStepOptions>().first()
         assertEquals(LatexmkCompileMode.LATEX_DVI, compile.latexmkCompileMode)
+    }
+
+    fun testLegacyLatexmkCompilerArgumentsMigrateToExtraArguments() {
+        val element = legacyConfigurationElement(
+            COMPILER to "LATEXMK",
+            COMPILER_ARGUMENTS to "-g",
+        )
+
+        val restored = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Restored")
+        restored.readExternal(element)
+
+        val compile = restored.configOptions.steps.filterIsInstance<LatexmkCompileStepOptions>().first()
+        assertEquals("-g", compile.latexmkExtraArguments)
     }
 
     fun testLegacyCompileTwiceAddsExtraClassicCompileWhenNoAux() {

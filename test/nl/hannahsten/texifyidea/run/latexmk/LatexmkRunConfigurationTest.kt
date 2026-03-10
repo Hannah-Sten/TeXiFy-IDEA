@@ -300,7 +300,7 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
         assertEquals(1, command.count { it == "-synctex=1" })
     }
 
-    fun testLatexmkCompilerArgumentsAreAppendedToCommand() {
+    fun testLatexmkExtraArgumentsAreAppendedToCommand() {
         val mainFile = myFixture.addFileToProject("main.tex", "\\documentclass{article}")
         val runConfig = LatexRunConfiguration(
             myFixture.project,
@@ -309,7 +309,7 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
         )
         val step = latexmkStep(runConfig)
         runConfig.mainFilePath = mainFile.virtualFile.name
-        step.compilerArguments = "-g"
+        step.latexmkExtraArguments = "-g"
 
         val session = initializeSessionState(runConfig)
         val command = latexmkCommand(runConfig, session)

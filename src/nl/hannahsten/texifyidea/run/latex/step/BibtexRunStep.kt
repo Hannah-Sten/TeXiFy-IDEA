@@ -15,10 +15,11 @@ internal class BibtexRunStep(
 
     @Throws(ExecutionException::class)
     override fun createProcess(context: LatexRunStepContext): ProcessHandler {
-        val workingDirectory = CommandLineRunStep.resolveWorkingDirectory(context, stepConfig.workingDirectoryPath)
+        val workingDirectory = CommandLineRunStep.resolveAuxiliaryWorkingDirectory(context, stepConfig.workingDirectoryPath)
         val command = mutableListOf(stepConfig.compilerPath ?: stepConfig.bibliographyCompiler.executableName)
         if (stepConfig.bibliographyCompiler.name == "BIBER") {
-            command += "--input-directory=$workingDirectory"
+            val pathText = context.session.mainFile.parent.path
+            command += "--input-directory=$pathText"
         }
         stepConfig.compilerArguments
             ?.takeIf(String::isNotBlank)

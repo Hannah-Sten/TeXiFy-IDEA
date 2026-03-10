@@ -24,11 +24,10 @@ class LatexStepRunConfigurationOptionsCopyTest : BasePlatformTestCase() {
             LatexmkCompileStepOptions().apply {
                 id = "latexmk-1"
                 compilerPath = "/usr/bin/latexmk"
-                compilerArguments = "-gg"
                 latexmkCompileMode = LatexmkCompileMode.CUSTOM
                 latexmkCustomEngineCommand = "xelatex"
                 latexmkCitationTool = LatexmkCitationTool.BIBER
-                latexmkExtraArguments = "-interaction=nonstopmode"
+                latexmkExtraArguments = "-gg -interaction=nonstopmode"
                 beforeRunCommand = "echo mk"
                 selectedOptions.add(FragmentedSettings.Option("latexmk.mode", true))
             },
@@ -136,7 +135,6 @@ class LatexStepRunConfigurationOptionsCopyTest : BasePlatformTestCase() {
 
             is LatexmkCompileStepOptions if copied is LatexmkCompileStepOptions -> {
                 assertEquals(original.compilerPath, copied.compilerPath)
-                assertEquals(original.compilerArguments, copied.compilerArguments)
                 assertEquals(original.latexmkCompileMode, copied.latexmkCompileMode)
                 assertEquals(original.latexmkCustomEngineCommand, copied.latexmkCustomEngineCommand)
                 assertEquals(original.latexmkCitationTool, copied.latexmkCitationTool)

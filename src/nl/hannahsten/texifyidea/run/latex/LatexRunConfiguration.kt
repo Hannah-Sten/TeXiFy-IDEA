@@ -266,11 +266,10 @@ class LatexRunConfiguration(
                 LatexmkCompileStepOptions().also {
                     it.id = old.id
                     it.compilerPath = old.compilerPath
-                    it.compilerArguments = old.compilerArguments
+                    it.latexmkExtraArguments = old.compilerArguments ?: DEFAULT_LATEXMK_EXTRA_ARGUMENTS
                     it.latexmkCompileMode = LatexmkCompileMode.AUTO
                     it.latexmkCustomEngineCommand = null
                     it.latexmkCitationTool = LatexmkCitationTool.AUTO
-                    it.latexmkExtraArguments = DEFAULT_LATEXMK_EXTRA_ARGUMENTS
                     it.beforeRunCommand = old.beforeRunCommand
                     it.selectedOptions = old.selectedOptions
                     configOptions.steps[index] = it

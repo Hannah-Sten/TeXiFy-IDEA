@@ -4,7 +4,6 @@ import com.intellij.execution.ui.CommonParameterFragments
 import com.intellij.execution.ui.SettingsEditorFragment
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.openapi.ui.TextBrowseFolderListener
@@ -32,7 +31,6 @@ internal class LatexCompileStepFragmentedEditor(
             TextBrowseFolderListener(
                 FileChooserDescriptor(true, false, false, false, false, false)
                     .withTitle("Choose Compiler Executable")
-                    .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules.toSet().toTypedArray())
             )
         )
     }

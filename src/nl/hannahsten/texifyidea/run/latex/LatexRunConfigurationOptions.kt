@@ -156,7 +156,6 @@ class LatexmkCompileStepOptions : LatexStepRunConfigurationOptions() {
     override var type: String = LatexStepType.LATEXMK_COMPILE
 
     var compilerPath by string(null)
-    var compilerArguments by string(null)
     var latexmkCompileMode by enum(LatexmkCompileMode.AUTO)
     var latexmkCustomEngineCommand by string(null)
     var latexmkCitationTool by enum(LatexmkCitationTool.AUTO)

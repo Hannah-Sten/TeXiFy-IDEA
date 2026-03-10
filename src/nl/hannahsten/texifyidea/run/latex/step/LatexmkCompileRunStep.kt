@@ -125,7 +125,6 @@ internal class LatexmkCompileRunStep(
             effectiveCompileModeOverride: LatexmkCompileMode? = null,
         ): String {
             val hasRcFile = LatexmkRcFileFinder.hasLatexmkRc(
-                compilerArguments = step.compilerArguments,
                 extraArguments = step.latexmkExtraArguments,
                 workingDirectory = session.workingDirectory,
             )
@@ -140,10 +139,6 @@ internal class LatexmkCompileRunStep(
             val commandArguments = mutableListOf<String>()
             if (structuredArguments.isNotBlank()) {
                 commandArguments += ParametersListUtil.parse(structuredArguments)
-            }
-            val compilerArguments = step.compilerArguments
-            if (!compilerArguments.isNullOrBlank()) {
-                commandArguments += ParametersListUtil.parse(compilerArguments)
             }
             return ParametersListUtil.join(commandArguments)
         }

@@ -41,7 +41,7 @@ internal class MakeindexRunStep(
         if (stepConfig.program == MakeindexProgram.BIB2GLS && configuredPath.isNullOrBlank()) {
             return Path.of(context.session.mainFile.parent.path)
         }
-        return CommandLineRunStep.resolveWorkingDirectory(context, configuredPath)
+        return CommandLineRunStep.resolveAuxiliaryWorkingDirectory(context, configuredPath)
     }
 
     internal fun buildCommand(context: LatexRunStepContext): List<String> {

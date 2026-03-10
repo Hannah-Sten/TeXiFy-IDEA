@@ -56,6 +56,17 @@ class MakeindexRunStepTest : BasePlatformTestCase() {
         assertEquals(Path.of(context.session.mainFile.parent.path), workingDirectory)
     }
 
+    fun testMakeindexDefaultsWorkingDirectoryToOutputDirectoryOnTexlive() {
+        val context = createContext(separateOutputAndAux = true)
+        val stepOptions = MakeindexStepOptions().apply {
+            program = MakeindexProgram.MAKEINDEX
+        }
+
+        val workingDirectory = MakeindexRunStep(stepOptions).resolveWorkingDirectory(context)
+
+        assertEquals(Path.of(context.session.outputDir.path), workingDirectory)
+    }
+
     fun testLifecycleAndProcessCreationWorkForMakeindexStep() {
         val context = createContext()
         val stepOptions = MakeindexStepOptions().apply {
@@ -77,18 +88,24 @@ class MakeindexRunStepTest : BasePlatformTestCase() {
         assertEquals(stepOptions.id, step.configId)
     }
 
-    private fun createContext(separateAuxDir: Boolean = false): LatexRunStepContext {
+    private fun createContext(
+        separateAuxDir: Boolean = false,
+        separateOutputAndAux: Boolean = false,
+    ): LatexRunStepContext {
         val root = Files.createTempDirectory("texify-makeindex-command")
         val mainFilePath = root.resolve("main.tex")
         Files.writeString(mainFilePath, "\\\\documentclass{article}")
         val mainFile = LocalFileSystem.getInstance().refreshAndFindFileByPath(mainFilePath.toString())!!
-        val auxDir = if (separateAuxDir) {
+        val outputDirPath = if (separateOutputAndAux) root.resolve("out") else Path.of(mainFile.parent.path)
+        Files.createDirectories(outputDirPath)
+        val outputDir = LocalFileSystem.getInstance().refreshAndFindFileByPath(outputDirPath.toString())!!
+        val auxDir = if (separateAuxDir || separateOutputAndAux) {
             val auxDirPath = root.resolve("aux")
             Files.createDirectories(auxDirPath)
             LocalFileSystem.getInstance().refreshAndFindFileByPath(auxDirPath.toString())!!
         }
         else {
-            mainFile.parent
+            outputDir
         }
 
         val runConfig = LatexRunConfiguration(
@@ -102,7 +119,7 @@ class MakeindexRunStepTest : BasePlatformTestCase() {
         val state = LatexRunSessionState(
             project = project,
             mainFile = mainFile,
-            outputDir = auxDir,
+            outputDir = outputDir,
             workingDirectory = Path.of(mainFile.parent.path),
             distributionType = LatexDistributionType.TEXLIVE,
             usesDefaultWorkingDirectory = true,

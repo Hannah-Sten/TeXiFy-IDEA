@@ -102,23 +102,21 @@ object LatexmkRcFileFinder {
     }
 
     private fun isLocalLatexmkRcFilePresent(
-        compilerArguments: String?,
         extraArguments: String?,
         workingDir: Path?,
-    ) = getLocalLatexmkRcPath(listOf(compilerArguments, extraArguments), workingDir) != null
+    ) = getLocalLatexmkRcPath(listOf(extraArguments), workingDir) != null
 
     fun hasLatexmkRc(
-        compilerArguments: String?,
         extraArguments: String?,
         workingDirectory: Path?,
-    ): Boolean = isSystemLatexmkRcFilePresent || isLocalLatexmkRcFilePresent(compilerArguments, extraArguments, workingDirectory)
+    ): Boolean = isSystemLatexmkRcFilePresent || isLocalLatexmkRcFilePresent(extraArguments, workingDirectory)
 
     internal fun localLatexmkRcPathForRunConfig(runConfig: LatexRunConfiguration): Path? {
         val mainFile = LatexRunConfigurationStaticSupport.resolveMainFile(runConfig)
         val latexmkStep = runConfig.primaryCompileStep() as? LatexmkCompileStepOptions
         val workingDirectory = LatexPathResolver.resolve(runConfig.workingDirectory, mainFile, runConfig.project)
             ?: mainFile?.parent?.path?.let { Path.of(it) }
-        return getLocalLatexmkRcPath(listOf(latexmkStep?.compilerArguments, latexmkStep?.latexmkExtraArguments), workingDirectory)
+        return getLocalLatexmkRcPath(listOf(latexmkStep?.latexmkExtraArguments), workingDirectory)
     }
 
     /**

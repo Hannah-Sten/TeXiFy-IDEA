@@ -40,8 +40,27 @@ internal class CommandLineRunStep(
             return configured ?: defaultWorkingDirectory(context)
         }
 
+        fun resolveAuxiliaryWorkingDirectory(context: LatexRunStepContext, configuredPath: String?): Path {
+            val configured = configuredPath
+                ?.trim()
+                ?.takeIf(String::isNotBlank)
+                ?.let(::pathOrNull)
+                ?.let { LatexPathResolver.resolve(it, context.session.mainFile, context.environment.project) }
+            return configured ?: defaultAuxiliaryWorkingDirectory(context)
+        }
+
         fun defaultWorkingDirectory(context: LatexRunStepContext): Path = context.session.auxDir?.let { Path.of(it.path) }
             ?: context.session.outputDir.let { Path.of(it.path) }
             ?: context.session.workingDirectory
+
+        fun defaultAuxiliaryWorkingDirectory(context: LatexRunStepContext): Path {
+            val session = context.session
+            return if (session.distributionType.isMiktex(session.project)) {
+                session.auxDir?.let { Path.of(it.path) } ?: Path.of(session.outputDir.path)
+            }
+            else {
+                Path.of(session.outputDir.path)
+            }
+        }
     }
 }
