@@ -32,7 +32,7 @@ internal object LatexBasicFragments {
     fun createMainFileFragment(
         group: String,
         project: Project
-    ): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<TextFieldWithBrowseButton>> {
+    ): Pair<TextFieldWithBrowseButton, RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<TextFieldWithBrowseButton>>> {
         val mainFile = TextFieldWithBrowseButton().apply {
             addBrowseFolderListener(
                 TextBrowseFolderListener(
@@ -66,7 +66,7 @@ internal object LatexBasicFragments {
 
         fragment.isRemovable = false
         applyTooltip(component, "Main .tex file")
-        return fragment
+        return mainFile to fragment
     }
 
     fun createWorkingDirectoryFragment(group: String, project: Project): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<JComponent>> = directoryFragment(

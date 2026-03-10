@@ -5,11 +5,14 @@ import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import nl.hannahsten.texifyidea.run.latex.*
+import nl.hannahsten.texifyidea.run.latex.step.BibtexRunStep
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepProviders
+import nl.hannahsten.texifyidea.run.latex.step.MakeindexRunStep
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import java.awt.BorderLayout
 import java.awt.CardLayout
 import javax.swing.JPanel
+import kotlin.io.path.pathString
 
 internal class LatexStepSettingsComponent(
     project: Project,
@@ -57,29 +60,25 @@ internal class LatexStepSettingsComponent(
     private val xindySettings = XindyStepFragmentedEditor(project)
     private val fileCleanupSettings = FileCleanupStepFragmentedEditor()
     private val unsupportedSettings = LatexUnsupportedStepSettingsComponent()
+    private val settingsEditors = listOf(
+        compileSettings,
+        latexmkSettings,
+        viewerSettings,
+        bibtexSettings,
+        makeindexSettings,
+        externalToolSettings,
+        pythontexSettings,
+        makeglossariesSettings,
+        xindySettings,
+        fileCleanupSettings,
+    )
 
     init {
         Disposer.register(editor, this)
-        Disposer.register(editor, compileSettings)
-        Disposer.register(editor, latexmkSettings)
-        Disposer.register(editor, viewerSettings)
-        Disposer.register(editor, bibtexSettings)
-        Disposer.register(editor, makeindexSettings)
-        Disposer.register(editor, externalToolSettings)
-        Disposer.register(editor, pythontexSettings)
-        Disposer.register(editor, makeglossariesSettings)
-        Disposer.register(editor, xindySettings)
-        Disposer.register(editor, fileCleanupSettings)
-        compileSettings.addSettingsEditorListener { changeListener() }
-        latexmkSettings.addSettingsEditorListener { changeListener() }
-        viewerSettings.addSettingsEditorListener { changeListener() }
-        bibtexSettings.addSettingsEditorListener { changeListener() }
-        makeindexSettings.addSettingsEditorListener { changeListener() }
-        externalToolSettings.addSettingsEditorListener { changeListener() }
-        pythontexSettings.addSettingsEditorListener { changeListener() }
-        makeglossariesSettings.addSettingsEditorListener { changeListener() }
-        xindySettings.addSettingsEditorListener { changeListener() }
-        fileCleanupSettings.addSettingsEditorListener { changeListener() }
+        settingsEditors.forEach {
+            Disposer.register(editor, it)
+            it.addSettingsEditorListener { changeListener() }
+        }
 
         cardsPanel.add(wrapEditor(compileSettings), CARD_COMPILE)
         cardsPanel.add(wrapEditor(latexmkSettings), CARD_LATEXMK)
@@ -194,6 +193,7 @@ internal class LatexStepSettingsComponent(
     }
 
     private fun resetCurrentCard(targetStep: LatexStepRunConfigurationOptions? = selectedStep) {
+        updateCardContext(targetStep)
         when (currentCardId) {
             CARD_COMPILE -> resetEditorFromSelected(compileSettings, targetStep as? LatexCompileStepOptions)
             CARD_LATEXMK -> resetEditorFromSelected(latexmkSettings, targetStep as? LatexmkCompileStepOptions)
@@ -205,6 +205,24 @@ internal class LatexStepSettingsComponent(
             CARD_MAKEGLOSSARIES -> resetEditorFromSelected(makeglossariesSettings, targetStep as? MakeglossariesStepOptions)
             CARD_XINDY -> resetEditorFromSelected(xindySettings, targetStep as? XindyStepOptions)
             CARD_FILE_CLEANUP -> resetEditorFromSelected(fileCleanupSettings, targetStep as? FileCleanupStepOptions)
+        }
+    }
+
+    private fun updateCardContext(targetStep: LatexStepRunConfigurationOptions?) {
+        val runConfig = editor.configFromReset ?: return
+        (targetStep as? BibtexStepOptions)?.let {
+            BibtexRunStep.inferredWorkingDirectoryHint(runConfig)
+        }?.let {
+            bibtexSettings.setInferredWorkingDirectoryHint(
+                it.pathString
+            )
+        }
+        (targetStep as? MakeindexStepOptions)?.let {
+            MakeindexRunStep.inferredWorkingDirectoryHint(runConfig, it)
+        }?.let {
+            makeindexSettings.setInferredWorkingDirectoryHint(
+                it.pathString
+            )
         }
     }
 

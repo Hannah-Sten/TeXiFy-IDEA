@@ -7,6 +7,7 @@ import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.components.JBTextField
+import com.intellij.util.ui.ComponentWithEmptyText
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
 import nl.hannahsten.texifyidea.run.latex.MakeindexStepOptions
 import nl.hannahsten.texifyidea.run.latex.StepUiOptionIds
@@ -29,6 +30,11 @@ internal class MakeindexStepFragmentedEditor(
 
     private val workingDirectory = createDirectoryField(project, "Step working directory")
     private val workingDirectoryRow = LabeledComponent.create(workingDirectory, "Working directory")
+    private var inferredWorkingDirectoryHint: String? = null
+
+    fun setInferredWorkingDirectoryHint(value: String?) {
+        inferredWorkingDirectoryHint = value
+    }
 
     override fun createFragments(): Collection<SettingsEditorFragment<MakeindexStepOptions, *>> {
         val header = CommonParameterFragments.createHeader<MakeindexStepOptions>("Makeindex Step")
@@ -76,13 +82,7 @@ internal class MakeindexStepFragmentedEditor(
             component = workingDirectoryRow,
             reset = { step, component ->
                 component.component.text = step.workingDirectoryPath.orEmpty()
-                component.component.textField.putClientProperty(
-                    "JTextField.placeholderText",
-                    when (step.program) {
-                        MakeindexProgram.BIB2GLS -> "Defaults to main file directory"
-                        else -> "Defaults to output directory"
-                    }
-                )
+                (component.component.textField as? ComponentWithEmptyText)?.emptyText?.text = inferredWorkingDirectoryHint.orEmpty()
             },
             apply = { step, component -> step.workingDirectoryPath = component.component.text.ifBlank { null } },
             initiallyVisible = { step -> !step.workingDirectoryPath.isNullOrBlank() },

@@ -4,6 +4,8 @@ import com.intellij.execution.ExecutionException
 import com.intellij.execution.process.ProcessHandler
 import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
 import nl.hannahsten.texifyidea.run.latex.LatexPathResolver
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationStaticSupport
 import nl.hannahsten.texifyidea.run.common.createCompilationHandler
 import java.nio.file.Path
 
@@ -61,6 +63,17 @@ internal class CommandLineRunStep(
             else {
                 Path.of(session.outputDir.path)
             }
+        }
+
+        fun inferredAuxiliaryWorkingDirectory(runConfig: LatexRunConfiguration): Path? {
+            val mainFile = LatexRunConfigurationStaticSupport.resolveMainFile(runConfig)
+            val selectedPath = if (runConfig.getLatexDistributionType().isMiktex(runConfig.project, mainFile)) {
+                runConfig.auxilPath ?: LatexPathResolver.defaultAuxilPath
+            }
+            else {
+                runConfig.outputPath ?: LatexPathResolver.defaultOutputPath
+            }
+            return LatexPathResolver.resolve(selectedPath, mainFile, runConfig.project)
         }
     }
 }

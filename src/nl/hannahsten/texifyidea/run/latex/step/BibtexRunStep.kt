@@ -5,6 +5,8 @@ import com.intellij.execution.process.ProcessHandler
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.common.createCompilationHandler
 import nl.hannahsten.texifyidea.run.latex.BibtexStepOptions
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import java.nio.file.Path
 
 internal class BibtexRunStep(
     private val stepConfig: BibtexStepOptions,
@@ -31,5 +33,9 @@ internal class BibtexRunStep(
             command = command,
             workingDirectory = workingDirectory,
         )
+    }
+
+    companion object {
+        fun inferredWorkingDirectoryHint(runConfig: LatexRunConfiguration): Path? = CommandLineRunStep.inferredAuxiliaryWorkingDirectory(runConfig)
     }
 }

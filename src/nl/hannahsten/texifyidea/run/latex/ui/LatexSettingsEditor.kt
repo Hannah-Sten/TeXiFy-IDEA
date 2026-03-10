@@ -6,6 +6,7 @@ import com.intellij.execution.ui.CommonParameterFragments
 import com.intellij.execution.ui.CommonTags
 import com.intellij.execution.ui.RunConfigurationFragmentedEditor
 import com.intellij.execution.ui.SettingsEditorFragment
+import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexStepRunConfigurationOptions
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationStaticSupport
@@ -61,7 +62,7 @@ import nl.hannahsten.texifyidea.util.files.psiFile
  * can be reasoned about from a single entry point.
  */
 class LatexSettingsEditor(
-    private val runConfiguration: LatexRunConfiguration,
+    runConfiguration: LatexRunConfiguration,
 ) : RunConfigurationFragmentedEditor<LatexRunConfiguration>(runConfiguration) {
 
     private val commonGroupName = "Common settings"
@@ -69,11 +70,18 @@ class LatexSettingsEditor(
     internal val compileSequenceComponent = LatexCompileSequenceComponent(this, project)
     internal val stepSettingsComponent = LatexStepSettingsComponent(project, this)
 
+    private val runConfig: LatexRunConfiguration
+        get() = mySettings
+
+    private lateinit var mainFileTextField: TextFieldWithBrowseButton
+
     override fun createRunFragments(): MutableList<SettingsEditorFragment<LatexRunConfiguration, *>> {
         val fragments = mutableListOf<SettingsEditorFragment<LatexRunConfiguration, *>>()
 
         fragments.add(CommonParameterFragments.createHeader(commonGroupName))
-        fragments.add(LatexBasicFragments.createMainFileFragment(commonGroupName, project))
+        val (mainFileTextField, mainFileFrag) = LatexBasicFragments.createMainFileFragment(commonGroupName, project)
+        this.mainFileTextField = mainFileTextField
+        fragments.add(mainFileFrag)
         fragments.add(LatexBasicFragments.createLatexDistributionFragment(commonGroupName, project))
         fragments.add(LatexBasicFragments.createWorkingDirectoryFragment(commonGroupName, project))
         fragments.add(LatexBasicFragments.createOutputDirectoryFragment(commonGroupName, project))
@@ -87,6 +95,9 @@ class LatexSettingsEditor(
         return fragments
     }
 
+    internal var configFromReset: LatexRunConfiguration? = null
+        private set
+
     /*
     Note: there are two `resetEditorFrom`/`applyEditorTo` pairs in this editor:
     resetEditorFrom(s: RunnerAndConfigurationSettingsImpl) goes first and is called by the framework, and sub-fragments are reset
@@ -95,6 +106,7 @@ class LatexSettingsEditor(
     override fun resetEditorFrom(s: RunnerAndConfigurationSettingsImpl) {
         (s.configuration as? LatexRunConfiguration)?.let {
             // we have to first update the steps before resetting the fragments
+            configFromReset = it
             shadowSteps.clear()
             shadowSteps.addAll(it.copyStepsForUi())
         }
@@ -119,7 +131,7 @@ class LatexSettingsEditor(
     }
 
     internal fun autoConfigureCurrentSteps(): List<LatexStepRunConfigurationOptions> {
-        val mainFile = LatexRunConfigurationStaticSupport.resolveMainFile(runConfiguration)
+        val mainFile = LatexRunConfigurationStaticSupport.resolveMainFile(runConfig, mainFileTextField.text)
         val configuredSteps = LatexStepAutoConfigurator.completeSteps(mainFile?.psiFile(project), shadowSteps)
         shadowSteps.clear()
         shadowSteps.addAll(configuredSteps)

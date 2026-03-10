@@ -9,6 +9,7 @@ import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.openapi.ui.TextBrowseFolderListener
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.ui.RawCommandLineEditor
+import com.intellij.util.ui.ComponentWithEmptyText
 import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.latex.BibtexStepOptions
 import nl.hannahsten.texifyidea.run.latex.StepUiOptionIds
@@ -38,6 +39,11 @@ internal class BibtexStepFragmentedEditor(
 
     private val workingDirectory = createDirectoryField(project, "Step working directory")
     private val workingDirectoryRow = LabeledComponent.create(workingDirectory, "Working directory")
+    private var inferredWorkingDirectoryHint: String? = null
+
+    fun setInferredWorkingDirectoryHint(value: String?) {
+        inferredWorkingDirectoryHint = value
+    }
 
     override fun createFragments(): Collection<SettingsEditorFragment<BibtexStepOptions, *>> {
         val header = CommonParameterFragments.createHeader<BibtexStepOptions>("Bibliography Step")
@@ -85,13 +91,7 @@ internal class BibtexStepFragmentedEditor(
             component = workingDirectoryRow,
             reset = { step, component ->
                 component.component.text = step.workingDirectoryPath.orEmpty()
-                val defaultDirectory = if (step.bibliographyCompiler == BibliographyCompiler.BIBER) {
-                    "Defaults to output directory"
-                }
-                else {
-                    "Defaults to auxiliary/output directory"
-                }
-                component.component.textField.putClientProperty("JTextField.placeholderText", defaultDirectory)
+                (component.component.textField as? ComponentWithEmptyText)?.emptyText?.text = inferredWorkingDirectoryHint.orEmpty()
             },
             apply = { step, component -> step.workingDirectoryPath = component.component.text.ifBlank { null } },
             initiallyVisible = { step -> !step.workingDirectoryPath.isNullOrBlank() },
