@@ -15,7 +15,7 @@ import nl.hannahsten.texifyidea.run.latex.BibtexStepOptions
 import nl.hannahsten.texifyidea.run.latex.StepUiOptionIds
 
 internal class BibtexStepFragmentedEditor(
-    private val project: Project,
+    project: Project,
     initialStep: BibtexStepOptions = BibtexStepOptions(),
 ) : AbstractStepFragmentedEditor<BibtexStepOptions>(initialStep) {
 

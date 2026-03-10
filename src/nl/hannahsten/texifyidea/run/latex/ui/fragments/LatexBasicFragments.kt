@@ -251,7 +251,7 @@ internal object LatexBasicFragments {
         tooltip: String = "Supports IDE path macros (for example PROJECT_DIR). Legacy placeholders also work.",
     ): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<JComponent>> {
         val field = directoryPicker(project, chooserTitle)
-        val component = LabeledComponent.create(pathFieldWithMacroSupport(field, project), name)
+        val component = LabeledComponent.create(pathFieldWithMacroSupport(field), name)
 
         val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<JComponent>>(
             id,
@@ -277,7 +277,7 @@ internal object LatexBasicFragments {
         return fragment
     }
 
-    private fun pathFieldWithMacroSupport(field: TextFieldWithBrowseButton, project: Project): JComponent {
+    private fun pathFieldWithMacroSupport(field: TextFieldWithBrowseButton): JComponent {
         val pathMacros = MacrosDialog.getPathMacros(true)
         (field.textField as? ExtendableTextField)?.let { textField ->
             MacrosDialog.addTextFieldExtension(textField, MacrosDialog.Filters.ANY_PATH, pathMacros)
