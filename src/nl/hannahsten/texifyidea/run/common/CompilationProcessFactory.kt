@@ -21,6 +21,7 @@ internal fun createCompilationHandler(
     context: LatexRunStepContext,
     command: List<String>,
     workingDirectory: Path? = context.session.workingDirectory,
+    extraEnvironment: Map<String, String> = emptyMap(),
 ): KillableProcessHandler {
     val runConfig = context.runConfig
     val mainFile = context.session.mainFile
@@ -58,7 +59,7 @@ internal fun createCompilationHandler(
     val commandLine = GeneralCommandLine(command)
         .withWorkingDirectory(resolvedWorkingDirectory)
         .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE)
-        .withEnvironment(envVariables)
+        .withEnvironment(envVariables + extraEnvironment)
 
     Log.debug("Executing ${commandLine.commandLineString} in $resolvedWorkingDirectory")
 

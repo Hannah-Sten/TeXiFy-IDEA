@@ -76,7 +76,7 @@ class MakeindexRunStepTest : BasePlatformTestCase() {
         }
         val expectedHandler = mockk<KillableProcessHandler>(relaxed = true)
         mockkStatic("nl.hannahsten.texifyidea.run.common.CompilationProcessFactoryKt")
-        every { createCompilationHandler(any(), any(), any()) } returns expectedHandler
+        every { createCompilationHandler(any(), any(), any(), any()) } returns expectedHandler
 
         val step = MakeindexRunStep(stepOptions)
         step.beforeStart(context)
