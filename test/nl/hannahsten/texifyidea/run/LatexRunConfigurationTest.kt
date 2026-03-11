@@ -357,7 +357,7 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         assertEquals("{mainFileParent}", restored.auxilPath.toString())
     }
 
-    fun testNewSchemaPrioritySkipsLegacyMigrationWhenStepsPresent() {
+    fun testLegacySchemaOverridesNewStepsWhenStepsArePresent() {
         val source = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Source")
         source.mainFilePath = "from-new-schema.tex"
         source.configOptions.steps = mutableListOf(
@@ -375,9 +375,10 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         val restored = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Restored")
         restored.readExternal(element)
 
-        assertEquals("from-new-schema.tex", restored.mainFilePath)
-        assertEquals(listOf(LatexStepType.LATEXMK_COMPILE, LatexStepType.PDF_VIEWER), restored.configOptions.steps.map { it.type })
-        assertEquals(listOf("new-compile", "new-viewer"), restored.configOptions.steps.map { it.id })
+        assertEquals("from-legacy.tex", restored.mainFilePath)
+        assertEquals(listOf(LatexStepType.LATEX_COMPILE, LatexStepType.LATEX_COMPILE, LatexStepType.PDF_VIEWER), restored.configOptions.steps.map { it.type })
+        assertFalse(restored.configOptions.steps.map { it.id }.contains("new-compile"))
+        assertFalse(restored.configOptions.steps.map { it.id }.contains("new-viewer"))
     }
 
     private fun legacyConfigurationElement(vararg fields: Pair<String, String>): Element {

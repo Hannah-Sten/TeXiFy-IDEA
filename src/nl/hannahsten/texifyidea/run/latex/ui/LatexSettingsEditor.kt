@@ -131,7 +131,8 @@ class LatexSettingsEditor(
     }
 
     internal fun autoConfigureCurrentSteps(): List<LatexStepRunConfigurationOptions> {
-        val mainFile = LatexRunConfigurationStaticSupport.resolveMainFile(runConfig, mainFileTextField.text)
+        val mainFilePath = if (::mainFileTextField.isInitialized) mainFileTextField.text else runConfig.mainFilePath
+        val mainFile = LatexRunConfigurationStaticSupport.resolveMainFile(runConfig, mainFilePath)
         val configuredSteps = LatexStepAutoConfigurator.completeSteps(mainFile?.psiFile(project), shadowSteps)
         shadowSteps.clear()
         shadowSteps.addAll(configuredSteps)
