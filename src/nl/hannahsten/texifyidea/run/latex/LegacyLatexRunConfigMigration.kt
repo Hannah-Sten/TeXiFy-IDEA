@@ -45,12 +45,6 @@ internal object LegacyLatexRunConfigMigration {
 
     fun migrateIfNeeded(runConfig: LatexRunConfiguration, rootElement: Element) {
         val legacyParent = rootElement.getChild(LEGACY_PARENT) ?: return
-        if (runConfig.configOptions.steps.isNotEmpty()) {
-            return
-        }
-        if (hasExplicitStepsOption(rootElement)) {
-            return
-        }
         migrate(runConfig, legacyParent)
     }
 
@@ -318,15 +312,6 @@ internal object LegacyLatexRunConfigMigration {
     private fun parseOutputFormat(raw: String?): LatexCompiler.Format? {
         val value = raw?.trim()?.takeIf { it.isNotBlank() } ?: return null
         return LatexCompiler.Format.entries.firstOrNull { it.name.equals(value, ignoreCase = true) }
-    }
-
-    private fun hasExplicitStepsOption(rootElement: Element): Boolean = containsOptionRecursively(rootElement, "steps")
-
-    private fun containsOptionRecursively(node: Element, optionName: String): Boolean {
-        if (node.name == "option" && node.getAttributeValue("name") == optionName) {
-            return true
-        }
-        return node.children.any { containsOptionRecursively(it, optionName) }
     }
 
     private fun Element.getChildTextTrimOrNull(name: String): String? = getChildText(name)?.trim()?.ifBlank { null }
