@@ -50,7 +50,7 @@ class LatexOutputPathTest : BasePlatformTestCase() {
         val auxDir = LatexPathResolver.resolve(runConfig.auxilPath, mainFile.virtualFile, project)
 
         assertEquals(Path.of(projectRoot, "out"), outputDir)
-        assertEquals(Path.of(projectRoot, "auxil"), auxDir)
+        assertEquals(Path.of(projectRoot, "out"), auxDir)
     }
 
     fun testRelativeOutputPathResolvesViaContentRoot() {

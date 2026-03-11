@@ -90,7 +90,7 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
 
         assertEquals("{projectDir}/out", runConfig.outputPath.toString())
-        assertEquals("{projectDir}/auxil", runConfig.auxilPath.toString())
+        assertEquals("{projectDir}/out", runConfig.auxilPath.toString())
     }
 
     fun testWriteReadRoundTripPreservesFileCleanupStep() {

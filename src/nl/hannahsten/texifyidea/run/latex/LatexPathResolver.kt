@@ -20,7 +20,7 @@ internal object LatexPathResolver {
     const val PROJECT_DIR_PLACEHOLDER = "{projectDir}"
     const val MAIN_FILE_PARENT_PLACEHOLDER = "{mainFileParent}"
     private const val OUTPUT_DIR_NAME = "out"
-    private const val AUX_DIR_NAME = "auxil"
+    private const val AUX_DIR_NAME = "out"
 
     val defaultOutputPath: Path = Path.of(PROJECT_DIR_PLACEHOLDER, OUTPUT_DIR_NAME)
     val defaultAuxilPath: Path = Path.of(PROJECT_DIR_PLACEHOLDER, AUX_DIR_NAME)
