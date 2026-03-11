@@ -423,14 +423,14 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         val element = legacyConfigurationElement(
             COMPILER to "PDFLATEX",
             OUT_DIR to "true",
-            AUX_DIR to "false",
+            AUX_DIR to "true",
         )
 
         val restored = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Restored")
         restored.readExternal(element)
 
         assertEquals("{projectDir}/out", restored.outputPath.toString())
-        assertEquals("{mainFileParent}", restored.auxilPath.toString())
+        assertEquals("{projectDir}/out", restored.auxilPath.toString())
     }
 
     fun testLegacySchemaOverridesNewStepsWhenStepsArePresent() {

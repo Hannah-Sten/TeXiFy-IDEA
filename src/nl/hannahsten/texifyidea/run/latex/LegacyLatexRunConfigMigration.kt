@@ -87,7 +87,7 @@ internal object LegacyLatexRunConfigMigration {
         resolveLegacyPath(
             explicitPath = auxPathText,
             legacyToggle = auxDirFlag,
-            truePlaceholder = "${LatexPathResolver.PROJECT_DIR_PLACEHOLDER}/auxil",
+            truePlaceholder = LatexPathResolver.defaultAuxilPath.toString(),
             falsePlaceholder = LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER,
             fallback = LatexPathResolver.defaultAuxilPath,
             fixInvalidBinPath = false,
