@@ -195,6 +195,7 @@ class BibtexStepOptions : LatexStepRunConfigurationOptions() {
     var compilerArguments by string(null)
     var workingDirectoryPath by string(null)
     var beforeRunCommand by string(null)
+    var legacyRunConfigId by string(null)
 
     override fun newInstance(): LatexStepRunConfigurationOptions = BibtexStepOptions()
 }
@@ -213,6 +214,7 @@ class MakeindexStepOptions : LatexStepRunConfigurationOptions() {
     var workingDirectoryPath by string(null)
     var targetBaseNameOverride by string(null)
     var beforeRunCommand by string(null)
+    var legacyRunConfigId by string(null)
 
     override fun newInstance(): LatexStepRunConfigurationOptions = MakeindexStepOptions()
 }

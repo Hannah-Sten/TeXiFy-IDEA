@@ -4,17 +4,20 @@ import com.intellij.execution.ExecutionException
 import com.intellij.execution.Executor
 import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.execution.configurations.*
+import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.Sdk
 import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
+import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.flow.LatexStepRunState
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepProviders
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCitationTool
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
+import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfiguration
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdk
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
@@ -134,8 +137,14 @@ class LatexRunConfiguration(
         LegacyLatexRunConfigMigration.migrateIfNeeded(this, element)
     }
 
+    override fun writeExternal(element: Element) {
+        resolvePendingLegacyAuxStepsIfNeeded()
+        super<RunConfigurationBase>.writeExternal(element)
+    }
+
     @Throws(RuntimeConfigurationException::class)
     override fun checkConfiguration() {
+        resolvePendingLegacyAuxStepsIfNeeded()
         if (mainFilePath.isNullOrBlank()) {
             throw RuntimeConfigurationError("Run configuration is invalid: no main LaTeX file path selected")
         }
@@ -152,6 +161,7 @@ class LatexRunConfiguration(
         executor: Executor,
         environment: ExecutionEnvironment
     ): RunProfileState {
+        resolvePendingLegacyAuxStepsIfNeeded()
         val configuredSteps = configOptions.steps
         if (configuredSteps.isEmpty()) {
             throw ExecutionException("No executable compile steps were configured.")
@@ -168,7 +178,7 @@ class LatexRunConfiguration(
     }
 
     internal fun copyStepsForUi(): MutableList<LatexStepRunConfigurationOptions> =
-        configOptions.steps.mapTo(mutableListOf()) { it.deepCopy() }
+        configOptions.steps.also { resolvePendingLegacyAuxStepsIfNeeded() }.mapTo(mutableListOf()) { it.deepCopy() }
 
     internal fun replaceStepsFromUi(steps: List<LatexStepRunConfigurationOptions>) {
         configOptions.steps = steps.mapTo(mutableListOf()) { it.deepCopy() }
@@ -218,6 +228,27 @@ class LatexRunConfiguration(
         "mainFilePath=$mainFilePath" +
         ", steps=${configOptions.steps.map { it.type }}" +
         '}'.toString()
+
+    internal fun resolvePendingLegacyAuxStepsIfNeeded() {
+        val hasPendingLegacyAux = configOptions.steps.any { step ->
+            when (step) {
+                is BibtexStepOptions -> !step.legacyRunConfigId.isNullOrBlank()
+                is MakeindexStepOptions -> !step.legacyRunConfigId.isNullOrBlank()
+                else -> false
+            }
+        }
+        if (!hasPendingLegacyAux) {
+            return
+        }
+
+        val runManager = RunManagerImpl.getInstanceImpl(project)
+        configOptions.steps.forEach { step ->
+            when (step) {
+                is BibtexStepOptions -> hydrateLegacyBibtexStep(step, runManager)
+                is MakeindexStepOptions -> hydrateLegacyMakeindexStep(step, runManager)
+            }
+        }
+    }
 
     override fun clone(): RunConfiguration {
         val cloned = super.clone() as LatexRunConfiguration
@@ -286,5 +317,28 @@ class LatexRunConfiguration(
         else {
             PdfViewerStepOptions().also { configOptions.steps.add(it) }
         }
+    }
+
+    private fun hydrateLegacyBibtexStep(step: BibtexStepOptions, runManager: RunManagerImpl) {
+        val legacyId = step.legacyRunConfigId ?: return
+        val bibConfig = runManager.getConfigurationById(legacyId)?.configuration as? BibtexRunConfiguration
+        if (bibConfig != null) {
+            step.bibliographyCompiler = bibConfig.compiler ?: step.bibliographyCompiler
+            step.compilerPath = bibConfig.compilerPath?.trim()?.ifBlank { null }
+            step.compilerArguments = bibConfig.compilerArguments?.trim()?.ifBlank { null }
+            step.workingDirectoryPath = bibConfig.bibWorkingDir?.path
+        }
+        step.legacyRunConfigId = null
+    }
+
+    private fun hydrateLegacyMakeindexStep(step: MakeindexStepOptions, runManager: RunManagerImpl) {
+        val legacyId = step.legacyRunConfigId ?: return
+        val makeindexConfig = runManager.getConfigurationById(legacyId)?.configuration as? MakeindexRunConfiguration
+        if (makeindexConfig != null) {
+            step.program = makeindexConfig.makeindexProgram
+            step.commandLineArguments = makeindexConfig.commandLineArguments?.trim()?.ifBlank { null }
+            step.workingDirectoryPath = makeindexConfig.workingDirectory?.path
+        }
+        step.legacyRunConfigId = null
     }
 }

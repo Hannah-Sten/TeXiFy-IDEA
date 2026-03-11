@@ -317,16 +317,83 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         val restored = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Restored")
         restored.readExternal(element)
 
+        val pendingBibStep = restored.configOptions.steps.filterIsInstance<BibtexStepOptions>().single()
+        assertEquals(bibSettings.uniqueID, pendingBibStep.legacyRunConfigId)
+
+        val pendingMakeindexStep = restored.configOptions.steps.filterIsInstance<MakeindexStepOptions>().single()
+        assertEquals(makeindexSettings.uniqueID, pendingMakeindexStep.legacyRunConfigId)
+
+        val hydratedSteps = restored.copyStepsForUi()
+
+        val bibStep = hydratedSteps.filterIsInstance<BibtexStepOptions>().single()
+        assertEquals(BibliographyCompiler.BIBER, bibStep.bibliographyCompiler)
+        assertEquals("/usr/bin/biber", bibStep.compilerPath)
+        assertEquals("--quiet", bibStep.compilerArguments)
+        assertEquals(workDirVf.path, bibStep.workingDirectoryPath)
+        assertNull(bibStep.legacyRunConfigId)
+
+        val makeindexStep = hydratedSteps.filterIsInstance<MakeindexStepOptions>().single()
+        assertEquals(MakeindexProgram.XINDY, makeindexStep.program)
+        assertEquals("-L english", makeindexStep.commandLineArguments)
+        assertEquals(workDirVf.path, makeindexStep.workingDirectoryPath)
+        assertNull(makeindexStep.legacyRunConfigId)
+    }
+
+    fun testLegacyBibAndMakeindexIdsCanHydrateAfterReadExternal() {
+        val runManager = RunManagerImpl.getInstanceImpl(project)
+        val workDir = Files.createTempDirectory("legacy-aux-late").toString()
+        val workDirVf = requireNotNull(LocalFileSystem.getInstance().refreshAndFindFileByPath(workDir))
+
+        val bibSettings = runManager.createConfiguration(
+            "",
+            LatexConfigurationFactory(BibtexRunConfigurationType())
+        )
+        val bibConfig = bibSettings.configuration as BibtexRunConfiguration
+        bibConfig.compiler = BibliographyCompiler.BIBER
+        bibConfig.compilerPath = "/usr/bin/biber"
+        bibConfig.compilerArguments = "--quiet"
+        bibConfig.bibWorkingDir = workDirVf
+
+        val makeindexSettings = runManager.createConfiguration(
+            "",
+            LatexConfigurationFactory(MakeindexRunConfigurationType())
+        )
+        val makeindexConfig = makeindexSettings.configuration as MakeindexRunConfiguration
+        makeindexConfig.makeindexProgram = MakeindexProgram.XINDY
+        makeindexConfig.commandLineArguments = "-L english"
+        makeindexConfig.workingDirectory = workDirVf
+
+        val element = legacyConfigurationElement(
+            COMPILER to "PDFLATEX",
+            BIB_RUN_CONFIG to "[${bibSettings.uniqueID}]",
+            MAKEINDEX_RUN_CONFIG to "[${makeindexSettings.uniqueID}]",
+        )
+
+        val restored = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Restored")
+        restored.readExternal(element)
+
+        val pendingBibStep = restored.configOptions.steps.filterIsInstance<BibtexStepOptions>().single()
+        val pendingMakeindexStep = restored.configOptions.steps.filterIsInstance<MakeindexStepOptions>().single()
+        assertEquals(bibSettings.uniqueID, pendingBibStep.legacyRunConfigId)
+        assertEquals(makeindexSettings.uniqueID, pendingMakeindexStep.legacyRunConfigId)
+
+        runManager.addConfiguration(bibSettings)
+        runManager.addConfiguration(makeindexSettings)
+
+        restored.copyStepsForUi()
+
         val bibStep = restored.configOptions.steps.filterIsInstance<BibtexStepOptions>().single()
         assertEquals(BibliographyCompiler.BIBER, bibStep.bibliographyCompiler)
         assertEquals("/usr/bin/biber", bibStep.compilerPath)
         assertEquals("--quiet", bibStep.compilerArguments)
         assertEquals(workDirVf.path, bibStep.workingDirectoryPath)
+        assertNull(bibStep.legacyRunConfigId)
 
         val makeindexStep = restored.configOptions.steps.filterIsInstance<MakeindexStepOptions>().single()
         assertEquals(MakeindexProgram.XINDY, makeindexStep.program)
         assertEquals("-L english", makeindexStep.commandLineArguments)
         assertEquals(workDirVf.path, makeindexStep.workingDirectoryPath)
+        assertNull(makeindexStep.legacyRunConfigId)
     }
 
     fun testLegacyDanglingBibAndMakeindexIdsAppendDefaultSteps() {
@@ -339,8 +406,17 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         val restored = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Restored")
         restored.readExternal(element)
 
+        val bibStep = restored.configOptions.steps.filterIsInstance<BibtexStepOptions>().single()
+        val makeindexStep = restored.configOptions.steps.filterIsInstance<MakeindexStepOptions>().single()
+        assertEquals("missing-bib-id", bibStep.legacyRunConfigId)
+        assertEquals("missing-makeindex-id", makeindexStep.legacyRunConfigId)
+
+        restored.copyStepsForUi()
+
         assertEquals(1, restored.configOptions.steps.count { it is BibtexStepOptions })
         assertEquals(1, restored.configOptions.steps.count { it is MakeindexStepOptions })
+        assertNull(restored.configOptions.steps.filterIsInstance<BibtexStepOptions>().single().legacyRunConfigId)
+        assertNull(restored.configOptions.steps.filterIsInstance<MakeindexStepOptions>().single().legacyRunConfigId)
     }
 
     fun testLegacyOutAuxBooleanFallbackMappingWorks() {
