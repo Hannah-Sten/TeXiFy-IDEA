@@ -40,6 +40,9 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
                 add("-output-format=${stepConfig.outputFormat.name.lowercase(Locale.getDefault())}")
                 add("-output-directory=$outputPath")
 
+                // Keep the legacy behavior from the old run configuration implementation:
+                // classic TeX Live compilers only receive -output-directory, while a separate
+                // -aux-directory is only passed on MiKTeX (and latexmk handles aux dirs itself).
                 if (auxilPath != null && session.distributionType.isMiktex(project = session.project)) {
                     add("-aux-directory=$auxilPath")
                 }
@@ -106,6 +109,9 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
                 add("-output-directory=$outputPath")
 
+                // Keep the legacy behavior from the old run configuration implementation:
+                // XeLaTeX only uses a dedicated aux directory on MiKTeX. On TeX Live, auxiliary
+                // files follow the output directory instead of a separate top-level aux path.
                 if (auxilPath != null && session.distributionType.isMiktex(session.project)) {
                     add("-aux-directory=$auxilPath")
                 }

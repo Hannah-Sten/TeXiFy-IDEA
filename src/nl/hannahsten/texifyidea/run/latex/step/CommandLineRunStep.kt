@@ -61,6 +61,8 @@ internal class CommandLineRunStep(
                 session.auxDir?.let { Path.of(it.path) } ?: Path.of(session.outputDir.path)
             }
             else {
+                // Preserve the old behavior: on TeX Live, bibliography/index tools default to the
+                // output directory rather than a separate aux directory unless a step overrides it.
                 Path.of(session.outputDir.path)
             }
         }
