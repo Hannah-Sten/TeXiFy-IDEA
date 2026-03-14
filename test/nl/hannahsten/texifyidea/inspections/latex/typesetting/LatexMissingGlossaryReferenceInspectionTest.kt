@@ -129,4 +129,26 @@ class LatexMissingGlossaryReferenceInspectionTest : TexifyInspectionTestBase(Lat
             updateCommand = true,
         )
     }
+
+    fun testAcro() {
+        testQuickFix(
+            """
+                \documentclass{article}
+                \usepackage{acro}
+                \DeclareAcronym{CD}{short=CD,long=Compact Disc}
+                \begin{document}
+                    Play CD.
+                \end{document}
+            """.trimIndent(),
+            """
+                \documentclass{article}
+                \usepackage{acro}
+                \DeclareAcronym{CD}{short=CD,long=Compact Disc}
+                \begin{document}
+                    Play \ac{CD}.
+                \end{document}
+            """.trimIndent(),
+            updateCommand = true,
+        )
+    }
 }
