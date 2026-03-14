@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Add correct quickfix for acro package
 
 ### Fixed
 
