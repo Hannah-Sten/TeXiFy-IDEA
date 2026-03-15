@@ -21,7 +21,6 @@ import com.intellij.util.concurrency.annotations.RequiresReadLock
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.modules.LatexModuleType
-import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationType
@@ -88,7 +87,7 @@ fun Project.containsFileOfType(type: FileType): Boolean {
         else {
             throw e
         }
-    } catch (e: IndexNotReadyException) {
+    } catch (_: IndexNotReadyException) {
         return false
     }
 }
@@ -106,11 +105,6 @@ fun Project.hasLatexRunConfigurations(): Boolean {
     return RunManager.getInstance(this).allConfigurationsList.any { it is LatexRunConfiguration }
 }
 
-fun Project.getBibtexRunConfigurations(): Collection<BibtexRunConfiguration> {
-    if (isDisposed) return emptyList()
-    return RunManager.getInstance(this).allConfigurationsList.filterIsInstance<BibtexRunConfiguration>()
-}
-
 /**
  * Get the run configuration that is currently selected.
  */
@@ -122,7 +116,8 @@ fun Project?.selectedRunConfig(): LatexRunConfiguration? = this?.let {
  * Get the run configuration of the template.
  */
 fun Project?.latexTemplateRunConfig(): LatexRunConfiguration? = this?.let {
-    RunManager.getInstance(it).getConfigurationTemplate(LatexConfigurationFactory(LatexRunConfigurationType())).configuration as? LatexRunConfiguration
+    val runManager = RunManager.getInstance(it)
+    runManager.getConfigurationTemplate(LatexConfigurationFactory(LatexRunConfigurationType())).configuration as? LatexRunConfiguration
 }
 
 /**
@@ -154,7 +149,7 @@ fun Project.hasLatexModule(): Boolean {
         ModuleManager.getInstance(this).modules
             .any { ModuleType.get(it).id == LatexModuleType.ID }
     }
-    catch (e: AlreadyDisposedException) {
+    catch (_: AlreadyDisposedException) {
         false
     }
 }

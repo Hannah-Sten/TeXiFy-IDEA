@@ -34,6 +34,7 @@ fun VirtualFile.findVirtualFileByAbsoluteOrRelativePath(filePath: String): Virtu
 /**
  * Try to find the virtual file, as absolute path or relative to a content root.
  */
+@Suppress("unused")
 fun findVirtualFileByAbsoluteOrRelativePath(path: String, project: Project): VirtualFile? {
     if (path.isBlank()) return null
 

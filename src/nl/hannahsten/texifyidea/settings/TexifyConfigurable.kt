@@ -3,17 +3,21 @@ package nl.hannahsten.texifyidea.settings
 import com.intellij.execution.configurations.RuntimeConfigurationError
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.options.SearchableConfigurable
+import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.TextBrowseFolderListener
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
+import com.intellij.openapi.ui.showOkCancelDialog
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.fields.IntegerField
 import nl.hannahsten.texifyidea.run.pdfviewer.SumatraViewer
+import nl.hannahsten.texifyidea.util.files.LatexIgnoredFileMasks
 import java.awt.Dimension
 import java.awt.FlowLayout
+import javax.swing.JButton
 import javax.swing.BoxLayout
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -39,6 +43,7 @@ class TexifyConfigurable : SearchableConfigurable {
     private var enableExternalIndex: JBCheckBox? = null
     private var enableSpellcheckEverywhere: JBCheckBox? = null
     private var enableTextidote: JBCheckBox? = null
+    private var addIgnoredLatexMasksButton: JButton? = null
     private var textidoteOptions: RawCommandLineEditor? = null
     private var latexIndentOptions: RawCommandLineEditor? = null
     private var bibtexTidyOptions: RawCommandLineEditor? = null
@@ -122,6 +127,7 @@ class TexifyConfigurable : SearchableConfigurable {
                 htmlPasteTranslator = addComboBox("HTML paste translator", "Built-in", "Pandoc", "Disabled")
                 autoCompileOption = addComboBox("Automatic compilation", "Off", "Always", "After document save", "Disable in power save mode")
                 addFilesetExpirationTimeMs(this)
+                addIgnoredLatexMasksAction()
             }
         )
     }
@@ -172,6 +178,58 @@ class TexifyConfigurable : SearchableConfigurable {
             }
         )
         return checkBox
+    }
+
+    private fun JPanel.addIgnoredLatexMasksAction() {
+        val button = JButton("Add ignored file masks for LaTeX intermediate files").apply {
+            toolTipText = "Adds TeXiFy preset masks to the IDE ignored file types list after confirmation."
+            addActionListener {
+                promptAndApplyIgnoredLatexMasks()
+            }
+        }
+        addIgnoredLatexMasksButton = button
+
+        add(
+            JPanel(FlowLayout(FlowLayout.LEFT)).apply {
+                add(button)
+            }
+        )
+        updateIgnoredLatexMasksButtonState()
+    }
+
+    private fun promptAndApplyIgnoredLatexMasks() {
+        val currentMasks = LatexIgnoredFileMasks.getCurrentMasks()
+        val missingMasks = LatexIgnoredFileMasks.findMissingMasks(currentMasks)
+        if (missingMasks.isEmpty()) {
+            Messages.showInfoMessage(
+                "All TeXiFy LaTeX intermediate-file masks are already present in the IDE ignored file types list.",
+                "Ignored File Masks"
+            )
+            updateIgnoredLatexMasksButtonState()
+            return
+        }
+
+        val result = showOkCancelDialog(
+            "Add Ignored File Masks",
+            buildString {
+                appendLine("Add the following file masks to the IDE ignored file types list?")
+                appendLine("This only changes file visibility. It does not delete any files.")
+                appendLine()
+                missingMasks.forEach { appendLine(it) }
+            },
+            "Add"
+        )
+
+        if (result != Messages.OK) {
+            return
+        }
+
+        LatexIgnoredFileMasks.applyMasks(LatexIgnoredFileMasks.mergeWithPreset(currentMasks))
+        updateIgnoredLatexMasksButtonState()
+    }
+
+    private fun updateIgnoredLatexMasksButtonState() {
+        addIgnoredLatexMasksButton?.isEnabled = LatexIgnoredFileMasks.findMissingMasks(LatexIgnoredFileMasks.getCurrentMasks()).isNotEmpty()
     }
 
     private fun addSumatraPathField(panel: JPanel) {
@@ -268,5 +326,6 @@ class TexifyConfigurable : SearchableConfigurable {
         }
         sumatraPath?.text = state.pathToSumatra ?: ""
         filesetExpirationTimeMs?.value = state.filesetExpirationTimeMs
+        updateIgnoredLatexMasksButtonState()
     }
 }

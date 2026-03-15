@@ -52,7 +52,13 @@ interface PdfViewer {
      * @param focusAllowed Indicates whether the viewer is allowed to take focus when performing the forward search.
      * **If false, the viewer should not take focus anyway, even if it has to abort the operation.** (In order to not disturb the user.)
      */
-    fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
+    fun forwardSearch(
+        outputPath: String?,
+        sourceFilePath: String,
+        line: Int,
+        project: Project,
+        focusAllowed: Boolean,
+    ) {
         // Default implementation does nothing.
     }
 

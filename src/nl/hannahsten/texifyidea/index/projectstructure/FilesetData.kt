@@ -17,6 +17,10 @@ data class FilesetData(
      */
     val filesetScope: GlobalSearchScope,
 
+    /**
+     * The union of all libraries used by the related [filesets], stored as file names with extension
+     * (for example `amsmath.sty` or `article.cls`).
+     */
     val libraries: Set<String>,
 
     val externalDocumentInfo: List<ExternalDocumentInfo>
