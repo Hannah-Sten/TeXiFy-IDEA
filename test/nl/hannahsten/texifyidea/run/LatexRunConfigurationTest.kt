@@ -172,6 +172,7 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         assertTrue(ids.contains("environmentVariables"))
         assertTrue(ids.contains("compileSequence"))
         assertTrue(ids.contains("stepSettings"))
+        assertTrue(ids.contains("beforeRunTasks"))
         assertTrue(ids.indexOf("mainFile") < ids.indexOf("compileSequence"))
         assertTrue(ids.indexOf("compileSequence") < ids.indexOf("stepSettings"))
         assertFalse(ids.contains("legacyAdvancedOptions"))

@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.run.latex.ui
 
 import com.intellij.execution.impl.RunnerAndConfigurationSettingsImpl
 import com.intellij.execution.ui.BeforeRunFragment
+import com.intellij.execution.ui.BeforeRunComponent
 import com.intellij.execution.ui.CommonParameterFragments
 import com.intellij.execution.ui.CommonTags
 import com.intellij.execution.ui.RunConfigurationFragmentedEditor
@@ -89,6 +90,9 @@ class LatexSettingsEditor(
         fragments.add(LatexBasicFragments.createEnvironmentVariablesFragment(commonGroupName))
         fragments.add(LatexCompileSequenceFragment(compileSequenceComponent))
         fragments.add(LatexStepSettingsFragment(stepSettingsComponent))
+
+        // platform fragments
+        fragments.add(BeforeRunFragment.createBeforeRun(BeforeRunComponent(this), null))
         fragments.addAll(BeforeRunFragment.createGroup())
         fragments.add(CommonTags.parallelRun())
 
