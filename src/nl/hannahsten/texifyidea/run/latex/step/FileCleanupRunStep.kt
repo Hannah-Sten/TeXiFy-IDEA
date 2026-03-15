@@ -1,10 +1,12 @@
 package nl.hannahsten.texifyidea.run.latex.step
 
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.execution.ExecutionException
+import com.intellij.execution.process.ProcessHandler
+import nl.hannahsten.texifyidea.run.common.createCompilationHandler
+import nl.hannahsten.texifyidea.run.latex.FileCleanupSupport
 import nl.hannahsten.texifyidea.run.latex.FileCleanupStepOptions
-import nl.hannahsten.texifyidea.util.runWriteAction
-import kotlin.io.path.absolutePathString
+import nl.hannahsten.texifyidea.run.latex.LatexmkCompileStepOptions
+import nl.hannahsten.texifyidea.run.latexmk.LatexmkCleanUtil
 
 internal class FileCleanupRunStep(
     stepConfig: FileCleanupStepOptions,
@@ -14,40 +16,52 @@ internal class FileCleanupRunStep(
     override val id: String = stepConfig.type
 
     override fun beforeStart(context: LatexRunStepContext) {
-        val state = context.session
-        val filesToDelete = state.filesToCleanUp.toList()
-
-        try {
-            deleteFilesViaVfs(filesToDelete)
-        }
-        finally {
-            state.filesToCleanUp.clear()
-        }
-    }
-
-    private fun deleteFilesViaVfs(files: List<java.nio.file.Path>) {
-        if (files.isEmpty()) {
+        if (usesLatexmkCleanup(context)) {
             return
         }
 
-        val deleteAction = {
-            val fileSystem = LocalFileSystem.getInstance()
-            files.forEach { path ->
-                val file = fileSystem.refreshAndFindFileByPath(path.absolutePathString()) ?: return@forEach
-                runCatching {
-                    file.delete(this)
-                }
-            }
+        try {
+            FileCleanupSupport.delete(FileCleanupSupport.collectRunTargets(context))
         }
-
-        val application = ApplicationManager.getApplication()
-        if (application.isDispatchThread) {
-            runWriteAction(deleteAction)
-        }
-        else {
-            application.invokeAndWait {
-                runWriteAction(deleteAction)
-            }
+        finally {
+            context.session.filesToCleanUp.clear()
         }
     }
+
+    @Throws(ExecutionException::class)
+    override fun createProcess(context: LatexRunStepContext): ProcessHandler? {
+        if (!usesLatexmkCleanup(context)) {
+            return null
+        }
+
+        val command = LatexmkCleanUtil.buildCleanCommandForModel(
+            runConfig = context.runConfig,
+            mainFile = context.session.mainFile,
+            cleanAll = false,
+        ) ?: throw ExecutionException("Could not build latexmk cleanup command.")
+
+        return createCompilationHandler(
+            context = context,
+            command = command,
+            workingDirectory = context.session.workingDirectory,
+        )
+    }
+
+    override fun afterFinish(context: LatexRunStepContext, exitCode: Int) {
+        if (!usesLatexmkCleanup(context)) {
+            return
+        }
+
+        try {
+            if (exitCode == 0) {
+                FileCleanupSupport.delete(context.session.filesToCleanUp.toList())
+            }
+        }
+        finally {
+            context.session.filesToCleanUp.clear()
+        }
+    }
+
+    private fun usesLatexmkCleanup(context: LatexRunStepContext): Boolean =
+        context.runConfig.primaryCompileStep() is LatexmkCompileStepOptions
 }

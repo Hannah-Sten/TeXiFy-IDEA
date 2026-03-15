@@ -11,8 +11,19 @@ internal class FileCleanupStepFragmentedEditor(
     initialStep: FileCleanupStepOptions = FileCleanupStepOptions(),
 ) : AbstractStepFragmentedEditor<FileCleanupStepOptions>(initialStep) {
 
+    companion object {
+
+        internal const val DESCRIPTION_TEXT =
+            "No additional settings. This step removes temporary build artifacts for the current document, " +
+                "including .aux and .log, while preserving final outputs such as PDF. " +
+                "For latexmk configurations it runs latexmk -c."
+
+        internal const val DESCRIPTION_HINT =
+            "Cleanup removes temporary build artifacts while preserving final outputs."
+    }
+
     private val description = JPanel(BorderLayout()).apply {
-        add(JBLabel("No additional settings. This step removes queued temporary files and empty directories."), BorderLayout.CENTER)
+        add(JBLabel(DESCRIPTION_TEXT), BorderLayout.CENTER)
     }
 
     override fun createFragments(): Collection<SettingsEditorFragment<FileCleanupStepOptions, *>> {
@@ -25,7 +36,7 @@ internal class FileCleanupStepFragmentedEditor(
             apply = { _, _ -> },
             initiallyVisible = { true },
             removable = false,
-            hint = "Cleanup removes files queued by compile and auxiliary steps.",
+            hint = DESCRIPTION_HINT,
         )
 
         return listOf(

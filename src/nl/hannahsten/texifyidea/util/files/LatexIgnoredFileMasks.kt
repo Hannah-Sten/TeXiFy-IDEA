@@ -5,32 +5,10 @@ import nl.hannahsten.texifyidea.util.runWriteAction
 
 object LatexIgnoredFileMasks {
 
-    val presetMasks = linkedSetOf(
-        "*.aux",
-        "*.bbl",
-        "*.blg",
-        "*.bcf",
-        "*.fls",
-        "*.fdb_latexmk",
-        "*.toc",
-        "*.out",
-        "*.log",
-        "*.synctex",
-        "*.synctex.gz",
-        "*.nav",
-        "*.snm",
-        "*.lof",
-        "*.lot",
-        "*.idx",
-        "*.ind",
-        "*.ilg",
-        "*.glg",
-        "*.glo",
-        "*.gls",
-        "*.ist",
-        "*.xdy",
-        "*.xdv",
-    )
+    val presetMasks: LinkedHashSet<String> = LatexTemporaryBuildArtifacts.ignoredFileMasks
+        .asSequence()
+        .map(::normalizeMask)
+        .toCollection(linkedSetOf())
 
     fun getCurrentMasks(): LinkedHashSet<String> = parseMasks(FileTypeManagerEx.getInstanceEx().ignoredFilesList)
 
