@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.run.latex.ui.fragments
 
+import com.intellij.execution.ui.FragmentedSettings
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
@@ -32,14 +33,22 @@ internal class LatexStepSettingsComponent(
         private const val CARD_XINDY = "xindy"
         private const val CARD_FILE_CLEANUP = "fileCleanup"
         private const val CARD_UNSUPPORTED = "unsupported"
+
+        private const val NO_SELECTION_MESSAGE = "Select a step in Compile sequence to configure it."
+        private const val MIXED_SELECTION_MESSAGE =
+            "Batch editing is available only when all selected steps have the same type."
+    }
+
+    private enum class StepSelectionMode {
+        NONE,
+        SINGLE,
+        MULTI_SAME_TYPE,
+        MULTI_MIXED_TYPE,
     }
 
     var changeListener: () -> Unit = {}
 
-    private var selectedStepId: String? = null
-    private var selectedStepIndex: Int = -1
-    private var selectedStepType: String? = null
-    private var selectedStep: LatexStepRunConfigurationOptions? = null
+    private var selectionState: LatexStepSelectionState = LatexStepSelectionState.EMPTY
     private var stepsById: Map<String, LatexStepRunConfigurationOptions> = emptyMap()
 
     private var currentCardId: String = CARD_UNSUPPORTED
@@ -91,15 +100,15 @@ internal class LatexStepSettingsComponent(
         cardsPanel.add(wrapEditor(xindySettings), CARD_XINDY)
         cardsPanel.add(wrapEditor(fileCleanupSettings), CARD_FILE_CLEANUP)
         cardsPanel.add(unsupportedSettings, CARD_UNSUPPORTED)
+
         add(cardsPanel, BorderLayout.CENTER)
 
-        showCard(CARD_UNSUPPORTED)
+        refreshForCurrentSelection()
     }
 
     fun resetEditorFrom() {
-        syncSelectionWithCurrentSteps(realignSelectedIndex = true)
-        showCardForStepType(selectedStepType)
-        resetCurrentCard()
+        syncSelectionWithCurrentSteps()
+        refreshForCurrentSelection()
     }
 
     fun applyEditorTo() {
@@ -110,30 +119,58 @@ internal class LatexStepSettingsComponent(
         flushCurrentCard()
     }
 
-    fun onStepSelectionChanged(index: Int, stepId: String?, type: String?) {
-        flushCurrentCard()
+    fun onStepSelectionChanged(selectionState: LatexStepSelectionState) {
+        flushCurrentCard(selectionChangeFlushTargets(selectionState))
 
-        selectedStepIndex = index
-        selectedStepId = stepId
-        selectedStepType = canonicalType(type)
-        selectedStep = selectedStepId?.let { stepsById[it] }
-        showCardForStepType(selectedStepType)
-        resetCurrentCard()
+        this.selectionState = selectionState
+        syncSelectionWithCurrentSteps()
+        refreshForCurrentSelection()
     }
 
     fun onStepsChanged() {
-        syncSelectionWithCurrentSteps(realignSelectedIndex = false)
-        showCardForStepType(selectedStepType)
-        resetCurrentCard()
+        syncSelectionWithCurrentSteps()
+        refreshForCurrentSelection()
     }
 
     internal fun currentCardId(): String = currentCardId
 
+    internal fun currentUnsupportedMessageForTest(): String = unsupportedSettings.message()
+
+    internal fun setCompileEditorValuesForTest(
+        compilerPath: String,
+        compilerArguments: String,
+    ) {
+        compileSettings.setValuesForTest(compilerPath, compilerArguments)
+    }
+
     override fun dispose() {
     }
 
+    private fun refreshForCurrentSelection() {
+        val selectionMode = selectionMode()
+        when (selectionMode) {
+            StepSelectionMode.NONE -> {
+                unsupportedSettings.setMessage(NO_SELECTION_MESSAGE)
+                showCard(CARD_UNSUPPORTED)
+            }
+
+            StepSelectionMode.MULTI_MIXED_TYPE -> {
+                unsupportedSettings.setMessage(MIXED_SELECTION_MESSAGE)
+                showCard(CARD_UNSUPPORTED)
+            }
+
+            StepSelectionMode.SINGLE,
+            StepSelectionMode.MULTI_SAME_TYPE,
+            -> {
+                val primaryStep = primarySelectedStep()
+                showCardForStepType(primaryStep?.type)
+                resetCurrentCard(templateStepForReset(selectionMode))
+            }
+        }
+    }
+
     private fun showCardForStepType(type: String?) {
-        when (type) {
+        when (canonicalType(type)) {
             LatexStepType.LATEX_COMPILE -> showCard(CARD_COMPILE)
             LatexStepType.LATEXMK_COMPILE -> showCard(CARD_LATEXMK)
             LatexStepType.PDF_VIEWER -> showCard(CARD_VIEWER)
@@ -146,7 +183,7 @@ internal class LatexStepSettingsComponent(
             LatexStepType.FILE_CLEANUP -> showCard(CARD_FILE_CLEANUP)
             else -> {
                 val message = when {
-                    type.isNullOrBlank() -> "Select a step in Compile sequence to configure it."
+                    type.isNullOrBlank() -> NO_SELECTION_MESSAGE
                     else -> "${LatexStepUiSupport.description(type)} settings are not available yet."
                 }
                 unsupportedSettings.setMessage(message)
@@ -169,30 +206,56 @@ internal class LatexStepSettingsComponent(
         return LatexRunStepProviders.find(type)?.type ?: type.trim().lowercase()
     }
 
-    private fun syncSelectionWithCurrentSteps(realignSelectedIndex: Boolean) {
+    private fun syncSelectionWithCurrentSteps() {
         stepsById = shadowSteps.associateBy { it.id }
-        if (selectedStepId !in stepsById.keys) {
-            selectedStepId = null
-            selectedStepIndex = -1
-            selectedStepType = null
+        val selectedIds = selectionState.selectedStepIds
+            .filter { it in stepsById.keys }
+        val primaryStepId = selectionState.primaryStepId
+            ?.takeIf { it in selectedIds }
+            ?: selectedIds.lastOrNull()
+        selectionState = LatexStepSelectionState(
+            selectedStepIds = selectedIds,
+            primaryStepId = primaryStepId,
+        )
+    }
+
+    private fun selectedSteps(): List<LatexStepRunConfigurationOptions> = selectionState.selectedStepIds
+        .mapNotNull { stepsById[it] }
+
+    private fun primarySelectedStep(): LatexStepRunConfigurationOptions? = selectionState.primaryStepId
+        ?.let { stepsById[it] }
+
+    private fun selectionMode(): StepSelectionMode {
+        val selectedSteps = selectedSteps()
+        if (selectedSteps.isEmpty()) {
+            return StepSelectionMode.NONE
+        }
+        if (selectedSteps.size == 1) {
+            return StepSelectionMode.SINGLE
         }
 
-        selectedStep = selectedStepId?.let { stepsById[it] }
-        selectedStepType = selectedStep?.type?.let(::canonicalType) ?: selectedStepType
-        if (
-            realignSelectedIndex &&
-            selectedStep != null &&
-            selectedStepIndex !in shadowSteps.indices
-        ) {
-            selectedStepIndex = shadowSteps.indexOfFirst { it.id == selectedStepId }
+        val distinctTypes = selectedSteps
+            .mapNotNull { canonicalType(it.type) }
+            .distinct()
+        return if (distinctTypes.size == 1) {
+            StepSelectionMode.MULTI_SAME_TYPE
         }
+        else {
+            StepSelectionMode.MULTI_MIXED_TYPE
+        }
+    }
+
+    private fun templateStepForReset(selectionMode: StepSelectionMode): LatexStepRunConfigurationOptions? = when (selectionMode) {
+        StepSelectionMode.SINGLE -> primarySelectedStep()
+        StepSelectionMode.MULTI_SAME_TYPE -> primarySelectedStep()?.deepCopy()
+        else -> null
     }
 
     private fun <T : LatexStepRunConfigurationOptions> wrapEditor(editor: SettingsEditor<T>): JPanel = JPanel(BorderLayout()).apply {
         add(editor.component, BorderLayout.CENTER)
     }
 
-    private fun resetCurrentCard(targetStep: LatexStepRunConfigurationOptions? = selectedStep) {
+    private fun resetCurrentCard(targetStep: LatexStepRunConfigurationOptions?) {
         updateCardContext(targetStep)
         when (currentCardId) {
             CARD_COMPILE -> resetEditorFromSelected(compileSettings, targetStep as? LatexCompileStepOptions)
@@ -226,40 +289,94 @@ internal class LatexStepSettingsComponent(
         }
     }
 
-    private fun flushCurrentCard() {
-        val targetStep = findTargetStep()
-        if (targetStep == null) {
-            selectedStep = null
-            return
-        }
-        when (currentCardId) {
-            CARD_COMPILE -> applyEditorToSelected(compileSettings, targetStep as? LatexCompileStepOptions)
-            CARD_LATEXMK -> applyEditorToSelected(latexmkSettings, targetStep as? LatexmkCompileStepOptions)
-            CARD_VIEWER -> applyEditorToSelected(viewerSettings, targetStep as? PdfViewerStepOptions)
-            CARD_BIBTEX -> applyEditorToSelected(bibtexSettings, targetStep as? BibtexStepOptions)
-            CARD_MAKEINDEX -> applyEditorToSelected(makeindexSettings, targetStep as? MakeindexStepOptions)
-            CARD_EXTERNAL_TOOL -> applyEditorToSelected(externalToolSettings, targetStep as? ExternalToolStepOptions)
-            CARD_PYTHONTEX -> applyEditorToSelected(pythontexSettings, targetStep as? PythontexStepOptions)
-            CARD_MAKEGLOSSARIES -> applyEditorToSelected(makeglossariesSettings, targetStep as? MakeglossariesStepOptions)
-            CARD_XINDY -> applyEditorToSelected(xindySettings, targetStep as? XindyStepOptions)
-            CARD_FILE_CLEANUP -> applyEditorToSelected(fileCleanupSettings, targetStep as? FileCleanupStepOptions)
-        }
-        selectedStep = targetStep
+    private fun selectionChangeFlushTargets(newSelectionState: LatexStepSelectionState): Set<String> = when (selectionMode()) {
+        StepSelectionMode.SINGLE -> selectionState.selectedStepIds.toSet()
+        StepSelectionMode.MULTI_SAME_TYPE ->
+            selectionState.selectedStepIds
+                .intersect(newSelectionState.selectedStepIds.toSet())
+
+        StepSelectionMode.NONE,
+        StepSelectionMode.MULTI_MIXED_TYPE,
+        -> emptySet()
     }
 
-    private fun findTargetStep(): LatexStepRunConfigurationOptions? {
-        selectedStepId?.let { id ->
-            shadowSteps.firstOrNull { it.id == id }?.let { return it }
+    private fun flushCurrentCard(targetStepIds: Set<String> = selectionState.selectedStepIds.toSet()) {
+        if (
+            targetStepIds.isEmpty() ||
+            selectionMode() == StepSelectionMode.NONE ||
+            selectionMode() == StepSelectionMode.MULTI_MIXED_TYPE ||
+            currentCardId == CARD_UNSUPPORTED
+        ) {
+            return
         }
-        if (selectedStepIndex in shadowSteps.indices) {
-            val byIndex = shadowSteps[selectedStepIndex]
-            val expectedType = selectedStepType
-            if (expectedType == null || canonicalType(byIndex.type) == expectedType) {
-                return byIndex
+
+        val primaryStep = primarySelectedStep() ?: return
+        val template = primaryStep.deepCopy()
+        when (currentCardId) {
+            CARD_COMPILE -> applyEditorToSelected(compileSettings, template as? LatexCompileStepOptions)
+            CARD_LATEXMK -> applyEditorToSelected(latexmkSettings, template as? LatexmkCompileStepOptions)
+            CARD_VIEWER -> applyEditorToSelected(viewerSettings, template as? PdfViewerStepOptions)
+            CARD_BIBTEX -> applyEditorToSelected(bibtexSettings, template as? BibtexStepOptions)
+            CARD_MAKEINDEX -> applyEditorToSelected(makeindexSettings, template as? MakeindexStepOptions)
+            CARD_EXTERNAL_TOOL -> applyEditorToSelected(externalToolSettings, template as? ExternalToolStepOptions)
+            CARD_PYTHONTEX -> applyEditorToSelected(pythontexSettings, template as? PythontexStepOptions)
+            CARD_MAKEGLOSSARIES -> applyEditorToSelected(makeglossariesSettings, template as? MakeglossariesStepOptions)
+            CARD_XINDY -> applyEditorToSelected(xindySettings, template as? XindyStepOptions)
+            CARD_FILE_CLEANUP -> applyEditorToSelected(fileCleanupSettings, template as? FileCleanupStepOptions)
+        }
+        template.selectedOptions = currentSelectedOptionsForCurrentCard()
+
+        applyTemplateToSelectedSteps(template, targetStepIds)
+        syncSelectionWithCurrentSteps()
+    }
+
+    private fun currentSelectedOptionsForCurrentCard(): MutableList<FragmentedSettings.Option> = when (currentCardId) {
+        CARD_COMPILE -> compileSettings.currentSelectedOptions()
+        CARD_LATEXMK -> latexmkSettings.currentSelectedOptions()
+        CARD_VIEWER -> viewerSettings.currentSelectedOptions()
+        CARD_BIBTEX -> bibtexSettings.currentSelectedOptions()
+        CARD_MAKEINDEX -> makeindexSettings.currentSelectedOptions()
+        CARD_EXTERNAL_TOOL -> externalToolSettings.currentSelectedOptions()
+        CARD_PYTHONTEX -> pythontexSettings.currentSelectedOptions()
+        CARD_MAKEGLOSSARIES -> makeglossariesSettings.currentSelectedOptions()
+        CARD_XINDY -> xindySettings.currentSelectedOptions()
+        CARD_FILE_CLEANUP -> fileCleanupSettings.currentSelectedOptions()
+        else -> mutableListOf()
+    }
+
+    private fun applyTemplateToSelectedSteps(
+        template: LatexStepRunConfigurationOptions,
+        selectedIds: Set<String>,
+    ) {
+        shadowSteps.forEachIndexed { index, target ->
+            if (target.id !in selectedIds) {
+                return@forEachIndexed
+            }
+
+            if (target::class == template::class) {
+                applyTemplateInPlace(target, template)
+            }
+            else {
+                shadowSteps[index] = template.copyWithIdentity(target.id)
             }
         }
-        val expectedType = selectedStepType ?: return null
-        return shadowSteps.firstOrNull { canonicalType(it.type) == expectedType }
+        stepsById = shadowSteps.associateBy { it.id }
+    }
+
+    private fun applyTemplateInPlace(
+        target: LatexStepRunConfigurationOptions,
+        template: LatexStepRunConfigurationOptions,
+    ) {
+        val originalId = target.id
+        target.copyFrom(template)
+        target.id = originalId
+        target.selectedOptions = template.selectedOptions
+            .map { source ->
+                FragmentedSettings.Option().also { option ->
+                    option.copyFrom(source)
+                }
+            }
+            .toMutableList()
     }
 
     private fun <T : LatexStepRunConfigurationOptions> resetEditorFromSelected(

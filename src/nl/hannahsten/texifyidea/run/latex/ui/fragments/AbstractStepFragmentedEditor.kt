@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.run.latex.ui.fragments
 
+import com.intellij.execution.ui.FragmentedSettings
 import com.intellij.execution.ui.FragmentedSettingsEditor
 import com.intellij.execution.ui.FragmentedSettingsBuilder
 import com.intellij.execution.ui.SettingsEditorFragment
@@ -20,6 +21,17 @@ internal abstract class AbstractStepFragmentedEditor<TStep : LatexStepRunConfigu
 ) : FragmentedSettingsEditor<TStep>(initialStep) {
 
     override fun getBuilder(): FragmentedSettingsBuilder<TStep> = LatexStepFragmentedSettingsBuilder(fragments, this)
+
+    internal fun currentSelectedOptions(): MutableList<FragmentedSettings.Option> = fragments
+        .filter { fragment ->
+            fragment.isRemovable &&
+                !fragment.isHeader &&
+                fragment.isSelected
+        }
+        .map { fragment ->
+            FragmentedSettings.Option(fragment.id ?: "", true)
+        }
+        .toMutableList()
 
     protected fun <C : JComponent> stepFragment(
         id: String,

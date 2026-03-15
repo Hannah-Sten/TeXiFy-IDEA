@@ -33,16 +33,101 @@ class LatexCompileSequenceComponentTest : BasePlatformTestCase() {
 
             assertEquals(-1, component.selectedStepIndex())
             assertNull(component.selectedStepType())
+            assertTrue(component.selectedStepIdsForTest().isEmpty())
         }
     }
 
-    fun testSelectStepChangesSelection() {
-        withEditor(configWithSteps(LatexCompileStepOptions(), PdfViewerStepOptions())) { _, component ->
+    fun testSelectStepChangesPrimarySelection() {
+        withEditor(configWithSteps(LatexCompileStepOptions(), PdfViewerStepOptions())) { editor, component ->
             component.resetEditorFrom()
             component.selectStep(1)
 
             assertEquals(1, component.selectedStepIndex())
             assertEquals("pdf-viewer", component.selectedStepType())
+            assertEquals(listOf(editor.shadowSteps[1].id), component.selectedStepIdsForTest())
+            assertEquals(editor.shadowSteps[1].id, component.primaryStepIdForTest())
+        }
+    }
+
+    fun testToggleSelectionAddsAndRemovesSecondarySelection() {
+        withEditor(configWithSteps(LatexCompileStepOptions(), BibtexStepOptions(), PdfViewerStepOptions())) { editor, component ->
+            component.resetEditorFrom()
+            component.selectStep(0)
+            component.toggleStepSelection(2)
+
+            assertEquals(listOf(editor.shadowSteps[0].id, editor.shadowSteps[2].id), component.selectedStepIdsForTest())
+            assertEquals(editor.shadowSteps[2].id, component.primaryStepIdForTest())
+
+            component.toggleStepSelection(2)
+
+            assertEquals(listOf(editor.shadowSteps[0].id), component.selectedStepIdsForTest())
+            assertEquals(editor.shadowSteps[0].id, component.primaryStepIdForTest())
+        }
+    }
+
+    fun testShiftSelectionUsesAnchorRange() {
+        withEditor(configWithSteps(LatexCompileStepOptions(), BibtexStepOptions(), PdfViewerStepOptions())) { editor, component ->
+            component.resetEditorFrom()
+            component.selectStep(0)
+            component.selectStepRange(2)
+
+            assertEquals(editor.shadowSteps.map { it.id }, component.selectedStepIdsForTest())
+            assertEquals(editor.shadowSteps[2].id, component.primaryStepIdForTest())
+        }
+    }
+
+    fun testMixedTypesCanBeSelectedTogether() {
+        withEditor(configWithSteps(LatexCompileStepOptions(), PdfViewerStepOptions(), BibtexStepOptions())) { editor, component ->
+            component.resetEditorFrom()
+            component.selectStep(0)
+            component.toggleStepSelection(1)
+
+            assertEquals(listOf(editor.shadowSteps[0].id, editor.shadowSteps[1].id), component.selectedStepIdsForTest())
+        }
+    }
+
+    fun testMoveSelectedStepsKeepsRelativeOrderAndSelection() {
+        withEditor(configWithSteps(LatexCompileStepOptions(), BibtexStepOptions(), PdfViewerStepOptions(), LatexmkCompileStepOptions())) { editor, component ->
+            component.resetEditorFrom()
+            val selectedIds = listOf(editor.shadowSteps[1].id, editor.shadowSteps[2].id)
+            component.selectStep(1)
+            component.toggleStepSelection(2)
+
+            component.moveSelectedStepsTo(0)
+
+            assertEquals(
+                listOf("bibtex", "pdf-viewer", "latex-compile", "latexmk-compile"),
+                editor.shadowSteps.map { it.type }
+            )
+            assertEquals(selectedIds, component.selectedStepIdsForTest())
+            assertEquals(selectedIds.last(), component.primaryStepIdForTest())
+        }
+    }
+
+    fun testMousePressOnSelectedStepKeepsBatchSelectionForDragStart() {
+        withEditor(configWithSteps(LatexCompileStepOptions(), BibtexStepOptions(), PdfViewerStepOptions())) { editor, component ->
+            component.resetEditorFrom()
+            component.selectStep(0)
+            component.toggleStepSelection(1)
+
+            component.pressStepForDragStartForTest(1)
+
+            assertEquals(listOf(editor.shadowSteps[0].id, editor.shadowSteps[1].id), component.selectedStepIdsForTest())
+            assertEquals(editor.shadowSteps[1].id, component.primaryStepIdForTest())
+        }
+    }
+
+    fun testRemoveSelectedStepRecomputesPrimarySelection() {
+        withEditor(configWithSteps(LatexCompileStepOptions(), BibtexStepOptions(), PdfViewerStepOptions())) { editor, component ->
+            component.resetEditorFrom()
+            component.selectStep(0)
+            component.toggleStepSelection(1)
+
+            component.removeStepForTest(1)
+
+            assertEquals(listOf(editor.shadowSteps[0].id), component.selectedStepIdsForTest())
+            assertEquals(editor.shadowSteps[0].id, component.primaryStepIdForTest())
+            assertEquals(listOf("latex-compile", "pdf-viewer"), editor.shadowSteps.map { it.type })
         }
     }
 

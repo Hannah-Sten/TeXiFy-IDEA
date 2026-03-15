@@ -15,6 +15,7 @@ import nl.hannahsten.texifyidea.run.latex.step.LatexStepAutoConfigurator
 import nl.hannahsten.texifyidea.run.latex.ui.fragments.LatexBasicFragments
 import nl.hannahsten.texifyidea.run.latex.ui.fragments.LatexCompileSequenceComponent
 import nl.hannahsten.texifyidea.run.latex.ui.fragments.LatexCompileSequenceFragment
+import nl.hannahsten.texifyidea.run.latex.ui.fragments.LatexStepSelectionState
 import nl.hannahsten.texifyidea.run.latex.ui.fragments.LatexStepSettingsComponent
 import nl.hannahsten.texifyidea.run.latex.ui.fragments.LatexStepSettingsFragment
 import nl.hannahsten.texifyidea.util.files.psiFile
@@ -126,8 +127,8 @@ class LatexSettingsEditor(
         stepSettingsComponent.flushCurrentStep()
     }
 
-    internal fun onCompileSequenceSelectionChanged(index: Int, stepId: String?, type: String?) {
-        stepSettingsComponent.onStepSelectionChanged(index, stepId, type)
+    internal fun onCompileSequenceSelectionChanged(selectionState: LatexStepSelectionState) {
+        stepSettingsComponent.onStepSelectionChanged(selectionState)
     }
 
     internal fun onCompileSequenceStepsChanged() {

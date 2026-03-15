@@ -112,6 +112,7 @@ abstract class LatexStepRunConfigurationOptions : RunConfigurationOptions() {
     fun deepCopy(): LatexStepRunConfigurationOptions {
         val copied = newInstance()
         copied.copyFrom(this)
+        copied.type = type
         copied.selectedOptions.clear()
         copied.selectedOptions.addAll(
             selectedOptions

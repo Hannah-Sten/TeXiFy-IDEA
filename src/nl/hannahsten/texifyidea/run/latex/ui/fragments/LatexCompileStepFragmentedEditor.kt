@@ -147,4 +147,12 @@ internal class LatexCompileStepFragmentedEditor(
         LatexArgumentsCompletionProvider(options).apply(compilerArguments)
         completionCompilerExecutable = executable
     }
+
+    internal fun setValuesForTest(
+        compilerPath: String,
+        compilerArguments: String,
+    ) {
+        this.compilerPath.text = compilerPath
+        this.compilerArguments.text = compilerArguments
+    }
 }
