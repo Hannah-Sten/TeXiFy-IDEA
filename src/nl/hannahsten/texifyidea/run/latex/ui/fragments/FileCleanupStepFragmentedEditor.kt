@@ -13,10 +13,7 @@ internal class FileCleanupStepFragmentedEditor(
 
     companion object {
 
-        internal const val DESCRIPTION_TEXT =
-            "No additional settings. This step removes temporary build artifacts for the current document, " +
-                "including .aux and .log, while preserving final outputs such as PDF. " +
-                "For latexmk configurations it runs latexmk -c."
+        internal const val DESCRIPTION_TEXT = "Removes temporary build artifacts"
 
         internal const val DESCRIPTION_HINT =
             "Cleanup removes temporary build artifacts while preserving final outputs."
