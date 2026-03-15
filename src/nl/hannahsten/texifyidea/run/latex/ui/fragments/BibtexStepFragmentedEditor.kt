@@ -20,7 +20,7 @@ internal class BibtexStepFragmentedEditor(
 ) : AbstractStepFragmentedEditor<BibtexStepOptions>(initialStep) {
 
     private val compiler = ComboBox(BibliographyCompiler.entries.toTypedArray())
-    private val compilerRow = LabeledComponent.create(compiler, "Bibliography tool")
+    private val compilerRow = LabeledComponent.create(compiler, "&Bibliography tool")
 
     private val compilerPath = TextFieldWithBrowseButton().apply {
         addBrowseFolderListener(
@@ -30,15 +30,15 @@ internal class BibtexStepFragmentedEditor(
             )
         )
     }
-    private val compilerPathRow = LabeledComponent.create(compilerPath, "Compiler path")
+    private val compilerPathRow = LabeledComponent.create(compilerPath, "Compiler &path")
 
     private val compilerArguments = RawCommandLineEditor().apply {
         editorField.emptyText.text = "Custom bibliography arguments"
     }
-    private val compilerArgumentsRow = LabeledComponent.create(compilerArguments, "Compiler arguments")
+    private val compilerArgumentsRow = LabeledComponent.create(compilerArguments, "Compiler ar&guments")
 
     private val workingDirectory = createDirectoryField(project, "Step working directory")
-    private val workingDirectoryRow = LabeledComponent.create(workingDirectory, "Working directory")
+    private val workingDirectoryRow = LabeledComponent.create(workingDirectory, "Working d&irectory")
     private var inferredWorkingDirectoryHint: String? = null
 
     fun setInferredWorkingDirectoryHint(value: String?) {

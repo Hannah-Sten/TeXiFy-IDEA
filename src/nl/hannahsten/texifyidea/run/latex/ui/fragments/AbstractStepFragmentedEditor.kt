@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.run.latex.ui.fragments
 
 import com.intellij.execution.ui.FragmentedSettingsEditor
+import com.intellij.execution.ui.FragmentedSettingsBuilder
 import com.intellij.execution.ui.SettingsEditorFragment
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.project.Project
@@ -17,6 +18,8 @@ import javax.swing.JComponent
 internal abstract class AbstractStepFragmentedEditor<TStep : LatexStepRunConfigurationOptions>(
     initialStep: TStep,
 ) : FragmentedSettingsEditor<TStep>(initialStep) {
+
+    override fun getBuilder(): FragmentedSettingsBuilder<TStep> = LatexStepFragmentedSettingsBuilder(getFragments(), this)
 
     protected fun <C : JComponent> stepFragment(
         id: String,

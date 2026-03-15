@@ -24,7 +24,7 @@ internal class LatexCompileStepFragmentedEditor(
 ) : AbstractStepFragmentedEditor<LatexCompileStepOptions>(initialStep) {
 
     private val compiler = ComboBox(LatexCompiler.entries.toTypedArray())
-    private val compilerRow = LabeledComponent.create(compiler, "Compiler")
+    private val compilerRow = LabeledComponent.create(compiler, "&Compiler")
 
     private val compilerPath = TextFieldWithBrowseButton().apply {
         addBrowseFolderListener(
@@ -34,18 +34,18 @@ internal class LatexCompileStepFragmentedEditor(
             )
         )
     }
-    private val compilerPathRow = LabeledComponent.create(compilerPath, "Compiler path")
+    private val compilerPathRow = LabeledComponent.create(compilerPath, "Compiler &path")
 
     private val compilerArguments = EditorTextField("", project, PlainTextFileType.INSTANCE).apply {
         setPlaceholder("Custom compiler arguments")
         @Suppress("UsePropertyAccessSyntax")
         setOneLineMode(true)
     }
-    private val compilerArgumentsRow = LabeledComponent.create(compilerArguments, "Compiler arguments")
+    private val compilerArgumentsRow = LabeledComponent.create(compilerArguments, "Compiler ar&guments")
     private var completionCompilerExecutable: String? = null
 
     private val outputFormat = ComboBox(Format.entries.toTypedArray())
-    private val outputFormatRow = LabeledComponent.create(outputFormat, "Output format")
+    private val outputFormatRow = LabeledComponent.create(outputFormat, "Output forma&t")
 
     init {
         compiler.addItemListener {

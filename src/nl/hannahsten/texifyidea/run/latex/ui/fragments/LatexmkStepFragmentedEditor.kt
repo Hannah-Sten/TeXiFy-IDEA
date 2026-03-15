@@ -28,21 +28,21 @@ internal class LatexmkStepFragmentedEditor(
             )
         )
     }
-    private val compilerPathRow = LabeledComponent.create(compilerPath, "Compiler path")
+    private val compilerPathRow = LabeledComponent.create(compilerPath, "Compiler &path")
 
     private val latexmkCompileMode = ComboBox(LatexmkCompileMode.entries.toTypedArray())
-    private val latexmkCompileModeRow = LabeledComponent.create(latexmkCompileMode, "Latexmk compile mode")
+    private val latexmkCompileModeRow = LabeledComponent.create(latexmkCompileMode, "Compile mod&e")
 
     private val latexmkCustomEngineCommand = JBTextField()
-    private val latexmkCustomEngineRow = LabeledComponent.create(latexmkCustomEngineCommand, "Latexmk custom engine command")
+    private val latexmkCustomEngineRow = LabeledComponent.create(latexmkCustomEngineCommand, "Custom e&ngine command")
 
     private val latexmkCitationTool = ComboBox(LatexmkCitationTool.entries.toTypedArray())
-    private val latexmkCitationToolRow = LabeledComponent.create(latexmkCitationTool, "Latexmk citation tool")
+    private val latexmkCitationToolRow = LabeledComponent.create(latexmkCitationTool, "Citation &tool")
 
     private val latexmkExtraArguments = RawCommandLineEditor().apply {
         editorField.emptyText.text = "Additional latexmk arguments"
     }
-    private val latexmkExtraArgumentsRow = LabeledComponent.create(latexmkExtraArguments, "Latexmk extra arguments")
+    private val latexmkExtraArgumentsRow = LabeledComponent.create(latexmkExtraArguments, "Extra ar&guments")
 
     init {
         latexmkCompileMode.addItemListener {

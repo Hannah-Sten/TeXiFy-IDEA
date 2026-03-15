@@ -15,15 +15,15 @@ internal class PythontexStepFragmentedEditor(
 ) : AbstractStepFragmentedEditor<PythontexStepOptions>(initialStep) {
 
     private val executable = JBTextField()
-    private val executableRow = LabeledComponent.create(executable, "Executable")
+    private val executableRow = LabeledComponent.create(executable, "E&xecutable")
 
     private val arguments = RawCommandLineEditor().apply {
         editorField.emptyText.text = "Defaults to main file base name"
     }
-    private val argumentsRow = LabeledComponent.create(arguments, "Arguments")
+    private val argumentsRow = LabeledComponent.create(arguments, "Ar&guments")
 
     private val workingDirectory = createDirectoryField(project, "Step working directory")
-    private val workingDirectoryRow = LabeledComponent.create(workingDirectory, "Working directory")
+    private val workingDirectoryRow = LabeledComponent.create(workingDirectory, "Working d&irectory")
 
     override fun createFragments(): Collection<SettingsEditorFragment<PythontexStepOptions, *>> {
         val header = CommonParameterFragments.createHeader<PythontexStepOptions>("PythonTeX Step")

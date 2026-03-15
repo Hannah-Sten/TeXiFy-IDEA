@@ -10,17 +10,21 @@ import nl.hannahsten.texifyidea.run.latex.PdfViewerStepOptions
 import nl.hannahsten.texifyidea.run.latex.StepUiOptionIds
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import java.awt.event.ItemEvent
+import java.awt.event.KeyEvent
 
 internal class LatexViewerStepFragmentedEditor(
     initialStep: PdfViewerStepOptions = PdfViewerStepOptions(),
 ) : AbstractStepFragmentedEditor<PdfViewerStepOptions>(initialStep) {
 
     private val pdfViewer = ComboBox(PdfViewer.availableViewers.toTypedArray())
-    private val pdfViewerRow = LabeledComponent.create(pdfViewer, "PDF viewer")
+    private val pdfViewerRow = LabeledComponent.create(pdfViewer, "PDF &viewer")
 
-    private val requireFocus = JBCheckBox("Allow PDF viewer to focus after compilation")
+    private val requireFocus = JBCheckBox("Require focus").apply {
+        mnemonic = KeyEvent.VK_R
+        displayedMnemonicIndex = 0
+    }
     private val viewerCommand = JBTextField()
-    private val viewerCommandRow = LabeledComponent.create(viewerCommand, "Custom viewer command")
+    private val viewerCommandRow = LabeledComponent.create(viewerCommand, "Custom viewer &command")
 
     init {
         pdfViewer.addItemListener {

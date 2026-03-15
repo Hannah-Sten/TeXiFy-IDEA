@@ -43,7 +43,7 @@ internal object LatexBasicFragments {
                 )
             )
         }
-        val component = LabeledComponent.create(mainFile, "Main file")
+        val component = LabeledComponent.create(mainFile, "Main &file")
 
         val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<TextFieldWithBrowseButton>>(
             "mainFile",
@@ -75,6 +75,7 @@ internal object LatexBasicFragments {
         group = group,
         project = project,
         chooserTitle = "Working Directory",
+        labelText = "&Working directory",
         initiallyVisible = { runConfig -> runConfig.workingDirectory != null },
         reset = { runConfig, field ->
             field.text = runConfig.workingDirectory?.toString() ?: LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER
@@ -95,7 +96,7 @@ internal object LatexBasicFragments {
         val distribution = ComboBox(LatexDistributionSelection.getAvailableSelections(project).toTypedArray()).apply {
             renderer = LatexDistributionComboBoxRenderer(project) { null }
         }
-        val component = LabeledComponent.create(distribution, "LaTeX distribution")
+        val component = LabeledComponent.create(distribution, "LaTeX &distribution")
 
         val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<ComboBox<LatexDistributionSelection>>>(
             "latexDistribution",
@@ -136,6 +137,7 @@ internal object LatexBasicFragments {
         group = group,
         project = project,
         chooserTitle = "Output Files Directory",
+        labelText = "&Output directory",
         initiallyVisible = { runConfig -> hasCustomPath(runConfig.outputPath, LatexPathResolver.defaultOutputPath) },
         reset = { runConfig, field ->
             field.text = runConfig.outputPath?.toString() ?: LatexPathResolver.defaultOutputPath.toString()
@@ -158,6 +160,7 @@ internal object LatexBasicFragments {
         group = group,
         project = project,
         chooserTitle = "Auxiliary Files Directory",
+        labelText = "A&uxiliary directory",
         initiallyVisible = { runConfig -> hasCustomPath(runConfig.auxilPath, LatexPathResolver.defaultAuxilPath) },
         reset = { runConfig, field ->
             field.text = runConfig.auxilPath?.toString() ?: LatexPathResolver.defaultAuxilPath.toString()
@@ -244,6 +247,7 @@ internal object LatexBasicFragments {
         group: String,
         project: Project,
         chooserTitle: String,
+        labelText: String = name,
         initiallyVisible: (LatexRunConfiguration) -> Boolean,
         reset: (LatexRunConfiguration, TextFieldWithBrowseButton) -> Unit,
         apply: (LatexRunConfiguration, TextFieldWithBrowseButton) -> Unit,
@@ -251,7 +255,7 @@ internal object LatexBasicFragments {
         tooltip: String = "Supports IDE path macros (for example PROJECT_DIR). Legacy placeholders also work.",
     ): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<JComponent>> {
         val field = directoryPicker(project, chooserTitle)
-        val component = LabeledComponent.create(pathFieldWithMacroSupport(field), name)
+        val component = LabeledComponent.create(pathFieldWithMacroSupport(field), labelText)
 
         val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<JComponent>>(
             id,

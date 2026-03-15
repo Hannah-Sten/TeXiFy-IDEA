@@ -18,18 +18,18 @@ internal class MakeindexStepFragmentedEditor(
 ) : AbstractStepFragmentedEditor<MakeindexStepOptions>(initialStep) {
 
     private val program = ComboBox(MakeindexProgram.entries.toTypedArray())
-    private val programRow = LabeledComponent.create(program, "Program")
+    private val programRow = LabeledComponent.create(program, "&Program")
 
     private val commandLineArguments = RawCommandLineEditor().apply {
         editorField.emptyText.text = "Custom makeindex arguments"
     }
-    private val commandLineArgumentsRow = LabeledComponent.create(commandLineArguments, "Program arguments")
+    private val commandLineArgumentsRow = LabeledComponent.create(commandLineArguments, "Program ar&guments")
 
     private val targetBaseName = JBTextField()
-    private val targetBaseNameRow = LabeledComponent.create(targetBaseName, "Target base name")
+    private val targetBaseNameRow = LabeledComponent.create(targetBaseName, "Target base &name")
 
     private val workingDirectory = createDirectoryField(project, "Step working directory")
-    private val workingDirectoryRow = LabeledComponent.create(workingDirectory, "Working directory")
+    private val workingDirectoryRow = LabeledComponent.create(workingDirectory, "Working d&irectory")
     private var inferredWorkingDirectoryHint: String? = null
 
     fun setInferredWorkingDirectoryHint(value: String?) {
