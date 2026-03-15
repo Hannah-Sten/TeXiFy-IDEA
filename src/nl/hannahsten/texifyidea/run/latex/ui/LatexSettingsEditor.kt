@@ -103,6 +103,8 @@ class LatexSettingsEditor(
     internal var configFromReset: LatexRunConfiguration? = null
         private set
 
+    internal fun configForUiContext(): LatexRunConfiguration = configFromReset ?: runConfig
+
     /*
     Note: there are two `resetEditorFrom`/`applyEditorTo` pairs in this editor:
     resetEditorFrom(s: RunnerAndConfigurationSettingsImpl) goes first and is called by the framework, and sub-fragments are reset

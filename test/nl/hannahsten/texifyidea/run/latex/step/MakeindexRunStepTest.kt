@@ -67,6 +67,42 @@ class MakeindexRunStepTest : BasePlatformTestCase() {
         assertEquals(Path.of(context.session.outputDir.path), workingDirectory)
     }
 
+    fun testInferredWorkingDirectoryHintPrefersIndependentAuxPath() {
+        val runConfig = createRunConfig(
+            outputPath = "{projectDir}/out",
+            auxPath = "\$PROJECT_DIR\$/aux",
+        )
+
+        val hint = MakeindexRunStep.inferredWorkingDirectoryHint(runConfig, MakeindexStepOptions())
+
+        assertEquals("\$PROJECT_DIR\$/aux", hint)
+    }
+
+    fun testInferredWorkingDirectoryHintFallsBackToOutputWhenAuxMatchesOutput() {
+        val runConfig = createRunConfig(
+            outputPath = "build/out",
+            auxPath = "build/out",
+        )
+
+        val hint = MakeindexRunStep.inferredWorkingDirectoryHint(runConfig, MakeindexStepOptions())
+
+        assertEquals("build/out", hint)
+    }
+
+    fun testInferredWorkingDirectoryHintUsesMainFileParentForBib2gls() {
+        val runConfig = createRunConfig(
+            outputPath = "{projectDir}/out",
+            auxPath = "{projectDir}/aux",
+        )
+        val step = MakeindexStepOptions().apply {
+            program = MakeindexProgram.BIB2GLS
+        }
+
+        val hint = MakeindexRunStep.inferredWorkingDirectoryHint(runConfig, step)
+
+        assertEquals("{mainFileParent}", hint)
+    }
+
     fun testLifecycleAndProcessCreationWorkForMakeindexStep() {
         val context = createContext()
         val stepOptions = MakeindexStepOptions().apply {
@@ -127,5 +163,17 @@ class MakeindexRunStepTest : BasePlatformTestCase() {
             auxDir = auxDir,
         )
         return LatexRunStepContext(runConfig, environment, state)
+    }
+
+    private fun createRunConfig(
+        outputPath: String,
+        auxPath: String,
+    ): LatexRunConfiguration = LatexRunConfiguration(
+        project,
+        LatexRunConfigurationProducer().configurationFactory,
+        "test"
+    ).apply {
+        configOptions.outputPath = outputPath
+        configOptions.auxilPath = auxPath
     }
 }

@@ -45,6 +45,8 @@ internal class BibtexStepFragmentedEditor(
         inferredWorkingDirectoryHint = value
     }
 
+    internal fun inferredWorkingDirectoryHintForTest(): String? = inferredWorkingDirectoryHint
+
     override fun createFragments(): Collection<SettingsEditorFragment<BibtexStepOptions, *>> {
         val header = CommonParameterFragments.createHeader<BibtexStepOptions>("Bibliography Step")
 

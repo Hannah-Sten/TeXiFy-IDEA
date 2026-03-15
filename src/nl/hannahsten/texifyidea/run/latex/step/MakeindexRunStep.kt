@@ -7,7 +7,6 @@ import nl.hannahsten.texifyidea.run.common.createCompilationHandler
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
 import nl.hannahsten.texifyidea.run.latex.LatexPathResolver
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationStaticSupport
 import nl.hannahsten.texifyidea.run.latex.MakeindexStepOptions
 import nl.hannahsten.texifyidea.run.latex.getMakeindexOptions
 import nl.hannahsten.texifyidea.util.appendExtension
@@ -72,16 +71,12 @@ internal class MakeindexRunStep(
     }
 
     companion object {
-
         fun inferredWorkingDirectoryHint(
             runConfig: LatexRunConfiguration,
             step: MakeindexStepOptions,
-        ): Path? = when (step.program) {
-            MakeindexProgram.BIB2GLS -> {
-                val mainFile = LatexRunConfigurationStaticSupport.resolveMainFile(runConfig)
-                LatexPathResolver.resolve(Path.of(LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER), mainFile, runConfig.project)
-            }
-            else -> CommandLineRunStep.inferredAuxiliaryWorkingDirectory(runConfig)
+        ): String = when (step.program) {
+            MakeindexProgram.BIB2GLS -> LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER
+            else -> if (runConfig.hasIndependentAuxPathForUiHint()) runConfig.rawAuxPathForUiHint() else runConfig.rawOutputPathForUiHint()
         }
     }
 }

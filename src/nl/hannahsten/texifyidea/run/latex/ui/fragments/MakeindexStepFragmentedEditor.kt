@@ -36,6 +36,8 @@ internal class MakeindexStepFragmentedEditor(
         inferredWorkingDirectoryHint = value
     }
 
+    internal fun inferredWorkingDirectoryHintForTest(): String? = inferredWorkingDirectoryHint
+
     override fun createFragments(): Collection<SettingsEditorFragment<MakeindexStepOptions, *>> {
         val header = CommonParameterFragments.createHeader<MakeindexStepOptions>("Makeindex Step")
 

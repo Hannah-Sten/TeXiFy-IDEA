@@ -81,6 +81,7 @@ internal class BibtexRunStep(
     }
 
     companion object {
-        fun inferredWorkingDirectoryHint(runConfig: LatexRunConfiguration): Path? = CommandLineRunStep.inferredAuxiliaryWorkingDirectory(runConfig)
+        fun inferredWorkingDirectoryHint(runConfig: LatexRunConfiguration): String =
+            if (runConfig.hasIndependentAuxPathForUiHint()) runConfig.rawAuxPathForUiHint() else runConfig.rawOutputPathForUiHint()
     }
 }

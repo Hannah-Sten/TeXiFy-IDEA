@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.run.latex.ui.fragments
 
 import com.intellij.execution.ui.FragmentedSettings
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
 import nl.hannahsten.texifyidea.run.latex.*
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 
@@ -77,6 +78,70 @@ class LatexStepSettingsComponentTest : BasePlatformTestCase() {
 
     fun testShowsMakeindexCardWhenMakeindexStepIsSelected() {
         assertCardForStep("makeindex", MakeindexStepOptions())
+    }
+
+    fun testBibtexHintUsesAuxPathWhenIndependent() {
+        val runConfig = configWithSteps(BibtexStepOptions()).apply {
+            configOptions.outputPath = "{projectDir}/out"
+            configOptions.auxilPath = "{projectDir}/aux"
+        }
+        withComponent(runConfig) { component, shadowSteps ->
+            val step = shadowSteps.first()
+
+            component.resetEditorFrom()
+            component.onStepSelectionChanged(selectionOf(step.id))
+
+            assertEquals("{projectDir}/aux", component.currentBibtexWorkingDirectoryHintForTest())
+        }
+    }
+
+    fun testBibtexHintFallsBackToOutputWhenAuxMatchesOutput() {
+        val runConfig = configWithSteps(BibtexStepOptions()).apply {
+            configOptions.outputPath = "build/out"
+            configOptions.auxilPath = "build/out"
+        }
+        withComponent(runConfig) { component, shadowSteps ->
+            val step = shadowSteps.first()
+
+            component.resetEditorFrom()
+            component.onStepSelectionChanged(selectionOf(step.id))
+
+            assertEquals("build/out", component.currentBibtexWorkingDirectoryHintForTest())
+        }
+    }
+
+    fun testMakeindexHintUsesAuxPathWhenIndependent() {
+        val runConfig = configWithSteps(MakeindexStepOptions()).apply {
+            configOptions.outputPath = "\$PROJECT_DIR\$/out"
+            configOptions.auxilPath = "\$PROJECT_DIR\$/aux"
+        }
+        withComponent(runConfig) { component, shadowSteps ->
+            val step = shadowSteps.first()
+
+            component.resetEditorFrom()
+            component.onStepSelectionChanged(selectionOf(step.id))
+
+            assertEquals("\$PROJECT_DIR\$/aux", component.currentMakeindexWorkingDirectoryHintForTest())
+        }
+    }
+
+    fun testMakeindexBib2glsHintUsesMainFileParentPlaceholder() {
+        val runConfig = configWithSteps(
+            MakeindexStepOptions().apply {
+                program = MakeindexProgram.BIB2GLS
+            }
+        ).apply {
+            configOptions.outputPath = "{projectDir}/out"
+            configOptions.auxilPath = "{projectDir}/aux"
+        }
+        withComponent(runConfig) { component, shadowSteps ->
+            val step = shadowSteps.first()
+
+            component.resetEditorFrom()
+            component.onStepSelectionChanged(selectionOf(step.id))
+
+            assertEquals(LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER, component.currentMakeindexWorkingDirectoryHintForTest())
+        }
     }
 
     fun testShowsExternalToolCardWhenExternalToolStepIsSelected() {

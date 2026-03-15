@@ -13,7 +13,6 @@ import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import java.awt.BorderLayout
 import java.awt.CardLayout
 import javax.swing.JPanel
-import kotlin.io.path.pathString
 
 internal class LatexStepSettingsComponent(
     project: Project,
@@ -135,6 +134,10 @@ internal class LatexStepSettingsComponent(
     internal fun currentCardId(): String = currentCardId
 
     internal fun currentUnsupportedMessageForTest(): String = unsupportedSettings.message()
+
+    internal fun currentBibtexWorkingDirectoryHintForTest(): String? = bibtexSettings.inferredWorkingDirectoryHintForTest()
+
+    internal fun currentMakeindexWorkingDirectoryHintForTest(): String? = makeindexSettings.inferredWorkingDirectoryHintForTest()
 
     internal fun setCompileEditorValuesForTest(
         compilerPath: String,
@@ -272,20 +275,16 @@ internal class LatexStepSettingsComponent(
     }
 
     private fun updateCardContext(targetStep: LatexStepRunConfigurationOptions?) {
-        val runConfig = editor.configFromReset ?: return
+        val runConfig = editor.configForUiContext()
         (targetStep as? BibtexStepOptions)?.let {
             BibtexRunStep.inferredWorkingDirectoryHint(runConfig)
         }?.let {
-            bibtexSettings.setInferredWorkingDirectoryHint(
-                it.pathString
-            )
+            bibtexSettings.setInferredWorkingDirectoryHint(it)
         }
         (targetStep as? MakeindexStepOptions)?.let {
             MakeindexRunStep.inferredWorkingDirectoryHint(runConfig, it)
         }?.let {
-            makeindexSettings.setInferredWorkingDirectoryHint(
-                it.pathString
-            )
+            makeindexSettings.setInferredWorkingDirectoryHint(it)
         }
     }
 

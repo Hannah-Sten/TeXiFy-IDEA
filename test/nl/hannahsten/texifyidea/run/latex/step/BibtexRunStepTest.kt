@@ -160,7 +160,55 @@ class BibtexRunStepTest : BasePlatformTestCase() {
         assertTrue(capturedEnvironment!!.isEmpty())
     }
 
+    fun testInferredWorkingDirectoryHintPrefersIndependentAuxPath() {
+        val runConfig = createRunConfig(
+            outputPath = "{projectDir}/out",
+            auxPath = "{projectDir}/aux",
+            distributionType = LatexDistributionType.MIKTEX,
+        )
+
+        val hint = BibtexRunStep.inferredWorkingDirectoryHint(runConfig)
+
+        assertEquals("{projectDir}/aux", hint)
+    }
+
+    fun testInferredWorkingDirectoryHintFallsBackToOutputWhenAuxMatchesOutput() {
+        val runConfig = createRunConfig(
+            outputPath = "build/out",
+            auxPath = "build/out",
+        )
+
+        val hint = BibtexRunStep.inferredWorkingDirectoryHint(runConfig)
+
+        assertEquals("build/out", hint)
+    }
+
+    fun testInferredWorkingDirectoryHintFallsBackToOutputWhenAuxIsBlank() {
+        val runConfig = createRunConfig(
+            outputPath = "\$PROJECT_DIR\$/out",
+            auxPath = "   ",
+        )
+
+        val hint = BibtexRunStep.inferredWorkingDirectoryHint(runConfig)
+
+        assertEquals("\$PROJECT_DIR\$/out", hint)
+    }
+
     private fun createContext(): LatexRunStepContext = createContext(outputDirPath = Path.of("out"))
+
+    private fun createRunConfig(
+        outputPath: String,
+        auxPath: String,
+        distributionType: LatexDistributionType = LatexDistributionType.TEXLIVE,
+    ): LatexRunConfiguration = LatexRunConfiguration(
+        project,
+        LatexRunConfigurationProducer().configurationFactory,
+        "test"
+    ).apply {
+        latexDistribution = distributionType
+        configOptions.outputPath = outputPath
+        configOptions.auxilPath = auxPath
+    }
 
     private fun createContext(
         outputDirPath: Path?,
