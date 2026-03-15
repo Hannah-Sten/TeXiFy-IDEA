@@ -27,10 +27,8 @@ class FileCleanupRunStepTest : BasePlatformTestCase() {
 
         val step = FileCleanupRunStep(FileCleanupStepOptions())
         step.beforeStart(context)
-        val exitCode = step.runInline(context)
-        step.afterFinish(context, exitCode)
 
-        assertEquals(0, exitCode)
+        assertNull(step.createProcess(context))
         assertFalse(Files.exists(toDelete))
         assertTrue(context.session.filesToCleanUp.isEmpty())
     }
@@ -46,10 +44,8 @@ class FileCleanupRunStepTest : BasePlatformTestCase() {
 
         val step = FileCleanupRunStep(FileCleanupStepOptions())
         step.beforeStart(context)
-        val exitCode = step.runInline(context)
-        step.afterFinish(context, exitCode)
 
-        assertEquals(0, exitCode)
+        assertNull(step.createProcess(context))
         assertTrue(context.session.filesToCleanUp.isEmpty())
     }
 

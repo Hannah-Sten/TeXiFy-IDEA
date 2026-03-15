@@ -13,7 +13,6 @@ import nl.hannahsten.texifyidea.run.latex.LatexRunSessionState
 import nl.hannahsten.texifyidea.run.latex.LatexStepType
 import nl.hannahsten.texifyidea.run.latex.flow.StepAwareSequentialProcessHandler
 import nl.hannahsten.texifyidea.run.latex.flow.StepLogEvent
-import nl.hannahsten.texifyidea.run.latex.step.InlineLatexRunStep
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStep
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepContext
 import java.nio.file.Path
@@ -321,7 +320,7 @@ class LatexStepLogTabComponentTest : BasePlatformTestCase() {
             auxDir = mainFile.parent,
         )
         val context = LatexRunStepContext(runConfig, environment, session)
-        val step = TestInlineStep(id = stepType, configId = "s1")
+        val step = TestNoProcessStep(id = stepType, configId = "s1")
         val handler = StepAwareSequentialProcessHandler(listOf(step), context)
         val component = LatexStepLogTabComponent(project, mainFile, handler)
         return StepLogFixture(component, step)
@@ -444,11 +443,8 @@ class LatexStepLogTabComponentTest : BasePlatformTestCase() {
         val step: LatexRunStep,
     )
 
-    private class TestInlineStep(
+    private class TestNoProcessStep(
         override val id: String,
         override val configId: String,
-    ) : InlineLatexRunStep {
-
-        override fun runInline(context: LatexRunStepContext): Int = 0
-    }
+    ) : LatexRunStep
 }

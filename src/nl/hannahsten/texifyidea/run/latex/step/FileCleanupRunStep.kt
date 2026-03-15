@@ -8,18 +8,17 @@ import kotlin.io.path.absolutePathString
 
 internal class FileCleanupRunStep(
     stepConfig: FileCleanupStepOptions,
-) : InlineLatexRunStep {
+) : LatexRunStep {
 
     override val configId: String = stepConfig.id
     override val id: String = stepConfig.type
 
-    override fun runInline(context: LatexRunStepContext): Int {
+    override fun beforeStart(context: LatexRunStepContext) {
         val state = context.session
         val filesToDelete = state.filesToCleanUp.toList()
 
-        return try {
+        try {
             deleteFilesViaVfs(filesToDelete)
-            0
         }
         finally {
             state.filesToCleanUp.clear()
