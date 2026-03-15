@@ -21,47 +21,12 @@ import nl.hannahsten.texifyidea.run.latex.ui.fragments.LatexStepSettingsFragment
 import nl.hannahsten.texifyidea.util.files.psiFile
 
 /**
- * Fragmented run-configuration editor for [LatexRunConfiguration].
+ * Fragmented editor for [LatexRunConfiguration] and the coordination point for step editing.
  *
- * Step-related UI is split into three layers:
- *
- * 1. Editor-owned `shadowSteps`
- *    This editor owns the single mutable draft step list used while the run configuration UI is open. It is created as
- *    a deep copy of `configuration.configOptions.steps` during reset and is the only step state shared by the step
- *    sequence UI and the step settings UI.
- *
- * 2. [LatexCompileSequenceComponent] and [LatexCompileSequenceFragment]
- *    The sequence component is a structural view over `shadowSteps`. It is responsible for add/remove, reorder, type
- *    changes, and auto-configure, but it no longer owns a separate persisted step list.
- *
- * 3. [LatexStepSettingsComponent] and [LatexStepSettingsFragment]
- *    These render the type-specific editor cards for the currently selected draft step in `shadowSteps`. The component
- *    contains one [com.intellij.openapi.options.SettingsEditor] per supported step kind and flushes field edits back
- *    into the currently selected draft step before selection or structure changes.
- *
- * 4. [LatexSettingsEditor.applyEditorTo]
- *    This is the only place that writes steps back to [LatexRunConfiguration]. Fragments only flush local UI state;
- *    after that this editor copies the final `shadowSteps` list into the run configuration.
- *
- * Current data flow:
- *
- * - The editor owns and resets `shadowSteps`.
- * - [LatexCompileSequenceComponent] mutates `shadowSteps` for structure changes.
- * - [LatexStepSettingsComponent] mutates the selected step inside `shadowSteps` for field changes.
- * - Structural mutations call into step settings first so the active card flushes its pending edits before drag/add/
- *   remove/type-change operations replace or reorder steps.
- * - The two step-related fragments are added in order:
- *   [LatexCompileSequenceFragment], then [LatexStepSettingsFragment].
- *   This means IntelliJ reset/apply also visits them in that order.
- *
- * Current lifecycle implications:
- *
- * - On reset, `shadowSteps` is populated once and both step UIs bind to that shared list.
- * - On apply, fragments flush local state into `shadowSteps`, then this editor writes `shadowSteps` back to the run
- *   configuration in one place.
- *
- * This class intentionally keeps the wiring centralized so future changes to step-state ownership or apply ordering
- * can be reasoned about from a single entry point.
+ * This editor brings together two different views of the compile pipeline:
+ * [LatexCompileSequenceFragment] edits the sequence itself, while [LatexStepSettingsFragment] edits the settings of the
+ * currently selected step. The editor keeps those views working against the same in-progress configuration so they stay
+ * synchronized during a single settings session.
  */
 class LatexSettingsEditor(
     runConfiguration: LatexRunConfiguration,
@@ -105,11 +70,6 @@ class LatexSettingsEditor(
 
     internal fun configForUiContext(): LatexRunConfiguration = configFromReset ?: runConfig
 
-    /*
-    Note: there are two `resetEditorFrom`/`applyEditorTo` pairs in this editor:
-    resetEditorFrom(s: RunnerAndConfigurationSettingsImpl) goes first and is called by the framework, and sub-fragments are reset
-    resetEditorFrom(settings: LatexRunConfiguration) is then called
-     */
     override fun resetEditorFrom(s: RunnerAndConfigurationSettingsImpl) {
         (s.configuration as? LatexRunConfiguration)?.let {
             // we have to first update the steps before resetting the fragments

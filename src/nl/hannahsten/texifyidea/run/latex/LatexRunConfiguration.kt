@@ -82,6 +82,12 @@ class LatexRunConfiguration(
             configOptions.auxilPath = value?.toString() ?: LatexPathResolver.defaultAuxilPath.toString()
         }
 
+    /**
+     * UI-only hint source for bibliography/index step editors.
+     *
+     * This intentionally returns the persisted string form instead of resolving to a filesystem path:
+     * placeholders/macros stay visible to the user, and the UI can refresh this hint on EDT without touching indexes.
+     */
     fun rawAuxPathOrOutputPathForUiHint(): String = configOptions.auxilPath ?: configOptions.outputPath.orEmpty().ifBlank { LatexPathResolver.defaultOutputPath.pathString }
 
     var workingDirectory: Path?
