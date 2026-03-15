@@ -19,7 +19,7 @@ internal abstract class AbstractStepFragmentedEditor<TStep : LatexStepRunConfigu
     initialStep: TStep,
 ) : FragmentedSettingsEditor<TStep>(initialStep) {
 
-    override fun getBuilder(): FragmentedSettingsBuilder<TStep> = LatexStepFragmentedSettingsBuilder(getFragments(), this)
+    override fun getBuilder(): FragmentedSettingsBuilder<TStep> = LatexStepFragmentedSettingsBuilder(fragments, this)
 
     protected fun <C : JComponent> stepFragment(
         id: String,
