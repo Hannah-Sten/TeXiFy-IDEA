@@ -41,11 +41,7 @@ internal object LatexPathResolver {
         runConfig: LatexRunConfiguration,
         mainFile: VirtualFile? = LatexRunConfigurationStaticSupport.resolveMainFile(runConfig),
     ): VirtualFile? {
-        val hasLatexmkStep = runConfig.configOptions.steps.any { it.type == LatexStepType.LATEXMK_COMPILE }
-        val supportsAuxDir = runConfig.getLatexDistributionType().isMiktex(runConfig.project, mainFile) ||
-            hasLatexmkStep ||
-            runConfig.hasEnabledLatexmkStep()
-        if (!supportsAuxDir) {
+        if (!supportsAuxDir(runConfig, mainFile)) {
             return null
         }
         return ensureDir(
@@ -56,6 +52,12 @@ internal object LatexPathResolver {
             variant = AUX_DIR_NAME,
         )
     }
+
+    internal fun supportsAuxDir(
+        runConfig: LatexRunConfiguration,
+        mainFile: VirtualFile? = LatexRunConfigurationStaticSupport.resolveMainFile(runConfig),
+    ): Boolean = runConfig.getLatexDistributionType().isMiktex(runConfig.project, mainFile) ||
+        runConfig.hasEnabledLatexmkStep()
 
     fun resolve(path: Path?, mainFile: VirtualFile?, project: Project): Path? {
         val raw = path?.toString()?.trim().orEmpty()

@@ -89,7 +89,7 @@ internal class MakeindexStepFragmentedEditor(
             apply = { step, component -> step.workingDirectoryPath = component.component.text.ifBlank { null } },
             initiallyVisible = { step -> !step.workingDirectoryPath.isNullOrBlank() },
             removable = true,
-            hint = "Leave empty to use the default working directory for this makeindex step.",
+            hint = "Leave empty to use the default directory for this step's control files (auxiliary directory when configured, otherwise output directory).",
             actionHint = "Set step working directory",
         )
 

@@ -23,6 +23,7 @@ import nl.hannahsten.texifyidea.settings.sdk.LatexSdk
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import org.jdom.Element
 import java.nio.file.Path
+import kotlin.io.path.pathString
 
 /**
  * Represents TeXiFy's step-based LaTeX run configuration persisted by IntelliJ.
@@ -81,27 +82,7 @@ class LatexRunConfiguration(
             configOptions.auxilPath = value?.toString() ?: LatexPathResolver.defaultAuxilPath.toString()
         }
 
-    internal fun rawOutputPathForUiHint(): String = configOptions.outputPath
-        ?.trim()
-        ?.ifBlank { LatexPathResolver.defaultOutputPath.toString() }
-        ?: LatexPathResolver.defaultOutputPath.toString()
-
-    internal fun rawAuxPathForUiHint(): String = configOptions.auxilPath
-        ?.trim()
-        ?.ifBlank { LatexPathResolver.defaultAuxilPath.toString() }
-        ?: LatexPathResolver.defaultAuxilPath.toString()
-
-    internal fun hasIndependentAuxPathForUiHint(): Boolean {
-        val rawAux = configOptions.auxilPath?.trim().orEmpty()
-        if (rawAux.isBlank()) {
-            return false
-        }
-        val rawOutput = configOptions.outputPath
-            ?.trim()
-            ?.ifBlank { LatexPathResolver.defaultOutputPath.toString() }
-            ?: LatexPathResolver.defaultOutputPath.toString()
-        return rawAux != rawOutput
-    }
+    fun rawAuxPathOrOutputPathForUiHint(): String = configOptions.auxilPath ?: configOptions.outputPath.orEmpty().ifBlank { LatexPathResolver.defaultOutputPath.pathString }
 
     var workingDirectory: Path?
         get() = configOptions.workingDirectoryPath?.let(::pathOrNull)

@@ -53,16 +53,9 @@ internal class CommandLineRunStep(
             ?: context.session.outputDir.let { Path.of(it.path) }
             ?: context.session.workingDirectory
 
-        fun defaultAuxiliaryWorkingDirectory(context: LatexRunStepContext): Path {
-            val session = context.session
-            return if (session.distributionType.isMiktex(session.project)) {
-                session.auxDir?.let { Path.of(it.path) } ?: Path.of(session.outputDir.path)
-            }
-            else {
-                // Preserve the old behavior: on TeX Live, bibliography/index tools default to the
-                // output directory rather than a separate aux directory unless a step overrides it.
-                Path.of(session.outputDir.path)
-            }
-        }
+        fun defaultAuxiliaryWorkingDirectory(context: LatexRunStepContext): Path =
+            // Auxiliary tools read control files from the resolved auxiliary directory when one
+            // is modeled by this run, otherwise they fall back to the output directory.
+            context.session.auxDir?.let { Path.of(it.path) } ?: Path.of(context.session.outputDir.path)
     }
 }

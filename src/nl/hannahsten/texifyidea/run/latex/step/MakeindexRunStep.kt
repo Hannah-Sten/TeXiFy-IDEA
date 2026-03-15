@@ -76,7 +76,7 @@ internal class MakeindexRunStep(
             step: MakeindexStepOptions,
         ): String = when (step.program) {
             MakeindexProgram.BIB2GLS -> LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER
-            else -> if (runConfig.hasIndependentAuxPathForUiHint()) runConfig.rawAuxPathForUiHint() else runConfig.rawOutputPathForUiHint()
+            else -> runConfig.rawAuxPathOrOutputPathForUiHint()
         }
     }
 }

@@ -21,7 +21,7 @@ import java.nio.file.Path
 
 class BibtexRunStepTest : BasePlatformTestCase() {
 
-    fun testBiberUsesOutputDirectoryAsDefaultWorkingDirectoryOnTexlive() {
+    fun testBiberUsesAuxDirectoryAsDefaultWorkingDirectoryWhenAvailable() {
         val context = createContext()
         val stepOptions = BibtexStepOptions().apply {
             bibliographyCompiler = BibliographyCompiler.BIBER
@@ -39,11 +39,12 @@ class BibtexRunStepTest : BasePlatformTestCase() {
         }
 
         val process = BibtexRunStep(stepOptions).createProcess(context)
+        val auxDirectory = requireNotNull(context.session.auxDir).path
 
         assertEquals(expectedHandler, process)
-        assertEquals(Path.of(context.session.outputDir.path), capturedWorkingDirectory)
-        assertTrue(capturedCommand!!.contains("--input-directory=${Path.of(context.session.outputDir.path)}"))
-        assertTrue(capturedCommand!!.contains("--output-directory=${Path.of(context.session.outputDir.path)}"))
+        assertEquals(Path.of(auxDirectory), capturedWorkingDirectory)
+        assertTrue(capturedCommand!!.contains("--input-directory=${Path.of(auxDirectory)}"))
+        assertTrue(capturedCommand!!.contains("--output-directory=${Path.of(auxDirectory)}"))
         assertEquals(context.session.mainFile.parent.path, capturedEnvironment!!["BIBINPUTS"])
         assertEquals(context.session.mainFile.parent.path + File.pathSeparator, capturedEnvironment!!["BSTINPUTS"])
     }
@@ -74,21 +75,25 @@ class BibtexRunStepTest : BasePlatformTestCase() {
             bibliographyCompiler = BibliographyCompiler.BIBTEX
         }
         val expectedHandler = mockk<KillableProcessHandler>(relaxed = true)
+        var capturedWorkingDirectory: Path? = null
         var capturedEnvironment: Map<String, String>? = null
         mockkStatic("nl.hannahsten.texifyidea.run.common.CompilationProcessFactoryKt")
         every { createCompilationHandler(any(), any(), any(), any()) } answers {
+            capturedWorkingDirectory = arg(2)
             capturedEnvironment = arg(3)
             expectedHandler
         }
 
         BibtexRunStep(stepOptions).createProcess(context)
+        val auxDirectory = requireNotNull(context.session.auxDir).path
 
+        assertEquals(Path.of(auxDirectory), capturedWorkingDirectory)
         assertEquals(context.session.mainFile.parent.path, capturedEnvironment!!["BIBINPUTS"])
         assertEquals(context.session.mainFile.parent.path + File.pathSeparator, capturedEnvironment!!["BSTINPUTS"])
     }
 
     fun testBibliographyStepDoesNotAddBibinputsWhenWorkingDirectoryMatchesMainFileDir() {
-        val context = createContext(outputDirPath = null)
+        val context = createContext(outputDirPath = null, auxDirPath = null)
         val stepOptions = BibtexStepOptions().apply {
             bibliographyCompiler = BibliographyCompiler.BIBTEX
         }
@@ -103,6 +108,24 @@ class BibtexRunStepTest : BasePlatformTestCase() {
         BibtexRunStep(stepOptions).createProcess(context)
 
         assertTrue(capturedEnvironment!!.isEmpty())
+    }
+
+    fun testBibliographyStepFallsBackToOutputDirectoryWhenAuxDirectoryUnavailable() {
+        val context = createContext(outputDirPath = Path.of("out"), auxDirPath = null)
+        val stepOptions = BibtexStepOptions().apply {
+            bibliographyCompiler = BibliographyCompiler.BIBER
+        }
+        val expectedHandler = mockk<KillableProcessHandler>(relaxed = true)
+        var capturedWorkingDirectory: Path? = null
+        mockkStatic("nl.hannahsten.texifyidea.run.common.CompilationProcessFactoryKt")
+        every { createCompilationHandler(any(), any(), any(), any()) } answers {
+            capturedWorkingDirectory = arg(2)
+            expectedHandler
+        }
+
+        BibtexRunStep(stepOptions).createProcess(context)
+
+        assertEquals(Path.of(context.session.outputDir.path), capturedWorkingDirectory)
     }
 
     fun testBibliographyStepPrependsMainFileDirToExistingBibinputs() {
@@ -164,7 +187,6 @@ class BibtexRunStepTest : BasePlatformTestCase() {
         val runConfig = createRunConfig(
             outputPath = "{projectDir}/out",
             auxPath = "{projectDir}/aux",
-            distributionType = LatexDistributionType.MIKTEX,
         )
 
         val hint = BibtexRunStep.inferredWorkingDirectoryHint(runConfig)
@@ -212,19 +234,20 @@ class BibtexRunStepTest : BasePlatformTestCase() {
 
     private fun createContext(
         outputDirPath: Path?,
+        auxDirPath: Path? = Path.of("aux"),
         distributionType: LatexDistributionType = LatexDistributionType.TEXLIVE,
         environmentVariables: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT,
     ): LatexRunStepContext {
         val root = Files.createTempDirectory("texify-bibtex-step")
         val mainFilePath = root.resolve("main.tex")
         val resolvedOutputDirPath = outputDirPath?.let(root::resolve) ?: mainFilePath.parent
-        val auxDirPath = root.resolve("aux")
         Files.createDirectories(resolvedOutputDirPath)
-        Files.createDirectories(auxDirPath)
+        val resolvedAuxDirPath = auxDirPath?.let(root::resolve)
+        resolvedAuxDirPath?.let(Files::createDirectories)
         Files.writeString(mainFilePath, "\\\\documentclass{article}")
         val mainFile = LocalFileSystem.getInstance().refreshAndFindFileByPath(mainFilePath.toString())!!
         val outputDir = LocalFileSystem.getInstance().refreshAndFindFileByPath(resolvedOutputDirPath.toString())!!
-        val auxDir = LocalFileSystem.getInstance().refreshAndFindFileByPath(auxDirPath.toString())!!
+        val auxDir = resolvedAuxDirPath?.let { LocalFileSystem.getInstance().refreshAndFindFileByPath(it.toString())!! }
 
         val runConfig = LatexRunConfiguration(
             project,

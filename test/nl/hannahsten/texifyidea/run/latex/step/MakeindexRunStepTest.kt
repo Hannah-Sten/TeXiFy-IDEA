@@ -56,8 +56,20 @@ class MakeindexRunStepTest : BasePlatformTestCase() {
         assertEquals(Path.of(context.session.mainFile.parent.path), workingDirectory)
     }
 
-    fun testMakeindexDefaultsWorkingDirectoryToOutputDirectoryOnTexlive() {
+    fun testMakeindexDefaultsWorkingDirectoryToAuxDirectoryWhenAvailable() {
         val context = createContext(separateOutputAndAux = true)
+        val stepOptions = MakeindexStepOptions().apply {
+            program = MakeindexProgram.MAKEINDEX
+        }
+
+        val workingDirectory = MakeindexRunStep(stepOptions).resolveWorkingDirectory(context)
+        val auxDirectory = requireNotNull(context.session.auxDir).path
+
+        assertEquals(Path.of(auxDirectory), workingDirectory)
+    }
+
+    fun testMakeindexFallsBackToOutputDirectoryWhenAuxDirectoryUnavailable() {
+        val context = createContext(separateOutputAndAux = true, noAuxDir = true)
         val stepOptions = MakeindexStepOptions().apply {
             program = MakeindexProgram.MAKEINDEX
         }
@@ -127,6 +139,7 @@ class MakeindexRunStepTest : BasePlatformTestCase() {
     private fun createContext(
         separateAuxDir: Boolean = false,
         separateOutputAndAux: Boolean = false,
+        noAuxDir: Boolean = false,
     ): LatexRunStepContext {
         val root = Files.createTempDirectory("texify-makeindex-command")
         val mainFilePath = root.resolve("main.tex")
@@ -135,7 +148,10 @@ class MakeindexRunStepTest : BasePlatformTestCase() {
         val outputDirPath = if (separateOutputAndAux) root.resolve("out") else Path.of(mainFile.parent.path)
         Files.createDirectories(outputDirPath)
         val outputDir = LocalFileSystem.getInstance().refreshAndFindFileByPath(outputDirPath.toString())!!
-        val auxDir = if (separateAuxDir || separateOutputAndAux) {
+        val auxDir = if (noAuxDir) {
+            null
+        }
+        else if (separateAuxDir || separateOutputAndAux) {
             val auxDirPath = root.resolve("aux")
             Files.createDirectories(auxDirPath)
             LocalFileSystem.getInstance().refreshAndFindFileByPath(auxDirPath.toString())!!
