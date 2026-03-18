@@ -55,7 +55,7 @@ class LatexSettingsEditor(
         fragments.add(LatexBasicFragments.createAuxiliaryDirectoryFragment(commonGroupName, project))
         fragments.add(LatexBasicFragments.createEnvironmentVariablesFragment(commonGroupName))
         fragments.add(LatexCompileSequenceFragment(compileSequenceComponent))
-        fragments.add(LatexStepSettingsFragment(stepSettingsComponent))
+        fragments.add(LatexStepSettingsFragment(stepSettingsComponent, ::onStepSettingsChanged))
 
         // platform fragments
         fragments.add(BeforeRunFragment.createBeforeRun(BeforeRunComponent(this), null))
@@ -95,6 +95,11 @@ class LatexSettingsEditor(
 
     internal fun onCompileSequenceStepsChanged() {
         stepSettingsComponent.onStepsChanged()
+    }
+
+    internal fun onStepSettingsChanged() {
+        stepSettingsComponent.flushCurrentStep()
+        compileSequenceComponent.refreshStepTitles()
     }
 
     internal fun autoConfigureCurrentSteps(): List<LatexStepRunConfigurationOptions> {

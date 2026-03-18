@@ -7,6 +7,7 @@ import javax.swing.JComponent
 
 internal class LatexStepSettingsFragment(
     private val component: LatexStepSettingsComponent,
+    private val onChanged: () -> Unit,
 ) : RunConfigurationEditorFragment<LatexRunConfiguration, JComponent>(
     "stepSettings",
     "Step settings",
@@ -17,7 +18,10 @@ internal class LatexStepSettingsFragment(
 ) {
 
     init {
-        component.changeListener = { fireEditorStateChanged() }
+        component.changeListener = {
+            onChanged()
+            fireEditorStateChanged()
+        }
         isRemovable = false
     }
 

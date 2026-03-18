@@ -286,6 +286,10 @@ internal class LatexCompileSequenceComponent(
 
     internal fun currentStepTypesForTest(): List<String> = stepButtons.map { it.stepConfig.type }
 
+    internal fun currentStepTitlesForTest(): List<String> = stepButtons
+        .filter { it.isVisible }
+        .map { it.labelTextForTest() }
+
     internal fun selectedStepIdsForTest(): List<String> = selectionState().selectedStepIds
 
     internal fun primaryStepIdForTest(): String? = selectionState().primaryStepId
@@ -306,6 +310,12 @@ internal class LatexCompileSequenceComponent(
                 MouseEvent.BUTTON1,
             )
         )
+    }
+
+    fun refreshStepTitles() {
+        stepButtons.forEach { it.updateFromStepConfig() }
+        revalidate()
+        repaint()
     }
 
     private fun handleSelection(button: StepButton, event: MouseEvent) {
@@ -591,7 +601,7 @@ internal class LatexCompileSequenceComponent(
             dropPlace?.isVisible = false
             border = JBUI.Borders.empty(1)
 
-            updateFromStepType()
+            updateFromStepConfig()
 
             myButton.addMouseListener(object : MouseAdapter() {
                 override fun mousePressed(e: MouseEvent) {
@@ -614,7 +624,7 @@ internal class LatexCompileSequenceComponent(
                             if (buttonIndex in shadowSteps.indices) {
                                 shadowSteps[buttonIndex] = this@StepButton.stepConfig
                             }
-                            updateFromStepType()
+                            updateFromStepConfig()
                             refreshSelectionUi()
                             notifySelectionChanged()
                             notifyStepsChanged()
@@ -652,10 +662,12 @@ internal class LatexCompileSequenceComponent(
             }
         }
 
-        private fun updateFromStepType() {
-            updateButton(LatexStepUiSupport.description(stepConfig.type), LatexStepUiSupport.icon(stepConfig.type))
+        fun updateFromStepConfig() {
+            updateButton(stepConfig.displayName(), LatexStepUiSupport.icon(stepConfig.type))
             myButton.toolTipText = "Double-click to change step type. Drag and drop to reorder."
         }
+
+        fun labelTextForTest(): String = myButton.text ?: ""
 
         override fun layoutButtons() {
             super.layoutButtons()

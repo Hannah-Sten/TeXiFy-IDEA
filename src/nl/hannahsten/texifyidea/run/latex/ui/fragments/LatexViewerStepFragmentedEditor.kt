@@ -116,6 +116,17 @@ internal class LatexViewerStepFragmentedEditor(
             ?: PdfViewer.firstAvailableViewer
     }
 
+    internal fun setValuesForTest(
+        pdfViewerName: String,
+        customViewerCommand: String?,
+    ) {
+        pdfViewer.selectedItem = viewerChoices.firstOrNull { it.name == pdfViewerName }
+            ?: CustomPdfViewer.takeIf { pdfViewerName == it.name }
+            ?: PdfViewer.firstAvailableViewer
+        viewerCommand.text = customViewerCommand.orEmpty()
+        updateUiState()
+    }
+
     private fun isCustomViewerSelected(): Boolean = pdfViewer.selectedItem == CustomPdfViewer
 
     private fun updateUiState() {

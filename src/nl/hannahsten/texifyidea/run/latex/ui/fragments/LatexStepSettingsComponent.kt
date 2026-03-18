@@ -5,6 +5,7 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
+import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.*
 import nl.hannahsten.texifyidea.run.latex.step.BibtexRunStep
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepProviders
@@ -144,6 +145,17 @@ internal class LatexStepSettingsComponent(
         compilerArguments: String,
     ) {
         compileSettings.setValuesForTest(compilerPath, compilerArguments)
+    }
+
+    internal fun setCompileCompilerForTest(compiler: LatexCompiler) {
+        compileSettings.setCompilerForTest(compiler)
+    }
+
+    internal fun setViewerEditorValuesForTest(
+        pdfViewerName: String,
+        customViewerCommand: String?,
+    ) {
+        viewerSettings.setValuesForTest(pdfViewerName, customViewerCommand)
     }
 
     override fun dispose() {

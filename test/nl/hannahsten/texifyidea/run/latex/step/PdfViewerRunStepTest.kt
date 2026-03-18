@@ -21,6 +21,7 @@ import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer
 import nl.hannahsten.texifyidea.run.latex.LatexRunSessionState
 import nl.hannahsten.texifyidea.run.latex.PdfViewerStepOptions
 import nl.hannahsten.texifyidea.run.pdfviewer.CustomPdfViewer
+import nl.hannahsten.texifyidea.run.pdfviewer.EvinceViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.NoViewer
 import java.nio.file.Files
 import java.nio.file.Path
@@ -232,6 +233,14 @@ class PdfViewerRunStepTest : BasePlatformTestCase() {
         )
 
         assertNull(customStep.createProcess(customContext))
+    }
+
+    fun testDisplayNameUsesConfiguredViewerName() {
+        val stepOptions = PdfViewerStepOptions().apply {
+            pdfViewerName = EvinceViewer.name
+        }
+
+        assertEquals(stepOptions.displayName(), PdfViewerRunStep(stepOptions).displayName)
     }
 
     private fun mockNoViewer() {

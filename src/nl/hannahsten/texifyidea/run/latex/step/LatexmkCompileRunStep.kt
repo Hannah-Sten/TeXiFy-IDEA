@@ -32,6 +32,8 @@ internal class LatexmkCompileRunStep(
 
     override val configId: String = stepConfig.id
     override val id: String = stepConfig.type
+    override val displayName: String
+        get() = stepConfig.displayName()
 
     @Throws(ExecutionException::class)
     override fun createProcess(context: LatexRunStepContext): ProcessHandler {

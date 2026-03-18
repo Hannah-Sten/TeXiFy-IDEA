@@ -13,6 +13,8 @@ import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCitationTool
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
+import nl.hannahsten.texifyidea.run.pdfviewer.CustomPdfViewer
+import nl.hannahsten.texifyidea.run.latex.step.LatexStepPresentation
 import java.util.UUID
 
 /**
@@ -109,6 +111,8 @@ abstract class LatexStepRunConfigurationOptions : RunConfigurationOptions() {
     @get:Attribute("type")
     abstract var type: String
 
+    open fun displayName(): String = LatexStepPresentation.displayName(type)
+
     fun deepCopy(): LatexStepRunConfigurationOptions {
         val copied = newInstance()
         copied.copyFrom(this)
@@ -144,6 +148,8 @@ class LatexCompileStepOptions : LatexStepRunConfigurationOptions() {
     var outputFormat by enum(LatexCompiler.Format.PDF)
     var beforeRunCommand by string(null)
 
+    override fun displayName(): String = "Compile with $compiler"
+
     override fun newInstance(): LatexStepRunConfigurationOptions = LatexCompileStepOptions()
 }
 
@@ -163,6 +169,20 @@ class LatexmkCompileStepOptions : LatexStepRunConfigurationOptions() {
     var latexmkExtraArguments by string(LatexRunConfiguration.DEFAULT_LATEXMK_EXTRA_ARGUMENTS)
     var beforeRunCommand by string(null)
 
+    override fun displayName(): String {
+        val modeLabel = when (latexmkCompileMode) {
+            LatexmkCompileMode.AUTO -> null
+            LatexmkCompileMode.CUSTOM ->
+                latexmkCustomEngineCommand
+                    ?.trim()
+                    ?.ifBlank { null }
+                    ?: latexmkCompileMode.toString()
+
+            else -> latexmkCompileMode.toString()
+        }
+        return modeLabel?.let { "Compile with latexmk ($it)" } ?: "Compile with latexmk"
+    }
+
     override fun newInstance(): LatexStepRunConfigurationOptions = LatexmkCompileStepOptions()
 }
 
@@ -178,6 +198,15 @@ class PdfViewerStepOptions : LatexStepRunConfigurationOptions() {
     var pdfViewerName by string(PdfViewer.firstAvailableViewer.name)
     var requireFocus by property(true)
     var customViewerCommand by string(null)
+
+    override fun displayName(): String = "Open with ${resolveViewerLabel()}"
+
+    private fun resolveViewerLabel(): String {
+        val configuredName = pdfViewerName?.trim().orEmpty()
+        val matchingViewer = (PdfViewer.allViewers + CustomPdfViewer).firstOrNull { it.name == configuredName }
+        return matchingViewer?.displayName
+            ?: configuredName.ifBlank { PdfViewer.firstAvailableViewer.displayName ?: "PDF viewer" }
+    }
 
     override fun newInstance(): LatexStepRunConfigurationOptions = PdfViewerStepOptions()
 }

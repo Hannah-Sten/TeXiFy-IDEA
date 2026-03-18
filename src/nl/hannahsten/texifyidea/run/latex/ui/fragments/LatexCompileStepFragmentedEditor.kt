@@ -155,4 +155,10 @@ internal class LatexCompileStepFragmentedEditor(
         this.compilerPath.text = compilerPath
         this.compilerArguments.text = compilerArguments
     }
+
+    internal fun setCompilerForTest(compiler: LatexCompiler) {
+        this.compiler.selectedItem = compiler
+        syncOutputFormatOptions(compiler)
+        syncCompilerArgumentCompletion(compiler)
+    }
 }

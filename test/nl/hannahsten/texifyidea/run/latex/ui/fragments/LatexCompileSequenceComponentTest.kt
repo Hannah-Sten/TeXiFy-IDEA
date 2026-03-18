@@ -2,8 +2,12 @@ package nl.hannahsten.texifyidea.run.latex.ui.fragments
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.util.ui.WrapLayout
+import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.*
+import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
+import nl.hannahsten.texifyidea.run.pdfviewer.CustomPdfViewer
+import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import javax.swing.JComponent
 import javax.swing.JLabel
 
@@ -151,6 +155,96 @@ class LatexCompileSequenceComponentTest : BasePlatformTestCase() {
 
             assertEquals(listOf("bibtex", "latex-compile", "latex-compile", "pdf-viewer"), component.currentStepTypesForTest())
             assertEquals(listOf("bibtex", "latex-compile", "latex-compile", "pdf-viewer"), editor.shadowSteps.map { it.type })
+        }
+    }
+
+    fun testLatexCompileStepTitleUsesConfiguredCompilerName() {
+        withEditor(
+            configWithSteps(
+                LatexCompileStepOptions().apply {
+                    compiler = LatexCompiler.LUALATEX
+                }
+            )
+        ) { _, component ->
+            component.resetEditorFrom()
+
+            assertEquals(listOf("Compile with LuaLaTeX"), component.currentStepTitlesForTest())
+        }
+    }
+
+    fun testLatexCompileStepTitleRefreshesAfterCompilerSettingChanges() {
+        withEditor(
+            configWithSteps(
+                LatexCompileStepOptions().apply {
+                    compiler = LatexCompiler.PDFLATEX
+                }
+            )
+        ) { editor, component ->
+            component.resetEditorFrom()
+            component.selectStep(0)
+
+            editor.stepSettingsComponent.setCompileCompilerForTest(LatexCompiler.XELATEX)
+            editor.onStepSettingsChanged()
+
+            val expectedTitle = LatexCompileStepOptions().apply {
+                compiler = LatexCompiler.XELATEX
+            }.displayName()
+            assertEquals(listOf(expectedTitle), component.currentStepTitlesForTest())
+        }
+    }
+
+    fun testLatexmkStepTitleUsesConfiguredCompileMode() {
+        withEditor(
+            configWithSteps(
+                LatexmkCompileStepOptions().apply {
+                    latexmkCompileMode = LatexmkCompileMode.XELATEX_PDF
+                }
+            )
+        ) { _, component ->
+            component.resetEditorFrom()
+
+            assertEquals(listOf("Compile with latexmk (XeLaTeX (PDF))"), component.currentStepTitlesForTest())
+        }
+    }
+
+    fun testPdfViewerStepTitleUsesConfiguredViewerName() {
+        withEditor(
+            configWithSteps(
+                PdfViewerStepOptions().apply {
+                    pdfViewerName = CustomPdfViewer.name
+                }
+            )
+        ) { _, component ->
+            component.resetEditorFrom()
+
+            assertEquals(listOf("Open with Custom viewer"), component.currentStepTitlesForTest())
+        }
+    }
+
+    fun testPdfViewerStepTitleRefreshesAfterViewerSettingChanges() {
+        withEditor(
+            configWithSteps(
+                PdfViewerStepOptions().apply {
+                    pdfViewerName = CustomPdfViewer.name
+                }
+            )
+        ) { editor, component ->
+            component.resetEditorFrom()
+            component.selectStep(0)
+
+            val selectedViewer = PdfViewer.firstAvailableViewer
+            val selectedViewerName = selectedViewer.name ?: error("Expected test viewer to have a name.")
+            editor.stepSettingsComponent.setViewerEditorValuesForTest(
+                pdfViewerName = selectedViewerName,
+                customViewerCommand = null,
+            )
+
+            editor.onStepSettingsChanged()
+
+            val expectedTitle = PdfViewerStepOptions().apply {
+                pdfViewerName = selectedViewerName
+            }.displayName()
+            assertEquals(listOf(expectedTitle), component.currentStepTitlesForTest())
         }
     }
 
