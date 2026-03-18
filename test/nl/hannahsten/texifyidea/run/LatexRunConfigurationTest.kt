@@ -14,6 +14,7 @@ import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
 import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfiguration
 import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType
+import nl.hannahsten.texifyidea.run.pdfviewer.CustomPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import org.jdom.Element
 import org.jdom.Namespace
@@ -239,6 +240,38 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         val viewer = restored.configOptions.steps.filterIsInstance<PdfViewerStepOptions>().single()
         assertEquals(PdfViewer.firstAvailableViewer.name, viewer.pdfViewerName)
         assertFalse(viewer.requireFocus)
+        assertEquals("open {pdf}", viewer.customViewerCommand)
+    }
+
+    fun testPdfViewerGetterReturnsCustomViewerWhenCustomCommandConfigured() {
+        val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
+        runConfig.configOptions.steps = mutableListOf(
+            PdfViewerStepOptions().apply {
+                pdfViewerName = PdfViewer.firstAvailableViewer.name
+                customViewerCommand = "open {pdf}"
+            }
+        )
+
+        assertEquals(CustomPdfViewer, runConfig.pdfViewer)
+    }
+
+    fun testWriteReadRoundTripPreservesCustomViewerType() {
+        val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
+        runConfig.configOptions.steps = mutableListOf(
+            PdfViewerStepOptions().apply {
+                pdfViewerName = CustomPdfViewer.name
+                customViewerCommand = "open {pdf}"
+            }
+        )
+
+        val element = Element("configuration", Namespace.getNamespace("", ""))
+        runConfig.writeExternal(element)
+
+        val restored = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Restored")
+        restored.readExternal(element)
+
+        val viewer = restored.configOptions.steps.filterIsInstance<PdfViewerStepOptions>().single()
+        assertEquals(CustomPdfViewer.name, viewer.pdfViewerName)
         assertEquals("open {pdf}", viewer.customViewerCommand)
     }
 

@@ -18,6 +18,7 @@ import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCitationTool
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
 import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfiguration
+import nl.hannahsten.texifyidea.run.pdfviewer.CustomPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdk
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
@@ -130,7 +131,11 @@ class LatexRunConfiguration(
 
     var pdfViewer: PdfViewer?
         get() {
-            val viewerName = primaryViewerStep()?.pdfViewerName
+            val viewerStep = primaryViewerStep()
+            if (!viewerStep?.customViewerCommand.isNullOrBlank() || viewerStep?.pdfViewerName == CustomPdfViewer.name) {
+                return CustomPdfViewer
+            }
+            val viewerName = viewerStep?.pdfViewerName
             return PdfViewer.availableViewers.firstOrNull { it.name == viewerName }
                 ?: PdfViewer.firstAvailableViewer
         }

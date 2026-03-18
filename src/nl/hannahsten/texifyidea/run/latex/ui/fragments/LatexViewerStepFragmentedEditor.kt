@@ -8,6 +8,7 @@ import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBTextField
 import nl.hannahsten.texifyidea.run.latex.PdfViewerStepOptions
 import nl.hannahsten.texifyidea.run.latex.StepUiOptionIds
+import nl.hannahsten.texifyidea.run.pdfviewer.CustomPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import java.awt.event.ItemEvent
 import java.awt.event.KeyEvent
@@ -16,7 +17,8 @@ internal class LatexViewerStepFragmentedEditor(
     initialStep: PdfViewerStepOptions = PdfViewerStepOptions(),
 ) : AbstractStepFragmentedEditor<PdfViewerStepOptions>(initialStep) {
 
-    private val pdfViewer = ComboBox(PdfViewer.availableViewers.toTypedArray())
+    private val viewerChoices: List<PdfViewer> = PdfViewer.availableViewers + CustomPdfViewer
+    private val pdfViewer = ComboBox(viewerChoices.toTypedArray())
     private val pdfViewerRow = LabeledComponent.create(pdfViewer, "PDF &viewer")
 
     private val requireFocus = JBCheckBox("Require focus").apply {
@@ -29,10 +31,11 @@ internal class LatexViewerStepFragmentedEditor(
     init {
         pdfViewer.addItemListener {
             if (it.stateChange == ItemEvent.SELECTED) {
-                updateRequireFocusEnabled()
+                updateUiState()
                 fireEditorStateChanged()
             }
         }
+        updateUiState()
     }
 
     override fun createFragments(): Collection<SettingsEditorFragment<PdfViewerStepOptions, *>> {
@@ -43,12 +46,19 @@ internal class LatexViewerStepFragmentedEditor(
             name = "PDF viewer",
             component = pdfViewerRow,
             reset = { step, component ->
-                component.component.selectedItem = PdfViewer.availableViewers.firstOrNull { it.name == step.pdfViewerName }
-                    ?: PdfViewer.firstAvailableViewer
-                updateRequireFocusEnabled()
+                component.component.selectedItem = selectedViewerFor(step)
+                updateUiState()
             },
             apply = { step, component ->
-                step.pdfViewerName = (component.component.selectedItem as? PdfViewer ?: PdfViewer.firstAvailableViewer).name
+                val selectedViewer = component.component.selectedItem as? PdfViewer ?: PdfViewer.firstAvailableViewer
+                if (selectedViewer == CustomPdfViewer) {
+                    step.pdfViewerName = CustomPdfViewer.name
+                    step.customViewerCommand = viewerCommand.text.ifBlank { null }
+                }
+                else {
+                    step.pdfViewerName = selectedViewer.name
+                    step.customViewerCommand = null
+                }
             },
             initiallyVisible = { true },
             removable = false,
@@ -77,11 +87,17 @@ internal class LatexViewerStepFragmentedEditor(
             name = "Custom viewer command",
             component = viewerCommandRow,
             reset = { step, component -> component.component.text = step.customViewerCommand.orEmpty() },
-            apply = { step, component -> step.customViewerCommand = component.component.text.ifBlank { null } },
-            initiallyVisible = { step -> !step.customViewerCommand.isNullOrBlank() },
-            removable = true,
-            hint = "Command template used when PDF viewer is set to CUSTOM.",
-            actionHint = "Set custom viewer command",
+            apply = { step, component ->
+                step.customViewerCommand = if (isCustomViewerSelected()) {
+                    component.component.text.ifBlank { null }
+                }
+                else {
+                    null
+                }
+            },
+            initiallyVisible = { step -> !step.customViewerCommand.isNullOrBlank() || step.pdfViewerName == CustomPdfViewer.name },
+            removable = false,
+            hint = "Command template used when PDF viewer is set to Custom viewer.",
         )
 
         return listOf(
@@ -90,6 +106,21 @@ internal class LatexViewerStepFragmentedEditor(
             focusFragment,
             commandFragment,
         )
+    }
+
+    private fun selectedViewerFor(step: PdfViewerStepOptions): PdfViewer {
+        if (!step.customViewerCommand.isNullOrBlank() || step.pdfViewerName == CustomPdfViewer.name) {
+            return CustomPdfViewer
+        }
+        return viewerChoices.firstOrNull { it.name == step.pdfViewerName }
+            ?: PdfViewer.firstAvailableViewer
+    }
+
+    private fun isCustomViewerSelected(): Boolean = pdfViewer.selectedItem == CustomPdfViewer
+
+    private fun updateUiState() {
+        viewerCommandRow.isVisible = isCustomViewerSelected()
+        updateRequireFocusEnabled()
     }
 
     private fun updateRequireFocusEnabled() {
