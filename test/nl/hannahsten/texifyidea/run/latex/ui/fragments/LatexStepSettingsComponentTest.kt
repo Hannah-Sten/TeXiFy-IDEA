@@ -110,6 +110,21 @@ class LatexStepSettingsComponentTest : BasePlatformTestCase() {
         }
     }
 
+    fun testBibtexHintFallsBackToOutputWhenAuxIsUnset() {
+        val runConfig = configWithSteps(BibtexStepOptions()).apply {
+            configOptions.outputPath = "{projectDir}/out"
+            configOptions.auxilPath = null
+        }
+        withComponent(runConfig) { component, shadowSteps ->
+            val step = shadowSteps.first()
+
+            component.resetEditorFrom()
+            component.onStepSelectionChanged(selectionOf(step.id))
+
+            assertEquals("{projectDir}/out", component.currentBibtexWorkingDirectoryHintForTest())
+        }
+    }
+
     fun testMakeindexHintUsesAuxPathWhenIndependent() {
         val runConfig = configWithSteps(MakeindexStepOptions()).apply {
             configOptions.outputPath = "\$PROJECT_DIR\$/out"

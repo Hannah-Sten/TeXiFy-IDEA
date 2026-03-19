@@ -87,11 +87,12 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         )
     }
 
-    fun testDefaultOutputAndAuxPathsUseProjectDirPlaceholders() {
+    fun testDefaultOutputPathUsesProjectDirPlaceholderAndAuxPathIsUnset() {
         val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
 
         assertEquals("{projectDir}/out", runConfig.outputPath.toString())
-        assertEquals("{projectDir}/out", runConfig.auxilPath.toString())
+        assertNull(runConfig.auxilPath)
+        assertEquals("{projectDir}/out", runConfig.rawAuxPathOrOutputPathForUiHint())
     }
 
     fun testWriteReadRoundTripPreservesFileCleanupStep() {

@@ -15,6 +15,7 @@ import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.fields.ExtendableTextComponent
 import com.intellij.ui.components.fields.ExtendableTextField
+import com.intellij.util.ui.ComponentWithEmptyText
 import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexPathResolver
@@ -154,22 +155,33 @@ internal object LatexBasicFragments {
     fun createAuxiliaryDirectoryFragment(
         group: String,
         project: Project
-    ): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<JComponent>> = directoryFragment(
-        id = "auxiliaryDirectory",
-        name = "Auxiliary directory",
-        group = group,
-        project = project,
-        chooserTitle = "Auxiliary Files Directory",
-        labelText = "A&uxiliary directory",
-        initiallyVisible = { runConfig -> hasCustomPath(runConfig.auxilPath, LatexPathResolver.defaultAuxilPath) },
-        reset = { runConfig, field ->
-            field.text = runConfig.auxilPath?.toString() ?: LatexPathResolver.defaultAuxilPath.toString()
-        },
-        apply = { runConfig, field ->
-            runConfig.auxilPath = parseDirectoryPath(field.text.trim(), LatexPathResolver.defaultAuxilPath)
-        },
-        actionHint = "Set auxiliary directory",
-    )
+    ): RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<JComponent>> {
+        val fragment = directoryFragment(
+            id = "auxiliaryDirectory",
+            name = "Auxiliary directory",
+            group = group,
+            project = project,
+            chooserTitle = "Auxiliary Files Directory",
+            labelText = "A&uxiliary directory",
+            initiallyVisible = { runConfig -> !runConfig.auxilPath?.toString().isNullOrBlank() },
+            reset = { runConfig, field ->
+                field.text = runConfig.auxilPath?.toString().orEmpty()
+            },
+            apply = { runConfig, field ->
+                runConfig.auxilPath = field.text
+                    .trim()
+                    .takeUnless(String::isBlank)
+                    ?.let(::pathOrNull)
+            },
+            actionHint = "Set auxiliary directory",
+        )
+
+        ((fragment.component().component as? TextFieldWithBrowseButton)?.textField as? ComponentWithEmptyText)
+            ?.emptyText
+            ?.text = "Leave empty to use Output directory"
+
+        return fragment
+    }
 
     fun createEnvironmentVariablesFragment(group: String): RunConfigurationEditorFragment<LatexRunConfiguration, JComponent> {
         val panel = EnvironmentFragmentPanel()

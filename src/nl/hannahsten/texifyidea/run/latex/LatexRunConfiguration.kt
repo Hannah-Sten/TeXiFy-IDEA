@@ -80,7 +80,7 @@ class LatexRunConfiguration(
     var auxilPath: Path?
         get() = configOptions.auxilPath?.let(::pathOrNull)
         set(value) {
-            configOptions.auxilPath = value?.toString() ?: LatexPathResolver.defaultAuxilPath.toString()
+            configOptions.auxilPath = value?.toString()
         }
 
     /**

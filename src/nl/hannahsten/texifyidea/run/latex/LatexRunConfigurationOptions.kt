@@ -44,7 +44,7 @@ class LatexRunConfigurationOptions : LocatableRunConfigurationOptions() {
     var mainFilePath by string(null)
     var workingDirectoryPath by string(null)
     var outputPath by string(LatexPathResolver.defaultOutputPath.toString())
-    var auxilPath by string(LatexPathResolver.defaultAuxilPath.toString())
+    var auxilPath by string(null)
 
     var latexDistribution by enum(LatexDistributionType.MODULE_SDK)
     var expandMacrosEnvVariables by property(false)
