@@ -60,7 +60,8 @@ internal class LatexCompileSequenceComponent(
         autoConfigureSteps()
     }.apply {
         border = JBUI.Borders.emptyRight(5)
-        toolTipText = "Automatically complete compile sequence from current setup."
+        toolTipText =
+            "Automatically complete the compile sequence from the current setup, inserting missing compile, bibliography, index, or PDF viewer steps when needed."
     }
 
     private val addPanel = JPanel().apply {
