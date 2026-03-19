@@ -36,10 +36,12 @@ internal class LatexCompileStepFragmentedEditor(
     }
     private val compilerPathRow = LabeledComponent.create(compilerPath, "Compiler &path")
 
-    private val compilerArguments = EditorTextField("", project, PlainTextFileType.INSTANCE).apply {
+    private val compilerArguments = object : EditorTextField("", project, PlainTextFileType.INSTANCE) {
+        init {
+            isOneLineMode = true
+        }
+    }.apply {
         setPlaceholder("Custom compiler arguments")
-        @Suppress("UsePropertyAccessSyntax")
-        setOneLineMode(true)
     }
     private val compilerArgumentsRow = LabeledComponent.create(compilerArguments, "Compiler ar&guments")
     private var completionCompilerExecutable: String? = null

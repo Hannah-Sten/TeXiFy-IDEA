@@ -162,8 +162,7 @@ internal class LatexStepSettingsComponent(
     }
 
     private fun refreshForCurrentSelection() {
-        val selectionMode = selectionMode()
-        when (selectionMode) {
+        when (val selectionMode = selectionMode()) {
             StepSelectionMode.NONE -> {
                 unsupportedSettings.setMessage(NO_SELECTION_MESSAGE)
                 showCard(CARD_UNSUPPORTED)

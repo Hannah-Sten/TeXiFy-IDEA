@@ -7,7 +7,6 @@ import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.components.JBTextField
-import com.intellij.util.ui.ComponentWithEmptyText
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
 import nl.hannahsten.texifyidea.run.latex.MakeindexStepOptions
 import nl.hannahsten.texifyidea.run.latex.StepUiOptionIds
@@ -78,19 +77,11 @@ internal class MakeindexStepFragmentedEditor(
             actionHint = "Set target base name",
         )
 
-        val workingDirFragment = stepFragment(
-            id = StepUiOptionIds.STEP_WORKING_DIRECTORY,
-            name = "Working directory",
+        val workingDirFragment = stepWorkingDirectoryFragment(
             component = workingDirectoryRow,
-            reset = { step, component ->
-                component.component.text = step.workingDirectoryPath.orEmpty()
-                (component.component.textField as? ComponentWithEmptyText)?.emptyText?.text = inferredWorkingDirectoryHint.orEmpty()
-            },
-            apply = { step, component -> step.workingDirectoryPath = component.component.text.ifBlank { null } },
-            initiallyVisible = { step -> !step.workingDirectoryPath.isNullOrBlank() },
-            removable = true,
-            hint = "Leave empty to use the default directory for this step's control files (auxiliary directory when configured, otherwise output directory).",
-            actionHint = "Set step working directory",
+            inferredWorkingDirectoryHint = { inferredWorkingDirectoryHint },
+            getWorkingDirectoryPath = { it.workingDirectoryPath },
+            setWorkingDirectoryPath = { step, value -> step.workingDirectoryPath = value },
         )
 
         return listOf(

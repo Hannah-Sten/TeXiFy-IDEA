@@ -89,7 +89,9 @@ class LatexRunConfiguration(
      * This intentionally returns the persisted string form instead of resolving to a filesystem path:
      * placeholders/macros stay visible to the user, and the UI can refresh this hint on EDT without touching indexes.
      */
-    fun rawAuxPathOrOutputPathForUiHint(): String = configOptions.auxilPath ?: configOptions.outputPath.orEmpty().ifBlank { LatexPathResolver.defaultOutputPath.pathString }
+    fun rawAuxPathOrOutputPathForUiHint(): String = configOptions.auxilPath
+        ?.takeUnless(String::isBlank)
+        ?: configOptions.outputPath.orEmpty().ifBlank { LatexPathResolver.defaultOutputPath.pathString }
 
     var workingDirectory: Path?
         get() = configOptions.workingDirectoryPath?.let(::pathOrNull)

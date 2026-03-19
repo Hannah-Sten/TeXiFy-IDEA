@@ -336,16 +336,4 @@ internal fun defaultLatexmkSteps(): MutableList<LatexStepRunConfigurationOptions
     PdfViewerStepOptions(),
 )
 
-internal fun defaultStepFor(type: String): LatexStepRunConfigurationOptions? = when (type.trim().lowercase()) {
-    LatexStepType.LATEX_COMPILE -> LatexCompileStepOptions()
-    LatexStepType.LATEXMK_COMPILE -> LatexmkCompileStepOptions()
-    LatexStepType.PDF_VIEWER -> PdfViewerStepOptions()
-    LatexStepType.BIBTEX -> BibtexStepOptions()
-    LatexStepType.MAKEINDEX -> MakeindexStepOptions()
-    LatexStepType.EXTERNAL_TOOL -> ExternalToolStepOptions()
-    LatexStepType.PYTHONTEX -> PythontexStepOptions()
-    LatexStepType.MAKEGLOSSARIES -> MakeglossariesStepOptions()
-    LatexStepType.XINDY -> XindyStepOptions()
-    LatexStepType.FILE_CLEANUP -> FileCleanupStepOptions()
-    else -> null
-}
+internal fun defaultStepFor(type: String): LatexStepRunConfigurationOptions? = LatexStepPresentation.defaultStepFor(type)
