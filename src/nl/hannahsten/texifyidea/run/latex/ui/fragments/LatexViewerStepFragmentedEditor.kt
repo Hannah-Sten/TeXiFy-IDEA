@@ -9,27 +9,33 @@ import com.intellij.ui.components.JBTextField
 import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.run.latex.PdfViewerStepOptions
 import nl.hannahsten.texifyidea.run.latex.StepUiOptionIds
+import nl.hannahsten.texifyidea.run.pdfviewer.CustomPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import java.awt.event.ItemEvent
+import java.awt.event.KeyEvent
 
 internal class LatexViewerStepFragmentedEditor(
     initialStep: PdfViewerStepOptions = PdfViewerStepOptions(),
 ) : AbstractStepFragmentedEditor<PdfViewerStepOptions>(initialStep) {
 
-    private val pdfViewer = ComboBox(PdfViewer.availableViewers.toTypedArray())
+    private val viewerChoices: List<PdfViewer> = PdfViewer.availableViewers + CustomPdfViewer
+    private val pdfViewer = ComboBox(viewerChoices.toTypedArray())
     private val pdfViewerRow = LabeledComponent.create(pdfViewer, TexifyBundle.message("run.step.ui.field.pdf.viewer"))
 
-    private val requireFocus = JBCheckBox(TexifyBundle.message("run.latex.settings.allow.viewer.focus"))
+    private val requireFocus = JBCheckBox().apply {
+        setTextWithMnemonic(TexifyBundle.message("run.step.ui.field.require.focus"))
+    }
     private val viewerCommand = JBTextField()
     private val viewerCommandRow = LabeledComponent.create(viewerCommand, TexifyBundle.message("run.step.ui.field.custom.viewer.command"))
 
     init {
         pdfViewer.addItemListener {
             if (it.stateChange == ItemEvent.SELECTED) {
-                updateRequireFocusEnabled()
+                updateUiState()
                 fireEditorStateChanged()
             }
         }
+        updateUiState()
     }
 
     override fun createFragments(): Collection<SettingsEditorFragment<PdfViewerStepOptions, *>> {
@@ -40,12 +46,19 @@ internal class LatexViewerStepFragmentedEditor(
             name = TexifyBundle.message("run.step.ui.field.pdf.viewer"),
             component = pdfViewerRow,
             reset = { step, component ->
-                component.component.selectedItem = PdfViewer.availableViewers.firstOrNull { it.name == step.pdfViewerName }
-                    ?: PdfViewer.firstAvailableViewer
-                updateRequireFocusEnabled()
+                component.component.selectedItem = selectedViewerFor(step)
+                updateUiState()
             },
             apply = { step, component ->
-                step.pdfViewerName = (component.component.selectedItem as? PdfViewer ?: PdfViewer.firstAvailableViewer).name
+                val selectedViewer = component.component.selectedItem as? PdfViewer ?: PdfViewer.firstAvailableViewer
+                if (selectedViewer == CustomPdfViewer) {
+                    step.pdfViewerName = CustomPdfViewer.name
+                    step.customViewerCommand = viewerCommand.text.ifBlank { null }
+                }
+                else {
+                    step.pdfViewerName = selectedViewer.name
+                    step.customViewerCommand = null
+                }
             },
             initiallyVisible = { true },
             removable = false,
@@ -74,11 +87,17 @@ internal class LatexViewerStepFragmentedEditor(
             name = TexifyBundle.message("run.step.ui.field.custom.viewer.command"),
             component = viewerCommandRow,
             reset = { step, component -> component.component.text = step.customViewerCommand.orEmpty() },
-            apply = { step, component -> step.customViewerCommand = component.component.text.ifBlank { null } },
-            initiallyVisible = { step -> !step.customViewerCommand.isNullOrBlank() },
-            removable = true,
+            apply = { step, component ->
+                step.customViewerCommand = if (isCustomViewerSelected()) {
+                    component.component.text.ifBlank { null }
+                }
+                else {
+                    null
+                }
+            },
+            initiallyVisible = { step -> !step.customViewerCommand.isNullOrBlank() || step.pdfViewerName == CustomPdfViewer.name },
+            removable = false,
             hint = TexifyBundle.message("run.step.ui.hint.custom.viewer.command"),
-            actionHint = TexifyBundle.message("run.step.ui.action.set.custom.viewer.command"),
         )
 
         return listOf(
@@ -89,9 +108,50 @@ internal class LatexViewerStepFragmentedEditor(
         )
     }
 
+    private fun selectedViewerFor(step: PdfViewerStepOptions): PdfViewer {
+        if (!step.customViewerCommand.isNullOrBlank() || step.pdfViewerName == CustomPdfViewer.name) {
+            return CustomPdfViewer
+        }
+        return viewerChoices.firstOrNull { it.name == step.pdfViewerName }
+            ?: PdfViewer.firstAvailableViewer
+    }
+
+    internal fun setValuesForTest(
+        pdfViewerName: String,
+        customViewerCommand: String?,
+    ) {
+        pdfViewer.selectedItem = viewerChoices.firstOrNull { it.name == pdfViewerName }
+            ?: CustomPdfViewer.takeIf { pdfViewerName == it.name }
+            ?: PdfViewer.firstAvailableViewer
+        viewerCommand.text = customViewerCommand.orEmpty()
+        updateUiState()
+    }
+
+    private fun isCustomViewerSelected(): Boolean = pdfViewer.selectedItem == CustomPdfViewer
+
+    private fun updateUiState() {
+        viewerCommandRow.isVisible = isCustomViewerSelected()
+        updateRequireFocusEnabled()
+    }
+
     private fun updateRequireFocusEnabled() {
         val selectedViewer = pdfViewer.selectedItem as? PdfViewer
         val supported = selectedViewer?.let { it.isForwardSearchSupported && it.isFocusSupported } ?: false
         requireFocus.isEnabled = supported
+    }
+
+    private fun JBCheckBox.setTextWithMnemonic(value: String) {
+        val markerIndex = value.indexOf('&')
+        if (markerIndex < 0) {
+            text = value
+            return
+        }
+
+        val resolvedText = value.removeRange(markerIndex, markerIndex + 1)
+        text = resolvedText
+        resolvedText.getOrNull(markerIndex)?.let { mnemonicChar ->
+            mnemonic = KeyEvent.getExtendedKeyCodeForChar(mnemonicChar.uppercaseChar().code)
+            displayedMnemonicIndex = markerIndex
+        }
     }
 }

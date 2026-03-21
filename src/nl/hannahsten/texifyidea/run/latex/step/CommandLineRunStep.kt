@@ -41,8 +41,22 @@ internal class CommandLineRunStep(
             return configured ?: defaultWorkingDirectory(context)
         }
 
+        fun resolveAuxiliaryWorkingDirectory(context: LatexRunStepContext, configuredPath: String?): Path {
+            val configured = configuredPath
+                ?.trim()
+                ?.takeIf(String::isNotBlank)
+                ?.let(::pathOrNull)
+                ?.let { LatexPathResolver.resolve(it, context.session.mainFile, context.environment.project) }
+            return configured ?: defaultAuxiliaryWorkingDirectory(context)
+        }
+
         fun defaultWorkingDirectory(context: LatexRunStepContext): Path = context.session.auxDir?.let { Path.of(it.path) }
             ?: context.session.outputDir.let { Path.of(it.path) }
             ?: context.session.workingDirectory
+
+        fun defaultAuxiliaryWorkingDirectory(context: LatexRunStepContext): Path =
+            // Auxiliary tools read control files from the resolved auxiliary directory when one
+            // is modeled by this run, otherwise they fall back to the output directory.
+            context.session.auxDir?.let { Path.of(it.path) } ?: Path.of(context.session.outputDir.path)
     }
 }

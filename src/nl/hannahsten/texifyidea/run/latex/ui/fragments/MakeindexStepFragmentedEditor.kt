@@ -30,6 +30,13 @@ internal class MakeindexStepFragmentedEditor(
 
     private val workingDirectory = createDirectoryField(project, TexifyBundle.message("run.step.ui.dialog.step.working.directory"))
     private val workingDirectoryRow = LabeledComponent.create(workingDirectory, TexifyBundle.message("run.step.ui.field.working.directory"))
+    private var inferredWorkingDirectoryHint: String? = null
+
+    fun setInferredWorkingDirectoryHint(value: String?) {
+        inferredWorkingDirectoryHint = value
+    }
+
+    internal fun inferredWorkingDirectoryHintForTest(): String? = inferredWorkingDirectoryHint
 
     override fun createFragments(): Collection<SettingsEditorFragment<MakeindexStepOptions, *>> {
         val header = CommonParameterFragments.createHeader<MakeindexStepOptions>(TexifyBundle.message("run.step.ui.header.makeindex"))
@@ -71,16 +78,11 @@ internal class MakeindexStepFragmentedEditor(
             actionHint = TexifyBundle.message("run.step.ui.action.set.target.base.name"),
         )
 
-        val workingDirFragment = stepFragment(
-            id = StepUiOptionIds.STEP_WORKING_DIRECTORY,
-            name = TexifyBundle.message("run.step.ui.field.working.directory"),
+        val workingDirFragment = stepWorkingDirectoryFragment(
             component = workingDirectoryRow,
-            reset = { step, component -> component.component.text = step.workingDirectoryPath.orEmpty() },
-            apply = { step, component -> step.workingDirectoryPath = component.component.text.ifBlank { null } },
-            initiallyVisible = { step -> !step.workingDirectoryPath.isNullOrBlank() },
-            removable = true,
-            hint = TexifyBundle.message("run.step.ui.hint.makeindex.working.directory"),
-            actionHint = TexifyBundle.message("run.step.ui.action.set.step.working.directory"),
+            inferredWorkingDirectoryHint = { inferredWorkingDirectoryHint },
+            getWorkingDirectoryPath = { it.workingDirectoryPath },
+            setWorkingDirectoryPath = { step, value -> step.workingDirectoryPath = value },
         )
 
         return listOf(

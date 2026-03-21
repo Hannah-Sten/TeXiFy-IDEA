@@ -44,6 +44,7 @@ internal class LatexCompileSequenceFragment(
             val tooltip = TexifyBundle.message("run.step.ui.compile.sequence.tooltip")
             val panel = JPanel(BorderLayout())
             panel.toolTipText = tooltip
+            val headerAction = component.headerActionComponent()
 
             val label = JLabel(TexifyBundle.message("run.step.ui.compile.sequence.title")).apply {
                 font = JBUI.Fonts.label().deriveFont(Font.BOLD)
@@ -55,13 +56,15 @@ internal class LatexCompileSequenceFragment(
                     JPanel(BorderLayout()).apply {
                         isOpaque = false
                         border = JBUI.Borders.emptyLeft(12)
-                        add(component.headerActionComponent(), BorderLayout.EAST)
+                        add(headerAction, BorderLayout.EAST)
                     },
                     BorderLayout.EAST,
                 )
             }
             component.toolTipText = tooltip
-            component.headerActionComponent().toolTipText = tooltip
+            if (headerAction.toolTipText.isNullOrBlank()) {
+                headerAction.toolTipText = tooltip
+            }
 
             panel.add(header, BorderLayout.NORTH)
             panel.add(component, BorderLayout.CENTER)

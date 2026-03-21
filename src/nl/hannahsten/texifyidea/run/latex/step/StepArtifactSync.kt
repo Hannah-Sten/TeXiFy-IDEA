@@ -113,7 +113,7 @@ internal class StepArtifactSync(
             Path.of(context.session.mainFile.parent.path)
         }
         else {
-            CommandLineRunStep.resolveWorkingDirectory(context, step.workingDirectoryPath)
+            CommandLineRunStep.resolveAuxiliaryWorkingDirectory(context, step.workingDirectoryPath)
         }
 
     private fun auxOrOutputDirectory(): Path? =

@@ -13,7 +13,7 @@ import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer
 import nl.hannahsten.texifyidea.run.latex.LatexRunSessionState
-import nl.hannahsten.texifyidea.run.latex.step.InlineLatexRunStep
+import nl.hannahsten.texifyidea.run.latex.step.LatexRunStep
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepContext
 import nl.hannahsten.texifyidea.run.latex.step.ProcessLatexRunStep
 import java.io.OutputStream
@@ -104,6 +104,7 @@ class StepAwareSequentialProcessHandlerTest : BasePlatformTestCase() {
         }
 
         handler.startNotify()
+        waitUntil { first.started }
         first.emit("boom\n")
         first.finish(2)
 
@@ -124,18 +125,18 @@ class StepAwareSequentialProcessHandlerTest : BasePlatformTestCase() {
         )
     }
 
-    fun testInlineExecutionRunsAndPublishesLifecycleEvents() {
-        val context = createContext("inline-run.tex")
+    fun testNoProcessExecutionRunsAndPublishesLifecycleEvents() {
+        val context = createContext("no-process-run.tex")
         val lifecycle = mutableListOf<String>()
         val handler = StepAwareSequentialProcessHandler(
             listOf(
-                TestInlineStep(
+                TestNoProcessStep(
                     id = "file-cleanup",
                     configId = "s1",
                     before = { lifecycle += "before" },
-                    run = {
-                        lifecycle += "run"
-                        0
+                    create = {
+                        lifecycle += "create"
+                        null
                     },
                     after = { _, _ -> lifecycle += "after" },
                 )
@@ -156,7 +157,7 @@ class StepAwareSequentialProcessHandlerTest : BasePlatformTestCase() {
         handler.startNotify()
 
         waitUntil { handler.isProcessTerminated }
-        assertEquals(listOf("before", "run", "after"), lifecycle)
+        assertEquals(listOf("before", "create", "after"), lifecycle)
         assertEquals(
             listOf(
                 "start:0",
@@ -184,12 +185,11 @@ class StepAwareSequentialProcessHandlerTest : BasePlatformTestCase() {
                         throw IllegalStateException("pre failed")
                     },
                 ),
-                TestInlineStep(
+                TestNoProcessStep(
                     id = "file-cleanup",
                     configId = "s2",
-                    run = {
+                    before = {
                         cleanupRan = true
-                        0
                     },
                 ),
             ),
@@ -224,38 +224,57 @@ class StepAwareSequentialProcessHandlerTest : BasePlatformTestCase() {
         )
     }
 
-    fun testInlineFailureShortCircuitsRemainingSteps() {
-        val context = createContext("inline-failure.tex")
+    fun testNoProcessFailureShortCircuitsRemainingSteps() {
+        val context = createContext("no-process-failure.tex")
         var firstRan = false
         var secondRan = false
+        val events = mutableListOf<String>()
         val handler = StepAwareSequentialProcessHandler(
             listOf(
-                TestInlineStep(
+                TestNoProcessStep(
                     id = "file-cleanup",
                     configId = "s1",
-                    run = {
+                    before = {
                         firstRan = true
-                        2
+                        throw IllegalStateException("cleanup failed")
                     },
                 ),
-                TestInlineStep(
+                TestNoProcessStep(
                     id = "file-cleanup",
                     configId = "s2",
-                    run = {
+                    before = {
                         secondRan = true
-                        0
                     },
                 ),
             ),
             context,
         )
 
+        handler.addStepLogListener { event ->
+            events += when (event) {
+                is StepLogEvent.StepStarted -> "start:${event.index}"
+                is StepLogEvent.StepOutput -> "out:${event.index}"
+                is StepLogEvent.StepFinished -> "finish:${event.index}:${event.exitCode}"
+                is StepLogEvent.RunFinished -> "run:${event.exitCode}"
+            }
+        }
+
         handler.startNotify()
 
         waitUntil { handler.isProcessTerminated }
         assertTrue(firstRan)
         assertFalse(secondRan)
+        assertTrue(handler.rawLog(0).contains("cleanup failed"))
         assertEquals("", handler.rawLog(1))
+        assertEquals(
+            listOf(
+                "start:0",
+                "out:0",
+                "finish:0:1",
+                "run:1",
+            ),
+            events
+        )
     }
 
     fun testAfterFinishReceivesExitCodeAndErrorsAreReportedWithoutChangingRunExitCode() {
@@ -316,12 +335,11 @@ class StepAwareSequentialProcessHandlerTest : BasePlatformTestCase() {
         val handler = StepAwareSequentialProcessHandler(
             listOf(
                 TestProcessStep("latex-compile", "s1", compile),
-                TestInlineStep(
+                TestNoProcessStep(
                     id = "file-cleanup",
                     configId = "s2",
-                    run = {
+                    before = {
                         cleanupRan = true
-                        0
                     },
                 ),
             ),
@@ -390,19 +408,19 @@ class StepAwareSequentialProcessHandlerTest : BasePlatformTestCase() {
         }
     }
 
-    private class TestInlineStep(
+    private class TestNoProcessStep(
         override val id: String,
         override val configId: String,
         private val before: (LatexRunStepContext) -> Unit = {},
-        private val run: (LatexRunStepContext) -> Int = { 0 },
+        private val create: (LatexRunStepContext) -> ProcessHandler? = { null },
         private val after: (LatexRunStepContext, Int) -> Unit = { _, _ -> },
-    ) : InlineLatexRunStep {
+    ) : LatexRunStep {
 
         override fun beforeStart(context: LatexRunStepContext) {
             before(context)
         }
 
-        override fun runInline(context: LatexRunStepContext): Int = run(context)
+        override fun createProcess(context: LatexRunStepContext): ProcessHandler? = create(context)
 
         override fun afterFinish(context: LatexRunStepContext, exitCode: Int) {
             after(context, exitCode)

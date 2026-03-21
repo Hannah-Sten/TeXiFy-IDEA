@@ -42,6 +42,13 @@ class LatexIgnoredFileMasksTest : BasePlatformTestCase() {
         assertTrue(missing.isEmpty())
     }
 
+    fun testPresetMasksTrackTemporaryBuildArtifacts() {
+        assertTrue("*.synctex" in LatexIgnoredFileMasks.presetMasks)
+        assertTrue("*.synctex.gz" in LatexIgnoredFileMasks.presetMasks)
+        assertTrue("*.synctex(busy)" in LatexIgnoredFileMasks.presetMasks)
+        assertTrue("*.xdv" in LatexIgnoredFileMasks.presetMasks)
+    }
+
     fun testApplyMasksDoesNotDropExistingCustomMasks() {
         LatexIgnoredFileMasks.applyMasks(linkedSetOf("*.mytmp"))
 

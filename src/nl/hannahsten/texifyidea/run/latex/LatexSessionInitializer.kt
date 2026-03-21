@@ -3,9 +3,12 @@ package nl.hannahsten.texifyidea.run.latex
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.application.ReadAction
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.SmartPointerManager
 import nl.hannahsten.texifyidea.TexifyBundle
+import com.intellij.psi.SmartPsiElementPointer
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import java.nio.file.Path
 import java.util.Locale
@@ -29,7 +32,7 @@ internal object LatexSessionInitializer {
     @Throws(ExecutionException::class)
     fun initializeForModel(
         runConfig: LatexRunConfiguration,
-        mainFile: com.intellij.openapi.vfs.VirtualFile? = LatexRunConfigurationStaticSupport.resolveMainFile(runConfig),
+        mainFile: VirtualFile? = LatexRunConfigurationStaticSupport.resolveMainFile(runConfig),
     ): LatexRunSessionState = initializeInternal(
         runConfig = runConfig,
         mainFile = mainFile,
@@ -39,7 +42,7 @@ internal object LatexSessionInitializer {
     @Throws(ExecutionException::class)
     private fun initializeInternal(
         runConfig: LatexRunConfiguration,
-        mainFile: com.intellij.openapi.vfs.VirtualFile?,
+        mainFile: VirtualFile?,
         workingDirectoryProject: com.intellij.openapi.project.Project,
     ): LatexRunSessionState {
         val resolvedMainFile = mainFile ?: throw ExecutionException(TexifyBundle.message("run.error.main.file.not.resolved"))
@@ -50,7 +53,7 @@ internal object LatexSessionInitializer {
         val workingDirectory = LatexPathResolver.resolve(runConfig.workingDirectory, resolvedMainFile, workingDirectoryProject)
             ?: Path.of(resolvedMainFile.parent.path)
 
-        val psiPointer = ReadAction.compute<com.intellij.psi.SmartPsiElementPointer<com.intellij.psi.PsiFile>?, RuntimeException> {
+        val psiPointer = ReadAction.compute<SmartPsiElementPointer<PsiFile>?, RuntimeException> {
             val mainPsiFile = PsiManager.getInstance(runConfig.project).findFile(resolvedMainFile) ?: return@compute null
             SmartPointerManager.getInstance(runConfig.project).createSmartPsiElementPointer(mainPsiFile)
         }

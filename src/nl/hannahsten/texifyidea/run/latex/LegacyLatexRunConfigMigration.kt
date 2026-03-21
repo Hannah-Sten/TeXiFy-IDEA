@@ -1,13 +1,10 @@
 package nl.hannahsten.texifyidea.run.latex
 
 import com.intellij.execution.configuration.EnvironmentVariablesData
-import com.intellij.execution.impl.RunManagerImpl
 import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
-import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.step.LatexStepAutoConfigurator
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
-import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfiguration
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import org.jdom.Element
 import java.nio.file.Path
@@ -45,19 +42,13 @@ internal object LegacyLatexRunConfigMigration {
 
     fun migrateIfNeeded(runConfig: LatexRunConfiguration, rootElement: Element) {
         val legacyParent = rootElement.getChild(LEGACY_PARENT) ?: return
-        if (runConfig.configOptions.steps.isNotEmpty()) {
-            return
-        }
-        if (hasExplicitStepsOption(rootElement)) {
-            return
-        }
         migrate(runConfig, legacyParent)
     }
 
     private fun migrate(runConfig: LatexRunConfiguration, legacyParent: Element) {
         migrateCommonOptions(runConfig, legacyParent)
 
-        val stepBundle = buildStepBundle(runConfig, legacyParent)
+        val stepBundle = buildStepBundle(legacyParent)
         val completed = LatexStepAutoConfigurator.completeSteps(
             mainPsiFile = null,
             baseSteps = stepBundle.baseSteps,
@@ -96,7 +87,7 @@ internal object LegacyLatexRunConfigMigration {
         resolveLegacyPath(
             explicitPath = auxPathText,
             legacyToggle = auxDirFlag,
-            truePlaceholder = "${LatexPathResolver.PROJECT_DIR_PLACEHOLDER}/auxil",
+            truePlaceholder = LatexPathResolver.defaultAuxilPath.toString(),
             falsePlaceholder = LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER,
             fallback = LatexPathResolver.defaultAuxilPath,
             fixInvalidBinPath = false,
@@ -135,14 +126,13 @@ internal object LegacyLatexRunConfigMigration {
     }
 
     private fun buildStepBundle(
-        runConfig: LatexRunConfiguration,
         legacyParent: Element,
     ): StepBundle {
         val mainStep = buildMainStep(legacyParent)
         val compileTwice = legacyParent.getChildTextTrimOrNull(COMPILE_TWICE)?.toBooleanStrictOrNullCompat() ?: false
 
-        val bibResult = resolveBibtexSteps(runConfig, legacyParent.getChildTextTrimOrNull(BIB_RUN_CONFIG))
-        val makeindexResult = resolveMakeindexSteps(runConfig, legacyParent.getChildTextTrimOrNull(MAKEINDEX_RUN_CONFIG))
+        val bibResult = resolveBibtexSteps(legacyParent.getChildTextTrimOrNull(BIB_RUN_CONFIG))
+        val makeindexResult = resolveMakeindexSteps(legacyParent.getChildTextTrimOrNull(MAKEINDEX_RUN_CONFIG))
         val viewerStep = buildViewerStep(legacyParent)
 
         val auxiliarySteps = mutableListOf<LatexStepRunConfigurationOptions>().apply {
@@ -172,7 +162,7 @@ internal object LegacyLatexRunConfigMigration {
         if (compilerText.equals(LEGACY_LATEXMK, ignoreCase = true)) {
             return LatexmkCompileStepOptions().apply {
                 this.compilerPath = compilerPath
-                this.compilerArguments = compilerArguments
+                this.latexmkExtraArguments = compilerArguments ?: LatexRunConfiguration.DEFAULT_LATEXMK_EXTRA_ARGUMENTS
                 this.beforeRunCommand = beforeRunCommand
                 this.latexmkCompileMode = legacyOutputFormatToLatexmkMode(outputFormatRaw)
             }
@@ -197,7 +187,7 @@ internal object LegacyLatexRunConfigMigration {
 
         return LatexmkCompileStepOptions().apply {
             this.compilerPath = compilerPath
-            this.compilerArguments = compilerArguments
+            this.latexmkExtraArguments = compilerArguments ?: LatexRunConfiguration.DEFAULT_LATEXMK_EXTRA_ARGUMENTS
             this.beforeRunCommand = beforeRunCommand
         }
     }
@@ -228,7 +218,6 @@ internal object LegacyLatexRunConfigMigration {
     }
 
     private fun resolveBibtexSteps(
-        runConfig: LatexRunConfiguration,
         legacyIdsRaw: String?,
     ): ResolvedAuxSteps<BibtexStepOptions> {
         val ids = parseLegacyIdList(legacyIdsRaw)
@@ -236,34 +225,15 @@ internal object LegacyLatexRunConfigMigration {
             return ResolvedAuxSteps(emptyList(), hasDangling = false)
         }
 
-        val runManager = RunManagerImpl.getInstanceImpl(runConfig.project)
-        val steps = mutableListOf<BibtexStepOptions>()
-        var hasDangling = false
-
-        ids.forEach { id ->
-            val settings = runManager.getConfigurationById(id)
-            val bibConfig = settings?.configuration as? BibtexRunConfiguration
-            if (bibConfig == null) {
-                hasDangling = true
-                return@forEach
-            }
-            steps += BibtexStepOptions().apply {
-                bibliographyCompiler = bibConfig.compiler ?: bibliographyCompiler
-                compilerPath = bibConfig.compilerPath?.trim()?.ifBlank { null }
-                compilerArguments = bibConfig.compilerArguments?.trim()?.ifBlank { null }
-                workingDirectoryPath = bibConfig.bibWorkingDir?.path
+        val steps = ids.map { id ->
+            BibtexStepOptions().apply {
+                legacyRunConfigId = id
             }
         }
-
-        if (hasDangling) {
-            steps += BibtexStepOptions()
-        }
-
-        return ResolvedAuxSteps(steps, hasDangling)
+        return ResolvedAuxSteps(steps, hasDangling = false)
     }
 
     private fun resolveMakeindexSteps(
-        runConfig: LatexRunConfiguration,
         legacyIdsRaw: String?,
     ): ResolvedAuxSteps<MakeindexStepOptions> {
         val ids = parseLegacyIdList(legacyIdsRaw)
@@ -271,29 +241,12 @@ internal object LegacyLatexRunConfigMigration {
             return ResolvedAuxSteps(emptyList(), hasDangling = false)
         }
 
-        val runManager = RunManagerImpl.getInstanceImpl(runConfig.project)
-        val steps = mutableListOf<MakeindexStepOptions>()
-        var hasDangling = false
-
-        ids.forEach { id ->
-            val settings = runManager.getConfigurationById(id)
-            val makeindexConfig = settings?.configuration as? MakeindexRunConfiguration
-            if (makeindexConfig == null) {
-                hasDangling = true
-                return@forEach
-            }
-            steps += MakeindexStepOptions().apply {
-                program = makeindexConfig.makeindexProgram
-                commandLineArguments = makeindexConfig.commandLineArguments?.trim()?.ifBlank { null }
-                workingDirectoryPath = makeindexConfig.workingDirectory?.path
+        val steps = ids.map { id ->
+            MakeindexStepOptions().apply {
+                legacyRunConfigId = id
             }
         }
-
-        if (hasDangling) {
-            steps += MakeindexStepOptions()
-        }
-
-        return ResolvedAuxSteps(steps, hasDangling)
+        return ResolvedAuxSteps(steps, hasDangling = false)
     }
 
     private fun parseLegacyIdList(raw: String?): List<String> {
@@ -318,15 +271,6 @@ internal object LegacyLatexRunConfigMigration {
     private fun parseOutputFormat(raw: String?): LatexCompiler.Format? {
         val value = raw?.trim()?.takeIf { it.isNotBlank() } ?: return null
         return LatexCompiler.Format.entries.firstOrNull { it.name.equals(value, ignoreCase = true) }
-    }
-
-    private fun hasExplicitStepsOption(rootElement: Element): Boolean = containsOptionRecursively(rootElement, "steps")
-
-    private fun containsOptionRecursively(node: Element, optionName: String): Boolean {
-        if (node.name == "option" && node.getAttributeValue("name") == optionName) {
-            return true
-        }
-        return node.children.any { containsOptionRecursively(it, optionName) }
     }
 
     private fun Element.getChildTextTrimOrNull(name: String): String? = getChildText(name)?.trim()?.ifBlank { null }

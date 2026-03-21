@@ -14,6 +14,9 @@ internal interface LatexRunStep {
     val displayName: String
         get() = LatexStepPresentation.displayName(id)
 
+    @Throws(ExecutionException::class)
+    fun createProcess(context: LatexRunStepContext): ProcessHandler? = null
+
     fun beforeStart(context: LatexRunStepContext) {}
 
     fun afterFinish(context: LatexRunStepContext, exitCode: Int) {}
@@ -26,15 +29,5 @@ internal interface LatexRunStep {
 internal interface ProcessLatexRunStep : LatexRunStep {
 
     @Throws(ExecutionException::class)
-    fun createProcess(context: LatexRunStepContext): ProcessHandler
-}
-
-/**
- * Step contract for lightweight in-process actions.
- * Inline steps return an exit code directly without creating an external process.
- */
-internal interface InlineLatexRunStep : LatexRunStep {
-
-    @Throws(ExecutionException::class)
-    fun runInline(context: LatexRunStepContext): Int
+    override fun createProcess(context: LatexRunStepContext): ProcessHandler
 }

@@ -4,23 +4,28 @@ import com.intellij.execution.ExecutionException
 import com.intellij.execution.Executor
 import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.execution.configurations.*
+import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.Sdk
 import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
+import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.flow.LatexStepRunState
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepProviders
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCitationTool
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
+import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfiguration
+import nl.hannahsten.texifyidea.run.pdfviewer.CustomPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdk
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import org.jdom.Element
 import java.nio.file.Path
+import kotlin.io.path.pathString
 
 /**
  * Represents TeXiFy's step-based LaTeX run configuration persisted by IntelliJ.
@@ -76,8 +81,18 @@ class LatexRunConfiguration(
     var auxilPath: Path?
         get() = configOptions.auxilPath?.let(::pathOrNull)
         set(value) {
-            configOptions.auxilPath = value?.toString() ?: LatexPathResolver.defaultAuxilPath.toString()
+            configOptions.auxilPath = value?.toString()
         }
+
+    /**
+     * UI-only hint source for bibliography/index step editors.
+     *
+     * This intentionally returns the persisted string form instead of resolving to a filesystem path:
+     * placeholders/macros stay visible to the user, and the UI can refresh this hint on EDT without touching indexes.
+     */
+    fun rawAuxPathOrOutputPathForUiHint(): String = configOptions.auxilPath
+        ?.takeUnless(String::isBlank)
+        ?: configOptions.outputPath.orEmpty().ifBlank { LatexPathResolver.defaultOutputPath.pathString }
 
     var workingDirectory: Path?
         get() = configOptions.workingDirectoryPath?.let(::pathOrNull)
@@ -119,7 +134,11 @@ class LatexRunConfiguration(
 
     var pdfViewer: PdfViewer?
         get() {
-            val viewerName = primaryViewerStep()?.pdfViewerName
+            val viewerStep = primaryViewerStep()
+            if (!viewerStep?.customViewerCommand.isNullOrBlank() || viewerStep?.pdfViewerName == CustomPdfViewer.name) {
+                return CustomPdfViewer
+            }
+            val viewerName = viewerStep?.pdfViewerName
             return PdfViewer.availableViewers.firstOrNull { it.name == viewerName }
                 ?: PdfViewer.firstAvailableViewer
         }
@@ -135,8 +154,14 @@ class LatexRunConfiguration(
         LegacyLatexRunConfigMigration.migrateIfNeeded(this, element)
     }
 
+    override fun writeExternal(element: Element) {
+        resolvePendingLegacyAuxStepsIfNeeded()
+        super<RunConfigurationBase>.writeExternal(element)
+    }
+
     @Throws(RuntimeConfigurationException::class)
     override fun checkConfiguration() {
+        resolvePendingLegacyAuxStepsIfNeeded()
         if (mainFilePath.isNullOrBlank()) {
             throw RuntimeConfigurationError(TexifyBundle.message("run.error.run.config.invalid.no.main.latex.file"))
         }
@@ -153,6 +178,7 @@ class LatexRunConfiguration(
         executor: Executor,
         environment: ExecutionEnvironment
     ): RunProfileState {
+        resolvePendingLegacyAuxStepsIfNeeded()
         val configuredSteps = configOptions.steps
         if (configuredSteps.isEmpty()) {
             throw ExecutionException(TexifyBundle.message("run.error.no.executable.compile.steps.configured"))
@@ -169,7 +195,7 @@ class LatexRunConfiguration(
     }
 
     internal fun copyStepsForUi(): MutableList<LatexStepRunConfigurationOptions> =
-        configOptions.steps.mapTo(mutableListOf()) { it.deepCopy() }
+        configOptions.steps.also { resolvePendingLegacyAuxStepsIfNeeded() }.mapTo(mutableListOf()) { it.deepCopy() }
 
     internal fun replaceStepsFromUi(steps: List<LatexStepRunConfigurationOptions>) {
         configOptions.steps = steps.mapTo(mutableListOf()) { it.deepCopy() }
@@ -220,6 +246,27 @@ class LatexRunConfiguration(
         ", steps=${configOptions.steps.map { it.type }}" +
         '}'.toString()
 
+    internal fun resolvePendingLegacyAuxStepsIfNeeded() {
+        val hasPendingLegacyAux = configOptions.steps.any { step ->
+            when (step) {
+                is BibtexStepOptions -> !step.legacyRunConfigId.isNullOrBlank()
+                is MakeindexStepOptions -> !step.legacyRunConfigId.isNullOrBlank()
+                else -> false
+            }
+        }
+        if (!hasPendingLegacyAux) {
+            return
+        }
+
+        val runManager = RunManagerImpl.getInstanceImpl(project)
+        configOptions.steps.forEach { step ->
+            when (step) {
+                is BibtexStepOptions -> hydrateLegacyBibtexStep(step, runManager)
+                is MakeindexStepOptions -> hydrateLegacyMakeindexStep(step, runManager)
+            }
+        }
+    }
+
     override fun clone(): RunConfiguration {
         val cloned = super.clone() as LatexRunConfiguration
         cloned.isAutoCompiling = false
@@ -267,11 +314,10 @@ class LatexRunConfiguration(
                 LatexmkCompileStepOptions().also {
                     it.id = old.id
                     it.compilerPath = old.compilerPath
-                    it.compilerArguments = old.compilerArguments
+                    it.latexmkExtraArguments = old.compilerArguments ?: DEFAULT_LATEXMK_EXTRA_ARGUMENTS
                     it.latexmkCompileMode = LatexmkCompileMode.AUTO
                     it.latexmkCustomEngineCommand = null
                     it.latexmkCitationTool = LatexmkCitationTool.AUTO
-                    it.latexmkExtraArguments = DEFAULT_LATEXMK_EXTRA_ARGUMENTS
                     it.beforeRunCommand = old.beforeRunCommand
                     it.selectedOptions = old.selectedOptions
                     configOptions.steps[index] = it
@@ -288,5 +334,28 @@ class LatexRunConfiguration(
         else {
             PdfViewerStepOptions().also { configOptions.steps.add(it) }
         }
+    }
+
+    private fun hydrateLegacyBibtexStep(step: BibtexStepOptions, runManager: RunManagerImpl) {
+        val legacyId = step.legacyRunConfigId ?: return
+        val bibConfig = runManager.getConfigurationById(legacyId)?.configuration as? BibtexRunConfiguration
+        if (bibConfig != null) {
+            step.bibliographyCompiler = bibConfig.compiler ?: step.bibliographyCompiler
+            step.compilerPath = bibConfig.compilerPath?.trim()?.ifBlank { null }
+            step.compilerArguments = bibConfig.compilerArguments?.trim()?.ifBlank { null }
+            step.workingDirectoryPath = bibConfig.bibWorkingDir?.path
+        }
+        step.legacyRunConfigId = null
+    }
+
+    private fun hydrateLegacyMakeindexStep(step: MakeindexStepOptions, runManager: RunManagerImpl) {
+        val legacyId = step.legacyRunConfigId ?: return
+        val makeindexConfig = runManager.getConfigurationById(legacyId)?.configuration as? MakeindexRunConfiguration
+        if (makeindexConfig != null) {
+            step.program = makeindexConfig.makeindexProgram
+            step.commandLineArguments = makeindexConfig.commandLineArguments?.trim()?.ifBlank { null }
+            step.workingDirectoryPath = makeindexConfig.workingDirectory?.path
+        }
+        step.legacyRunConfigId = null
     }
 }

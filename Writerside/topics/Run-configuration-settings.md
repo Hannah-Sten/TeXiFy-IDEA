@@ -165,6 +165,14 @@ Set it in `latexmk-compile` step settings.
 
 When selected run config uses latexmk, TeXiFy cleanup actions use latexmk clean modes.
 
+### Cleaning temporary build files
+
+Use a `file-cleanup` step to remove temporary build artifacts for the current document while preserving final outputs such as PDF.
+
+For latexmk-based configurations, this step runs `latexmk -c`.
+
+For classic compile flows, TeXiFy removes temporary artifacts such as `.aux`, `.log`, `.bbl`, `.synctex`, and `.synctex.gz` from the current document's source/output/auxiliary locations.
+
 ## BibTeX compilers
 
 For bibliography compiler details, see [BibTeX](BibTeX.md).

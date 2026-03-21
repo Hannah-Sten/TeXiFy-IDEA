@@ -62,7 +62,7 @@ internal object LatexStepAutoConfigurator {
         val commandSpec = resolveCommandSpec(runConfig, contextPsiFile)
         if (commandSpec.isLatexmk) {
             val step = ensurePrimaryCompileStepLatexmk(baseSteps)
-            step.compilerArguments = commandSpec.arguments
+            step.latexmkExtraArguments = commandSpec.arguments ?: LatexRunConfiguration.DEFAULT_LATEXMK_EXTRA_ARGUMENTS
             step.latexmkCompileMode = LatexmkCompileMode.AUTO
         }
         else {
@@ -437,7 +437,6 @@ internal object LatexStepAutoConfigurator {
                     it.id = old.id
                     it.compiler = LatexCompiler.PDFLATEX
                     it.compilerPath = old.compilerPath
-                    it.compilerArguments = old.compilerArguments
                     it.outputFormat = LatexCompiler.Format.PDF
                     it.beforeRunCommand = old.beforeRunCommand
                     it.selectedOptions = old.selectedOptions
@@ -461,7 +460,7 @@ internal object LatexStepAutoConfigurator {
                 LatexmkCompileStepOptions().also {
                     it.id = old.id
                     it.compilerPath = old.compilerPath
-                    it.compilerArguments = old.compilerArguments
+                    it.latexmkExtraArguments = old.compilerArguments ?: LatexRunConfiguration.DEFAULT_LATEXMK_EXTRA_ARGUMENTS
                     it.latexmkCompileMode = LatexmkCompileMode.AUTO
                     it.beforeRunCommand = old.beforeRunCommand
                     it.selectedOptions = old.selectedOptions
@@ -470,7 +469,6 @@ internal object LatexStepAutoConfigurator {
             }
         }
     }
-
     private data class CommandSpec(
         val compiler: LatexCompiler?,
         val arguments: String?,

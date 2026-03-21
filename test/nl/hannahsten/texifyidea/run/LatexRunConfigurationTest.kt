@@ -14,6 +14,7 @@ import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
 import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfiguration
 import nl.hannahsten.texifyidea.run.makeindex.MakeindexRunConfigurationType
+import nl.hannahsten.texifyidea.run.pdfviewer.CustomPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import org.jdom.Element
 import org.jdom.Namespace
@@ -40,7 +41,7 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
             LatexmkCompileStepOptions().apply {
                 id = "compile-1"
                 compilerPath = "/usr/bin/latexmk"
-                compilerArguments = "-shell-escape"
+                latexmkExtraArguments = "-shell-escape"
                 latexmkCompileMode = LatexmkCompileMode.CUSTOM
                 latexmkCustomEngineCommand = "xelatex"
             },
@@ -66,6 +67,7 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         assertEquals("pdf-viewer", restored.configOptions.steps[1].type)
         assertEquals("compile-1", restored.configOptions.steps[0].id)
         assertEquals("viewer-1", restored.configOptions.steps[1].id)
+        assertEquals("-shell-escape", (restored.configOptions.steps[0] as LatexmkCompileStepOptions).latexmkExtraArguments)
     }
 
     fun testEmptyStepListRemainsEmpty() {
@@ -85,11 +87,12 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         )
     }
 
-    fun testDefaultOutputAndAuxPathsUseProjectDirPlaceholders() {
+    fun testDefaultOutputPathUsesProjectDirPlaceholderAndAuxPathIsUnset() {
         val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
 
         assertEquals("{projectDir}/out", runConfig.outputPath.toString())
-        assertEquals("{projectDir}/auxil", runConfig.auxilPath.toString())
+        assertNull(runConfig.auxilPath)
+        assertEquals("{projectDir}/out", runConfig.rawAuxPathOrOutputPathForUiHint())
     }
 
     fun testWriteReadRoundTripPreservesFileCleanupStep() {
@@ -171,6 +174,7 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         assertTrue(ids.contains("environmentVariables"))
         assertTrue(ids.contains("compileSequence"))
         assertTrue(ids.contains("stepSettings"))
+        assertTrue(ids.contains("beforeRunTasks"))
         assertTrue(ids.indexOf("mainFile") < ids.indexOf("compileSequence"))
         assertTrue(ids.indexOf("compileSequence") < ids.indexOf("stepSettings"))
         assertFalse(ids.contains("legacyAdvancedOptions"))
@@ -240,6 +244,38 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         assertEquals("open {pdf}", viewer.customViewerCommand)
     }
 
+    fun testPdfViewerGetterReturnsCustomViewerWhenCustomCommandConfigured() {
+        val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
+        runConfig.configOptions.steps = mutableListOf(
+            PdfViewerStepOptions().apply {
+                pdfViewerName = PdfViewer.firstAvailableViewer.name
+                customViewerCommand = "open {pdf}"
+            }
+        )
+
+        assertEquals(CustomPdfViewer, runConfig.pdfViewer)
+    }
+
+    fun testWriteReadRoundTripPreservesCustomViewerType() {
+        val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test run config")
+        runConfig.configOptions.steps = mutableListOf(
+            PdfViewerStepOptions().apply {
+                pdfViewerName = CustomPdfViewer.name
+                customViewerCommand = "open {pdf}"
+            }
+        )
+
+        val element = Element("configuration", Namespace.getNamespace("", ""))
+        runConfig.writeExternal(element)
+
+        val restored = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Restored")
+        restored.readExternal(element)
+
+        val viewer = restored.configOptions.steps.filterIsInstance<PdfViewerStepOptions>().single()
+        assertEquals(CustomPdfViewer.name, viewer.pdfViewerName)
+        assertEquals("open {pdf}", viewer.customViewerCommand)
+    }
+
     fun testLegacyLatexmkOutputFormatMapsToCompileMode() {
         val element = legacyConfigurationElement(
             COMPILER to "LATEXMK",
@@ -251,6 +287,19 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
 
         val compile = restored.configOptions.steps.filterIsInstance<LatexmkCompileStepOptions>().first()
         assertEquals(LatexmkCompileMode.LATEX_DVI, compile.latexmkCompileMode)
+    }
+
+    fun testLegacyLatexmkCompilerArgumentsMigrateToExtraArguments() {
+        val element = legacyConfigurationElement(
+            COMPILER to "LATEXMK",
+            COMPILER_ARGUMENTS to "-g",
+        )
+
+        val restored = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Restored")
+        restored.readExternal(element)
+
+        val compile = restored.configOptions.steps.filterIsInstance<LatexmkCompileStepOptions>().first()
+        assertEquals("-g", compile.latexmkExtraArguments)
     }
 
     fun testLegacyCompileTwiceAddsExtraClassicCompileWhenNoAux() {
@@ -303,16 +352,83 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         val restored = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Restored")
         restored.readExternal(element)
 
+        val pendingBibStep = restored.configOptions.steps.filterIsInstance<BibtexStepOptions>().single()
+        assertEquals(bibSettings.uniqueID, pendingBibStep.legacyRunConfigId)
+
+        val pendingMakeindexStep = restored.configOptions.steps.filterIsInstance<MakeindexStepOptions>().single()
+        assertEquals(makeindexSettings.uniqueID, pendingMakeindexStep.legacyRunConfigId)
+
+        val hydratedSteps = restored.copyStepsForUi()
+
+        val bibStep = hydratedSteps.filterIsInstance<BibtexStepOptions>().single()
+        assertEquals(BibliographyCompiler.BIBER, bibStep.bibliographyCompiler)
+        assertEquals("/usr/bin/biber", bibStep.compilerPath)
+        assertEquals("--quiet", bibStep.compilerArguments)
+        assertEquals(workDirVf.path, bibStep.workingDirectoryPath)
+        assertNull(bibStep.legacyRunConfigId)
+
+        val makeindexStep = hydratedSteps.filterIsInstance<MakeindexStepOptions>().single()
+        assertEquals(MakeindexProgram.XINDY, makeindexStep.program)
+        assertEquals("-L english", makeindexStep.commandLineArguments)
+        assertEquals(workDirVf.path, makeindexStep.workingDirectoryPath)
+        assertNull(makeindexStep.legacyRunConfigId)
+    }
+
+    fun testLegacyBibAndMakeindexIdsCanHydrateAfterReadExternal() {
+        val runManager = RunManagerImpl.getInstanceImpl(project)
+        val workDir = Files.createTempDirectory("legacy-aux-late").toString()
+        val workDirVf = requireNotNull(LocalFileSystem.getInstance().refreshAndFindFileByPath(workDir))
+
+        val bibSettings = runManager.createConfiguration(
+            "",
+            LatexConfigurationFactory(BibtexRunConfigurationType())
+        )
+        val bibConfig = bibSettings.configuration as BibtexRunConfiguration
+        bibConfig.compiler = BibliographyCompiler.BIBER
+        bibConfig.compilerPath = "/usr/bin/biber"
+        bibConfig.compilerArguments = "--quiet"
+        bibConfig.bibWorkingDir = workDirVf
+
+        val makeindexSettings = runManager.createConfiguration(
+            "",
+            LatexConfigurationFactory(MakeindexRunConfigurationType())
+        )
+        val makeindexConfig = makeindexSettings.configuration as MakeindexRunConfiguration
+        makeindexConfig.makeindexProgram = MakeindexProgram.XINDY
+        makeindexConfig.commandLineArguments = "-L english"
+        makeindexConfig.workingDirectory = workDirVf
+
+        val element = legacyConfigurationElement(
+            COMPILER to "PDFLATEX",
+            BIB_RUN_CONFIG to "[${bibSettings.uniqueID}]",
+            MAKEINDEX_RUN_CONFIG to "[${makeindexSettings.uniqueID}]",
+        )
+
+        val restored = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Restored")
+        restored.readExternal(element)
+
+        val pendingBibStep = restored.configOptions.steps.filterIsInstance<BibtexStepOptions>().single()
+        val pendingMakeindexStep = restored.configOptions.steps.filterIsInstance<MakeindexStepOptions>().single()
+        assertEquals(bibSettings.uniqueID, pendingBibStep.legacyRunConfigId)
+        assertEquals(makeindexSettings.uniqueID, pendingMakeindexStep.legacyRunConfigId)
+
+        runManager.addConfiguration(bibSettings)
+        runManager.addConfiguration(makeindexSettings)
+
+        restored.copyStepsForUi()
+
         val bibStep = restored.configOptions.steps.filterIsInstance<BibtexStepOptions>().single()
         assertEquals(BibliographyCompiler.BIBER, bibStep.bibliographyCompiler)
         assertEquals("/usr/bin/biber", bibStep.compilerPath)
         assertEquals("--quiet", bibStep.compilerArguments)
         assertEquals(workDirVf.path, bibStep.workingDirectoryPath)
+        assertNull(bibStep.legacyRunConfigId)
 
         val makeindexStep = restored.configOptions.steps.filterIsInstance<MakeindexStepOptions>().single()
         assertEquals(MakeindexProgram.XINDY, makeindexStep.program)
         assertEquals("-L english", makeindexStep.commandLineArguments)
         assertEquals(workDirVf.path, makeindexStep.workingDirectoryPath)
+        assertNull(makeindexStep.legacyRunConfigId)
     }
 
     fun testLegacyDanglingBibAndMakeindexIdsAppendDefaultSteps() {
@@ -325,25 +441,34 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         val restored = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Restored")
         restored.readExternal(element)
 
+        val bibStep = restored.configOptions.steps.filterIsInstance<BibtexStepOptions>().single()
+        val makeindexStep = restored.configOptions.steps.filterIsInstance<MakeindexStepOptions>().single()
+        assertEquals("missing-bib-id", bibStep.legacyRunConfigId)
+        assertEquals("missing-makeindex-id", makeindexStep.legacyRunConfigId)
+
+        restored.copyStepsForUi()
+
         assertEquals(1, restored.configOptions.steps.count { it is BibtexStepOptions })
         assertEquals(1, restored.configOptions.steps.count { it is MakeindexStepOptions })
+        assertNull(restored.configOptions.steps.filterIsInstance<BibtexStepOptions>().single().legacyRunConfigId)
+        assertNull(restored.configOptions.steps.filterIsInstance<MakeindexStepOptions>().single().legacyRunConfigId)
     }
 
     fun testLegacyOutAuxBooleanFallbackMappingWorks() {
         val element = legacyConfigurationElement(
             COMPILER to "PDFLATEX",
             OUT_DIR to "true",
-            AUX_DIR to "false",
+            AUX_DIR to "true",
         )
 
         val restored = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Restored")
         restored.readExternal(element)
 
         assertEquals("{projectDir}/out", restored.outputPath.toString())
-        assertEquals("{mainFileParent}", restored.auxilPath.toString())
+        assertEquals("{projectDir}/out", restored.auxilPath.toString())
     }
 
-    fun testNewSchemaPrioritySkipsLegacyMigrationWhenStepsPresent() {
+    fun testLegacySchemaOverridesNewStepsWhenStepsArePresent() {
         val source = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Source")
         source.mainFilePath = "from-new-schema.tex"
         source.configOptions.steps = mutableListOf(
@@ -361,9 +486,10 @@ class LatexRunConfigurationTest : BasePlatformTestCase() {
         val restored = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Restored")
         restored.readExternal(element)
 
-        assertEquals("from-new-schema.tex", restored.mainFilePath)
-        assertEquals(listOf(LatexStepType.LATEXMK_COMPILE, LatexStepType.PDF_VIEWER), restored.configOptions.steps.map { it.type })
-        assertEquals(listOf("new-compile", "new-viewer"), restored.configOptions.steps.map { it.id })
+        assertEquals("from-legacy.tex", restored.mainFilePath)
+        assertEquals(listOf(LatexStepType.LATEX_COMPILE, LatexStepType.LATEX_COMPILE, LatexStepType.PDF_VIEWER), restored.configOptions.steps.map { it.type })
+        assertFalse(restored.configOptions.steps.map { it.id }.contains("new-compile"))
+        assertFalse(restored.configOptions.steps.map { it.id }.contains("new-viewer"))
     }
 
     private fun legacyConfigurationElement(vararg fields: Pair<String, String>): Element {

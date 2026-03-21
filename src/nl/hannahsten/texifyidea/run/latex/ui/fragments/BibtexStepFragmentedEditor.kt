@@ -16,7 +16,7 @@ import nl.hannahsten.texifyidea.run.latex.BibtexStepOptions
 import nl.hannahsten.texifyidea.run.latex.StepUiOptionIds
 
 internal class BibtexStepFragmentedEditor(
-    private val project: Project,
+    project: Project,
     initialStep: BibtexStepOptions = BibtexStepOptions(),
 ) : AbstractStepFragmentedEditor<BibtexStepOptions>(initialStep) {
 
@@ -41,6 +41,13 @@ internal class BibtexStepFragmentedEditor(
 
     private val workingDirectory = createDirectoryField(project, TexifyBundle.message("run.step.ui.dialog.step.working.directory"))
     private val workingDirectoryRow = LabeledComponent.create(workingDirectory, TexifyBundle.message("run.step.ui.field.working.directory"))
+    private var inferredWorkingDirectoryHint: String? = null
+
+    fun setInferredWorkingDirectoryHint(value: String?) {
+        inferredWorkingDirectoryHint = value
+    }
+
+    internal fun inferredWorkingDirectoryHintForTest(): String? = inferredWorkingDirectoryHint
 
     override fun createFragments(): Collection<SettingsEditorFragment<BibtexStepOptions, *>> {
         val header = CommonParameterFragments.createHeader<BibtexStepOptions>(TexifyBundle.message("run.step.ui.header.bibliography"))
@@ -82,16 +89,11 @@ internal class BibtexStepFragmentedEditor(
             actionHint = TexifyBundle.message("run.step.ui.action.set.bibliography.arguments"),
         )
 
-        val workingDirFragment = stepFragment(
-            id = StepUiOptionIds.STEP_WORKING_DIRECTORY,
-            name = TexifyBundle.message("run.step.ui.field.working.directory"),
+        val workingDirFragment = stepWorkingDirectoryFragment(
             component = workingDirectoryRow,
-            reset = { step, component -> component.component.text = step.workingDirectoryPath.orEmpty() },
-            apply = { step, component -> step.workingDirectoryPath = component.component.text.ifBlank { null } },
-            initiallyVisible = { step -> !step.workingDirectoryPath.isNullOrBlank() },
-            removable = true,
-            hint = TexifyBundle.message("run.step.ui.hint.bibliography.working.directory"),
-            actionHint = TexifyBundle.message("run.step.ui.action.set.step.working.directory"),
+            inferredWorkingDirectoryHint = { inferredWorkingDirectoryHint },
+            getWorkingDirectoryPath = { it.workingDirectoryPath },
+            setWorkingDirectoryPath = { step, value -> step.workingDirectoryPath = value },
         )
 
         return listOf(

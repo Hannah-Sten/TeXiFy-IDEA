@@ -3,11 +3,12 @@ package nl.hannahsten.texifyidea.action
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.vfs.LocalFileSystem
+import nl.hannahsten.texifyidea.run.latex.FileCleanupSupport
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCleanUtil
+import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.selectedRunConfig
-import nl.hannahsten.texifyidea.util.magic.FileMagic
-import java.io.File
+import java.nio.file.Path
 
 /**
  * Action to delete all auxiliary files.
@@ -26,9 +27,12 @@ class DeleteAuxFiles : AnAction() {
         }
 
         val basePath = project.basePath ?: return
-        File(basePath).walk().filter { it.isFile }
-            .filter { it.extension in FileMagic.auxiliaryFileTypes }
-            .forEach { it.delete() }
+        val result = FileCleanupSupport.delete(
+            FileCleanupSupport.collectProjectTemporaryBuildTargets(Path.of(basePath))
+        )
+        if (result.failedPaths.isNotEmpty()) {
+            Log.warn("Could not delete some temporary build files: ${result.failedPaths.joinToString()}")
+        }
         LocalFileSystem.getInstance().refresh(true)
     }
 }

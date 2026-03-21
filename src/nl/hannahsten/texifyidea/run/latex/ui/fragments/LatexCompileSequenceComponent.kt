@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.run.latex.ui.fragments
 
 import com.intellij.execution.ui.TagButton
-import com.intellij.execution.ui.FragmentedSettings
 import com.intellij.icons.AllIcons
 import com.intellij.ide.DataManager
 import com.intellij.ide.dnd.DnDAction
@@ -20,6 +19,7 @@ import com.intellij.openapi.util.Conditions
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.ui.InplaceButton
+import com.intellij.ui.JBColor
 import com.intellij.ui.components.labels.LinkLabel
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.WrapLayout
@@ -31,8 +31,11 @@ import java.awt.Dimension
 import java.awt.FlowLayout
 import java.awt.Point
 import java.awt.Rectangle
+import java.awt.event.InputEvent
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
+import kotlin.math.max
+import kotlin.math.min
 import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JPanel
@@ -76,8 +79,11 @@ internal class LatexCompileSequenceComponent(
     private val shadowSteps: MutableList<LatexStepRunConfigurationOptions>
         get() = editor.shadowSteps
 
+    private val selectedStepIds = linkedSetOf<String>()
+    private var primaryStepId: String? = null
+    private var anchorStepId: String? = null
+
     var changeListener: () -> Unit = {}
-    private var selectedIndex: Int = -1
 
     init {
         Disposer.register(editor, this)
@@ -94,6 +100,17 @@ internal class LatexCompileSequenceComponent(
 
     internal fun headerActionComponent(): JComponent = autoConfigureLabel
 
+    internal fun selectionState(): LatexStepSelectionState {
+        val orderedSelection = orderedSelectedButtons().map { it.stepConfig.id }
+        val resolvedPrimary = primaryStepId
+            ?.takeIf { it in orderedSelection }
+            ?: selectedStepIds.firstOrNull()
+        return LatexStepSelectionState(
+            selectedStepIds = orderedSelection,
+            primaryStepId = resolvedPrimary,
+        )
+    }
+
     private fun buildPanel() {
         remove(addPanel)
         remove(addLabel)
@@ -101,9 +118,9 @@ internal class LatexCompileSequenceComponent(
         add(addPanel)
         add(addLabel)
         addLabel.isVisible = stepButtons.none { it.isVisible }
+        refreshSelectionUi()
         revalidate()
         repaint()
-        notifyStepsChanged()
     }
 
     private fun addStep(type: String) {
@@ -112,7 +129,8 @@ internal class LatexCompileSequenceComponent(
         shadowSteps.add(newStep)
         stepButtons.add(StepButton(newStep))
         buildPanel()
-        selectStep(stepButtons.lastIndex)
+        setSingleSelection(stepButtons.last(), notify = true)
+        notifyStepsChanged()
         changeListener()
     }
 
@@ -139,12 +157,12 @@ internal class LatexCompileSequenceComponent(
     fun resetEditorFrom() {
         stepButtons.forEach { remove(it) }
         stepButtons.clear()
-        selectedIndex = -1
+        clearSelection(notify = false)
 
         shadowSteps.forEach { step -> stepButtons.add(StepButton(step)) }
 
         buildPanel()
-        normalizeSelection()
+        normalizeSelection(notify = true)
     }
 
     fun applyEditorTo() {
@@ -153,15 +171,16 @@ internal class LatexCompileSequenceComponent(
     }
 
     override fun update(event: DnDEvent): Boolean {
-        val buttonToReplace = findButtonToReplace(event)
-        if (buttonToReplace == null) {
+        val droppedButton = event.attachedObject as? StepButton ?: return true
+        val movingButtons = movingButtonsForDrag(droppedButton)
+        val insertionIndex = findInsertionIndex(event, movingButtons) ?: run {
             stepButtons.forEach { it.showDropPlace(false) }
             dropFirst.isVisible = false
             event.isDropPossible = false
             return true
         }
 
-        val dropButton = findDropButton(buttonToReplace, event)
+        val dropButton = findDropButton(insertionIndex, movingButtons)
         stepButtons.forEach { it.showDropPlace(it == dropButton) }
         dropFirst.isVisible = dropButton == null
         event.isDropPossible = true
@@ -170,15 +189,24 @@ internal class LatexCompileSequenceComponent(
     }
 
     override fun drop(event: DnDEvent) {
-        val (index, _) = findButtonToReplace(event) ?: return
         val droppedButton = event.attachedObject as? StepButton ?: return
+        if (droppedButton !in stepButtons) {
+            return
+        }
+
+        if (droppedButton.stepConfig.id !in selectedStepIds) {
+            setSingleSelection(droppedButton, notify = true)
+        }
+
+        val movingButtons = movingButtonsForDrag(droppedButton)
+        val insertionIndex = findInsertionIndex(event, movingButtons) ?: return
 
         editor.beforeSequenceStructureChange()
-        stepButtons.remove(droppedButton)
-        stepButtons.add(index, droppedButton)
+        moveButtonsBeforeIndex(movingButtons, insertionIndex)
         synchronizeShadowStepsFromButtons()
         buildPanel()
-        selectStep(stepButtons.indexOf(droppedButton))
+        normalizeSelection(notify = true)
+        notifyStepsChanged()
         changeListener()
         IdeFocusManager.getInstance(project).requestFocus(droppedButton, false)
     }
@@ -188,87 +216,64 @@ internal class LatexCompileSequenceComponent(
         dropFirst.isVisible = false
     }
 
-    private fun findButtonToReplace(event: DnDEvent): IndexedValue<StepButton>? {
-        if (event.attachedObject !is StepButton) {
-            return null
-        }
-
-        val area = Rectangle(event.point.x - 5, event.point.y - 5, 10, 10)
-        val indexedSteps = stepButtons.withIndex()
-        val intersected = indexedSteps.find { (_, button) ->
-            button.isVisible && button.bounds.intersects(area)
-        } ?: return null
-
-        val (index, intersectedButton) = intersected
-        if (intersectedButton == event.attachedObject) {
-            return null
-        }
-
-        val leftHalf = intersectedButton.bounds.centerX > event.point.x
-        val replaceTarget = if (index < stepButtons.indexOf(event.attachedObject)) {
-            if (!leftHalf) {
-                indexedSteps.find { (i, button) -> button.isVisible && i > index }
-            }
-            else {
-                intersected
-            }
-        }
-        else if (leftHalf) {
-            indexedSteps.findLast { (i, button) -> button.isVisible && i < index }
-        }
-        else {
-            intersected
-        }
-
-        return if (replaceTarget?.value == event.attachedObject) null else replaceTarget
-    }
-
-    private fun findDropButton(replaceButton: IndexedValue<StepButton>, event: DnDEvent): StepButton? = if (replaceButton.index > stepButtons.indexOf(event.attachedObject)) {
-        replaceButton.value
-    }
-    else {
-        stepButtons.withIndex()
-            .findLast { (i, button) -> button.isVisible && i < replaceButton.index }
-            ?.value
-    }
-
     override fun dispose() {
     }
 
-    internal fun selectedStepIndex(): Int = selectedIndex
+    internal fun selectedStepIndex(): Int = stepButtons.indexOfFirst {
+        it.isVisible && it.stepConfig.id == primaryStepId
+    }
 
-    internal fun selectedStepId(): String? = stepButtons.getOrNull(selectedIndex)
-        ?.takeIf { it.isVisible }
-        ?.stepConfig
-        ?.id
-
-    internal fun selectedStepType(): String? = stepButtons.getOrNull(selectedIndex)
-        ?.takeIf { it.isVisible }
+    internal fun selectedStepType(): String? = stepButtons
+        .firstOrNull { it.isVisible && it.stepConfig.id == primaryStepId }
         ?.stepConfig
         ?.type
 
     internal fun selectStep(index: Int) {
-        if (index !in stepButtons.indices || !stepButtons[index].isVisible) {
-            normalizeSelection()
+        val button = stepButtons.getOrNull(index)?.takeIf { it.isVisible }
+        if (button == null) {
+            normalizeSelection(notify = true)
             return
         }
+        setSingleSelection(button, notify = true)
+    }
 
-        selectedIndex = index
-        refreshSelectionUi()
-        val selected = stepButtons[selectedIndex].stepConfig
-        editor.onCompileSequenceSelectionChanged(selectedIndex, selected.id, selected.type)
+    internal fun toggleStepSelection(index: Int) {
+        val button = stepButtons.getOrNull(index)?.takeIf { it.isVisible } ?: return
+        toggleSelection(button, notify = true)
+    }
+
+    internal fun selectStepRange(index: Int) {
+        val button = stepButtons.getOrNull(index)?.takeIf { it.isVisible } ?: return
+        selectRange(button, notify = true)
     }
 
     internal fun moveStep(from: Int, to: Int) {
-        if (from !in stepButtons.indices || to !in stepButtons.indices || from == to) {
+        val button = stepButtons.getOrNull(from)?.takeIf { it.isVisible } ?: return
+        if (button.stepConfig.id !in selectedStepIds) {
+            setSingleSelection(button, notify = true)
+        }
+        moveSelectedStepsTo(to)
+    }
+
+    internal fun moveSelectedStepsTo(targetIndex: Int) {
+        val movingButtons = orderedSelectedButtons()
+        if (movingButtons.isEmpty()) {
             return
         }
+
         editor.beforeSequenceStructureChange()
-        val step = stepButtons.removeAt(from)
-        stepButtons.add(to, step)
+        moveButtonsBeforeIndex(movingButtons, targetIndex.coerceIn(0, stepButtons.size))
         synchronizeShadowStepsFromButtons()
         buildPanel()
-        selectStep(stepButtons.indexOf(step))
+        normalizeSelection(notify = true)
+        notifyStepsChanged()
+        changeListener()
+    }
+
+    internal fun removeStepForTest(index: Int) {
+        val button = stepButtons.getOrNull(index)?.takeIf { it.isVisible } ?: return
+        editor.beforeSequenceStructureChange()
+        removeStepButton(button)
         changeListener()
     }
 
@@ -282,30 +287,187 @@ internal class LatexCompileSequenceComponent(
 
     internal fun currentStepTypesForTest(): List<String> = stepButtons.map { it.stepConfig.type }
 
-    private fun normalizeSelection() {
-        if (stepButtons.isEmpty()) {
-            selectedIndex = -1
-            refreshSelectionUi()
-            editor.onCompileSequenceSelectionChanged(-1, null, null)
+    internal fun currentStepTitlesForTest(): List<String> = stepButtons
+        .filter { it.isVisible }
+        .map { it.labelTextForTest() }
+
+    internal fun selectedStepIdsForTest(): List<String> = selectionState().selectedStepIds
+
+    internal fun primaryStepIdForTest(): String? = selectionState().primaryStepId
+
+    internal fun pressStepForDragStartForTest(index: Int) {
+        val button = stepButtons.getOrNull(index)?.takeIf { it.isVisible } ?: return
+        handleSelection(
+            button,
+            MouseEvent(
+                this,
+                MouseEvent.MOUSE_PRESSED,
+                0,
+                InputEvent.BUTTON1_DOWN_MASK,
+                0,
+                0,
+                1,
+                false,
+                MouseEvent.BUTTON1,
+            )
+        )
+    }
+
+    internal fun clickStepForTest(index: Int) {
+        clickStepForTest(index, modifiers = 0)
+    }
+
+    internal fun ctrlClickStepForTest(index: Int) {
+        clickStepForTest(index, modifiers = InputEvent.CTRL_DOWN_MASK)
+    }
+
+    fun refreshStepTitles() {
+        stepButtons.forEach { it.updateFromStepConfig() }
+        revalidate()
+        repaint()
+    }
+
+    private fun handleSelection(button: StepButton, event: MouseEvent) {
+        when {
+            event.isShiftDown -> selectRange(button, notify = true)
+            event.isMetaDown || event.isControlDown -> toggleSelection(button, notify = true)
+            button.stepConfig.id in selectedStepIds && selectedStepIds.size > 1 -> {
+                // Keep the existing batch selected while drag-and-drop is deciding whether this press becomes a drag.
+            }
+            else -> setSingleSelection(button, notify = true)
+        }
+    }
+
+    private fun finalizeSingleClickSelection(button: StepButton, event: MouseEvent) {
+        if (
+            event.isShiftDown ||
+            event.isMetaDown ||
+            event.isControlDown ||
+            button.stepConfig.id !in selectedStepIds ||
+            selectedStepIds.size <= 1
+        ) {
             return
         }
 
-        val currentlyVisible = stepButtons.getOrNull(selectedIndex)?.isVisible == true
-        if (currentlyVisible) {
-            refreshSelectionUi()
-            val selected = stepButtons[selectedIndex].stepConfig
-            editor.onCompileSequenceSelectionChanged(selectedIndex, selected.id, selected.type)
+        setSingleSelection(button, notify = true)
+    }
+
+    private fun setSingleSelection(button: StepButton?, notify: Boolean) {
+        if (button == null || !button.isVisible) {
+            clearSelection(notify)
             return
         }
 
-        selectedIndex = -1
+        selectedStepIds.clear()
+        selectedStepIds.add(button.stepConfig.id)
+        primaryStepId = button.stepConfig.id
+        anchorStepId = button.stepConfig.id
         refreshSelectionUi()
-        editor.onCompileSequenceSelectionChanged(-1, null, null)
+        if (notify) {
+            notifySelectionChanged()
+        }
+    }
+
+    private fun toggleSelection(button: StepButton, notify: Boolean) {
+        val stepId = button.stepConfig.id
+        if (!selectedStepIds.add(stepId)) {
+            selectedStepIds.remove(stepId)
+            if (selectedStepIds.isEmpty()) {
+                primaryStepId = null
+                anchorStepId = null
+            }
+            else {
+                if (primaryStepId == stepId) {
+                    primaryStepId = selectedStepIds.firstOrNull()
+                    anchorStepId = primaryStepId
+                }
+                else if (anchorStepId == stepId) {
+                    anchorStepId = primaryStepId
+                }
+            }
+        }
+        else {
+            if (primaryStepId == null) {
+                primaryStepId = stepId
+                anchorStepId = stepId
+            }
+        }
+
+        refreshSelectionUi()
+        if (notify) {
+            notifySelectionChanged()
+        }
+    }
+
+    private fun selectRange(button: StepButton, notify: Boolean) {
+        val anchorIndex = visibleStepIds().indexOf(anchorStepId)
+        val targetIndex = visibleStepIds().indexOf(button.stepConfig.id)
+        if (anchorIndex < 0 || targetIndex < 0) {
+            setSingleSelection(button, notify)
+            return
+        }
+
+        selectedStepIds.clear()
+        val rangeStart = min(anchorIndex, targetIndex)
+        val rangeEnd = max(anchorIndex, targetIndex)
+        visibleStepIds()
+            .subList(rangeStart, rangeEnd + 1)
+            .forEach(selectedStepIds::add)
+        primaryStepId = primaryStepId
+            ?.takeIf { it in selectedStepIds }
+            ?: anchorStepId?.takeIf { it in selectedStepIds }
+            ?: selectedStepIds.firstOrNull()
+        refreshSelectionUi()
+        if (notify) {
+            notifySelectionChanged()
+        }
+    }
+
+    private fun clearSelection(notify: Boolean) {
+        selectedStepIds.clear()
+        primaryStepId = null
+        anchorStepId = null
+        refreshSelectionUi()
+        if (notify) {
+            notifySelectionChanged()
+        }
+    }
+
+    private fun normalizeSelection(notify: Boolean) {
+        val visibleIds = visibleStepIds()
+        selectedStepIds.retainAll(visibleIds.toSet())
+
+        if (selectedStepIds.isEmpty()) {
+            primaryStepId = null
+            anchorStepId = null
+            refreshSelectionUi()
+            if (notify) {
+                notifySelectionChanged()
+            }
+            return
+        }
+
+        if (primaryStepId !in selectedStepIds) {
+            primaryStepId = selectedStepIds.firstOrNull()
+            anchorStepId = primaryStepId
+        }
+        else if (anchorStepId !in selectedStepIds) {
+            anchorStepId = primaryStepId
+        }
+
+        refreshSelectionUi()
+        if (notify) {
+            notifySelectionChanged()
+        }
     }
 
     private fun refreshSelectionUi() {
-        stepButtons.forEachIndexed { index, button ->
-            button.setSelectedState(index == selectedIndex && button.isVisible)
+        stepButtons.forEach { button ->
+            val stepId = button.stepConfig.id
+            button.setSelectedState(
+                primary = stepId == primaryStepId && button.isVisible,
+                selected = stepId in selectedStepIds && button.isVisible,
+            )
         }
     }
 
@@ -313,35 +475,162 @@ internal class LatexCompileSequenceComponent(
         editor.onCompileSequenceStepsChanged()
     }
 
+    private fun notifySelectionChanged() {
+        editor.onCompileSequenceSelectionChanged(selectionState())
+    }
+
     private fun autoConfigureSteps() {
         editor.beforeSequenceStructureChange()
+        val previousSelection = selectionState()
         val autoConfiguredSteps = editor.autoConfigureCurrentSteps()
 
         if (autoConfiguredSteps.isEmpty()) {
             return
         }
 
-        val previouslySelectedId = selectedStepId()
         stepButtons.forEach { remove(it) }
         stepButtons.clear()
-        autoConfiguredSteps.forEach { stepButtons.add(StepButton(it)) }
-
+        autoConfiguredSteps.forEach { configuredStep ->
+            stepButtons.add(StepButton(configuredStep))
+        }
         buildPanel()
-        val selectedIndexAfterConfigure = previouslySelectedId?.let { selectedId ->
-            stepButtons.indexOfFirst { it.stepConfig.id == selectedId }
-        } ?: -1
-        if (selectedIndexAfterConfigure >= 0) {
-            selectStep(selectedIndexAfterConfigure)
-        }
-        else {
-            normalizeSelection()
-        }
+
+        val availableIds = autoConfiguredSteps.map { it.id }.toSet()
+        selectedStepIds.clear()
+        previousSelection.selectedStepIds
+            .filter { it in availableIds }
+            .forEach(selectedStepIds::add)
+        primaryStepId = previousSelection.primaryStepId
+            ?.takeIf { it in selectedStepIds }
+            ?: selectedStepIds.firstOrNull()
+        anchorStepId = primaryStepId
+
+        normalizeSelection(notify = true)
+        notifyStepsChanged()
         changeListener()
     }
 
     private fun synchronizeShadowStepsFromButtons() {
         editor.shadowSteps.clear()
         editor.shadowSteps.addAll(stepButtons.filter { it.isVisible }.map { it.stepConfig })
+    }
+
+    private fun orderedSelectedButtons(): List<StepButton> = stepButtons.filter {
+        it.isVisible && it.stepConfig.id in selectedStepIds
+    }
+
+    private fun clickStepForTest(index: Int, modifiers: Int) {
+        val button = stepButtons.getOrNull(index)?.takeIf { it.isVisible } ?: return
+        handleSelection(
+            button,
+            MouseEvent(
+                this,
+                MouseEvent.MOUSE_PRESSED,
+                0,
+                modifiers,
+                0,
+                0,
+                1,
+                false,
+                MouseEvent.BUTTON1,
+            )
+        )
+        finalizeSingleClickSelection(
+            button,
+            MouseEvent(
+                this,
+                MouseEvent.MOUSE_CLICKED,
+                0,
+                modifiers,
+                0,
+                0,
+                1,
+                false,
+                MouseEvent.BUTTON1,
+            )
+        )
+    }
+
+    private fun visibleStepIds(): List<String> = stepButtons
+        .filter { it.isVisible }
+        .map { it.stepConfig.id }
+
+    private fun movingButtonsForDrag(droppedButton: StepButton): List<StepButton> = if (droppedButton.stepConfig.id in selectedStepIds) {
+        orderedSelectedButtons()
+    }
+    else {
+        listOf(droppedButton)
+    }
+
+    private fun findInsertionIndex(event: DnDEvent, movingButtons: Collection<StepButton>): Int? {
+        if (event.attachedObject !is StepButton) {
+            return null
+        }
+
+        val area = Rectangle(event.point.x - 5, event.point.y - 5, 10, 10)
+        val movingSet = movingButtons.toSet()
+        val visibleTargets = stepButtons.withIndex().filter { (_, button) ->
+            button.isVisible && button !in movingSet
+        }
+        val intersected = visibleTargets.find { (_, button) ->
+            button.bounds.intersects(area)
+        } ?: return null
+
+        val (index, intersectedButton) = intersected
+        val insertBeforeTarget = intersectedButton.bounds.centerX > event.point.x
+        if (insertBeforeTarget) {
+            return index
+        }
+
+        return visibleTargets.firstOrNull { (targetIndex, _) -> targetIndex > index }?.index ?: stepButtons.size
+    }
+
+    private fun findDropButton(
+        insertionIndex: Int,
+        movingButtons: Collection<StepButton>,
+    ): StepButton? {
+        val movingSet = movingButtons.toSet()
+        return stepButtons.withIndex()
+            .findLast { (index, button) ->
+                button.isVisible &&
+                    button !in movingSet &&
+                    index < insertionIndex
+            }
+            ?.value
+    }
+
+    private fun moveButtonsBeforeIndex(movingButtons: List<StepButton>, rawIndex: Int) {
+        if (movingButtons.isEmpty()) {
+            return
+        }
+
+        val movingSet = movingButtons.toSet()
+        val insertionIndex = (
+            rawIndex - stepButtons.withIndex().count { (index, button) ->
+                index < rawIndex && button in movingSet
+            }
+            ).coerceIn(0, stepButtons.size - movingButtons.size)
+
+        stepButtons.removeAll(movingSet)
+        stepButtons.addAll(insertionIndex, movingButtons)
+    }
+
+    private fun removeStepButton(button: StepButton) {
+        selectedStepIds.remove(button.stepConfig.id)
+        stepButtons.remove(button)
+        shadowSteps.remove(button.stepConfig)
+        remove(button)
+        if (primaryStepId == button.stepConfig.id) {
+            primaryStepId = selectedStepIds.firstOrNull()
+            anchorStepId = primaryStepId
+        }
+        else if (anchorStepId == button.stepConfig.id) {
+            anchorStepId = primaryStepId
+        }
+
+        buildPanel()
+        normalizeSelection(notify = true)
+        notifyStepsChanged()
     }
 
     private inner class StepButton(stepConfig: LatexStepRunConfigurationOptions) : TagButton("", { changeListener() }), DnDSource {
@@ -358,14 +647,17 @@ internal class LatexCompileSequenceComponent(
             dropPlace?.isVisible = false
             border = JBUI.Borders.empty(1)
 
-            updateFromStepType()
+            updateFromStepConfig()
 
             myButton.addMouseListener(object : MouseAdapter() {
                 override fun mousePressed(e: MouseEvent) {
-                    selectStep(stepButtons.indexOf(this@StepButton))
+                    handleSelection(this@StepButton, e)
                 }
 
                 override fun mouseClicked(e: MouseEvent) {
+                    if (e.clickCount == 1) {
+                        finalizeSingleClickSelection(this@StepButton, e)
+                    }
                     if (e.clickCount == 2) {
                         showTypeSelectionPopup(myButton) { selectedType ->
                             editor.beforeSequenceStructureChange()
@@ -378,10 +670,9 @@ internal class LatexCompileSequenceComponent(
                             if (buttonIndex in shadowSteps.indices) {
                                 shadowSteps[buttonIndex] = this@StepButton.stepConfig
                             }
-                            updateFromStepType()
-                            if (selectedIndex == buttonIndex) {
-                                editor.onCompileSequenceSelectionChanged(selectedIndex, stepConfig.id, stepConfig.type)
-                            }
+                            updateFromStepConfig()
+                            refreshSelectionUi()
+                            notifySelectionChanged()
                             notifyStepsChanged()
                             changeListener()
                         }
@@ -392,16 +683,7 @@ internal class LatexCompileSequenceComponent(
             addPropertyChangeListener("visible") {
                 if (!isVisible && this@StepButton in stepButtons) {
                     editor.beforeSequenceStructureChange()
-                    val removedSelected = stepButtons.indexOf(this@StepButton) == selectedIndex
-                    stepButtons.remove(this@StepButton)
-                    shadowSteps.remove(this@StepButton.stepConfig)
-                    buildPanel()
-                    if (removedSelected) {
-                        normalizeSelection()
-                    }
-                    else {
-                        refreshSelectionUi()
-                    }
+                    removeStepButton(this@StepButton)
                     changeListener()
                 }
             }
@@ -410,19 +692,28 @@ internal class LatexCompileSequenceComponent(
             layoutButtons()
         }
 
-        fun setSelectedState(selected: Boolean) {
-            if (selected) {
-                myButton.border = JBUI.Borders.customLine(com.intellij.ui.JBColor.namedColor("Component.focusColor", com.intellij.ui.JBColor.BLUE), 2)
-            }
-            else {
-                myButton.border = JBUI.Borders.empty(1)
+        fun setSelectedState(primary: Boolean, selected: Boolean) {
+            myButton.border = when {
+                primary -> JBUI.Borders.customLine(
+                    JBColor.namedColor("Component.focusColor", JBColor.BLUE),
+                    2
+                )
+
+                selected -> JBUI.Borders.customLine(
+                    JBColor.namedColor("Component.focusColor", JBColor.BLUE),
+                    1
+                )
+
+                else -> JBUI.Borders.empty(1)
             }
         }
 
-        private fun updateFromStepType() {
-            updateButton(LatexStepUiSupport.description(stepConfig.type), LatexStepUiSupport.icon(stepConfig.type))
+        fun updateFromStepConfig() {
+            updateButton(stepConfig.displayName(), LatexStepUiSupport.icon(stepConfig.type))
             myButton.toolTipText = TexifyBundle.message("run.step.ui.compile.sequence.step.tooltip")
         }
+
+        fun labelTextForTest(): String = myButton.text ?: ""
 
         override fun layoutButtons() {
             super.layoutButtons()
@@ -447,16 +738,6 @@ internal class LatexCompileSequenceComponent(
         fun showDropPlace(show: Boolean) {
             dropPlace?.isVisible = show
         }
-    }
-
-    private fun LatexStepRunConfigurationOptions.copyWithIdentity(
-        stepId: String,
-        selectedOptions: MutableList<FragmentedSettings.Option>,
-    ): LatexStepRunConfigurationOptions = deepCopy().also {
-        it.id = stepId
-        it.selectedOptions = selectedOptions
-            .map { option -> FragmentedSettings.Option(option.name ?: "", option.visible) }
-            .toMutableList()
     }
 
     private class AddStepAction(

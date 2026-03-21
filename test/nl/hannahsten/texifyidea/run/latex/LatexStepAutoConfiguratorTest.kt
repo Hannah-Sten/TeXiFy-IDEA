@@ -64,6 +64,30 @@ class LatexStepAutoConfiguratorTest : BasePlatformTestCase() {
         assertEquals(BibliographyCompiler.BIBER, bibStep.bibliographyCompiler)
     }
 
+    fun testCompleteStepsStoresOutputDirectoryForInferredBiberStep() {
+        val mainPsi = myFixture.addFileToProject(
+            "main-biber-working-dir.tex",
+            """
+            \documentclass{article}
+            \usepackage{biblatex}
+            \addbibresource{references.bib}
+            \begin{document}
+            \printbibliography
+            \end{document}
+            """.trimIndent()
+        )
+        myFixture.updateFilesets()
+
+        val augmented = LatexStepAutoConfigurator.completeSteps(
+            mainPsi,
+            listOf(LatexCompileStepOptions(), PdfViewerStepOptions()),
+        )
+
+        val bibStep = augmented.filterIsInstance<BibtexStepOptions>().single()
+        assertEquals(BibliographyCompiler.BIBER, bibStep.bibliographyCompiler)
+        assertNull(bibStep.workingDirectoryPath)
+    }
+
     fun testCompleteStepsAddsBiberStepForBiblatexPackageImport() {
         val mainPsi = myFixture.addFileToProject(
             "main-biblatex-package.tex",
@@ -106,6 +130,29 @@ class LatexStepAutoConfiguratorTest : BasePlatformTestCase() {
         assertEquals(listOf("latex-compile", "bibtex", "latex-compile", "latex-compile", "pdf-viewer"), augmented.map { it.type })
         val bibStep = augmented.filterIsInstance<BibtexStepOptions>().single()
         assertEquals(BibliographyCompiler.BIBTEX, bibStep.bibliographyCompiler)
+    }
+
+    fun testCompleteStepsStoresOutputDirectoryForInferredMakeindexStep() {
+        val mainPsi = myFixture.addFileToProject(
+            "main-index.tex",
+            """
+            \documentclass{article}
+            \usepackage{imakeidx}
+            \makeindex
+            \begin{document}
+            \printindex
+            \end{document}
+            """.trimIndent()
+        )
+        myFixture.updateFilesets()
+
+        val augmented = LatexStepAutoConfigurator.completeSteps(
+            mainPsi,
+            listOf(LatexCompileStepOptions(), PdfViewerStepOptions()),
+        )
+
+        val makeindexStep = augmented.filterIsInstance<MakeindexStepOptions>().single()
+        assertNull(makeindexStep.workingDirectoryPath)
     }
 
     fun testCompleteStepsAddsPythontexTemplateStep() {

@@ -21,7 +21,7 @@ internal object LatexPathResolver {
     const val PROJECT_DIR_PLACEHOLDER = "{projectDir}"
     const val MAIN_FILE_PARENT_PLACEHOLDER = "{mainFileParent}"
     private const val OUTPUT_DIR_NAME = "out"
-    private const val AUX_DIR_NAME = "auxil"
+    private const val AUX_DIR_NAME = "out"
 
     val defaultOutputPath: Path = Path.of(PROJECT_DIR_PLACEHOLDER, OUTPUT_DIR_NAME)
     val defaultAuxilPath: Path = Path.of(PROJECT_DIR_PLACEHOLDER, AUX_DIR_NAME)
@@ -42,11 +42,7 @@ internal object LatexPathResolver {
         runConfig: LatexRunConfiguration,
         mainFile: VirtualFile? = LatexRunConfigurationStaticSupport.resolveMainFile(runConfig),
     ): VirtualFile? {
-        val hasLatexmkStep = runConfig.configOptions.steps.any { it.type == LatexStepType.LATEXMK_COMPILE }
-        val supportsAuxDir = runConfig.getLatexDistributionType().isMiktex(runConfig.project, mainFile) ||
-            hasLatexmkStep ||
-            runConfig.hasEnabledLatexmkStep()
-        if (!supportsAuxDir) {
+        if (!supportsAuxDir(runConfig, mainFile)) {
             return null
         }
         return ensureDir(
@@ -57,6 +53,12 @@ internal object LatexPathResolver {
             variant = AUX_DIR_NAME,
         )
     }
+
+    internal fun supportsAuxDir(
+        runConfig: LatexRunConfiguration,
+        mainFile: VirtualFile? = LatexRunConfigurationStaticSupport.resolveMainFile(runConfig),
+    ): Boolean = runConfig.getLatexDistributionType().isMiktex(runConfig.project, mainFile) ||
+        runConfig.hasEnabledLatexmkStep()
 
     fun resolve(path: Path?, mainFile: VirtualFile?, project: Project): Path? {
         val raw = path?.toString()?.trim().orEmpty()

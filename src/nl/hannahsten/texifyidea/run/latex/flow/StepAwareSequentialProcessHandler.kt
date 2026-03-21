@@ -8,10 +8,8 @@ import com.intellij.execution.process.ProcessOutputTypes
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.util.Key
 import nl.hannahsten.texifyidea.TeXception
-import nl.hannahsten.texifyidea.run.latex.step.InlineLatexRunStep
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStep
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepContext
-import nl.hannahsten.texifyidea.run.latex.step.ProcessLatexRunStep
 import java.io.OutputStream
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -161,21 +159,16 @@ internal class StepAwareSequentialProcessHandler(
 
         fire(StepLogEvent.StepStarted(index, step))
         step.beforeStart(context)
-
-        when (step) {
-            is ProcessLatexRunStep -> startProcessStep(index, step)
-            is InlineLatexRunStep -> executeInlineStep(index, step)
-            else -> {
-                emitStepOutput(index, step, "[TeXiFy] Unsupported step implementation: ${step::class.simpleName}\n", ProcessOutputTypes.STDERR)
-                fire(StepLogEvent.StepFinished(index, step, 1))
-                finishRun(1)
-            }
+        val processHandler = step.createProcess(context)
+        if (processHandler == null) {
+            completeStep(index, step, 0)
+        }
+        else {
+            startProcessStep(index, step, processHandler)
         }
     }
 
-    private fun startProcessStep(index: Int, step: ProcessLatexRunStep) {
-        val processHandler = step.createProcess(context)
-
+    private fun startProcessStep(index: Int, step: LatexRunStep, processHandler: ProcessHandler) {
         currentProcess = processHandler
         processHandler.addProcessListener(object : ProcessAdapter() {
             override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
@@ -194,11 +187,6 @@ internal class StepAwareSequentialProcessHandler(
             }
         })
         processHandler.startNotify()
-    }
-
-    private fun executeInlineStep(index: Int, step: InlineLatexRunStep) {
-        val exitCode = step.runInline(context)
-        completeStep(index, step, exitCode)
     }
 
     private fun completeStep(index: Int, step: LatexRunStep, exitCode: Int) {

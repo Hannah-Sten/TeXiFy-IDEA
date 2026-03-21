@@ -13,6 +13,8 @@ import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCitationTool
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
+import nl.hannahsten.texifyidea.run.pdfviewer.CustomPdfViewer
+import nl.hannahsten.texifyidea.run.latex.step.LatexStepPresentation
 import java.util.UUID
 
 /**
@@ -42,7 +44,7 @@ class LatexRunConfigurationOptions : LocatableRunConfigurationOptions() {
     var mainFilePath by string(null)
     var workingDirectoryPath by string(null)
     var outputPath by string(LatexPathResolver.defaultOutputPath.toString())
-    var auxilPath by string(LatexPathResolver.defaultAuxilPath.toString())
+    var auxilPath by string(null)
 
     var latexDistribution by enum(LatexDistributionType.MODULE_SDK)
     var expandMacrosEnvVariables by property(false)
@@ -109,9 +111,12 @@ abstract class LatexStepRunConfigurationOptions : RunConfigurationOptions() {
     @get:Attribute("type")
     abstract var type: String
 
+    open fun displayName(): String = LatexStepPresentation.displayName(type)
+
     fun deepCopy(): LatexStepRunConfigurationOptions {
         val copied = newInstance()
         copied.copyFrom(this)
+        copied.type = type
         copied.selectedOptions.clear()
         copied.selectedOptions.addAll(
             selectedOptions
@@ -143,6 +148,8 @@ class LatexCompileStepOptions : LatexStepRunConfigurationOptions() {
     var outputFormat by enum(LatexCompiler.Format.PDF)
     var beforeRunCommand by string(null)
 
+    override fun displayName(): String = "Compile with $compiler"
+
     override fun newInstance(): LatexStepRunConfigurationOptions = LatexCompileStepOptions()
 }
 
@@ -156,12 +163,25 @@ class LatexmkCompileStepOptions : LatexStepRunConfigurationOptions() {
     override var type: String = LatexStepType.LATEXMK_COMPILE
 
     var compilerPath by string(null)
-    var compilerArguments by string(null)
     var latexmkCompileMode by enum(LatexmkCompileMode.AUTO)
     var latexmkCustomEngineCommand by string(null)
     var latexmkCitationTool by enum(LatexmkCitationTool.AUTO)
     var latexmkExtraArguments by string(LatexRunConfiguration.DEFAULT_LATEXMK_EXTRA_ARGUMENTS)
     var beforeRunCommand by string(null)
+
+    override fun displayName(): String {
+        val modeLabel = when (latexmkCompileMode) {
+            LatexmkCompileMode.AUTO -> null
+            LatexmkCompileMode.CUSTOM ->
+                latexmkCustomEngineCommand
+                    ?.trim()
+                    ?.ifBlank { null }
+                    ?: latexmkCompileMode.toString()
+
+            else -> latexmkCompileMode.toString()
+        }
+        return modeLabel?.let { "Compile with latexmk ($it)" } ?: "Compile with latexmk"
+    }
 
     override fun newInstance(): LatexStepRunConfigurationOptions = LatexmkCompileStepOptions()
 }
@@ -178,6 +198,15 @@ class PdfViewerStepOptions : LatexStepRunConfigurationOptions() {
     var pdfViewerName by string(PdfViewer.firstAvailableViewer.name)
     var requireFocus by property(true)
     var customViewerCommand by string(null)
+
+    override fun displayName(): String = "Open with ${resolveViewerLabel()}"
+
+    private fun resolveViewerLabel(): String {
+        val configuredName = pdfViewerName?.trim().orEmpty()
+        val matchingViewer = (PdfViewer.allViewers + CustomPdfViewer).firstOrNull { it.name == configuredName }
+        return matchingViewer?.displayName
+            ?: configuredName.ifBlank { PdfViewer.firstAvailableViewer.displayName ?: "PDF viewer" }
+    }
 
     override fun newInstance(): LatexStepRunConfigurationOptions = PdfViewerStepOptions()
 }
@@ -196,6 +225,7 @@ class BibtexStepOptions : LatexStepRunConfigurationOptions() {
     var compilerArguments by string(null)
     var workingDirectoryPath by string(null)
     var beforeRunCommand by string(null)
+    var legacyRunConfigId by string(null)
 
     override fun newInstance(): LatexStepRunConfigurationOptions = BibtexStepOptions()
 }
@@ -214,6 +244,7 @@ class MakeindexStepOptions : LatexStepRunConfigurationOptions() {
     var workingDirectoryPath by string(null)
     var targetBaseNameOverride by string(null)
     var beforeRunCommand by string(null)
+    var legacyRunConfigId by string(null)
 
     override fun newInstance(): LatexStepRunConfigurationOptions = MakeindexStepOptions()
 }
@@ -305,16 +336,4 @@ internal fun defaultLatexmkSteps(): MutableList<LatexStepRunConfigurationOptions
     PdfViewerStepOptions(),
 )
 
-internal fun defaultStepFor(type: String): LatexStepRunConfigurationOptions? = when (type.trim().lowercase()) {
-    LatexStepType.LATEX_COMPILE -> LatexCompileStepOptions()
-    LatexStepType.LATEXMK_COMPILE -> LatexmkCompileStepOptions()
-    LatexStepType.PDF_VIEWER -> PdfViewerStepOptions()
-    LatexStepType.BIBTEX -> BibtexStepOptions()
-    LatexStepType.MAKEINDEX -> MakeindexStepOptions()
-    LatexStepType.EXTERNAL_TOOL -> ExternalToolStepOptions()
-    LatexStepType.PYTHONTEX -> PythontexStepOptions()
-    LatexStepType.MAKEGLOSSARIES -> MakeglossariesStepOptions()
-    LatexStepType.XINDY -> XindyStepOptions()
-    LatexStepType.FILE_CLEANUP -> FileCleanupStepOptions()
-    else -> null
-}
+internal fun defaultStepFor(type: String): LatexStepRunConfigurationOptions? = LatexStepPresentation.defaultStepFor(type)

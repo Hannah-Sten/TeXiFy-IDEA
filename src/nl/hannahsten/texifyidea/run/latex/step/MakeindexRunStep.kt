@@ -5,6 +5,8 @@ import com.intellij.execution.process.ProcessHandler
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.common.createCompilationHandler
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
+import nl.hannahsten.texifyidea.run.latex.LatexPathResolver
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.MakeindexStepOptions
 import nl.hannahsten.texifyidea.run.latex.getMakeindexOptions
 import nl.hannahsten.texifyidea.util.appendExtension
@@ -41,7 +43,7 @@ internal class MakeindexRunStep(
         if (stepConfig.program == MakeindexProgram.BIB2GLS && configuredPath.isNullOrBlank()) {
             return Path.of(context.session.mainFile.parent.path)
         }
-        return CommandLineRunStep.resolveWorkingDirectory(context, configuredPath)
+        return CommandLineRunStep.resolveAuxiliaryWorkingDirectory(context, configuredPath)
     }
 
     internal fun buildCommand(context: LatexRunStepContext): List<String> {
@@ -66,5 +68,15 @@ internal class MakeindexRunStep(
             }
         }
         return command
+    }
+
+    companion object {
+        fun inferredWorkingDirectoryHint(
+            runConfig: LatexRunConfiguration,
+            step: MakeindexStepOptions,
+        ): String = when (step.program) {
+            MakeindexProgram.BIB2GLS -> LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER
+            else -> runConfig.rawAuxPathOrOutputPathForUiHint()
+        }
     }
 }

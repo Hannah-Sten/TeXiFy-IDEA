@@ -18,4 +18,6 @@ internal class LatexUnsupportedStepSettingsComponent : JPanel(FlowLayout(FlowLay
     fun setMessage(message: String) {
         messageLabel.text = message
     }
+
+    fun message(): String = messageLabel.text
 }
