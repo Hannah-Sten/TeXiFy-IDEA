@@ -1,5 +1,7 @@
 package nl.hannahsten.texifyidea.run.latex.ui.fragments
 
+import com.intellij.execution.impl.RunManagerImpl
+import com.intellij.execution.impl.RunnerAndConfigurationSettingsImpl
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.util.ui.WrapLayout
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
@@ -60,7 +62,7 @@ class LatexCompileSequenceComponentTest : BasePlatformTestCase() {
             component.toggleStepSelection(2)
 
             assertEquals(listOf(editor.shadowSteps[0].id, editor.shadowSteps[2].id), component.selectedStepIdsForTest())
-            assertEquals(editor.shadowSteps[2].id, component.primaryStepIdForTest())
+            assertEquals(editor.shadowSteps[0].id, component.primaryStepIdForTest())
 
             component.toggleStepSelection(2)
 
@@ -76,7 +78,7 @@ class LatexCompileSequenceComponentTest : BasePlatformTestCase() {
             component.selectStepRange(2)
 
             assertEquals(editor.shadowSteps.map { it.id }, component.selectedStepIdsForTest())
-            assertEquals(editor.shadowSteps[2].id, component.primaryStepIdForTest())
+            assertEquals(editor.shadowSteps[0].id, component.primaryStepIdForTest())
         }
     }
 
@@ -104,7 +106,7 @@ class LatexCompileSequenceComponentTest : BasePlatformTestCase() {
                 editor.shadowSteps.map { it.type }
             )
             assertEquals(selectedIds, component.selectedStepIdsForTest())
-            assertEquals(selectedIds.last(), component.primaryStepIdForTest())
+            assertEquals(selectedIds.first(), component.primaryStepIdForTest())
         }
     }
 
@@ -117,7 +119,7 @@ class LatexCompileSequenceComponentTest : BasePlatformTestCase() {
             component.pressStepForDragStartForTest(1)
 
             assertEquals(listOf(editor.shadowSteps[0].id, editor.shadowSteps[1].id), component.selectedStepIdsForTest())
-            assertEquals(editor.shadowSteps[1].id, component.primaryStepIdForTest())
+            assertEquals(editor.shadowSteps[0].id, component.primaryStepIdForTest())
         }
     }
 
@@ -278,8 +280,13 @@ class LatexCompileSequenceComponentTest : BasePlatformTestCase() {
         action: (LatexSettingsEditor, LatexCompileSequenceComponent) -> Unit,
     ) {
         val editor = LatexSettingsEditor(runConfig)
-        editor.shadowSteps.clear()
-        editor.shadowSteps.addAll(runConfig.copyStepsForUi())
+        editor.resetEditorFrom(createSettings(runConfig))
         action(editor, editor.compileSequenceComponent)
+    }
+
+    private fun createSettings(runConfig: LatexRunConfiguration): RunnerAndConfigurationSettingsImpl {
+        val factory = LatexRunConfigurationProducer().configurationFactory
+        return RunManagerImpl.getInstanceImpl(project)
+            .createConfiguration(runConfig, factory) as RunnerAndConfigurationSettingsImpl
     }
 }

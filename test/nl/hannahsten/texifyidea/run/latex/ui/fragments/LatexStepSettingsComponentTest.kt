@@ -1,5 +1,8 @@
 package nl.hannahsten.texifyidea.run.latex.ui.fragments
 
+import com.intellij.execution.impl.RunManagerImpl
+import com.intellij.execution.impl.RunnerAndConfigurationSettingsImpl
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.execution.ui.FragmentedSettings
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
@@ -462,6 +465,147 @@ class LatexStepSettingsComponentTest : BasePlatformTestCase() {
         }
     }
 
+    fun testCompileSequenceSelectionChangeWithDifferentCompilersDoesNotOverwriteClickedStepDuringReset() {
+        val runConfig = configWithSteps(
+            LatexCompileStepOptions().apply {
+                compiler = LatexCompiler.LUALATEX
+                compilerPath = "/usr/bin/lualatex"
+                compilerArguments = "--lua"
+            },
+            LatexCompileStepOptions().apply {
+                compiler = LatexCompiler.PDFLATEX
+                compilerPath = "/usr/bin/pdflatex"
+                compilerArguments = "--pdf"
+            }
+        )
+        withEditor(runConfig) { editor, component, shadowSteps ->
+            val lualatex = shadowSteps[0] as LatexCompileStepOptions
+            val pdflatex = shadowSteps[1] as LatexCompileStepOptions
+            val compileSequence = editor.compileSequenceComponent
+
+            compileSequence.resetEditorFrom()
+            component.resetEditorFrom()
+            drainEdt()
+
+            compileSequence.clickStepForTest(0)
+            drainEdt()
+            compileSequence.ctrlClickStepForTest(1)
+            drainEdt()
+            compileSequence.clickStepForTest(0)
+            drainEdt()
+
+            assertEquals(LatexCompiler.LUALATEX, lualatex.compiler)
+            assertEquals("/usr/bin/lualatex", lualatex.compilerPath)
+            assertEquals("--lua", lualatex.compilerArguments)
+            assertEquals(LatexCompiler.PDFLATEX, pdflatex.compiler)
+            assertEquals("/usr/bin/pdflatex", pdflatex.compilerPath)
+            assertEquals("--pdf", pdflatex.compilerArguments)
+            assertEquals(
+                lualatex.compilerPath.orEmpty() to lualatex.compilerArguments.orEmpty(),
+                component.currentCompileEditorValuesForTest()
+            )
+        }
+    }
+
+    fun testCompileSequenceSelectionChangeToDifferentStepDoesNotOverwriteEarlierSelection() {
+        val runConfig = configWithSteps(
+            LatexCompileStepOptions().apply {
+                compiler = LatexCompiler.LUALATEX
+                compilerPath = "/usr/bin/lualatex"
+                compilerArguments = "--lua"
+            },
+            LatexCompileStepOptions().apply {
+                compiler = LatexCompiler.PDFLATEX
+                compilerPath = "/usr/bin/pdflatex"
+                compilerArguments = "--pdf"
+            },
+            LatexCompileStepOptions().apply {
+                compiler = LatexCompiler.XELATEX
+                compilerPath = "/usr/bin/xelatex"
+                compilerArguments = "--xe"
+            }
+        )
+        withEditor(runConfig) { editor, component, shadowSteps ->
+            val lualatex = shadowSteps[0] as LatexCompileStepOptions
+            val pdflatex = shadowSteps[1] as LatexCompileStepOptions
+            val xelatex = shadowSteps[2] as LatexCompileStepOptions
+            val compileSequence = editor.compileSequenceComponent
+
+            compileSequence.resetEditorFrom()
+            component.resetEditorFrom()
+            drainEdt()
+
+            compileSequence.clickStepForTest(0)
+            drainEdt()
+            compileSequence.ctrlClickStepForTest(1)
+            drainEdt()
+            compileSequence.clickStepForTest(2)
+            drainEdt()
+
+            assertEquals(LatexCompiler.LUALATEX, lualatex.compiler)
+            assertEquals("/usr/bin/lualatex", lualatex.compilerPath)
+            assertEquals("--lua", lualatex.compilerArguments)
+            assertEquals(LatexCompiler.PDFLATEX, pdflatex.compiler)
+            assertEquals("/usr/bin/pdflatex", pdflatex.compilerPath)
+            assertEquals("--pdf", pdflatex.compilerArguments)
+            assertEquals(LatexCompiler.XELATEX, xelatex.compiler)
+            assertEquals("/usr/bin/xelatex", xelatex.compilerPath)
+            assertEquals("--xe", xelatex.compilerArguments)
+            assertEquals(
+                xelatex.compilerPath.orEmpty() to xelatex.compilerArguments.orEmpty(),
+                component.currentCompileEditorValuesForTest()
+            )
+        }
+    }
+
+    fun testRapidCompileSequenceSelectionChangeDoesNotOverwriteEarlierSelection() {
+        val runConfig = configWithSteps(
+            LatexCompileStepOptions().apply {
+                compiler = LatexCompiler.LUALATEX
+                compilerPath = "/usr/bin/lualatex"
+                compilerArguments = "--lua"
+            },
+            LatexCompileStepOptions().apply {
+                compiler = LatexCompiler.PDFLATEX
+                compilerPath = "/usr/bin/pdflatex"
+                compilerArguments = "--pdf"
+            },
+            LatexCompileStepOptions().apply {
+                compiler = LatexCompiler.XELATEX
+                compilerPath = "/usr/bin/xelatex"
+                compilerArguments = "--xe"
+            }
+        )
+        withEditor(runConfig) { editor, component, shadowSteps ->
+            val lualatex = shadowSteps[0] as LatexCompileStepOptions
+            val pdflatex = shadowSteps[1] as LatexCompileStepOptions
+            val xelatex = shadowSteps[2] as LatexCompileStepOptions
+            val compileSequence = editor.compileSequenceComponent
+
+            compileSequence.resetEditorFrom()
+            component.resetEditorFrom()
+
+            compileSequence.clickStepForTest(0)
+            compileSequence.ctrlClickStepForTest(1)
+            compileSequence.clickStepForTest(2)
+            drainEdt()
+
+            assertEquals(LatexCompiler.LUALATEX, lualatex.compiler)
+            assertEquals("/usr/bin/lualatex", lualatex.compilerPath)
+            assertEquals("--lua", lualatex.compilerArguments)
+            assertEquals(LatexCompiler.PDFLATEX, pdflatex.compiler)
+            assertEquals("/usr/bin/pdflatex", pdflatex.compilerPath)
+            assertEquals("--pdf", pdflatex.compilerArguments)
+            assertEquals(LatexCompiler.XELATEX, xelatex.compiler)
+            assertEquals("/usr/bin/xelatex", xelatex.compilerPath)
+            assertEquals("--xe", xelatex.compilerArguments)
+            assertEquals(
+                xelatex.compilerPath.orEmpty() to xelatex.compilerArguments.orEmpty(),
+                component.currentCompileEditorValuesForTest()
+            )
+        }
+    }
+
     fun testApplyEditorToDoesNothingForMixedTypeSelection() {
         val runConfig = configWithSteps(
             LatexCompileStepOptions().apply {
@@ -582,7 +726,7 @@ class LatexStepSettingsComponentTest : BasePlatformTestCase() {
 
     private fun selectionOf(
         stepIds: List<String>,
-        primaryStepId: String? = stepIds.lastOrNull(),
+        primaryStepId: String? = stepIds.firstOrNull(),
     ): LatexStepSelectionState = LatexStepSelectionState(
         selectedStepIds = stepIds,
         primaryStepId = primaryStepId,
@@ -619,8 +763,18 @@ class LatexStepSettingsComponentTest : BasePlatformTestCase() {
         editor.stepSettingsComponent.changeListener = {
             editor.onStepSettingsChanged()
         }
-        editor.shadowSteps.clear()
-        editor.shadowSteps.addAll(runConfig.copyStepsForUi())
+        editor.resetEditorFrom(createSettings(runConfig))
+        drainEdt()
         action(editor, editor.stepSettingsComponent, editor.shadowSteps)
+    }
+
+    private fun drainEdt() {
+        ApplicationManager.getApplication().invokeAndWait {}
+    }
+
+    private fun createSettings(runConfig: LatexRunConfiguration): RunnerAndConfigurationSettingsImpl {
+        val factory = LatexRunConfigurationProducer().configurationFactory
+        return RunManagerImpl.getInstanceImpl(project)
+            .createConfiguration(runConfig, factory) as RunnerAndConfigurationSettingsImpl
     }
 }

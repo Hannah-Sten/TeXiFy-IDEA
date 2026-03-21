@@ -27,6 +27,15 @@ import nl.hannahsten.texifyidea.util.files.psiFile
  * [LatexCompileSequenceFragment] edits the sequence itself, while [LatexStepSettingsFragment] edits the settings of the
  * currently selected step. The editor keeps those views working against the same in-progress configuration so they stay
  * synchronized during a single settings session.
+ *
+ * JetBrains treats fragmented run configuration editors as continuously snapshotted state. In practice that means:
+ * - [resetEditorFrom] must stay a pure UI reset with no write-back side effects.
+ * - [SettingsEditorFragment.fireEditorStateChanged] should only represent real user edits.
+ * - [applyEditorTo] may be called during dirty-state polling, not only on the final Apply/OK action.
+ *
+ * References:
+ * https://plugins.jetbrains.com/docs/intellij/run-configurations.html
+ * https://intellij-support.jetbrains.com/hc/en-us/community/posts/4459894734610-Run-configuration-is-never-saved
  */
 class LatexSettingsEditor(
     runConfiguration: LatexRunConfiguration,
@@ -82,7 +91,21 @@ class LatexSettingsEditor(
 
     override fun applyEditorTo(settings: LatexRunConfiguration) {
         super.applyEditorTo(settings)
-        settings.replaceStepsFromUi(shadowSteps)
+        val stepsToSave = shadowSteps
+            .map { it.deepCopy() }
+            .toMutableList()
+        stepSettingsComponent.applyCurrentSelectionTo(stepsToSave)
+        settings.replaceStepsFromUi(stepsToSave)
+
+        // JetBrains support notes that applyEditorTo() is also used to build periodic dirty-state snapshots.
+        // During those calls the platform applies the editor into a temporary snapshot, not the live configuration.
+        // Only mirror the saved batch-apply result back into the shared UI state when the platform is applying to the
+        // live run configuration instance that backs this editor session.
+        if (settings === configForUiContext()) {
+            stepSettingsComponent.applyCurrentSelectionTo(shadowSteps)
+            stepSettingsComponent.onStepsChanged()
+            compileSequenceComponent.refreshStepTitles()
+        }
     }
 
     internal fun beforeSequenceStructureChange() {

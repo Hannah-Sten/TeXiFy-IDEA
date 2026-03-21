@@ -88,6 +88,8 @@ internal class LatexStepSettingsComponent(
         settingsEditors.forEach {
             Disposer.register(editor, it)
             it.addSettingsEditorListener {
+                // JetBrains uses editor snapshots to recompute dirty state, so resetFrom()-driven UI updates must
+                // not be reported as user edits. Only propagate real edits into the fragmented editor change chain.
                 if (!suppressEditorChangeEvents) {
                     changeListener()
                 }
@@ -117,7 +119,7 @@ internal class LatexStepSettingsComponent(
     }
 
     fun applyEditorTo() {
-        applyCurrentSelection()
+        applyCurrentSelectionToShadowSteps()
     }
 
     fun flushCurrentStep() {
@@ -235,7 +237,7 @@ internal class LatexStepSettingsComponent(
             .filter { it in stepsById.keys }
         val primaryStepId = selectionState.primaryStepId
             ?.takeIf { it in selectedIds }
-            ?: selectedIds.lastOrNull()
+            ?: selectedIds.firstOrNull()
         return LatexStepSelectionState(
             selectedStepIds = selectedIds,
             primaryStepId = primaryStepId,
@@ -279,6 +281,8 @@ internal class LatexStepSettingsComponent(
     }
 
     private fun resetCurrentCard(targetStep: LatexStepRunConfigurationOptions?) {
+        // resetFrom() is part of the platform reset path, not a user edit. Guard this narrow section so programmatic
+        // control updates do not trigger write-back through fireEditorStateChanged()/applyEditorTo() dirty polling.
         suppressEditorChangeEvents = true
         try {
             updateCardContext(targetStep)
@@ -321,10 +325,14 @@ internal class LatexStepSettingsComponent(
         syncSelectionWithCurrentSteps()
     }
 
-    private fun applyCurrentSelection() {
+    internal fun applyCurrentSelectionTo(targetSteps: MutableList<LatexStepRunConfigurationOptions>) {
         val targetStepIds = targetStepIdsForCurrentSelectionApply()
         val template = captureTemplateFromCurrentCard() ?: return
-        applyTemplateToSelectedSteps(template, targetStepIds)
+        applyTemplateToSelectedSteps(template, targetStepIds, targetSteps)
+    }
+
+    private fun applyCurrentSelectionToShadowSteps() {
+        applyCurrentSelectionTo(shadowSteps)
         syncSelectionWithCurrentSteps()
     }
 
@@ -398,8 +406,9 @@ internal class LatexStepSettingsComponent(
     private fun applyTemplateToSelectedSteps(
         template: LatexStepRunConfigurationOptions,
         selectedIds: Set<String>,
+        targetSteps: MutableList<LatexStepRunConfigurationOptions> = shadowSteps,
     ) {
-        shadowSteps.forEachIndexed { index, target ->
+        targetSteps.forEachIndexed { index, target ->
             if (target.id !in selectedIds) {
                 return@forEachIndexed
             }
@@ -408,10 +417,12 @@ internal class LatexStepSettingsComponent(
                 applyTemplateInPlace(target, template)
             }
             else {
-                shadowSteps[index] = template.copyWithIdentity(target.id)
+                targetSteps[index] = template.copyWithIdentity(target.id)
             }
         }
-        stepsById = shadowSteps.associateBy { it.id }
+        if (targetSteps === shadowSteps) {
+            stepsById = shadowSteps.associateBy { it.id }
+        }
     }
 
     private fun applyTemplateInPlace(

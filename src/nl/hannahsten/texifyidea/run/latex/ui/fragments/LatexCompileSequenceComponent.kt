@@ -104,7 +104,7 @@ internal class LatexCompileSequenceComponent(
         val orderedSelection = orderedSelectedButtons().map { it.stepConfig.id }
         val resolvedPrimary = primaryStepId
             ?.takeIf { it in orderedSelection }
-            ?: orderedSelection.lastOrNull()
+            ?: selectedStepIds.firstOrNull()
         return LatexStepSelectionState(
             selectedStepIds = orderedSelection,
             primaryStepId = resolvedPrimary,
@@ -313,6 +313,14 @@ internal class LatexCompileSequenceComponent(
         )
     }
 
+    internal fun clickStepForTest(index: Int) {
+        clickStepForTest(index, modifiers = 0)
+    }
+
+    internal fun ctrlClickStepForTest(index: Int) {
+        clickStepForTest(index, modifiers = InputEvent.CTRL_DOWN_MASK)
+    }
+
     fun refreshStepTitles() {
         stepButtons.forEach { it.updateFromStepConfig() }
         revalidate()
@@ -370,7 +378,7 @@ internal class LatexCompileSequenceComponent(
             }
             else {
                 if (primaryStepId == stepId) {
-                    primaryStepId = orderedSelectedButtons().lastOrNull()?.stepConfig?.id
+                    primaryStepId = selectedStepIds.firstOrNull()
                     anchorStepId = primaryStepId
                 }
                 else if (anchorStepId == stepId) {
@@ -379,8 +387,10 @@ internal class LatexCompileSequenceComponent(
             }
         }
         else {
-            primaryStepId = stepId
-            anchorStepId = stepId
+            if (primaryStepId == null) {
+                primaryStepId = stepId
+                anchorStepId = stepId
+            }
         }
 
         refreshSelectionUi()
@@ -403,7 +413,10 @@ internal class LatexCompileSequenceComponent(
         visibleStepIds()
             .subList(rangeStart, rangeEnd + 1)
             .forEach(selectedStepIds::add)
-        primaryStepId = button.stepConfig.id
+        primaryStepId = primaryStepId
+            ?.takeIf { it in selectedStepIds }
+            ?: anchorStepId?.takeIf { it in selectedStepIds }
+            ?: selectedStepIds.firstOrNull()
         refreshSelectionUi()
         if (notify) {
             notifySelectionChanged()
@@ -435,7 +448,7 @@ internal class LatexCompileSequenceComponent(
         }
 
         if (primaryStepId !in selectedStepIds) {
-            primaryStepId = orderedSelectedButtons().lastOrNull()?.stepConfig?.id
+            primaryStepId = selectedStepIds.firstOrNull()
             anchorStepId = primaryStepId
         }
         else if (anchorStepId !in selectedStepIds) {
@@ -489,7 +502,7 @@ internal class LatexCompileSequenceComponent(
             .forEach(selectedStepIds::add)
         primaryStepId = previousSelection.primaryStepId
             ?.takeIf { it in selectedStepIds }
-            ?: orderedSelectedButtons().lastOrNull()?.stepConfig?.id
+            ?: selectedStepIds.firstOrNull()
         anchorStepId = primaryStepId
 
         normalizeSelection(notify = true)
@@ -504,6 +517,38 @@ internal class LatexCompileSequenceComponent(
 
     private fun orderedSelectedButtons(): List<StepButton> = stepButtons.filter {
         it.isVisible && it.stepConfig.id in selectedStepIds
+    }
+
+    private fun clickStepForTest(index: Int, modifiers: Int) {
+        val button = stepButtons.getOrNull(index)?.takeIf { it.isVisible } ?: return
+        handleSelection(
+            button,
+            MouseEvent(
+                this,
+                MouseEvent.MOUSE_PRESSED,
+                0,
+                modifiers,
+                0,
+                0,
+                1,
+                false,
+                MouseEvent.BUTTON1,
+            )
+        )
+        finalizeSingleClickSelection(
+            button,
+            MouseEvent(
+                this,
+                MouseEvent.MOUSE_CLICKED,
+                0,
+                modifiers,
+                0,
+                0,
+                1,
+                false,
+                MouseEvent.BUTTON1,
+            )
+        )
     }
 
     private fun visibleStepIds(): List<String> = stepButtons
@@ -576,7 +621,7 @@ internal class LatexCompileSequenceComponent(
         shadowSteps.remove(button.stepConfig)
         remove(button)
         if (primaryStepId == button.stepConfig.id) {
-            primaryStepId = orderedSelectedButtons().lastOrNull()?.stepConfig?.id
+            primaryStepId = selectedStepIds.firstOrNull()
             anchorStepId = primaryStepId
         }
         else if (anchorStepId == button.stepConfig.id) {

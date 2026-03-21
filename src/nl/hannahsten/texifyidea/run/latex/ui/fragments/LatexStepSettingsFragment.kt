@@ -30,6 +30,8 @@ internal class LatexStepSettingsFragment(
     }
 
     override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
-        component.applyEditorTo()
+        // Intentionally no-op. The platform may call fragment apply during dirty-state polling, so mutating the shared
+        // shadow step list here would turn transient UI state into real selection-wide write-back. The real save path
+        // is coordinated by LatexSettingsEditor.applyEditorTo(), which can distinguish live apply from snapshot apply.
     }
 }
