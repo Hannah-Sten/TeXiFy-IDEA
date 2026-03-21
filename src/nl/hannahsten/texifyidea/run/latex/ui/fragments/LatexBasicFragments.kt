@@ -45,7 +45,7 @@ internal object LatexBasicFragments {
                 )
             )
         }
-        val component = LabeledComponent.create(mainFile, TexifyBundle.message("run.latex.settings.main.file.to.compile"))
+        val component = LabeledComponent.create(mainFile, TexifyBundle.message("run.step.ui.field.main.file.label"))
 
         val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<TextFieldWithBrowseButton>>(
             "mainFile",
@@ -77,6 +77,7 @@ internal object LatexBasicFragments {
         group = group,
         project = project,
         chooserTitle = TexifyBundle.message("run.latex.settings.working.directory.title"),
+        labelText = TexifyBundle.message("run.step.ui.field.common.working.directory.label"),
         initiallyVisible = { runConfig -> runConfig.workingDirectory != null },
         reset = { runConfig, field ->
             field.text = runConfig.workingDirectory?.toString() ?: LatexPathResolver.MAIN_FILE_PARENT_PLACEHOLDER
@@ -97,7 +98,7 @@ internal object LatexBasicFragments {
         val distribution = ComboBox(LatexDistributionSelection.getAvailableSelections(project).toTypedArray()).apply {
             renderer = LatexDistributionComboBoxRenderer(project) { null }
         }
-        val component = LabeledComponent.create(distribution, TexifyBundle.message("run.latex.settings.latex.distribution"))
+        val component = LabeledComponent.create(distribution, TexifyBundle.message("run.step.ui.field.latex.distribution.label"))
 
         val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, LabeledComponent<ComboBox<LatexDistributionSelection>>>(
             "latexDistribution",
@@ -138,6 +139,7 @@ internal object LatexBasicFragments {
         group = group,
         project = project,
         chooserTitle = TexifyBundle.message("run.latex.settings.output.files.directory.title"),
+        labelText = TexifyBundle.message("run.step.ui.field.output.directory.label"),
         initiallyVisible = { runConfig -> hasCustomPath(runConfig.outputPath, LatexPathResolver.defaultOutputPath) },
         reset = { runConfig, field ->
             field.text = runConfig.outputPath?.toString() ?: LatexPathResolver.defaultOutputPath.toString()
@@ -161,6 +163,7 @@ internal object LatexBasicFragments {
             group = group,
             project = project,
             chooserTitle = TexifyBundle.message("run.latex.settings.aux.files.directory.title"),
+            labelText = TexifyBundle.message("run.step.ui.field.auxiliary.directory.label"),
             initiallyVisible = { runConfig -> !runConfig.auxilPath?.toString().isNullOrBlank() },
             reset = { runConfig, field ->
                 field.text = runConfig.auxilPath?.toString().orEmpty()

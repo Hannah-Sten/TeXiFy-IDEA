@@ -8,6 +8,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.LeafPsiElement
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.lang.magic.magicComment
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexGroup
@@ -18,7 +19,7 @@ import nl.hannahsten.texifyidea.util.parser.parentOfType
 /**
  * @author Hannah Schellekens
  */
-class LatexToggleStarAction : EditorAction("Toggle Star") {
+class LatexToggleStarAction : EditorAction(TexifyBundle.message("action.texify.ToggleStar.text")) {
 
     override fun actionPerformed(file: VirtualFile, project: Project, textEditor: TextEditor) {
         val element = getElement(file, project, textEditor)

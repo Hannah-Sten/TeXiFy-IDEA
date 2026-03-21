@@ -16,15 +16,15 @@ internal class MakeglossariesStepFragmentedEditor(
 ) : AbstractStepFragmentedEditor<MakeglossariesStepOptions>(initialStep) {
 
     private val executable = JBTextField()
-    private val executableRow = LabeledComponent.create(executable, TexifyBundle.message("run.step.ui.field.executable"))
+    private val executableRow = LabeledComponent.create(executable, TexifyBundle.message("run.step.ui.field.executable.label"))
 
     private val arguments = RawCommandLineEditor().apply {
         editorField.emptyText.text = TexifyBundle.message("run.step.ui.placeholder.default.main.base.name")
     }
-    private val argumentsRow = LabeledComponent.create(arguments, TexifyBundle.message("run.step.ui.field.arguments"))
+    private val argumentsRow = LabeledComponent.create(arguments, TexifyBundle.message("run.step.ui.field.arguments.label"))
 
     private val workingDirectory = createDirectoryField(project, TexifyBundle.message("run.step.ui.dialog.step.working.directory"))
-    private val workingDirectoryRow = LabeledComponent.create(workingDirectory, TexifyBundle.message("run.step.ui.field.working.directory"))
+    private val workingDirectoryRow = LabeledComponent.create(workingDirectory, TexifyBundle.message("run.step.ui.field.working.directory.label"))
 
     override fun createFragments(): Collection<SettingsEditorFragment<MakeglossariesStepOptions, *>> {
         val header = CommonParameterFragments.createHeader<MakeglossariesStepOptions>(TexifyBundle.message("run.step.ui.header.makeglossaries"))

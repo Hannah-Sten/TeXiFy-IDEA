@@ -21,7 +21,7 @@ internal class BibtexStepFragmentedEditor(
 ) : AbstractStepFragmentedEditor<BibtexStepOptions>(initialStep) {
 
     private val compiler = ComboBox(BibliographyCompiler.entries.toTypedArray())
-    private val compilerRow = LabeledComponent.create(compiler, TexifyBundle.message("run.step.ui.field.bibliography.tool"))
+    private val compilerRow = LabeledComponent.create(compiler, TexifyBundle.message("run.step.ui.field.bibliography.tool.label"))
 
     private val compilerPath = TextFieldWithBrowseButton().apply {
         addBrowseFolderListener(
@@ -32,15 +32,15 @@ internal class BibtexStepFragmentedEditor(
             )
         )
     }
-    private val compilerPathRow = LabeledComponent.create(compilerPath, TexifyBundle.message("run.step.ui.field.compiler.path"))
+    private val compilerPathRow = LabeledComponent.create(compilerPath, TexifyBundle.message("run.step.ui.field.compiler.path.label"))
 
     private val compilerArguments = RawCommandLineEditor().apply {
         editorField.emptyText.text = TexifyBundle.message("run.step.ui.placeholder.custom.bibliography.arguments")
     }
-    private val compilerArgumentsRow = LabeledComponent.create(compilerArguments, TexifyBundle.message("run.step.ui.field.compiler.arguments"))
+    private val compilerArgumentsRow = LabeledComponent.create(compilerArguments, TexifyBundle.message("run.step.ui.field.compiler.arguments.label"))
 
     private val workingDirectory = createDirectoryField(project, TexifyBundle.message("run.step.ui.dialog.step.working.directory"))
-    private val workingDirectoryRow = LabeledComponent.create(workingDirectory, TexifyBundle.message("run.step.ui.field.working.directory"))
+    private val workingDirectoryRow = LabeledComponent.create(workingDirectory, TexifyBundle.message("run.step.ui.field.working.directory.label"))
     private var inferredWorkingDirectoryHint: String? = null
 
     fun setInferredWorkingDirectoryHint(value: String?) {

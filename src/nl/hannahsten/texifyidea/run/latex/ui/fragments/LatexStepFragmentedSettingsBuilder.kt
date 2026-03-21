@@ -13,6 +13,7 @@ import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.ui.components.DropDownLink
 import com.intellij.util.ui.JBUI
+import nl.hannahsten.texifyidea.TexifyBundle
 import java.awt.BorderLayout
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -32,13 +33,13 @@ internal class LatexStepFragmentedSettingsBuilder<Settings : FragmentedSettings>
 
         internal const val STEP_OPTIONS_HEADER_NAME = "latex.step.settings.header"
         internal const val STEP_OPTIONS_LINK_NAME = "latex.step.settings.optionsLink"
-
-        private const val STEP_OPTIONS_TITLE = "Step options"
     }
 
     private val stepFragments = fragments.toList()
     private val optionFragments: List<SettingsEditorFragment<Settings, *>>
         get() = stepFragments.filter { it.isRemovable && !it.isHeader }
+    private val stepOptionsTitle: String
+        get() = TexifyBundle.message("run.step.ui.step.options.title")
 
     private var pendingFocusTarget: JComponent? = null
 
@@ -52,7 +53,7 @@ internal class LatexStepFragmentedSettingsBuilder<Settings : FragmentedSettings>
         fragment?.component?.let { headerPanel.add(it, BorderLayout.WEST) }
         createHeaderSeparator()?.let { headerPanel.add(it, BorderLayout.CENTER) }
 
-        val stepOptionsLink = DropDownLink(STEP_OPTIONS_TITLE) { link ->
+        val stepOptionsLink = DropDownLink(stepOptionsTitle) { link ->
             createStepOptionsPopup(link)
         }.apply {
             name = STEP_OPTIONS_LINK_NAME
@@ -70,7 +71,7 @@ internal class LatexStepFragmentedSettingsBuilder<Settings : FragmentedSettings>
 
     private fun createStepOptionsPopup(anchor: JComponent): JBPopup {
         if (optionFragments.isEmpty()) {
-            return JBPopupFactory.getInstance().createMessage("No additional step options.")
+            return JBPopupFactory.getInstance().createMessage(TexifyBundle.message("run.step.ui.step.options.none"))
         }
 
         pendingFocusTarget = null
@@ -79,7 +80,7 @@ internal class LatexStepFragmentedSettingsBuilder<Settings : FragmentedSettings>
         }
 
         return JBPopupFactory.getInstance().createActionGroupPopup(
-            STEP_OPTIONS_TITLE,
+            stepOptionsTitle,
             group,
             com.intellij.ide.DataManager.getInstance().getDataContext(anchor),
             JBPopupFactory.ActionSelectionAid.SPEEDSEARCH,

@@ -26,7 +26,7 @@ internal class LatexCompileStepFragmentedEditor(
 ) : AbstractStepFragmentedEditor<LatexCompileStepOptions>(initialStep) {
 
     private val compiler = ComboBox(LatexCompiler.entries.toTypedArray())
-    private val compilerRow = LabeledComponent.create(compiler, TexifyBundle.message("run.step.ui.field.compiler"))
+    private val compilerRow = LabeledComponent.create(compiler, TexifyBundle.message("run.step.ui.field.compiler.label"))
 
     private val compilerPath = TextFieldWithBrowseButton().apply {
         addBrowseFolderListener(
@@ -37,18 +37,18 @@ internal class LatexCompileStepFragmentedEditor(
             )
         )
     }
-    private val compilerPathRow = LabeledComponent.create(compilerPath, TexifyBundle.message("run.step.ui.field.compiler.path"))
+    private val compilerPathRow = LabeledComponent.create(compilerPath, TexifyBundle.message("run.step.ui.field.compiler.path.label"))
 
     private val compilerArguments = EditorTextField("", project, PlainTextFileType.INSTANCE).apply {
         setPlaceholder(TexifyBundle.message("run.latex.settings.custom.compiler.arguments"))
         @Suppress("UsePropertyAccessSyntax")
         setOneLineMode(true)
     }
-    private val compilerArgumentsRow = LabeledComponent.create(compilerArguments, TexifyBundle.message("run.step.ui.field.compiler.arguments"))
+    private val compilerArgumentsRow = LabeledComponent.create(compilerArguments, TexifyBundle.message("run.step.ui.field.compiler.arguments.label"))
     private var completionCompilerExecutable: String? = null
 
     private val outputFormat = ComboBox(Format.entries.toTypedArray())
-    private val outputFormatRow = LabeledComponent.create(outputFormat, TexifyBundle.message("run.step.ui.field.output.format"))
+    private val outputFormatRow = LabeledComponent.create(outputFormat, TexifyBundle.message("run.step.ui.field.output.format.label"))
 
     init {
         compiler.addItemListener {

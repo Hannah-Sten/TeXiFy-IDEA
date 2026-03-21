@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.run.latex.ui.fragments
 
 import com.intellij.execution.ui.CommonParameterFragments
 import com.intellij.execution.ui.SettingsEditorFragment
+import com.intellij.openapi.util.text.TextWithMnemonic
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.ui.components.JBCheckBox
@@ -12,7 +13,6 @@ import nl.hannahsten.texifyidea.run.latex.StepUiOptionIds
 import nl.hannahsten.texifyidea.run.pdfviewer.CustomPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import java.awt.event.ItemEvent
-import java.awt.event.KeyEvent
 
 internal class LatexViewerStepFragmentedEditor(
     initialStep: PdfViewerStepOptions = PdfViewerStepOptions(),
@@ -20,13 +20,13 @@ internal class LatexViewerStepFragmentedEditor(
 
     private val viewerChoices: List<PdfViewer> = PdfViewer.availableViewers + CustomPdfViewer
     private val pdfViewer = ComboBox(viewerChoices.toTypedArray())
-    private val pdfViewerRow = LabeledComponent.create(pdfViewer, TexifyBundle.message("run.step.ui.field.pdf.viewer"))
+    private val pdfViewerRow = LabeledComponent.create(pdfViewer, TexifyBundle.message("run.step.ui.field.pdf.viewer.label"))
 
     private val requireFocus = JBCheckBox().apply {
-        setTextWithMnemonic(TexifyBundle.message("run.step.ui.field.require.focus"))
+        setTextWithMnemonic(TexifyBundle.message("run.step.ui.field.require.focus.label"))
     }
     private val viewerCommand = JBTextField()
-    private val viewerCommandRow = LabeledComponent.create(viewerCommand, TexifyBundle.message("run.step.ui.field.custom.viewer.command"))
+    private val viewerCommandRow = LabeledComponent.create(viewerCommand, TexifyBundle.message("run.step.ui.field.custom.viewer.command.label"))
 
     init {
         pdfViewer.addItemListener {
@@ -76,7 +76,7 @@ internal class LatexViewerStepFragmentedEditor(
             apply = { step, component ->
                 step.requireFocus = component.isSelected
             },
-            initiallyVisible = { step -> !step.requireFocus },
+            initiallyVisible = { step -> step.requireFocus },
             removable = true,
             hint = TexifyBundle.message("run.step.ui.hint.require.focus"),
             actionHint = TexifyBundle.message("run.step.ui.action.set.require.focus"),
@@ -141,17 +141,9 @@ internal class LatexViewerStepFragmentedEditor(
     }
 
     private fun JBCheckBox.setTextWithMnemonic(value: String) {
-        val markerIndex = value.indexOf('&')
-        if (markerIndex < 0) {
-            text = value
-            return
-        }
-
-        val resolvedText = value.removeRange(markerIndex, markerIndex + 1)
-        text = resolvedText
-        resolvedText.getOrNull(markerIndex)?.let { mnemonicChar ->
-            mnemonic = KeyEvent.getExtendedKeyCodeForChar(mnemonicChar.uppercaseChar().code)
-            displayedMnemonicIndex = markerIndex
-        }
+        val mnemonicText = TextWithMnemonic.fromMnemonicText(value) ?: TextWithMnemonic.parse(value)
+        text = mnemonicText.text
+        mnemonic = mnemonicText.mnemonicCode
+        displayedMnemonicIndex = mnemonicText.mnemonicIndex
     }
 }

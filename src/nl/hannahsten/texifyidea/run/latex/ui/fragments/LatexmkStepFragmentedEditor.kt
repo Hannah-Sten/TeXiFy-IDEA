@@ -29,21 +29,21 @@ internal class LatexmkStepFragmentedEditor(
             )
         )
     }
-    private val compilerPathRow = LabeledComponent.create(compilerPath, TexifyBundle.message("run.step.ui.field.compiler.path"))
+    private val compilerPathRow = LabeledComponent.create(compilerPath, TexifyBundle.message("run.step.ui.field.compiler.path.label"))
 
     private val latexmkCompileMode = ComboBox(LatexmkCompileMode.entries.toTypedArray())
-    private val latexmkCompileModeRow = LabeledComponent.create(latexmkCompileMode, TexifyBundle.message("run.step.ui.field.latexmk.compile.mode"))
+    private val latexmkCompileModeRow = LabeledComponent.create(latexmkCompileMode, TexifyBundle.message("run.step.ui.field.latexmk.compile.mode.label"))
 
     private val latexmkCustomEngineCommand = JBTextField()
-    private val latexmkCustomEngineRow = LabeledComponent.create(latexmkCustomEngineCommand, TexifyBundle.message("run.step.ui.field.latexmk.custom.engine.command"))
+    private val latexmkCustomEngineRow = LabeledComponent.create(latexmkCustomEngineCommand, TexifyBundle.message("run.step.ui.field.latexmk.custom.engine.command.label"))
 
     private val latexmkCitationTool = ComboBox(LatexmkCitationTool.entries.toTypedArray())
-    private val latexmkCitationToolRow = LabeledComponent.create(latexmkCitationTool, TexifyBundle.message("run.step.ui.field.latexmk.citation.tool"))
+    private val latexmkCitationToolRow = LabeledComponent.create(latexmkCitationTool, TexifyBundle.message("run.step.ui.field.latexmk.citation.tool.label"))
 
     private val latexmkExtraArguments = RawCommandLineEditor().apply {
         editorField.emptyText.text = TexifyBundle.message("run.latexmk.settings.additional.arguments")
     }
-    private val latexmkExtraArgumentsRow = LabeledComponent.create(latexmkExtraArguments, TexifyBundle.message("run.step.ui.field.latexmk.extra.arguments"))
+    private val latexmkExtraArgumentsRow = LabeledComponent.create(latexmkExtraArguments, TexifyBundle.message("run.step.ui.field.latexmk.extra.arguments.label"))
 
     init {
         latexmkCompileMode.addItemListener {

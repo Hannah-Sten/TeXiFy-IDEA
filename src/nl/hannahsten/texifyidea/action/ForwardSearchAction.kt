@@ -16,7 +16,7 @@ import nl.hannahsten.texifyidea.util.latexTemplateRunConfig
 import nl.hannahsten.texifyidea.util.selectedRunConfig
 
 open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
-    name = "_Forward Search"
+    name = TexifyBundle.message("action.texify.ForwardSearch.text")
 ) {
 
     override fun actionPerformed(file: VirtualFile, project: Project, textEditor: TextEditor) {

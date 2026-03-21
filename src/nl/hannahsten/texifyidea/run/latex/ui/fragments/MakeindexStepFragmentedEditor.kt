@@ -18,18 +18,18 @@ internal class MakeindexStepFragmentedEditor(
 ) : AbstractStepFragmentedEditor<MakeindexStepOptions>(initialStep) {
 
     private val program = ComboBox(MakeindexProgram.entries.toTypedArray())
-    private val programRow = LabeledComponent.create(program, TexifyBundle.message("run.step.ui.field.program"))
+    private val programRow = LabeledComponent.create(program, TexifyBundle.message("run.step.ui.field.program.label"))
 
     private val commandLineArguments = RawCommandLineEditor().apply {
         editorField.emptyText.text = TexifyBundle.message("run.step.ui.placeholder.custom.makeindex.arguments")
     }
-    private val commandLineArgumentsRow = LabeledComponent.create(commandLineArguments, TexifyBundle.message("run.step.ui.field.program.arguments"))
+    private val commandLineArgumentsRow = LabeledComponent.create(commandLineArguments, TexifyBundle.message("run.step.ui.field.program.arguments.label"))
 
     private val targetBaseName = JBTextField()
-    private val targetBaseNameRow = LabeledComponent.create(targetBaseName, TexifyBundle.message("run.step.ui.field.target.base.name"))
+    private val targetBaseNameRow = LabeledComponent.create(targetBaseName, TexifyBundle.message("run.step.ui.field.target.base.name.label"))
 
     private val workingDirectory = createDirectoryField(project, TexifyBundle.message("run.step.ui.dialog.step.working.directory"))
-    private val workingDirectoryRow = LabeledComponent.create(workingDirectory, TexifyBundle.message("run.step.ui.field.working.directory"))
+    private val workingDirectoryRow = LabeledComponent.create(workingDirectory, TexifyBundle.message("run.step.ui.field.working.directory.label"))
     private var inferredWorkingDirectoryHint: String? = null
 
     fun setInferredWorkingDirectoryHint(value: String?) {
