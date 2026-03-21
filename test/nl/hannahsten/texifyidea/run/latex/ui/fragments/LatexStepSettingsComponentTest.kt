@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.run.latex.ui.fragments
 
 import com.intellij.execution.ui.FragmentedSettings
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
 import nl.hannahsten.texifyidea.run.latex.*
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
@@ -264,7 +265,131 @@ class LatexStepSettingsComponentTest : BasePlatformTestCase() {
         }
     }
 
-    fun testDeselectingStepFromBatchDoesNotOverwriteDeselectedStep() {
+    fun testEditingDuringSameTypeMultiSelectionUpdatesOnlyPrimaryStep() {
+        val runConfig = configWithSteps(
+            LatexCompileStepOptions().apply {
+                compilerPath = "/usr/bin/pdflatex"
+                compilerArguments = "-shell-escape"
+            },
+            LatexCompileStepOptions().apply {
+                compilerPath = "/usr/bin/lualatex"
+                compilerArguments = "-draftmode"
+            }
+        )
+        withComponent(runConfig) { component, shadowSteps ->
+            val first = shadowSteps[0] as LatexCompileStepOptions
+            val second = shadowSteps[1] as LatexCompileStepOptions
+
+            component.resetEditorFrom()
+            component.onStepSelectionChanged(
+                selectionOf(
+                    listOf(first.id, second.id),
+                    primaryStepId = second.id,
+                )
+            )
+            component.setCompileEditorValuesForTest(
+                compilerPath = "/custom/bin/latex",
+                compilerArguments = "-file-line-error",
+            )
+            component.flushCurrentStep()
+
+            assertEquals("/usr/bin/pdflatex", first.compilerPath)
+            assertEquals("-shell-escape", first.compilerArguments)
+            assertEquals("/custom/bin/latex", second.compilerPath)
+            assertEquals("-file-line-error", second.compilerArguments)
+        }
+    }
+
+    fun testOnStepSettingsChangedFlushesOnlyPrimaryStep() {
+        val runConfig = configWithSteps(
+            LatexCompileStepOptions().apply {
+                compilerPath = "/usr/bin/pdflatex"
+                compilerArguments = "-shell-escape"
+            },
+            LatexCompileStepOptions().apply {
+                compilerPath = "/usr/bin/lualatex"
+                compilerArguments = "-draftmode"
+            }
+        )
+        withEditor(runConfig) { editor, component, shadowSteps ->
+            val first = shadowSteps[0] as LatexCompileStepOptions
+            val second = shadowSteps[1] as LatexCompileStepOptions
+
+            component.resetEditorFrom()
+            component.onStepSelectionChanged(
+                selectionOf(
+                    listOf(first.id, second.id),
+                    primaryStepId = second.id,
+                )
+            )
+            component.setCompileEditorValuesForTest(
+                compilerPath = "/custom/bin/latex",
+                compilerArguments = "-file-line-error",
+            )
+
+            editor.onStepSettingsChanged()
+
+            assertEquals("/usr/bin/pdflatex", first.compilerPath)
+            assertEquals("-shell-escape", first.compilerArguments)
+            assertEquals("/custom/bin/latex", second.compilerPath)
+            assertEquals("-file-line-error", second.compilerArguments)
+        }
+    }
+
+    fun testSelectingAdditionalSameTypeStepResetsCardFromNewPrimaryWithoutWritingPreviousCard() {
+        val runConfig = configWithSteps(
+            LatexCompileStepOptions().apply {
+                compilerPath = "/usr/bin/pdflatex"
+                compilerArguments = "-shell-escape"
+            },
+            LatexCompileStepOptions().apply {
+                compilerPath = "/usr/bin/lualatex"
+                compilerArguments = "-draftmode"
+            },
+            LatexCompileStepOptions().apply {
+                compilerPath = "/usr/bin/xelatex"
+                compilerArguments = "-synctex=1"
+            }
+        )
+        withComponent(runConfig) { component, shadowSteps ->
+            val first = shadowSteps[0] as LatexCompileStepOptions
+            val second = shadowSteps[1] as LatexCompileStepOptions
+            val third = shadowSteps[2] as LatexCompileStepOptions
+
+            component.resetEditorFrom()
+            component.onStepSelectionChanged(
+                selectionOf(
+                    listOf(first.id, second.id),
+                    primaryStepId = first.id,
+                )
+            )
+            component.setCompileEditorValuesForTest(
+                compilerPath = "/custom/bin/latex",
+                compilerArguments = "-file-line-error",
+            )
+            component.flushCurrentStep()
+
+            component.onStepSelectionChanged(
+                selectionOf(
+                    listOf(first.id, second.id, third.id),
+                    primaryStepId = third.id,
+                )
+            )
+
+            assertEquals("/custom/bin/latex", first.compilerPath)
+            assertEquals("-file-line-error", first.compilerArguments)
+            assertEquals("/usr/bin/lualatex", second.compilerPath)
+            assertEquals("-draftmode", second.compilerArguments)
+            assertEquals("/usr/bin/xelatex", third.compilerPath)
+            assertEquals("-synctex=1", third.compilerArguments)
+            assertEquals(
+                third.compilerPath.orEmpty() to third.compilerArguments.orEmpty(),
+                component.currentCompileEditorValuesForTest()
+            )
+        }
+    }
+
+    fun testSelectionChangeFromMultiToSingleDoesNotBroadcastCurrentCard() {
         val runConfig = configWithSteps(
             LatexCompileStepOptions().apply {
                 compilerPath = "/usr/bin/pdflatex"
@@ -290,6 +415,7 @@ class LatexStepSettingsComponentTest : BasePlatformTestCase() {
                 compilerPath = "/custom/bin/latex",
                 compilerArguments = "-file-line-error",
             )
+            component.flushCurrentStep()
 
             component.onStepSelectionChanged(selectionOf(first.id))
 
@@ -297,6 +423,109 @@ class LatexStepSettingsComponentTest : BasePlatformTestCase() {
             assertEquals("-file-line-error", first.compilerArguments)
             assertEquals("/usr/bin/lualatex", second.compilerPath)
             assertEquals("-draftmode", second.compilerArguments)
+        }
+    }
+
+    fun testSelectionChangeWithDifferentCompilersDoesNotOverwriteClickedStepDuringReset() {
+        val runConfig = configWithSteps(
+            LatexCompileStepOptions().apply {
+                compiler = LatexCompiler.LUALATEX
+                compilerPath = "/usr/bin/lualatex"
+                compilerArguments = "--lua"
+            },
+            LatexCompileStepOptions().apply {
+                compiler = LatexCompiler.PDFLATEX
+                compilerPath = "/usr/bin/pdflatex"
+                compilerArguments = "--pdf"
+            }
+        )
+        withComponent(runConfig) { component, shadowSteps ->
+            val lualatex = shadowSteps[0] as LatexCompileStepOptions
+            val pdflatex = shadowSteps[1] as LatexCompileStepOptions
+
+            component.resetEditorFrom()
+            component.onStepSelectionChanged(selectionOf(lualatex.id))
+            component.onStepSelectionChanged(
+                selectionOf(
+                    listOf(lualatex.id, pdflatex.id),
+                    primaryStepId = pdflatex.id,
+                )
+            )
+            component.onStepSelectionChanged(selectionOf(lualatex.id))
+
+            assertEquals(LatexCompiler.LUALATEX, lualatex.compiler)
+            assertEquals("/usr/bin/lualatex", lualatex.compilerPath)
+            assertEquals("--lua", lualatex.compilerArguments)
+            assertEquals(LatexCompiler.PDFLATEX, pdflatex.compiler)
+            assertEquals("/usr/bin/pdflatex", pdflatex.compilerPath)
+            assertEquals("--pdf", pdflatex.compilerArguments)
+        }
+    }
+
+    fun testApplyEditorToDoesNothingForMixedTypeSelection() {
+        val runConfig = configWithSteps(
+            LatexCompileStepOptions().apply {
+                compilerPath = "/usr/bin/pdflatex"
+                compilerArguments = "-shell-escape"
+            },
+            PdfViewerStepOptions().apply {
+                pdfViewerName = "Custom Viewer"
+                customViewerCommand = "open {pdf}"
+            }
+        )
+        withComponent(runConfig) { component, shadowSteps ->
+            val compile = shadowSteps[0] as LatexCompileStepOptions
+            val viewer = shadowSteps[1] as PdfViewerStepOptions
+
+            component.resetEditorFrom()
+            component.onStepSelectionChanged(
+                selectionOf(
+                    listOf(compile.id, viewer.id),
+                    primaryStepId = viewer.id,
+                )
+            )
+            component.applyEditorTo()
+
+            assertEquals("/usr/bin/pdflatex", compile.compilerPath)
+            assertEquals("-shell-escape", compile.compilerArguments)
+            assertEquals("Custom Viewer", viewer.pdfViewerName)
+            assertEquals("open {pdf}", viewer.customViewerCommand)
+        }
+    }
+
+    fun testBeforeSequenceStructureChangeFlushesOnlyPrimaryStep() {
+        val runConfig = configWithSteps(
+            LatexCompileStepOptions().apply {
+                compilerPath = "/usr/bin/pdflatex"
+                compilerArguments = "-shell-escape"
+            },
+            LatexCompileStepOptions().apply {
+                compilerPath = "/usr/bin/lualatex"
+                compilerArguments = "-draftmode"
+            },
+        )
+        withEditor(runConfig) { editor, component, shadowSteps ->
+            val first = shadowSteps[0] as LatexCompileStepOptions
+            val second = shadowSteps[1] as LatexCompileStepOptions
+
+            component.resetEditorFrom()
+            component.onStepSelectionChanged(
+                selectionOf(
+                    listOf(first.id, second.id),
+                    primaryStepId = second.id,
+                )
+            )
+            component.setCompileEditorValuesForTest(
+                compilerPath = "/custom/bin/latex",
+                compilerArguments = "-file-line-error",
+            )
+
+            editor.beforeSequenceStructureChange()
+
+            assertEquals("/usr/bin/pdflatex", first.compilerPath)
+            assertEquals("-shell-escape", first.compilerArguments)
+            assertEquals("/custom/bin/latex", second.compilerPath)
+            assertEquals("-file-line-error", second.compilerArguments)
         }
     }
 
@@ -377,9 +606,21 @@ class LatexStepSettingsComponentTest : BasePlatformTestCase() {
         runConfig: LatexRunConfiguration,
         action: (LatexStepSettingsComponent, MutableList<LatexStepRunConfigurationOptions>) -> Unit,
     ) {
+        withEditor(runConfig) { _, component, shadowSteps ->
+            action(component, shadowSteps)
+        }
+    }
+
+    private fun withEditor(
+        runConfig: LatexRunConfiguration,
+        action: (LatexSettingsEditor, LatexStepSettingsComponent, MutableList<LatexStepRunConfigurationOptions>) -> Unit,
+    ) {
         val editor = LatexSettingsEditor(runConfig)
+        editor.stepSettingsComponent.changeListener = {
+            editor.onStepSettingsChanged()
+        }
         editor.shadowSteps.clear()
         editor.shadowSteps.addAll(runConfig.copyStepsForUi())
-        action(editor.stepSettingsComponent, editor.shadowSteps)
+        action(editor, editor.stepSettingsComponent, editor.shadowSteps)
     }
 }

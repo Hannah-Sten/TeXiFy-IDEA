@@ -158,6 +158,8 @@ internal class LatexCompileStepFragmentedEditor(
         this.compilerArguments.text = compilerArguments
     }
 
+    internal fun currentValuesForTest(): Pair<String, String> = compilerPath.text to compilerArguments.text
+
     internal fun setCompilerForTest(compiler: LatexCompiler) {
         this.compiler.selectedItem = compiler
         syncOutputFormatOptions(compiler)
