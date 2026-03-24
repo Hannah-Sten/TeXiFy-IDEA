@@ -3,6 +3,8 @@ package nl.hannahsten.texifyidea.run.latex.step
 import com.intellij.execution.process.KillableProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.fileEditor.FileEditorManager
+import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import io.mockk.every
@@ -12,6 +14,7 @@ import io.mockk.mockkStatic
 import io.mockk.unmockkAll
 import io.mockk.verify
 import kotlin.test.assertFailsWith
+import nl.hannahsten.texifyidea.updateFilesets
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.action.ForwardSearchAction
 import nl.hannahsten.texifyidea.run.common.createCompilationHandler
@@ -23,6 +26,8 @@ import nl.hannahsten.texifyidea.run.latex.PdfViewerStepOptions
 import nl.hannahsten.texifyidea.run.pdfviewer.CustomPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.EvinceViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.NoViewer
+import nl.hannahsten.texifyidea.util.focusedTextEditor
+import nl.hannahsten.texifyidea.util.selectedTextEditor
 import java.nio.file.Files
 import java.nio.file.Path
 
@@ -252,6 +257,40 @@ class PdfViewerRunStepTest : BasePlatformTestCase() {
         assertEquals(stepOptions.displayName(), PdfViewerRunStep(stepOptions).displayName)
     }
 
+    fun testStandardViewerIgnoresEditorOutsideCurrentFileset() {
+        val main = myFixture.addFileToProject(
+            "main.tex",
+            """
+            \documentclass{article}
+            \begin{document}
+            \input{chapter}
+            \end{document}
+            """.trimIndent()
+        ).virtualFile
+        myFixture.addFileToProject("chapter.tex", "chapter")
+        val unrelated = myFixture.addFileToProject("other.tex", "other")
+        myFixture.updateFilesets()
+
+        val context = createProjectContext(main)
+        val step = PdfViewerRunStep(
+            PdfViewerStepOptions().apply {
+                pdfViewerName = NoViewer.name
+            }
+        )
+        mockNoViewer()
+        mockkStatic("nl.hannahsten.texifyidea.util.ProjectsKt")
+        myFixture.openFileInEditor(unrelated.virtualFile)
+        val textEditor = FileEditorManager.getInstance(project).selectedEditor as TextEditor
+        every { project.focusedTextEditor() } returns textEditor
+        every { project.selectedTextEditor() } returns textEditor
+
+        step.beforeStart(context)
+
+        verify(exactly = 1) {
+            NoViewer.forwardSearch(context.session.resolvedOutputFilePath, main.path, 0, project, any())
+        }
+    }
+
     private fun mockNoViewer() {
         mockkObject(NoViewer)
         every { NoViewer.openFile(any(), any(), any(), any(), any()) } answers { }
@@ -288,6 +327,35 @@ class PdfViewerRunStepTest : BasePlatformTestCase() {
             latexSdk = null,
             auxDir = outputDir,
             resolvedOutputFilePath = outputFilePath?.let(outputDirPath::resolve)?.toString(),
+        )
+        return LatexRunStepContext(runConfig, environment, state)
+    }
+
+    private fun createProjectContext(mainFile: com.intellij.openapi.vfs.VirtualFile): LatexRunStepContext {
+        val outputDirPath = Files.createDirectories(Path.of(project.basePath!!, "out"))
+        val outputDir = LocalFileSystem.getInstance().refreshAndFindFileByPath(outputDirPath.toString())!!
+        Files.writeString(outputDirPath.resolve("main.pdf"), "pdf")
+
+        val runConfig = LatexRunConfiguration(
+            project,
+            LatexRunConfigurationProducer().configurationFactory,
+            "test"
+        )
+        runConfig.mainFilePath = mainFile.path
+
+        val environment = mockk<ExecutionEnvironment>(relaxed = true).also {
+            every { it.project } returns project
+        }
+        val state = LatexRunSessionState(
+            project = project,
+            mainFile = mainFile,
+            outputDir = outputDir,
+            workingDirectory = Path.of(mainFile.parent.path),
+            distributionType = LatexDistributionType.TEXLIVE,
+            usesDefaultWorkingDirectory = true,
+            latexSdk = null,
+            auxDir = outputDir,
+            resolvedOutputFilePath = outputDirPath.resolve("main.pdf").toString(),
         )
         return LatexRunStepContext(runConfig, environment, state)
     }

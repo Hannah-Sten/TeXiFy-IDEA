@@ -9,6 +9,7 @@ import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.action.ForwardSearchAction
 import nl.hannahsten.texifyidea.run.common.createCompilationHandler
 import nl.hannahsten.texifyidea.run.latex.PdfViewerStepOptions
+import nl.hannahsten.texifyidea.run.pdfviewer.ForwardSearchSupport
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.util.caretOffset
 import nl.hannahsten.texifyidea.util.focusedTextEditor
@@ -77,9 +78,26 @@ internal class PdfViewerRunStep(
             ?: PdfViewer.firstAvailableViewer
         val editor = context.environment.project.focusedTextEditor()?.editor
             ?: context.environment.project.selectedTextEditor()?.editor
-        val line = editor?.document?.getLineNumber(editor.caretOffset())?.plus(1) ?: 0
-        val sourceFilePath = editor?.document?.let { FileDocumentManager.getInstance().getFile(it)?.path }
-            ?: context.session.mainFile.path
+        val editorFile = editor?.document?.let { FileDocumentManager.getInstance().getFile(it) }
+        val useEditorSource = editorFile?.let {
+            ForwardSearchSupport.sourceBelongsToMainFileset(
+                project = context.environment.project,
+                sourceFile = it,
+                mainFile = context.session.mainFile,
+            )
+        } == true
+        val line = if (useEditorSource) {
+            editor.document.getLineNumber(editor.caretOffset()) + 1
+        }
+        else {
+            0
+        }
+        val sourceFilePath = if (useEditorSource) {
+            editorFile.path
+        }
+        else {
+            context.session.mainFile.path
+        }
 
         return ResolvedViewerContext(
             viewer = viewer,
