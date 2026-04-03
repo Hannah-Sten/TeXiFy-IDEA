@@ -134,7 +134,7 @@ class LatexRunConfiguration(
     var pdfViewer: PdfViewer?
         get() {
             val viewerStep = primaryViewerStep()
-            if (!viewerStep?.customViewerCommand.isNullOrBlank() || viewerStep?.pdfViewerName == CustomPdfViewer.name) {
+            if (viewerStep?.usesCustomViewer() == true) {
                 return CustomPdfViewer
             }
             val viewerName = viewerStep?.pdfViewerName
@@ -151,6 +151,7 @@ class LatexRunConfiguration(
     override fun readExternal(element: Element) {
         super<RunConfigurationBase>.readExternal(element)
         LegacyLatexRunConfigMigration.migrateIfNeeded(this, element)
+        normalizePdfViewerSteps()
     }
 
     override fun writeExternal(element: Element) {
@@ -356,5 +357,9 @@ class LatexRunConfiguration(
             step.workingDirectoryPath = makeindexConfig.workingDirectory?.path
         }
         step.legacyRunConfigId = null
+    }
+
+    private fun normalizePdfViewerSteps() {
+        configOptions.steps.filterIsInstance<PdfViewerStepOptions>().forEach { it.normalizeCustomViewerConfiguration() }
     }
 }

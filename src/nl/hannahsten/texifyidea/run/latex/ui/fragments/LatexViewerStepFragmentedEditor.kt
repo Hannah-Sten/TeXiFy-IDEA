@@ -95,7 +95,7 @@ internal class LatexViewerStepFragmentedEditor(
                     null
                 }
             },
-            initiallyVisible = { step -> !step.customViewerCommand.isNullOrBlank() || step.pdfViewerName == CustomPdfViewer.name },
+            initiallyVisible = { step -> step.usesCustomViewer() },
             removable = false,
             hint = "Command template used when PDF viewer is set to Custom viewer.",
         )
@@ -109,7 +109,7 @@ internal class LatexViewerStepFragmentedEditor(
     }
 
     private fun selectedViewerFor(step: PdfViewerStepOptions): PdfViewer {
-        if (!step.customViewerCommand.isNullOrBlank() || step.pdfViewerName == CustomPdfViewer.name) {
+        if (step.usesCustomViewer()) {
             return CustomPdfViewer
         }
         return viewerChoices.firstOrNull { it.name == step.pdfViewerName }
@@ -120,9 +120,11 @@ internal class LatexViewerStepFragmentedEditor(
         pdfViewerName: String,
         customViewerCommand: String?,
     ) {
-        pdfViewer.selectedItem = viewerChoices.firstOrNull { it.name == pdfViewerName }
-            ?: CustomPdfViewer.takeIf { pdfViewerName == it.name }
-            ?: PdfViewer.firstAvailableViewer
+        val step = PdfViewerStepOptions().apply {
+            this.pdfViewerName = pdfViewerName
+            this.customViewerCommand = customViewerCommand
+        }
+        pdfViewer.selectedItem = selectedViewerFor(step)
         viewerCommand.text = customViewerCommand.orEmpty()
         updateUiState()
     }

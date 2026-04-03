@@ -152,7 +152,7 @@ class PdfViewerRunStepTest : BasePlatformTestCase() {
         assertEquals(listOf("viewer", "--flag", context.session.resolvedOutputFilePath!!), capturedCommand)
     }
 
-    fun testNonCustomViewerSkipsCreateProcessEvenWhenCustomCommandExists() {
+    fun testCustomViewerCommandTakesPrecedenceOverStoredViewerName() {
         val context = createContext()
         val step = PdfViewerRunStep(
             PdfViewerStepOptions().apply {
@@ -161,10 +161,19 @@ class PdfViewerRunStepTest : BasePlatformTestCase() {
             }
         )
         mockNoViewer()
+        val expectedHandler = mockk<KillableProcessHandler>(relaxed = true)
+        var capturedCommand: List<String>? = null
+        mockkStatic("nl.hannahsten.texifyidea.run.common.CompilationProcessFactoryKt")
+        every { createCompilationHandler(any(), any(), any(), any()) } answers {
+            capturedCommand = secondArg()
+            expectedHandler
+        }
 
         step.beforeStart(context)
+        val process = step.createProcess(context)
 
-        assertNull(step.createProcess(context))
+        assertEquals(expectedHandler, process)
+        assertEquals(listOf("viewer", context.session.resolvedOutputFilePath!!), capturedCommand)
         verify(exactly = 0) { NoViewer.openFile(any(), any(), any(), any(), any()) }
         verify(exactly = 0) { NoViewer.forwardSearch(any(), any(), any(), any(), any()) }
     }

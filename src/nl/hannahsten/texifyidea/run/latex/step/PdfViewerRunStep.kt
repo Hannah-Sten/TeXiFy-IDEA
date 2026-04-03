@@ -9,7 +9,6 @@ import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.action.ForwardSearchAction
 import nl.hannahsten.texifyidea.run.common.createCompilationHandler
 import nl.hannahsten.texifyidea.run.latex.PdfViewerStepOptions
-import nl.hannahsten.texifyidea.run.pdfviewer.CustomPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.util.caretOffset
 import nl.hannahsten.texifyidea.util.focusedTextEditor
@@ -39,7 +38,7 @@ internal class PdfViewerRunStep(
 
     @Throws(ExecutionException::class)
     override fun createProcess(context: LatexRunStepContext): ProcessHandler? {
-        if (stepConfig.pdfViewerName != CustomPdfViewer.name) {
+        if (!stepConfig.usesCustomViewer()) {
             return null
         }
 
@@ -67,8 +66,7 @@ internal class PdfViewerRunStep(
     private fun shouldSkipInlineViewer(context: LatexRunStepContext): Boolean =
         context.runConfig.isAutoCompiling ||
             context.session.resolvedOutputFilePath == null ||
-            isCustomViewerCommandConfigured() ||
-            stepConfig.pdfViewerName == CustomPdfViewer.name
+            stepConfig.usesCustomViewer()
 
     private fun isCustomViewerCommandConfigured(): Boolean = !stepConfig.customViewerCommand.isNullOrBlank()
 

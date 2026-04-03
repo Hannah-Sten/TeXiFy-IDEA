@@ -9,6 +9,7 @@ import nl.hannahsten.texifyidea.run.latex.*
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
 import nl.hannahsten.texifyidea.run.pdfviewer.CustomPdfViewer
+import nl.hannahsten.texifyidea.run.pdfviewer.NoViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import javax.swing.JComponent
 import javax.swing.JLabel
@@ -214,6 +215,21 @@ class LatexCompileSequenceComponentTest : BasePlatformTestCase() {
             configWithSteps(
                 PdfViewerStepOptions().apply {
                     pdfViewerName = CustomPdfViewer.name
+                }
+            )
+        ) { _, component ->
+            component.resetEditorFrom()
+
+            assertEquals(listOf("Open with Custom viewer"), component.currentStepTitlesForTest())
+        }
+    }
+
+    fun testPdfViewerStepTitleUsesCustomViewerWhenCommandConfigured() {
+        withEditor(
+            configWithSteps(
+                PdfViewerStepOptions().apply {
+                    pdfViewerName = NoViewer.name
+                    customViewerCommand = "open {pdf}"
                 }
             )
         ) { _, component ->
