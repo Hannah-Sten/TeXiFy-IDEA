@@ -41,7 +41,7 @@ import kotlin.io.path.pathString
  * 6. Runtime execution: [LatexStepRunState] initializes a [LatexRunSessionState], builds a step plan, and runs it
  *    through [nl.hannahsten.texifyidea.run.latex.flow.StepAwareSequentialProcessHandler].
  * 7. Step Log integration: during the same run, [nl.hannahsten.texifyidea.run.latex.steplog.LatexStepLogTabComponent]
- *    subscribes to handler events and renders per-step output/status in the Run tool window.
+ *    subscribes to handler events and renders merged raw output with per-step drill-down/status in the Run tool window.
  *    The handler returned to IntelliJ is shared, so Step Log and raw process output remain synchronized.
  *
  * This class coordinates configuration semantics but does not execute commands directly.

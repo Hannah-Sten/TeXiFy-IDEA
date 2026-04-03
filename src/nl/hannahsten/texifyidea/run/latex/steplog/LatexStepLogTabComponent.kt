@@ -164,7 +164,9 @@ internal class LatexStepLogTabComponent(
     private val stepHasErrors = mutableSetOf<Int>()
 
     private var runExitCode: Int? = null
-    private var currentStepIndex: Int? = null
+    private var consoleSelection: RawLogSelection = RawLogSelection.All
+    private var pendingProgrammaticSelectionBehavior: ProgrammaticSelectionBehavior? = null
+    private var hasPinnedTreeSelection = false
     private var renderedStepIndex: Int? = null
     private var renderedOutputText: String = ""
 
@@ -222,12 +224,13 @@ internal class LatexStepLogTabComponent(
 
     override fun valueChanged(e: TreeSelectionEvent?) {
         val selectedNode = extractTreeNode(tree.lastSelectedPathComponent)
-        val selectedMessage = selectedNode?.messageData
-        if (selectedMessage != null) {
-            tryJumpMessageInConsole(selectedMessage)
+        val behavior = pendingProgrammaticSelectionBehavior
+        pendingProgrammaticSelectionBehavior = null
+        if (behavior == ProgrammaticSelectionBehavior.PRESERVE_CONSOLE || selectedNode == null) {
             return
         }
-        refreshRawLogView()
+        hasPinnedTreeSelection = true
+        applyConsoleSelectionForNode(selectedNode)
     }
 
     private fun initializeSteps(steps: List<LatexRunStep>, mainFile: VirtualFile?) {
@@ -253,10 +256,11 @@ internal class LatexStepLogTabComponent(
     private fun handleEvent(event: StepLogEvent) {
         when (event) {
             is StepLogEvent.StepStarted -> {
-                currentStepIndex = event.index
                 updateStepStatus(event.index, NodeStatus.RUNNING)
                 updateRunStatus()
-                selectStep(event.index)
+                if (!hasPinnedTreeSelection) {
+                    selectStep(event.index)
+                }
             }
 
             is StepLogEvent.StepOutput -> {
@@ -286,22 +290,19 @@ internal class LatexStepLogTabComponent(
                 }
                 stepOutputLengths[event.index] = stepOffset
 
-                when (val selection = selectedRawLogSelection()) {
-                    is RawLogSelection.Step -> {
-                        if (selection.stepIndex == event.index) {
-                            printChunk(chunk)
-                            renderedStepIndex = event.index
-                            renderedOutputText += event.text
-                        }
-                    }
-
+                when (val selection = consoleSelection) {
                     RawLogSelection.All -> {
                         printChunk(chunk)
                         renderedStepIndex = null
                         renderedOutputText += event.text
                     }
 
-                    RawLogSelection.None -> {
+                    is RawLogSelection.Step -> {
+                        if (selection.stepIndex == event.index) {
+                            printChunk(chunk)
+                            renderedStepIndex = event.index
+                            renderedOutputText += event.text
+                        }
                     }
                 }
             }
@@ -340,7 +341,7 @@ internal class LatexStepLogTabComponent(
         val record = ParsedRecord(message, logOffset)
         parsedRecordsByStep.getOrPut(stepIndex) { mutableListOf() }.add(record)
 
-        if (!shouldShowMessageInTree(stepIndex, message)) {
+        if (!shouldShowMessageInTree(message)) {
             return
         }
 
@@ -382,6 +383,30 @@ internal class LatexStepLogTabComponent(
         selectTreeNode(node)
     }
 
+    private fun applyConsoleSelectionForNode(node: StepTreeNode) {
+        when {
+            node.messageData != null -> {
+                tryJumpMessageInConsole(node.messageData)
+            }
+
+            node.stepData != null -> {
+                setConsoleSelection(RawLogSelection.Step(node.stepData.index))
+            }
+
+            node.runData != null -> {
+                setConsoleSelection(RawLogSelection.All)
+            }
+        }
+    }
+
+    private fun setConsoleSelection(selection: RawLogSelection) {
+        if (consoleSelection == selection) {
+            return
+        }
+        consoleSelection = selection
+        refreshRawLogView()
+    }
+
     private fun updateStepStatus(stepIndex: Int, status: NodeStatus) {
         val data = stepNodeData[stepIndex] ?: return
         if (data.status == status) {
@@ -404,15 +429,13 @@ internal class LatexStepLogTabComponent(
     }
 
     private fun refreshRawLogView() {
-        when (val selection = selectedRawLogSelection()) {
-            RawLogSelection.None -> clearRawLogView()
+        when (val selection = consoleSelection) {
             RawLogSelection.All -> renderAllRawLog()
             is RawLogSelection.Step -> renderStepRawLog(selection.stepIndex)
         }
     }
 
-    private fun visibleMessageNodes(selection: RawLogSelection = selectedRawLogSelection()): List<StepTreeNode> = when (selection) {
-        RawLogSelection.None -> emptyList()
+    private fun visibleMessageNodes(selection: RawLogSelection = consoleSelection): List<StepTreeNode> = when (selection) {
         RawLogSelection.All -> stepNodes.values.flatMap { node ->
             node.children.filter { it.messageData != null }
         }
@@ -436,8 +459,7 @@ internal class LatexStepLogTabComponent(
         }
     }
 
-    private fun currentRawLogLength(selection: RawLogSelection = selectedRawLogSelection()): Int = when (selection) {
-        RawLogSelection.None -> 0
+    private fun currentRawLogLength(selection: RawLogSelection = consoleSelection): Int = when (selection) {
         RawLogSelection.All -> stepOutputLengths.values.sum()
         is RawLogSelection.Step -> stepOutputLengths[selection.stepIndex] ?: 0
     }
@@ -453,19 +475,17 @@ internal class LatexStepLogTabComponent(
             return null
         }
 
-        selectTreeNode(node)
+        selectTreeNode(node, syncConsoleSelection = true)
         return OccurenceNavigator.OccurenceInfo.position(index + 1, messageNodes.size)
     }
 
     private fun tryJumpMessageInConsole(messageData: MessageNodeData): Boolean {
+        setConsoleSelection(RawLogSelection.Step(messageData.stepIndex))
+
         val logOffset = messageData.logOffset ?: return false
         val stepContentSize = stepOutputLengths[messageData.stepIndex] ?: return false
         if (logOffset !in 0..stepContentSize) {
             return false
-        }
-
-        if (renderedStepIndex != messageData.stepIndex) {
-            renderStepRawLog(messageData.stepIndex)
         }
 
         if (logOffset !in 0..console.contentSize) {
@@ -474,12 +494,6 @@ internal class LatexStepLogTabComponent(
 
         console.scrollTo(logOffset)
         return true
-    }
-
-    private fun clearRawLogView() {
-        console.clear()
-        renderedStepIndex = null
-        renderedOutputText = ""
     }
 
     private fun renderAllRawLog() {
@@ -510,28 +524,6 @@ internal class LatexStepLogTabComponent(
         console.print(chunk.text, contentType)
     }
 
-    private fun selectedStepIndexForFallback(): Int? {
-        if (currentStepIndex != null) {
-            return currentStepIndex
-        }
-        return stepNodes.keys.firstOrNull()
-    }
-
-    private fun selectedRawLogSelection(): RawLogSelection {
-        fun fallbackStepSelection(): RawLogSelection {
-            val fallbackStepIndex = selectedStepIndexForFallback() ?: return RawLogSelection.None
-            return RawLogSelection.Step(fallbackStepIndex)
-        }
-
-        val selectedNode = extractTreeNode(tree.lastSelectedPathComponent) ?: return fallbackStepSelection()
-        return when {
-            selectedNode.stepData != null -> RawLogSelection.Step(selectedNode.stepData.index)
-            selectedNode.messageData != null -> RawLogSelection.Step(selectedNode.messageData.stepIndex)
-            selectedNode.runData != null -> RawLogSelection.All
-            else -> fallbackStepSelection()
-        }
-    }
-
     private fun createConsoleToolbarActions(): List<AnAction> = console.createConsoleActions().map { action ->
         when (action) {
             is PreviousOccurenceToolbarAction -> PreviousOccurenceToolbarAction(this)
@@ -545,7 +537,7 @@ internal class LatexStepLogTabComponent(
         structureTreeModel.invalidate(node, structureChanged)
     }
 
-    private fun shouldShowMessageInTree(stepIndex: Int, message: ParsedStepMessage): Boolean {
+    private fun shouldShowMessageInTree(message: ParsedStepMessage): Boolean {
         if (!showBibtexMessages && message.source == ParsedStepMessageSource.BIBTEX) {
             return false
         }
@@ -571,7 +563,7 @@ internal class LatexStepLogTabComponent(
 
         parsedRecordsByStep.forEach { (stepIndex, records) ->
             val stepNode = stepNodes[stepIndex] ?: return@forEach
-            records.filter { shouldShowMessageInTree(stepIndex, it.message) }.forEach { record ->
+            records.filter { shouldShowMessageInTree(it.message) }.forEach { record ->
                 stepNode.children.add(
                     StepTreeNode(
                         parent = stepNode,
@@ -642,8 +634,22 @@ internal class LatexStepLogTabComponent(
         return TreePath(chain.reversed().toTypedArray())
     }
 
-    private fun selectTreeNode(node: StepTreeNode) {
+    private fun selectTreeNode(node: StepTreeNode, syncConsoleSelection: Boolean = false) {
         treePathFor(node)?.let { path ->
+            val behavior = if (syncConsoleSelection) {
+                ProgrammaticSelectionBehavior.APPLY_CONSOLE_SELECTION
+            }
+            else {
+                ProgrammaticSelectionBehavior.PRESERVE_CONSOLE
+            }
+            if (tree.selectionPath == path) {
+                if (behavior == ProgrammaticSelectionBehavior.APPLY_CONSOLE_SELECTION) {
+                    hasPinnedTreeSelection = true
+                    applyConsoleSelectionForNode(node)
+                }
+                return
+            }
+            pendingProgrammaticSelectionBehavior = behavior
             tree.selectionPath = path
             tree.scrollPathToVisible(path)
         }
@@ -717,13 +723,16 @@ internal class LatexStepLogTabComponent(
 
     private sealed interface RawLogSelection {
 
-        object None : RawLogSelection
-
         object All : RawLogSelection
 
         data class Step(
             val stepIndex: Int
         ) : RawLogSelection
+    }
+
+    private enum class ProgrammaticSelectionBehavior {
+        PRESERVE_CONSOLE,
+        APPLY_CONSOLE_SELECTION,
     }
 
     private inner class ShowBibtexMessagesAction :
