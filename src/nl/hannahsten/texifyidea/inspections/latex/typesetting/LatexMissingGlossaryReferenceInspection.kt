@@ -56,7 +56,7 @@ class LatexMissingGlossaryReferenceInspection : TexifyInspectionBase() {
                 val allOccurrences = nameLettersRegex.findAll(text).map { it.range }
                 allOccurrences.filter { !correctOccurrences.contains(it) }.forEach { range ->
                     // The command is different for each package, but the idea is the same
-                    val fixes = listOf(Pair("glossaries.sty", "\\gls"), Pair("acronym.sty", "\\ac")).filter { it.first in libraries }
+                    val fixes = listOf(Pair("glossaries.sty", "\\gls"), Pair("acronym.sty", "\\ac"), Pair("acro.sty", "\\ac")).filter { it.first in libraries }
                         .map { AddGlsFix(it.second) }
                         .toTypedArray()
                         .ifEmpty { arrayOf(AddGlsFix("\\gls")) }
