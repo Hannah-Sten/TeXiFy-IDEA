@@ -1,5 +1,5 @@
-const core = require('@actions/core');
-const github = require('@actions/github');
+import * as github from '@actions/github';
+import * as core from '@actions/core';
 import {Octokit} from "@octokit/rest";
 
 function getText() {
