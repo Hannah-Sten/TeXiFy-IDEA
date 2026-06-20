@@ -34,7 +34,7 @@ plugins {
     id("org.owasp.dependencycheck") version "12.1.9"
 
     id("org.jetbrains.changelog") version "2.5.0"
-    id("org.jetbrains.grammarkit") version "2023.3.0.1"
+    id("org.jetbrains.grammarkit") version "2023.3.0.3"
     id("io.sentry.jvm.gradle") version "5.12.2"
 }
 
@@ -100,7 +100,7 @@ dependencies {
         testFramework(TestFrameworkType.Platform)
         testFramework(TestFrameworkType.Plugin.Java)
 
-        intellijIdeaCommunity("2024.3")
+        intellijIdea("2026.1")
 
         // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
         // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
