@@ -63,9 +63,15 @@ sourceSets {
 
 val targetVersion = "21"
 
-// Java target version
-java.sourceCompatibility = JavaVersion.toVersion(targetVersion)
 val kotlinJvmTarget = JvmTarget.fromTarget(targetVersion)
+
+java {
+    sourceCompatibility = JavaVersion.toVersion(targetVersion)
+
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
 
 // Specify the right jvm target for Kotlin
 tasks.compileKotlin {
