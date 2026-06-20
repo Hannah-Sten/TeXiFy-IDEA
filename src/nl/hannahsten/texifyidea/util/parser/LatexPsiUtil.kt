@@ -2,11 +2,9 @@ package nl.hannahsten.texifyidea.util.parser
 
 import com.intellij.codeInsight.PsiEquivalenceUtil
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiRecursiveElementVisitor
 import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
-import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.index.stub.LatexCommandsStub
 import nl.hannahsten.texifyidea.index.stub.LatexParameterStub
 import nl.hannahsten.texifyidea.index.stub.requiredParamAt
@@ -44,27 +42,6 @@ fun LatexEndCommand.beginCommand(): LatexBeginCommand? = previousSiblingOfType(L
  * Checks if the latex content objects is a display math environment.
  */
 fun LatexNoMathContent.isDisplayMath() = children.firstOrNull() is LatexMathEnvironment && children.first().firstChild is LatexDisplayMath
-
-/*
- * Technically it's impossible to determine for all cases whether a users wants to compile with biber or biblatex.
- * But often when people use the biblatex package they use biber.
- * And often, when they use biber they use \printbibliography instead of \bibliography.
- * Hence, the following methods often work - and if they don't, users can easily change the compiler in the run config.
- */
-
-/**
- * Checks if the fileset for this file has a bibliography included.
- *
- * @return `true` when the fileset has a bibliography included, `false` otherwise.
- */
-fun PsiFile.hasBibliography(): Boolean = NewCommandsIndex.getByNameInFileSet("\\bibliography", this).isNotEmpty()
-
-/**
- * Checks if the fileset for this file uses \printbibliography, in which case the user probably wants to use biber.
- *
- * @return `true` when the fileset has a bibliography included, `false` otherwise.
- */
-fun PsiFile.usesBiber() = NewCommandsIndex.getByNameInFileSet("\\printbibliography", this).isNotEmpty()
 
 /**
  * Looks up the first parent of a given child that has the given class.

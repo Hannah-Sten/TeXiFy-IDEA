@@ -12,6 +12,7 @@ import nl.hannahsten.texifyidea.lang.LatexLib.Companion.NOMENCL
 import nl.hannahsten.texifyidea.lang.LatexLib.Companion.REPEATINDEX
 import nl.hannahsten.texifyidea.lang.LatexLib.Companion.SPLITIDX
 import nl.hannahsten.texifyidea.lang.LatexLib.Companion.SPLITINDEX
+import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 
 object PackageMagic {
 
@@ -54,4 +55,36 @@ object PackageMagic {
             (old + new).toSet()
         }
     }
+
+    /**
+     * Libraries that are generally better served by XeLaTeX.
+     */
+    val preferredXeEngineLibraries = setOf(
+        LatexLib.Package("ctex"),
+        LatexLib.Package("xecjk"),
+        LatexLib.Class("ctexart"),
+        LatexLib.Class("ctexrep"),
+        LatexLib.Class("ctexbook"),
+        LatexLib.Class("ctexbeamer"),
+    )
+
+    /**
+     * Libraries that are generally better served by LuaLaTeX.
+     */
+    val preferredLuaEngineLibraries = setOf(
+        LatexLib.CITATION_STYLE_LANGUAGE,
+        LatexLib.FONTSPEC,
+        LatexLib.Package("unicode-math"),
+        LatexLib.Package("polyglossia"),
+        LatexLib.Package("luatexja"),
+        LatexLib.Package("luatexja-fontspec"),
+        LatexLib.Package("luatexja-preset"),
+        LatexLib.Package("zxjatype"),
+    )
+
+    // Order matters: if both are present, prefer biblatex's compiler.
+    val libToPreferredBibCompiler = linkedMapOf(
+        LatexLib.BIBLATEX to BibliographyCompiler.BIBER,
+        LatexLib.NATBIB to BibliographyCompiler.BIBTEX,
+    )
 }

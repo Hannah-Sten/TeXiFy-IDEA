@@ -132,30 +132,25 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
 
     object Util {
         private var latestVersionCached = IdeaPlugin()
+        internal var latestVersionResponseProvider: (() -> String?)? = null
+
         fun getLatestVersion(): IdeaPlugin {
             if (latestVersionCached.version.toString().isNotBlank()) return latestVersionCached
 
             // Create xml mapper that doesn't fail on unknown properties. This allows us to only define the properties we need.
             val mapper = XmlMapper().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-
-            val connection = (URI.create(JETBRAINS_API_URL).toURL().openConnection() as HttpURLConnection).apply {
-                requestMethod = "GET"
-                connectTimeout = 1000
-                readTimeout = 1000
-            }
-
-            val inputString: String = try {
-                connection.inputStream.reader().use { it.readText() }
-            }
-            catch (_: SocketTimeoutException) {
-                return latestVersionCached
-            }
+            val inputString = fetchLatestVersionResponse() ?: return latestVersionCached
             latestVersionCached = mapper.readValue(inputString, PluginRepo::class.java)
                 .category
                 ?.maxByOrNull { it.version }
                 ?: latestVersionCached
 
             return latestVersionCached
+        }
+
+        internal fun resetLatestVersionStateForTest() {
+            latestVersionCached = IdeaPlugin()
+            latestVersionResponseProvider = null
         }
 
         val currentVersion by lazy {
@@ -172,6 +167,23 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
             return interestingLines.foldIndexed("") { i, stacktrace, lineIndex ->
                 stacktrace + (if (i > 0 && interestingLines[i - 1] < lineIndex - 1) "\n        (...)" else "") + "\n" + lines.getOrElse(lineIndex) { "" }.take(500)
             }.trim()
+        }
+
+        private fun fetchLatestVersionResponse(): String? {
+            latestVersionResponseProvider?.let { return it() }
+
+            val connection = (URI.create(JETBRAINS_API_URL).toURL().openConnection() as HttpURLConnection).apply {
+                requestMethod = "GET"
+                connectTimeout = 1000
+                readTimeout = 1000
+            }
+
+            return try {
+                connection.inputStream.reader().use { it.readText() }
+            }
+            catch (_: SocketTimeoutException) {
+                null
+            }
         }
     }
 

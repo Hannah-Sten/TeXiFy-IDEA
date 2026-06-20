@@ -166,6 +166,15 @@ _Since b0.6.8_
 
 See [Support for automatic compilation](Running-a-LaTeX-file.md#automatic-compilation).
 
+## Run configuration mode
+This setting was removed with the step-based run configuration flow.
+
+TeXiFy now always creates a LaTeX run configuration and you choose the strategy in its compile sequence
+(for example `latex-compile` or `latexmk-compile` step).
+
+To control defaults for new configurations, edit the LaTeX run configuration template:
+[Template run configurations](Running-a-LaTeX-file.md#template-run-configurations)
+
 ## Fileset refresh period
 _Since b0.11.0_
 
@@ -200,4 +209,3 @@ In addition, you can configure the preferred prefix for a label, e.g., `fig:` fo
 ![Added Label](https://user-images.githubusercontent.com/7955528/153943754-176325aa-cd3c-4efb-8ec6-0b561d8ac3dc.png)
 
 See [Label conventions inspection](Code-style-issues.md#label-conventions) and [Missing labels inspection](Code-style-issues.md#missing-labels).
-

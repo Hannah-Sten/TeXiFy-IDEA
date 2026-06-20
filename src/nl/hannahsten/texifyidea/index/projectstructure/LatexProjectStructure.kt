@@ -23,6 +23,7 @@ import nl.hannahsten.texifyidea.action.debug.SimplePerformanceTracker
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.psi.LatexCommands
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationStaticSupport
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.*
 import java.io.File
@@ -63,7 +64,7 @@ object LatexProjectStructure {
             .mapNotNullTo(rootFiles) { it.containingFile.virtualFile }
 
         project.getLatexRunConfigurations().forEach {
-            it.mainFile?.let { mainFile -> rootFiles.add(mainFile) }
+            LatexRunConfigurationStaticSupport.resolveMainFile(it)?.let { mainFile -> rootFiles.add(mainFile) }
         }
         FilenameIndex.getVirtualFilesByName("main.tex", true, project.contentSearchScope)
             .filter { it.isValid }
@@ -83,8 +84,8 @@ object LatexProjectStructure {
 
     private fun makePreparation(project: Project): ProjectInfo {
         // Get all bibtex input paths from the run configurations
-        val bibInputPaths = project.getBibtexRunConfigurations().mapNotNull { config ->
-            (config.environmentVariables.envs["BIBINPUTS"])?.let {
+        val bibInputPaths = project.getLatexRunConfigurations().mapNotNull { config ->
+            config.environmentVariables.envs["BIBINPUTS"]?.let {
                 LocalFileSystem.getInstance().findFileByPath(it)
             }
         }.toMutableSet()
@@ -262,6 +263,17 @@ object LatexProjectStructure {
      * This will ensure that the filesets are recomputed and up-to-date.
      */
     suspend fun updateFilesetsSuspend(project: Project): LatexProjectFilesets = TexifyProjectCacheService.getInstance(project).ensureRefresh(CACHE_KEY, ::buildFilesetsSuspend)
+
+    /**
+     * Test-only synchronous fileset rebuild that bypasses the cache refresh lock.
+     * Some tests trigger background cache work and can deadlock or stall when they wait on [updateFilesetsSuspend].
+     */
+    internal suspend fun rebuildFilesetsForTests(project: Project): LatexProjectFilesets {
+        val cache = TexifyProjectCacheService.getInstance(project)
+        val rebuilt = buildFilesetsSuspend(project, cache.getOrNull(CACHE_KEY))
+        cache.put(CACHE_KEY, rebuilt)
+        return rebuilt
+    }
 
     /**
      * Gets the recently built filesets for the given project and schedule a recomputation if they are not available or expired.

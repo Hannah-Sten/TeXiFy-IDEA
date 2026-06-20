@@ -3,7 +3,7 @@ package nl.hannahsten.texifyidea.run.latex
 import com.intellij.execution.ExecutionException
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
-import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
@@ -62,12 +62,12 @@ fun getDefaultMakeindexPrograms(mainFile: VirtualFile?, project: Project, usedPa
  */
 private fun getIndexPackageOptions(mainFile: VirtualFile?, project: Project): List<String> {
     // Find index package options
-    val mainPsiFile = runReadAction { mainFile?.psiFile(project) } ?: throw ExecutionException("Main file not found")
+    val mainPsiFile = ReadAction.compute<com.intellij.psi.PsiFile?, RuntimeException> { mainFile?.psiFile(project) } ?: throw ExecutionException("Main file not found")
 //    return LatexCommandsIndex.Util.getItemsInFileSet(mainPsiFile)
 //        .filter { it.commandToken.text in CommandMagic.packageInclusionCommands }
 //        .filter { command -> command.getRequiredParameters().any { it in PackageMagic.index.map { pkg -> pkg.name } || it in PackageMagic.glossary.map { pkg -> pkg.name } } }
 //        .flatMap { it.getOptionalParameterMap().toStringMap().keys }
-    return runReadAction {
+    return ReadAction.compute<List<String>, RuntimeException> {
         NewCommandsIndex.getByNames(CommandMagic.packageInclusionCommands, mainPsiFile).asSequence()
             .filter { command -> command.requiredParametersText().any { it in PackageMagic.indexNames || it in PackageMagic.glossaryNames } }
             .flatMap { it.getOptionalParameterMap().toStringMap().keys }
@@ -79,14 +79,14 @@ private fun getIndexPackageOptions(mainFile: VirtualFile?, project: Project): Li
  * Get optional parameters of the \makeindex command. If an option key does not have a value it will map to the empty string.
  */
 fun getMakeindexOptions(mainFile: VirtualFile?, project: Project): Map<String, String> {
-    val mainPsiFile = runReadAction { mainFile?.psiFile(project) }
+    val mainPsiFile = ReadAction.compute<com.intellij.psi.PsiFile?, RuntimeException> { mainFile?.psiFile(project) }
     if (mainPsiFile == null) {
         Notification("LaTeX", "Could not find main file ${mainFile?.path}", "Please make sure the main file exists.", NotificationType.ERROR).notify(project)
         return mapOf()
     }
 
     val makeindexOptions = HashMap<String, String>()
-    runReadAction {
+    ReadAction.run<RuntimeException> {
         NewCommandsIndex.getByName("\\makeindex", mainPsiFile)
             .forEach {
                 makeindexOptions.putAll(it.getOptionalParameterMap().toStringMap())

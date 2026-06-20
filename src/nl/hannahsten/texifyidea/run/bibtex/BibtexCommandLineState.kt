@@ -9,7 +9,6 @@ import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
-import com.intellij.platform.ide.progress.runWithModalProgressBlocking
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Companion.toWslPathIfNeeded
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
@@ -68,9 +67,7 @@ open class BibtexCommandLineState(
 
         val commandLine = GeneralCommandLine(command).withWorkingDirectory(workingDirectory)
 
-        val handler = runWithModalProgressBlocking(environment.project, "Creating command line process...") {
-            KillableProcessHandler(commandLine.withEnvironment(runConfig.environmentVariables.envs))
-        }
+        val handler = KillableProcessHandler(commandLine.withEnvironment(runConfig.environmentVariables.envs))
 
         // Reports exit code to run output window when command is terminated
         ProcessTerminatedListener.attach(handler, environment.project)

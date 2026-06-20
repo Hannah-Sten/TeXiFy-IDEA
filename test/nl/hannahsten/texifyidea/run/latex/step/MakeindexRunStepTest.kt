@@ -1,0 +1,195 @@
+package nl.hannahsten.texifyidea.run.latex.step
+
+import com.intellij.execution.runners.ExecutionEnvironment
+import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import io.mockk.every
+import io.mockk.mockkStatic
+import io.mockk.mockk
+import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
+import nl.hannahsten.texifyidea.run.common.createCompilationHandler
+import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer
+import nl.hannahsten.texifyidea.run.latex.LatexRunSessionState
+import nl.hannahsten.texifyidea.run.latex.MakeindexStepOptions
+import com.intellij.execution.process.KillableProcessHandler
+import java.nio.file.Files
+import java.nio.file.Path
+
+class MakeindexRunStepTest : BasePlatformTestCase() {
+
+    fun testBuildCommandAppendsIdxForXindyWhenNoOutputOverride() {
+        val context = createContext()
+        val stepOptions = MakeindexStepOptions().apply {
+            program = MakeindexProgram.XINDY
+            targetBaseNameOverride = "custom-name"
+            commandLineArguments = "-L english"
+        }
+
+        val command = MakeindexRunStep(stepOptions).buildCommand(context)
+
+        assertEquals(listOf("texindy", "-L", "english", "custom-name.idx"), command)
+    }
+
+    fun testBuildCommandRespectsOutputOverride() {
+        val context = createContext()
+        val stepOptions = MakeindexStepOptions().apply {
+            program = MakeindexProgram.MAKEINDEX
+            targetBaseNameOverride = "custom-name"
+            commandLineArguments = "-o result.ind"
+        }
+
+        val command = MakeindexRunStep(stepOptions).buildCommand(context)
+
+        assertEquals(listOf("makeindex", "-o", "result.ind"), command)
+    }
+
+    fun testBib2glsDefaultsWorkingDirectoryToMainFileDirectory() {
+        val context = createContext(separateAuxDir = true)
+        val stepOptions = MakeindexStepOptions().apply {
+            program = MakeindexProgram.BIB2GLS
+        }
+
+        val workingDirectory = MakeindexRunStep(stepOptions).resolveWorkingDirectory(context)
+
+        assertEquals(Path.of(context.session.mainFile.parent.path), workingDirectory)
+    }
+
+    fun testMakeindexDefaultsWorkingDirectoryToAuxDirectoryWhenAvailable() {
+        val context = createContext(separateOutputAndAux = true)
+        val stepOptions = MakeindexStepOptions().apply {
+            program = MakeindexProgram.MAKEINDEX
+        }
+
+        val workingDirectory = MakeindexRunStep(stepOptions).resolveWorkingDirectory(context)
+        val auxDirectory = requireNotNull(context.session.auxDir).path
+
+        assertEquals(Path.of(auxDirectory), workingDirectory)
+    }
+
+    fun testMakeindexFallsBackToOutputDirectoryWhenAuxDirectoryUnavailable() {
+        val context = createContext(separateOutputAndAux = true, noAuxDir = true)
+        val stepOptions = MakeindexStepOptions().apply {
+            program = MakeindexProgram.MAKEINDEX
+        }
+
+        val workingDirectory = MakeindexRunStep(stepOptions).resolveWorkingDirectory(context)
+
+        assertEquals(Path.of(context.session.outputDir.path), workingDirectory)
+    }
+
+    fun testInferredWorkingDirectoryHintPrefersIndependentAuxPath() {
+        val runConfig = createRunConfig(
+            outputPath = "{projectDir}/out",
+            auxPath = "\$PROJECT_DIR\$/aux",
+        )
+
+        val hint = MakeindexRunStep.inferredWorkingDirectoryHint(runConfig, MakeindexStepOptions())
+
+        assertEquals("\$PROJECT_DIR\$/aux", hint)
+    }
+
+    fun testInferredWorkingDirectoryHintFallsBackToOutputWhenAuxMatchesOutput() {
+        val runConfig = createRunConfig(
+            outputPath = "build/out",
+            auxPath = "build/out",
+        )
+
+        val hint = MakeindexRunStep.inferredWorkingDirectoryHint(runConfig, MakeindexStepOptions())
+
+        assertEquals("build/out", hint)
+    }
+
+    fun testInferredWorkingDirectoryHintUsesMainFileParentForBib2gls() {
+        val runConfig = createRunConfig(
+            outputPath = "{projectDir}/out",
+            auxPath = "{projectDir}/aux",
+        )
+        val step = MakeindexStepOptions().apply {
+            program = MakeindexProgram.BIB2GLS
+        }
+
+        val hint = MakeindexRunStep.inferredWorkingDirectoryHint(runConfig, step)
+
+        assertEquals("{mainFileParent}", hint)
+    }
+
+    fun testLifecycleAndProcessCreationWorkForMakeindexStep() {
+        val context = createContext()
+        val stepOptions = MakeindexStepOptions().apply {
+            program = MakeindexProgram.MAKEINDEX
+            targetBaseNameOverride = "custom-name"
+            workingDirectoryPath = context.session.mainFile.parent.path
+        }
+        val expectedHandler = mockk<KillableProcessHandler>(relaxed = true)
+        mockkStatic("nl.hannahsten.texifyidea.run.common.CompilationProcessFactoryKt")
+        every { createCompilationHandler(any(), any(), any(), any()) } returns expectedHandler
+
+        val step = MakeindexRunStep(stepOptions)
+        step.beforeStart(context)
+        val process = step.createProcess(context)
+        step.afterFinish(context, 0)
+
+        assertEquals(expectedHandler, process)
+        assertEquals("makeindex", step.id)
+        assertEquals(stepOptions.id, step.configId)
+    }
+
+    private fun createContext(
+        separateAuxDir: Boolean = false,
+        separateOutputAndAux: Boolean = false,
+        noAuxDir: Boolean = false,
+    ): LatexRunStepContext {
+        val root = Files.createTempDirectory("texify-makeindex-command")
+        val mainFilePath = root.resolve("main.tex")
+        Files.writeString(mainFilePath, "\\\\documentclass{article}")
+        val mainFile = LocalFileSystem.getInstance().refreshAndFindFileByPath(mainFilePath.toString())!!
+        val outputDirPath = if (separateOutputAndAux) root.resolve("out") else Path.of(mainFile.parent.path)
+        Files.createDirectories(outputDirPath)
+        val outputDir = LocalFileSystem.getInstance().refreshAndFindFileByPath(outputDirPath.toString())!!
+        val auxDir = if (noAuxDir) {
+            null
+        }
+        else if (separateAuxDir || separateOutputAndAux) {
+            val auxDirPath = root.resolve("aux")
+            Files.createDirectories(auxDirPath)
+            LocalFileSystem.getInstance().refreshAndFindFileByPath(auxDirPath.toString())!!
+        }
+        else {
+            outputDir
+        }
+
+        val runConfig = LatexRunConfiguration(
+            project,
+            LatexRunConfigurationProducer().configurationFactory,
+            "test"
+        )
+        val environment = mockk<ExecutionEnvironment>(relaxed = true).also {
+            every { it.project } returns project
+        }
+        val state = LatexRunSessionState(
+            project = project,
+            mainFile = mainFile,
+            outputDir = outputDir,
+            workingDirectory = Path.of(mainFile.parent.path),
+            distributionType = LatexDistributionType.TEXLIVE,
+            usesDefaultWorkingDirectory = true,
+            latexSdk = null,
+            auxDir = auxDir,
+        )
+        return LatexRunStepContext(runConfig, environment, state)
+    }
+
+    private fun createRunConfig(
+        outputPath: String,
+        auxPath: String,
+    ): LatexRunConfiguration = LatexRunConfiguration(
+        project,
+        LatexRunConfigurationProducer().configurationFactory,
+        "test"
+    ).apply {
+        configOptions.outputPath = outputPath
+        configOptions.auxilPath = auxPath
+    }
+}

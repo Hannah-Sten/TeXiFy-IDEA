@@ -12,7 +12,7 @@ import nl.hannahsten.texifyidea.inspections.ALL_TEXIFY_INSPECTIONS
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
-import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
+import nl.hannahsten.texifyidea.run.compiler.LatexCompilePrograms
 import nl.hannahsten.texifyidea.util.magic.CommentMagic
 import nl.hannahsten.texifyidea.util.parser.*
 import java.util.*
@@ -137,7 +137,7 @@ class LatexCompletionContributor : CompletionContributor() {
         extendMagicCommentValues(
             "compiler",
             compilerRegex,
-            LatexMagicCommentValueProvider(compilerRegex, LatexCompiler.entries.map { it.executableName }.toHashSet())
+            LatexMagicCommentValueProvider(compilerRegex, LatexCompilePrograms.allExecutableNames.toHashSet())
         )
     }
 

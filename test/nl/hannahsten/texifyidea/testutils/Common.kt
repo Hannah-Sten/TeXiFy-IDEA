@@ -4,10 +4,12 @@ import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
 import com.intellij.testFramework.fixtures.IdeaProjectTestFixture
 import io.mockk.every
+import io.mockk.mockk
 import io.mockk.mockkConstructor
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
+import nl.hannahsten.texifyidea.run.latex.LatexCompileStepOptions
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettings
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettingsManager
@@ -45,14 +47,17 @@ fun IdeaProjectTestFixture.updateConvention(action: (settings: TexifyConventions
  */
 fun setUnicodeSupport(project: Project, enabled: Boolean = true) {
     mockkStatic("nl.hannahsten.texifyidea.util.ProjectsKt")
+    val runConfig = mockk<LatexRunConfiguration>()
+    every { project.selectedRunConfig() } returns runConfig
     if (enabled) {
-        mockkStatic(LatexRunConfiguration::class)
         // Unicode is always supported in lualatex.
-        every { project.selectedRunConfig()?.compiler } returns LatexCompiler.LUALATEX
+        every { runConfig.primaryCompileStep() } returns LatexCompileStepOptions().apply { compiler = LatexCompiler.LUALATEX }
+        every { runConfig.primaryCompiler() } returns LatexCompiler.LUALATEX
     }
     else {
         // Unicode is not supported on pdflatex on texlive <= 2017.
-        every { project.selectedRunConfig()?.compiler } returns LatexCompiler.PDFLATEX
+        every { runConfig.primaryCompileStep() } returns LatexCompileStepOptions().apply { compiler = LatexCompiler.PDFLATEX }
+        every { runConfig.primaryCompiler() } returns LatexCompiler.PDFLATEX
         mockkObject(TexliveSdk.Cache)
         every { TexliveSdk.Cache.version } returns 2017
         mockkConstructor(MiktexWindowsSdk::class)

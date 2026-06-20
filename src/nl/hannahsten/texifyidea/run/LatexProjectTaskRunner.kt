@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.run
 
 import com.intellij.execution.RunManager
+import com.intellij.execution.configurations.RunConfiguration
 import com.intellij.execution.executors.DefaultRunExecutor
 import com.intellij.execution.impl.RunConfigurationBeforeRunProvider
 import com.intellij.execution.impl.RunManagerImpl
@@ -38,7 +39,8 @@ class LatexProjectTaskRunner : ProjectTaskRunner() {
         // Each task will probably be a module, but we don't use it
 
         project.getLatexRunConfigurations().forEach { runConfig ->
-            val latexSettings = RunManagerImpl.getInstanceImpl(project).getSettings(runConfig) ?: return@forEach
+            val runConfiguration = runConfig as? RunConfiguration ?: return@forEach
+            val latexSettings = RunManagerImpl.getInstanceImpl(project).getSettings(runConfiguration) ?: return@forEach
             val environment = ExecutionEnvironmentBuilder.createOrNull(DefaultRunExecutor.getRunExecutorInstance(), latexSettings)?.build()
                 ?: return@forEach
             RunConfigurationBeforeRunProvider.doExecuteTask(environment, latexSettings, null)

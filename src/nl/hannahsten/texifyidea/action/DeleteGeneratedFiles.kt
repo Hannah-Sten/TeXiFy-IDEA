@@ -10,12 +10,20 @@ import com.intellij.openapi.ui.showOkCancelDialog
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.openapi.vfs.InvalidVirtualFileAccessException
 import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.run.latex.FileCleanupSupport
+import nl.hannahsten.texifyidea.run.latex.LatexPathResolver
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationStaticSupport
+import nl.hannahsten.texifyidea.run.latexmk.LatexmkCleanUtil
 import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
+import nl.hannahsten.texifyidea.util.selectedRunConfig
 import nl.hannahsten.texifyidea.util.magic.FileMagic
 import nl.hannahsten.texifyidea.util.runWriteAction
 import java.io.File
 import java.io.IOException
+import java.nio.file.Path
 import java.security.PrivilegedActionException
 
 /**
@@ -43,9 +51,21 @@ class DeleteGeneratedFiles : AnAction() {
         val project = getEventProject(e) ?: return
         val basePath = project.basePath ?: return
 
+        val selectedRunConfig = project.selectedRunConfig()
+        if (selectedRunConfig is LatexRunConfiguration && selectedRunConfig.hasEnabledLatexmkStep()) {
+            LatexmkCleanUtil.run(project, selectedRunConfig, LatexmkCleanUtil.Mode.CLEAN_ALL)
+            return
+        }
+
         // Custom output folders
         val customOutput = project.getLatexRunConfigurations()
-            .flatMap { listOf(it.outputPath.getAndCreatePath(), it.auxilPath.getAndCreatePath()) }
+            .flatMap { config ->
+                val mainFile = LatexRunConfigurationStaticSupport.resolveMainFile(config)
+                listOf(
+                    LatexPathResolver.resolveOutputDir(config, mainFile),
+                    LatexPathResolver.resolveAuxDir(config, mainFile)
+                )
+            }
             // There's no reason to delete files outside the project
             .filter { it?.path?.contains(project.basePath!!) == true }
             .filterNotNull()
@@ -63,26 +83,42 @@ class DeleteGeneratedFiles : AnAction() {
 
         if (result != Messages.OK) return
 
-        // Also clear aux files
-        DeleteAuxFiles().actionPerformed(e)
+        val notDeleted = DeleteGeneratedFilesSupport.deleteProjectGeneratedFiles(Path.of(basePath), customOutput)
 
-        // Delete files only in specific folders, to avoid deleting for example figures with pdf extension
+        if (notDeleted.isNotEmpty()) {
+            Notification("LaTeX", "Could not delete some files", "The following files need to be deleted manually: $notDeleted", NotificationType.WARNING).notify(project)
+        }
+    }
+}
+
+internal object DeleteGeneratedFilesSupport {
+
+    fun deleteProjectGeneratedFiles(
+        basePath: Path,
+        customOutput: Collection<VirtualFile>,
+    ): List<String> {
+        val temporaryBuildCleanup = FileCleanupSupport.delete(
+            FileCleanupSupport.collectProjectTemporaryBuildTargets(basePath)
+        )
+        temporaryBuildCleanup.failedPaths.forEach { Log.warn("Could not delete temporary build file $it") }
+
+        // Delete files only in specific folders, to avoid deleting for example figures with pdf extension.
         for (folder in setOf("src")) {
-            File(basePath, folder).walk().maxDepth(1)
+            File(basePath.toFile(), folder).walk().maxDepth(1)
                 .filter { it.isFile }
                 .filter { it.extension in FileMagic.generatedFileTypes }
                 .forEach { it.delete() }
         }
 
-        // Just delete everything in directories which should only contain output files
-        val defaultOutput = setOf(File(basePath, "auxil"), File(basePath, "out"))
+        // Just delete everything in directories which should only contain output files.
+        val defaultOutput = setOf(File(basePath.toFile(), "auxil"), File(basePath.toFile(), "out"))
         for (path in defaultOutput) {
             path.walk().maxDepth(1).forEach { it.delete() }
         }
 
         val notDeleted = mutableListOf<String>()
 
-        // Custom out/aux dirs
+        // Custom out/aux dirs.
         runWriteAction {
             for (path in customOutput) {
                 try {
@@ -103,15 +139,12 @@ class DeleteGeneratedFiles : AnAction() {
             }
         }
 
-        if (notDeleted.isNotEmpty()) {
-            Notification("LaTeX", "Could not delete some files", "The following files need to be deleted manually: $notDeleted", NotificationType.WARNING).notify(project)
-        }
-
-        // Generated minted files
-        File(basePath, "src").walk().maxDepth(1)
+        // Generated minted files.
+        File(basePath.toFile(), "src").walk().maxDepth(1)
             .filter { it.name.startsWith("_minted") }
             .forEach { it.deleteRecursively() }
 
         LocalFileSystem.getInstance().refresh(true)
+        return notDeleted
     }
 }

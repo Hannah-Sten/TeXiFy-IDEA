@@ -193,7 +193,8 @@ fun String.formatAsLabel(): String = this.let { Normalizer.normalize(it, Normali
 /**
  * Split the given string on whitespace.
  */
-fun String.splitWhitespace() = split(Regex("\\s+"))
+@Suppress("unused")
+internal fun String.splitWhitespace() = split(Regex("\\s+"))
 
 /**
  * Removes HTML tags from the string.
