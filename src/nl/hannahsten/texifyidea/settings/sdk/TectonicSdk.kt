@@ -8,6 +8,7 @@ import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.util.runCommand
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import java.io.File
+import java.nio.file.Path
 
 /**
  * Tectonic has its own source, which is in effect TeX Live, but since it is stored not in TeX Live format
@@ -60,7 +61,7 @@ class TectonicSdk : LatexSdk("Tectonic SDK") {
     // We assume Tectonic is in PATH.
     override fun getExecutableName(executable: String, homePath: String) = executable
 
-    override fun suggestHomePath(): String {
+    override fun suggestHomePath(path: Path): String {
         // https://github.com/tectonic-typesetting/tectonic/issues/159
         val home = System.getProperty("user.home")
         return if (SystemInfo.isMac) "$home/Library/Caches/Tectonic"

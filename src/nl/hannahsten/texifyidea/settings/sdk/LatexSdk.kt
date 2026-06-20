@@ -6,6 +6,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.util.runWriteAction
 import org.jdom.Element
+import java.nio.file.Path
 
 /**
  * Represents the location of the LaTeX installation.
@@ -37,6 +38,13 @@ abstract class LatexSdk(name: String) : SdkType(name) {
             }
         }
     }
+
+    // We have to implement it
+    @Deprecated("Deprecated", ReplaceWith("suggestHomePath(path)"))
+    override fun suggestHomePath() = null
+
+    // Just a path on the same file system, not used probably
+    fun defaultSuggestedHomePath() = suggestHomePath(Path.of(System.getProperty("user.home")))
 
     /**
      * Interface between this and [LatexDistributionType], which is used in the run configuration.

@@ -1,16 +1,18 @@
 package nl.hannahsten.texifyidea.settings.sdk
 
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.*
 import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.DialogBuilder
 import com.intellij.openapi.util.SystemInfo
-import com.intellij.util.Consumer
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.util.containsAny
 import nl.hannahsten.texifyidea.util.runCommand
 import org.jdom.Element
+import java.nio.file.Path
+import java.util.function.Consumer
 import javax.swing.JComponent
 
 /**
@@ -18,7 +20,10 @@ import javax.swing.JComponent
  */
 class DockerSdk : LatexSdk("LaTeX Docker SDK") {
 
+    val defaultHomePath = "/usr/bin"
+
     object Availability {
+
         val isAvailable: Boolean by lazy {
             getAvailableImages().any { it.contains("miktex") || it.contains("texlive") }
         }
@@ -29,12 +34,12 @@ class DockerSdk : LatexSdk("LaTeX Docker SDK") {
                 ?.filter { it.isNotBlank() } ?: emptyList()
     }
 
-    override fun suggestHomePath(): String {
+    override fun suggestHomePath(path: Path): String {
         // Path to Docker executable
-        return "/usr/bin"
+        return defaultHomePath
     }
 
-    override fun suggestHomePaths(): MutableCollection<String> {
+    override fun suggestHomePaths(project: Project?): MutableCollection<String> {
         // Windows is not supported for now
         if (!SystemInfo.isLinux) return mutableListOf()
 
@@ -102,14 +107,15 @@ class DockerSdk : LatexSdk("LaTeX Docker SDK") {
         val imagesComboBox = chooseImageComponent.components.filterIsInstance<ComboBox<String>>().firstOrNull()
         val dialog = DialogBuilder().apply {
             setTitle("Choose Docker Image")
+            @Suppress("UsePropertyAccessSyntax") // val cannot be reassigned
             setCenterPanel(chooseImageComponent)
         }
         dialog.show()
 
         // Currently, we don't ask the user for this. See SdkConfigurationUtil.selectSdkHome
-        val homePath = suggestHomePath()
+        val homePath = defaultHomePath
 
         val sdk = SdkConfigurationUtil.createSdk(sdkModel.sdks.toMutableList(), homePath, this, DockerSdkAdditionalData(imagesComboBox?.selectedItem as? String), name)
-        sdkCreatedCallback.consume(sdk)
+        sdkCreatedCallback.accept(sdk)
     }
 }

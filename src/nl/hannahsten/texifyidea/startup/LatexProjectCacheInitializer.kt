@@ -28,7 +28,7 @@ class LatexProjectCacheInitializer : ProjectActivity {
             LatexDefinitionService.getInstance(project).ensureRefreshFileset(fileset)
             // there will be an exception if we try to restart the daemon in unit tests
             // see FileStatusMap.CHANGES_NOT_ALLOWED_DURING_HIGHLIGHTING
-            DaemonCodeAnalyzer.getInstance(project).restart()
+            DaemonCodeAnalyzer.getInstance(project).restart("TeXiFy-IDEA: Restarting daemon after project cache initialization")
         }
     }
 }

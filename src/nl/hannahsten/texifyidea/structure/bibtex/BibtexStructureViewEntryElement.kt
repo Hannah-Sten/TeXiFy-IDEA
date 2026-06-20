@@ -31,7 +31,7 @@ open class BibtexStructureViewEntryElement(val entry: BibtexEntry) : StructureVi
             else -> entry.getIdentifier()
         } ?: ""
 
-        override fun getIcon(b: Boolean) = when (entry.tokenName().lowercase(Locale.getDefault())) {
+        override fun getIcon(open: Boolean) = when (entry.tokenName().lowercase(Locale.getDefault())) {
             "string" -> TexifyIcons.STRING
             "preamble" -> PlatformIcons.PROPERTY_ICON
             else -> PlatformIcons.ANNOTATION_TYPE_ICON

@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.settings.sdk
 
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
@@ -7,6 +8,7 @@ import nl.hannahsten.texifyidea.util.TexifyCoroutine
 import nl.hannahsten.texifyidea.util.containsAny
 import nl.hannahsten.texifyidea.util.runCommand
 import nl.hannahsten.texifyidea.util.runCommandNonBlocking
+import java.nio.file.Path
 
 /**
  * TeX Live, as installed natively by the OS's package manager.
@@ -29,13 +31,13 @@ class NativeTexliveSdk : TexliveSdk("Native TeX Live SDK") {
         var defaultStyleFilesPath: String? = null
     }
 
-    override fun suggestHomePath(): String {
+    override fun suggestHomePath(path: Path): String {
         // This method should work fast and allow running from the EDT thread.
         // It will be the starting point when someone opens the file explorer dialog to select an SDK of this type
         return "/usr/bin"
     }
 
-    override fun suggestHomePaths(): MutableCollection<String> = TexliveSdk().suggestHomePaths().plus(suggestHomePath())
+    override fun suggestHomePaths(project: Project?): MutableCollection<String> = TexliveSdk().suggestHomePaths(project).plus(defaultSuggestedHomePath()).filterNotNull()
         // Avoid duplicates of TexliveSdks, which probably have x86_64-linux in the path
         .filter { path -> !path.containsAny(setOf("x86_64-linux", "universal-darwin")) }
         .toMutableSet()

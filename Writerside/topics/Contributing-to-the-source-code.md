@@ -133,7 +133,7 @@ This can lead to strange behaviour (see e.g. [#1097](https://github.com/Hannah-S
 
 ## Concurrency
 
-Never use the regular `runReadAction` from a coroutine! This read action will block write actions, but in a coroutine the regular cancellation check/exception does not work, which may lead to a deadlock.
+Never use the regular `runReadActionBlocking` from a coroutine! This read action will block write actions, but in a coroutine the regular cancellation check/exception does not work, which may lead to a deadlock.
 See https://plugins.jetbrains.com/docs/intellij/coroutine-read-actions.html#write-allowing-read-action-vs-nonblockingreadaction
 
 ## Helpful tools

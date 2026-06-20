@@ -53,7 +53,7 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
     private val endRegionRegex = """%!\s*(</editor-fold>|endregion)""".toRegex()
 
     override fun buildFoldRegions(root: PsiElement, document: Document, quick: Boolean): Array<FoldingDescriptor> {
-        // We are guaranteed read access so we must not call any `runReadAction` here.
+        // We are guaranteed read access so we must not call any `runReadActionBlocking` here.
         val lookup = LatexDefinitionService.getBundleFor(root)
         val visitor = LatexFoldingVisitor(lookup)
         visitor.traverse(root)

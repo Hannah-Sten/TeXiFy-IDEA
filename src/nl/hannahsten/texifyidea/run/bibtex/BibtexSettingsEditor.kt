@@ -10,6 +10,7 @@ import com.intellij.openapi.ui.*
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.SeparatorComponent
+import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import java.awt.event.ItemEvent
@@ -113,7 +114,7 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
             val mainFileField = TextFieldWithBrowseButton().apply {
                 addBrowseFolderListener(
                     TextBrowseFolderListener(
-                        FileChooserDescriptorFactory.createSingleFileDescriptor()
+                        FileChooserDescriptorFactory.createSingleFileDescriptor(LatexFileType)
                             .withTitle("Choose the Main .tex File")
                             .withExtensionFilter("tex")
                             .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules.toSet().toTypedArray())
