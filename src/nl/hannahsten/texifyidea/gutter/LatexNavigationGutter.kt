@@ -28,7 +28,6 @@ class LatexNavigationGutter : RelatedItemLineMarkerProvider() {
         // Gutters should only be used with leaf elements.
         // We assume gutter icons only have to be shown for elements in required parameters
         if(element.elementType != LatexTypes.COMMAND_TOKEN) return
-//        if (element.firstChild != null) return
 
         // Only make markers when dealing with commands.
         val command = element.parentOfType(LatexCommands::class) ?: return

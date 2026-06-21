@@ -105,9 +105,6 @@ abstract class LatexParameterTextImplMixin(node: ASTNode) : LatexParameterText, 
         require(normalText != null) {
             "Expected NORMAL_TEXT, but got null."
         }
-//        require(normalText.text == name){
-//            "Expected NORMAL_TEXT to have text '$name', but got '${normalText.text}' instead."
-//        }
         this.node.replaceAllChildrenToChildrenOf(normalText)
         return
     }
@@ -122,7 +119,6 @@ abstract class LatexParameterTextImplMixin(node: ASTNode) : LatexParameterText, 
         val content = LatexPsiHelper(this.project).createFromText("\\cmd[label=$name]")
             .firstChild // The first child is the command with parameters
             .findFirstChildTyped<LatexKeyValContent>() ?: return this
-//        originalContent.node.replaceAllChildrenToChildrenOf(content.node)
         val newNode = content.firstChild ?: return this
         return originalContent.firstChild.replace(newNode)
     }
