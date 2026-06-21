@@ -43,8 +43,7 @@ class LatexLineWrapStrategyTest : BasePlatformTestCase() {
             {This includes permissions.}
             \href
             {https://the-very-very-long.url}
-            {This includes}
-            permissions.
+            {This includes} permissions.
         """.trimIndent()
         myFixture.checkResult(expected)
     }

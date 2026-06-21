@@ -78,6 +78,9 @@ interface PdfViewer {
 
     companion object {
 
+        // Used by tests to register concrete viewer fakes without redefining Kotlin object singletons.
+        internal var additionalViewers: List<PdfViewer> = emptyList()
+
         val internalViewers
             get() = listOf(SumatraViewer, EvinceViewer, OkularViewer, ZathuraViewer, SkimViewer, SystemDefaultViewer, NoViewer)
 
@@ -88,7 +91,7 @@ interface PdfViewer {
          * Gets the list of all PDF viewers, both internal and external.
          */
         val allViewers: List<PdfViewer>
-            get() = externalViewers + internalViewers
+            get() = externalViewers + additionalViewers + internalViewers
 
         /**
          * Gets the list of all available PDF viewers, both internal and external.

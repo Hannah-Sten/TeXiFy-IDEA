@@ -107,7 +107,6 @@ class DockerSdk : LatexSdk("LaTeX Docker SDK") {
         val imagesComboBox = chooseImageComponent.components.filterIsInstance<ComboBox<String>>().firstOrNull()
         val dialog = DialogBuilder().apply {
             setTitle("Choose Docker Image")
-            @Suppress("UsePropertyAccessSyntax") // val cannot be reassigned
             setCenterPanel(chooseImageComponent)
         }
         dialog.show()
