@@ -1,5 +1,5 @@
 version: "1.0"
-linter: jetbrains/qodana-jvm-community:2025.3
+linter: jetbrains/qodana-jvm-community:2026.1
 profile:
   path: .idea/inspectionProfiles/Project_Default.xml
 failThreshold: 0
@@ -18,7 +18,7 @@ exclude: # Some of these are valid inspections but not important or accurate eno
       - .github
       - results
       - build
-      - test
+      - testjetbrains/qodana-jvm-community
       - src/nl/hannahsten/texifyidea/action/preview/PreviewForm.form
       # The class is unused, see TexifyProjectConfigurable
       - src/nl/hannahsten/texifyidea/settings/TexifyProjectSettings.kt

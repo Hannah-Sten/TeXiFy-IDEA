@@ -1,6 +1,6 @@
 package nl.hannahsten.texifyidea.util
 
-import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.application.runReadActionBlocking
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
@@ -65,7 +65,7 @@ fun BibtexTag.content(): BibtexContent? = findFirstChildOfType(BibtexContent::cl
 fun BibtexContent.evaluate(): String {
     var result = ""
 
-    runReadAction {
+    runReadActionBlocking {
         for (string in collectSubtreeTyped<BibtexString>()) {
             val braced = string.bracedString
             val quoted = string.quotedString

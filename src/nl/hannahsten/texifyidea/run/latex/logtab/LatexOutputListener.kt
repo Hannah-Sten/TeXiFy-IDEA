@@ -125,7 +125,7 @@ class LatexOutputListener(
                 ActionManager.getInstance(),
             )
             runInEdt {
-                ActionUtil.performActionDumbAwareWithCallbacks(action, event)
+                ActionUtil.performAction(action, event)
             }
         }
     }
@@ -149,7 +149,7 @@ class LatexOutputListener(
         val text = try {
             window.joinToString(separator = "")
         }
-        catch (e: IndexOutOfBoundsException) {
+        catch (_: IndexOutOfBoundsException) {
             return
         }
 

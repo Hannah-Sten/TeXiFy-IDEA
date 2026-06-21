@@ -16,7 +16,6 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.search.ProjectScope
-import com.intellij.serviceContainer.AlreadyDisposedException
 import com.intellij.util.concurrency.annotations.RequiresReadLock
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
@@ -143,16 +142,9 @@ fun Project.selectedTextEditorOrWarning(): TextEditor? {
  *     If you need to make an action enabled in presence of a specific technology only, do this by looking for required files in the project
  *     directories, not by checking type of the current module.
  */
-fun Project.hasLatexModule(): Boolean {
-    if (isDisposed) return false
-    return try {
-        ModuleManager.getInstance(this).modules
-            .any { ModuleType.get(it).id == LatexModuleType.ID }
-    }
-    catch (_: AlreadyDisposedException) {
-        false
-    }
-}
+fun Project.hasLatexModule(): Boolean = !isDisposed &&
+    ModuleManager.getInstance(this).modules
+        .any { ModuleType.get(it).id == LatexModuleType.ID }
 
 /**
  * Best guess at whether this project can be considered a project containing significant LaTeX things.

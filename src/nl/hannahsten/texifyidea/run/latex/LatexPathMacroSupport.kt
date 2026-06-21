@@ -47,7 +47,7 @@ internal object LatexPathMacroSupport {
         if (mainFile == null || !project.isInitialized) {
             return null
         }
-        return ReadAction.compute<Module?, RuntimeException> {
+        return ReadAction.computeBlocking<Module?, RuntimeException> {
             ProjectRootManager.getInstance(project).fileIndex.getModuleForFile(mainFile, false)
         }
     }

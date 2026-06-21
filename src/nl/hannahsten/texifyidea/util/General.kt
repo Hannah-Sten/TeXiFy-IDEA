@@ -6,7 +6,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.intellij.platform.util.progress.ProgressReporter
-import com.intellij.platform.util.progress.reportProgress
+import com.intellij.platform.util.progress.reportProgressScope
 import com.intellij.psi.PsiFile
 import java.util.regex.Pattern
 
@@ -85,7 +85,7 @@ const val PROGRESS_SIZE = 1000
 /**
  * Runs the given function in a background thread, with a fake progress indicator, using [TexifyCoroutine.coroutineScope].
  *
- * IMPORTANT: Do not use runReadAction in the function, this may block the UI.
+ * IMPORTANT: Do not use runReadActionBlocking in the function, this may block the UI.
  * Use smartReadAction instead.
  *
  * See [coroutine-read-actions-api](https://plugins.jetbrains.com/docs/intellij/coroutine-read-actions.html#coroutine-read-actions-api).
@@ -98,7 +98,7 @@ internal fun runInBackgroundNonBlocking(project: Project, description: String, f
     // We don't need to block until it finished
     TexifyCoroutine.runInBackground {
         withBackgroundProgress(project, description) {
-            reportProgress(size = PROGRESS_SIZE) { function(it) }
+            reportProgressScope(size = PROGRESS_SIZE) { function(it) }
         }
     }
 }

@@ -6,11 +6,11 @@ import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.LatexPathResolver
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationStaticSupport
+import nl.hannahsten.texifyidea.util.files.findRootFiles
+import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
 import nl.hannahsten.texifyidea.util.latexTemplateRunConfig
 import nl.hannahsten.texifyidea.util.selectedRunConfig
-import nl.hannahsten.texifyidea.util.files.findRootFiles
-import nl.hannahsten.texifyidea.util.files.psiFile
 
 internal object ForwardSearchSupport {
 
@@ -30,8 +30,8 @@ internal object ForwardSearchSupport {
         if (sourceFile == mainFile) {
             return true
         }
-        return ReadAction.compute<Boolean, RuntimeException> {
-            val sourcePsi = sourceFile.psiFile(project) ?: return@compute false
+        return ReadAction.computeBlocking<Boolean, RuntimeException> {
+            val sourcePsi = sourceFile.psiFile(project) ?: return@computeBlocking false
             sourcePsi.findRootFiles().any { it.virtualFile == mainFile }
         }
     }

@@ -12,19 +12,7 @@ import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompilePrograms
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
-import nl.hannahsten.texifyidea.run.latex.BibtexStepOptions
-import nl.hannahsten.texifyidea.run.latex.LatexCompileStepOptions
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.latex.LatexStepRunConfigurationOptions
-import nl.hannahsten.texifyidea.run.latex.LatexStepType
-import nl.hannahsten.texifyidea.run.latex.LatexmkCompileStepOptions
-import nl.hannahsten.texifyidea.run.latex.MakeindexStepOptions
-import nl.hannahsten.texifyidea.run.latex.MakeglossariesStepOptions
-import nl.hannahsten.texifyidea.run.latex.PdfViewerStepOptions
-import nl.hannahsten.texifyidea.run.latex.PythontexStepOptions
-import nl.hannahsten.texifyidea.run.latex.defaultLatexmkSteps
-import nl.hannahsten.texifyidea.run.latex.generateLatexStepId
-import nl.hannahsten.texifyidea.run.latex.getDefaultMakeindexPrograms
+import nl.hannahsten.texifyidea.run.latex.*
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
 import nl.hannahsten.texifyidea.util.files.findTectonicTomlFile
 import nl.hannahsten.texifyidea.util.files.hasTectonicTomlFile
@@ -346,7 +334,7 @@ internal object LatexStepAutoConfigurator {
         return steps.none { it.type == LatexStepType.LATEXMK_COMPILE }
     }
 
-    private fun collectPsiSignals(mainPsiFile: PsiFile): PsiSignals = ReadAction.compute<PsiSignals, RuntimeException> {
+    private fun collectPsiSignals(mainPsiFile: PsiFile): PsiSignals = ReadAction.computeBlocking<PsiSignals, RuntimeException> {
         val usedPackages = mainPsiFile.includedPackagesInFileset()
 
         PsiSignals(
@@ -366,7 +354,7 @@ internal object LatexStepAutoConfigurator {
         runConfig: LatexRunConfiguration,
         contextPsiFile: PsiFile,
     ): CommandSpec {
-        val command = ReadAction.compute<String?, RuntimeException> {
+        val command = ReadAction.computeBlocking<String?, RuntimeException> {
             val magicComments = contextPsiFile.allParentMagicComments()
             val runCommand = magicComments.value(DefaultMagicKeys.COMPILER)
             val runProgram = magicComments.value(DefaultMagicKeys.PROGRAM)

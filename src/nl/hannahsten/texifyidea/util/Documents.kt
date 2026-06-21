@@ -1,6 +1,6 @@
 package nl.hannahsten.texifyidea.util
 
-import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.application.runReadActionBlocking
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.CaretModel
 import com.intellij.openapi.editor.Document
@@ -95,4 +95,4 @@ fun Editor.insertAtCaretAndMove(string: String) {
 /**
  * @see [CaretModel.getOffset]
  */
-fun Editor.caretOffset() = runReadAction { caretModel.offset }
+fun Editor.caretOffset() = runReadActionBlocking { caretModel.offset }

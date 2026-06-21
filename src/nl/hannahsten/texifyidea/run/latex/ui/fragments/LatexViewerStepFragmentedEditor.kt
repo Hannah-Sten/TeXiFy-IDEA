@@ -59,6 +59,7 @@ internal class LatexViewerStepFragmentedEditor(
                     step.pdfViewerName = selectedViewer.name
                     step.customViewerCommand = null
                 }
+                updateUiState()
             },
             initiallyVisible = { true },
             removable = false,
@@ -132,7 +133,9 @@ internal class LatexViewerStepFragmentedEditor(
     private fun isCustomViewerSelected(): Boolean = pdfViewer.selectedItem == CustomPdfViewer
 
     private fun updateUiState() {
-        viewerCommandRow.isVisible = isCustomViewerSelected()
+        val commandVisible = isCustomViewerSelected()
+        viewerCommandRow.isVisible = commandVisible
+        viewerCommand.isVisible = commandVisible
         updateRequireFocusEnabled()
     }
 

@@ -8,6 +8,7 @@ import java.io.BufferedReader
 import java.io.IOException
 import java.nio.file.Path
 import javax.swing.SwingUtilities
+import kotlin.time.Duration.Companion.milliseconds
 
 data class CommandResult(
     val exitCode: Int,
@@ -66,7 +67,7 @@ suspend fun runCommandNonBlocking(
             val error = if (!discardOutput) async { readTextIgnoreClosedStream(errorReader) } else null
 
             // Make sure the await() is done within the timeout, otherwise the timeout will not work, see example in #3921
-            val result = withTimeoutOrNull(1_000 * timeout) {
+            val result = withTimeoutOrNull((1_000 * timeout).milliseconds) {
                 CommandResult(process.awaitExit(), output?.await()?.trim(), error?.await()?.trim())
             } ?: run {
                 process.destroy()

@@ -1,7 +1,7 @@
 package nl.hannahsten.texifyidea.run.latex.ui.fragments
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.ui.ComboBox
-import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.ui.components.JBTextField
 import nl.hannahsten.texifyidea.run.latex.PdfViewerStepOptions
@@ -9,7 +9,6 @@ import nl.hannahsten.texifyidea.run.pdfviewer.CustomPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import java.awt.Component
 import java.awt.Container
-import javax.swing.JLabel
 
 class LatexViewerStepFragmentedEditorTest : BasePlatformTestCase() {
 
@@ -23,7 +22,7 @@ class LatexViewerStepFragmentedEditorTest : BasePlatformTestCase() {
         editor.resetFrom(step)
 
         assertEquals(CustomPdfViewer, viewerCombo(editor).selectedItem)
-        assertTrue(viewerCommandRow(editor).isVisible)
+        assertTrue(isEffectivelyVisible(viewerCommandField(editor)))
         assertEquals("open {pdf}", viewerCommandField(editor).text)
     }
 
@@ -43,41 +42,31 @@ class LatexViewerStepFragmentedEditorTest : BasePlatformTestCase() {
 
     fun testApplyNormalViewerClearsCustomViewerCommand() {
         val editor = LatexViewerStepFragmentedEditor()
-        val realViewer = PdfViewer.firstAvailableViewer
         val step = PdfViewerStepOptions().apply {
             pdfViewerName = CustomPdfViewer.name
             customViewerCommand = "open {pdf}"
         }
 
         editor.resetFrom(step)
-        viewerCombo(editor).selectedItem = realViewer
+        val combo = viewerCombo(editor)
+        val realViewer = (0 until combo.itemCount)
+            .map(combo::getItemAt)
+            .first { it != CustomPdfViewer }
+        combo.selectedItem = realViewer
+        drainEdt()
+        assertFalse(visibilityState(editor), isEffectivelyVisible(viewerCommandField(editor)))
 
         editor.applyTo(step)
 
         assertEquals(realViewer.name, step.pdfViewerName)
         assertNull(step.customViewerCommand)
-        assertFalse(viewerCommandRow(editor).isVisible)
+        assertFalse(visibilityState(editor), isEffectivelyVisible(viewerCommandField(editor)))
     }
 
     @Suppress("UNCHECKED_CAST")
     private fun viewerCombo(editor: LatexViewerStepFragmentedEditor): ComboBox<PdfViewer> = findComponents(editor.component, ComboBox::class.java).single() as ComboBox<PdfViewer>
 
     private fun viewerCommandField(editor: LatexViewerStepFragmentedEditor): JBTextField = findComponents(editor.component, JBTextField::class.java).single()
-
-    private fun viewerCommandRow(editor: LatexViewerStepFragmentedEditor): LabeledComponent<JBTextField> {
-        val label = findComponents(editor.component, JLabel::class.java)
-            .firstOrNull { normalizedText(it.text) == "Custom viewer command" }
-        assertNotNull("Expected label 'Custom viewer command' to exist", label)
-
-        var current: Component? = label
-        while (current != null && current !is LabeledComponent<*>) {
-            current = current.parent
-        }
-        assertTrue(current is LabeledComponent<*>)
-
-        @Suppress("UNCHECKED_CAST")
-        return current as LabeledComponent<JBTextField>
-    }
 
     private fun <T : Component> findComponents(root: Component, type: Class<T>): List<T> {
         val matches = mutableListOf<T>()
@@ -96,5 +85,31 @@ class LatexViewerStepFragmentedEditorTest : BasePlatformTestCase() {
         return matches
     }
 
-    private fun normalizedText(text: String?): String? = text?.removeSuffix(":")?.trim()
+    private fun drainEdt() {
+        ApplicationManager.getApplication().invokeAndWait {}
+    }
+
+    private fun isEffectivelyVisible(component: Component): Boolean {
+        var current: Component? = component
+        while (current != null) {
+            if (!current.isVisible) {
+                return false
+            }
+            current = current.parent
+        }
+        return true
+    }
+
+    /**
+     * Print layout properties for debugging purposes.
+     */
+    private fun visibilityState(editor: LatexViewerStepFragmentedEditor): String {
+        val chain = mutableListOf<String>()
+        var current: Component? = viewerCommandField(editor)
+        while (current != null) {
+            chain += "${current::class.java.simpleName}:${current.isVisible}"
+            current = current.parent
+        }
+        return chain.joinToString(" -> ")
+    }
 }

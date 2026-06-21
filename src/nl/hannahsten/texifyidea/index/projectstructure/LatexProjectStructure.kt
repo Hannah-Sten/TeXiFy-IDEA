@@ -251,7 +251,7 @@ object LatexProjectStructure {
         val result = newFileset ?: fallbackFilesets(previous)
         if (!ApplicationManager.getApplication().isUnitTestMode && newFileset != null && newFileset != previous) {
             // refresh the inspections
-            DaemonCodeAnalyzer.getInstance(project).restart()
+            DaemonCodeAnalyzer.getInstance(project).restart("TeXiFy-IDEA: Filesets updated")
             // there will be an exception if we try to restart the daemon in unit tests
             // see FileStatusMap.CHANGES_NOT_ALLOWED_DURING_HIGHLIGHTING
         }

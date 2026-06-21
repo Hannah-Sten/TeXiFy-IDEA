@@ -1,9 +1,9 @@
 package nl.hannahsten.texifyidea.run.latex.flow
 
 import com.intellij.execution.KillableProcess
-import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessHandler
+import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.process.ProcessOutputTypes
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.util.Key
@@ -170,7 +170,7 @@ internal class StepAwareSequentialProcessHandler(
 
     private fun startProcessStep(index: Int, step: LatexRunStep, processHandler: ProcessHandler) {
         currentProcess = processHandler
-        processHandler.addProcessListener(object : ProcessAdapter() {
+        processHandler.addProcessListener(object : ProcessListener {
             override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
                 if (runFinished) {
                     return

@@ -18,12 +18,14 @@ import nl.hannahsten.texifyidea.file.StyleFileType
 import nl.hannahsten.texifyidea.index.NewSpecialCommandsIndex
 import nl.hannahsten.texifyidea.index.SpecialKeys
 import nl.hannahsten.texifyidea.psi.*
-import nl.hannahsten.texifyidea.run.latex.LatexStepType
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationStaticSupport
+import nl.hannahsten.texifyidea.run.latex.LatexStepType
 import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
 import nl.hannahsten.texifyidea.util.isTestProject
 import nl.hannahsten.texifyidea.util.magic.FileMagic
-import nl.hannahsten.texifyidea.util.parser.*
+import nl.hannahsten.texifyidea.util.parser.LatexExtractablePSI
+import nl.hannahsten.texifyidea.util.parser.asExtractable
+import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
 
 /**
  * Checks if the file has LaTeX syntax.
@@ -218,9 +220,9 @@ fun PsiFile.findExpressionAtCaret(offset: Int): PsiElement? {
     }
 }
 
-fun PsiFile.rerunInspections() {
+fun PsiFile.rerunInspections(reason: String) {
     if (!isTestProject()) {
         // PSI/document/model changes are not allowed during highlighting in tests
-        DaemonCodeAnalyzer.getInstance(project).restart(this)
+        DaemonCodeAnalyzer.getInstance(project).restart(this, "TeXiFy-IDEA: $reason")
     }
 }
