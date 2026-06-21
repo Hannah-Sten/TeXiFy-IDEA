@@ -112,5 +112,4 @@ class LatexViewerStepFragmentedEditorTest : BasePlatformTestCase() {
         }
         return chain.joinToString(" -> ")
     }
-
 }

@@ -25,7 +25,7 @@ class AddZoteroAction : AddLibraryAction<ZoteroLibrary, AddZoteroAction.AddZoter
     override suspend fun createLibrary(dialogWrapper: AddZoteroDialogWrapper, project: Project): Either<RemoteLibraryRequestFailure, Pair<ZoteroLibrary, List<BibtexEntry>>?> = either {
         val library = RemoteBibLibraryFactory.create<ZoteroLibrary>(dialogWrapper.name, dialogWrapper.url) ?: return@either null
         val credentials = Credentials(dialogWrapper.userID, dialogWrapper.userApiKey)
-        PasswordSafe.instance.set(Zotero.userAttributes, credentials)
+        PasswordSafe.instance[Zotero.userAttributes] = credentials
         val bibItems = library.getCollection().getOrElse { raise(it) }
         RemoteLibraryManager.getInstance().updateLibrary(library, bibItems, dialogWrapper.url)
         library to bibItems
