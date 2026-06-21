@@ -19,7 +19,8 @@ import nl.hannahsten.texifyidea.util.labels.LatexLabelUtil
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.EnvironmentMagic
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
-import nl.hannahsten.texifyidea.util.parser.*
+import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
+import nl.hannahsten.texifyidea.util.parser.traverseTyped
 import java.util.*
 
 /**
@@ -197,10 +198,6 @@ class LatexLabelConventionInspection : TexifyInspectionBase() {
 
             // let us add a braced label if it is not already braced
             if (shouldBeBraced) {
-//                parameterText.firstParentOfType(LatexCommandWithParams::class)?.let { command ->
-//                    LatexPsiHelper(project).setOptionalParameter(command, "label", "{$newLabel}")
-//                    parameterText = command.extractLabelParameterTextFromOptionalParameters()
-//                }
                 newLabel = "{$newLabel}"
             }
             // use the renaming processor to rename the label, which will also update all references

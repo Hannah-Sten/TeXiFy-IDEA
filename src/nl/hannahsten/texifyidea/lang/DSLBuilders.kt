@@ -133,14 +133,6 @@ open class DSLLatexBuilderScope {
         return command
     }
 
-//    fun String.cmd(
-//        vararg arguments: LArgument, desc: String = "",
-//    ): LSemanticCommand {
-//        return command(
-//            name = this, arguments = arguments.toList(), description = desc, display = null
-//        )
-//    }
-
     @OptIn(ExperimentalContracts::class)
     inline fun String.cmd(
         vararg arguments: LArgument, display: String? = null, desc: () -> String = { "" }
