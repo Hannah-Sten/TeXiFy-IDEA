@@ -684,7 +684,7 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         val nameRequired = "name".required
         val numberOptional = "number".optional
         val defaultOptional = "default".optional
-        val optionsRequired = "options".required
+        val optionsRequired = "options".required(ctx = LatexContexts.InsideDefinition)
         val specificationRequired = "specification".required
 
         "newtcolorbox".cmd(initOptionsOptional, nameRequired, numberOptional, defaultOptional, optionsRequired) { "Define a new tcolorbox environment" }
