@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.application.runReadActionBlocking
 import com.intellij.util.xmlb.Converter
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 
@@ -37,7 +37,7 @@ class LibraryStateConverter : Converter<Map<String, LibraryState>>() {
             BibItems::class.java,
             object : JsonSerializer<BibItems>() {
                 override fun serialize(p0: BibItems, p1: JsonGenerator, p2: SerializerProvider) {
-                    runReadAction { p1.writeString(BibtexEntryListConverter().toString(p0.items)) }
+                    runReadActionBlocking { p1.writeString(BibtexEntryListConverter().toString(p0.items)) }
                 }
             }
         )
@@ -53,7 +53,7 @@ class LibraryStateConverter : Converter<Map<String, LibraryState>>() {
         module.addDeserializer(
             BibItems::class.java,
             object : JsonDeserializer<BibItems>() {
-                override fun deserialize(p0: JsonParser, p1: DeserializationContext): BibItems = runReadAction { BibItems(BibtexEntryListConverter().fromString(p0.text)) }
+                override fun deserialize(p0: JsonParser, p1: DeserializationContext): BibItems = runReadActionBlocking { BibItems(BibtexEntryListConverter().fromString(p0.text)) }
             }
         )
 

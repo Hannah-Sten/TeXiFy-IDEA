@@ -88,14 +88,14 @@ class LatexTableWizardAction : AnAction() {
         // Convert content to string
         val contentRows = tableModel.dataVector
         var content = ""
-        for (rowIndex in 0 until contentRows.size) {
+        for ((rowIndex, element) in contentRows.withIndex()) {
             var rowString = indent
-            val numberOfRows = contentRows[rowIndex].size
+            val numberOfRows = element.size
             var columnIndex = 0
             while (columnIndex < numberOfRows) {
                 // Enclose with $ if the type of this column is math.
                 val encloseWith = if (columnTypes[columnIndex] == ColumnType.MATH_COLUMN) "$" else ""
-                val cellContent = encloseWith + contentRows[rowIndex][columnIndex] + encloseWith
+                val cellContent = encloseWith + element[columnIndex] + encloseWith
 
                 val span = columnSpanMap.numberOfColumnsInSpan(rowIndex, columnIndex)
                 if (span > 1) {

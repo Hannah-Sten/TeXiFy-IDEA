@@ -1,10 +1,10 @@
 package nl.hannahsten.texifyidea.inspections.latex
 
-import com.intellij.spellchecker.inspections.SpellCheckingInspection
+import com.intellij.grazie.spellcheck.GrazieSpellCheckingInspection
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
 
-class LatexSpellCheckingStrategyTest : TexifyInspectionTestBase(SpellCheckingInspection()) {
+class LatexSpellCheckingStrategyTest : TexifyInspectionTestBase(GrazieSpellCheckingInspection()) {
 
     fun testWarning() {
         myFixture.configureByText(

@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.settings.sdk
 
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.LocalFileSystem
@@ -7,6 +8,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.util.runCommand
 import java.io.File
+import java.nio.file.Path
 import java.util.*
 
 /**
@@ -31,7 +33,7 @@ open class TexliveSdk(name: String = "TeX Live SDK") : LatexSdk(name) {
                         startIndex + "TeX Live ".length + "2019".length
                     ).toInt()
                 }
-                catch (e: NumberFormatException) {
+                catch (_: NumberFormatException) {
                     0
                 }
             }
@@ -46,7 +48,7 @@ open class TexliveSdk(name: String = "TeX Live SDK") : LatexSdk(name) {
         }
     }
 
-    override fun suggestHomePath(): String {
+    override fun suggestHomePath(path: Path): String {
         // This method should work fast and allow running from the EDT thread.
         // It will be the starting point when someone opens the file explorer dialog to select an SDK of this type
         // Guess defaults without accessing file system
@@ -54,9 +56,10 @@ open class TexliveSdk(name: String = "TeX Live SDK") : LatexSdk(name) {
         return if (SystemInfo.isMac) "/usr/local/texlive/$year" else "~/texlive/$year"
     }
 
-    override fun suggestHomePaths(): MutableCollection<String> {
+    override fun suggestHomePaths(project: Project?): MutableCollection<String> {
         // Note that suggested paths appear under "Detected SDK's" when adding an SDK
-        val results = mutableSetOf(suggestHomePath())
+        val results = mutableSetOf<String>()
+        defaultSuggestedHomePath()?.let { results.add(it) }
         val paths = if (SystemInfo.isWindows) "where pdflatex".runCommand() else "which pdflatex".runCommand()
         if (!paths.isNullOrEmpty()) {
             for (path in paths.split("\\s+".toRegex())) {

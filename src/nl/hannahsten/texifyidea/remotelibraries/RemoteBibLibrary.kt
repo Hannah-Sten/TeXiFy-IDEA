@@ -4,7 +4,7 @@ import arrow.core.Either
 import arrow.core.raise.either
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
-import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.application.runReadActionBlocking
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.RemoteLibraryRequestFailure
 import nl.hannahsten.texifyidea.psi.BibtexEntry
@@ -32,7 +32,7 @@ abstract class RemoteBibLibrary(open val identifier: String, open val displayNam
         val body = getBibtexString().bind()
 
         // Reading the dummy bib file needs to happen in a place where we have read access.
-        runReadAction {
+        runReadActionBlocking {
             try {
                 BibtexEntryListConverter().fromString(body)
             } catch (e: Exception) {

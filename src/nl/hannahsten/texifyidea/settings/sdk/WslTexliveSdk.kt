@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.settings.sdk
 
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.LocalFileSystem
@@ -7,7 +8,8 @@ import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.runCommand
-import java.util.Calendar
+import java.nio.file.Path
+import java.util.*
 
 /**
  * Utility functions for WSL path conversion and availability checking.
@@ -44,14 +46,14 @@ object WslPathUtil {
  */
 class WslTexliveSdk : LatexSdk("WSL TeX Live SDK") {
 
-    override fun suggestHomePath(): String {
+    override fun suggestHomePath(path: Path): String {
         if (!SystemInfo.isWindows) return ""
 
         val year = Calendar.getInstance().weekYear
         return WslPathUtil.wslPathToWindows("/usr/local/texlive/$year") ?: ""
     }
 
-    override fun suggestHomePaths(): MutableCollection<String> {
+    override fun suggestHomePaths(project: Project?): MutableCollection<String> {
         if (!SystemInfo.isWindows) return mutableListOf()
 
         val results = mutableSetOf<String>()
@@ -72,8 +74,8 @@ class WslTexliveSdk : LatexSdk("WSL TeX Live SDK") {
         }
 
         // Add default suggestion
-        val defaultPath = suggestHomePath()
-        if (defaultPath.isNotEmpty()) {
+        val defaultPath = defaultSuggestedHomePath()
+        if (defaultPath?.isNotBlank() == true) {
             results.add(defaultPath)
         }
 

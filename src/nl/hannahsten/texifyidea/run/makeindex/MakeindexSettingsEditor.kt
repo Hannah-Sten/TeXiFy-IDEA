@@ -8,6 +8,7 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.ui.*
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.ui.RawCommandLineEditor
+import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -57,7 +58,7 @@ class MakeindexSettingsEditor(private val project: Project) : SettingsEditor<Mak
             val mainFileField = TextFieldWithBrowseButton().apply {
                 addBrowseFolderListener(
                     TextBrowseFolderListener(
-                        FileChooserDescriptorFactory.createSingleFileDescriptor()
+                        FileChooserDescriptorFactory.createSingleFileDescriptor(LatexFileType)
                             .withTitle("Choose the Main .tex File")
                             .withExtensionFilter("tex")
                             .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules.toSet().toTypedArray())

@@ -118,7 +118,7 @@ object MendeleyAuthenticator {
     /**
      * Exchange the [authenticationCode] for an access token. Use the stored access token when available.
      */
-    suspend fun getAccessToken(): Credentials? = PasswordSafe.instance.get(tokenAttributes) ?: authenticationCode?.let {
+    suspend fun getAccessToken(): Credentials? = PasswordSafe.instance[tokenAttributes] ?: authenticationCode?.let {
         val token: AccessTokenInfo = authenticationClient.submitForm(
             url = "https://api.mendeley.com/oauth/token",
             formParameters = Parameters.build {
@@ -182,8 +182,8 @@ object MendeleyAuthenticator {
             val tokenCredentials = Credentials("token", accessToken)
             val refreshTokenCredentials = Credentials("refresh_token", refreshToken)
 
-            PasswordSafe.instance.set(tokenAttributes, tokenCredentials)
-            PasswordSafe.instance.set(refreshTokenAttributes, refreshTokenCredentials)
+            PasswordSafe.instance[tokenAttributes] = tokenCredentials
+            PasswordSafe.instance[refreshTokenAttributes] = refreshTokenCredentials
 
             return tokenCredentials to refreshTokenCredentials
         }
