@@ -3,9 +3,16 @@
 ## [Unreleased]
 
 ### Added
-* Add correct quickfix for acro package
 
 ### Fixed
+
+## [1.0.0] - 2026-06-22
+
+Welcome to TeXiFy IDEA 1.0.0! We are happy to introduce a completely new run configuration written by @Ezrnest based on an idea from @stenwessel.
+We also celebrate 10 years since @stenwessel created the first commit, so we think it is fitting to release version 1.0.0.
+
+After updating, your existing run configurations will be migrated automatically.
+We have tried our best to support all different run configuration workflows. If we missed something, please let us know!
 
 ## [0.11.8] - 2026-03-01
 
@@ -766,7 +773,8 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.8...HEAD
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.8...v1.0.0
 [0.11.8]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.7...v0.11.8
 [0.11.7]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.6...v0.11.7
 [0.11.6]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v0.11.5...v0.11.6

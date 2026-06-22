@@ -9,7 +9,7 @@
 - [ ] runIDE and check the changelog is formatted correctly, then close the dev instance
 - [ ] Run publishPlugin
 - [ ] Merge PR
-- [ ] buildPlugin and release on GitHub, tag version: v0.x.x and release title: Beta x.x.x
+- [ ] Release on GitHub, tag version: v0.x.x and release title: vx.x.x
 - [ ] Close the milestone
 - [ ] Update MiKTeX Docker image
 - [ ] Check performance: indexing texlive full should take around one minute, inspections on a 10k line file should take around 10 seconds, pressing enter in such a file should react within a second.
