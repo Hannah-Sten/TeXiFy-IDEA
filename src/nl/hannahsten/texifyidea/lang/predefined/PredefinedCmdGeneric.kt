@@ -294,7 +294,7 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
 
     val booktabs = buildCommands {
         underPackage("booktabs") {
-            underContext(LatexContexts.Tabular) {
+            underContext(LatexContexts.Table) {
                 "toprule".cmd("width".optional(LatexContexts.Dimension)) {
                     "Draw the top rule of a formal table."
                 }

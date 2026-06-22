@@ -203,12 +203,12 @@ object PredefinedEnvBasic : PredefinedEnvironmentSet() {
         val cols = "cols".required(Literal)
         val pos = "pos".optional(Position)
         val width = "width".optional(Dimension)
-        "tabular".env(+LatexContexts.Tabular, pos, cols) {
+        "tabular".env(+LatexContexts.Table, pos, cols) {
             "A basic table."
         }
-        "tabular*".env(+LatexContexts.Tabular, width, pos, cols)
-        "tabularx".env(+LatexContexts.Tabular, width, cols)
-        "tabulary".env(+LatexContexts.Tabular, "length".required(Dimension), "pream".optional(Literal))
+        "tabular*".env(+LatexContexts.Table, width, pos, cols)
+        "tabularx".env(+LatexContexts.Table, width, cols)
+        "tabulary".env(+LatexContexts.Table, "length".required(Dimension), "pream".optional(Literal))
         "longtable".env(LatexContexts.Table, cols)
 
         underPackage("tabularray") {
