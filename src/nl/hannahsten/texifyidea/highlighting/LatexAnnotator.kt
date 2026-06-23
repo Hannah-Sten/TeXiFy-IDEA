@@ -22,7 +22,6 @@ import nl.hannahsten.texifyidea.lang.predefined.CommandNames
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil
 import nl.hannahsten.texifyidea.util.parser.findFirstChildTyped
-import nl.hannahsten.texifyidea.util.shrink
 import nl.hannahsten.texifyidea.util.parser.forEachDirectChildTyped
 
 /**
@@ -265,10 +264,15 @@ open class LatexAnnotator : Annotator {
         }
 
         command.firstRequiredParameter()?.let { param ->
-            annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-                .range(param.textRange.shrink(1))
-                .textAttributes(style)
-                .create()
+            param.findFirstChildTyped<LatexRequiredParamContent>()?.forEachDirectChildTyped<LatexParameterText> { content ->
+                // Avoid overriding command highlighting
+                content.node.children().filter { it.elementType == LatexTypes.NORMAL_TEXT_WORD }.forEach { text ->
+                    annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                        .range(text.textRange)
+                        .textAttributes(style)
+                        .create()
+                }
+            }
         }
     }
 }

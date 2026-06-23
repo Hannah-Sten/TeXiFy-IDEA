@@ -34,4 +34,16 @@ class LatexHighlightingTest : BasePlatformTestCase() {
         myFixture.updateCommandDef()
         myFixture.checkHighlighting(true, true, true, true)
     }
+
+    fun testCommand() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+                \textbf{<info descr="null">Boldstyle</info> \notboldstyle <info descr="null">boldstyle</info> <info descr="null">again</info>}
+                Something \guilsinglright{} something else
+            """.trimIndent()
+        )
+        myFixture.updateCommandDef()
+        myFixture.checkHighlighting(true, true, true, false)
+    }
 }

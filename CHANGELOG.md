@@ -6,6 +6,7 @@
 * Updated dependencies
 
 ### Fixed
+* Fixed command highlighting in \textbf, \textit, etc.
 * Fixed issues where some table environments were not recognised as such
 
 ## [1.0.0] - 2026-06-22
