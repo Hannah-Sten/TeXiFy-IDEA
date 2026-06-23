@@ -38,11 +38,15 @@ internal class LatexEscapeAmpersandInspectionTest : TexifyInspectionTestBase(Lat
             """
             \newenvironment{kwak}{ \begin{tabular}{lc} }{ \end{tabular} }
             \newcommand{\kwek}[1]{ \begin{kwak} #1 \end{kwak} }
+            \newenvironment{kwik}[1]{ \begin{longtable}{#1} }{ \end{longtable} }
             \begin{document}
                 \begin{kwak}
                     kwik & kwek \\
                 \end{kwak}
                 \kwek{kwak & kwek}
+                \begin{kwik}{cc}
+                    kwak & kwek \\
+                \end{kwik}
             \end{document}
             """.trimIndent()
         )

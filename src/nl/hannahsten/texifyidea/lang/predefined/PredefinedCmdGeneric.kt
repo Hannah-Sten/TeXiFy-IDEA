@@ -294,7 +294,7 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
 
     val booktabs = buildCommands {
         underPackage("booktabs") {
-            underContext(LatexContexts.Tabular) {
+            underContext(LatexContexts.Table) {
                 "toprule".cmd("width".optional(LatexContexts.Dimension)) {
                     "Draw the top rule of a formal table."
                 }
@@ -684,7 +684,7 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         val nameRequired = "name".required
         val numberOptional = "number".optional
         val defaultOptional = "default".optional
-        val optionsRequired = "options".required
+        val optionsRequired = "options".required(ctx = LatexContexts.InsideDefinition)
         val specificationRequired = "specification".required
 
         "newtcolorbox".cmd(initOptionsOptional, nameRequired, numberOptional, defaultOptional, optionsRequired) { "Define a new tcolorbox environment" }
