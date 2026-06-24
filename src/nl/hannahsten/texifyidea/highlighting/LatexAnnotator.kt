@@ -234,15 +234,7 @@ open class LatexAnnotator : Annotator {
         LatexPsiUtil.processArgumentsWithNonNullSemantics(command, semantics) { param, arg ->
             val intro = arg.contextSignature
             getStyleFromContextSignature(intro)?.let { style ->
-                param.findFirstChildTyped<LatexRequiredParamContent>()?.forEachDirectChildTyped<LatexParameterText> { content ->
-                    // Avoid overriding command highlighting
-                    content.node.children().filter { it.elementType == LatexTypes.NORMAL_TEXT_WORD }.forEach { text ->
-                        annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-                            .range(text.textRange)
-                            .textAttributes(style)
-                            .create()
-                    }
-                }
+                annotateRequiredParameterText(param, annotationHolder, style)
             }
         }
     }
@@ -264,14 +256,22 @@ open class LatexAnnotator : Annotator {
         }
 
         command.firstRequiredParameter()?.let { param ->
-            param.findFirstChildTyped<LatexRequiredParamContent>()?.forEachDirectChildTyped<LatexParameterText> { content ->
-                // Avoid overriding command highlighting
-                content.node.children().filter { it.elementType == LatexTypes.NORMAL_TEXT_WORD }.forEach { text ->
-                    annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-                        .range(text.textRange)
-                        .textAttributes(style)
-                        .create()
-                }
+            annotateRequiredParameterText(param, annotationHolder, style)
+        }
+    }
+
+    private fun annotateRequiredParameterText(
+        parameter: PsiElement,
+        annotationHolder: AnnotationHolder,
+        style: TextAttributesKey
+    ) {
+        parameter.findFirstChildTyped<LatexRequiredParamContent>()?.forEachDirectChildTyped<LatexParameterText> { content ->
+            // Avoid overriding command highlighting
+            content.node.children().filter { it.elementType == LatexTypes.NORMAL_TEXT_WORD }.forEach { text ->
+                annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                    .range(text.textRange)
+                    .textAttributes(style)
+                    .create()
             }
         }
     }
