@@ -16,7 +16,7 @@ import nl.hannahsten.texifyidea.util.parser.getRequiredArgumentValueByName
 import nl.hannahsten.texifyidea.util.parser.traverseTyped
 
 /**
- * Inserts a custom c custom command definition.
+ * Inserts a custom command definition.
  */
 fun insertCommandDefinition(file: PsiFile, commandText: String, newCommandName: String = "mycommand"): PsiElement? {
     if (!file.isWritable) return null

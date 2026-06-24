@@ -11,7 +11,6 @@ import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.lang.predefined.CommandNames
 import nl.hannahsten.texifyidea.lang.predefined.PredefinedCmdFiles
 import nl.hannahsten.texifyidea.lang.predefined.PredefinedCmdMathSymbols
-import nl.hannahsten.texifyidea.util.magic.CommandMagic.stylePrimitives
 
 object CommandMagic {
 
@@ -289,7 +288,7 @@ object CommandMagic {
      * Commands which can include packages in optional or required arguments.
      */
     val packageInclusionCommands = CommandNames.run {
-        setOf(USE_PACKAGE, REQUIRE_PACKAGE, DOCUMENT_CLASS, LOAD_CLASS, LOAD_CLASS_WITH_OPTIONS)
+        setOf(USE_PACKAGE, REQUIRE_PACKAGE, DOCUMENT_CLASS, LOAD_CLASS, LOAD_CLASS_WITH_OPTIONS, USE_TBLR_LIBRARY)
     }
 
     val tikzLibraryInclusionCommands = CommandNames.run { setOf(USE_TIKZ_LIBRARY) }
@@ -300,7 +299,7 @@ object CommandMagic {
     val externalDocumentCommands = CommandNames.run { setOf(EXTERNAL_DOCUMENT, Z_EXTERNAL_DOCUMENT) }
 
     /**
-     * Extensions that should only be scanned for the provided include commands.
+     * These commands can only include files of the given type.
      */
     val includeAndExtensions: Map<String, Set<String>> = CommandNames.run {
         mapOf(
@@ -313,6 +312,7 @@ object CommandMagic {
             ADD_BIB_RESOURCE to hashSetOf("bib"),
             REQUIRE_PACKAGE to hashSetOf("sty"),
             USE_PACKAGE to hashSetOf("sty"),
+            USE_TBLR_LIBRARY to hashSetOf("sty"),
             DOCUMENT_CLASS to hashSetOf("cls"),
             LOAD_CLASS to hashSetOf("cls"),
             EXTERNAL_DOCUMENT to hashSetOf("tex"),

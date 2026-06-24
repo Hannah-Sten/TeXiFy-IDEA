@@ -60,6 +60,7 @@ object CommandNames {
     const val USE_TIKZ_LIBRARY = "\\usetikzlibrary"
     const val USE_PGF_PLOTS_LIBRARY = "\\usepgfplotslibrary"
     const val ONLY_IF_STANDALONE = "\\onlyifstandalone"
+    const val USE_TBLR_LIBRARY = "\\UseTblrLibrary"
 
     // 4. File/input related
     const val INPUT = "\\input"
