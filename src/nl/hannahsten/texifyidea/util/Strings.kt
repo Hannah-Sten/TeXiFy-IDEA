@@ -1,12 +1,10 @@
 package nl.hannahsten.texifyidea.util
 
-import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.LocalFileSystem
 import nl.hannahsten.texifyidea.util.magic.PatternMagic
 import java.nio.file.Path
 import java.text.Normalizer
 import java.util.*
-import kotlin.math.max
 import kotlin.math.min
 
 /**
@@ -236,9 +234,6 @@ fun String.firstIndexOfAny(vararg chars: Char): Int {
 
 /** If this contains any of the given set. */
 fun CharSequence.containsAny(set: Set<String>) = set.any { this.contains(it) }
-
-/** Shrink textrange with the given amount at both sides. */
-fun TextRange.shrink(amount: Int) = TextRange(min(this.startOffset + amount, endOffset - 1), max(0, this.endOffset - amount))
 
 /**
  * Appends a line separator.
