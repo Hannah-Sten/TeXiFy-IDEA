@@ -18,6 +18,7 @@ import nl.hannahsten.texifyidea.util.AbstractBlockingCacheService
 import nl.hannahsten.texifyidea.util.CacheValueTimed
 import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.files.LatexPackageLocation
+import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import java.nio.file.Path
 import kotlin.io.path.pathString
 import kotlin.time.Duration
@@ -37,12 +38,7 @@ class LatexLibraryStructureService(
     companion object {
         val performanceTracker = SimplePerformanceTracker()
 
-        private val libraryCommandNameToExt: Map<String, String> = mapOf(
-            "\\usepackage" to ".sty",
-            "\\RequirePackage" to ".sty",
-            "\\documentclass" to ".cls",
-            "\\LoadClass" to ".cls"
-        )
+        private val libraryCommandNameToExt: Map<String, String> = CommandMagic.includeAndExtensions.mapValues { "." + it.value.first() }
 
         // never expire unless invalidated manually
         private val LIBRARY_FILESET_EXPIRATION_TIME = Duration.INFINITE
