@@ -114,12 +114,15 @@ object PredefinedEnvBasic : PredefinedEnvironmentSet() {
             "equation*".env(math) { "An unnumbered equation." }
             "align".env(alignableMath) { "A set of aligned equations." }
             "align*".env(alignableMath) { "A set of aligned equations without numbering." }
+            "alignat".env(alignableMath, "columns".required) { "A set of aligned equations on a given number of columns." }
+            "alignat*".env(alignableMath, "columns".required) { "A set of aligned equations on a given number of columns, without numbering." }
             "gather".env(math) { "A set of equations, centered." }
             "gather*".env(math) { "A set of equations, centered, without numbering." }
             "multline".env(math) { "A long equation that spans multiple lines." }
             "multline*".env(math) { "A long equation that spans multiple lines, without numbering." }
             "flalign".env(math) { "A set of equations, left and right aligned." }
             "flalign*".env(math) { "A set of equations, left and right aligned, without numbering." }
+            "split".env(alignableMath) { "A single equation, split into multiple lines." }
         }
 
         underContext(LatexContexts.Math) {

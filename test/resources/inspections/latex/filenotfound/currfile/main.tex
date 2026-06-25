@@ -1,0 +1,9 @@
+%! compiler = pdflatex -recorder
+%\RequirePackage[abspath]{currfile}
+
+%\documentclass{article}
+
+\begin{document}
+    % Still works when compiled with a different working directory
+    \input{\currfileabsdir/included}
+\end{document}

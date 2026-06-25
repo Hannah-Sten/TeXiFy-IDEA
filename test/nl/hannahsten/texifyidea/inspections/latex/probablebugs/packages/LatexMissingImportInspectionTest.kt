@@ -177,6 +177,7 @@ class LatexMissingImportInspectionTest : TexifyInspectionTestBase(LatexMissingIm
             """.trimIndent()
         )
         myFixture.updateFilesets()
+        myFixture.updateFilesets()
         myFixture.checkHighlighting()
     }
 }
