@@ -124,19 +124,23 @@ private fun VirtualFile.allChildDirectories(dirs: MutableSet<VirtualFile>) {
 /**
  * Recursively finds all files in a directory (thus, also the files in sub-directories etc.)
  */
-fun VirtualFile.allChildFiles(): Set<VirtualFile> {
+fun VirtualFile.allChildFiles(maxFiles: Int = 10000): Set<VirtualFile> {
     val set = HashSet<VirtualFile>()
-    allChildFiles(set)
+    allChildFiles(set, maxFiles)
     return set
 }
 
 /**
  * Recursive implementation of [allChildFiles].
  */
-private fun VirtualFile.allChildFiles(files: MutableSet<VirtualFile>) {
+private fun VirtualFile.allChildFiles(files: MutableSet<VirtualFile>, maxFiles: Int) {
     if (isDirectory) {
+        if (files.size > maxFiles) {
+            Log.debug("Found more than $maxFiles files, skipping the rest")
+            return
+        }
         children.forEach {
-            it.allChildFiles(files)
+            it.allChildFiles(files, maxFiles)
         }
     }
     else files.add(this)

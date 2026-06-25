@@ -21,6 +21,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.nameWithSlash
 import nl.hannahsten.texifyidea.util.CacheValueTimed
 import nl.hannahsten.texifyidea.util.expandCommandsOnce
+import nl.hannahsten.texifyidea.util.expandGlob
 import nl.hannahsten.texifyidea.util.files.allChildDirectories
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
@@ -102,7 +103,7 @@ class FilesetProcessor(
     }
 
     private inline fun processElementsWithPaths(
-        elements: List<Sequence<Path>>, refInfoList: List<MutableSet<VirtualFile>>, containingFile: VirtualFile,
+        elements: List<Iterable<Path>>, refInfoList: List<MutableSet<VirtualFile>>, containingFile: VirtualFile,
         crossinline findFile: (Path) -> VirtualFile?
     ) {
         for ((paths, refInfo) in elements.zip(refInfoList)) {
@@ -116,7 +117,7 @@ class FilesetProcessor(
     }
 
     private fun processLibraryReferences(
-        elements: List<Sequence<Path>>, refInfoList: List<MutableSet<VirtualFile>>, containingFile: VirtualFile, command: LatexCommands
+        elements: List<Iterable<Path>>, refInfoList: List<MutableSet<VirtualFile>>, containingFile: VirtualFile, command: LatexCommands
     ) {
         for ((paths, refInfo) in elements.zip(refInfoList)) {
             for (path in paths) {
@@ -166,7 +167,7 @@ class FilesetProcessor(
     }
 
     private fun processFilesUnderRootDirs(
-        elements: List<Sequence<Path>>, refInfoList: List<MutableSet<VirtualFile>>, containingFile: VirtualFile, rootDirs: Collection<VirtualFile>,
+        elements: List<Iterable<Path>>, refInfoList: List<MutableSet<VirtualFile>>, containingFile: VirtualFile, rootDirs: Collection<VirtualFile>,
     ) {
         processElementsWithPaths(elements, refInfoList, containingFile) { path ->
             findLocalFile(path, rootDirs)
@@ -185,11 +186,16 @@ class FilesetProcessor(
     }
 
     private fun pathTextExtraProcessing(
-        text: String, file: VirtualFile
-    ): String {
-        var result = expandCommandsOnce(text, project, file, currentParentFile)
-        result = result.trim()
-        return result
+        text: String, file: VirtualFile, command: LatexCommands
+    ): List<String> {
+        val expandedCommands = expandCommandsOnce(text, project, file, currentParentFile).trim()
+        // Special case for biblatex: [ and ] break up the parameter text psi element, but are part of a glob pattern, so we need to consider the parameter as a whole
+        return if (command.name == CommandNames.ADD_BIB_RESOURCE && command.optionalParameterTextMap().keys.any { it == "glob" }) {
+            expandGlob(expandedCommands, currentRootDir)
+        }
+        else {
+            listOf(expandedCommands)
+        }
     }
 
     private fun resolveSubfolder(root: VirtualFile, siblingRelativePath: String): VirtualFile? = runCatching { root.parent?.findDirectory(siblingRelativePath) }.getOrNull()
@@ -243,20 +249,21 @@ class FilesetProcessor(
         var pathWithExts = rangesAndTextsWithExt.flatMap { (paramTexts, extensions) ->
             val noExtensionProvided = extensions.isEmpty()
             val extensionSeq = extensions.asSequence()
-            paramTexts.asSequence().map { text ->
-                val text = pathTextExtraProcessing(text, file)
-                pathOrNull(text)?.let { path ->
-                    // If a file a.b.tex exists, \input{a.b} prefers a.b.tex over a.b
-                    if (noExtensionProvided) {
-                        sequenceOf(path)
-                    }
-                    else {
-                        path.name.let { fileName ->
-                            // For some commands, like \input, the extension is optional, for now we always try it
-                            extensionSeq.map { ext -> path.resolveSibling("$fileName.$ext") } + listOf(path.resolveSibling(fileName))
+            paramTexts.asSequence().map { paramText ->
+                pathTextExtraProcessing(paramText, file, command).flatMap { pathMaybe ->
+                    pathOrNull(pathMaybe)?.let { path ->
+                        // If a file a.b.tex exists, \input{a.b} prefers a.b.tex over a.b
+                        if (noExtensionProvided) {
+                            sequenceOf(path)
                         }
-                    }
-                } ?: emptySequence()
+                        else {
+                            path.name.let { fileName ->
+                                // For some commands, like \input, the extension is optional, for now we always try it
+                                extensionSeq.map { ext -> path.resolveSibling("$fileName.$ext") } + listOf(path.resolveSibling(fileName))
+                            }
+                        }
+                    } ?: emptySequence()
+                }
             }
         }
         val refInfos: List<MutableSet<VirtualFile>> = List(extractedRefTexts.size) { mutableSetOf() }
