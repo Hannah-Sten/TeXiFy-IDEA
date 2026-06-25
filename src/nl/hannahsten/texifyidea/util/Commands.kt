@@ -11,9 +11,13 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.psi.traverseCommands
 import nl.hannahsten.texifyidea.util.PackageUtils.getDefaultInsertAnchor
+import nl.hannahsten.texifyidea.util.files.allChildFiles
 import nl.hannahsten.texifyidea.util.files.definitions
 import nl.hannahsten.texifyidea.util.parser.getRequiredArgumentValueByName
 import nl.hannahsten.texifyidea.util.parser.traverseTyped
+import java.nio.file.FileSystems
+import java.nio.file.Path
+import kotlin.io.path.invariantSeparatorsPathString
 
 /**
  * Inserts a custom command definition.
@@ -52,6 +56,26 @@ fun insertCommandDefinition(file: PsiFile, commandText: String, newCommandName: 
     PackageUtils.insertNodeAfterAnchor(file, anchorAfter, prependNewLine = true, newNode, prependBlankLine = true)
 
     return newChild
+}
+
+/**
+ * \addbibresource supports BSD-style globs, in particular *, ?, [...] and [!...].
+ */
+fun expandGlob(pathWithGlob: String, currentRootDir: VirtualFile?): List<String> {
+    val trimmedPath = pathWithGlob.trim()
+    if (trimmedPath.isBlank()) return emptyList()
+
+    val matcher = FileSystems.getDefault().getPathMatcher("glob:$trimmedPath")
+
+    val result = mutableListOf<String>()
+    currentRootDir?.allChildFiles()?.forEach { candidate ->
+        val pathForMatch = Path.of(candidate.path.remove(currentRootDir.path + "/"))
+        if (matcher.matches(pathForMatch)) {
+            result.add(pathForMatch.invariantSeparatorsPathString)
+        }
+    }
+
+    return result.sorted() // Just for the test
 }
 
 /**
