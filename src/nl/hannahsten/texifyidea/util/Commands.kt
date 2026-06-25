@@ -56,8 +56,10 @@ fun insertCommandDefinition(file: PsiFile, commandText: String, newCommandName: 
 
 /**
  * Expand custom commands in a given text once, using its definition in the index.
+ *
+ * @param parentFile The file which includes [file].
  */
-fun expandCommandsOnce(inputText: String, project: Project, file: VirtualFile?): String {
+fun expandCommandsOnce(inputText: String, project: Project, file: VirtualFile?, parentFile: VirtualFile? = null): String {
     file ?: return inputText
     if (!inputText.contains('\\')) return inputText // No commands to expand, return the text as is
     var text = inputText
@@ -67,6 +69,10 @@ fun expandCommandsOnce(inputText: String, project: Project, file: VirtualFile?):
     for (command in commandsInText) {
         // Expand the command once, and replace the command with the expanded text
         val name = command.name ?: continue
+        expandCurrfileCommand(command, file, parentFile)?.let {
+            text = text.replace(command.text, it)
+            continue
+        }
         val definitionCommand = NewDefinitionIndex.getByName(name, project, file).firstOrNull() ?: continue
         definitionCommand.getRequiredArgumentValueByName("code")
             ?.let { commandExpansion ->
@@ -74,4 +80,28 @@ fun expandCommandsOnce(inputText: String, project: Project, file: VirtualFile?):
             }
     }
     return text
+}
+
+/**
+ * The currfile package provides various commands which resolve to parts of the current file path.
+ *
+ * @param parentFile The file which includes [file].
+ */
+fun expandCurrfileCommand(command: LatexCommands, file: VirtualFile, parentFile: VirtualFile? = null): String? = when (command.name) {
+    CommandNames.CURRFILE_DIR,
+    CommandNames.CURRFILE_ABS_DIR -> file.parent?.path ?: ""
+    CommandNames.CURRFILE_BASE -> file.nameWithoutExtension
+    CommandNames.CURRFILE_EXT -> file.extension ?: ""
+    CommandNames.CURRFILE_NAME -> file.name
+    CommandNames.CURRFILE_PATH -> file.path
+    CommandNames.CURRFILE_ABS_PATH -> file.path
+
+    CommandNames.PARENTFILE_DIR,
+    CommandNames.PARENTFILE_ABS_DIR -> parentFile?.parent?.path ?: ""
+    CommandNames.PARENTFILE_BASE -> parentFile?.nameWithoutExtension ?: ""
+    CommandNames.PARENTFILE_EXT -> parentFile?.extension ?: ""
+    CommandNames.PARENTFILE_NAME -> parentFile?.name ?: ""
+    CommandNames.PARENTFILE_PATH -> parentFile?.path ?: ""
+    CommandNames.PARENTFILE_ABS_PATH -> parentFile?.path ?: ""
+    else -> null
 }

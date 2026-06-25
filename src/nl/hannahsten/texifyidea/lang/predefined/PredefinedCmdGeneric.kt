@@ -290,6 +290,22 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
         "setmainfont".cmd("font".required, "font features".optional) { "Set the main text font." }
         "setmonofont".cmd("font".required, "font features".optional) { "Set the monospaced font." }
         "setsansfont".cmd("font".required, "font features".optional) { "Set the sans-serif font." }
+
+        packageOf("currfile")
+        "currfiledir".cmd { "Get the directory of the current file." }
+        "currfilebase".cmd { "Get the base name of the current file without extension." }
+        "currfileext".cmd { "Get the extension of the current file." }
+        "currfilename".cmd { "Get the file name of the current file." }
+        "currfilepath".cmd { "Get the path of the current file." }
+        "currfileabsdir".cmd { "Get the absolute directory of the current file." }
+        "currfileabspath".cmd { "Get the absolute path of the current file." }
+        "parentfiledir".cmd { "Get the directory of the parent file." }
+        "parentfilebase".cmd { "Get the base name of the parent file without extension." }
+        "parentfileext".cmd { "Get the extension of the parent file." }
+        "parentfilename".cmd { "Get the file name of the parent file." }
+        "parentfilepath".cmd { "Get the path of the parent file." }
+        "parentfileabsdir".cmd { "Get the absolute directory of the parent file." }
+        "parentfileabspath".cmd { "Get the absolute path of the parent file." }
     }
 
     val booktabs = buildCommands {
