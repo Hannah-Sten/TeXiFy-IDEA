@@ -122,7 +122,7 @@ object PredefinedEnvBasic : PredefinedEnvironmentSet() {
             "multline*".env(math) { "A long equation that spans multiple lines, without numbering." }
             "flalign".env(math) { "A set of equations, left and right aligned." }
             "flalign*".env(math) { "A set of equations, left and right aligned, without numbering." }
-            "split".env(math) { "A single equation, split into multiple lines." }
+            "split".env(alignableMath) { "A single equation, split into multiple lines." }
         }
 
         underContext(LatexContexts.Math) {
