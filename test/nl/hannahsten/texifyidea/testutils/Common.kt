@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.testutils
 
+import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
 import com.intellij.testFramework.fixtures.IdeaProjectTestFixture
@@ -11,12 +12,15 @@ import io.mockk.mockkStatic
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.LatexCompileStepOptions
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer
+import nl.hannahsten.texifyidea.run.pdfviewer.NoViewer
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettings
 import nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsSettingsManager
 import nl.hannahsten.texifyidea.settings.sdk.MiktexWindowsSdk
 import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
 import nl.hannahsten.texifyidea.util.selectedRunConfig
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
+import java.nio.file.Path
 
 /**
  * Execute the given action as write command.
@@ -66,3 +70,27 @@ fun setUnicodeSupport(project: Project, enabled: Boolean = true) {
 }
 
 fun String.toSystemNewLine() = replace(Regex("\n|\r\n"), System.lineSeparator())
+
+/**
+ * Adds a new LaTeX run configuration to the project.
+ *
+ * @param name The name of the run configuration.
+ * @param mainFilePath The path to the main LaTeX file to be compiled.
+ * @param outputPath The directory path where the outputs (e.g., PDF files) will be generated.
+ * @return The created instance of [LatexRunConfiguration].
+ */
+fun Project.addLatexRunConfig(
+    name: String,
+    mainFilePath: String,
+    outputPath: Path,
+): LatexRunConfiguration {
+    val factory = LatexRunConfigurationProducer().configurationFactory
+    val runConfig = LatexRunConfiguration(this, factory, name).apply {
+        this.mainFilePath = mainFilePath
+        this.outputPath = outputPath
+        pdfViewer = NoViewer
+    }
+    val settings = RunManagerImpl.getInstanceImpl(this).createConfiguration(runConfig, factory)
+    RunManagerImpl.getInstanceImpl(this).addConfiguration(settings)
+    return settings.configuration as LatexRunConfiguration
+}

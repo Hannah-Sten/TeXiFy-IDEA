@@ -1,18 +1,24 @@
 package nl.hannahsten.texifyidea.action
 
-import com.intellij.execution.impl.RunManagerImpl
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.TextEditor
-import com.intellij.openapi.project.Project
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer
-import nl.hannahsten.texifyidea.run.pdfviewer.NoViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
+import nl.hannahsten.texifyidea.testutils.RecordingForwardSearchViewer
+import nl.hannahsten.texifyidea.testutils.addLatexRunConfig
 import nl.hannahsten.texifyidea.updateFilesets
 import java.nio.file.Path
 
 class ForwardSearchActionTest : BasePlatformTestCase() {
+
+    override fun tearDown() {
+        try {
+            PdfViewer.additionalViewers = emptyList()
+        }
+        finally {
+            super.tearDown()
+        }
+    }
 
     fun testForwardSearchUsesRunConfigOfCurrentFileset() {
         myFixture.addFileToProject(
@@ -37,10 +43,12 @@ class ForwardSearchActionTest : BasePlatformTestCase() {
         myFixture.addFileToProject("b/chapter.tex", "B content")
         myFixture.updateFilesets()
 
-        addRunConfig("A", "a/root-a.tex", Path.of("{projectDir}", "out-a"))
-        addRunConfig("B", "b/root-b.tex", Path.of("{projectDir}", "out-b"))
+        project.addLatexRunConfig("A", "a/root-a.tex", Path.of("{projectDir}", "out-a"))
+        project.addLatexRunConfig("B", "b/root-b.tex", Path.of("{projectDir}", "out-b"))
 
         // Using a mockk object would give an exception: java.lang.UnsupportedOperationException: class redefinition failed: attempted to change the schema
+        // This is probably because of intellij platform test instrumentation interfers with Mockk's one,
+        // and it only happens for mocked methods that return Unit (see https://github.com/mockk/mockk/issues/1422)
         val viewer = RecordingForwardSearchViewer()
         PdfViewer.additionalViewers = listOf(viewer)
 
@@ -56,39 +64,4 @@ class ForwardSearchActionTest : BasePlatformTestCase() {
         assertEquals(project, call.project)
         assertTrue(call.focusAllowed)
     }
-
-    private fun addRunConfig(name: String, mainFilePath: String, outputPath: Path): LatexRunConfiguration {
-        val factory = LatexRunConfigurationProducer().configurationFactory
-        val runConfig = LatexRunConfiguration(project, factory, name).apply {
-            this.mainFilePath = mainFilePath
-            this.outputPath = outputPath
-            pdfViewer = NoViewer
-        }
-        val settings = RunManagerImpl.getInstanceImpl(project).createConfiguration(runConfig, factory)
-        RunManagerImpl.getInstanceImpl(project).addConfiguration(settings)
-        return settings.configuration as LatexRunConfiguration
-    }
-
-    private class RecordingForwardSearchViewer : PdfViewer {
-
-        override val name: String = NoViewer.name
-        override val displayName: String = NoViewer.displayName
-        override val isForwardSearchSupported: Boolean = true
-
-        val forwardSearchCalls = mutableListOf<ForwardSearchCall>()
-
-        override fun isAvailable(): Boolean = true
-
-        override fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
-            forwardSearchCalls += ForwardSearchCall(outputPath, sourceFilePath, line, project, focusAllowed)
-        }
-    }
-
-    private data class ForwardSearchCall(
-        val outputPath: String?,
-        val sourceFilePath: String,
-        val line: Int,
-        val project: Project,
-        val focusAllowed: Boolean,
-    )
 }
