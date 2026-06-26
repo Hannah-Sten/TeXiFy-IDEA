@@ -20,6 +20,13 @@ class LatexForwardSearchIntention : TexifyIntentionBase("Forward search in PDF")
     override fun generatePreview(project: Project, editor: Editor, psiFile: PsiFile): IntentionPreviewInfo = IntentionPreviewInfo.EMPTY
 
     override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?): Boolean {
+        // since isAvailable should be inexpensive, we only check the file type
+        // without looking for a supported viewer.
+//        return editor != null &&
+//                file != null &&
+//                file.fileType is LatexFileType &&
+//                file.virtualFile != null
+
         if (editor == null || file == null || file.fileType !is LatexFileType) return false
         val virtualFile = file.virtualFile ?: return false
 

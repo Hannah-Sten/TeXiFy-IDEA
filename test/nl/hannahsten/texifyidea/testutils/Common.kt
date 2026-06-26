@@ -9,6 +9,9 @@ import io.mockk.mockk
 import io.mockk.mockkConstructor
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
+import io.mockk.unmockkConstructor
+import io.mockk.unmockkObject
+import io.mockk.unmockkStatic
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.LatexCompileStepOptions
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
@@ -48,11 +51,18 @@ fun IdeaProjectTestFixture.updateConvention(action: (settings: TexifyConventions
 /**
  * Set the selected compiler in the selected run configuration and the Latex Distribution in a way to ensure either unicode
  * support, or no unicode support.
+ *
+ * Tests that use this function must call `resetUnicodeSupportMocks()` during tearDown.
  */
 fun setUnicodeSupport(project: Project, enabled: Boolean = true) {
     mockkStatic("nl.hannahsten.texifyidea.util.ProjectsKt")
     val runConfig = mockk<LatexRunConfiguration>()
     every { project.selectedRunConfig() } returns runConfig
+
+    // getters that are implicitly called by the LatexForwardSearchIntention#isAvailable
+    every { runConfig.mainFilePath } returns null
+    every { runConfig.pdfViewer } returns null
+
     if (enabled) {
         // Unicode is always supported in lualatex.
         every { runConfig.primaryCompileStep() } returns LatexCompileStepOptions().apply { compiler = LatexCompiler.LUALATEX }
@@ -67,6 +77,17 @@ fun setUnicodeSupport(project: Project, enabled: Boolean = true) {
         mockkConstructor(MiktexWindowsSdk::class)
         every { anyConstructed<MiktexWindowsSdk>().getVersion(null) } returns DefaultArtifactVersion("2.9.7300")
     }
+}
+
+/**
+ * Resets mocks that were set during `setUnicodeSupport()`.
+ *
+ * It should be called by all test classes that use `setUnicodeSupport()`.
+ */
+fun resetUnicodeSupportMocks() {
+    runCatching { unmockkStatic("nl.hannahsten.texifyidea.util.ProjectsKt") }
+    runCatching { unmockkObject(TexliveSdk.Cache) }
+    runCatching { unmockkConstructor(MiktexWindowsSdk::class) }
 }
 
 fun String.toSystemNewLine() = replace(Regex("\n|\r\n"), System.lineSeparator())
