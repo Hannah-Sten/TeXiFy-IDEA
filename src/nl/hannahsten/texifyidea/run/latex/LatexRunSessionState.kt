@@ -7,6 +7,16 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPsiElementPointer
 import java.nio.file.Path
 
+data class TextEditorSnapshot(
+    val sourceFilePath: String,
+    val line: Int,
+)
+
+data class TextEditorContextSnapshot(
+    val focused: TextEditorSnapshot?,
+    val selected: TextEditorSnapshot?,
+)
+
 data class LatexRunSessionState(
     val project: Project,
     val mainFile: VirtualFile,
@@ -17,6 +27,7 @@ data class LatexRunSessionState(
     val latexSdk: Sdk?,
     val auxDir: VirtualFile? = null,
     val psiFile: SmartPsiElementPointer<PsiFile>? = null,
+    var editorContext: TextEditorContextSnapshot? = null,
     /** Absolute path to the compiled document output file (for example the generated PDF/XDV). */
     var resolvedOutputFilePath: String? = null,
     val filesToCleanUp: MutableList<Path> = mutableListOf(),

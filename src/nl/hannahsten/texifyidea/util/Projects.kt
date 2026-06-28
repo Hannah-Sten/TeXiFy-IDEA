@@ -129,6 +129,8 @@ fun Project.focusedTextEditor(): TextEditor? = FileEditorManager.getInstance(thi
  */
 fun Project.selectedTextEditor(): TextEditor? = FileEditorManager.getInstance(this).selectedEditor as? TextEditor?
 
+fun Project.selectedTextEditors(): List<TextEditor> = FileEditorManager.getInstance(this).selectedEditors.filterIsInstance<TextEditor>()
+
 fun Project.selectedTextEditorOrWarning(): TextEditor? {
     selectedTextEditor()?.let { return it }
     Notification("LaTeX", "Could not find an open editor to insert text", "Put your caret in a LaTeX file first. Please report an issue on GitHub if you believe this is incorrect", NotificationType.ERROR).notify(this)

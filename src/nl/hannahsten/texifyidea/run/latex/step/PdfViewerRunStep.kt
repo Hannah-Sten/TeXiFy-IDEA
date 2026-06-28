@@ -4,16 +4,21 @@ import com.intellij.execution.ExecutionException
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.fileEditor.FileDocumentManager
+import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.action.ForwardSearchAction
+import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.run.common.createCompilationHandler
 import nl.hannahsten.texifyidea.run.latex.PdfViewerStepOptions
+import nl.hannahsten.texifyidea.run.latex.TextEditorSnapshot
 import nl.hannahsten.texifyidea.run.pdfviewer.ForwardSearchSupport
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.util.caretOffset
 import nl.hannahsten.texifyidea.util.focusedTextEditor
 import nl.hannahsten.texifyidea.util.selectedTextEditor
+import nl.hannahsten.texifyidea.util.selectedTextEditors
 
 internal class PdfViewerRunStep(
     private val stepConfig: PdfViewerStepOptions,
@@ -76,35 +81,50 @@ internal class PdfViewerRunStep(
         val viewer = PdfViewer.availableViewers
             .firstOrNull { it.name == stepConfig.pdfViewerName }
             ?: PdfViewer.firstAvailableViewer
-        val editor = context.environment.project.focusedTextEditor()?.editor
-            ?: context.environment.project.selectedTextEditor()?.editor
-        val editorFile = editor?.document?.let { FileDocumentManager.getInstance().getFile(it) }
-        val useEditorSource = editorFile?.let {
+        val project = context.environment.project
+        val source = resolveSourceContext(context)
+            ?: return null
+        val useResolvedSource =
             ForwardSearchSupport.sourceBelongsToMainFileset(
-                project = context.environment.project,
-                sourceFile = it,
+                project = project,
+                sourceFile = source.file,
                 mainFile = context.session.mainFile,
             )
-        } == true
-        val line = if (useEditorSource) {
-            editor.document.getLineNumber(editor.caretOffset()) + 1
-        }
-        else {
-            0
-        }
-        val sourceFilePath = if (useEditorSource) {
-            editorFile.path
-        }
-        else {
-            context.session.mainFile.path
-        }
+
+        // No forward search if we are not in the fileset, to avoid resetting the pdf view
+        if (!useResolvedSource) return null
 
         return ResolvedViewerContext(
             viewer = viewer,
             outputFilePath = outputFilePath,
-            sourceFilePath = sourceFilePath,
-            line = line,
+            sourceFilePath = source.file.path,
+            line = source.line,
         )
+    }
+
+    /**
+     * Use the information from before starting execution to determine what editor was focused, or fall back to currently open editors.
+     */
+    private fun resolveSourceContext(context: LatexRunStepContext): SourceContext? {
+        val snapshot = context.session.editorContext?.focused ?: context.session.editorContext?.selected
+        snapshot?.toSourceContext()?.let { return it }
+
+        val project = context.environment.project
+        val editor = project.focusedTextEditor()?.editor
+            ?: project.selectedTextEditor()?.editor
+            // Fallback in case both a tex file and the pdf file are selected (in different windows)
+            ?: project.selectedTextEditors().firstOrNull { it.editor.virtualFile?.fileType == LatexFileType }?.editor
+        val editorFile = editor?.document?.let { FileDocumentManager.getInstance().getFile(it) } ?: return null
+        val line = editor.document.getLineNumber(editor.caretOffset()) + 1
+        return SourceContext(editorFile, line)
+    }
+
+    private fun TextEditorSnapshot.toSourceContext(): SourceContext? {
+        if (line <= 0) {
+            return null
+        }
+        val file = LocalFileSystem.getInstance().findFileByPath(sourceFilePath) ?: return null
+        return SourceContext(file, line)
     }
 
     private fun openStandardViewer(
@@ -150,6 +170,11 @@ internal class PdfViewerRunStep(
         val viewer: PdfViewer,
         val outputFilePath: String,
         val sourceFilePath: String,
+        val line: Int,
+    )
+
+    private data class SourceContext(
+        val file: VirtualFile,
         val line: Int,
     )
 }
