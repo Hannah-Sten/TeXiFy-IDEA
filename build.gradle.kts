@@ -123,8 +123,8 @@ dependencies {
         bundledPlugin("com.intellij.java")
         bundledPlugin("tanvd.grazi")
         // https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html#non-bundled-plugin
-        plugin("com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.17.1-alpha.3@alpha")
-        plugin("com.jetbrains.hackathon.indices.viewer:1.29")
+        plugin("com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.18.0")
+        plugin("com.jetbrains.hackathon.indices.viewer:1.32")
         // Does not work in tests: https://youtrack.jetbrains.com/issue/GRZ-5023
 //        plugin("com.intellij.grazie.pro:0.3.371")
     }
