@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.run.pdfviewer
 
 import com.intellij.openapi.application.ReadAction
+import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.run.latex.LatexPathResolver
@@ -14,12 +15,44 @@ import nl.hannahsten.texifyidea.util.selectedRunConfig
 
 internal object ForwardSearchSupport {
 
-    fun resolveViewer(project: Project, sourceFile: VirtualFile, fallback: PdfViewer? = null): PdfViewer? = resolveRunConfig(project, sourceFile)?.pdfViewer
+    /**
+     * Checks if a viewer can be resolved and supports forward search.
+     */
+    fun canForwardSearch(project: Project, sourceFile: VirtualFile, fallback: PdfViewer? = null): Boolean {
+        val viewer = resolveViewer(project, sourceFile, fallback) ?: return false
+        return viewer.isAvailable() && viewer.isForwardSearchSupported
+    }
+
+    /**
+     * Resolves the viewer and performs a forward search based on the position in the
+     * given editor.
+     *
+     * @return the resolved viewer or `null` if no usable viewer got resolved
+     * @throws nl.hannahsten.texifyidea.TeXception if the viewer reports a forward search failure
+     */
+    fun performForwardSearch(
+        project: Project,
+        file: VirtualFile,
+        editor: Editor,
+        fallbackViewer: PdfViewer? = null,
+        focusAllowed: Boolean = true,
+    ): PdfViewer? {
+        val viewer = resolveViewer(project, file, fallbackViewer) ?: return null
+        if (!viewer.isAvailable() || !viewer.isForwardSearchSupported) return null
+
+        val document = editor.document
+        val line = document.getLineNumber(editor.caretModel.offset) + 1
+        val outputPath = resolveOutputPath(project, file)
+        viewer.forwardSearch(outputPath, file.path, line, project, focusAllowed)
+        return viewer
+    }
+
+    private fun resolveViewer(project: Project, sourceFile: VirtualFile, fallback: PdfViewer? = null): PdfViewer? = resolveRunConfig(project, sourceFile)?.pdfViewer
         ?: fallback
         ?: project.selectedRunConfig()?.pdfViewer
         ?: project.latexTemplateRunConfig()?.pdfViewer
 
-    fun resolveOutputPath(project: Project, sourceFile: VirtualFile): String? {
+    private fun resolveOutputPath(project: Project, sourceFile: VirtualFile): String? {
         val runConfig = resolveRunConfig(project, sourceFile) ?: return null
         val mainFile = LatexRunConfigurationStaticSupport.resolveMainFile(runConfig) ?: return null
         val outputDir = LatexPathResolver.resolveOutputDir(runConfig, mainFile) ?: return null

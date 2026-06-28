@@ -4,6 +4,7 @@ import io.mockk.every
 import io.mockk.mockkStatic
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionTestBase
+import nl.hannahsten.texifyidea.testutils.resetUnicodeSupportMocks
 import nl.hannahsten.texifyidea.updateFilesets
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 
@@ -181,6 +182,15 @@ class LatexUnicodeInspectionQuickFix : LatexUnicodeInspectionTest() {
 }
 
 abstract class LatexUnicodeInspectionTest : TexifyInspectionTestBase(LatexUnicodeInspection()) {
+
+    override fun tearDown() {
+        try {
+            resetUnicodeSupportMocks()
+        }
+        finally {
+            super.tearDown()
+        }
+    }
 
     fun setUnicodeSupport(enabled: Boolean = true) = nl.hannahsten.texifyidea.testutils.setUnicodeSupport(myFixture.project, enabled)
 }

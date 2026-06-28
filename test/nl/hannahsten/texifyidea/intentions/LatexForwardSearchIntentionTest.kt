@@ -1,18 +1,19 @@
-package nl.hannahsten.texifyidea.action
+package nl.hannahsten.texifyidea.intentions
 
-import com.intellij.openapi.fileEditor.FileEditorManager
-import com.intellij.openapi.fileEditor.TextEditor
+import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import nl.hannahsten.texifyidea.action.ForwardSearchAction
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.testutils.RecordingForwardSearchViewer
 import nl.hannahsten.texifyidea.testutils.addLatexRunConfig
 import nl.hannahsten.texifyidea.updateFilesets
 import java.nio.file.Path
 
-class ForwardSearchActionTest : BasePlatformTestCase() {
+class LatexForwardSearchIntentionTest : BasePlatformTestCase() {
 
     override fun tearDown() {
         try {
+            (ActionManager.getInstance().getAction("texify.ForwardSearch") as? ForwardSearchAction)?.viewer = null
             PdfViewer.additionalViewers = emptyList()
         }
         finally {
@@ -53,9 +54,8 @@ class ForwardSearchActionTest : BasePlatformTestCase() {
         PdfViewer.additionalViewers = listOf(viewer)
 
         myFixture.openFileInEditor(aChapter.virtualFile)
-        val textEditor = FileEditorManager.getInstance(project).selectedEditor as TextEditor
 
-        ForwardSearchAction(viewer).actionPerformed(aChapter.virtualFile, project, textEditor)
+        LatexForwardSearchIntention().invoke(project, myFixture.editor, aChapter)
 
         assertEquals(1, viewer.forwardSearchCalls.size)
         val call = viewer.forwardSearchCalls.single()
