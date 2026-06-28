@@ -7,7 +7,7 @@
 * Add missing context for alignat and split environments
 * Add support for the currfile package
 * Add support for loading packages using \UseTblrLibrary from tabularray
-* Add intention to forward search in PDF 
+* Add intention to forward search in PDF, by @Jozott00
 * Updated dependencies
 
 ### Fixed
