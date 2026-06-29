@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.run.latex
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
@@ -14,7 +15,11 @@ internal object LatexRunConfigurationStaticSupport {
     fun resolveMainFile(runConfig: LatexRunConfiguration, path: String? = runConfig.mainFilePath): VirtualFile? {
         val candidate = path?.trim()?.takeIf { it.isNotBlank() } ?: return null
         val fileSystem = LocalFileSystem.getInstance()
-        val absolute = fileSystem.findFileByPath(candidate) ?: fileSystem.refreshAndFindFileByPath(candidate)
+        val absolute = fileSystem.findFileByPath(candidate) ?: run {
+            val application = ApplicationManager.getApplication()
+            // Under read lock (like from LatexRunConfiguration.checkConfiguration), we may not call a VFS refresh
+            if (application.isReadAccessAllowed) fileSystem.findFileByPath(candidate) else fileSystem.refreshAndFindFileByPath(candidate)
+        }
         if (absolute?.extension == "tex") {
             return absolute
         }
