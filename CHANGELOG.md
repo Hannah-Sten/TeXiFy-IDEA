@@ -12,6 +12,7 @@
 
 ### Fixed
 
+* Fixed forward search resetting to page 1 on second compilation
 * Fixed command highlighting in \textbf, \textit, etc.
 * Fixed issues where some table environments were not recognised as such
 
