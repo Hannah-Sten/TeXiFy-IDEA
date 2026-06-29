@@ -282,12 +282,8 @@ class PdfViewerRunStepTest : BasePlatformTestCase() {
 
         step.beforeStart(context)
 
-        assertEquals(1, viewer.forwardSearchCalls.size)
-        val call = viewer.forwardSearchCalls.single()
-        assertEquals(context.session.resolvedOutputFilePath, call.outputPath)
-        assertEquals(main.path, call.sourceFilePath)
-        assertEquals(0, call.line)
-        assertEquals(project, call.project)
+        // It doesn't make sense to forward search if the caret is in an unrelated file, since the user probably wants to keep looking at the same page
+        assertEquals(0, viewer.forwardSearchCalls.size)
     }
 
     private fun mockNoViewer(openFileError: Throwable? = null): RecordingPdfViewer = RecordingPdfViewer(openFileError).also {
@@ -362,6 +358,7 @@ class PdfViewerRunStepTest : BasePlatformTestCase() {
             latexSdk = null,
             auxDir = outputDir,
             resolvedOutputFilePath = outputFilePath?.let(outputDirPath::resolve)?.toString(),
+            editorContext = TextEditorContextSnapshot(focused = TextEditorSnapshot(mainFilePath.toString(), 1), selected = null)
         )
         return LatexRunStepContext(runConfig, environment, state)
     }

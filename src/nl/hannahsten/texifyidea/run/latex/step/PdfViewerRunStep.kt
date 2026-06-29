@@ -114,7 +114,8 @@ internal class PdfViewerRunStep(
             ?: project.selectedTextEditor()?.editor
             // Fallback in case both a tex file and the pdf file are selected (in different windows)
             ?: project.selectedTextEditors().firstOrNull { it.editor.virtualFile?.fileType == LatexFileType }?.editor
-        val editorFile = editor?.document?.let { FileDocumentManager.getInstance().getFile(it) } ?: return null
+            ?: return null
+        val editorFile = editor.document.let { FileDocumentManager.getInstance().getFile(it) } ?: return null
         val line = editor.document.getLineNumber(editor.caretOffset()) + 1
         return SourceContext(editorFile, line)
     }
