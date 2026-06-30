@@ -5,6 +5,7 @@ import com.intellij.psi.codeStyle.CodeStyleManager
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.testutils.writeCommand
+import nl.hannahsten.texifyidea.updateCommandDef
 
 class TableAlignTest : BasePlatformTestCase() {
 
@@ -397,6 +398,22 @@ class TableAlignTest : BasePlatformTestCase() {
         """.trimIndent()
     }
 
+    fun testUserDefinedTabularEnvironment() {
+        """
+            \newenvironment{mytable}{\begin{tabular}{cc}}{\end{tabular}}
+            \begin{mytable}
+                a & b \\
+                cccc & d \\
+            \end{mytable}
+        """.trimIndent() `should be reformatted to` """
+            \newenvironment{mytable}{\begin{tabular}{cc}}{\end{tabular}}
+            \begin{mytable}
+                a    & b \\
+                cccc & d \\
+            \end{mytable}
+        """.trimIndent()
+    }
+
     fun testVeryWideTable() {
         val start = """
 \documentclass[11pt]{article}
@@ -441,6 +458,7 @@ class TableAlignTest : BasePlatformTestCase() {
 
     private infix fun String.`should be reformatted to`(expected: String) {
         myFixture.configureByText(LatexFileType, this)
+        myFixture.updateCommandDef()
         writeCommand(project) {
             CodeStyleManager.getInstance(project).reformat(myFixture.file)
         }
