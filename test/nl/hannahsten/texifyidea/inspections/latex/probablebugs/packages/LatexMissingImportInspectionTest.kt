@@ -155,4 +155,29 @@ class LatexMissingImportInspectionTest : TexifyInspectionTestBase(LatexMissingIm
         myFixture.updateFilesets()
         myFixture.checkHighlighting()
     }
+
+    fun testTblrLibrary() {
+        myFixture.configureByText(
+            LatexFileType,
+            """
+            \documentclass{article}
+
+            \usepackage{tabularray}
+            \UseTblrLibrary{booktabs}
+
+            \begin{document}
+                \begin{table}
+                    \begin{tblr}{colspec={lr}}
+                        \toprule % booktabs command is valid because booktabs is loaded by the tabularray package
+                        Test & Test \\ \midrule
+                        Test & Test \\ \bottomrule
+                    \end{tblr}
+                \end{table}
+            \end{document}
+            """.trimIndent()
+        )
+        myFixture.updateFilesets()
+        myFixture.updateFilesets()
+        myFixture.checkHighlighting()
+    }
 }

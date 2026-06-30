@@ -6,7 +6,7 @@ import com.intellij.codeInsight.template.postfix.templates.PostfixTemplate
 import com.intellij.grazie.utils.toSet
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.DefaultActionGroup
-import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.application.runReadActionBlocking
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorFactory
@@ -42,7 +42,7 @@ class LatexPostfixTemplateEditor(private val templateProvider: LatexPostFixTempl
 
     companion object {
         private fun createEditor(): Editor {
-            val project = ProjectManager.getInstance().openProjects.firstOrNull { runReadAction { it.isLatexProject() } } ?: ProjectManager.getInstance().defaultProject
+            val project = ProjectManager.getInstance().openProjects.firstOrNull { runReadActionBlocking { it.isLatexProject() } } ?: ProjectManager.getInstance().defaultProject
             return EditorFactory.getInstance().createEditor(createDocument(project), project, LatexFileType, false)
         }
 

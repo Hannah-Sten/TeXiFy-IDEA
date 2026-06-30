@@ -1,6 +1,6 @@
 package nl.hannahsten.texifyidea.util.files
 
-import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.application.runReadActionBlocking
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.module.Module
@@ -98,7 +98,7 @@ fun Module.createExcludedDir(path: String) {
  *          The project scope to retrieve the psi file for.
  * @return The PSI file matching the document, or `null` when the PSI file could not be found.
  */
-fun Document.psiFile(project: Project): PsiFile? = runReadAction { PsiDocumentManager.getInstance(project).getPsiFile(this) }
+fun Document.psiFile(project: Project): PsiFile? = runReadActionBlocking { PsiDocumentManager.getInstance(project).getPsiFile(this) }
 
 /**
  * This writes to a file without using java.io.File

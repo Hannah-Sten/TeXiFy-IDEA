@@ -1,11 +1,13 @@
 package nl.hannahsten.texifyidea.settings.sdk
 
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.util.runCommand
+import java.nio.file.Path
 import java.nio.file.Paths
 
 /**
@@ -26,13 +28,13 @@ class MiktexLinuxSdk : LatexSdk(TexifyBundle.message("settings.sdk.miktex.maclin
 
     override fun getExecutableName(executable: String, homePath: String): String = "$homePath/$executable"
 
-    override fun suggestHomePath(): String {
+    override fun suggestHomePath(path: Path): String {
         // The user can by default install globally or for the user only (see below)
         // Similar as with Windows we recommend installing for the user only.
         return "~/bin/"
     }
 
-    override fun suggestHomePaths(): MutableCollection<String> = listOf(
+    override fun suggestHomePaths(project: Project?): MutableCollection<String> = listOf(
         Paths.get(System.getProperty("user.home"), "bin").toString(),
         "/usr/local/bin"
     ).toMutableList()

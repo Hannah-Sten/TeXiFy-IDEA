@@ -36,7 +36,7 @@ class TeXiFyProjectViewNodeDecorator : ProjectViewNodeDecorator {
         }
     }
 
-    override fun decorate(projectViewNode: ProjectViewNode<*>, presentationData: PresentationData) {
-        setIcon(projectViewNode, presentationData)
+    override fun decorate(node: ProjectViewNode<*>, data: PresentationData) {
+        setIcon(node, data)
     }
 }

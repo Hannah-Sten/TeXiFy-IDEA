@@ -201,19 +201,23 @@ internal object LegacyLatexRunConfigMigration {
 
     private fun buildViewerStep(legacyParent: Element): PdfViewerStepOptions {
         val viewerStep = PdfViewerStepOptions()
-        val viewerName = legacyParent.getChildTextTrimOrNull(PDF_VIEWER)
-        if (!viewerName.isNullOrBlank()) {
-            val matchedViewer = PdfViewer.availableViewers.firstOrNull {
-                it.name?.equals(viewerName, ignoreCase = true) == true ||
-                    it.name?.uppercase(Locale.getDefault()) == viewerName
-            }
-            if (matchedViewer != null) {
-                viewerStep.pdfViewerName = matchedViewer.name
+        viewerStep.customViewerCommand = legacyParent.getChildTextTrimOrNull(VIEWER_COMMAND)
+        viewerStep.normalizeCustomViewerConfiguration()
+
+        if (!viewerStep.usesCustomViewer()) {
+            val viewerName = legacyParent.getChildTextTrimOrNull(PDF_VIEWER)
+            if (!viewerName.isNullOrBlank()) {
+                val matchedViewer = PdfViewer.availableViewers.firstOrNull {
+                    it.name?.equals(viewerName, ignoreCase = true) == true ||
+                        it.name?.uppercase(Locale.getDefault()) == viewerName
+                }
+                if (matchedViewer != null) {
+                    viewerStep.pdfViewerName = matchedViewer.name
+                }
             }
         }
 
         viewerStep.requireFocus = legacyParent.getChildTextTrimOrNull(REQUIRE_FOCUS)?.toBooleanStrictOrNullCompat() ?: true
-        viewerStep.customViewerCommand = legacyParent.getChildTextTrimOrNull(VIEWER_COMMAND)
         return viewerStep
     }
 

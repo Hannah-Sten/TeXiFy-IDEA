@@ -15,8 +15,9 @@ import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.fields.ExtendableTextComponent
 import com.intellij.ui.components.fields.ExtendableTextField
-import nl.hannahsten.texifyidea.TexifyBundle
 import com.intellij.util.ui.ComponentWithEmptyText
+import nl.hannahsten.texifyidea.TexifyBundle
+import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexPathResolver
@@ -38,7 +39,7 @@ internal object LatexBasicFragments {
         val mainFile = TextFieldWithBrowseButton().apply {
             addBrowseFolderListener(
                 TextBrowseFolderListener(
-                    FileChooserDescriptorFactory.createSingleFileDescriptor()
+                    FileChooserDescriptorFactory.createSingleFileDescriptor(LatexFileType)
                         .withTitle(TexifyBundle.message("run.latex.settings.choose.file.to.compile"))
                         .withExtensionFilter("tex")
                         .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules.toSet().toTypedArray())

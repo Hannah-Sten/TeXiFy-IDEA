@@ -29,7 +29,7 @@ object SpecialKeys {
 class NewSpecialCommandsIndexEx : SpecialKeyStubIndexWrapper<LatexCommands>(LatexCommands::class.java) {
     override fun getKey(): StubIndexKey<String, LatexCommands> = LatexStubIndexKeys.COMMANDS_SPECIAL
 
-    override fun getVersion(): Int = 105
+    override fun getVersion(): Int = 106
 
     val mappingPairs = listOf(
         PredefinedCmdFiles.namesOfAllFileIncludeCommands to SpecialKeys.FILE_INPUTS,

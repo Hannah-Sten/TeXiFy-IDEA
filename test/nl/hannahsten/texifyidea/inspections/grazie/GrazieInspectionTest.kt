@@ -5,9 +5,9 @@ import com.intellij.grazie.ide.inspection.grammar.GrazieInspection
 import com.intellij.grazie.ide.msg.GrazieStateLifecycle
 import com.intellij.grazie.jlanguage.Lang
 import com.intellij.grazie.remote.GrazieRemote
+import com.intellij.grazie.spellcheck.GrazieSpellCheckingInspection
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.psi.PsiFile
-import com.intellij.spellchecker.inspections.SpellCheckingInspection
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.testFramework.fixtures.impl.CodeInsightTestFixtureImpl
 import com.intellij.util.messages.Topic
@@ -21,7 +21,7 @@ class GrazieInspectionTest : BasePlatformTestCase() {
 
     override fun setUp() {
         super.setUp()
-        myFixture.enableInspections(GrazieInspection(), SpellCheckingInspection())
+        myFixture.enableInspections(GrazieInspection(), GrazieSpellCheckingInspection(), GrazieInspection.Grammar(), GrazieInspection.Style())
         (myFixture as? CodeInsightTestFixtureImpl)?.canChangeDocumentDuringHighlighting(true)
 
         while (ApplicationManager.getApplication().messageBus.hasUndeliveredEvents(Topic(GrazieStateLifecycle::class.java))) {
@@ -38,11 +38,11 @@ class GrazieInspectionTest : BasePlatformTestCase() {
         myFixture.configureByText(
             LatexFileType,
             """
-            \begin{document}
-                All <GRAMMAR_ERROR descr="The verb 'is' is singular. Did you mean: this is or those are?">those is</GRAMMAR_ERROR> problems in the middle of a sentence.
-                % <GRAMMAR_ERROR descr="The verb 'is' is singular. Did you mean: this is or Those are?">Those is</GRAMMAR_ERROR> a problem in a comment
-                <GRAMMAR_ERROR descr="The verb 'is' is singular. Did you mean: this is or Those are?">Those is</GRAMMAR_ERROR> a problem at the beginning of a sentence.
-            \end{document}
+                \begin{document}
+                    All <GRAMMAR_ERROR descr="The verb 'is' is singular. Did you mean: 'this is' or 'those are'?">those is</GRAMMAR_ERROR> problems in the middle of a sentence.
+                    % <GRAMMAR_ERROR descr="The verb 'is' is singular. Did you mean: 'this is' or 'Those are'?">Those is</GRAMMAR_ERROR> a problem in a comment
+                    <GRAMMAR_ERROR descr="The verb 'is' is singular. Did you mean: 'this is' or 'Those are'?">Those is</GRAMMAR_ERROR> a problem at the beginning of a sentence.
+                \end{document}
             """.trimIndent()
         )
         myFixture.checkHighlighting(true, false, false, true)
@@ -53,7 +53,7 @@ class GrazieInspectionTest : BasePlatformTestCase() {
             LatexFileType,
             """
             \begin{document}
-                <GRAMMAR_ERROR descr="Use An instead of 'A' if the following word starts with a vowel sound, e.g. 'an article', 'an hour'.">A</GRAMMAR_ERROR> apple a day keeps the doctor away.
+                <GRAMMAR_ERROR descr="Use 'An' instead of 'A' if the following word starts with a vowel sound, e.g. 'an article', 'an hour'.">A</GRAMMAR_ERROR> apple a day keeps the doctor away.
                 Some other sentence.
             \end{document}
             """.trimIndent()
@@ -100,7 +100,7 @@ class GrazieInspectionTest : BasePlatformTestCase() {
     }
 
     fun testGerman() {
-        GrazieRemote.download(Lang.GERMANY_GERMAN)
+        GrazieRemote.downloadWithoutLicenseCheck(Lang.GERMANY_GERMAN)
         GrazieConfig.update { it.copy(enabledLanguages = it.enabledLanguages + Lang.GERMANY_GERMAN) }
         myFixture.configureByText(
             LatexFileType,
@@ -119,7 +119,7 @@ class GrazieInspectionTest : BasePlatformTestCase() {
     }
 
     fun testGermanList() {
-        GrazieRemote.download(Lang.GERMANY_GERMAN)
+        GrazieRemote.downloadWithoutLicenseCheck(Lang.GERMANY_GERMAN)
         GrazieConfig.update { it.copy(enabledLanguages = it.enabledLanguages + Lang.GERMANY_GERMAN) }
         myFixture.configureByText(
             LatexFileType,
@@ -132,7 +132,7 @@ class GrazieInspectionTest : BasePlatformTestCase() {
     }
 
     fun testGermanCommandSpacing() {
-        GrazieRemote.download(Lang.GERMANY_GERMAN)
+        GrazieRemote.downloadWithoutLicenseCheck(Lang.GERMANY_GERMAN)
         GrazieConfig.update { it.copy(enabledLanguages = it.enabledLanguages + Lang.GERMANY_GERMAN) }
         myFixture.configureByText(
             LatexFileType,
@@ -144,7 +144,7 @@ class GrazieInspectionTest : BasePlatformTestCase() {
     }
 
     fun testGermanGlossaries() {
-        GrazieRemote.download(Lang.GERMANY_GERMAN)
+        GrazieRemote.downloadWithoutLicenseCheck(Lang.GERMANY_GERMAN)
         GrazieConfig.update { it.copy(enabledLanguages = it.enabledLanguages + Lang.GERMANY_GERMAN) }
         myFixture.configureByText(
             LatexFileType,
@@ -156,7 +156,7 @@ class GrazieInspectionTest : BasePlatformTestCase() {
     }
 
     fun testTabular() {
-        GrazieRemote.download(Lang.GERMANY_GERMAN)
+        GrazieRemote.downloadWithoutLicenseCheck(Lang.GERMANY_GERMAN)
         GrazieConfig.update { it.copy(enabledLanguages = it.enabledLanguages + Lang.GERMANY_GERMAN) }
         myFixture.configureByText(
             LatexFileType,

@@ -14,6 +14,7 @@ import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.runInBackgroundWithoutProgress
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * State of autocompilation.
@@ -54,7 +55,7 @@ object AutoCompileState {
     fun compilationFinished() {
         // Here the configuration is still running, so to avoid starting a new run before this one is finished (which may trigger the 'stop and rerun?' dialog, see #4120) we add a small delay
         runInBackgroundWithoutProgress {
-            delay(100)
+            delay(100.milliseconds)
             isCompiling.set(false)
             // Process any pending requests to compile
             if (recentRequest) {

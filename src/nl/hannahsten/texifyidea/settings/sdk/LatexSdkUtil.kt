@@ -12,9 +12,6 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
-import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil.getExecutableName
-import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil.getLatexSdkForFile
-import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil.resolveSdkPath
 import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
 import nl.hannahsten.texifyidea.util.runCommand
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
@@ -242,7 +239,7 @@ object LatexSdkUtil {
             // If no SDK configured, try the default paths for this distribution type
             val sdkType = getSdkTypeForDistribution(effectiveDistributionType)
             if (sdkType != null) {
-                val homePath = sdkType.suggestHomePaths().firstOrNull { sdkType.isValidSdkHome(it) }
+                val homePath = sdkType.suggestHomePaths(project).firstOrNull { sdkType.isValidSdkHome(it) }
                 if (homePath != null) {
                     return sdkType.getExecutableName(executableName, homePath)
                 }
@@ -410,7 +407,7 @@ object LatexSdkUtil {
 
         // If no sdk is known, guess something
         for (sdkType in setOf(TexliveSdk(), NativeTexliveSdk(), MiktexWindowsSdk())) {
-            val roots = sdkType.suggestHomePaths().mapNotNull { homePath -> getRoots(sdkType, homePath) }.toSet()
+            val roots = sdkType.suggestHomePaths(project).mapNotNull { homePath -> getRoots(sdkType, homePath) }.toSet()
             if (roots.isNotEmpty()) return roots
         }
         return emptySet()

@@ -190,12 +190,11 @@ object LatexContexts {
     // environment contexts
     val Enumerate = SimpleLatexContext("env.enumerate")
     val Figure = SimpleLatexContext("env.figure")
-    val Table = SimpleLatexContext("env.table")
 
     /**
      * A context inside tabular environment, where `&` is valid.
      */
-    val Tabular = SimpleLatexContext("tabular")
+    val Table = SimpleLatexContext("env.table")
 
     val Alignable = SimpleLatexContext("alignable")
 

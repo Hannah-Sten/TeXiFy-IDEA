@@ -8,9 +8,6 @@ import nl.hannahsten.texifyidea.run.pdfviewer.EvinceInverseSearchListener
 class LoadUnloadListener : DynamicPluginListener {
 
     override fun beforePluginUnload(pluginDescriptor: IdeaPluginDescriptor, isUpdate: Boolean) {
-        // Apparently it's not needed to unload these anymore? Were a problem in the past.
-//        ControlTracker.unload()
-//        ShiftTracker.unload()
         runBlocking { EvinceInverseSearchListener.unload() }
         super.beforePluginUnload(pluginDescriptor, isUpdate)
     }

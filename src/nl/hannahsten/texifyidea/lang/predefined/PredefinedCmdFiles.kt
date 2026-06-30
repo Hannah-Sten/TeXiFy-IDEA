@@ -76,6 +76,13 @@ object PredefinedCmdFiles : PredefinedCommandSet() {
             "ProvidesPackage".cmd(name)
             "RequirePackage".cmd("options".optional, packageArg)
 
+            // Only a small number of packages is supported to be loaded this way
+            underPackage(LatexLib.TABULARRAY) {
+                "UseTblrLibrary".cmd(packageArg) {
+                    "Load a tabularray library."
+                }
+            }
+
             "includeonly".cmd(relativeMultipleTexFilesArg) {
                 "Specify which files to include (comma-separated)"
             }

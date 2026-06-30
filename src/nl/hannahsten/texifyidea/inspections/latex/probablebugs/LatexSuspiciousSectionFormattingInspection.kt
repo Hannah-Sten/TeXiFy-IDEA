@@ -8,7 +8,6 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
-import com.intellij.webSymbols.references.WebSymbolReferenceProvider.Companion.startOffsetIn
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
@@ -18,6 +17,7 @@ import nl.hannahsten.texifyidea.util.containsAny
 import nl.hannahsten.texifyidea.util.files.commandsInFile
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.parser.findFirstChildOfType
+import nl.hannahsten.texifyidea.util.parser.startOffsetInAncestor
 
 open class LatexSuspiciousSectionFormattingInspection : TexifyInspectionBase() {
 
@@ -37,7 +37,7 @@ open class LatexSuspiciousSectionFormattingInspection : TexifyInspectionBase() {
         .map { psiElement ->
             val requiredParam = psiElement.findFirstChildOfType(LatexRequiredParam::class)
             // Plus 1 for the opening brace.
-            val startOffset = requiredParam?.startOffsetIn(psiElement)?.plus(1) ?: 0
+            val startOffset = requiredParam?.startOffsetInAncestor(psiElement)?.plus(1) ?: 0
             // Minus 2 for the braces surrounding the parameter.
             val endOffset = requiredParam?.textLength?.minus(2)?.plus(startOffset) ?: psiElement.textLength
             manager.createProblemDescriptor(

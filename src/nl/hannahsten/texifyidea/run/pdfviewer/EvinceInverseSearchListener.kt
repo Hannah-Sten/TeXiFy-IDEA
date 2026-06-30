@@ -14,6 +14,7 @@ import org.freedesktop.dbus.connections.impl.DBusConnection
 import org.freedesktop.dbus.connections.impl.DBusConnectionBuilder
 import org.gnome.evince.Window
 import java.io.IOException
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Listen on the D-Bus for inverse search signals coming from Evince.
@@ -69,7 +70,7 @@ object EvinceInverseSearchListener {
         // If the program finishes, the listener will stop as well
         TexifyCoroutine.runInBackground {
             // Delay execution and hope everything is ready (#3995)
-            delay(1000)
+            delay(1000.milliseconds)
             try {
                 startListening()
             }

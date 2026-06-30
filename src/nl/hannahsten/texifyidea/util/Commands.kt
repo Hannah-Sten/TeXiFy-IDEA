@@ -11,12 +11,16 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.psi.traverseCommands
 import nl.hannahsten.texifyidea.util.PackageUtils.getDefaultInsertAnchor
+import nl.hannahsten.texifyidea.util.files.allChildFiles
 import nl.hannahsten.texifyidea.util.files.definitions
 import nl.hannahsten.texifyidea.util.parser.getRequiredArgumentValueByName
 import nl.hannahsten.texifyidea.util.parser.traverseTyped
+import java.nio.file.FileSystems
+import java.nio.file.Path
+import kotlin.io.path.invariantSeparatorsPathString
 
 /**
- * Inserts a custom c custom command definition.
+ * Inserts a custom command definition.
  */
 fun insertCommandDefinition(file: PsiFile, commandText: String, newCommandName: String = "mycommand"): PsiElement? {
     if (!file.isWritable) return null
@@ -55,9 +59,31 @@ fun insertCommandDefinition(file: PsiFile, commandText: String, newCommandName: 
 }
 
 /**
- * Expand custom commands in a given text once, using its definition in the index.
+ * \addbibresource supports BSD-style globs, in particular *, ?, [...] and [!...].
  */
-fun expandCommandsOnce(inputText: String, project: Project, file: VirtualFile?): String {
+fun expandGlob(pathWithGlob: String, currentRootDir: VirtualFile?): List<String> {
+    val trimmedPath = pathWithGlob.trim()
+    if (trimmedPath.isBlank()) return emptyList()
+
+    val matcher = FileSystems.getDefault().getPathMatcher("glob:$trimmedPath")
+
+    val result = mutableListOf<String>()
+    currentRootDir?.allChildFiles()?.forEach { candidate ->
+        val pathForMatch = Path.of(candidate.path.remove(currentRootDir.path + "/"))
+        if (matcher.matches(pathForMatch)) {
+            result.add(pathForMatch.invariantSeparatorsPathString)
+        }
+    }
+
+    return result.sorted() // Just for the test
+}
+
+/**
+ * Expand custom commands in a given text once, using its definition in the index.
+ *
+ * @param parentFile The file which includes [file].
+ */
+fun expandCommandsOnce(inputText: String, project: Project, file: VirtualFile?, parentFile: VirtualFile? = null): String {
     file ?: return inputText
     if (!inputText.contains('\\')) return inputText // No commands to expand, return the text as is
     var text = inputText
@@ -67,6 +93,10 @@ fun expandCommandsOnce(inputText: String, project: Project, file: VirtualFile?):
     for (command in commandsInText) {
         // Expand the command once, and replace the command with the expanded text
         val name = command.name ?: continue
+        expandCurrfileCommand(command, file, parentFile)?.let {
+            text = text.replace(command.text, it)
+            continue
+        }
         val definitionCommand = NewDefinitionIndex.getByName(name, project, file).firstOrNull() ?: continue
         definitionCommand.getRequiredArgumentValueByName("code")
             ?.let { commandExpansion ->
@@ -74,4 +104,28 @@ fun expandCommandsOnce(inputText: String, project: Project, file: VirtualFile?):
             }
     }
     return text
+}
+
+/**
+ * The currfile package provides various commands which resolve to parts of the current file path.
+ *
+ * @param parentFile The file which includes [file].
+ */
+fun expandCurrfileCommand(command: LatexCommands, file: VirtualFile, parentFile: VirtualFile? = null): String? = when (command.name) {
+    CommandNames.CURRFILE_DIR,
+    CommandNames.CURRFILE_ABS_DIR -> file.parent?.path ?: ""
+    CommandNames.CURRFILE_BASE -> file.nameWithoutExtension
+    CommandNames.CURRFILE_EXT -> file.extension ?: ""
+    CommandNames.CURRFILE_NAME -> file.name
+    CommandNames.CURRFILE_PATH -> file.path
+    CommandNames.CURRFILE_ABS_PATH -> file.path
+
+    CommandNames.PARENTFILE_DIR,
+    CommandNames.PARENTFILE_ABS_DIR -> parentFile?.parent?.path ?: ""
+    CommandNames.PARENTFILE_BASE -> parentFile?.nameWithoutExtension ?: ""
+    CommandNames.PARENTFILE_EXT -> parentFile?.extension ?: ""
+    CommandNames.PARENTFILE_NAME -> parentFile?.name ?: ""
+    CommandNames.PARENTFILE_PATH -> parentFile?.path ?: ""
+    CommandNames.PARENTFILE_ABS_PATH -> parentFile?.path ?: ""
+    else -> null
 }

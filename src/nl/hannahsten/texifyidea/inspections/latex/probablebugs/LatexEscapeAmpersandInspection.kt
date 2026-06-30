@@ -19,7 +19,7 @@ class LatexEscapeAmpersandInspection : AbstractTexifyRegexBasedInspection(
     regex = Regex.fromLiteral("&"),
     highlight = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
     excludedContexts = setOf(
-        LatexContexts.Tabular, LatexContexts.Alignable, // Tabular and align environments handle & correctly.
+        LatexContexts.Table, LatexContexts.Alignable, // Tabular and align environments handle & correctly.
         LatexContexts.Comment, LatexContexts.MintedFuntimeLand, // Comments and verbatim-like environments do not need escaping.
         LatexContexts.Literal, // just ignore literal blocks
         LatexContexts.LabelReference, LatexContexts.LabelDefinition // Label names and URLs may contain &.

@@ -60,6 +60,7 @@ object CommandNames {
     const val USE_TIKZ_LIBRARY = "\\usetikzlibrary"
     const val USE_PGF_PLOTS_LIBRARY = "\\usepgfplotslibrary"
     const val ONLY_IF_STANDALONE = "\\onlyifstandalone"
+    const val USE_TBLR_LIBRARY = "\\UseTblrLibrary"
 
     // 4. File/input related
     const val INPUT = "\\input"
@@ -79,6 +80,20 @@ object CommandNames {
     const val SUB_IMPORT = "\\subimport"
     const val SUB_INPUT_FROM = "\\subinputfrom"
     const val SUB_INCLUDE_FROM = "\\subincludefrom"
+    const val CURRFILE_DIR = "\\currfiledir"
+    const val CURRFILE_BASE = "\\currfilebase"
+    const val CURRFILE_EXT = "\\currfileext"
+    const val CURRFILE_NAME = "\\currfilename"
+    const val CURRFILE_PATH = "\\currfilepath"
+    const val CURRFILE_ABS_DIR = "\\currfileabsdir"
+    const val CURRFILE_ABS_PATH = "\\currfileabspath"
+    const val PARENTFILE_DIR = "\\parentfiledir"
+    const val PARENTFILE_BASE = "\\parentfilebase"
+    const val PARENTFILE_EXT = "\\parentfileext"
+    const val PARENTFILE_NAME = "\\parentfilename"
+    const val PARENTFILE_PATH = "\\parentfilepath"
+    const val PARENTFILE_ABS_DIR = "\\parentfileabsdir"
+    const val PARENTFILE_ABS_PATH = "\\parentfileabspath"
 
     // 5. TikZ/graphics related
     const val INCLUDE_GRAPHICS = "\\includegraphics"

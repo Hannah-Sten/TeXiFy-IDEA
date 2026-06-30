@@ -9,6 +9,7 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.ui.*
 import com.intellij.openapi.vfs.LocalFileSystem
 import nl.hannahsten.texifyidea.TexifyBundle
+import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.run.compiler.ExternalTool
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -58,7 +59,7 @@ class ExternalToolSettingsEditor(private val project: Project) : SettingsEditor<
             val mainFileField = TextFieldWithBrowseButton().apply {
                 addBrowseFolderListener(
                     TextBrowseFolderListener(
-                        FileChooserDescriptorFactory.createSingleFileDescriptor()
+                        FileChooserDescriptorFactory.createSingleFileDescriptor(LatexFileType)
                             .withTitle(TexifyBundle.message("run.external.tool.settings.choose.main.file"))
                             .withExtensionFilter("tex")
                             .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules.toSet().toTypedArray())

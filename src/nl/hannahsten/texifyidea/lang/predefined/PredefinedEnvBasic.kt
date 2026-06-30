@@ -114,12 +114,15 @@ object PredefinedEnvBasic : PredefinedEnvironmentSet() {
             "equation*".env(math) { "An unnumbered equation." }
             "align".env(alignableMath) { "A set of aligned equations." }
             "align*".env(alignableMath) { "A set of aligned equations without numbering." }
+            "alignat".env(alignableMath, "columns".required) { "A set of aligned equations on a given number of columns." }
+            "alignat*".env(alignableMath, "columns".required) { "A set of aligned equations on a given number of columns, without numbering." }
             "gather".env(math) { "A set of equations, centered." }
             "gather*".env(math) { "A set of equations, centered, without numbering." }
             "multline".env(math) { "A long equation that spans multiple lines." }
             "multline*".env(math) { "A long equation that spans multiple lines, without numbering." }
             "flalign".env(math) { "A set of equations, left and right aligned." }
             "flalign*".env(math) { "A set of equations, left and right aligned, without numbering." }
+            "split".env(alignableMath) { "A single equation, split into multiple lines." }
         }
 
         underContext(LatexContexts.Math) {
@@ -203,12 +206,12 @@ object PredefinedEnvBasic : PredefinedEnvironmentSet() {
         val cols = "cols".required(Literal)
         val pos = "pos".optional(Position)
         val width = "width".optional(Dimension)
-        "tabular".env(+LatexContexts.Tabular, pos, cols) {
+        "tabular".env(+LatexContexts.Table, pos, cols) {
             "A basic table."
         }
-        "tabular*".env(+LatexContexts.Tabular, width, pos, cols)
-        "tabularx".env(+LatexContexts.Tabular, width, cols)
-        "tabulary".env(+LatexContexts.Tabular, "length".required(Dimension), "pream".optional(Literal))
+        "tabular*".env(+LatexContexts.Table, width, pos, cols)
+        "tabularx".env(+LatexContexts.Table, width, cols)
+        "tabulary".env(+LatexContexts.Table, "length".required(Dimension), "pream".optional(Literal))
         "longtable".env(LatexContexts.Table, cols)
 
         underPackage("tabularray") {

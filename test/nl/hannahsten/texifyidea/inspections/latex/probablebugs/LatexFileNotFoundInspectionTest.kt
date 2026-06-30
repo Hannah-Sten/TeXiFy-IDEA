@@ -178,6 +178,18 @@ class LatexFileNotFoundInspectionTest : TexifyInspectionTestBase(LatexFileNotFou
         myFixture.testHighlighting("subfilestest/subdir/subsubdir/twodown.tex", "subfilestest/subdir/onedown.tex", "subfilestest/main.tex", "subfilestest/subfiles.cls")
     }
 
+    fun testGlobExpansion() {
+        configureByFilesAndBuildFilesets("globexpansion/main.tex", "globexpansion/mais.bib", "globexpansion/mail.bib", "globexpansion/refs.bib")
+        myFixture.checkHighlighting()
+    }
+
+    // Test is not working due to absolute paths not working in temp file system
+//    fun testCurrfileAbsdir() {
+//        myFixture.copyFileToProject("currfile/included.tex")
+//        configureByFilesAndBuildFilesets("currfile/main.tex")
+//        myFixture.checkHighlighting()
+//    }
+
 // java.lang.Throwable: Stub index points to a file without PSI: file = temp:///src/subfiles/dir1, file type = com.intellij.openapi.fileTypes.UnknownFileType@35570dc3
 //    @Test
 //    fun `test subfiles`() {

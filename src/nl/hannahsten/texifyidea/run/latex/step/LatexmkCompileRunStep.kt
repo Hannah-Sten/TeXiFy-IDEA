@@ -24,7 +24,7 @@ import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.LatexmkRcFileFinder
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.includedPackagesInFileset
-import java.util.Locale
+import java.util.*
 
 internal class LatexmkCompileRunStep(
     private val stepConfig: LatexmkCompileStepOptions,
@@ -154,7 +154,7 @@ internal class LatexmkCompileRunStep(
                 return step.latexmkCompileMode
             }
 
-            return ReadAction.compute<LatexmkCompileMode, RuntimeException> {
+            return ReadAction.computeBlocking<LatexmkCompileMode, RuntimeException> {
                 val psi = PsiManager.getInstance(runConfig.project).findFile(session.mainFile) ?: session.psiFile?.element
                 val magicComments = psi?.allParentMagicComments()
                 val magicMode = compileModeFromMagicCommand(

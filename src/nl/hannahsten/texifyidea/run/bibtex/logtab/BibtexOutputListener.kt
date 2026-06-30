@@ -48,7 +48,7 @@ class BibtexOutputListener(
 
         updateCurrentFile(newText)
 
-        val windowList: List<String> = window.mapNotNull { it as? String }
+        val windowList: List<String> = window.filterIsInstance<String>()
         val logMessage = extractMessage(windowList) ?: return
 
         if (!messageList.contains(logMessage)) {

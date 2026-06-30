@@ -29,7 +29,6 @@ abstract class BibtexIdImplMixin(node: ASTNode) : BibtexId, ASTWrapperPsiElement
         val parent = firstParentOfType<BibtexEntry>() ?: return
         // remove the whole entry, not just the id
         parent.delete()
-//        super.delete()
         // removing the reference is done separately by usage search
     }
 }

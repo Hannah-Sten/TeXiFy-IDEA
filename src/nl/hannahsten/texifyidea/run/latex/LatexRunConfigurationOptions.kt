@@ -203,7 +203,19 @@ class PdfViewerStepOptions : LatexStepRunConfigurationOptions() {
 
     override fun displayName(): String = TexifyBundle.message("run.step.display.open.with", resolveViewerLabel())
 
+    internal fun usesCustomViewer(): Boolean = !customViewerCommand.isNullOrBlank() || pdfViewerName == CustomPdfViewer.name
+
+    internal fun normalizeCustomViewerConfiguration() {
+        customViewerCommand = customViewerCommand?.takeUnless(String::isBlank)
+        if (usesCustomViewer()) {
+            pdfViewerName = CustomPdfViewer.name
+        }
+    }
+
     private fun resolveViewerLabel(): String {
+        if (usesCustomViewer()) {
+            return CustomPdfViewer.displayName
+        }
         val configuredName = pdfViewerName?.trim().orEmpty()
         val matchingViewer = (PdfViewer.allViewers + CustomPdfViewer).firstOrNull { it.name == configuredName }
         return matchingViewer?.displayName

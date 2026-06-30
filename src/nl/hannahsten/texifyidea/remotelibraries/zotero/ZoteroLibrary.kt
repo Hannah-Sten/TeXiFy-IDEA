@@ -26,7 +26,7 @@ class ZoteroLibrary(val url: String?, override val identifier: String = NAME, ov
     }
 
     override suspend fun getBibtexString(): Either<RemoteLibraryRequestFailure, String> = either {
-        val credentials = PasswordSafe.instance.get(CredentialAttributes.Zotero.userAttributes)
+        val credentials = PasswordSafe.instance[CredentialAttributes.Zotero.userAttributes]
         // Backwards compatibility, url may be null
         val cleanedUrl = if (url.isNullOrBlank()) DEFAULT_URL else url
         val (response, content) = client.get(cleanedUrl.replace(USER_ID_MACRO, credentials?.userName ?: "")) {
@@ -51,7 +51,7 @@ class ZoteroLibrary(val url: String?, override val identifier: String = NAME, ov
     }
 
     override fun destroyCredentials() {
-        PasswordSafe.instance.set(CredentialAttributes.Zotero.userAttributes, null)
+        PasswordSafe.instance[CredentialAttributes.Zotero.userAttributes] = null
     }
 
     companion object {

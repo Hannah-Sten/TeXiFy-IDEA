@@ -147,7 +147,7 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
                     override fun onSuccess() {
                         TexLivePackages.packageList?.add(packageName)
                         // Rerun inspections
-                        filePointer.containingFile?.rerunInspections()
+                        filePointer.containingFile?.rerunInspections("Package $packageName installed")
                     }
                 })
         }

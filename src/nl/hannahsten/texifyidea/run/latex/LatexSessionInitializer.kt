@@ -11,7 +11,7 @@ import nl.hannahsten.texifyidea.TexifyBundle
 import com.intellij.psi.SmartPsiElementPointer
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import java.nio.file.Path
-import java.util.Locale
+import java.util.*
 
 /**
  * Builds an immutable runtime session from persisted run-configuration settings.
@@ -53,8 +53,8 @@ internal object LatexSessionInitializer {
         val workingDirectory = LatexPathResolver.resolve(runConfig.workingDirectory, resolvedMainFile, workingDirectoryProject)
             ?: Path.of(resolvedMainFile.parent.path)
 
-        val psiPointer = ReadAction.compute<SmartPsiElementPointer<PsiFile>?, RuntimeException> {
-            val mainPsiFile = PsiManager.getInstance(runConfig.project).findFile(resolvedMainFile) ?: return@compute null
+        val psiPointer = ReadAction.computeBlocking<SmartPsiElementPointer<PsiFile>?, RuntimeException> {
+            val mainPsiFile = PsiManager.getInstance(runConfig.project).findFile(resolvedMainFile) ?: return@computeBlocking null
             SmartPointerManager.getInstance(runConfig.project).createSmartPsiElementPointer(mainPsiFile)
         }
 

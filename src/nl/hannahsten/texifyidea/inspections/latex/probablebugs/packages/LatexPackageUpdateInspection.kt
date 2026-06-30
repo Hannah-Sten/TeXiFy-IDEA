@@ -147,7 +147,7 @@ class LatexPackageUpdateInspection : TexifyInspectionBase() {
                     // Clear cache, since we changed something
                     Cache.availablePackageUpdates = mapOf()
                     // Rerun inspections
-                    filePointer.containingFile?.rerunInspections()
+                    filePointer.containingFile?.rerunInspections("Package $packageName updated")
                 }
             })
         }

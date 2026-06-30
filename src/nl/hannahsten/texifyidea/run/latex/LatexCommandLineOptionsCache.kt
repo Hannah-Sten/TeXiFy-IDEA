@@ -42,7 +42,7 @@ object LatexCommandLineOptionsCache {
     private fun getOptions(optionsList: List<Pair<String, String>>): Options = Options().apply {
         for ((option, description) in optionsList) {
             // option is with one - and .longOpt is with two --, but both are possible it seems with pdflatex
-            addOption(Option.builder().longOpt(option).desc(description).build())
+            addOption(Option.builder().longOpt(option).desc(description).get())
         }
     }
 

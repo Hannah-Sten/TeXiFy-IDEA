@@ -5,6 +5,7 @@ import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
 import nl.hannahsten.texifyidea.run.pdfviewer.CustomPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.EvinceViewer
+import nl.hannahsten.texifyidea.run.pdfviewer.NoViewer
 
 class LatexStepRunConfigurationOptionsDisplayNameTest : BasePlatformTestCase() {
 
@@ -48,6 +49,15 @@ class LatexStepRunConfigurationOptionsDisplayNameTest : BasePlatformTestCase() {
     fun testPdfViewerDisplayNameUsesCustomViewerLabel() {
         val step = PdfViewerStepOptions().apply {
             pdfViewerName = CustomPdfViewer.name
+        }
+
+        assertEquals("Open with Custom viewer", step.displayName())
+    }
+
+    fun testPdfViewerDisplayNameUsesCustomViewerLabelWhenCommandConfigured() {
+        val step = PdfViewerStepOptions().apply {
+            pdfViewerName = NoViewer.name
+            customViewerCommand = "open {pdf}"
         }
 
         assertEquals("Open with Custom viewer", step.displayName())

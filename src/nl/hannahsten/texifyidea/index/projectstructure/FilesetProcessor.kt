@@ -21,6 +21,7 @@ import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.nameWithSlash
 import nl.hannahsten.texifyidea.util.CacheValueTimed
 import nl.hannahsten.texifyidea.util.expandCommandsOnce
+import nl.hannahsten.texifyidea.util.expandGlob
 import nl.hannahsten.texifyidea.util.files.allChildDirectories
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 import nl.hannahsten.texifyidea.util.magic.PackageMagic
@@ -43,6 +44,11 @@ class FilesetProcessor(
      * The current root directory, particularly for subfiles package as each `subfile` assigns a new root directory.
      */
     var currentRootDir: VirtualFile? = root.parent
+
+    /**
+     * The file which includes other files.
+     */
+    var currentParentFile: VirtualFile? = null
 
     /**
      * All files in the fileset in encountering order.
@@ -84,10 +90,10 @@ class FilesetProcessor(
         return Fileset(root, files, libraries, scope, extInfo)
     }
 
-    private fun processNext(v: VirtualFile) {
+    private fun processNext(v: VirtualFile, parent: VirtualFile? = null) {
         if (files.add(v)) {
             // new element added, continue building the fileset
-            recursiveBuildFileset(v)
+            recursiveBuildFileset(v, parent)
         }
     }
 
@@ -97,13 +103,13 @@ class FilesetProcessor(
     }
 
     private inline fun processElementsWithPaths(
-        elements: List<Sequence<Path>>, refInfoList: List<MutableSet<VirtualFile>>,
+        elements: List<Iterable<Path>>, refInfoList: List<MutableSet<VirtualFile>>, containingFile: VirtualFile,
         crossinline findFile: (Path) -> VirtualFile?
     ) {
         for ((paths, refInfo) in elements.zip(refInfoList)) {
             for (path in paths) {
                 findFile(path)?.let { file ->
-                    processNext(file)
+                    processNext(file, containingFile)
                     refInfo.add(file)
                 }
             }
@@ -111,7 +117,7 @@ class FilesetProcessor(
     }
 
     private fun processLibraryReferences(
-        elements: List<Sequence<Path>>, refInfoList: List<MutableSet<VirtualFile>>, command: LatexCommands
+        elements: List<Iterable<Path>>, refInfoList: List<MutableSet<VirtualFile>>, containingFile: VirtualFile, command: LatexCommands
     ) {
         for ((paths, refInfo) in elements.zip(refInfoList)) {
             for (path in paths) {
@@ -119,7 +125,7 @@ class FilesetProcessor(
                 val localFile = findLocalFile(path, rootDirs)
 
                 if (localFile != null) {
-                    processNext(localFile)
+                    processNext(localFile, containingFile)
                     refInfo.add(localFile)
                     continue
                 }
@@ -161,9 +167,9 @@ class FilesetProcessor(
     }
 
     private fun processFilesUnderRootDirs(
-        elements: List<Sequence<Path>>, refInfoList: List<MutableSet<VirtualFile>>, rootDirs: Collection<VirtualFile>,
+        elements: List<Iterable<Path>>, refInfoList: List<MutableSet<VirtualFile>>, containingFile: VirtualFile, rootDirs: Collection<VirtualFile>,
     ) {
-        processElementsWithPaths(elements, refInfoList) { path ->
+        processElementsWithPaths(elements, refInfoList, containingFile) { path ->
             findLocalFile(path, rootDirs)
         }
     }
@@ -180,11 +186,16 @@ class FilesetProcessor(
     }
 
     private fun pathTextExtraProcessing(
-        text: String, file: VirtualFile
-    ): String {
-        var result = expandCommandsOnce(text, project, file)
-        result = result.trim()
-        return result
+        text: String, file: VirtualFile, command: LatexCommands
+    ): List<String> {
+        val expandedCommands = expandCommandsOnce(text, project, file, currentParentFile).trim()
+        // Special case for biblatex: [ and ] break up the parameter text psi element, but are part of a glob pattern, so we need to consider the parameter as a whole
+        return if (command.name == CommandNames.ADD_BIB_RESOURCE && command.optionalParameterTextMap().keys.any { it == "glob" }) {
+            expandGlob(expandedCommands, currentRootDir)
+        }
+        else {
+            listOf(expandedCommands)
+        }
     }
 
     private fun resolveSubfolder(root: VirtualFile, siblingRelativePath: String): VirtualFile? = runCatching { root.parent?.findDirectory(siblingRelativePath) }.getOrNull()
@@ -238,20 +249,21 @@ class FilesetProcessor(
         var pathWithExts = rangesAndTextsWithExt.flatMap { (paramTexts, extensions) ->
             val noExtensionProvided = extensions.isEmpty()
             val extensionSeq = extensions.asSequence()
-            paramTexts.asSequence().map { text ->
-                val text = pathTextExtraProcessing(text, file)
-                pathOrNull(text)?.let { path ->
-                    // If a file a.b.tex exists, \input{a.b} prefers a.b.tex over a.b
-                    if (noExtensionProvided) {
-                        sequenceOf(path)
-                    }
-                    else {
-                        path.name.let { fileName ->
-                            // For some commands, like \input, the extension is optional, for now we always try it
-                            extensionSeq.map { ext -> path.resolveSibling("$fileName.$ext") } + listOf(path.resolveSibling(fileName))
+            paramTexts.asSequence().map { paramText ->
+                pathTextExtraProcessing(paramText, file, command).flatMap { pathMaybe ->
+                    pathOrNull(pathMaybe)?.let { path ->
+                        // If a file a.b.tex exists, \input{a.b} prefers a.b.tex over a.b
+                        if (noExtensionProvided) {
+                            sequenceOf(path)
                         }
-                    }
-                } ?: emptySequence()
+                        else {
+                            path.name.let { fileName ->
+                                // For some commands, like \input, the extension is optional, for now we always try it
+                                extensionSeq.map { ext -> path.resolveSibling("$fileName.$ext") } + listOf(path.resolveSibling(fileName))
+                            }
+                        }
+                    } ?: emptySequence()
+                }
             }
         }
         val refInfos: List<MutableSet<VirtualFile>> = List(extractedRefTexts.size) { mutableSetOf() }
@@ -288,11 +300,11 @@ class FilesetProcessor(
         var processPlainFilePath = true
 
         if (commandName in CommandMagic.packageInclusionCommands) {
-            processLibraryReferences(pathWithExts, refInfos, command)
+            processLibraryReferences(pathWithExts, refInfos, file, command)
         }
         if (commandName in CommandMagic.bibliographyIncludeCommands) {
             // For bibliography files, we can search in the bib input paths
-            processFilesUnderRootDirs(pathWithExts, refInfos, info.bibInputPaths)
+            processFilesUnderRootDirs(pathWithExts, refInfos, file, info.bibInputPaths)
         }
         if (commandName in CommandMagic.externalDocumentCommands) {
             // \externaldocument uses the .aux file in the output directory, we are only interested in the source file,
@@ -311,7 +323,7 @@ class FilesetProcessor(
             processPlainFilePath = false // do not process more
         }
         if (processPlainFilePath)
-            processFilesUnderRootDirs(pathWithExts, refInfos, searchDirs)
+            processFilesUnderRootDirs(pathWithExts, refInfos, file, searchDirs)
 
         val savedData = extractedRefTexts to refInfos
         updateOrMergeRefData(command, savedData)
@@ -365,7 +377,7 @@ class FilesetProcessor(
      * Add new information such as declared graphics extensions and luatex paths to the given fileset info,
      * perform the given callback, and then restore the original information.
      */
-    private inline fun withNewInformation(file: VirtualFile, callback: () -> Unit) {
+    private inline fun withNewInformation(file: VirtualFile, parentFile: VirtualFile?, callback: () -> Unit) {
         val info = this
         addGraphicsPathsfo(file)
         addLuatexPaths(project, file)
@@ -373,6 +385,8 @@ class FilesetProcessor(
         val docClass = NewCommandsIndex.getByName(CommandNames.DOCUMENT_CLASS, project, file)
             .lastOrNull()?.requiredParameterText(0)
         val oldRoot = info.currentRootDir
+        val oldParent = currentParentFile
+        currentParentFile = parentFile
         if (docClass != null && docClass.endsWith(LatexLib.SUBFILES.name)) {
             // subfiles package sets the root directory to the parent of the file
             info.currentRootDir = file.parent
@@ -381,6 +395,7 @@ class FilesetProcessor(
         callback()
 
         info.currentRootDir = oldRoot
+        currentParentFile = oldParent
     }
 
     private fun updateOrMergeRefData(command: PsiElement, refInfoList: Pair<List<String>, List<MutableSet<VirtualFile>>>) {
@@ -414,10 +429,10 @@ class FilesetProcessor(
      *
      * Note: the path of the referred file is relative to the root file, not the file that contains the input command.
      */
-    fun recursiveBuildFileset(file: VirtualFile) {
+    fun recursiveBuildFileset(file: VirtualFile, parentFile: VirtualFile? = null) {
         // indeed, we may deal with the same file multiple times with different roots
         if (!file.isValid) return
-        withNewInformation(file) {
+        withNewInformation(file, parentFile) {
             val fileInputCommands = NewSpecialCommandsIndex.getAllFileInputs(project, file)
             fileInputCommands.forEach {
                 findReferencedFiles(it, file)

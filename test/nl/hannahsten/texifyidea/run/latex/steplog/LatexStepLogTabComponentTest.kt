@@ -16,6 +16,7 @@ import nl.hannahsten.texifyidea.run.latex.flow.StepLogEvent
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStep
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepContext
 import java.nio.file.Path
+import javax.swing.tree.TreePath
 
 class LatexStepLogTabComponentTest : BasePlatformTestCase() {
 
@@ -40,19 +41,31 @@ class LatexStepLogTabComponentTest : BasePlatformTestCase() {
         assertFalse(LatexStepLogTabComponent.isOverfullUnderfullMessage("Package hyperref Warning: Token not allowed"))
     }
 
-    fun testTryJumpMessageInConsoleDoesNotRefreshWhenOffsetMissing() {
-        val fixture = createFixture()
+    fun testDefaultConsoleShowsMergedOutputAcrossSteps() {
+        val fixture = createFixture(listOf(LatexStepType.LATEX_COMPILE, LatexStepType.BIBTEX))
         try {
-            emitStepOutput(fixture.component, fixture.step, "alpha\nbeta\n")
-            renderStepRawLog(fixture.component, 0)
-            val beforeText = privateField<String>(fixture.component, "renderedOutputText")
-            val beforeStep = privateField<Int?>(fixture.component, "renderedStepIndex")
+            emitStepOutput(fixture.component, 0, fixture.steps[0], "alpha\n")
+            emitStepOutput(fixture.component, 1, fixture.steps[1], "beta\n")
 
-            val result = tryJump(fixture.component, messageNodeData(fixture.component, 0, null))
+            assertEquals(null, privateField<Int?>(fixture.component, "renderedStepIndex"))
+            assertEquals("alpha\nbeta\n", privateField<String>(fixture.component, "renderedOutputText"))
+        }
+        finally {
+            Disposer.dispose(fixture.component)
+        }
+    }
+
+    fun testTryJumpMessageInConsoleSwitchesToStepConsoleWhenOffsetMissing() {
+        val fixture = createFixture(listOf(LatexStepType.LATEX_COMPILE, LatexStepType.BIBTEX))
+        try {
+            emitStepOutput(fixture.component, 0, fixture.steps[0], "alpha\n")
+            emitStepOutput(fixture.component, 1, fixture.steps[1], "beta\n")
+
+            val result = tryJump(fixture.component, messageNodeData(fixture.component, 1, null))
 
             assertFalse(result)
-            assertEquals(beforeText, privateField<String>(fixture.component, "renderedOutputText"))
-            assertEquals(beforeStep, privateField<Int?>(fixture.component, "renderedStepIndex"))
+            assertEquals(1, privateField<Int?>(fixture.component, "renderedStepIndex"))
+            assertEquals("beta\n", privateField<String>(fixture.component, "renderedOutputText"))
         }
         finally {
             Disposer.dispose(fixture.component)
@@ -70,6 +83,41 @@ class LatexStepLogTabComponentTest : BasePlatformTestCase() {
             assertTrue(first)
             assertTrue(second)
             assertEquals(0, privateField<Int?>(fixture.component, "renderedStepIndex"))
+        }
+        finally {
+            Disposer.dispose(fixture.component)
+        }
+    }
+
+    fun testManualStepSelectionSwitchesConsoleAndStopsAutoFollow() {
+        val fixture = createFixture(listOf(LatexStepType.LATEX_COMPILE, LatexStepType.BIBTEX))
+        try {
+            emitStepOutput(fixture.component, 0, fixture.steps[0], "alpha\n")
+            emitStepOutput(fixture.component, 1, fixture.steps[1], "beta\n")
+
+            manualSelectStep(fixture.component, 0)
+            handleEvent(fixture.component, StepLogEvent.StepStarted(1, fixture.steps[1]))
+            emitStepOutput(fixture.component, 1, fixture.steps[1], "gamma\n")
+
+            assertEquals(0, privateField<Int?>(fixture.component, "renderedStepIndex"))
+            assertEquals("alpha\n", privateField<String>(fixture.component, "renderedOutputText"))
+        }
+        finally {
+            Disposer.dispose(fixture.component)
+        }
+    }
+
+    fun testSelectingRootRestoresMergedConsole() {
+        val fixture = createFixture(listOf(LatexStepType.LATEX_COMPILE, LatexStepType.BIBTEX))
+        try {
+            emitStepOutput(fixture.component, 0, fixture.steps[0], "alpha\n")
+            emitStepOutput(fixture.component, 1, fixture.steps[1], "beta\n")
+
+            manualSelectStep(fixture.component, 0)
+            manualSelectRoot(fixture.component)
+
+            assertEquals(null, privateField<Int?>(fixture.component, "renderedStepIndex"))
+            assertEquals("alpha\nbeta\n", privateField<String>(fixture.component, "renderedOutputText"))
         }
         finally {
             Disposer.dispose(fixture.component)
@@ -285,13 +333,14 @@ class LatexStepLogTabComponentTest : BasePlatformTestCase() {
     }
 
     fun testScrollRawLogToEndRendersCurrentStepOutput() {
-        val fixture = createFixture()
+        val fixture = createFixture(listOf(LatexStepType.LATEX_COMPILE, LatexStepType.BIBTEX))
         try {
-            emitStepOutput(fixture.component, fixture.step, "alpha\nbeta\n")
+            emitStepOutput(fixture.component, 0, fixture.steps[0], "alpha\n")
+            emitStepOutput(fixture.component, 1, fixture.steps[1], "beta\n")
 
             invokeNoArgMethod(fixture.component, "scrollRawLogToEnd")
 
-            assertEquals(0, privateField<Int?>(fixture.component, "renderedStepIndex"))
+            assertEquals(null, privateField<Int?>(fixture.component, "renderedStepIndex"))
             assertEquals("alpha\nbeta\n", privateField<String>(fixture.component, "renderedOutputText"))
         }
         finally {
@@ -299,7 +348,9 @@ class LatexStepLogTabComponentTest : BasePlatformTestCase() {
         }
     }
 
-    private fun createFixture(stepType: String = LatexStepType.LATEX_COMPILE): StepLogFixture {
+    private fun createFixture(stepType: String = LatexStepType.LATEX_COMPILE): StepLogFixture = createFixture(listOf(stepType))
+
+    private fun createFixture(stepTypes: List<String>): StepLogFixture {
         val mainFile = myFixture.addFileToProject("step-log-main.tex", "\\documentclass{article}").virtualFile
         val runConfig = LatexRunConfiguration(
             project,
@@ -320,26 +371,26 @@ class LatexStepLogTabComponentTest : BasePlatformTestCase() {
             auxDir = mainFile.parent,
         )
         val context = LatexRunStepContext(runConfig, environment, session)
-        val step = TestNoProcessStep(id = stepType, configId = "s1")
-        val handler = StepAwareSequentialProcessHandler(listOf(step), context)
+        val steps = stepTypes.mapIndexed { index, stepType ->
+            TestNoProcessStep(id = stepType, configId = "s${index + 1}")
+        }
+        val handler = StepAwareSequentialProcessHandler(steps, context)
         val component = LatexStepLogTabComponent(project, mainFile, handler)
-        return StepLogFixture(component, step)
+        return StepLogFixture(component, steps)
     }
 
     private fun emitStepOutput(component: LatexStepLogTabComponent, step: LatexRunStep, text: String) {
-        handleEvent(component, StepLogEvent.StepOutput(0, step, text, ProcessOutputTypes.STDOUT))
+        emitStepOutput(component, 0, step, text)
+    }
+
+    private fun emitStepOutput(component: LatexStepLogTabComponent, stepIndex: Int, step: LatexRunStep, text: String) {
+        handleEvent(component, StepLogEvent.StepOutput(stepIndex, step, text, ProcessOutputTypes.STDOUT))
     }
 
     private fun handleEvent(component: LatexStepLogTabComponent, event: StepLogEvent) {
         val method = component.javaClass.getDeclaredMethod("handleEvent", StepLogEvent::class.java)
         method.isAccessible = true
         method.invoke(component, event)
-    }
-
-    private fun renderStepRawLog(component: LatexStepLogTabComponent, stepIndex: Int) {
-        val method = component.javaClass.getDeclaredMethod("renderStepRawLog", Int::class.javaPrimitiveType)
-        method.isAccessible = true
-        method.invoke(component, stepIndex)
     }
 
     private fun tryJump(component: LatexStepLogTabComponent, messageData: Any): Boolean {
@@ -438,10 +489,31 @@ class LatexStepLogTabComponentTest : BasePlatformTestCase() {
         return field.get(instance) as T
     }
 
+    private fun manualSelectRoot(component: LatexStepLogTabComponent) {
+        manualSelectNode(component, privateField(component, "rootNode"))
+    }
+
+    private fun manualSelectStep(component: LatexStepLogTabComponent, stepIndex: Int) {
+        val stepNodes = privateField<Map<Int, Any>>(component, "stepNodes")
+        manualSelectNode(component, stepNodes.getValue(stepIndex))
+    }
+
+    private fun manualSelectNode(component: LatexStepLogTabComponent, node: Any) {
+        val pathMethod = component.javaClass.getDeclaredMethod("treePathFor", node.javaClass)
+        pathMethod.isAccessible = true
+        val path = pathMethod.invoke(component, node) as TreePath
+        val tree = privateField<Any>(component, "tree")
+        tree.javaClass.getMethod("setSelectionPath", TreePath::class.java).invoke(tree, path)
+    }
+
     private data class StepLogFixture(
         val component: LatexStepLogTabComponent,
-        val step: LatexRunStep,
-    )
+        val steps: List<LatexRunStep>,
+    ) {
+
+        val step: LatexRunStep
+            get() = steps.single()
+    }
 
     private class TestNoProcessStep(
         override val id: String,

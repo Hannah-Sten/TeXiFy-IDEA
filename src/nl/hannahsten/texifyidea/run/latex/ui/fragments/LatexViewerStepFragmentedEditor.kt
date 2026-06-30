@@ -59,6 +59,7 @@ internal class LatexViewerStepFragmentedEditor(
                     step.pdfViewerName = selectedViewer.name
                     step.customViewerCommand = null
                 }
+                updateUiState()
             },
             initiallyVisible = { true },
             removable = false,
@@ -95,7 +96,7 @@ internal class LatexViewerStepFragmentedEditor(
                     null
                 }
             },
-            initiallyVisible = { step -> !step.customViewerCommand.isNullOrBlank() || step.pdfViewerName == CustomPdfViewer.name },
+            initiallyVisible = { step -> step.usesCustomViewer() },
             removable = false,
             hint = TexifyBundle.message("run.step.ui.hint.custom.viewer.command"),
         )
@@ -109,7 +110,7 @@ internal class LatexViewerStepFragmentedEditor(
     }
 
     private fun selectedViewerFor(step: PdfViewerStepOptions): PdfViewer {
-        if (!step.customViewerCommand.isNullOrBlank() || step.pdfViewerName == CustomPdfViewer.name) {
+        if (step.usesCustomViewer()) {
             return CustomPdfViewer
         }
         return viewerChoices.firstOrNull { it.name == step.pdfViewerName }
@@ -120,9 +121,11 @@ internal class LatexViewerStepFragmentedEditor(
         pdfViewerName: String,
         customViewerCommand: String?,
     ) {
-        pdfViewer.selectedItem = viewerChoices.firstOrNull { it.name == pdfViewerName }
-            ?: CustomPdfViewer.takeIf { pdfViewerName == it.name }
-            ?: PdfViewer.firstAvailableViewer
+        val step = PdfViewerStepOptions().apply {
+            this.pdfViewerName = pdfViewerName
+            this.customViewerCommand = customViewerCommand
+        }
+        pdfViewer.selectedItem = selectedViewerFor(step)
         viewerCommand.text = customViewerCommand.orEmpty()
         updateUiState()
     }
@@ -130,7 +133,9 @@ internal class LatexViewerStepFragmentedEditor(
     private fun isCustomViewerSelected(): Boolean = pdfViewer.selectedItem == CustomPdfViewer
 
     private fun updateUiState() {
-        viewerCommandRow.isVisible = isCustomViewerSelected()
+        val commandVisible = isCustomViewerSelected()
+        viewerCommandRow.isVisible = commandVisible
+        viewerCommand.isVisible = commandVisible
         updateRequireFocusEnabled()
     }
 

@@ -86,7 +86,7 @@ internal object LatexPathResolver {
 
     fun getMainFileContentRoot(mainFile: VirtualFile?, project: Project): VirtualFile? {
         if (mainFile == null || !project.isInitialized) return null
-        return ReadAction.compute<VirtualFile?, RuntimeException> {
+        return ReadAction.computeBlocking<VirtualFile?, RuntimeException> {
             ProjectRootManager.getInstance(project).fileIndex.getContentRootForFile(mainFile)
         }
     }
@@ -98,7 +98,7 @@ internal object LatexPathResolver {
         }
 
         return runCatching {
-            ReadAction.compute<Path?, RuntimeException> {
+            ReadAction.computeBlocking<Path?, RuntimeException> {
                 ProjectRootManager.getInstance(project).contentRoots.firstNotNullOfOrNull { root ->
                     root.findFileByRelativePath(path)?.let { Path.of(it.path) }
                 }
@@ -162,7 +162,7 @@ internal object LatexPathResolver {
         val file = mainFile ?: return null
         if (outPath.isBlank()) return null
 
-        val module = ReadAction.compute<com.intellij.openapi.module.Module?, RuntimeException> {
+        val module = ReadAction.computeBlocking<com.intellij.openapi.module.Module?, RuntimeException> {
             ProjectRootManager.getInstance(project).fileIndex.getModuleForFile(file, false)
         }
 

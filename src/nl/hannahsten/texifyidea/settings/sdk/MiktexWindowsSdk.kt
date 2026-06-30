@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.settings.sdk
 
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
@@ -10,6 +11,7 @@ import nl.hannahsten.texifyidea.util.runCommand
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import java.nio.file.InvalidPathException
+import java.nio.file.Path
 import java.nio.file.Paths
 
 /**
@@ -29,9 +31,9 @@ class MiktexWindowsSdk : LatexSdk(TexifyBundle.message("settings.sdk.miktex.wind
         return Paths.get(path, executable).toString()
     }
 
-    override fun suggestHomePath(): String = Paths.get(System.getProperty("user.home"), "AppData", "Local", "Programs", "MiKTeX 2.9").toString()
+    override fun suggestHomePath(path: Path): String = Paths.get(System.getProperty("user.home"), "AppData", "Local", "Programs", "MiKTeX 2.9").toString()
 
-    override fun suggestHomePaths(): MutableCollection<String> {
+    override fun suggestHomePaths(project: Project?): MutableCollection<String> {
         val results = mutableSetOf<String>()
         val (paths, exitCode) = runCommandWithExitCode("where", "pdflatex")
         if (paths != null && exitCode == 0) {
@@ -44,7 +46,7 @@ class MiktexWindowsSdk : LatexSdk(TexifyBundle.message("settings.sdk.miktex.wind
             }
         }
         else {
-            results.add(suggestHomePath())
+            defaultSuggestedHomePath()?.let { results.add(it) }
         }
         return results
     }
@@ -56,7 +58,7 @@ class MiktexWindowsSdk : LatexSdk(TexifyBundle.message("settings.sdk.miktex.wind
             // To save space, MiKTeX leaves source/latex empty by default, but does leave the zipped files in source/
             LocalFileSystem.getInstance().findFileByPath(path)
         }
-        catch (ignored: InvalidPathException) {
+        catch (_: InvalidPathException) {
             Log.debug("Invalid path $path when looking for LaTeX sources")
             null
         }
@@ -68,7 +70,7 @@ class MiktexWindowsSdk : LatexSdk(TexifyBundle.message("settings.sdk.miktex.wind
         return try {
             LocalFileSystem.getInstance().findFileByPath(path)
         }
-        catch (ignored: InvalidPathException) {
+        catch (_: InvalidPathException) {
             Log.debug("Invalid path $path when looking for LaTeX style files")
             null
         }

@@ -5,20 +5,22 @@ import com.intellij.psi.PsiFile
 import com.intellij.testFramework.common.timeoutRunBlocking
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture
 import com.intellij.testFramework.fixtures.impl.CodeInsightTestFixtureImpl
+import junit.framework.TestCase.assertEquals
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.index.projectstructure.LatexProjectStructure
-import junit.framework.TestCase.assertEquals
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
-fun CodeInsightTestFixture.updateFilesets() {
-    timeoutRunBlocking(10.seconds) {
-        LatexProjectStructure.updateFilesetsSuspend(project)
+fun CodeInsightTestFixture.updateFilesets(timeout: Duration = 30.seconds) {
+    timeoutRunBlocking(timeout) {
+        LatexProjectStructure.rebuildFilesetsForTests(project)
     }
 }
 
-fun CodeInsightTestFixture.updateCommandDef() {
-    timeoutRunBlocking(10.seconds) {
-        LatexDefinitionService.getInstance(project).ensureRefreshAll()
+fun CodeInsightTestFixture.updateCommandDef(timeout: Duration = 30.seconds) {
+    timeoutRunBlocking(timeout) {
+        val filesets = LatexProjectStructure.rebuildFilesetsForTests(project)
+        LatexDefinitionService.getInstance(project).ensureRefreshFileset(filesets)
     }
 }
 
@@ -32,7 +34,7 @@ fun CodeInsightTestFixture.testFoldingWithDefinitions(content: String, fileName:
     configureByText(fileName, rawText)
     updateCommandDef()
 
-    val actual = (this as CodeInsightTestFixtureImpl).getFoldingDescription(false)
+    val actual = (this as CodeInsightTestFixtureImpl).getFoldingDescription(false, false)
     assertEquals(
         "Folding mismatch for inline content in $fileName",
         StringUtil.convertLineSeparators(expectedText),

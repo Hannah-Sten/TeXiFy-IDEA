@@ -11,9 +11,8 @@ import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.file.LatexFileType
+import nl.hannahsten.texifyidea.run.pdfviewer.ForwardSearchSupport
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
-import nl.hannahsten.texifyidea.util.latexTemplateRunConfig
-import nl.hannahsten.texifyidea.util.selectedRunConfig
 
 open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
     name = TexifyBundle.message("action.texify.ForwardSearch.text")
@@ -21,13 +20,10 @@ open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
 
     override fun actionPerformed(file: VirtualFile, project: Project, textEditor: TextEditor) {
         if (file.fileType !is LatexFileType) return
-        val viewer = this.viewer ?: return
-        if (!viewer.isAvailable() || !viewer.isForwardSearchSupported) return
 
-        val document = textEditor.editor.document
-        val line = document.getLineNumber(textEditor.editor.caretModel.offset) + 1
         try {
-            viewer.forwardSearch(null, file.path, line, project, focusAllowed = true)
+            val resolvedViewer = ForwardSearchSupport.performForwardSearch(project, file, textEditor.editor, fallbackViewer = viewer)
+            if (resolvedViewer != null) this.viewer = resolvedViewer
         }
         catch (e: TeXception) {
             // Show a notification if the forward search fails, but only catch TeXception and let other unexpected exceptions bubble up.
@@ -41,12 +37,13 @@ open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
     }
 
     override fun update(e: AnActionEvent) {
-        e.presentation.isEnabledAndVisible = (
-            e.project?.selectedRunConfig()?.pdfViewer == viewer
-                ||
-                (e.project?.selectedRunConfig() == null && e.project?.latexTemplateRunConfig()?.pdfViewer == viewer)
-            ) &&
-            e.getData(CommonDataKeys.VIRTUAL_FILE)?.fileType is LatexFileType
+        val project = e.project
+        val file = e.getData(CommonDataKeys.VIRTUAL_FILE)
+
+        e.presentation.isEnabledAndVisible =
+            project != null &&
+            file?.fileType is LatexFileType &&
+            ForwardSearchSupport.canForwardSearch(project, file, viewer)
     }
 
     override fun getActionUpdateThread() = ActionUpdateThread.BGT

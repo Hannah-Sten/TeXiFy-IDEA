@@ -1,6 +1,6 @@
 package nl.hannahsten.texifyidea.util
 
-import org.junit.Assert
+import org.junit.Assert.assertEquals
 import org.junit.Test
 
 /**
@@ -14,7 +14,7 @@ class TexifyUtilTest {
         val extension = "tex"
         val actualResult = path.appendExtension(extension)
         val expectedResult = "SomePath.tex"
-        Assert.assertEquals("SomePath + tex", expectedResult, actualResult)
+        assertEquals("SomePath + tex", expectedResult, actualResult)
     }
 
     @Test
@@ -23,7 +23,7 @@ class TexifyUtilTest {
         val extension = "tex"
         val actualResult = path.appendExtension(extension)
         val expectedResult = "SomePath.tex"
-        Assert.assertEquals("SomePath. + tex", expectedResult, actualResult)
+        assertEquals("SomePath. + tex", expectedResult, actualResult)
     }
 
     @Test
@@ -32,7 +32,7 @@ class TexifyUtilTest {
         val extension = "tex"
         val actualResult = path.appendExtension(extension)
         val expectedResult = "SomePath.tex"
-        Assert.assertEquals("SomePath.tex + tex", expectedResult, actualResult)
+        assertEquals("SomePath.tex + tex", expectedResult, actualResult)
     }
 
     @Test
@@ -41,6 +41,6 @@ class TexifyUtilTest {
         val extension = "tex"
         val actualResult = path.appendExtension(extension)
         val expectedResult = "SomePath.tex.tex"
-        Assert.assertEquals("SomePath.tex.tex + tex", expectedResult, actualResult)
+        assertEquals("SomePath.tex.tex + tex", expectedResult, actualResult)
     }
 }

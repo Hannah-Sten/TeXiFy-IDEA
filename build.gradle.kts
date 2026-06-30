@@ -4,6 +4,7 @@ import org.jetbrains.changelog.Changelog
 import org.jetbrains.grammarkit.tasks.GenerateLexerTask
 import org.jetbrains.grammarkit.tasks.GenerateParserTask
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
+import org.jetbrains.intellij.platform.gradle.tasks.VerifyPluginTask
 import org.jetbrains.kotlin.gradle.dsl.JvmDefaultMode
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -11,31 +12,31 @@ fun properties(key: String) = project.findProperty(key).toString()
 
 // NOTE: when updating versions, also update Qodana in qodana.yaml
 plugins {
-    id("org.jetbrains.intellij.platform") version "2.10.5"
-    kotlin("jvm") version ("2.3.0")
-    kotlin("plugin.serialization") version ("2.3.0")
+    id("org.jetbrains.intellij.platform") version "2.16.0"
+    kotlin("jvm") version ("2.4.0")
+    kotlin("plugin.serialization") version ("2.4.0")
 
     // Plugin which can check for Gradle dependencies, use the help/dependencyUpdates task.
-    id("com.github.ben-manes.versions") version "0.53.0"
+    id("com.github.ben-manes.versions") version "0.54.0"
 
     // Plugin which can update Gradle dependencies, use the help/useLatestVersions task.
     id("se.patrikerdes.use-latest-versions") version "0.2.19"
 
     // Used to debug in a different IDE
-    id("de.undercouch.download") version "5.6.0"
+    id("de.undercouch.download") version "5.7.0"
 
     // Test coverage
-    id("org.jetbrains.kotlinx.kover") version "0.9.4"
+    id("org.jetbrains.kotlinx.kover") version "0.9.8"
 
     // Linting
     id("org.jlleitschuh.gradle.ktlint") version "14.0.1"
 
     // Vulnerability scanning
-    id("org.owasp.dependencycheck") version "12.1.9"
+    id("org.owasp.dependencycheck") version "12.2.2"
 
     id("org.jetbrains.changelog") version "2.5.0"
-    id("org.jetbrains.grammarkit") version "2023.3.0.1"
-    id("io.sentry.jvm.gradle") version "5.12.2"
+    id("org.jetbrains.grammarkit") version "2023.3.0.3"
+    id("io.sentry.jvm.gradle") version "6.12.0"
 }
 
 group = "nl.hannahsten"
@@ -63,9 +64,15 @@ sourceSets {
 
 val targetVersion = "21"
 
-// Java target version
-java.sourceCompatibility = JavaVersion.toVersion(targetVersion)
 val kotlinJvmTarget = JvmTarget.fromTarget(targetVersion)
+
+java {
+    sourceCompatibility = JavaVersion.toVersion(targetVersion)
+
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
 
 // Specify the right jvm target for Kotlin
 tasks.compileKotlin {
@@ -100,7 +107,7 @@ dependencies {
         testFramework(TestFrameworkType.Platform)
         testFramework(TestFrameworkType.Plugin.Java)
 
-        intellijIdeaCommunity("2024.3")
+        intellijIdea("2026.1")
 
         // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
         // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
@@ -116,8 +123,8 @@ dependencies {
         bundledPlugin("com.intellij.java")
         bundledPlugin("tanvd.grazi")
         // https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html#non-bundled-plugin
-        plugin("com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.17.1-alpha.3@alpha")
-        plugin("com.jetbrains.hackathon.indices.viewer:1.29")
+        plugin("com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.18.0")
+        plugin("com.jetbrains.hackathon.indices.viewer:1.32")
         // Does not work in tests: https://youtrack.jetbrains.com/issue/GRZ-5023
 //        plugin("com.intellij.grazie.pro:0.3.371")
     }
@@ -128,31 +135,31 @@ dependencies {
     // D-Bus Java bindings
     implementation("com.github.hypfvieh:dbus-java-core:5.2.0")
     implementation("com.github.hypfvieh:dbus-java-transport-native-unixsocket:5.2.0")
-    implementation("org.slf4j:slf4j-simple:2.0.17")
+    implementation("org.slf4j:slf4j-simple:2.0.18")
 
     // Unzipping tar.xz/tar.bz2 files on Windows containing dtx files
     implementation("org.codehaus.plexus:plexus-component-api:1.0-alpha-33")
     implementation("org.codehaus.plexus:plexus-container-default:2.1.1")
-    implementation("org.codehaus.plexus:plexus-archiver:4.10.4")
+    implementation("org.codehaus.plexus:plexus-archiver:4.12.0")
 
     // Parsing json
     implementation("com.beust:klaxon:5.6")
 
     // Parsing xml
-    implementation("com.fasterxml.jackson.core:jackson-core:2.20.1")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.20.1")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-toml:2.20.1")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.20.1")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.22.0")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.22.0")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-toml:2.22.0")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.22.0")
 
     // Http requests
-    implementation("io.ktor:ktor-client-core:3.3.3")
-    implementation("io.ktor:ktor-client-cio:3.3.3")
-    implementation("io.ktor:ktor-client-auth:3.3.3")
-    implementation("io.ktor:ktor-client-content-negotiation:3.3.3")
-    implementation("io.ktor:ktor-server-core:3.3.3")
-    implementation("io.ktor:ktor-server-jetty-jakarta:3.3.3")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:3.3.3")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
+    implementation("io.ktor:ktor-client-core:3.5.0")
+    implementation("io.ktor:ktor-client-cio:3.5.0")
+    implementation("io.ktor:ktor-client-auth:3.5.0")
+    implementation("io.ktor:ktor-client-content-negotiation:3.5.0")
+    implementation("io.ktor:ktor-server-core:3.5.0")
+    implementation("io.ktor:ktor-server-jetty-jakarta:3.5.0")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:3.5.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
 
     // Comparing versions
     implementation("org.apache.maven:maven-artifact:4.0.0-rc-2")
@@ -162,25 +169,25 @@ dependencies {
     implementation("org.apache.xmlgraphics:batik-all:1.19")
     implementation("batik:batik-svg-dom:1.6-1")
 
-    implementation("io.arrow-kt:arrow-core:2.1.2")
-    implementation("io.arrow-kt:arrow-fx-coroutines:2.1.2")
-    implementation("io.arrow-kt:arrow-resilience:2.1.2")
+    implementation("io.arrow-kt:arrow-core:2.2.3")
+    implementation("io.arrow-kt:arrow-fx-coroutines:2.2.3")
+    implementation("io.arrow-kt:arrow-resilience:2.2.3")
     // Test dependencies
     // No version specified, it equals the kotlin version
     testImplementation("org.jetbrains.kotlin:kotlin-test")
 
     // Also implementation junit 4, just in case
     testImplementation("junit:junit:4.13.2")
-    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.12.0")
+    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:6.1.0")
 
     // Use junit 5 for test cases
-    testImplementation("org.junit.jupiter:junit-jupiter-api:6.0.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.12.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:6.1.0")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:6.1.0")
 
     // Enable use of the JUnitPlatform Runner within the IDE
-    testImplementation("org.junit.platform:junit-platform-runner:1.14.1")
+    testImplementation("org.junit.platform:junit-platform-runner:1.14.4")
 
-    testImplementation("io.mockk:mockk:1.14.7")
+    testImplementation("io.mockk:mockk:1.14.11")
 
     // Add custom ruleset from github.com/slideclimb/ktlint-ruleset
     ktlintRuleset(files("lib/ktlint-ruleset-0.2.jar"))
@@ -238,6 +245,34 @@ intellijPlatform {
         // Specify channel as per the tutorial.
         // More documentation: https://github.com/JetBrains/gradle-intellij-plugin/blob/master/README.md#publishing-dsl
         channels.set(listOf(properties("pluginVersion").split('-').getOrElse(1) { "stable" }.split('.').first()))
+    }
+
+    pluginVerification {
+        freeArgs = listOf("-mute", "TemplateWordInPluginId", "-mute", "TemplateWordInPluginName")
+
+        ides {
+            // Don't check all recommended ides, we would run out of disk space on github actions
+            current()
+        }
+
+        // Does not appear to do anything
+        ignoredProblemsFile = file("plugin-verifier-ignored-problems.txt")
+
+        // Ignore internal API, as in many cases there is no alternative
+        failureLevel = listOf(
+            VerifyPluginTask.FailureLevel.COMPATIBILITY_WARNINGS,
+            VerifyPluginTask.FailureLevel.COMPATIBILITY_PROBLEMS,
+            VerifyPluginTask.FailureLevel.DEPRECATED_API_USAGES,
+            VerifyPluginTask.FailureLevel.SCHEDULED_FOR_REMOVAL_API_USAGES,
+//            VerifyPluginTask.FailureLevel.EXPERIMENTAL_API_USAGES,
+//      VerifyPluginTask.FailureLevel.INTERNAL_API_USAGES,
+            VerifyPluginTask.FailureLevel.OVERRIDE_ONLY_API_USAGES,
+            VerifyPluginTask.FailureLevel.NON_EXTENDABLE_API_USAGES,
+            VerifyPluginTask.FailureLevel.PLUGIN_STRUCTURE_WARNINGS,
+            VerifyPluginTask.FailureLevel.MISSING_DEPENDENCIES,
+            VerifyPluginTask.FailureLevel.INVALID_PLUGIN,
+            VerifyPluginTask.FailureLevel.NOT_DYNAMIC,
+        )
     }
 }
 

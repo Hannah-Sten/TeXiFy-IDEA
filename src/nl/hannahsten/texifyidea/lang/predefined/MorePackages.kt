@@ -38,7 +38,7 @@ object MorePackages : PredefinedEntitySet() {
 
         underContext(LatexContexts.Text) {
             arrayOf("NiceTabular", "NiceTabular*").forEach {
-                it.env(setOf(LatexContexts.Tabular, LatexContexts.Text), colsArg)
+                it.env(setOf(LatexContexts.Table, LatexContexts.Text), colsArg)
             }
         }
     }

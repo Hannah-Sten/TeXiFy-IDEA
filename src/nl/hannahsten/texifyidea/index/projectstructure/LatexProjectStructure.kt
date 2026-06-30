@@ -251,7 +251,7 @@ object LatexProjectStructure {
         val result = newFileset ?: fallbackFilesets(previous)
         if (!ApplicationManager.getApplication().isUnitTestMode && newFileset != null && newFileset != previous) {
             // refresh the inspections
-            DaemonCodeAnalyzer.getInstance(project).restart()
+            DaemonCodeAnalyzer.getInstance(project).restart("TeXiFy-IDEA: Filesets updated")
             // there will be an exception if we try to restart the daemon in unit tests
             // see FileStatusMap.CHANGES_NOT_ALLOWED_DURING_HIGHLIGHTING
         }
@@ -263,6 +263,17 @@ object LatexProjectStructure {
      * This will ensure that the filesets are recomputed and up-to-date.
      */
     suspend fun updateFilesetsSuspend(project: Project): LatexProjectFilesets = TexifyProjectCacheService.getInstance(project).ensureRefresh(CACHE_KEY, ::buildFilesetsSuspend)
+
+    /**
+     * Test-only synchronous fileset rebuild that bypasses the cache refresh lock.
+     * Some tests trigger background cache work and can deadlock or stall when they wait on [updateFilesetsSuspend].
+     */
+    internal suspend fun rebuildFilesetsForTests(project: Project): LatexProjectFilesets {
+        val cache = TexifyProjectCacheService.getInstance(project)
+        val rebuilt = buildFilesetsSuspend(project, cache.getOrNull(CACHE_KEY))
+        cache.put(CACHE_KEY, rebuilt)
+        return rebuilt
+    }
 
     /**
      * Gets the recently built filesets for the given project and schedule a recomputation if they are not available or expired.

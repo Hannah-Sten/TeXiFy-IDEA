@@ -66,7 +66,7 @@ class MendeleyLibrary(override val identifier: String = NAME, override val displ
             try {
                 getBibtexStringWithoutRetry()
             }
-            catch (e: ParseException) {
+            catch (_: ParseException) {
                 raise(RemoteLibraryRequestFailure(displayName, "Invalid token, please retry Mendeley authentication"))
             }
         }
@@ -89,8 +89,8 @@ class MendeleyLibrary(override val identifier: String = NAME, override val displ
     }
 
     override fun destroyCredentials() {
-        PasswordSafe.instance.set(Mendeley.tokenAttributes, null)
-        PasswordSafe.instance.set(Mendeley.refreshTokenAttributes, null)
+        PasswordSafe.instance[Mendeley.tokenAttributes] = null
+        PasswordSafe.instance[Mendeley.refreshTokenAttributes] = null
     }
 
     companion object {
