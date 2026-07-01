@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Add support for user-defined tabular environments in the formatter
 * Add support for glob patterns in \addbibresource
 * Add missing context for alignat and split environments
 * Add support for the currfile package

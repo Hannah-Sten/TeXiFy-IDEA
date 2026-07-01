@@ -4,11 +4,11 @@ import com.intellij.formatting.ASTBlock
 import com.intellij.formatting.Spacing
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import nl.hannahsten.texifyidea.formatting.createSpacing
-import nl.hannahsten.texifyidea.lang.predefined.EnvironmentNames
+import nl.hannahsten.texifyidea.index.LatexDefinitionService
+import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.psi.LatexEnvironment
 import nl.hannahsten.texifyidea.psi.LatexEnvironmentContent
 import nl.hannahsten.texifyidea.psi.LatexTypes
-import nl.hannahsten.texifyidea.psi.getEnvironmentName
 import nl.hannahsten.texifyidea.util.getIndent
 import nl.hannahsten.texifyidea.util.parser.firstParentOfType
 import kotlin.math.min
@@ -24,7 +24,10 @@ fun checkTableEnvironment(parent: ASTBlock, child: ASTBlock): LatexEnvironmentCo
     // node - no_math_content - environment_content - environment: We have to go two levels up
     val contentElement = parent.node?.psi?.firstParentOfType<LatexEnvironmentContent>(2) ?: return null
     val envNode = contentElement.parent as? LatexEnvironment ?: return null
-    if (envNode.getEnvironmentName() != EnvironmentNames.TABULAR) return null
+    val introducesTableContext = LatexDefinitionService.resolveEnv(envNode)
+        ?.contextSignature
+        ?.introduces(LatexContexts.Table) == true
+    if (!introducesTableContext) return null
     // Ignore raw texts
     if (child.node?.elementType == LatexTypes.RAW_TEXT_TOKEN || parent.node?.elementType == LatexTypes.RAW_TEXT) return null
     return contentElement
