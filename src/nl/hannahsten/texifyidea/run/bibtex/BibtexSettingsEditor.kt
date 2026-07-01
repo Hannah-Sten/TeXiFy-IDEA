@@ -141,7 +141,6 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
             add(bibWorkingDir)
 
             // LaTeX distribution, use project SDK as backwards compatible default
-            @Suppress("DialogTitleCapitalization")
             latexDistribution = LabeledComponent.create(
                 ComboBox(LatexDistributionType.entries.filter { it.isAvailable(project) }.toTypedArray() + arrayOf(LatexDistributionType.PROJECT_SDK)),
                 TexifyBundle.message("run.bibtex.settings.latex.distribution")

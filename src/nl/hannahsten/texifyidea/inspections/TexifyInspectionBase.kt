@@ -11,7 +11,6 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.createSmartPointer
 import com.intellij.util.SmartList
-import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.lang.magic.*
 import nl.hannahsten.texifyidea.psi.*
@@ -87,16 +86,6 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
     override fun getShortName() = inspectionGroup.prefix + inspectionId
 
     override fun getGroupDisplayName() = inspectionGroup.displayName
-
-    protected fun localizedFamilyName(keySuffix: String, defaultText: String, vararg params: Any): String =
-        when (keySuffix) {
-            "suppress.file" -> TexifyBundle.message("quickfix.suppress.file", *params)
-            "suppress.environment" -> TexifyBundle.message("quickfix.suppress.environment", *params)
-            "suppress.math.environment" -> TexifyBundle.message("quickfix.suppress.math.environment")
-            "suppress.command" -> TexifyBundle.message("quickfix.suppress.command", *params)
-            "suppress.group" -> TexifyBundle.message("quickfix.suppress.group")
-            else -> defaultText
-        }
 
     override fun checkFile(file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean): Array<ProblemDescriptor>? {
         // Only inspect the right file types.
@@ -195,7 +184,7 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
 
         override val suppressionScope = MagicCommentScope.FILE
 
-        override fun getFamilyName() = localizedFamilyName("suppress.file", "Suppress for file ''{0}''", file.element?.name ?: "")
+        override fun getFamilyName() = localizedSuppressionFamilyName("suppress.file", "Suppress for file ''{0}''", file.element?.name ?: "")
     }
 
     /**
@@ -210,7 +199,7 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
 
         override val suppressionScope = MagicCommentScope.ENVIRONMENT
 
-        override fun getFamilyName() = localizedFamilyName("suppress.environment", "Suppress for environment ''{0}''", environmentName)
+        override fun getFamilyName() = localizedSuppressionFamilyName("suppress.environment", "Suppress for environment ''{0}''", environmentName)
 
         override fun isAvailable(project: Project, context: PsiElement): Boolean = super.isAvailable(project, context)
     }
@@ -222,7 +211,7 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
 
         override val suppressionScope = MagicCommentScope.MATH_ENVIRONMENT
 
-        override fun getFamilyName() = localizedFamilyName("suppress.math.environment", "Suppress for math environment")
+        override fun getFamilyName() = localizedSuppressionFamilyName("suppress.math.environment", "Suppress for math environment")
     }
 
     /**
@@ -237,7 +226,7 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
 
         override val suppressionScope = MagicCommentScope.COMMAND
 
-        override fun getFamilyName() = localizedFamilyName("suppress.command", "Suppress for command ''{0}''", commandToken ?: "")
+        override fun getFamilyName() = localizedSuppressionFamilyName("suppress.command", "Suppress for command ''{0}''", commandToken ?: "")
 
         override fun isAvailable(project: Project, context: PsiElement): Boolean = commandToken != null && super.isAvailable(project, context)
     }
@@ -249,6 +238,6 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
 
         override val suppressionScope = MagicCommentScope.GROUP
 
-        override fun getFamilyName() = localizedFamilyName("suppress.group", "Suppress for group")
+        override fun getFamilyName() = localizedSuppressionFamilyName("suppress.group", "Suppress for group")
     }
 }
