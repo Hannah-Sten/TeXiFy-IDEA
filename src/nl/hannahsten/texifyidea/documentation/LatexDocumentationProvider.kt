@@ -6,6 +6,7 @@ import com.intellij.lang.documentation.DocumentationProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
 import nl.hannahsten.texifyidea.CommandFailure
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.index.DefinitionBundle
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.index.SourcedDefinition
@@ -172,7 +173,8 @@ class LatexDocumentationProvider : DocumentationProvider {
             }
             // If we return a blank string, the popup will just say "Fetching documentation..."
             if (isBlank()) {
-                append("<i>No documentation found.</i>")
+                val text = TexifyBundle.message("documentation.none.found")
+                append("<i>$text</i>")
             }
         }
     }
