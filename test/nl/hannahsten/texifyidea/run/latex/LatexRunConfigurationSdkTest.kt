@@ -220,7 +220,7 @@ class LatexRunConfigurationSdkTest : BasePlatformTestCase() {
 
         assertEquals(
             "Expected secondary label for MODULE_SDK",
-            "Module SDK",
+            LatexDistributionType.MODULE_SDK.toString(),
             selection.secondaryLabel
         )
     }
@@ -230,7 +230,7 @@ class LatexRunConfigurationSdkTest : BasePlatformTestCase() {
 
         assertEquals(
             "Expected secondary label for PROJECT_SDK",
-            "Project SDK",
+            LatexDistributionType.PROJECT_SDK.toString(),
             selection.secondaryLabel
         )
     }
@@ -311,7 +311,7 @@ class LatexRunConfigurationSdkTest : BasePlatformTestCase() {
 
         assertEquals(
             "Expected distribution display name",
-            LatexDistributionType.TEXLIVE.displayName,
+            LatexDistributionType.TEXLIVE.toString(),
             displayName
         )
     }
