@@ -20,8 +20,6 @@ object EnvironmentNames {
     const val EQUATION = "equation"
     const val EQUATION_STAR = "equation*"
 
-    const val TABULAR = "tabular"
-
     const val FIGURE = "figure"
 
     const val TABLE = "table"
