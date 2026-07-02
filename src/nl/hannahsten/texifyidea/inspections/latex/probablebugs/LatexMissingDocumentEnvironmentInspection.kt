@@ -34,7 +34,7 @@ open class LatexMissingDocumentEnvironmentInspection : TexifyInspectionBase() {
         MagicCommentScope.GROUP
     )!!
 
-    override fun getDisplayName() = "Missing document environment"
+    override fun getDisplayName(): String = "Missing document environment"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
@@ -55,7 +55,7 @@ open class LatexMissingDocumentEnvironmentInspection : TexifyInspectionBase() {
         descriptors.add(
             manager.createProblemDescriptor(
                 file,
-                "Document doesn't contain a document environment.",
+                nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.missing.document.environment"),
                 InspectionFix(),
                 ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                 isOntheFly
@@ -70,7 +70,7 @@ open class LatexMissingDocumentEnvironmentInspection : TexifyInspectionBase() {
      */
     private class InspectionFix : LocalQuickFix {
 
-        override fun getFamilyName() = "Add a document environment"
+        override fun getFamilyName() = nl.hannahsten.texifyidea.TexifyBundle.message("inspection.quickfix.add.document.environment")
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val psiElement = descriptor.psiElement

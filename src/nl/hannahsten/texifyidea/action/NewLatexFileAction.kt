@@ -9,6 +9,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiElement
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.file.*
 import nl.hannahsten.texifyidea.templates.LatexTemplatesFactory
@@ -21,23 +22,27 @@ import java.util.function.Consumer
 /**
  * @author Hannah Schellekens
  */
-class NewLatexFileAction : CreateElementActionBase("LaTeX File", "Create a new LaTeX file", TexifyIcons.LATEX_FILE) {
+class NewLatexFileAction : CreateElementActionBase(
+    TexifyBundle.message("action.texify.NewFile.text"),
+    TexifyBundle.message("action.texify.NewFile.description"),
+    TexifyIcons.LATEX_FILE
+) {
 
     override fun invokeDialog(project: Project, psiDirectory: PsiDirectory, elementsConsumer: Consumer<in Array<PsiElement>>) {
         val fileCreator = LatexFileCreator(project, psiDirectory)
         val builder = CreateFileFromTemplateDialog.createDialog(project)
-        builder.setTitle("Create a New LaTeX File")
-        builder.addKind("Sources (.tex)", TexifyIcons.LATEX_FILE, OPTION_TEX_FILE)
-        builder.addKind("Bibliography (.bib)", TexifyIcons.BIBLIOGRAPHY_FILE, OPTION_BIB_FILE)
-        builder.addKind("Package (.sty)", TexifyIcons.STYLE_FILE, OPTION_STY_FILE)
-        builder.addKind("Document class (.cls)", TexifyIcons.CLASS_FILE, OPTION_CLS_FILE)
-        builder.addKind("TikZ (.tikz)", TexifyIcons.TIKZ_FILE, OPTION_TIKZ_FILE)
+        builder.setTitle(TexifyBundle.message("ui.dialog.new.latex.file.title"))
+        builder.addKind(TexifyBundle.message("ui.dialog.new.latex.file.kind.sources"), TexifyIcons.LATEX_FILE, OPTION_TEX_FILE)
+        builder.addKind(TexifyBundle.message("ui.dialog.new.latex.file.kind.bibliography"), TexifyIcons.BIBLIOGRAPHY_FILE, OPTION_BIB_FILE)
+        builder.addKind(TexifyBundle.message("ui.dialog.new.latex.file.kind.package"), TexifyIcons.STYLE_FILE, OPTION_STY_FILE)
+        builder.addKind(TexifyBundle.message("ui.dialog.new.latex.file.kind.document.class"), TexifyIcons.CLASS_FILE, OPTION_CLS_FILE)
+        builder.addKind(TexifyBundle.message("ui.dialog.new.latex.file.kind.tikz"), TexifyIcons.TIKZ_FILE, OPTION_TIKZ_FILE)
         builder.show<PsiElement>("", null, fileCreator) {}
     }
 
     override fun create(s: String, psiDirectory: PsiDirectory): Array<PsiElement> = arrayOf()
 
-    override fun getErrorTitle(): String = "Error"
+    override fun getErrorTitle(): String = TexifyBundle.message("ui.error.title")
 
     override fun getActionName(psiDirectory: PsiDirectory, s: String): String = ""
 
@@ -96,7 +101,7 @@ class NewLatexFileAction : CreateElementActionBase("LaTeX File", "Create a new L
             return file
         }
 
-        override fun getActionName(fileName: String, option: String): String = "New LaTeX File"
+        override fun getActionName(fileName: String, option: String): String = TexifyBundle.message("ui.dialog.new.latex.file.action.name")
 
         override fun startInWriteAction(): Boolean = false
     }

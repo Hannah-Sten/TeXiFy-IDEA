@@ -25,7 +25,7 @@ open class LatexQedHereInspection : TexifyInspectionBase() {
 
     override val inspectionGroup = InsightGroup.LATEX
 
-    override fun getDisplayName() = "Insert \\qedhere in trailing displaymath environment"
+    override fun getDisplayName(): String = "Insert \\qedhere in trailing displaymath environment"
 
     override val inspectionId = "QedHere"
 
@@ -48,7 +48,7 @@ open class LatexQedHereInspection : TexifyInspectionBase() {
                 manager.createProblemDescriptor(
                     displayMath,
                     TextRange(offset, offset + 1),
-                    "Missing \\qedhere in trailing displaymath environment",
+                    nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.missing.qedhere.in.trailing.displaymath"),
                     ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                     isOntheFly,
                     InsertQedHereFix()
@@ -64,7 +64,7 @@ open class LatexQedHereInspection : TexifyInspectionBase() {
      */
     private class InsertQedHereFix : LocalQuickFix {
 
-        override fun getFamilyName() = "Insert \\qedhere"
+        override fun getFamilyName() = nl.hannahsten.texifyidea.TexifyBundle.message("inspection.quickfix.insert.qedhere")
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val element = (descriptor.psiElement as? LatexDisplayMath)?.mathContent ?: return

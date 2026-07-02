@@ -8,6 +8,7 @@ import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.lang.LSemanticEntity
 import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.magic.MagicCommentScope
@@ -26,7 +27,7 @@ class LatexMissingImportInspection : LatexMissingImportInspectionBase("MissingIm
 
     override val ignoredSuppressionScopes = EnumSet.of(MagicCommentScope.GROUP)!!
 
-    override fun getDisplayName() = "Missing imports"
+    override fun getDisplayName(): String = "Missing imports"
 
     override fun reportCommandMissingImport(
         command: LatexCommands, candidates: List<LSemanticEntity>,
@@ -40,7 +41,7 @@ class LatexMissingImportInspection : LatexMissingImportInspectionBase("MissingIm
             manager.createProblemDescriptor(
                 command,
                 range,
-                "Command requires any of the packages: ${packageNames.joinToString(", ")}",
+                TexifyBundle.message("inspection.description.latex.command.requires.any.package", packageNames.joinToString(", ")),
                 ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                 isOntheFly,
                 *fixes
@@ -60,7 +61,7 @@ class LatexMissingImportInspection : LatexMissingImportInspectionBase("MissingIm
             manager.createProblemDescriptor(
                 environment,
                 range,
-                "Environment requires any of the packages: ${packageNames.joinToString(", ")}",
+                TexifyBundle.message("inspection.description.latex.environment.requires.any.package", packageNames.joinToString(", ")),
                 ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                 isOntheFly,
                 *fixes
@@ -79,13 +80,15 @@ class LatexMissingImportInspection : LatexMissingImportInspectionBase("MissingIm
      */
     private class ImportPackageFix(val packName: String) : LocalQuickFix {
 
-        override fun getFamilyName() = "Add import for package '$packName' which provides this environment"
+        override fun getFamilyName() = TexifyBundle.message("inspection.quickfix.add.import.for.package.providing.environment", packName)
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             if (!PackageUtils.insertUsepackage(descriptor.psiElement.containingFile, LatexLib.Package(packName))) {
                 Notification(
-                    "LaTeX", "Conflicting package detected",
-                    "The package $packName was not inserted because a conflicting package was detected.", NotificationType.INFORMATION
+                    "LaTeX",
+                    TexifyBundle.message("notification.inspection.conflicting.package.title"),
+                    TexifyBundle.message("notification.inspection.conflicting.package.content", packName),
+                    NotificationType.INFORMATION
                 ).notify(project)
             }
         }

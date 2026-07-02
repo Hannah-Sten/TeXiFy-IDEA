@@ -28,7 +28,7 @@ class LatexMathFunctionTextInspection : AbstractTexifyCommandBasedInspection(
 
     private val affectedCommands = CommandMagic.mathOperators.map { it.name }.toSet()
 
-    override fun getDisplayName() = "Use math function instead of \\text"
+    override fun getDisplayName(): String = "Use math function instead of \\text"
 
     override fun inspectCommand(
         command: LatexCommands,
@@ -47,7 +47,7 @@ class LatexMathFunctionTextInspection : AbstractTexifyCommandBasedInspection(
         descriptors.add(
             manager.createProblemDescriptor(
                 command,
-                "Use math function instead of \\text",
+                nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.use.math.function.instead.of.text"),
                 MathFunctionFix(),
                 ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                 isOnTheFly
@@ -56,7 +56,7 @@ class LatexMathFunctionTextInspection : AbstractTexifyCommandBasedInspection(
     }
 
     private class MathFunctionFix : LocalQuickFix {
-        override fun getFamilyName() = "Convert to math function"
+        override fun getFamilyName() = nl.hannahsten.texifyidea.TexifyBundle.message("inspection.quickfix.convert.to.math.function")
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val textCommand = descriptor.psiElement as? LatexCommands ?: return

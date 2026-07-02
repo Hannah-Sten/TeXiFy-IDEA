@@ -12,6 +12,7 @@ import com.intellij.openapi.ui.TextBrowseFolderListener
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.util.NlsContexts
 import com.intellij.util.ui.ComponentWithEmptyText
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.run.latex.LatexStepRunConfigurationOptions
 import nl.hannahsten.texifyidea.run.latex.StepUiOptionIds
 import java.util.function.BiConsumer
@@ -80,7 +81,7 @@ internal abstract class AbstractStepFragmentedEditor<TStep : LatexStepRunConfigu
         setWorkingDirectoryPath: (TStep, String?) -> Unit,
     ): SettingsEditorFragment<TStep, LabeledComponent<TextFieldWithBrowseButton>> = stepFragment(
         id = StepUiOptionIds.STEP_WORKING_DIRECTORY,
-        name = "Working directory",
+        name = TexifyBundle.message("run.step.ui.field.working.directory"),
         component = component,
         reset = { step, row ->
             row.component.text = getWorkingDirectoryPath(step).orEmpty()
@@ -91,8 +92,8 @@ internal abstract class AbstractStepFragmentedEditor<TStep : LatexStepRunConfigu
         },
         initiallyVisible = { step -> !getWorkingDirectoryPath(step).isNullOrBlank() },
         removable = true,
-        hint = "Leave empty to use the default directory for this step's control files (auxiliary directory when configured, otherwise output directory).",
-        actionHint = "Set step working directory",
+        hint = TexifyBundle.message("run.step.ui.hint.step.working.directory.default"),
+        actionHint = TexifyBundle.message("run.step.ui.action.set.step.working.directory"),
     )
 
     protected fun applyTooltip(component: JComponent, tooltip: String) {

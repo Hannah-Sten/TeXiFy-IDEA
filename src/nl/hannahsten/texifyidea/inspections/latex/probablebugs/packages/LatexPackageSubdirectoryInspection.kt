@@ -23,8 +23,7 @@ class LatexPackageSubdirectoryInspection : TexifyInspectionBase() {
 
     override fun getShortName(): String = "LatexPackageSubdirectory"
 
-    override fun getDisplayName(): String =
-        "Package name does not have the correct directory"
+    override fun getDisplayName(): String = "Package name does not have the correct directory"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val dir = file.containingDirectory ?: return emptyList()
@@ -58,7 +57,7 @@ class LatexPackageSubdirectoryInspection : TexifyInspectionBase() {
     class FixSubdirectoryQuickFix(private val oldDir: String, private val newDir: String) : LocalQuickFix {
 
         override fun getFamilyName(): String =
-            "Change LaTeX command to match directory structure"
+            nl.hannahsten.texifyidea.TexifyBundle.message("inspection.quickfix.change.command.to.match.directory.structure")
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val providesCommand = descriptor.psiElement as LatexCommands

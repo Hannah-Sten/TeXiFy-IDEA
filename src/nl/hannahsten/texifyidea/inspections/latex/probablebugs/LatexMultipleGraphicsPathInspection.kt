@@ -35,7 +35,7 @@ class LatexMultipleGraphicsPathInspection : TexifyInspectionBase() {
                     manager.createProblemDescriptor(
                         i,
                         TextRange(0, i.text.length),
-                        "\\graphicspath is already used elsewhere",
+                        nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.graphicspath.already.used"),
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly,
                         RemoveFix()
@@ -52,7 +52,7 @@ class LatexMultipleGraphicsPathInspection : TexifyInspectionBase() {
      */
     class RemoveFix : LocalQuickFix {
 
-        override fun getFamilyName(): String = "Remove this Line"
+        override fun getFamilyName(): String = nl.hannahsten.texifyidea.TexifyBundle.message("inspection.quickfix.remove.this.line")
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             descriptor.psiElement.delete()

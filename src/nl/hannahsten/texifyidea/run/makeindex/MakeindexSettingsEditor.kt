@@ -8,6 +8,7 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.ui.*
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.ui.RawCommandLineEditor
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
 import javax.swing.JComponent
@@ -51,7 +52,7 @@ class MakeindexSettingsEditor(private val project: Project) : SettingsEditor<Mak
 
             // Program
             val programField = ComboBox(MakeindexProgram.entries.toTypedArray())
-            makeindexProgram = LabeledComponent.create(programField, "Index program")
+            makeindexProgram = LabeledComponent.create(programField, TexifyBundle.message("run.makeindex.settings.index.program"))
             add(makeindexProgram)
 
             // Main file
@@ -59,16 +60,16 @@ class MakeindexSettingsEditor(private val project: Project) : SettingsEditor<Mak
                 addBrowseFolderListener(
                     TextBrowseFolderListener(
                         FileChooserDescriptorFactory.createSingleFileDescriptor(LatexFileType)
-                            .withTitle("Choose the Main .tex File")
+                            .withTitle(TexifyBundle.message("run.makeindex.settings.choose.main.file"))
                             .withExtensionFilter("tex")
                             .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules.toSet().toTypedArray())
                     )
                 )
             }
-            mainFile = LabeledComponent.create(mainFileField, "Main file which uses an index")
+            mainFile = LabeledComponent.create(mainFileField, TexifyBundle.message("run.makeindex.settings.main.file"))
             add(mainFile)
 
-            commandLineArguments = LabeledComponent.create(RawCommandLineEditor(), "Custom arguments")
+            commandLineArguments = LabeledComponent.create(RawCommandLineEditor(), TexifyBundle.message("run.makeindex.settings.custom.arguments"))
             add(commandLineArguments)
 
             // Working directory
@@ -76,11 +77,11 @@ class MakeindexSettingsEditor(private val project: Project) : SettingsEditor<Mak
                 addBrowseFolderListener(
                     TextBrowseFolderListener(
                         FileChooserDescriptor(false, true, false, false, false, false)
-                            .withTitle("Choose the Directory Where the Index .idx File Will Be Generated")
+                            .withTitle(TexifyBundle.message("run.makeindex.settings.choose.working.directory"))
                     )
                 )
             }
-            workingDirectory = LabeledComponent.create(workDirField, "Working directory for the index program")
+            workingDirectory = LabeledComponent.create(workDirField, TexifyBundle.message("run.makeindex.settings.working.directory"))
             add(workingDirectory)
         }
     }

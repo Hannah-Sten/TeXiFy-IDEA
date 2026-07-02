@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.settings
 
 import com.intellij.openapi.options.SearchableConfigurable
+import nl.hannahsten.texifyidea.TexifyBundle
 import javax.swing.JComponent
 
 /**
@@ -17,7 +18,7 @@ class TexifyProjectConfigurable : SearchableConfigurable {
 
     override fun getId() = "TexifyProjectConfigurable"
 
-    override fun getDisplayName() = "Project Settings"
+    override fun getDisplayName() = TexifyBundle.message("settings.project.displayName")
 
     override fun createComponent(): JComponent? = null
 

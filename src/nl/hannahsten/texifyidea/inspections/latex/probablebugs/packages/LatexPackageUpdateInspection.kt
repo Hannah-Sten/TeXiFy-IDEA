@@ -14,6 +14,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPointerManager
 import com.intellij.psi.SmartPsiElementPointer
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
 import nl.hannahsten.texifyidea.psi.LatexCommands
@@ -40,7 +41,7 @@ class LatexPackageUpdateInspection : TexifyInspectionBase() {
 
     override val inspectionId = "PackageUpdate"
 
-    override fun getDisplayName() = "Package has an update available"
+    override fun getDisplayName(): String = "Package has an update available"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         if (!LatexSdkUtil.isTlmgrAvailable(file.project) || !TexliveSdk.Cache.isAvailable) return emptyList()
@@ -65,7 +66,7 @@ class LatexPackageUpdateInspection : TexifyInspectionBase() {
             val packageVersions = Cache.availablePackageUpdates!![packageName] ?: return@mapNotNull null
             manager.createProblemDescriptor(
                 it,
-                "Update available for package $packageName",
+                TexifyBundle.message("inspection.description.latex.package.update.available", packageName),
                 arrayOf(
                     UpdatePackage(SmartPointerManager.getInstance(file.project).createSmartPsiElementPointer(file), packageName, packageVersions.first, packageVersions.second),
                     UpdatePackage(SmartPointerManager.getInstance(file.project).createSmartPsiElementPointer(file), "--all", null, null),
@@ -79,7 +80,15 @@ class LatexPackageUpdateInspection : TexifyInspectionBase() {
 
     private class UpdatePackage(val filePointer: SmartPsiElementPointer<PsiFile>, val packageName: String, val old: String?, val new: String?) : LocalQuickFix {
 
-        override fun getFamilyName(): String = if (packageName == "--all") "Update all packages" else if (old != null && new != null) "Update $packageName from revision $old to revision $new" else "Update $packageName"
+        override fun getFamilyName(): String = if (packageName == "--all") {
+            TexifyBundle.message("inspection.quickfix.update.all.packages")
+        }
+        else if (old != null && new != null) {
+            TexifyBundle.message("inspection.quickfix.update.package.from.to.revision", packageName, old, new)
+        }
+        else {
+            TexifyBundle.message("inspection.quickfix.update.package", packageName)
+        }
 
         override fun generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo {
             // Nothing is modified
@@ -100,8 +109,8 @@ class LatexPackageUpdateInspection : TexifyInspectionBase() {
                         if (tlmgrExitCode != 0) {
                             Notification(
                                 "LaTeX",
-                                "Package $packageName not updated",
-                                "Could not update tlmgr: $tlmgrOutput",
+                                TexifyBundle.message("notification.inspection.package.not.updated.title", packageName),
+                                TexifyBundle.message("notification.inspection.tlmgr.update.failed.content", tlmgrOutput ?: ""),
                                 NotificationType.ERROR
                             ).notify(project)
                             indicator.cancel()
@@ -113,10 +122,21 @@ class LatexPackageUpdateInspection : TexifyInspectionBase() {
                     }
 
                     if (exitCode != 0) {
+                        val contentKey = if (exitCode == 143) {
+                            "notification.inspection.package.update.failed.timeout.content"
+                        }
+                        else {
+                            "notification.inspection.package.update.failed.content"
+                        }
                         Notification(
                             "LaTeX",
-                            if (packageName == "--all") "Could not update packages" else "Package $packageName not updated",
-                            "Could not update $packageName${if (exitCode == 143) " due to a timeout" else ""}: $output",
+                            if (packageName == "--all") {
+                                TexifyBundle.message("notification.inspection.packages.update.failed.title")
+                            }
+                            else {
+                                TexifyBundle.message("notification.inspection.package.not.updated.title", packageName)
+                            },
+                            TexifyBundle.message(contentKey, packageName, output ?: ""),
                             NotificationType.ERROR
                         ).notify(project)
                         indicator.cancel()

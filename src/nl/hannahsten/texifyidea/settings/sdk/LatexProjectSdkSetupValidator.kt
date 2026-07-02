@@ -7,6 +7,7 @@ import com.intellij.openapi.roots.ui.configuration.SdkPopupFactory
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
 import com.intellij.ui.EditorNotificationPanel
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.grammar.LatexLanguage
 import nl.hannahsten.texifyidea.util.runCommand
@@ -46,7 +47,7 @@ class LatexProjectSdkSetupValidator : ProjectSdkSetupValidator {
         // Use the centralized SDK lookup which checks module SDK first, then project SDK
         if (LatexSdkUtil.getLatexSdkForFile(file, project) != null) return null
 
-        return "No LaTeX installation could be found. Please add it to PATH or set up a LaTeX SDK (and reopen this file)."
+        return TexifyBundle.message("settings.sdk.project.setup.error.no.latex.installation")
     }
 
     override fun getFixHandler(project: Project, file: VirtualFile): EditorNotificationPanel.ActionHandler = SdkPopupFactory.newBuilder().withProject(project)

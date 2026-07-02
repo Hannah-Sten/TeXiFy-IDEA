@@ -6,6 +6,7 @@ import com.intellij.application.options.TabbedLanguageCodeStylePanel
 import com.intellij.psi.codeStyle.CodeStyleConfigurable
 import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.codeStyle.CodeStyleSettingsProvider
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.grammar.BibtexLanguage
 import nl.hannahsten.texifyidea.grammar.LatexLanguage
 
@@ -33,7 +34,7 @@ class BibtexCodeStyleSettingsProvider : CodeStyleSettingsProvider() {
                     override fun addWrappingAndBracesTab(settings: CodeStyleSettings?) {
                         addTab(object : MyWrappingAndBracesPanel(settings) {
                             // Remove "Braces" from tab title
-                            override fun getTabTitle() = "Wrapping"
+                            override fun getTabTitle() = TexifyBundle.message("settings.codestyle.tab.wrapping")
                         })
                     }
                 }

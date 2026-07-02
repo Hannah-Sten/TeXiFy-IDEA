@@ -6,6 +6,7 @@ import com.intellij.openapi.project.ProjectManager
 import com.intellij.psi.PsiErrorElement
 import com.intellij.psi.PsiFileFactory
 import com.intellij.util.xmlb.Converter
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.file.BibtexFileType
 import nl.hannahsten.texifyidea.psi.BibtexEntry
 import nl.hannahsten.texifyidea.util.parser.collectSubtreeTyped
@@ -25,8 +26,8 @@ class BibtexEntryListConverter : Converter<List<BibtexEntry>>() {
         if (file.children.any { it is PsiErrorElement }) {
             Notification(
                 "LaTeX",
-                "Library could not be imported completely",
-                "Some bib elements might be missing in the imported library. See the TeXiFy documentation for more information.",
+                TexifyBundle.message("notification.remotelibraries.import.incomplete.title"),
+                TexifyBundle.message("notification.remotelibraries.import.incomplete.content"),
                 NotificationType.WARNING
             ).notify(project)
         }

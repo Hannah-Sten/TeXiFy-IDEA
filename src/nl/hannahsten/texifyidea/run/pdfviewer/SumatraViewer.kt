@@ -11,6 +11,7 @@ import com.pretty_tools.dde.DDEException
 import com.pretty_tools.dde.DDEMLException
 import com.pretty_tools.dde.client.DDEClientConversation
 import nl.hannahsten.texifyidea.TeXception
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.util.int
 import nl.hannahsten.texifyidea.util.runCommand
 import java.nio.file.Files
@@ -308,7 +309,12 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
     fun configureInverseSearch(project: Project?) {
         val sumatraRunnable = this.sumatraPath
         if (sumatraRunnable == null) {
-            Notification("LaTeX", "SumatraPDF not found", "Please install SumatraPDF to use inverse search.", NotificationType.WARNING)
+            Notification(
+                "LaTeX",
+                TexifyBundle.message("run.notification.sumatra.not.found.title"),
+                TexifyBundle.message("run.notification.sumatra.not.found.message"),
+                NotificationType.WARNING
+            )
                 .notify(project)
             return
         }

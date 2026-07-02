@@ -43,7 +43,7 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
 
     override val outerSuppressionScopes = EnumSet.of(MagicCommentScope.COMMAND)!!
 
-    override fun getDisplayName() = "Enclose high lines with \\leftX..\\rightX"
+    override fun getDisplayName(): String = "Enclose high lines with \\leftX..\\rightX"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
@@ -72,7 +72,7 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
                     manager.createProblemDescriptor(
                         openElement,
                         TextRange.from(0, 1),
-                        "Parentheses pair could be replaced by \\left(..\\right)",
+                        nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.use.left.right"),
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly,
                         fix
@@ -83,7 +83,7 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
                     manager.createProblemDescriptor(
                         closeElement,
                         TextRange.from(0, 1),
-                        "Parentheses pair could be replaced by \\left(..\\right)",
+                        nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.use.left.right"),
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly,
                         fix
@@ -204,7 +204,7 @@ open class LatexEncloseWithLeftRightInspection : TexifyLineOptionsInspection("Cu
          */
         private var applied = false
 
-        override fun getFamilyName() = "Convert (..) to \\left(..\\right)"
+        override fun getFamilyName() = nl.hannahsten.texifyidea.TexifyBundle.message("inspection.quickfix.convert.to.left.right")
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             if (!applied) {

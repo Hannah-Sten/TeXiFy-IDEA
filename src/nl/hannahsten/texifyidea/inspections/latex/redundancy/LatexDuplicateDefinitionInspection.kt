@@ -25,7 +25,7 @@ open class LatexDuplicateDefinitionInspection : TexifyInspectionBase() {
 
     override val inspectionId = "DuplicateDefinition"
 
-    override fun getDisplayName() = "Duplicate command definitions"
+    override fun getDisplayName(): String = "Duplicate command definitions"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = descriptorList()
@@ -50,7 +50,7 @@ open class LatexDuplicateDefinitionInspection : TexifyInspectionBase() {
                 descriptors.add(
                     manager.createProblemDescriptor(
                         it,
-                        "Command '$definedCmd' is defined multiple times",
+                        nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.command.defined.multiple.times", definedCmd),
                         true,
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly

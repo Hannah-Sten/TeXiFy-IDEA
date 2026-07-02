@@ -1,7 +1,5 @@
 package nl.hannahsten.texifyidea.refactoring.inlinefile
 
-import com.intellij.notification.Notification
-import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
@@ -50,12 +48,7 @@ class LatexInlineFileHandler : LatexInlineHandler() {
             }
         }
         else {
-            Notification(
-                "LaTeX",
-                "No usages found",
-                "Could not find any usages for ${inlineFile.name}",
-                NotificationType.ERROR
-            ).notify(project)
+            showDialog(dialog, inlineFile.name, project)
         }
     }
 

@@ -30,7 +30,7 @@ open class LatexNestedIncludesInspection : TexifyInspectionBase() {
 
     override val outerSuppressionScopes = EnumSet.of(MagicCommentScope.GROUP)!!
 
-    override fun getDisplayName() = "Nested includes"
+    override fun getDisplayName(): String = "Nested includes"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val root = file.findRootFile()
@@ -50,7 +50,7 @@ open class LatexNestedIncludesInspection : TexifyInspectionBase() {
                     manager.createProblemDescriptor(
                         it,
                         TextRange.allOf(it.text),
-                        "Includes cannot be nested",
+                        nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.includes.cannot.be.nested"),
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly,
                         ConvertToInputFix
@@ -65,7 +65,7 @@ open class LatexNestedIncludesInspection : TexifyInspectionBase() {
      */
     object ConvertToInputFix : LocalQuickFix {
 
-        override fun getFamilyName() = "Convert to \\input"
+        override fun getFamilyName() = nl.hannahsten.texifyidea.TexifyBundle.message("inspection.quickfix.convert.to.input")
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands

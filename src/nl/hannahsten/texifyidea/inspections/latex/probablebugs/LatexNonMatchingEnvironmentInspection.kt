@@ -27,7 +27,7 @@ open class LatexNonMatchingEnvironmentInspection : TexifyInspectionBase() {
 
     override val outerSuppressionScopes = EnumSet.of(MagicCommentScope.GROUP)!!
 
-    override fun getDisplayName() = "Non matching environment commands"
+    override fun getDisplayName(): String = "Non matching environment commands"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
@@ -44,7 +44,7 @@ open class LatexNonMatchingEnvironmentInspection : TexifyInspectionBase() {
             descriptors.add(
                 manager.createProblemDescriptor(
                     begin,
-                    "DefaultEnvironment name does not match with the name in \\end.",
+                    nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.environment.name.not.matching.end"),
                     MatchBeginFix(beginEnvironment),
                     ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                     isOntheFly
@@ -55,7 +55,7 @@ open class LatexNonMatchingEnvironmentInspection : TexifyInspectionBase() {
             descriptors.add(
                 manager.createProblemDescriptor(
                     end,
-                    "DefaultEnvironment name does not match with the name in \\begin.",
+                    nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.environment.name.not.matching.begin"),
                     MatchEndFix(endEnvironment),
                     ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                     isOntheFly
@@ -71,7 +71,7 @@ open class LatexNonMatchingEnvironmentInspection : TexifyInspectionBase() {
      */
     private open class MatchBeginFix(val environmentName: String) : LocalQuickFix {
 
-        override fun getFamilyName() = "Change \\end environment to '$environmentName'"
+        override fun getFamilyName() = nl.hannahsten.texifyidea.TexifyBundle.message("inspection.quickfix.change.end.environment", environmentName)
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexBeginCommand
@@ -89,7 +89,7 @@ open class LatexNonMatchingEnvironmentInspection : TexifyInspectionBase() {
      */
     private open class MatchEndFix(val environmentName: String) : LocalQuickFix {
 
-        override fun getFamilyName() = "Change \\begin environment to '$environmentName'"
+        override fun getFamilyName() = nl.hannahsten.texifyidea.TexifyBundle.message("inspection.quickfix.change.begin.environment", environmentName)
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexEndCommand

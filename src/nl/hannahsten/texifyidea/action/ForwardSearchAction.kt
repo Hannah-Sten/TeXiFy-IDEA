@@ -8,13 +8,14 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.run.pdfviewer.ForwardSearchSupport
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 
 open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
-    name = "_Forward Search"
+    name = TexifyBundle.message("action.texify.ForwardSearch.text")
 ) {
 
     override fun actionPerformed(file: VirtualFile, project: Project, textEditor: TextEditor) {
@@ -27,7 +28,9 @@ open class ForwardSearchAction(var viewer: PdfViewer? = null) : EditorAction(
         catch (e: TeXception) {
             // Show a notification if the forward search fails, but only catch TeXception and let other unexpected exceptions bubble up.
             Notification(
-                "LaTeX", "Forward search error", "${e.message}",
+                "LaTeX",
+                TexifyBundle.message("notification.forward.search.error.title"),
+                e.message ?: "",
                 NotificationType.WARNING
             ).notify(project)
         }

@@ -43,7 +43,7 @@ open class LatexRedundantEscapeInspection : TexifyInspectionBase() {
 
     override val outerSuppressionScopes = EnumSet.of(MagicCommentScope.COMMAND)!!
 
-    override fun getDisplayName() = "Redundant escape when Unicode is enabled"
+    override fun getDisplayName(): String = "Redundant escape when Unicode is enabled"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = descriptorList()
@@ -64,7 +64,7 @@ open class LatexRedundantEscapeInspection : TexifyInspectionBase() {
                 descriptors.add(
                     manager.createProblemDescriptor(
                         command,
-                        "Redundant diacritic escape",
+                        nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.redundant.diacritic.escape"),
                         RemoveEscapeFix(),
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly
@@ -81,7 +81,7 @@ open class LatexRedundantEscapeInspection : TexifyInspectionBase() {
      */
     private class RemoveEscapeFix : LocalQuickFix {
 
-        override fun getFamilyName() = "Replace escape with Unicode character"
+        override fun getFamilyName() = nl.hannahsten.texifyidea.TexifyBundle.message("inspection.quickfix.replace.escape.with.unicode")
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands

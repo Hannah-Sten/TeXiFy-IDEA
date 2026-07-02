@@ -1,27 +1,27 @@
 <idea-plugin>
     <extensions defaultExtensionNs="com.intellij">
         <localInspection language="Bibtex" implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateIdInspection"
-                         groupName="BibTeX" displayName="Duplicate ID"
+                         groupBundle="messages.TexifyBundle" groupKey="inspection.group.bibtex" bundle="messages.TexifyBundle" key="inspection.display.duplicate.id"
                          enabledByDefault="true"
                          level="ERROR" />
         <localInspection language="Latex"
                          implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexMissingBibliographystyleInspection"
-                         groupName="BibTeX" displayName="Missing bibliography style"
+                         groupBundle="messages.TexifyBundle" groupKey="inspection.group.bibtex" bundle="messages.TexifyBundle" key="inspection.display.missing.bibliography.style"
                          enabledByDefault="true"
                          level="WARNING" />
         <localInspection language="Latex"
                          implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateBibliographystyleInspection"
-                         groupName="BibTeX" displayName="Duplicate bibliography style commands"
+                         groupBundle="messages.TexifyBundle" groupKey="inspection.group.bibtex" bundle="messages.TexifyBundle" key="inspection.display.duplicate.bibliography.style.commands"
                          enabledByDefault="true"
                          level="ERROR" />
         <localInspection language="Latex"
                          implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexDuplicateBibliographyInspection"
-                         groupName="BibTeX" displayName="Same bibliography is included multiple times"
+                         groupBundle="messages.TexifyBundle" groupKey="inspection.group.bibtex" bundle="messages.TexifyBundle" key="inspection.display.same.bibliography.is.included.multiple.times"
                          enabledByDefault="true"
                          level="ERROR" />
         <localInspection language="Bibtex"
                          implementationClass="nl.hannahsten.texifyidea.inspections.bibtex.BibtexUnusedEntryInspection"
-                         groupName="BibTeX" displayName="Unused bib entry"
+                         groupBundle="messages.TexifyBundle" groupKey="inspection.group.bibtex" bundle="messages.TexifyBundle" key="inspection.display.unused.bib.entry"
                          enabledByDefault="true"
                          level="WARNING" />
     </extensions>

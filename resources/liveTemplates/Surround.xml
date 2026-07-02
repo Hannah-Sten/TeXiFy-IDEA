@@ -1,11 +1,13 @@
 <templateSet group="surround">
-    <template name="D" value="$$$SELECTION$$$" description="Surround with $$" toReformat="false" toShortenFQNames="false">
+    <template name="D" value="$$$SELECTION$$$" toReformat="false" toShortenFQNames="false"
+              key="livetemplate.surround.d.description" resource-bundle="messages.TexifyBundle">
         <context>
             <option name="LATEX" value="true"/>
         </context>
     </template>
 
-    <template name="O" value="[$SELECTION$]" description="Surround with []" toReformat="false" toShortenFQNames="false">
+    <template name="O" value="[$SELECTION$]" toReformat="false" toShortenFQNames="false"
+              key="livetemplate.surround.o.description" resource-bundle="messages.TexifyBundle">
         <context>
             <option name="LATEX" value="true"/>
         </context>

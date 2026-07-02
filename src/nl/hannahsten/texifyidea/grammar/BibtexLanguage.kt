@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.grammar
 
 import com.intellij.lang.Language
+import nl.hannahsten.texifyidea.TexifyBundle
 
 /**
  * @author Hannah Schellekens
@@ -8,5 +9,5 @@ import com.intellij.lang.Language
 object BibtexLanguage : Language("Bibtex") {
     private fun readResolve(): Any = BibtexLanguage
 
-    override fun getDisplayName(): String = "BibTeX"
+    override fun getDisplayName(): String = TexifyBundle.message("language.bibtex.displayName")
 }

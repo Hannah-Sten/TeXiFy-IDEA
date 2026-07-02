@@ -22,6 +22,7 @@
   ~ SOFTWARE.
   -->
 <idea-plugin url="https://github.com/Hannah-Sten/TeXiFy-IDEA" xmlns:xi="http://www.w3.org/2001/XInclude" require-restart="true">
+    <resource-bundle>messages.TexifyBundle</resource-bundle>
 
     <!-- Plugin information -->
     <id>nl.rubensten.texifyidea</id>

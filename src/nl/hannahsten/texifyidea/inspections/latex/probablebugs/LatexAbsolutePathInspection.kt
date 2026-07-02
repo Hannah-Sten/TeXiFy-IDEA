@@ -40,7 +40,7 @@ class LatexAbsolutePathInspection : AbstractTexifyCommandBasedInspection(
         descriptors.add(
             manager.createDescriptor(
                 parameter,
-                "No absolute path allowed here",
+                nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.no.absolute.path.allowed.here"),
                 isOnTheFly = isOnTheFly,
                 highlightType = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                 rangeInElement = range,

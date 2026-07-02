@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.run.latex.ui
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 
@@ -27,12 +28,12 @@ data class LatexDistributionSelection(val distributionType: LatexDistributionTyp
             else {
                 LatexSdkUtil.getLatexProjectSdk(project)
             }
-            sdk?.name ?: "<no SDK configured>"
+            sdk?.name ?: TexifyBundle.message("run.latex.distribution.no.sdk.configured")
         }
         LatexDistributionType.PROJECT_SDK -> {
-            LatexSdkUtil.getLatexProjectSdk(project)?.name ?: "<no SDK configured>"
+            LatexSdkUtil.getLatexProjectSdk(project)?.name ?: TexifyBundle.message("run.latex.distribution.no.sdk.configured")
         }
-        else -> distributionType.displayName
+        else -> distributionType.toString()
     }
 
     /**
@@ -41,8 +42,8 @@ data class LatexDistributionSelection(val distributionType: LatexDistributionTyp
      */
     val secondaryLabel: String?
         get() = when (distributionType) {
-            LatexDistributionType.MODULE_SDK -> "Module SDK"
-            LatexDistributionType.PROJECT_SDK -> "Project SDK"
+            LatexDistributionType.MODULE_SDK -> TexifyBundle.message("run.latex.distribution.module.sdk")
+            LatexDistributionType.PROJECT_SDK -> TexifyBundle.message("run.latex.distribution.project.sdk")
             else -> null
         }
 

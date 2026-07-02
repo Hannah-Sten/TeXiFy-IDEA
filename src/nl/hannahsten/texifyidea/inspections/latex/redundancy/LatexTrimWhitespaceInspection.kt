@@ -32,7 +32,7 @@ open class LatexTrimWhitespaceInspection : TexifyInspectionBase() {
 
     override val ignoredSuppressionScopes = EnumSet.of(MagicCommentScope.GROUP)!!
 
-    override fun getDisplayName() = "Unnecessary whitespace in section commands"
+    override fun getDisplayName(): String = "Unnecessary whitespace in section commands"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = descriptorList()
@@ -53,7 +53,7 @@ open class LatexTrimWhitespaceInspection : TexifyInspectionBase() {
                 manager.createProblemDescriptor(
                     command,
                     TextRange.from(name.length + 1, sectionName.length),
-                    "Unnecessary whitespace",
+                    nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.unnecessary.whitespace"),
                     ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                     isOntheFly,
                     TrimFix()
@@ -69,7 +69,7 @@ open class LatexTrimWhitespaceInspection : TexifyInspectionBase() {
      */
     private class TrimFix : LocalQuickFix {
 
-        override fun getFamilyName() = "Trim whitespace"
+        override fun getFamilyName() = nl.hannahsten.texifyidea.TexifyBundle.message("inspection.quickfix.trim.whitespace")
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands

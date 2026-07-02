@@ -6,6 +6,7 @@ import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.psi.LatexCommands
@@ -52,7 +53,7 @@ class LatexVerbatimToggleIntention : TexifyIntentionBase("Convert to other verba
         else {
             JBPopupFactory.getInstance()
                 .createPopupChooserBuilder(availableEnvironments)
-                .setTitle("Verbatim Environments")
+                .setTitle(TexifyBundle.message("ui.popup.verbatim.environments.title"))
                 .setItemChosenCallback { replaceVerbatim(element, it, file, project) }
                 .setRenderer(PopupChooserCellRenderer())
                 .createPopup()

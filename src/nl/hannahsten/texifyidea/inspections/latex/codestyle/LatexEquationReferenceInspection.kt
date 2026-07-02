@@ -47,7 +47,7 @@ class LatexEquationReferenceInspection : AbstractTexifyCommandBasedInspection(
         ) return
         val descriptor = manager.createDescriptor(
             command,
-            "Use \\eqref for equation references",
+            nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.use.eqref.for.equation.references"),
             rangeInElement = TextRange.from(0, 4), // only highlight the command
             isOnTheFly = isOnTheFly,
             fix = ReplaceEquationReferenceQuickFix()
@@ -56,7 +56,7 @@ class LatexEquationReferenceInspection : AbstractTexifyCommandBasedInspection(
     }
 
     private class ReplaceEquationReferenceQuickFix : LocalQuickFix {
-        override fun getFamilyName(): @IntentionFamilyName String = "Replace with \\eqref"
+        override fun getFamilyName(): @IntentionFamilyName String = nl.hannahsten.texifyidea.TexifyBundle.message("inspection.quickfix.replace.with.eqref")
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val element = descriptor.psiElement as? LatexCommands ?: return

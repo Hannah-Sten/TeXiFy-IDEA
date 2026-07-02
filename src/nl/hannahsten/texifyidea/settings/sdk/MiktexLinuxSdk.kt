@@ -4,6 +4,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.util.runCommand
 import java.nio.file.Path
@@ -16,7 +17,7 @@ import java.nio.file.Paths
  *
  * On Arch (user install), the pdflatex binary was created in ~/bin and MiKTeX itself was installed to /opt/miktex, the texmf folder was in ~/.miktex.
  */
-class MiktexLinuxSdk : LatexSdk("MiKTeX Mac/Linux SDK") {
+class MiktexLinuxSdk : LatexSdk(TexifyBundle.message("settings.sdk.miktex.maclinux.name")) {
 
     object Cache {
         // Cache version
@@ -43,7 +44,7 @@ class MiktexLinuxSdk : LatexSdk("MiKTeX Mac/Linux SDK") {
         return LatexSdkUtil.isPdflatexPresent(path)
     }
 
-    override fun getInvalidHomeMessage(path: String) = "Could not find $path/pdflatex"
+    override fun getInvalidHomeMessage(path: String) = TexifyBundle.message("settings.sdk.error.could.not.find.pdflatex", path)
 
     override fun getVersionString(sdk: Sdk): String? {
         return getVersionString(sdk.homePath ?: return null)

@@ -1,5 +1,7 @@
 <templateSet group="LaTeX">
-    <template name="fig" value="\begin{figure}&#10;    \centering&#10;    \includegraphics{$FIGURE$}&#10;    \caption{$CAPTION$}&#10;    \label{fig:$LABEL$}&#10;\end{figure}&#10;$END$" description="Figure environment" toReformat="true" toShortenFQNames="true">
+    <template name="fig" value="\begin{figure}&#10;    \centering&#10;    \includegraphics{$FIGURE$}&#10;    \caption{$CAPTION$}&#10;    \label{fig:$LABEL$}&#10;\end{figure}&#10;$END$"
+              toReformat="true" toShortenFQNames="true" key="livetemplate.latex.fig.description"
+              resource-bundle="messages.TexifyBundle">
         <variable name="FIGURE" expression="" defaultValue="" alwaysStopAt="true"/>
         <variable name="CAPTION" expression="" defaultValue="" alwaysStopAt="true"/>
         <variable name="LABEL" expression="" defaultValue="" alwaysStopAt="true"/>
@@ -9,7 +11,9 @@
         </context>
     </template>
 
-    <template name="tab" value="\begin{table}&#10;    \centering&#10;    \caption{$CAPTION$}&#10;    \label{tab:$LABEL$}&#10;    \begin{tabular}{$COLUMNS$}&#10;        $END$&#10;    \end{tabular}&#10;\end{table}&#10;$END$" description="Table environment" toReformat="false" toShortenFQNames="true">
+    <template name="tab" value="\begin{table}&#10;    \centering&#10;    \caption{$CAPTION$}&#10;    \label{tab:$LABEL$}&#10;    \begin{tabular}{$COLUMNS$}&#10;        $END$&#10;    \end{tabular}&#10;\end{table}&#10;$END$"
+              toReformat="false" toShortenFQNames="true" key="livetemplate.latex.tab.description"
+              resource-bundle="messages.TexifyBundle">
         <variable name="CAPTION" expression="" defaultValue="" alwaysStopAt="true"/>
         <variable name="LABEL" expression="" defaultValue="" alwaysStopAt="true"/>
         <variable name="COLUMNS" expression="" defaultValue="" alwaysStopAt="true"/>
@@ -19,21 +23,24 @@
         </context>
     </template>
 
-    <template name="itm" value="\begin{itemize}&#10;    \item $END$&#10;\end{itemize}" description="Itemize environment" toReformat="true" toShortenFQNames="true">
+    <template name="itm" value="\begin{itemize}&#10;    \item $END$&#10;\end{itemize}" toReformat="true" toShortenFQNames="true"
+              key="livetemplate.latex.itm.description" resource-bundle="messages.TexifyBundle">
         <context>
             <option name="LATEX" value="true"/>
             <option name="LATEX_MATH" value="false"/>
         </context>
     </template>
 
-    <template name="enm" value="\begin{enumerate}&#10;    \item $END$&#10;\end{enumerate}" description="Enumerate environment" toReformat="false" toShortenFQNames="true">
+    <template name="enm" value="\begin{enumerate}&#10;    \item $END$&#10;\end{enumerate}" toReformat="false" toShortenFQNames="true"
+              key="livetemplate.latex.enm.description" resource-bundle="messages.TexifyBundle">
         <context>
             <option name="LATEX" value="true"/>
             <option name="LATEX_MATH" value="false"/>
         </context>
     </template>
 
-    <template name="\begin1" value="\begin{$NAME$}{$ARG1$}&#10;    $END$&#10;\end{$NAME$}" description="Environment with 1 parameter" toReformat="false" toShortenFQNames="true">
+    <template name="\begin1" value="\begin{$NAME$}{$ARG1$}&#10;    $END$&#10;\end{$NAME$}" toReformat="false" toShortenFQNames="true"
+              key="livetemplate.latex.begin1.description" resource-bundle="messages.TexifyBundle">
         <variable name="NAME" expression="" defaultValue="" alwaysStopAt="true" />
         <variable name="ARG1" expression="" defaultValue="" alwaysStopAt="true" />
         <context>
@@ -42,7 +49,8 @@
         </context>
     </template>
 
-    <template name="\begin2" value="\begin{$NAME$}{$ARG1$}{$ARG2$}&#10;    $END$&#10;\end{$NAME$}" description="Environment with 2 parameters" toReformat="false" toShortenFQNames="true">
+    <template name="\begin2" value="\begin{$NAME$}{$ARG1$}{$ARG2$}&#10;    $END$&#10;\end{$NAME$}" toReformat="false" toShortenFQNames="true"
+              key="livetemplate.latex.begin2.description" resource-bundle="messages.TexifyBundle">
         <variable name="NAME" expression="" defaultValue="" alwaysStopAt="true" />
         <variable name="ARG1" expression="" defaultValue="" alwaysStopAt="true" />
         <variable name="ARG2" expression="" defaultValue="" alwaysStopAt="true" />
@@ -52,7 +60,7 @@
         </context>
     </template>
 
-    <template name="\begin3" value="\begin{$NAME$}{$ARG1$}{$ARG2$}{$ARG3$}&#10;    $END$&#10;\end{$NAME$}" description="Environment with 3 parameters" toReformat="false" toShortenFQNames="true">
+    <template name="\begin3" value="\begin{$NAME$}{$ARG1$}{$ARG2$}{$ARG3$}&#10;    $END$&#10;\end{$NAME$}" key="livetemplate.latex.begin3.description" resource-bundle="messages.TexifyBundle" toReformat="false" toShortenFQNames="true">
         <variable name="NAME" expression="" defaultValue="" alwaysStopAt="true" />
         <variable name="ARG1" expression="" defaultValue="" alwaysStopAt="true" />
         <variable name="ARG2" expression="" defaultValue="" alwaysStopAt="true" />
@@ -63,7 +71,7 @@
         </context>
     </template>
 
-    <template name="\partl" value="\part{$TITLE$}\label{$LABEL$}$END$" description="Part with label" toReformat="false" toShortenFQNames="true">
+    <template name="\partl" value="\part{$TITLE$}\label{$LABEL$}$END$" key="livetemplate.latex.partl.description" resource-bundle="messages.TexifyBundle" toReformat="false" toShortenFQNames="true">
         <variable name="TITLE" expression="" defaultValue="" alwaysStopAt="true" />
         <variable name="LABEL" expression="latexFormatAsLabel(TITLE)" defaultValue="" alwaysStopAt="true" />
         <context>
@@ -72,7 +80,7 @@
         </context>
     </template>
 
-    <template name="\chapl" value="\chapter{$TITLE$}\label{ch:$LABEL$}$END$" description="Chapter with label" toReformat="false" toShortenFQNames="true">
+    <template name="\chapl" value="\chapter{$TITLE$}\label{ch:$LABEL$}$END$" key="livetemplate.latex.chapl.description" resource-bundle="messages.TexifyBundle" toReformat="false" toShortenFQNames="true">
         <variable name="TITLE" expression="" defaultValue="" alwaysStopAt="true" />
         <variable name="LABEL" expression="latexFormatAsLabel(TITLE)" defaultValue="" alwaysStopAt="true" />
         <context>
@@ -81,7 +89,7 @@
         </context>
     </template>
 
-    <template name="\secl" value="\section{$TITLE$}\label{sec:$LABEL$}$END$" description="Section with label" toReformat="false" toShortenFQNames="true">
+    <template name="\secl" value="\section{$TITLE$}\label{sec:$LABEL$}$END$" key="livetemplate.latex.secl.description" resource-bundle="messages.TexifyBundle" toReformat="false" toShortenFQNames="true">
         <variable name="TITLE" expression="" defaultValue="" alwaysStopAt="true" />
         <variable name="LABEL" expression="latexFormatAsLabel(TITLE)" defaultValue="" alwaysStopAt="true" />
         <context>
@@ -90,7 +98,7 @@
         </context>
     </template>
 
-    <template name="\subsecl" value="\subsection{$TITLE$}\label{subsec:$LABEL$}$END$" description="Subsection with label" toReformat="false" toShortenFQNames="true">
+    <template name="\subsecl" value="\subsection{$TITLE$}\label{subsec:$LABEL$}$END$" key="livetemplate.latex.subsecl.description" resource-bundle="messages.TexifyBundle" toReformat="false" toShortenFQNames="true">
         <variable name="TITLE" expression="" defaultValue="" alwaysStopAt="true" />
         <variable name="LABEL" expression="latexFormatAsLabel(TITLE)" defaultValue="" alwaysStopAt="true" />
         <context>
@@ -99,7 +107,7 @@
         </context>
     </template>
 
-    <template name="\subsubsecl" value="\subsubsection{$TITLE$}\label{subsubsec:$LABEL$}$END$" description="Subsubsection with label" toReformat="false" toShortenFQNames="true">
+    <template name="\subsubsecl" value="\subsubsection{$TITLE$}\label{subsubsec:$LABEL$}$END$" key="livetemplate.latex.subsubsecl.description" resource-bundle="messages.TexifyBundle" toReformat="false" toShortenFQNames="true">
         <variable name="TITLE" expression="" defaultValue="" alwaysStopAt="true" />
         <variable name="LABEL" expression="latexFormatAsLabel(TITLE)" defaultValue="" alwaysStopAt="true" />
         <context>
@@ -108,7 +116,7 @@
         </context>
     </template>
 
-    <template name="enq" value="\enquote{$QUOTE$} $END$" description="Enquote" toReformat="false" toShortenFQNames="true">
+    <template name="enq" value="\enquote{$QUOTE$} $END$" key="livetemplate.latex.enq.description" resource-bundle="messages.TexifyBundle" toReformat="false" toShortenFQNames="true">
         <variable name="QUOTE" expression="" defaultValue="" alwaysStopAt="true" />
         <context>
             <option name="LATEX" value="true"/>
@@ -116,7 +124,7 @@
         </context>
     </template>
 
-    <template name="fc" value="\footcite[$PAGE$]{$SOURCE$}$END$" description="footcite" toReformat="false" toShortenFQNames="true">
+    <template name="fc" value="\footcite[$PAGE$]{$SOURCE$}$END$" key="livetemplate.latex.fc.description" resource-bundle="messages.TexifyBundle" toReformat="false" toShortenFQNames="true">
         <variable name="PAGE" expression="" defaultValue="" alwaysStopAt="true" />
         <variable name="SOURCE" expression="" defaultValue="" alwaysStopAt="true" />
         <context>
@@ -126,7 +134,7 @@
     </template>
 
     <!--  Mathematics  -->
-    <template name="sum" value="\sum_{$FROM$}^{$TO$} $END$" description="Sum with sub- and superscript" toReformat="false" toShortenFQNames="true">
+    <template name="sum" value="\sum_{$FROM$}^{$TO$} $END$" key="livetemplate.latex.sum.description" resource-bundle="messages.TexifyBundle" toReformat="false" toShortenFQNames="true">
         <variable name="FROM" expression="" defaultValue="" alwaysStopAt="true"/>
         <variable name="TO" expression="" defaultValue="" alwaysStopAt="true"/>
         <context>
@@ -134,7 +142,7 @@
         </context>
     </template>
 
-    <template name="int" value="\int_{$FROM$}^{$TO$} $END$" description="Integral with sub- and superscript" toReformat="false" toShortenFQNames="true">
+    <template name="int" value="\int_{$FROM$}^{$TO$} $END$" key="livetemplate.latex.int.description" resource-bundle="messages.TexifyBundle" toReformat="false" toShortenFQNames="true">
         <variable name="FROM" expression="" defaultValue="" alwaysStopAt="true"/>
         <variable name="TO" expression="" defaultValue="" alwaysStopAt="true"/>
         <context>
@@ -142,4 +150,3 @@
         </context>
     </template>
 </templateSet>
-

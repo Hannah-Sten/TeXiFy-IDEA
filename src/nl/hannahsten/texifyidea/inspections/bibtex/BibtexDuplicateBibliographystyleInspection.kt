@@ -28,7 +28,7 @@ open class BibtexDuplicateBibliographystyleInspection : TexifyInspectionBase() {
 
     override val inspectionId = "DuplicateBibliographystyle"
 
-    override fun getDisplayName() = "Duplicate bibliography style commands"
+    override fun getDisplayName(): String = "Duplicate bibliography style commands"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         // Chapterbib allows multiple bibliographies
@@ -49,7 +49,7 @@ open class BibtexDuplicateBibliographystyleInspection : TexifyInspectionBase() {
                         manager.createProblemDescriptor(
                             it,
                             TextRange(0, it.commandToken.textLength),
-                            "\\bibliographystyle is already used elsewhere",
+                            nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.bibtex.bibliographystyle.duplicate"),
                             ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                             isOntheFly,
                             RemoveOtherCommandsFix
@@ -66,7 +66,7 @@ open class BibtexDuplicateBibliographystyleInspection : TexifyInspectionBase() {
      */
     object RemoveOtherCommandsFix : LocalQuickFix {
 
-        override fun getFamilyName(): String = "Remove other \\bibliographystyle commands"
+        override fun getFamilyName(): String = nl.hannahsten.texifyidea.TexifyBundle.message("inspection.quickfix.remove.other.bibliographystyle.commands")
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands

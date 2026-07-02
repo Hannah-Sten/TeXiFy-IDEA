@@ -4,6 +4,7 @@ import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.TeXception
+import nl.hannahsten.texifyidea.TexifyBundle
 import org.freedesktop.dbus.connections.impl.DBusConnectionBuilder
 import org.freedesktop.dbus.errors.NoReply
 import org.freedesktop.dbus.errors.ServiceUnknown
@@ -92,21 +93,36 @@ object EvinceViewer : SystemPdfViewer("Evince", "evince") {
                     }
                     catch (ignored: NoReply) {}
                     catch (e: ServiceUnknown) {
-                        Notification("LaTeX", "Cannot sync position to Evince", "Please update Evince and then try again.", NotificationType.ERROR).notify(project)
+                        Notification(
+                            "LaTeX",
+                            TexifyBundle.message("run.notification.evince.sync.position.failed.title"),
+                            TexifyBundle.message("run.notification.evince.update.and.retry"),
+                            NotificationType.ERROR
+                        ).notify(project)
                     }
                 }
             }
             catch (e: DBusException) {
-                Notification("LaTeX", "Cannot sync position to Evince", "The Connection could not be established.", NotificationType.ERROR).notify(project)
+                Notification(
+                    "LaTeX",
+                    TexifyBundle.message("run.notification.evince.sync.position.failed.title"),
+                    TexifyBundle.message("run.notification.connection.not.established"),
+                    NotificationType.ERROR
+                ).notify(project)
             }
         }
         else {
             // If the user used the forward search menu action
             if (outputPath == null) {
-                Notification("LaTeX", "Could not execute forward search", "Please make sure you have compiled the document first, and that your path does not contain spaces.", NotificationType.ERROR).notify(project)
+                Notification(
+                    "LaTeX",
+                    TexifyBundle.message("run.notification.forward.search.failed.title"),
+                    TexifyBundle.message("run.notification.forward.search.failed.compile.first.and.no.spaces"),
+                    NotificationType.ERROR
+                ).notify(project)
             }
             else {
-                throw TeXception("Could not execute forward search with Evince because something went wrong when finding the pdf file at $outputPath")
+                throw TeXception(TexifyBundle.message("run.error.evince.forward.search.failed.detail", outputPath))
             }
         }
     }
@@ -132,12 +148,22 @@ object EvinceViewer : SystemPdfViewer("Evince", "evince") {
                 }
                 catch (ignored: NoReply) {}
                 catch (e: ServiceUnknown) {
-                    Notification("LaTeX", "Cannot communicate to Evince", "Please update Evince and then try again.", NotificationType.ERROR).notify(project)
+                    Notification(
+                        "LaTeX",
+                        TexifyBundle.message("run.notification.evince.communication.failed.title"),
+                        TexifyBundle.message("run.notification.evince.update.and.retry"),
+                        NotificationType.ERROR
+                    ).notify(project)
                 }
             }
         }
         catch (e: DBusException) {
-            Notification("LaTeX", "Cannot communicate to Evince", "The connection could not be established.", NotificationType.ERROR).notify(project)
+            Notification(
+                "LaTeX",
+                TexifyBundle.message("run.notification.evince.communication.failed.title"),
+                TexifyBundle.message("run.notification.connection.not.established.lowercase"),
+                NotificationType.ERROR
+            ).notify(project)
         }
     }
 }

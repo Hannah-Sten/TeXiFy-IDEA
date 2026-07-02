@@ -4,11 +4,13 @@ import com.intellij.execution.ui.CommonParameterFragments
 import com.intellij.execution.ui.SettingsEditorFragment
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.openapi.ui.TextBrowseFolderListener
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.ui.RawCommandLineEditor
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.latex.BibtexStepOptions
 import nl.hannahsten.texifyidea.run.latex.StepUiOptionIds
@@ -19,25 +21,26 @@ internal class BibtexStepFragmentedEditor(
 ) : AbstractStepFragmentedEditor<BibtexStepOptions>(initialStep) {
 
     private val compiler = ComboBox(BibliographyCompiler.entries.toTypedArray())
-    private val compilerRow = LabeledComponent.create(compiler, "&Bibliography tool")
+    private val compilerRow = LabeledComponent.create(compiler, TexifyBundle.message("run.step.ui.field.bibliography.tool.label"))
 
     private val compilerPath = TextFieldWithBrowseButton().apply {
         addBrowseFolderListener(
             TextBrowseFolderListener(
                 FileChooserDescriptor(true, false, false, false, false, false)
-                    .withTitle("Choose Bibliography Executable")
+                    .withTitle(TexifyBundle.message("run.step.ui.dialog.choose.bibliography.executable"))
+                    .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules.toSet().toTypedArray())
             )
         )
     }
-    private val compilerPathRow = LabeledComponent.create(compilerPath, "Compiler &path")
+    private val compilerPathRow = LabeledComponent.create(compilerPath, TexifyBundle.message("run.step.ui.field.compiler.path.label"))
 
     private val compilerArguments = RawCommandLineEditor().apply {
-        editorField.emptyText.text = "Custom bibliography arguments"
+        editorField.emptyText.text = TexifyBundle.message("run.step.ui.placeholder.custom.bibliography.arguments")
     }
-    private val compilerArgumentsRow = LabeledComponent.create(compilerArguments, "Compiler ar&guments")
+    private val compilerArgumentsRow = LabeledComponent.create(compilerArguments, TexifyBundle.message("run.step.ui.field.compiler.arguments.label"))
 
-    private val workingDirectory = createDirectoryField(project, "Step working directory")
-    private val workingDirectoryRow = LabeledComponent.create(workingDirectory, "Working d&irectory")
+    private val workingDirectory = createDirectoryField(project, TexifyBundle.message("run.step.ui.dialog.step.working.directory"))
+    private val workingDirectoryRow = LabeledComponent.create(workingDirectory, TexifyBundle.message("run.step.ui.field.working.directory.label"))
     private var inferredWorkingDirectoryHint: String? = null
 
     fun setInferredWorkingDirectoryHint(value: String?) {
@@ -47,11 +50,11 @@ internal class BibtexStepFragmentedEditor(
     internal fun inferredWorkingDirectoryHintForTest(): String? = inferredWorkingDirectoryHint
 
     override fun createFragments(): Collection<SettingsEditorFragment<BibtexStepOptions, *>> {
-        val header = CommonParameterFragments.createHeader<BibtexStepOptions>("Bibliography Step")
+        val header = CommonParameterFragments.createHeader<BibtexStepOptions>(TexifyBundle.message("run.step.ui.header.bibliography"))
 
         val compilerFragment = stepFragment(
             id = "step.bib.compiler",
-            name = "Bibliography tool",
+            name = TexifyBundle.message("run.step.ui.field.bibliography.tool"),
             component = compilerRow,
             reset = { step, component -> component.component.selectedItem = step.bibliographyCompiler },
             apply = { step, component ->
@@ -59,31 +62,31 @@ internal class BibtexStepFragmentedEditor(
             },
             initiallyVisible = { true },
             removable = false,
-            hint = "Bibliography compiler used by this step.",
+            hint = TexifyBundle.message("run.step.ui.hint.bibliography.tool"),
         )
 
         val pathFragment = stepFragment(
             id = StepUiOptionIds.BIB_COMPILER_PATH,
-            name = "Compiler path",
+            name = TexifyBundle.message("run.step.ui.field.compiler.path"),
             component = compilerPathRow,
             reset = { step, component -> component.component.text = step.compilerPath.orEmpty() },
             apply = { step, component -> step.compilerPath = component.component.text.ifBlank { null } },
             initiallyVisible = { step -> !step.compilerPath.isNullOrBlank() },
             removable = true,
-            hint = "Optional absolute path to bibliography executable.",
-            actionHint = "Set bibliography executable path",
+            hint = TexifyBundle.message("run.step.ui.hint.bibliography.compiler.path"),
+            actionHint = TexifyBundle.message("run.step.ui.action.set.bibliography.executable.path"),
         )
 
         val argsFragment = stepFragment(
             id = StepUiOptionIds.BIB_COMPILER_ARGS,
-            name = "Compiler arguments",
+            name = TexifyBundle.message("run.step.ui.field.compiler.arguments"),
             component = compilerArgumentsRow,
             reset = { step, component -> component.component.text = step.compilerArguments.orEmpty() },
             apply = { step, component -> step.compilerArguments = component.component.text.ifBlank { null } },
             initiallyVisible = { step -> !step.compilerArguments.isNullOrBlank() },
             removable = true,
-            hint = "Additional arguments passed to bibliography compiler.",
-            actionHint = "Set bibliography arguments",
+            hint = TexifyBundle.message("run.step.ui.hint.bibliography.arguments"),
+            actionHint = TexifyBundle.message("run.step.ui.action.set.bibliography.arguments"),
         )
 
         val workingDirFragment = stepWorkingDirectoryFragment(

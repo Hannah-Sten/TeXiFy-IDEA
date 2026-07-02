@@ -1,27 +1,27 @@
 <idea-plugin>
     <extensions defaultExtensionNs="com.intellij">
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codematurity.LatexOverInsteadOfFracInspection"
-                         groupPath="LaTeX" groupName="Code maturity" displayName="Use of \over discouraged"
+                         groupPath="LaTeX" groupBundle="messages.TexifyBundle" groupKey="inspection.group.code.maturity" bundle="messages.TexifyBundle" key="inspection.display.use.of.over.discouraged"
                          enabledByDefault="true"
                          level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codematurity.LatexPrimitiveStyleInspection"
-                         groupPath="LaTeX" groupName="Code maturity" displayName="TeX styling primitives usage is discouraged"
+                         groupPath="LaTeX" groupBundle="messages.TexifyBundle" groupKey="inspection.group.code.maturity" bundle="messages.TexifyBundle" key="inspection.display.tex.styling.primitives.usage.is.discouraged"
                          enabledByDefault="true"
                          level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codematurity.LatexDiscouragedUseOfDefInspection"
-                         groupPath="LaTeX" groupName="Code maturity" displayName="Discouraged use of \def and \let"
+                         groupPath="LaTeX" groupBundle="messages.TexifyBundle" groupKey="inspection.group.code.maturity" bundle="messages.TexifyBundle" key="inspection.display.discouraged.use.of.def.and.let"
                          enabledByDefault="true"
                          level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codematurity.LatexAvoidEqnarrayInspection"
-                         groupPath="LaTeX" groupName="Code maturity" displayName="Avoid eqnarray"
+                         groupPath="LaTeX" groupBundle="messages.TexifyBundle" groupKey="inspection.group.code.maturity" bundle="messages.TexifyBundle" key="inspection.display.avoid.eqnarray"
                          enabledByDefault="true"
                          level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codematurity.LatexPrimitiveEquationInspection"
-                         groupPath="LaTeX" groupName="Code maturity" displayName="Discouraged use of primitive TeX display math"
+                         groupPath="LaTeX" groupBundle="messages.TexifyBundle" groupKey="inspection.group.code.maturity" bundle="messages.TexifyBundle" key="inspection.display.discouraged.use.of.primitive.tex.display.math"
                          enabledByDefault="true"
                          level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.codematurity.LatexMakeatletterInspection"
-                         groupPath="LaTeX" groupName="Code maturity" displayName="Discouraged use of \makeatletter in tex sources"
+                         groupPath="LaTeX" groupBundle="messages.TexifyBundle" groupKey="inspection.group.code.maturity" bundle="messages.TexifyBundle" key="inspection.display.discouraged.use.of.makeatletter.in.tex.sources"
                          enabledByDefault="true"
                          level="WARNING" />
     </extensions>

@@ -284,7 +284,7 @@ abstract class AbstractTexifyContextAwareInspection(
 
         override val suppressionScope = MagicCommentScope.FILE
 
-        override fun getFamilyName() = "Suppress for file '${file.element?.name}'"
+        override fun getFamilyName() = localizedSuppressionFamilyName("suppress.file", "Suppress for file ''{0}''", file.element?.name ?: "")
     }
 
     /**
@@ -300,7 +300,7 @@ abstract class AbstractTexifyContextAwareInspection(
 
         override val suppressionScope = MagicCommentScope.ENVIRONMENT
 
-        override fun getFamilyName() = "Suppress for environment '$environmentName'"
+        override fun getFamilyName() = localizedSuppressionFamilyName("suppress.environment", "Suppress for environment ''{0}''", environmentName)
 
         override fun isAvailable(project: Project, context: PsiElement): Boolean = super.isAvailable(project, context)
     }
@@ -313,7 +313,7 @@ abstract class AbstractTexifyContextAwareInspection(
 
         override val suppressionScope = MagicCommentScope.MATH_ENVIRONMENT
 
-        override fun getFamilyName() = "Suppress for math environment"
+        override fun getFamilyName() = localizedSuppressionFamilyName("suppress.math.environment", "Suppress for math environment")
     }
 
     /**
@@ -329,7 +329,7 @@ abstract class AbstractTexifyContextAwareInspection(
 
         override val suppressionScope = MagicCommentScope.COMMAND
 
-        override fun getFamilyName() = "Suppress for command '$commandToken'"
+        override fun getFamilyName() = localizedSuppressionFamilyName("suppress.command", "Suppress for command ''{0}''", commandToken ?: "")
 
         override fun isAvailable(project: Project, context: PsiElement): Boolean = commandToken != null && super.isAvailable(project, context)
     }
@@ -342,6 +342,6 @@ abstract class AbstractTexifyContextAwareInspection(
 
         override val suppressionScope = MagicCommentScope.GROUP
 
-        override fun getFamilyName() = "Suppress for group"
+        override fun getFamilyName() = localizedSuppressionFamilyName("suppress.group", "Suppress for group")
     }
 }

@@ -20,7 +20,7 @@ open class BibtexDuplicateIdInspection : TexifyInspectionBase() {
 
     override val inspectionGroup = InsightGroup.BIBTEX
 
-    override fun getDisplayName() = "Duplicate ID"
+    override fun getDisplayName(): String = "Duplicate ID"
 
     override val inspectionId = "DuplicateId"
 
@@ -36,7 +36,7 @@ open class BibtexDuplicateIdInspection : TexifyInspectionBase() {
                     manager.createProblemDescriptor(
                         bibtexEntry,
                         TextRange(0, bibtexEntry.textLength - 1),
-                        "Duplicate identifier '$idName'",
+                        nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.bibtex.duplicate.identifier", idName),
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly
                     )

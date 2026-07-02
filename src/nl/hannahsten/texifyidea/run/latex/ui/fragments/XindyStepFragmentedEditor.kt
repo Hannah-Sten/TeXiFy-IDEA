@@ -6,6 +6,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.components.JBTextField
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.run.latex.StepUiOptionIds
 import nl.hannahsten.texifyidea.run.latex.XindyStepOptions
 
@@ -15,22 +16,22 @@ internal class XindyStepFragmentedEditor(
 ) : AbstractStepFragmentedEditor<XindyStepOptions>(initialStep) {
 
     private val executable = JBTextField()
-    private val executableRow = LabeledComponent.create(executable, "E&xecutable")
+    private val executableRow = LabeledComponent.create(executable, TexifyBundle.message("run.step.ui.field.executable.label"))
 
     private val arguments = RawCommandLineEditor().apply {
-        editorField.emptyText.text = "Defaults to {main}.idx"
+        editorField.emptyText.text = TexifyBundle.message("run.step.ui.placeholder.default.main.idx")
     }
-    private val argumentsRow = LabeledComponent.create(arguments, "Ar&guments")
+    private val argumentsRow = LabeledComponent.create(arguments, TexifyBundle.message("run.step.ui.field.arguments.label"))
 
-    private val workingDirectory = createDirectoryField(project, "Step working directory")
-    private val workingDirectoryRow = LabeledComponent.create(workingDirectory, "Working d&irectory")
+    private val workingDirectory = createDirectoryField(project, TexifyBundle.message("run.step.ui.dialog.step.working.directory"))
+    private val workingDirectoryRow = LabeledComponent.create(workingDirectory, TexifyBundle.message("run.step.ui.field.working.directory.label"))
 
     override fun createFragments(): Collection<SettingsEditorFragment<XindyStepOptions, *>> {
-        val header = CommonParameterFragments.createHeader<XindyStepOptions>("Xindy Step")
+        val header = CommonParameterFragments.createHeader<XindyStepOptions>(TexifyBundle.message("run.step.ui.header.xindy"))
 
         val executableFragment = stepFragment(
             id = StepUiOptionIds.COMMAND_EXECUTABLE,
-            name = "Executable",
+            name = TexifyBundle.message("run.step.ui.field.executable"),
             component = executableRow,
             reset = { step, component -> component.component.text = step.executable.orEmpty() },
             apply = { step, component ->
@@ -38,31 +39,31 @@ internal class XindyStepFragmentedEditor(
             },
             initiallyVisible = { true },
             removable = false,
-            hint = "Xindy executable command.",
+            hint = TexifyBundle.message("run.step.ui.hint.xindy.executable"),
         )
 
         val argsFragment = stepFragment(
             id = StepUiOptionIds.COMMAND_ARGS,
-            name = "Arguments",
+            name = TexifyBundle.message("run.step.ui.field.arguments"),
             component = argumentsRow,
             reset = { step, component -> component.component.text = step.arguments.orEmpty() },
             apply = { step, component -> step.arguments = component.component.text.ifBlank { null } },
             initiallyVisible = { step -> !step.arguments.isNullOrBlank() },
             removable = true,
-            hint = "Arguments passed to xindy executable.",
-            actionHint = "Set xindy arguments",
+            hint = TexifyBundle.message("run.step.ui.hint.xindy.arguments"),
+            actionHint = TexifyBundle.message("run.step.ui.action.set.xindy.arguments"),
         )
 
         val workingDirFragment = stepFragment(
             id = StepUiOptionIds.STEP_WORKING_DIRECTORY,
-            name = "Working directory",
+            name = TexifyBundle.message("run.step.ui.field.working.directory"),
             component = workingDirectoryRow,
             reset = { step, component -> component.component.text = step.workingDirectoryPath.orEmpty() },
             apply = { step, component -> step.workingDirectoryPath = component.component.text.ifBlank { null } },
             initiallyVisible = { step -> !step.workingDirectoryPath.isNullOrBlank() },
             removable = true,
-            hint = "Override working directory for this xindy step.",
-            actionHint = "Set step working directory",
+            hint = TexifyBundle.message("run.step.ui.hint.xindy.working.directory"),
+            actionHint = TexifyBundle.message("run.step.ui.action.set.step.working.directory"),
         )
 
         return listOf(

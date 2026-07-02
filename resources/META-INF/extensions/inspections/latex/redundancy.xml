@@ -1,31 +1,31 @@
 <idea-plugin>
     <extensions defaultExtensionNs="com.intellij">
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.redundancy.LatexRedundantEscapeInspection"
-                         groupPath="LaTeX" groupName="Redundant code constructs" displayName="Redundant escape when Unicode is enabled"
+                         groupPath="LaTeX" groupBundle="messages.TexifyBundle" groupKey="inspection.group.redundant.code.constructs" bundle="messages.TexifyBundle" key="inspection.display.redundant.escape.when.unicode.is.enabled"
                          enabledByDefault="true"
                          level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.redundancy.LatexRedundantParInspection"
-                         groupPath="LaTeX" groupName="Redundant code constructs" displayName="Redundant use of \par"
+                         groupPath="LaTeX" groupBundle="messages.TexifyBundle" groupKey="inspection.group.redundant.code.constructs" bundle="messages.TexifyBundle" key="inspection.display.redundant.use.of.par"
                          enabledByDefault="true"
                          level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.redundancy.LatexTrimWhitespaceInspection"
-                         groupPath="LaTeX" groupName="Redundant code constructs" displayName="Unnecessary whitespace in section commands"
+                         groupPath="LaTeX" groupBundle="messages.TexifyBundle" groupKey="inspection.group.redundant.code.constructs" bundle="messages.TexifyBundle" key="inspection.display.unnecessary.whitespace.in.section.commands"
                          enabledByDefault="true"
                          level="WEAK WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.redundancy.LatexCommandAlreadyDefinedInspection"
-                         groupPath="LaTeX" groupName="Redundant code constructs" displayName="Command is already defined"
+                         groupPath="LaTeX" groupBundle="messages.TexifyBundle" groupKey="inspection.group.redundant.code.constructs" bundle="messages.TexifyBundle" key="inspection.display.command.is.already.defined"
                          enabledByDefault="true"
                          level="WARNING" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.redundancy.LatexDuplicateLabelInspection"
-                         groupPath="LaTeX" groupName="Redundant code constructs" displayName="Duplicate labels"
+                         groupPath="LaTeX" groupBundle="messages.TexifyBundle" groupKey="inspection.group.redundant.code.constructs" bundle="messages.TexifyBundle" key="inspection.display.duplicate.labels"
                          enabledByDefault="true"
                          level="ERROR" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.redundancy.LatexMultipleIncludesInspection"
-                         groupPath="LaTeX" groupName="Redundant code constructs" displayName="Package has been imported multiple times"
+                         groupPath="LaTeX" groupBundle="messages.TexifyBundle" groupKey="inspection.group.redundant.code.constructs" bundle="messages.TexifyBundle" key="inspection.display.package.has.been.imported.multiple.times"
                          enabledByDefault="true"
                          level="ERROR" />
         <localInspection language="Latex" implementationClass="nl.hannahsten.texifyidea.inspections.latex.redundancy.LatexDuplicateDefinitionInspection"
-                         groupPath="LaTeX" groupName="Redundant code constructs" displayName="Duplicate command definitions"
+                         groupPath="LaTeX" groupBundle="messages.TexifyBundle" groupKey="inspection.group.redundant.code.constructs" bundle="messages.TexifyBundle" key="inspection.display.duplicate.command.definitions"
                          enabledByDefault="true"
                          level="ERROR" />
     </extensions>

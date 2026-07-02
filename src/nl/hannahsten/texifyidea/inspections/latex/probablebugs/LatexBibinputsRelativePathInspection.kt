@@ -47,7 +47,7 @@ class LatexBibinputsRelativePathInspection : TexifyInspectionBase() {
                 manager.createProblemDescriptor(
                     command,
                     TextRange(0, command.textLength - 1),
-                    "You cannot use both BIBINPUTS and a path that starts with ../ in \\bibliography",
+                    nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.bibinputs.relative.path.not.allowed"),
                     ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                     isOntheFly,
                     RelativePathFix
@@ -59,7 +59,7 @@ class LatexBibinputsRelativePathInspection : TexifyInspectionBase() {
 
     object RelativePathFix : LocalQuickFix {
 
-        override fun getFamilyName() = "Remove relative part from argument and from BIBINPUTS"
+        override fun getFamilyName() = nl.hannahsten.texifyidea.TexifyBundle.message("inspection.quickfix.remove.relative.part.from.argument.and.bibinputs")
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val oldNode = descriptor.psiElement.node

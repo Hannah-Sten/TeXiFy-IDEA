@@ -103,6 +103,33 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
             .toTypedArray()
     }
 
+    private fun createSuppression(
+        element: PsiElement?,
+        inspectionId: String,
+        outerSuppressionScopes: Set<MagicCommentScope>
+    ): List<SuppressionFixBase> {
+        element ?: return emptyList()
+        val result = mutableListOf<SuppressionFixBase>()
+
+        element.let { elt ->
+            elt.containingFile?.let { result.add(FileSuppressionFix(it.createSmartPointer(), inspectionId)) }
+
+            elt.suppressionElement<LatexEnvironment>(MagicCommentScope.ENVIRONMENT, outerSuppressionScopes)?.let {
+                result.add(EnvironmentSuppressionFix(it, inspectionId))
+            }
+            elt.suppressionElement<LatexMathEnvironment>(MagicCommentScope.MATH_ENVIRONMENT, outerSuppressionScopes)?.let {
+                result.add(MathEnvironmentSuppressionFix(it, inspectionId))
+            }
+            elt.suppressionElement<LatexCommands>(MagicCommentScope.COMMAND, outerSuppressionScopes)?.let {
+                result.add(CommandSuppressionFix(it, inspectionId))
+            }
+            elt.suppressionElement<LatexGroup>(MagicCommentScope.GROUP, outerSuppressionScopes)?.let {
+                result.add(GroupSuppressionFix(it, inspectionId))
+            }
+        }
+        return result
+    }
+
     companion object {
 
         /**
@@ -116,29 +143,6 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
                 parent?.parentOfType(Psi::class)
             }
             else parent
-        }
-
-        fun createSuppression(element: PsiElement?, inspectionId: String, outerSuppressionScopes: Set<MagicCommentScope>): List<SuppressionFixBase> {
-            element ?: return emptyList()
-            val result = mutableListOf<SuppressionFixBase>()
-
-            element.let { elt ->
-                elt.containingFile?.let { result.add(FileSuppressionFix(it.createSmartPointer(), inspectionId)) }
-
-                elt.suppressionElement<LatexEnvironment>(MagicCommentScope.ENVIRONMENT, outerSuppressionScopes)?.let {
-                    result.add(EnvironmentSuppressionFix(it, inspectionId))
-                }
-                elt.suppressionElement<LatexMathEnvironment>(MagicCommentScope.MATH_ENVIRONMENT, outerSuppressionScopes)?.let {
-                    result.add(MathEnvironmentSuppressionFix(it, inspectionId))
-                }
-                elt.suppressionElement<LatexCommands>(MagicCommentScope.COMMAND, outerSuppressionScopes)?.let {
-                    result.add(CommandSuppressionFix(it, inspectionId))
-                }
-                elt.suppressionElement<LatexGroup>(MagicCommentScope.GROUP, outerSuppressionScopes)?.let {
-                    result.add(GroupSuppressionFix(it, inspectionId))
-                }
-            }
-            return result
         }
     }
 
@@ -180,7 +184,7 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
 
         override val suppressionScope = MagicCommentScope.FILE
 
-        override fun getFamilyName() = "Suppress for file '${file.element?.name}'"
+        override fun getFamilyName() = localizedSuppressionFamilyName("suppress.file", "Suppress for file ''{0}''", file.element?.name ?: "")
     }
 
     /**
@@ -195,7 +199,7 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
 
         override val suppressionScope = MagicCommentScope.ENVIRONMENT
 
-        override fun getFamilyName() = "Suppress for environment '$environmentName'"
+        override fun getFamilyName() = localizedSuppressionFamilyName("suppress.environment", "Suppress for environment ''{0}''", environmentName)
 
         override fun isAvailable(project: Project, context: PsiElement): Boolean = super.isAvailable(project, context)
     }
@@ -207,7 +211,7 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
 
         override val suppressionScope = MagicCommentScope.MATH_ENVIRONMENT
 
-        override fun getFamilyName() = "Suppress for math environment"
+        override fun getFamilyName() = localizedSuppressionFamilyName("suppress.math.environment", "Suppress for math environment")
     }
 
     /**
@@ -222,7 +226,7 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
 
         override val suppressionScope = MagicCommentScope.COMMAND
 
-        override fun getFamilyName() = "Suppress for command '$commandToken'"
+        override fun getFamilyName() = localizedSuppressionFamilyName("suppress.command", "Suppress for command ''{0}''", commandToken ?: "")
 
         override fun isAvailable(project: Project, context: PsiElement): Boolean = commandToken != null && super.isAvailable(project, context)
     }
@@ -234,6 +238,6 @@ abstract class TexifyInspectionBase : LocalInspectionTool() {
 
         override val suppressionScope = MagicCommentScope.GROUP
 
-        override fun getFamilyName() = "Suppress for group"
+        override fun getFamilyName() = localizedSuppressionFamilyName("suppress.group", "Suppress for group")
     }
 }

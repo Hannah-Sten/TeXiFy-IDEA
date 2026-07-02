@@ -28,7 +28,7 @@ class LatexUsePackageInPackageInspection : AbstractTexifyCommandBasedInspection(
         if (name != "usepackage") return
         val descriptor = manager.createProblemDescriptor(
             command,
-            "Use \\RequirePackage{...} instead of \\usepackage{...}",
+            nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.use.requirepackage.instead.of.usepackage"),
             ReplaceCommandQuickFix("Replace with \\RequirePackage", "RequirePackage"),
             ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
             isOnTheFly

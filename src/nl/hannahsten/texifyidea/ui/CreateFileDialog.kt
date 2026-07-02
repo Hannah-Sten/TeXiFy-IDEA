@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.ui
 
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.ui.*
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.util.formatAsFilePath
 import nl.hannahsten.texifyidea.util.formatAsFilePathWithExistingParents
 import java.io.File
@@ -21,7 +22,7 @@ class CreateFileDialog(private val basePath: String?, private val newFileName: S
 
     init {
         DialogBuilder().apply {
-            setTitle("Create New File")
+            setTitle(TexifyBundle.message("ui.dialog.create.new.file.title"))
             val panel = JPanel()
             panel.layout = VerticalFlowLayout(VerticalFlowLayout.TOP)
 
@@ -44,13 +45,13 @@ class CreateFileDialog(private val basePath: String?, private val newFileName: S
             pathField.addBrowseFolderListener(
                 TextBrowseFolderListener(
                     FileChooserDescriptor(false, true, false, false, false, false)
-                        .withTitle("Select Folder of New File")
+                        .withTitle(TexifyBundle.message("ui.dialog.create.new.file.select.folder.title"))
                 )
             )
 
             // Add the fields to the panel, with a useful label.
-            panel.add(LabeledComponent.create(nameField, "File path (extension optional, relative to base directory)"))
-            panel.add(LabeledComponent.create(pathField, "Base directory"))
+            panel.add(LabeledComponent.create(nameField, TexifyBundle.message("ui.dialog.create.new.file.path.label")))
+            panel.add(LabeledComponent.create(pathField, TexifyBundle.message("ui.dialog.create.new.file.base.directory.label")))
 
             setCenterPanel(panel)
             addCancelAction()

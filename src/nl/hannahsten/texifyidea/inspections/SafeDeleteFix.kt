@@ -33,7 +33,7 @@ open class SafeDeleteFix(element: PsiElement) : LocalQuickFixAndIntentionActionO
         return "Safe delete " + startElement.text
     }
 
-    override fun getFamilyName(): String = "Safe delete"
+    override fun getFamilyName(): String = nl.hannahsten.texifyidea.TexifyBundle.message("inspection.quickfix.safe.delete")
 
     override fun invoke(
         project: Project,

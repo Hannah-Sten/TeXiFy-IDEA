@@ -5,6 +5,7 @@ import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.util.runCommand
 import java.io.File
@@ -14,7 +15,7 @@ import java.util.*
 /**
  * TeX Live, as installed in the recommended way by https://www.tug.org/texlive/quickinstall.html (Windows or Linux).
  */
-open class TexliveSdk(name: String = "TeX Live SDK") : LatexSdk(name) {
+open class TexliveSdk(name: String = TexifyBundle.message("settings.sdk.texlive.name")) : LatexSdk(name) {
 
     object Cache {
         /**
@@ -91,11 +92,12 @@ open class TexliveSdk(name: String = "TeX Live SDK") : LatexSdk(name) {
         return LatexSdkUtil.isPdflatexPresent(parent)
     }
 
-    override fun getInvalidHomeMessage(path: String) = "Could not find $path/bin/*/pdflatex"
+    override fun getInvalidHomeMessage(path: String) = TexifyBundle.message("settings.sdk.error.could.not.find.pdflatex.in.bin", path)
 
     override fun getLatexDistributionType(sdk: Sdk) = LatexDistributionType.TEXLIVE
 
-    override fun getVersionString(sdkHome: String): String = "TeX Live " + sdkHome.split("/").lastOrNull { it.isNotBlank() }
+    override fun getVersionString(sdkHome: String): String =
+        TexifyBundle.message("settings.sdk.version.texlive", sdkHome.split("/").lastOrNull { it.isNotBlank() } ?: "")
 
     override fun getDefaultDocumentationUrl(sdk: Sdk): String? {
         if (sdk.homePath == null) return null

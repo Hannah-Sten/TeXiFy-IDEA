@@ -21,7 +21,7 @@ open class LatexInclusionLoopInspection : TexifyInspectionBase() {
 
     override val inspectionId = "InclusionLoop"
 
-    override fun getDisplayName() = "Inclusion loops"
+    override fun getDisplayName(): String = "Inclusion loops"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = descriptorList()
@@ -40,7 +40,7 @@ open class LatexInclusionLoopInspection : TexifyInspectionBase() {
                         manager.createProblemDescriptor(
                             command,
                             TextRange(0, command.textLength - 1),
-                            "File inclusion loop found for files ${referenced.name} and ${declaredIn.name}.",
+                            nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.inclusion.loop.found", referenced.name, declaredIn.name),
                             ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                             isOntheFly
                         )

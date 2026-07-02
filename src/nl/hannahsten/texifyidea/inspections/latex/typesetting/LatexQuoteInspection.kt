@@ -113,7 +113,7 @@ class LatexQuoteInspection : TexifyInspectionBase() {
                             manager.createProblemDescriptor(
                                 text,
                                 match.range.toTextRange(),
-                                "${match.value} is not a valid set of LaTeX quotes",
+                                nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.invalid.quote.set", match.value),
                                 ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                                 isOntheFly,
                                 *fixers
@@ -137,7 +137,7 @@ class LatexQuoteInspection : TexifyInspectionBase() {
                             manager.createProblemDescriptor(
                                 text,
                                 match.range.toTextRange(),
-                                "Closing quote without opening quote",
+                                nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.closing.quote.without.opening.quote"),
                                 ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                                 isOntheFly,
                                 *fixers
@@ -155,7 +155,7 @@ class LatexQuoteInspection : TexifyInspectionBase() {
      */
     private class MathFix : LocalQuickFix {
 
-        override fun getFamilyName(): String = "Convert to inline maths environment, for typesetting feet, inches or other mathematical punctuation."
+        override fun getFamilyName(): String = nl.hannahsten.texifyidea.TexifyBundle.message("inspection.quickfix.convert.to.inline.math.environment")
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val document = descriptor.psiElement.containingFile.document() ?: return
@@ -169,7 +169,7 @@ class LatexQuoteInspection : TexifyInspectionBase() {
 
     private class LatexQuoteFix(val description: String, val replacement: String) : LocalQuickFix {
 
-        override fun getFamilyName(): String = "Replace with a LaTeX $description"
+        override fun getFamilyName(): String = nl.hannahsten.texifyidea.TexifyBundle.message("inspection.quickfix.replace.with.latex.description", description)
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val document = descriptor.psiElement.containingFile.document() ?: return

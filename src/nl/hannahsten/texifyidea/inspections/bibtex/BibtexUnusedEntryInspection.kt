@@ -26,7 +26,7 @@ class BibtexUnusedEntryInspection : TexifyInspectionBase() {
         }.map {
             manager.createProblemDescriptor(
                 it,
-                "Bibtex entry is not used",
+                nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.bibtex.entry.not.used"),
                 RemoveBibtexEntryFix(it.createSmartPointer()),
                 ProblemHighlightType.LIKE_UNUSED_SYMBOL,
                 isOntheFly

@@ -1,9 +1,11 @@
 package nl.hannahsten.texifyidea.run.pdfviewer
 
+import nl.hannahsten.texifyidea.TexifyBundle
+
 object NoViewer : PdfViewer {
 
     override val name: String = "none"
-    override val displayName: String = "No PDF viewer"
+    override val displayName: String = TexifyBundle.message("run.pdfviewer.none.displayName")
     override val isFocusSupported = false
     override val isForwardSearchSupported = false
 

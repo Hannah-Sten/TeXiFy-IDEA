@@ -136,7 +136,7 @@ class LatexLabelConventionInspection : TexifyInspectionBase() {
 
     override val ignoredSuppressionScopes = EnumSet.of(MagicCommentScope.COMMAND, MagicCommentScope.GROUP)!!
 
-    override fun getDisplayName() = "Label conventions"
+    override fun getDisplayName(): String = "Label conventions"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = mutableListOf<ProblemDescriptor>()
@@ -156,7 +156,7 @@ class LatexLabelConventionInspection : TexifyInspectionBase() {
                 descriptors.add(
                     manager.createProblemDescriptor(
                         labelParameterText,
-                        "Unconventional label prefix",
+                        nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.label.unconventional.prefix"),
                         LabelPreFix(expectedPrefix, shouldBeBraced(element)),
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly
@@ -178,7 +178,7 @@ class LatexLabelConventionInspection : TexifyInspectionBase() {
             return false
         }
 
-        override fun getFamilyName() = "Fix label name"
+        override fun getFamilyName() = nl.hannahsten.texifyidea.TexifyBundle.message("inspection.quickfix.fix.label.name")
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val parameterText = descriptor.psiElement

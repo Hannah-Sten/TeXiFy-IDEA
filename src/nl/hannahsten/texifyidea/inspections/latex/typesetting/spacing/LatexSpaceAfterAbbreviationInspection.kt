@@ -25,7 +25,7 @@ open class LatexSpaceAfterAbbreviationInspection : TexifyInspectionBase() {
 
     override val inspectionGroup = InsightGroup.LATEX
 
-    override fun getDisplayName() = "Normal space after abbreviation"
+    override fun getDisplayName(): String = "Normal space after abbreviation"
 
     override val inspectionId = "SpaceAfterAbbreviation"
 
@@ -62,7 +62,7 @@ open class LatexSpaceAfterAbbreviationInspection : TexifyInspectionBase() {
                     manager.createProblemDescriptor(
                         text,
                         TextRange(matchRange.last - 2, matchRange.last),
-                        "Abbreviation should be followed by a normal space",
+                        nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.abbreviation.followed.by.normal.space"),
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly,
                         NormalSpaceFix(matchRange)
@@ -79,7 +79,7 @@ open class LatexSpaceAfterAbbreviationInspection : TexifyInspectionBase() {
      */
     open class NormalSpaceFix(private val whitespaceRange: IntRange) : LocalQuickFix {
 
-        override fun getFamilyName() = "Insert normal space after abbreviation"
+        override fun getFamilyName() = nl.hannahsten.texifyidea.TexifyBundle.message("inspection.quickfix.insert.normal.space.after.abbreviation")
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val element = descriptor.psiElement as LatexNormalText

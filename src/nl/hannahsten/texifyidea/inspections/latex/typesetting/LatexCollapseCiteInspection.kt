@@ -42,7 +42,7 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
 
     override val outerSuppressionScopes = EnumSet.of(MagicCommentScope.COMMAND)!!
 
-    override fun getDisplayName() = "Collapse cite commands"
+    override fun getDisplayName(): String = "Collapse cite commands"
 
     override fun inspectFile(
         file: PsiFile,
@@ -63,7 +63,7 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
             descriptors.add(
                 manager.createProblemDescriptor(
                     cmd,
-                    "Citations can be collapsed",
+                    nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.citations.can.be.collapsed"),
                     InspectionFix(bundle.map { SmartPointerManager.createPointer(it) }),
                     ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                     isOntheFly
@@ -155,7 +155,7 @@ open class LatexCollapseCiteInspection : TexifyInspectionBase() {
             citeBundle.mapNotNull { it.element }.sortedBy { it.textOffset }
         }
 
-        override fun getFamilyName(): String = "Collapse citations"
+        override fun getFamilyName(): String = nl.hannahsten.texifyidea.TexifyBundle.message("inspection.quickfix.collapse.citations")
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val (targetCite, _, replacement) = replacement(project) ?: return

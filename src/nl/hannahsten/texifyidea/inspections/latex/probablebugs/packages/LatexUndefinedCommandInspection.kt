@@ -19,7 +19,7 @@ import nl.hannahsten.texifyidea.psi.LatexEnvironment
  */
 class LatexUndefinedCommandInspection : LatexMissingImportInspectionBase(inspectionId = "UndefinedCommand") {
 
-    override fun getDisplayName() = "Command is not defined"
+    override fun getDisplayName(): String = "Command is not defined"
 
     override fun reportUnknownCommand(
         command: LatexCommands, descriptors: MutableList<ProblemDescriptor>, manager: InspectionManager, isOntheFly: Boolean
@@ -28,7 +28,7 @@ class LatexUndefinedCommandInspection : LatexMissingImportInspectionBase(inspect
             manager.createProblemDescriptor(
                 command,
                 TextRange(0, command.commandToken.textLength),
-                "Undefined command: ${command.name}",
+                nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.undefined.command", command.name ?: ""),
                 ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                 isOntheFly
             )
@@ -42,7 +42,7 @@ class LatexUndefinedCommandInspection : LatexMissingImportInspectionBase(inspect
             manager.createProblemDescriptor(
                 environment,
                 TextRange(7, 7 + name.length),
-                "Undefined environment: $name",
+                nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.undefined.environment", name),
                 ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                 isOntheFly,
             )

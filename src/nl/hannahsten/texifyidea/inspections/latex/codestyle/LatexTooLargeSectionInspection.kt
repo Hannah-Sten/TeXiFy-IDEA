@@ -91,7 +91,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
 
     override val ignoredSuppressionScopes: Set<MagicCommentScope> = EnumSet.of(MagicCommentScope.GROUP)
 
-    override fun getDisplayName() = "Too large sections"
+    override fun getDisplayName(): String = "Too large sections"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
@@ -111,7 +111,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
             descriptors.add(
                 manager.createProblemDescriptor(
                     commands[i],
-                    "Section is long and may be moved to a separate file.",
+                    nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.section.too.large"),
                     InspectionFix(),
                     ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                     isOntheFly
@@ -171,7 +171,7 @@ open class LatexTooLargeSectionInspection : TexifyInspectionBase() {
 
         override fun startInWriteAction() = false
 
-        override fun getFamilyName() = "Move section to another file"
+        override fun getFamilyName() = nl.hannahsten.texifyidea.TexifyBundle.message("inspection.quickfix.move.section.to.another.file")
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val cmd = descriptor.psiElement as LatexCommands

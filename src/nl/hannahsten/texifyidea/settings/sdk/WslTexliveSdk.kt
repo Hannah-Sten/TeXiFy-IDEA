@@ -5,6 +5,7 @@ import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.runCommand
@@ -44,7 +45,7 @@ object WslPathUtil {
  * The home path should be the Windows path to the WSL TeX Live installation,
  * e.g., `\\wsl$\Ubuntu\usr\local\texlive\2025` or `\\wsl.localhost\Ubuntu\usr\local\texlive\2025`
  */
-class WslTexliveSdk : LatexSdk("WSL TeX Live SDK") {
+class WslTexliveSdk : LatexSdk(TexifyBundle.message("settings.sdk.wsl.texlive.name")) {
 
     override fun suggestHomePath(path: Path): String {
         if (!SystemInfo.isWindows) return ""
@@ -96,15 +97,15 @@ class WslTexliveSdk : LatexSdk("WSL TeX Live SDK") {
 
     override fun getInvalidHomeMessage(path: String): String {
         val wslPath = WslPathUtil.windowsPathToWsl(path) ?: path
-        return "Could not find $wslPath/bin/*/pdflatex in WSL"
+        return TexifyBundle.message("settings.sdk.error.could.not.find.pdflatex.in.wsl", wslPath)
     }
 
     override fun getLatexDistributionType(sdk: Sdk) = LatexDistributionType.WSL_TEXLIVE
 
     override fun getVersionString(sdkHome: String): String {
         val wslPath = WslPathUtil.windowsPathToWsl(sdkHome) ?: sdkHome
-        val year = wslPath.split("/").lastOrNull { it.matches(Regex("\\d{4}")) } ?: "unknown"
-        return "WSL TeX Live $year"
+        val year = wslPath.split("/").lastOrNull { it.matches(Regex("\\d{4}")) } ?: TexifyBundle.message("settings.sdk.version.unknown.lowercase")
+        return TexifyBundle.message("settings.sdk.version.wsl.texlive", year)
     }
 
     override fun getDefaultDocumentationUrl(sdk: Sdk): String? = sdk.homePath

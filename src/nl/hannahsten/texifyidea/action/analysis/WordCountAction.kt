@@ -12,6 +12,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.ui.dsl.builder.Panel
 import com.intellij.ui.dsl.builder.panel
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.files.findRootFile
@@ -34,11 +35,11 @@ internal data class CountData(
 
 internal sealed class CountScope(val renderOrder: Int) {
     internal class FileCountScope(val psiFile: PsiFile) : CountScope(0) {
-        override fun name(): String = "Current file (${psiFile.name})"
+        override fun name(): String = TexifyBundle.message("ui.word.count.scope.current.file", psiFile.name)
     }
 
     internal class DocumentCountScope : CountScope(1) {
-        override fun name(): String = "Entire document"
+        override fun name(): String = TexifyBundle.message("ui.word.count.scope.entire.document")
     }
 
     abstract fun name(): String
@@ -52,7 +53,7 @@ typealias ErrorMessage = String
 
 internal sealed class CountMethod {
     internal class TexCount : CountMethod() {
-        override fun renderString(): String = "<a href='https://app.uio.no/ifi/texcount/intro.html'>texcount</a> (default if available)"
+        override fun renderString(): String = TexifyBundle.message("ui.word.count.render.texcount")
 
         fun count(root: VirtualFile, workingDirectory: @NonNls String, psiFile: PsiFile): DialogBuilder {
             // Make sure the file is written to disk before running an external tool on it
@@ -63,7 +64,7 @@ internal sealed class CountMethod {
             }
             val (output, exitCode) = runCommandWithExitCode("texcount", "-brief", "-inc", "-sum", root.name, workingDirectory = Path(workingDirectory))
             return if (exitCode != 0 || output == null) {
-                makeDialog(psiFile, emptyList(), errorMessage = "texcount failed")
+                makeDialog(psiFile, emptyList(), errorMessage = TexifyBundle.message("ui.word.count.error.texcount.failed"))
             }
             else {
                 val (countData, error) = parseOutput(output, workingDirectory, psiFile)
@@ -343,23 +344,23 @@ internal sealed class CountMethod {
                 title = data.name().lowercase().split(" ").joinToString(" ") { it.replaceFirstChar { c -> c.titlecaseChar() } },
             ) {
                 data.wordCount?.let {
-                    row("Word Count:") { text(it.toString()) }
+                    row(TexifyBundle.message("ui.word.count.label.word.count")) { text(it.toString()) }
                 }
                 data.charsCount?.let {
-                    row("Character count:") { text(it.toString()) }
+                    row(TexifyBundle.message("ui.word.count.label.character.count")) { text(it.toString()) }
                 }
             }
         }
 
-        setTitle("Word Count")
+        setTitle(TexifyBundle.message("ui.word.count.title"))
 
         setCenterPanel(
             panel {
                 row {
                     panel {
                         row {
-                            text("Analysis of document that includes ${baseFile.name}")
-                                .comment("Counted with ${renderString()}")
+                            text(TexifyBundle.message("ui.word.count.analysis.of.document", baseFile.name))
+                                .comment(TexifyBundle.message("ui.word.count.counted.with", renderString()))
                         }
                         if (count.isNotEmpty()) {
                             count.sortedBy { it.scope.renderOrder }.forEach {
@@ -368,7 +369,7 @@ internal sealed class CountMethod {
                         }
                         else {
                             row {
-                                text("Word count failed")
+                                text(TexifyBundle.message("ui.word.count.failed"))
                             }
                         }
                     }

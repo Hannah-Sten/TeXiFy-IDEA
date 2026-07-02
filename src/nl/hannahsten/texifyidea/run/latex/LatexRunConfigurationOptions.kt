@@ -7,13 +7,14 @@ import com.intellij.openapi.components.BaseState
 import com.intellij.util.xmlb.annotations.Attribute
 import com.intellij.util.xmlb.annotations.Tag
 import com.intellij.util.xmlb.annotations.XCollection
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCitationTool
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
-import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.CustomPdfViewer
+import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.run.latex.step.LatexStepPresentation
 import java.util.UUID
 
@@ -148,7 +149,7 @@ class LatexCompileStepOptions : LatexStepRunConfigurationOptions() {
     var outputFormat by enum(LatexCompiler.Format.PDF)
     var beforeRunCommand by string(null)
 
-    override fun displayName(): String = "Compile with $compiler"
+    override fun displayName(): String = TexifyBundle.message("run.step.display.compile.with", compiler)
 
     override fun newInstance(): LatexStepRunConfigurationOptions = LatexCompileStepOptions()
 }
@@ -180,7 +181,8 @@ class LatexmkCompileStepOptions : LatexStepRunConfigurationOptions() {
 
             else -> latexmkCompileMode.toString()
         }
-        return modeLabel?.let { "Compile with latexmk ($it)" } ?: "Compile with latexmk"
+        return modeLabel?.let { TexifyBundle.message("run.step.display.compile.with.latexmk.mode", it) }
+            ?: TexifyBundle.message("run.step.display.compile.with.latexmk")
     }
 
     override fun newInstance(): LatexStepRunConfigurationOptions = LatexmkCompileStepOptions()
@@ -199,7 +201,7 @@ class PdfViewerStepOptions : LatexStepRunConfigurationOptions() {
     var requireFocus by property(true)
     var customViewerCommand by string(null)
 
-    override fun displayName(): String = "Open with ${resolveViewerLabel()}"
+    override fun displayName(): String = TexifyBundle.message("run.step.display.open.with", resolveViewerLabel())
 
     internal fun usesCustomViewer(): Boolean = !customViewerCommand.isNullOrBlank() || pdfViewerName == CustomPdfViewer.name
 
@@ -217,7 +219,7 @@ class PdfViewerStepOptions : LatexStepRunConfigurationOptions() {
         val configuredName = pdfViewerName?.trim().orEmpty()
         val matchingViewer = (PdfViewer.allViewers + CustomPdfViewer).firstOrNull { it.name == configuredName }
         return matchingViewer?.displayName
-            ?: configuredName.ifBlank { PdfViewer.firstAvailableViewer.displayName ?: "PDF viewer" }
+            ?: configuredName.ifBlank { PdfViewer.firstAvailableViewer.displayName ?: TexifyBundle.message("run.step.display.pdf.viewer") }
     }
 
     override fun newInstance(): LatexStepRunConfigurationOptions = PdfViewerStepOptions()

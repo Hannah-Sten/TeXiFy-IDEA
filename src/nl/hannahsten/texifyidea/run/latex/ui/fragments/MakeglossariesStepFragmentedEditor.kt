@@ -6,6 +6,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.components.JBTextField
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.run.latex.MakeglossariesStepOptions
 import nl.hannahsten.texifyidea.run.latex.StepUiOptionIds
 
@@ -15,22 +16,22 @@ internal class MakeglossariesStepFragmentedEditor(
 ) : AbstractStepFragmentedEditor<MakeglossariesStepOptions>(initialStep) {
 
     private val executable = JBTextField()
-    private val executableRow = LabeledComponent.create(executable, "E&xecutable")
+    private val executableRow = LabeledComponent.create(executable, TexifyBundle.message("run.step.ui.field.executable.label"))
 
     private val arguments = RawCommandLineEditor().apply {
-        editorField.emptyText.text = "Defaults to main file base name"
+        editorField.emptyText.text = TexifyBundle.message("run.step.ui.placeholder.default.main.base.name")
     }
-    private val argumentsRow = LabeledComponent.create(arguments, "Ar&guments")
+    private val argumentsRow = LabeledComponent.create(arguments, TexifyBundle.message("run.step.ui.field.arguments.label"))
 
-    private val workingDirectory = createDirectoryField(project, "Step working directory")
-    private val workingDirectoryRow = LabeledComponent.create(workingDirectory, "Working d&irectory")
+    private val workingDirectory = createDirectoryField(project, TexifyBundle.message("run.step.ui.dialog.step.working.directory"))
+    private val workingDirectoryRow = LabeledComponent.create(workingDirectory, TexifyBundle.message("run.step.ui.field.working.directory.label"))
 
     override fun createFragments(): Collection<SettingsEditorFragment<MakeglossariesStepOptions, *>> {
-        val header = CommonParameterFragments.createHeader<MakeglossariesStepOptions>("Makeglossaries Step")
+        val header = CommonParameterFragments.createHeader<MakeglossariesStepOptions>(TexifyBundle.message("run.step.ui.header.makeglossaries"))
 
         val executableFragment = stepFragment(
             id = StepUiOptionIds.COMMAND_EXECUTABLE,
-            name = "Executable",
+            name = TexifyBundle.message("run.step.ui.field.executable"),
             component = executableRow,
             reset = { step, component -> component.component.text = step.executable.orEmpty() },
             apply = { step, component ->
@@ -38,31 +39,31 @@ internal class MakeglossariesStepFragmentedEditor(
             },
             initiallyVisible = { true },
             removable = false,
-            hint = "Makeglossaries executable command.",
+            hint = TexifyBundle.message("run.step.ui.hint.makeglossaries.executable"),
         )
 
         val argsFragment = stepFragment(
             id = StepUiOptionIds.COMMAND_ARGS,
-            name = "Arguments",
+            name = TexifyBundle.message("run.step.ui.field.arguments"),
             component = argumentsRow,
             reset = { step, component -> component.component.text = step.arguments.orEmpty() },
             apply = { step, component -> step.arguments = component.component.text.ifBlank { null } },
             initiallyVisible = { step -> !step.arguments.isNullOrBlank() },
             removable = true,
-            hint = "Arguments passed to makeglossaries executable.",
-            actionHint = "Set makeglossaries arguments",
+            hint = TexifyBundle.message("run.step.ui.hint.makeglossaries.arguments"),
+            actionHint = TexifyBundle.message("run.step.ui.action.set.makeglossaries.arguments"),
         )
 
         val workingDirFragment = stepFragment(
             id = StepUiOptionIds.STEP_WORKING_DIRECTORY,
-            name = "Working directory",
+            name = TexifyBundle.message("run.step.ui.field.working.directory"),
             component = workingDirectoryRow,
             reset = { step, component -> component.component.text = step.workingDirectoryPath.orEmpty() },
             apply = { step, component -> step.workingDirectoryPath = component.component.text.ifBlank { null } },
             initiallyVisible = { step -> !step.workingDirectoryPath.isNullOrBlank() },
             removable = true,
-            hint = "Override working directory for this makeglossaries step.",
-            actionHint = "Set step working directory",
+            hint = TexifyBundle.message("run.step.ui.hint.makeglossaries.working.directory"),
+            actionHint = TexifyBundle.message("run.step.ui.action.set.step.working.directory"),
         )
 
         return listOf(

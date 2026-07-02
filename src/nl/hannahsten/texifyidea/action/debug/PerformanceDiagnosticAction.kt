@@ -6,6 +6,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.ui.DialogBuilder
 import kotlinx.html.*
 import kotlinx.html.stream.createHTML
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.completion.LatexContextAwareCompletionAdaptor
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
 import nl.hannahsten.texifyidea.index.LatexLibraryDefinitionService
@@ -102,15 +103,15 @@ class PerformanceDiagnosticAction : AnAction() {
         val totalRunningTime = ManagementFactory.getRuntimeMXBean().uptime + 1 // +1 to avoid division by zero
         val messageHtml = createHTML(true).html {
             body {
-                h2 { +"Performance Diagnostic Since Last Restart" }
+                h2 { +TexifyBundle.message("ui.performance.diagnostic.header") }
                 table {
                     tr {
-                        td { +"Name" }
-                        td { +"CPU Time" }
-                        td { +"% of Total Uptime" }
-                        td { +"Runs" }
-                        td { +"Average Time" }
-                        td { +"Additional Info" }
+                        td { +TexifyBundle.message("ui.performance.diagnostic.column.name") }
+                        td { +TexifyBundle.message("ui.performance.diagnostic.column.cpu.time") }
+                        td { +TexifyBundle.message("ui.performance.diagnostic.column.uptime.percent") }
+                        td { +TexifyBundle.message("ui.performance.diagnostic.column.runs") }
+                        td { +TexifyBundle.message("ui.performance.diagnostic.column.average.time") }
+                        td { +TexifyBundle.message("ui.performance.diagnostic.column.additional.info") }
                     }
                     for (data in tableData) {
                         tr {
@@ -126,7 +127,7 @@ class PerformanceDiagnosticAction : AnAction() {
                                     +formatDurationMillis(data.totalTime / data.count)
                                 }
                                 else {
-                                    +"N/A"
+                                    +TexifyBundle.message("ui.performance.diagnostic.na")
                                 }
                             }
                             td {
@@ -140,13 +141,13 @@ class PerformanceDiagnosticAction : AnAction() {
                 }
                 // add a separator line
                 hr { }
-                +"Total Uptime (${totalRunningTime.milliseconds}) reflects real elapsed time, not CPU time."
+                +TexifyBundle.message("ui.performance.diagnostic.footer.uptime", totalRunningTime.milliseconds)
                 br
-                +"Total CPU time may significantly exceed uptime due to multi-core processing."
+                +TexifyBundle.message("ui.performance.diagnostic.footer.cpu.time")
             }
         }
         DialogBuilder().apply {
-            setTitle("Texify Performance Diagnostic")
+            setTitle(TexifyBundle.message("ui.dialog.performance.diagnostic.title"))
             setCenterPanel(
                 JLabel(
                     messageHtml,

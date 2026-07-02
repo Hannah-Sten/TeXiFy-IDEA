@@ -4,6 +4,7 @@ import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.util.runCommand
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
@@ -14,7 +15,7 @@ import java.nio.file.Path
  * Tectonic has its own source, which is in effect TeX Live, but since it is stored not in TeX Live format
  * but in a Tectonic-specific cache it warrants its own SDK.
  */
-class TectonicSdk : LatexSdk("Tectonic SDK") {
+class TectonicSdk : LatexSdk(TexifyBundle.message("settings.sdk.tectonic.name")) {
 
     object Cache {
         // Map readable file name (e.g. article.sty) to actual file path on disk
@@ -75,7 +76,7 @@ class TectonicSdk : LatexSdk("Tectonic SDK") {
         exists() && isDirectory && listFiles()?.map { it.name }?.contains("urls") == true
     }
 
-    override fun getInvalidHomeMessage(path: String) = "Please select the caches path for Tectonic"
+    override fun getInvalidHomeMessage(path: String) = TexifyBundle.message("settings.sdk.tectonic.invalid.home.message")
 
     // Actually we should return the TeX Live version, but not sure how to find it
     override fun getVersionString(sdkHome: String): String? = "tectonic -V".runCommand()?.replace("Tectonic", "", ignoreCase = true)?.trim()

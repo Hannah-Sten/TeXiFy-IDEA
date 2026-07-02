@@ -8,6 +8,7 @@ import com.intellij.ide.errorTreeView.NewErrorTreeViewPanel
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexLogMessage
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMessage
@@ -139,7 +140,12 @@ class LatexCompileMessageTreeView(
         getAllElements().map { it.fullString() }.contains(message.toTreeViewString())
 
     inner class FilterKeywordAction(private val keyword: LatexKeywordFilter, val project: Project) :
-        ToggleAction("Show $keyword messages", "Show $keyword messages", keyword.icon), DumbAware {
+        ToggleAction(
+            TexifyBundle.message("run.logtab.filter.keyword.text", keyword),
+            TexifyBundle.message("run.logtab.filter.keyword.description", keyword),
+            keyword.icon
+        ),
+        DumbAware {
 
         override fun isSelected(e: AnActionEvent): Boolean = config().showKeywordWarnings[keyword] ?: true
 
@@ -152,7 +158,7 @@ class LatexCompileMessageTreeView(
     }
 
     inner class FilterBibtexAction(val project: Project) :
-        ToggleAction("Show Bibtex Messages by Latexmk", "", TexifyIcons.DOT_BIB), DumbAware {
+        ToggleAction(TexifyBundle.message("run.logtab.filter.bibtex.text"), "", TexifyIcons.DOT_BIB), DumbAware {
 
         override fun isSelected(e: AnActionEvent): Boolean = config().showBibtexWarnings
 
@@ -164,7 +170,7 @@ class LatexCompileMessageTreeView(
         override fun getActionUpdateThread() = ActionUpdateThread.EDT
     }
 
-    inner class ExpandAllAction : AnAction("Expand All", "", AllIcons.Actions.Expandall), DumbAware {
+    inner class ExpandAllAction : AnAction(TexifyBundle.message("run.logtab.expand.all"), "", AllIcons.Actions.Expandall), DumbAware {
 
         override fun actionPerformed(e: AnActionEvent) {
             expandAll()
@@ -172,7 +178,7 @@ class LatexCompileMessageTreeView(
         }
     }
 
-    inner class CollapseAllAction : AnAction("Collapse All", "", AllIcons.Actions.Collapseall), DumbAware {
+    inner class CollapseAllAction : AnAction(TexifyBundle.message("run.logtab.collapse.all"), "", AllIcons.Actions.Collapseall), DumbAware {
 
         override fun actionPerformed(e: AnActionEvent) {
             collapseAll()
