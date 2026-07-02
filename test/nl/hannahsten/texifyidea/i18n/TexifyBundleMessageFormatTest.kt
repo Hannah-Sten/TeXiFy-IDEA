@@ -1,5 +1,6 @@
 package nl.hannahsten.texifyidea.i18n
 
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.nio.file.Files
@@ -8,10 +9,29 @@ import java.text.MessageFormat
 
 class TexifyBundleMessageFormatTest {
 
-    private val bundles = listOf(
-        Path.of("resources/messages/TexifyBundle.properties"),
+    private val defaultBundle = Path.of("resources/messages/TexifyBundle.properties")
+    private val localizedBundles = listOf(
         Path.of("resources/messages/TexifyBundle_zh.properties"),
     )
+    private val bundles = listOf(defaultBundle) + localizedBundles
+
+    @Test
+    fun localizedBundlesHaveSamePropertiesAsDefaultBundle() {
+        val expectedKeys = readPropertyKeys(defaultBundle)
+        localizedBundles.forEach { bundle ->
+            assertEquals(
+                "Expected $bundle to define the same properties, in the same order, as $defaultBundle",
+                expectedKeys,
+                readPropertyKeys(bundle)
+            )
+        }
+    }
+
+    private fun readPropertyKeys(bundle: Path): List<String> =
+        Files.readAllLines(bundle).mapNotNull { line ->
+            if (line.isBlank() || line.startsWith("#") || !line.contains("=")) return@mapNotNull null
+            line.substringBefore('=').trim()
+        }
 
     @Test
     fun noAccidentalEmptyPlaceholders() {
