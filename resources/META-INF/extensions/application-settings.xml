@@ -4,8 +4,8 @@
         <applicationService
                 serviceImplementation="nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsGlobalSettingsManager"/>
         <applicationConfigurable instance="nl.hannahsten.texifyidea.settings.TexifyConfigurable" groupId="language"
-                                 id="TexifyConfigurable" displayName="TeXiFy"/>
-        <projectConfigurable parentId="TexifyConfigurable" id="texify.conventions" displayName="Conventions"
+                                 id="TexifyConfigurable" bundle="messages.TexifyBundle" key="settings.texify.displayName"/>
+        <projectConfigurable parentId="TexifyConfigurable" id="texify.conventions" bundle="messages.TexifyBundle" key="settings.conventions.displayName"
                              instance="nl.hannahsten.texifyidea.settings.conventions.TexifyConventionsConfigurable"/>
 
         <colorSettingsPage implementation="nl.hannahsten.texifyidea.highlighting.LatexColorSettingsPage"/>

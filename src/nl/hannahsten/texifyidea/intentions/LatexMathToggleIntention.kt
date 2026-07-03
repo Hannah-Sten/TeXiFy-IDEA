@@ -4,6 +4,7 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.editor.MathEnvironmentEditor
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
@@ -73,7 +74,7 @@ open class LatexMathToggleIntention : TexifyIntentionBase("Convert to other math
         // Ask for the new environment name.
         JBPopupFactory.getInstance()
             .createPopupChooserBuilder(availableEnvironments)
-            .setTitle("Math Environments")
+            .setTitle(TexifyBundle.message("ui.popup.math.environments.title"))
             .setItemChosenCallback {
                 // Apply the chosen environment.
                 MathEnvironmentEditor(environmentName, it, editor, element).apply()

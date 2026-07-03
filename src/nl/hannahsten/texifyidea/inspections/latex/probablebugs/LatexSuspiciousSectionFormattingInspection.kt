@@ -25,7 +25,7 @@ open class LatexSuspiciousSectionFormattingInspection : TexifyInspectionBase() {
 
     val formatting = setOf("~", "\\\\")
 
-    override fun getDisplayName() = "Suspicious formatting in the required argument of a sectioning command"
+    override fun getDisplayName(): String = "Suspicious formatting in the required argument of a sectioning command"
 
     override val inspectionId = "SuspiciousSectionFormatting"
 
@@ -43,7 +43,7 @@ open class LatexSuspiciousSectionFormattingInspection : TexifyInspectionBase() {
             manager.createProblemDescriptor(
                 psiElement,
                 TextRange(startOffset, endOffset),
-                "Suspicious formatting in ${psiElement.name}",
+                nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.suspicious.formatting.in", psiElement.name ?: ""),
                 ProblemHighlightType.WARNING,
                 isOntheFly,
                 AddOptionalArgumentQuickFix(formatting)
@@ -53,7 +53,7 @@ open class LatexSuspiciousSectionFormattingInspection : TexifyInspectionBase() {
 
     class AddOptionalArgumentQuickFix(@SafeFieldForPreview val formatting: Set<String>) : LocalQuickFix {
 
-        override fun getFamilyName(): String = "Fix formatting in table of contents and running head"
+        override fun getFamilyName(): String = nl.hannahsten.texifyidea.TexifyBundle.message("inspection.quickfix.fix.toc.running.head.formatting")
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands

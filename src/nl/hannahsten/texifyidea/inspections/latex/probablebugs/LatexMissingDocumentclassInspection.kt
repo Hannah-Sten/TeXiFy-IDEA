@@ -30,7 +30,7 @@ open class LatexMissingDocumentclassInspection : TexifyInspectionBase() {
         MagicCommentScope.GROUP
     )!!
 
-    override fun getDisplayName() = "Missing documentclass"
+    override fun getDisplayName(): String = "Missing documentclass"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
@@ -45,7 +45,7 @@ open class LatexMissingDocumentclassInspection : TexifyInspectionBase() {
             descriptors.add(
                 manager.createProblemDescriptor(
                     file,
-                    "Document doesn't contain a \\documentclass command.",
+                    nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.missing.documentclass"),
                     InspectionFix(),
                     ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                     isOntheFly
@@ -58,7 +58,7 @@ open class LatexMissingDocumentclassInspection : TexifyInspectionBase() {
 
     private class InspectionFix : LocalQuickFix {
 
-        override fun getFamilyName() = "Add \\documentclass{article}"
+        override fun getFamilyName() = nl.hannahsten.texifyidea.TexifyBundle.message("inspection.quickfix.add.documentclass.article")
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val psiElement = descriptor.psiElement

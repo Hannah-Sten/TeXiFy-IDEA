@@ -46,7 +46,7 @@ class LatexPrimitiveStyleInspection : TexifyInspectionBase() {
                 descriptors.add(
                     manager.createProblemDescriptor(
                         command,
-                        "Use of TeX primitive $name is discouraged",
+                        nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.use.of.tex.primitive.discouraged", name ?: ""),
                         InspectionFix(SmartPointerManager.createPointer(command)),
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly
@@ -60,7 +60,7 @@ class LatexPrimitiveStyleInspection : TexifyInspectionBase() {
     private class InspectionFix(val oldCommand: SmartPsiElementPointer<LatexCommands>) : LocalQuickFixAndIntentionActionOnPsiElement(oldCommand.element) {
 
         @Nls
-        override fun getFamilyName(): String = "Convert to LaTeX alternative"
+        override fun getFamilyName(): String = nl.hannahsten.texifyidea.TexifyBundle.message("inspection.quickfix.convert.to.latex.alternative")
 
         override fun getText(): String = oldCommand.element
             ?.let { "Convert ${it.name} to ${CommandMagic.stylePrimitiveReplacements[it.name]}" }

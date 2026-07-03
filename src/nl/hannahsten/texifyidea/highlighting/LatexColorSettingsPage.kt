@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.highlighting
 import com.intellij.openapi.options.colors.AttributesDescriptor
 import com.intellij.openapi.options.colors.ColorDescriptor
 import com.intellij.openapi.options.colors.ColorSettingsPage
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.TexifyIcons
 
 /**
@@ -173,5 +174,5 @@ class LatexColorSettingsPage : ColorSettingsPage {
 
     override fun getColorDescriptors(): Array<out ColorDescriptor> = ColorDescriptor.EMPTY_ARRAY!!
 
-    override fun getDisplayName() = "LaTeX"
+    override fun getDisplayName() = TexifyBundle.message("color.settings.latex.displayName")
 }

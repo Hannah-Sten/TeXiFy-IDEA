@@ -6,6 +6,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.components.JBTextField
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.run.latex.ExternalToolStepOptions
 import nl.hannahsten.texifyidea.run.latex.StepUiOptionIds
 
@@ -15,52 +16,52 @@ internal class ExternalToolStepFragmentedEditor(
 ) : AbstractStepFragmentedEditor<ExternalToolStepOptions>(initialStep) {
 
     private val executable = JBTextField()
-    private val executableRow = LabeledComponent.create(executable, "E&xecutable")
+    private val executableRow = LabeledComponent.create(executable, TexifyBundle.message("run.step.ui.field.executable.label"))
 
     private val arguments = RawCommandLineEditor().apply {
-        editorField.emptyText.text = "Custom command arguments"
+        editorField.emptyText.text = TexifyBundle.message("run.step.ui.placeholder.custom.command.arguments")
     }
-    private val argumentsRow = LabeledComponent.create(arguments, "Ar&guments")
+    private val argumentsRow = LabeledComponent.create(arguments, TexifyBundle.message("run.step.ui.field.arguments.label"))
 
-    private val workingDirectory = createDirectoryField(project, "Step working directory")
-    private val workingDirectoryRow = LabeledComponent.create(workingDirectory, "Working d&irectory")
+    private val workingDirectory = createDirectoryField(project, TexifyBundle.message("run.step.ui.dialog.step.working.directory"))
+    private val workingDirectoryRow = LabeledComponent.create(workingDirectory, TexifyBundle.message("run.step.ui.field.working.directory.label"))
 
     override fun createFragments(): Collection<SettingsEditorFragment<ExternalToolStepOptions, *>> {
-        val header = CommonParameterFragments.createHeader<ExternalToolStepOptions>("External Tool Step")
+        val header = CommonParameterFragments.createHeader<ExternalToolStepOptions>(TexifyBundle.message("run.step.ui.header.external.tool"))
 
         val executableFragment = stepFragment(
             id = StepUiOptionIds.COMMAND_EXECUTABLE,
-            name = "Executable",
+            name = TexifyBundle.message("run.step.ui.field.executable"),
             component = executableRow,
             reset = { step, component -> component.component.text = step.executable.orEmpty() },
             apply = { step, component -> step.executable = component.component.text.ifBlank { null } },
             initiallyVisible = { true },
             removable = false,
-            hint = "Executable command for this external tool step.",
+            hint = TexifyBundle.message("run.step.ui.hint.external.tool.executable"),
         )
 
         val argsFragment = stepFragment(
             id = StepUiOptionIds.COMMAND_ARGS,
-            name = "Arguments",
+            name = TexifyBundle.message("run.step.ui.field.arguments"),
             component = argumentsRow,
             reset = { step, component -> component.component.text = step.arguments.orEmpty() },
             apply = { step, component -> step.arguments = component.component.text.ifBlank { null } },
             initiallyVisible = { step -> !step.arguments.isNullOrBlank() },
             removable = true,
-            hint = "Arguments passed to external tool executable.",
-            actionHint = "Set external tool arguments",
+            hint = TexifyBundle.message("run.step.ui.hint.external.tool.arguments"),
+            actionHint = TexifyBundle.message("run.step.ui.action.set.external.tool.arguments"),
         )
 
         val workingDirFragment = stepFragment(
             id = StepUiOptionIds.STEP_WORKING_DIRECTORY,
-            name = "Working directory",
+            name = TexifyBundle.message("run.step.ui.field.working.directory"),
             component = workingDirectoryRow,
             reset = { step, component -> component.component.text = step.workingDirectoryPath.orEmpty() },
             apply = { step, component -> step.workingDirectoryPath = component.component.text.ifBlank { null } },
             initiallyVisible = { step -> !step.workingDirectoryPath.isNullOrBlank() },
             removable = true,
-            hint = "Override working directory for this external tool step.",
-            actionHint = "Set step working directory",
+            hint = TexifyBundle.message("run.step.ui.hint.external.tool.working.directory"),
+            actionHint = TexifyBundle.message("run.step.ui.action.set.step.working.directory"),
         )
 
         return listOf(

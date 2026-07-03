@@ -7,6 +7,7 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.grammar.LatexLanguage
 
 abstract class LatexInlineHandler : InlineActionHandler() {
@@ -32,8 +33,8 @@ abstract class LatexInlineHandler : InlineActionHandler() {
         else {
             Notification(
                 "LaTeX",
-                "No usages found",
-                "Could not find any usages for $inlineElementName",
+                TexifyBundle.message("notification.inline.no.usages.found.title"),
+                TexifyBundle.message("notification.inline.no.usages.found.content", inlineElementName),
                 NotificationType.ERROR
             ).notify(project)
         }

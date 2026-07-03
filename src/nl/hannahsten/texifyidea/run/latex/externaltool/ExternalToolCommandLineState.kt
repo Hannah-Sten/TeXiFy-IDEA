@@ -9,6 +9,7 @@ import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.run.compiler.ExternalTool
 import kotlin.io.path.Path
 
@@ -26,11 +27,11 @@ class ExternalToolCommandLineState(
     @Throws(ExecutionException::class)
     override fun startProcess(): ProcessHandler {
         if (mainFile == null) {
-            throw ExecutionException("Main file to compile is not found or missing.")
+            throw ExecutionException(TexifyBundle.message("run.error.main.file.not.found.or.missing"))
         }
 
         val command = listOf(tool.executableName, mainFile.nameWithoutExtension)
-        val workDirectory = workingDirectory?.path ?: throw ExecutionException("Working directory is not given.")
+        val workDirectory = workingDirectory?.path ?: throw ExecutionException(TexifyBundle.message("run.error.working.directory.not.given"))
         val commandLine = GeneralCommandLine(command).withWorkingDirectory(Path(workDirectory))
             .withEnvironment(environmentVariables.envs)
 

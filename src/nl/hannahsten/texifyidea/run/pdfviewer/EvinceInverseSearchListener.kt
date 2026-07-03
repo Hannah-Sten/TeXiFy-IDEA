@@ -6,6 +6,7 @@ import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.project.Project
 import kotlinx.coroutines.delay
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.TexifyCoroutine
@@ -37,8 +38,8 @@ object EvinceInverseSearchListener {
         if (SystemEnvironment.evinceVersion.majorVersion <= 3 && SystemEnvironment.evinceVersion.minorVersion <= 28) {
             Notification(
                 "LaTeX",
-                "Old Evince version found",
-                "Please update Evince to at least version 3.28 to use forward/backward search",
+                TexifyBundle.message("run.notification.evince.old.version.title"),
+                TexifyBundle.message("run.notification.evince.old.version.message"),
                 NotificationType.ERROR
             ).notify(project)
             return
@@ -52,8 +53,8 @@ object EvinceInverseSearchListener {
             catch (e: Exception) {
                 Notification(
                     "LaTeX",
-                    "Cannot get connection to DBus",
-                    "Check if the correct packages are installed",
+                    TexifyBundle.message("run.notification.evince.dbus.connection.failed.title"),
+                    TexifyBundle.message("run.notification.evince.dbus.connection.failed.message"),
                     NotificationType.ERROR
                 ).notify(project)
                 return

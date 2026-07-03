@@ -7,6 +7,7 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
@@ -29,7 +30,7 @@ open class BibtexMissingBibliographystyleInspection : TexifyInspectionBase() {
 
     override val inspectionId = "MissingBibliographystyle"
 
-    override fun getDisplayName() = "Missing bibliography style"
+    override fun getDisplayName(): String = "Missing bibliography style"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): MutableList<ProblemDescriptor> {
         val descriptors = descriptorList()
@@ -43,7 +44,7 @@ open class BibtexMissingBibliographystyleInspection : TexifyInspectionBase() {
                 manager.createProblemDescriptor(
                     bibCmd,
                     TextRange(0, bibCmd.commandToken.textLength),
-                    "No \\bibliographystyle defined",
+                    TexifyBundle.message("inspection.description.bibtex.no.bibliographystyle"),
                     ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                     isOntheFly,
                     InsertStyleFix
@@ -59,7 +60,7 @@ open class BibtexMissingBibliographystyleInspection : TexifyInspectionBase() {
      */
     object InsertStyleFix : LocalQuickFix {
 
-        override fun getFamilyName(): String = "Insert \\bibliographystyle"
+        override fun getFamilyName(): String = TexifyBundle.message("inspection.quickfix.insert.bibliographystyle")
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands

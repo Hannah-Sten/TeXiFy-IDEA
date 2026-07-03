@@ -1,53 +1,53 @@
 <idea-plugin>
     <actions>
-        <group id="texify.LatexMenuTools" text="_LaTeX" description="Latex tools" popup="true">
+        <group id="texify.LatexMenuTools" popup="true">
             <add-to-group group-id="ToolsMenu" anchor="last"/>
-            <override-text place="GoToAction" text="_LaTeX Tools"/>
+            <override-text place="GoToAction"/>
 
             <!-- Clear files -->
-            <action class="nl.hannahsten.texifyidea.action.DeleteAuxFiles" id="texify.ClearAuxFiles" text="Delete Auxiliary Files">
+            <action class="nl.hannahsten.texifyidea.action.DeleteAuxFiles" id="texify.ClearAuxFiles">
             </action>
             <action class="nl.hannahsten.texifyidea.action.DeleteGeneratedFiles" id="texify.ClearGeneratedFiles"
-                    text="Delete All Output Files">
+                   >
             </action>
 
             <separator/>
             <!-- Show equation preview -->
             <action class="nl.hannahsten.texifyidea.action.preview.ShowEquationPreview" id="texify.ShowEquationPreview"
-                    text="Preview _Equation" icon="nl.hannahsten.texifyidea.TexifyIcons.EQUATION_PREVIEW">
+                    icon="nl.hannahsten.texifyidea.TexifyIcons.EQUATION_PREVIEW">
                 <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl X"/>
             </action>
 
             <!-- Show tikz preview -->
             <action class="nl.hannahsten.texifyidea.action.preview.ShowTikzPreview" id="texify.ShowTikzPreview"
-                    text="Preview _Tikz Picture" icon="nl.hannahsten.texifyidea.TexifyIcons.TIKZ_PREVIEW">
+                    icon="nl.hannahsten.texifyidea.TexifyIcons.TIKZ_PREVIEW">
                 <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl Y"/>
             </action>
 
             <separator/>
             <!-- Forward search -->
-            <action class="nl.hannahsten.texifyidea.action.ForwardSearchAction" id="texify.ForwardSearch" text="_Forward Search" icon="nl.hannahsten.texifyidea.TexifyIcons.RIGHT">
+            <action class="nl.hannahsten.texifyidea.action.ForwardSearchAction" id="texify.ForwardSearch" icon="nl.hannahsten.texifyidea.TexifyIcons.RIGHT">
                 <keyboard-shortcut first-keystroke="ctrl shift alt PERIOD" keymap="$default"/>
             </action>
 
             <!-- Configure inverse search-->
             <action class="nl.hannahsten.texifyidea.action.sumatra.ConfigureInverseSearchAction" id="texify.sumatra.ConfigureInverseSearch"
-                    text="Configure Inverse Search for Sumatra"
-                    description="Setup inverse search integration with SumatraPDF and TeXiFy IDEA."/>
+                   
+                   />
             <action class="nl.hannahsten.texifyidea.action.skim.ConfigureInverseSearchAction" id="texify.skim.ConfigureInverseSearch"
-                    text="Configure Inverse Search for Skim" description="Instructions for configuring inverse search."/>
+                   />
 
             <separator/>
             <!-- Refresh actions -->
             <action class="nl.hannahsten.texifyidea.action.RefreshTexifyCachesAction" id="texify.RefreshFileset"
-                    text="Refresh TeXiFy Caches" description="Refresh the fileset and command definition caches of the project"/>
+                   />
             <!-- Performance diagnostic -->
             <action class="nl.hannahsten.texifyidea.action.debug.PerformanceDiagnosticAction" id="texify.PerformanceDiagnostic"
-                    text="Performance Diagnostic" description="Run a performance diagnostic to find potential bottlenecks in TeXiFy IDEA."/>
+                   />
             <!-- Debug actions -->
             <action class="nl.hannahsten.texifyidea.action.debug.ShowContextAction" id="texify.ShowContext"
-                    text="Show Context"
-                    description="Show the context of the current file in the TeXiFy IDEA plugin."/>
+                   
+                   />
         </group>
     </actions>
 </idea-plugin>

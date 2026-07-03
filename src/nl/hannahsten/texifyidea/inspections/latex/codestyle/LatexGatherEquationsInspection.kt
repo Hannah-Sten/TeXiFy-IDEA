@@ -23,7 +23,7 @@ open class LatexGatherEquationsInspection : TexifyInspectionBase() {
 
     override val inspectionGroup = InsightGroup.LATEX
 
-    override fun getDisplayName() = "Gather equations"
+    override fun getDisplayName(): String = "Gather equations"
 
     override val inspectionId = "GatherEquations"
 
@@ -40,7 +40,7 @@ open class LatexGatherEquationsInspection : TexifyInspectionBase() {
                 descriptors.add(
                     manager.createProblemDescriptor(
                         it ?: return@forEach,
-                        "Equations can be gathered",
+                        nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.equations.can.be.gathered"),
                         GatherEnvironments(),
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly
@@ -56,7 +56,7 @@ open class LatexGatherEquationsInspection : TexifyInspectionBase() {
      */
     private class GatherEnvironments : LocalQuickFix {
 
-        override fun getFamilyName() = "Gather equations"
+        override fun getFamilyName() = nl.hannahsten.texifyidea.TexifyBundle.message("inspection.quickfix.gather.equations")
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val element = descriptor.psiElement as? LatexNoMathContent ?: return

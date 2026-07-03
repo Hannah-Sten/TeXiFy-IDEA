@@ -6,6 +6,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.components.JBTextField
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.run.latex.PythontexStepOptions
 import nl.hannahsten.texifyidea.run.latex.StepUiOptionIds
 
@@ -15,22 +16,22 @@ internal class PythontexStepFragmentedEditor(
 ) : AbstractStepFragmentedEditor<PythontexStepOptions>(initialStep) {
 
     private val executable = JBTextField()
-    private val executableRow = LabeledComponent.create(executable, "E&xecutable")
+    private val executableRow = LabeledComponent.create(executable, TexifyBundle.message("run.step.ui.field.executable.label"))
 
     private val arguments = RawCommandLineEditor().apply {
-        editorField.emptyText.text = "Defaults to main file base name"
+        editorField.emptyText.text = TexifyBundle.message("run.step.ui.placeholder.default.main.base.name")
     }
-    private val argumentsRow = LabeledComponent.create(arguments, "Ar&guments")
+    private val argumentsRow = LabeledComponent.create(arguments, TexifyBundle.message("run.step.ui.field.arguments.label"))
 
-    private val workingDirectory = createDirectoryField(project, "Step working directory")
-    private val workingDirectoryRow = LabeledComponent.create(workingDirectory, "Working d&irectory")
+    private val workingDirectory = createDirectoryField(project, TexifyBundle.message("run.step.ui.dialog.step.working.directory"))
+    private val workingDirectoryRow = LabeledComponent.create(workingDirectory, TexifyBundle.message("run.step.ui.field.working.directory.label"))
 
     override fun createFragments(): Collection<SettingsEditorFragment<PythontexStepOptions, *>> {
-        val header = CommonParameterFragments.createHeader<PythontexStepOptions>("PythonTeX Step")
+        val header = CommonParameterFragments.createHeader<PythontexStepOptions>(TexifyBundle.message("run.step.ui.header.pythontex"))
 
         val executableFragment = stepFragment(
             id = StepUiOptionIds.COMMAND_EXECUTABLE,
-            name = "Executable",
+            name = TexifyBundle.message("run.step.ui.field.executable"),
             component = executableRow,
             reset = { step, component -> component.component.text = step.executable.orEmpty() },
             apply = { step, component ->
@@ -38,31 +39,31 @@ internal class PythontexStepFragmentedEditor(
             },
             initiallyVisible = { true },
             removable = false,
-            hint = "PythonTeX executable command.",
+            hint = TexifyBundle.message("run.step.ui.hint.pythontex.executable"),
         )
 
         val argsFragment = stepFragment(
             id = StepUiOptionIds.COMMAND_ARGS,
-            name = "Arguments",
+            name = TexifyBundle.message("run.step.ui.field.arguments"),
             component = argumentsRow,
             reset = { step, component -> component.component.text = step.arguments.orEmpty() },
             apply = { step, component -> step.arguments = component.component.text.ifBlank { null } },
             initiallyVisible = { step -> !step.arguments.isNullOrBlank() },
             removable = true,
-            hint = "Arguments passed to PythonTeX executable.",
-            actionHint = "Set PythonTeX arguments",
+            hint = TexifyBundle.message("run.step.ui.hint.pythontex.arguments"),
+            actionHint = TexifyBundle.message("run.step.ui.action.set.pythontex.arguments"),
         )
 
         val workingDirFragment = stepFragment(
             id = StepUiOptionIds.STEP_WORKING_DIRECTORY,
-            name = "Working directory",
+            name = TexifyBundle.message("run.step.ui.field.working.directory"),
             component = workingDirectoryRow,
             reset = { step, component -> component.component.text = step.workingDirectoryPath.orEmpty() },
             apply = { step, component -> step.workingDirectoryPath = component.component.text.ifBlank { null } },
             initiallyVisible = { step -> !step.workingDirectoryPath.isNullOrBlank() },
             removable = true,
-            hint = "Override working directory for this PythonTeX step.",
-            actionHint = "Set step working directory",
+            hint = TexifyBundle.message("run.step.ui.hint.pythontex.working.directory"),
+            actionHint = TexifyBundle.message("run.step.ui.action.set.step.working.directory"),
         )
 
         return listOf(

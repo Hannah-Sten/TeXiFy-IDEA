@@ -5,6 +5,7 @@ import com.intellij.openapi.projectRoots.AdditionalDataConfigurable
 import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.components.JBLabel
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import java.awt.Dimension
 import java.awt.FlowLayout
@@ -33,7 +34,7 @@ class DockerSdkConfigurable : AdditionalDataConfigurable {
             // Check if Docker is up and running
             val (output, exitCode) = runCommandWithExitCode("docker", "image", "ls", returnExceptionMessage = true)
             if (exitCode != 0) {
-                return JBLabel("Error: $output")
+                return JBLabel(TexifyBundle.message("settings.docker.error", output ?: ""))
             }
         }
 
@@ -55,7 +56,7 @@ class DockerSdkConfigurable : AdditionalDataConfigurable {
         imageName.preferredSize = Dimension(width, imageName.preferredSize.height)
 
         return JPanel(FlowLayout(FlowLayout.LEFT)).apply {
-            add(JBLabel("Docker image name: "))
+            add(JBLabel(TexifyBundle.message("settings.docker.image.name")))
             add(imageName)
         }
     }

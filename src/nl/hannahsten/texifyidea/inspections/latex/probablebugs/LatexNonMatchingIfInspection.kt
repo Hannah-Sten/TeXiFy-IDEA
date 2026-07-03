@@ -28,7 +28,7 @@ open class LatexNonMatchingIfInspection : TexifyInspectionBase() {
 
     override val inspectionGroup = InsightGroup.LATEX
 
-    override fun getDisplayName() = "Open if-then-else control sequence"
+    override fun getDisplayName(): String = "Open if-then-else control sequence"
 
     override val inspectionId = "NonMatchingIf"
 
@@ -53,7 +53,7 @@ open class LatexNonMatchingIfInspection : TexifyInspectionBase() {
                     descriptors.add(
                         manager.createProblemDescriptor(
                             command,
-                            "No matching \\if-command found",
+                            nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.no.matching.if"),
                             GeneralMagic.noQuickFix,
                             ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                             isOntheFly
@@ -74,7 +74,7 @@ open class LatexNonMatchingIfInspection : TexifyInspectionBase() {
             descriptors.add(
                 manager.createProblemDescriptor(
                     cmd,
-                    "If statement should probably be closed with \\fi",
+                    nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.if.should.be.closed.with.fi"),
                     GeneralMagic.noQuickFix,
                     ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                     isOntheFly

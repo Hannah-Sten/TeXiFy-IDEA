@@ -12,6 +12,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import com.intellij.util.execution.ParametersListUtil
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import java.nio.file.Path
@@ -78,7 +79,11 @@ class TextidoteAnnotator : DumbAware, ExternalAnnotator<TextidoteAnnotatorInitia
 
         // Since the user has explicitly enabled this inspection, we should raise an error if we cannot actually run textidote
         if (output == null) {
-            Notification("LaTeX", "Could not run textidote", NotificationType.ERROR).notify(collectedInfo.project)
+            Notification(
+                "LaTeX",
+                TexifyBundle.message("notification.textidote.could.not.run.title"),
+                NotificationType.ERROR
+            ).notify(collectedInfo.project)
             return TextidoteAnnotationResult(emptyList(), collectedInfo.document)
         }
 
@@ -102,7 +107,8 @@ class TextidoteAnnotator : DumbAware, ExternalAnnotator<TextidoteAnnotatorInitia
         if (warnings.isEmpty() && exitCode != 0) {
             Notification(
                 "LaTeX",
-                "There was a problem getting Textidote results: $output",
+                TexifyBundle.message("notification.textidote.results.failed.title"),
+                TexifyBundle.message("notification.textidote.results.failed.content", output),
                 NotificationType.ERROR
             ).notify(collectedInfo.project)
         }

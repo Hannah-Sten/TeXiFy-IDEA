@@ -10,6 +10,7 @@ import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexLogMessage
 import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexOutputListener
 import nl.hannahsten.texifyidea.run.latex.logtab.LatexLogMagicRegex.DUPLICATE_WHITESPACE
@@ -277,10 +278,10 @@ class LatexOutputListener(
 
     override fun processTerminated(event: ProcessEvent) {
         if (event.exitCode == 0) {
-            treeView.setProgressText("Compilation was successful.")
+            treeView.setProgressText(TexifyBundle.message("run.logtab.compilation.success"))
         }
         else {
-            treeView.setProgressText("Compilation failed.")
+            treeView.setProgressText(TexifyBundle.message("run.logtab.compilation.failed"))
         }
     }
 
@@ -288,6 +289,6 @@ class LatexOutputListener(
     }
 
     override fun startNotified(event: ProcessEvent) {
-        treeView.setProgressText("Compilation in progress...")
+        treeView.setProgressText(TexifyBundle.message("run.logtab.compilation.in.progress"))
     }
 }

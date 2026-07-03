@@ -47,7 +47,7 @@ class LatexPackageNameDoesNotMatchFileNameInspection : TexifyInspectionBase() {
 
     object PackageNameMatchFileNameQuickFix : LocalQuickFix {
 
-        override fun getFamilyName(): String = "Fix package name"
+        override fun getFamilyName(): String = nl.hannahsten.texifyidea.TexifyBundle.message("inspection.quickfix.fix.package.name")
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val providesCommand = descriptor.psiElement as LatexCommands

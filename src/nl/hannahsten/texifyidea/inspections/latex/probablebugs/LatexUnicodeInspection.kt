@@ -94,7 +94,7 @@ class LatexUnicodeInspection : AbstractTexifyContextAwareInspection(
     }
 
     @Nls
-    override fun getDisplayName(): String = "Unsupported non-ASCII character"
+    override fun getDisplayName(): String = nl.hannahsten.texifyidea.TexifyBundle.message("inspection.display.unsupported.non.ascii.character")
 
     override fun prepareInspectionForFile(file: PsiFile, bundle: DefinitionBundle): Boolean {
         unicodeEnabledLocal = Util.unicodeEnabled(file)
@@ -130,7 +130,7 @@ class LatexUnicodeInspection : AbstractTexifyContextAwareInspection(
                     manager.createProblemDescriptor(
                         element,
                         TextRange(matcher.start(), matcher.end()),
-                        "Unsupported non-ASCII character",
+                        nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.unsupported.non.ascii.character"),
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOnTheFly,
                         escapeFix
@@ -142,7 +142,7 @@ class LatexUnicodeInspection : AbstractTexifyContextAwareInspection(
                     manager.createProblemDescriptor(
                         element,
                         TextRange(matcher.start(), matcher.end()),
-                        "Unsupported non-ASCII character",
+                        nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.unsupported.non.ascii.character"),
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOnTheFly,
                         escapeFix,
@@ -167,7 +167,7 @@ class LatexUnicodeInspection : AbstractTexifyContextAwareInspection(
     private class InsertUnicodePackageFix : LocalQuickFix {
 
         @Nls
-        override fun getFamilyName(): String = "Include Unicode support packages"
+        override fun getFamilyName(): String = nl.hannahsten.texifyidea.TexifyBundle.message("inspection.quickfix.include.unicode.support.packages")
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val file = descriptor.psiElement.containingFile
@@ -201,7 +201,7 @@ class LatexUnicodeInspection : AbstractTexifyContextAwareInspection(
     private class EscapeUnicodeFix(private val inMathMode: Boolean) : LocalQuickFix {
 
         @Nls
-        override fun getFamilyName(): String = "Escape Unicode character"
+        override fun getFamilyName(): String = nl.hannahsten.texifyidea.TexifyBundle.message("inspection.quickfix.escape.unicode.character")
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val element = descriptor.psiElement

@@ -23,6 +23,7 @@ import com.intellij.ui.JBColor
 import com.intellij.ui.components.labels.LinkLabel
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.WrapLayout
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.run.latex.LatexStepRunConfigurationOptions
 import nl.hannahsten.texifyidea.run.latex.defaultStepFor
 import nl.hannahsten.texifyidea.run.latex.ui.LatexSettingsEditor
@@ -52,16 +53,15 @@ internal class LatexCompileSequenceComponent(
         isVisible = false
     }
 
-    private val addButton: InplaceButton = InplaceButton("Add step", AllIcons.General.Add) {
+    private val addButton: InplaceButton = InplaceButton(TexifyBundle.message("run.step.ui.compile.sequence.add.step"), AllIcons.General.Add) {
         showTypeSelectionPopup(addButton, ::addStep)
     }
 
-    private val autoConfigureLabel = LinkLabel<Any>("Auto configure", null) { _, _ ->
+    private val autoConfigureLabel = LinkLabel<Any>(TexifyBundle.message("run.step.ui.compile.sequence.auto.configure"), null) { _, _ ->
         autoConfigureSteps()
     }.apply {
         border = JBUI.Borders.emptyRight(5)
-        toolTipText =
-            "Automatically complete the compile sequence from the current setup, inserting missing compile, bibliography, index, or PDF viewer steps when needed."
+        toolTipText = TexifyBundle.message("run.step.ui.compile.sequence.auto.configure.tooltip")
     }
 
     private val addPanel = JPanel().apply {
@@ -69,7 +69,7 @@ internal class LatexCompileSequenceComponent(
         add(addButton)
     }
 
-    private val addLabel = LinkLabel<Any>("Add step", null) { source, _ ->
+    private val addLabel = LinkLabel<Any>(TexifyBundle.message("run.step.ui.compile.sequence.add.step"), null) { source, _ ->
         showTypeSelectionPopup(source, ::addStep)
     }.apply {
         border = JBUI.Borders.emptyRight(5)
@@ -142,7 +142,7 @@ internal class LatexCompileSequenceComponent(
         }
 
         JBPopupFactory.getInstance().createActionGroupPopup(
-            "Add New Step",
+            TexifyBundle.message("run.step.ui.compile.sequence.add.new.step"),
             group,
             DataManager.getInstance().getDataContext(anchor),
             false,
@@ -710,7 +710,7 @@ internal class LatexCompileSequenceComponent(
 
         fun updateFromStepConfig() {
             updateButton(stepConfig.displayName(), LatexStepUiSupport.icon(stepConfig.type))
-            myButton.toolTipText = "Double-click to change step type. Drag and drop to reorder."
+            myButton.toolTipText = TexifyBundle.message("run.step.ui.compile.sequence.step.tooltip")
         }
 
         fun labelTextForTest(): String = myButton.text ?: ""

@@ -10,6 +10,7 @@ import com.intellij.openapi.ui.*
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.SeparatorComponent
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
@@ -69,7 +70,7 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
 
             // Compiler
             val compilerField = ComboBox(BibliographyCompiler.entries.toTypedArray())
-            compiler = LabeledComponent.create(compilerField, "Compiler")
+            compiler = LabeledComponent.create(compilerField, TexifyBundle.message("run.bibtex.settings.compiler"))
             add(compiler)
 
             // Custom compiler path
@@ -78,7 +79,7 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
                     TextBrowseFolderListener(
                         FileChooserDescriptor(true, false, false, false, false, false)
                             .withFileFilter { file -> file.nameWithoutExtension == (compiler.component.selectedItem as BibliographyCompiler?)?.executableName }
-                            .withTitle("Choose ${compiler.component.selectedItem} executable")
+                            .withTitle(TexifyBundle.message("run.bibtex.settings.choose.executable", compiler.component.selectedItem.toString()))
                     )
                 )
 
@@ -90,7 +91,7 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
                 }
             }
 
-            enableCompilerPath = JCheckBox("Select custom compiler executable path (required on Mac OS X)").apply {
+            enableCompilerPath = JCheckBox(TexifyBundle.message("run.bibtex.settings.custom.compiler.path")).apply {
                 addItemListener { e ->
                     compilerPath.isEnabled = e.stateChange == ItemEvent.SELECTED
                 }
@@ -100,7 +101,7 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
             add(compilerPath)
 
             // Custom compiler arguments
-            val argumentsTitle = "Custom compiler arguments"
+            val argumentsTitle = TexifyBundle.message("run.bibtex.settings.custom.compiler.arguments")
             val argumentsField = RawCommandLineEditor()
             compilerArguments = LabeledComponent.create(argumentsField, argumentsTitle)
             add(compilerArguments)
@@ -115,13 +116,13 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
                 addBrowseFolderListener(
                     TextBrowseFolderListener(
                         FileChooserDescriptorFactory.createSingleFileDescriptor(LatexFileType)
-                            .withTitle("Choose the Main .tex File")
+                            .withTitle(TexifyBundle.message("run.bibtex.settings.choose.main.file"))
                             .withExtensionFilter("tex")
                             .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules.toSet().toTypedArray())
                     )
                 )
             }
-            mainFile = LabeledComponent.create(mainFileField, "Main file that includes bibliography")
+            mainFile = LabeledComponent.create(mainFileField, TexifyBundle.message("run.bibtex.settings.main.file"))
             add(mainFile)
 
             // Working directory
@@ -129,19 +130,21 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
             workingDirField.addBrowseFolderListener(
                 TextBrowseFolderListener(
                     FileChooserDescriptor(false, true, false, false, false, false)
-                        .withTitle("Choose the BibTeX Working Directory")
+                        .withTitle(TexifyBundle.message("run.bibtex.settings.choose.working.directory"))
                         .withRoots(
                             *ProjectRootManager.getInstance(project)
                                 .contentRootsFromAllModules
                         )
                 )
             )
-            bibWorkingDir = LabeledComponent.create(workingDirField, "Working directory for bibtex")
+            bibWorkingDir = LabeledComponent.create(workingDirField, TexifyBundle.message("run.bibtex.settings.working.directory"))
             add(bibWorkingDir)
 
             // LaTeX distribution, use project SDK as backwards compatible default
-            @Suppress("DialogTitleCapitalization")
-            latexDistribution = LabeledComponent.create(ComboBox(LatexDistributionType.entries.filter { it.isAvailable(project) }.toTypedArray() + arrayOf(LatexDistributionType.PROJECT_SDK)), "LaTeX Distribution")
+            latexDistribution = LabeledComponent.create(
+                ComboBox(LatexDistributionType.entries.filter { it.isAvailable(project) }.toTypedArray() + arrayOf(LatexDistributionType.PROJECT_SDK)),
+                TexifyBundle.message("run.bibtex.settings.latex.distribution")
+            )
             add(latexDistribution)
         }
     }

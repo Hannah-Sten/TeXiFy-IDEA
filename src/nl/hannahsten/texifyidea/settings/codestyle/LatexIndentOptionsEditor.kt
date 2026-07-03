@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.settings.codestyle
 import com.intellij.application.options.SmartIndentOptionsEditor
 import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings
+import nl.hannahsten.texifyidea.TexifyBundle
 import java.awt.event.ItemEvent
 import javax.swing.JCheckBox
 
@@ -13,9 +14,9 @@ import javax.swing.JCheckBox
  */
 class LatexIndentOptionsEditor(provider: LatexLanguageCodeStyleSettingsProvider) : SmartIndentOptionsEditor(provider) {
 
-    private val sectionIndents = JCheckBox("Nested indent of sections")
-    private val environmentIndent = JCheckBox("Indent environments")
-    private val documentIndent = JCheckBox("Indent document environment")
+    private val sectionIndents = JCheckBox(TexifyBundle.message("settings.codestyle.indent.nested.sections"))
+    private val environmentIndent = JCheckBox(TexifyBundle.message("settings.codestyle.indent.environments"))
+    private val documentIndent = JCheckBox(TexifyBundle.message("settings.codestyle.indent.document.environment"))
 
     init {
         // (De)select the document environment checkbox whenever the environment checkbox is (de)selected.

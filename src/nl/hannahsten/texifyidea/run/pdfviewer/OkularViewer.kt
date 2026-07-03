@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.run.pdfviewer
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
+import nl.hannahsten.texifyidea.TexifyBundle
 
 /**
  * Execute Okular commands.
@@ -33,7 +34,12 @@ object OkularViewer : SystemPdfViewer("Okular", "okular") {
         }
 
         if (pdfFilePath == null) {
-            Notification("LaTeX", "Could not execute forward search", "Please make sure you have compiled the document first.", NotificationType.ERROR).notify(project)
+            Notification(
+                "LaTeX",
+                TexifyBundle.message("run.notification.forward.search.failed.title"),
+                TexifyBundle.message("run.notification.forward.search.failed.compile.first"),
+                NotificationType.ERROR
+            ).notify(project)
             return
         }
         // This okular command opens the pdf file using the destination coming from the line in the tex file.

@@ -7,6 +7,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
 import nl.hannahsten.texifyidea.util.files.createExcludedDir
 import java.nio.file.Path
@@ -131,8 +132,8 @@ internal object LatexPathResolver {
         val fallback = resolvedDefaultPathString ?: "${mainFile?.parent?.path}/$variant"
         Notification(
             "LaTeX",
-            "Invalid output path",
-            "Output path $resolvedPathString could not be created, trying default path $fallback",
+            TexifyBundle.message("run.notification.path.fallback.title"),
+            TexifyBundle.message("run.notification.path.fallback.message", resolvedPathString, fallback),
             NotificationType.WARNING
         ).notify(project)
 

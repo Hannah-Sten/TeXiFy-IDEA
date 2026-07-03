@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.run.latex.step
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.util.execution.ParametersListUtil
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.run.common.createCompilationHandler
 import nl.hannahsten.texifyidea.run.latex.ExternalToolStepOptions
 
@@ -28,7 +29,7 @@ internal class ExternalToolRunStep(
             }
         }
         if (command.isEmpty()) {
-            throw ExecutionException("External tool step has an empty executable.")
+            throw ExecutionException(TexifyBundle.message("run.error.external.tool.step.empty.executable"))
         }
 
         return createCompilationHandler(

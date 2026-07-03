@@ -32,7 +32,7 @@ class LatexAvoidEqnarrayInspection : AbstractTexifyEnvironmentBasedInspection(
                 manager.createProblemDescriptor(
                     environment,
                     TextRange.from(7, name.length),
-                    "Avoid using the 'eqnarray$star' environment",
+                    nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.avoid.eqnarray.environment", star),
                     ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                     isOnTheFly,
                     ReplaceEnvironmentQuickFix(

@@ -8,6 +8,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.ui.*
 import com.intellij.openapi.vfs.LocalFileSystem
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.run.compiler.ExternalTool
 import javax.swing.JComponent
@@ -51,7 +52,7 @@ class ExternalToolSettingsEditor(private val project: Project) : SettingsEditor<
 
             // Program
             val programField = ComboBox(ExternalTool.entries.toTypedArray())
-            program = LabeledComponent.create(programField, "External tool")
+            program = LabeledComponent.create(programField, TexifyBundle.message("run.external.tool.settings.external.tool"))
             add(program)
 
             // Main file
@@ -59,13 +60,13 @@ class ExternalToolSettingsEditor(private val project: Project) : SettingsEditor<
                 addBrowseFolderListener(
                     TextBrowseFolderListener(
                         FileChooserDescriptorFactory.createSingleFileDescriptor(LatexFileType)
-                            .withTitle("Choose Main LaTeX File")
+                            .withTitle(TexifyBundle.message("run.external.tool.settings.choose.main.file"))
                             .withExtensionFilter("tex")
                             .withRoots(*ProjectRootManager.getInstance(project).contentRootsFromAllModules.toSet().toTypedArray())
                     )
                 )
             }
-            mainFile = LabeledComponent.create(mainFileField, "Main file which requires the external tool")
+            mainFile = LabeledComponent.create(mainFileField, TexifyBundle.message("run.external.tool.settings.main.file"))
             add(mainFile)
 
             // Working directory
@@ -73,11 +74,11 @@ class ExternalToolSettingsEditor(private val project: Project) : SettingsEditor<
                 addBrowseFolderListener(
                     TextBrowseFolderListener(
                         FileChooserDescriptor(false, true, false, false, false, false)
-                            .withTitle("Choose Output Directory of Main LaTeX File")
+                            .withTitle(TexifyBundle.message("run.external.tool.settings.choose.output.directory"))
                     )
                 )
             }
-            workingDirectory = LabeledComponent.create(workDirField, "Working directory for the external tool")
+            workingDirectory = LabeledComponent.create(workDirField, TexifyBundle.message("run.external.tool.settings.working.directory"))
             add(workingDirectory)
 
             environmentVariables = EnvironmentVariablesComponent()

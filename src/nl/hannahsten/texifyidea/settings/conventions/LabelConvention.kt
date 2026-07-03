@@ -1,5 +1,7 @@
 package nl.hannahsten.texifyidea.settings.conventions
 
+import nl.hannahsten.texifyidea.TexifyBundle
+
 /**
  * A label convention stores the Texify conventions for a specific label type.
  *
@@ -29,10 +31,10 @@ data class LabelConvention(
     var prefix: String? = null
 )
 
-enum class LabelConventionType(private val prettyName: String) {
+enum class LabelConventionType(private val messageKey: String) {
 
-    ENVIRONMENT("Environment"),
-    COMMAND("Command");
+    ENVIRONMENT("settings.conventions.label.type.environment"),
+    COMMAND("settings.conventions.label.type.command");
 
-    override fun toString(): String = prettyName
+    override fun toString(): String = TexifyBundle.message(messageKey)
 }

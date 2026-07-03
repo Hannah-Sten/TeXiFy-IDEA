@@ -20,6 +20,7 @@ import com.intellij.util.ui.AbstractTableCellEditor
 import com.intellij.util.ui.JBDimension
 import com.intellij.util.ui.ListTableModel
 import com.intellij.util.ui.table.TableModelEditor
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.TexifyIcons
 import java.awt.BorderLayout
 import java.awt.Component
@@ -60,7 +61,7 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
     private lateinit var labelConventionsTable: TableView<LabelConvention>
 
     private val typeColumnInfo =
-        object : TableModelEditor.EditableColumnInfo<LabelConvention, LabelConvention>("Type") {
+        object : TableModelEditor.EditableColumnInfo<LabelConvention, LabelConvention>(TexifyBundle.message("settings.conventions.column.type")) {
             override fun valueOf(item: LabelConvention?): LabelConvention? = item
             override fun getColumnClass(): Class<*> = LabelConvention::class.java
             override fun getRenderer(item: LabelConvention?): TableCellRenderer {
@@ -123,15 +124,15 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
             }
         }
 
-    private val prefixColumnInfo = object : TableModelEditor.EditableColumnInfo<LabelConvention, String>("Prefix") {
+    private val prefixColumnInfo = object : TableModelEditor.EditableColumnInfo<LabelConvention, String>(TexifyBundle.message("settings.conventions.column.prefix")) {
         override fun valueOf(item: LabelConvention): String = item.prefix!!
-        override fun getTooltipText(): String = "The prefix labels for the given Latex element should have"
+        override fun getTooltipText(): String = TexifyBundle.message("settings.conventions.tooltip.prefix")
         override fun setValue(item: LabelConvention, value: String?) {
             item.prefix = value ?: ""
         }
     }
 
-    private val nameColumnInfo = object : TableModelEditor.EditableColumnInfo<LabelConvention, String>("Element") {
+    private val nameColumnInfo = object : TableModelEditor.EditableColumnInfo<LabelConvention, String>(TexifyBundle.message("settings.conventions.column.element")) {
         override fun valueOf(item: LabelConvention): String = item.name
         override fun getColumnClass(): Class<*> = String::class.java
         override fun setValue(item: LabelConvention, value: String?) {
@@ -140,10 +141,10 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
     }
 
     private val enabledColumnInfo =
-        object : TableModelEditor.EditableColumnInfo<LabelConvention, Boolean>("Should Have Label") {
+        object : TableModelEditor.EditableColumnInfo<LabelConvention, Boolean>(TexifyBundle.message("settings.conventions.column.should.have.label")) {
             override fun getColumnClass(): Class<*> = Boolean::class.java
             override fun getTooltipText(): String =
-                "If enabled, TeXiFy issues a warning if the given Latex element does not have a label"
+                TexifyBundle.message("settings.conventions.tooltip.should.have.label")
 
             override fun valueOf(item: LabelConvention): Boolean = item.enabled
             override fun setValue(item: LabelConvention, value: Boolean) {
@@ -221,16 +222,16 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
         DialogBuilder().apply {
             setCenterPanel(
                 panel {
-                    row("Type:") { cell(typeField) }
-                    row("Environment/command name:") { cell(elementField) }
-                    row("Prefix:") { cell(prefixField) }
-                    row("Should have label:") { cell(labelField) }
+                    row(TexifyBundle.message("settings.conventions.dialog.row.type")) { cell(typeField) }
+                    row(TexifyBundle.message("settings.conventions.dialog.row.environment.or.command.name")) { cell(elementField) }
+                    row(TexifyBundle.message("settings.conventions.dialog.row.prefix")) { cell(prefixField) }
+                    row(TexifyBundle.message("settings.conventions.dialog.row.should.have.label")) { cell(labelField) }
                 }
             )
 
             addOkAction()
             addCancelAction()
-            title("Add Label Convention")
+            title(TexifyBundle.message("settings.conventions.dialog.add.label.convention"))
 
             if (show() == DialogWrapper.OK_EXIT_CODE) {
                 val newLabel = LabelConvention(
@@ -280,14 +281,14 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
 
         val centerPanel = panel {
             row {
-                label("Maximum section size (characters)")
+                label(TexifyBundle.message("settings.conventions.max.section.size.characters"))
                 spinner(1..Integer.MAX_VALUE, 500).apply {
                     maxSectionSize = component
                     component.number = 4000
                 }
             }
 
-            group("Labels") {
+            group(TexifyBundle.message("settings.conventions.group.labels")) {
                 row {
                     cell(
                         createMappingsTableDecorator()
@@ -351,7 +352,7 @@ class TexifyConventionsConfigurable(project: Project) : SearchableConfigurable, 
         settingsManager.saveSettings(unsavedSettings)
     }
 
-    override fun getDisplayName() = "Conventions"
+    override fun getDisplayName() = TexifyBundle.message("settings.conventions.displayName")
 
     override fun getId() = "TexifyConventionsConfigurable"
 

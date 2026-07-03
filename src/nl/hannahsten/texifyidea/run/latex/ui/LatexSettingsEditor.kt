@@ -7,6 +7,7 @@ import com.intellij.execution.ui.CommonParameterFragments
 import com.intellij.execution.ui.CommonTags
 import com.intellij.execution.ui.RunConfigurationFragmentedEditor
 import com.intellij.execution.ui.SettingsEditorFragment
+import nl.hannahsten.texifyidea.TexifyBundle
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexStepRunConfigurationOptions
@@ -41,7 +42,11 @@ class LatexSettingsEditor(
     runConfiguration: LatexRunConfiguration,
 ) : RunConfigurationFragmentedEditor<LatexRunConfiguration>(runConfiguration) {
 
-    private val commonGroupName = "Common settings"
+    private companion object {
+
+        private const val COMMON_GROUP_KEY = "run.step.ui.group.common.settings"
+    }
+
     internal val shadowSteps = mutableListOf<LatexStepRunConfigurationOptions>()
     internal val compileSequenceComponent = LatexCompileSequenceComponent(this, project)
     internal val stepSettingsComponent = LatexStepSettingsComponent(project, this)
@@ -52,6 +57,7 @@ class LatexSettingsEditor(
     private lateinit var mainFileTextField: TextFieldWithBrowseButton
 
     override fun createRunFragments(): MutableList<SettingsEditorFragment<LatexRunConfiguration, *>> {
+        val commonGroupName = TexifyBundle.message(COMMON_GROUP_KEY)
         val fragments = mutableListOf<SettingsEditorFragment<LatexRunConfiguration, *>>()
 
         fragments.add(CommonParameterFragments.createHeader(commonGroupName))

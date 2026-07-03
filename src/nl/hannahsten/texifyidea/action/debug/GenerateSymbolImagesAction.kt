@@ -7,6 +7,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.fileChooser.FileChooser
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.ui.symbols.tools.generateSymbolImages
 
 /**
@@ -16,8 +17,8 @@ import nl.hannahsten.texifyidea.ui.symbols.tools.generateSymbolImages
  */
 @Suppress("ComponentNotRegistered", "unused")
 open class GenerateSymbolImagesAction : AnAction(
-    "Generate Symbol Images",
-    "(Development) Generates the symbol images for the symbol view",
+    TexifyBundle.message("action.generate.symbol.images.text"),
+    TexifyBundle.message("action.generate.symbol.images.description"),
     null
 ) {
 
@@ -25,11 +26,16 @@ open class GenerateSymbolImagesAction : AnAction(
         val project = event.getData(PlatformDataKeys.PROJECT) ?: return
 
         val fileDescriptor = FileChooserDescriptor(false, true, false, false, false, false)
-            .withTitle("Select Symbols Folder...")
+            .withTitle(TexifyBundle.message("filechooser.symbol.folder.title"))
 
         FileChooser.chooseFile(fileDescriptor, project, null) {
             generateSymbolImages(it.path)
-            Notification("LaTeX", "Finished generating symbol images", "<html>Generated symbol images to:<br>${it.path}</html>", NotificationType.INFORMATION)
+            Notification(
+                "LaTeX",
+                TexifyBundle.message("notification.symbol.images.generated.title"),
+                TexifyBundle.message("notification.symbol.images.generated.content", it.path),
+                NotificationType.INFORMATION
+            )
         }
     }
 }

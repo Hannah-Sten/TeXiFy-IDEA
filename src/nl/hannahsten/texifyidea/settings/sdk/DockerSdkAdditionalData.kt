@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.settings.sdk
 import com.intellij.openapi.options.ConfigurationException
 import com.intellij.openapi.projectRoots.SdkModel
 import com.intellij.openapi.projectRoots.ValidatableSdkAdditionalData
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import org.jdom.Element
 
@@ -24,7 +25,7 @@ class DockerSdkAdditionalData(val imageName: String?) : ValidatableSdkAdditional
         // For some reason this method is called on the initial additional data as well, and if it's not valid then the user cannot change it. So, we provide null as default value and then make null a valid name.
         if (imageName != null) {
             if (runCommandWithExitCode("docker", "image", "inspect", imageName).second != 0) {
-                throw ConfigurationException("Cannot find docker image $imageName")
+                throw ConfigurationException(TexifyBundle.message("settings.docker.image.not.found", imageName))
             }
         }
     }

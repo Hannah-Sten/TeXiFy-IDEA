@@ -14,6 +14,7 @@ import com.intellij.psi.PsiNamedElement
 import com.intellij.psi.util.parentOfType
 import com.intellij.refactoring.rename.RenameProcessor
 import com.intellij.refactoring.rename.inplace.MemberInplaceRenamer
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.psi.LatexCommandWithParams
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
 import nl.hannahsten.texifyidea.util.labels.LatexLabelUtil
@@ -88,7 +89,12 @@ abstract class LatexAddLabelIntention(name: String) : TexifyIntentionBase(name) 
         val parameter = helper.setOptionalParameter(command, "label", "{${label.labelText}}")
 
         if (parameter == null) {
-            Notification("LaTeX", "Could not add label", "Something went wrong while trying to add the label ${label.labelText} to command ${command.getName()}. Please try again", NotificationType.WARNING).notify(project)
+            Notification(
+                "LaTeX",
+                TexifyBundle.message("notification.intentions.add.label.failed.title"),
+                TexifyBundle.message("notification.intentions.add.label.failed.content", label.labelText, command.getName() ?: ""),
+                NotificationType.WARNING
+            ).notify(project)
             return
         }
 

@@ -6,6 +6,7 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
@@ -62,7 +63,12 @@ fun getDefaultMakeindexPrograms(mainFile: VirtualFile?, project: Project, usedPa
  */
 private fun getIndexPackageOptions(mainFile: VirtualFile?, project: Project): List<String> {
     // Find index package options
-    val mainPsiFile = ReadAction.computeBlocking<com.intellij.psi.PsiFile?, RuntimeException> { mainFile?.psiFile(project) } ?: throw ExecutionException("Main file not found")
+    val mainPsiFile = ReadAction.computeBlocking<com.intellij.psi.PsiFile?, RuntimeException> { mainFile?.psiFile(project) }
+        ?: throw ExecutionException(TexifyBundle.message("run.error.main.file.not.found"))
+//    return LatexCommandsIndex.Util.getItemsInFileSet(mainPsiFile)
+//        .filter { it.commandToken.text in CommandMagic.packageInclusionCommands }
+//        .filter { command -> command.getRequiredParameters().any { it in PackageMagic.index.map { pkg -> pkg.name } || it in PackageMagic.glossary.map { pkg -> pkg.name } } }
+//        .flatMap { it.getOptionalParameterMap().toStringMap().keys }
     return ReadAction.computeBlocking<List<String>, RuntimeException> {
         NewCommandsIndex.getByNames(CommandMagic.packageInclusionCommands, mainPsiFile).asSequence()
             .filter { command -> command.requiredParametersText().any { it in PackageMagic.indexNames || it in PackageMagic.glossaryNames } }
@@ -77,7 +83,12 @@ private fun getIndexPackageOptions(mainFile: VirtualFile?, project: Project): Li
 fun getMakeindexOptions(mainFile: VirtualFile?, project: Project): Map<String, String> {
     val mainPsiFile = ReadAction.computeBlocking<com.intellij.psi.PsiFile?, RuntimeException> { mainFile?.psiFile(project) }
     if (mainPsiFile == null) {
-        Notification("LaTeX", "Could not find main file ${mainFile?.path}", "Please make sure the main file exists.", NotificationType.ERROR).notify(project)
+        Notification(
+            "LaTeX",
+            TexifyBundle.message("run.notification.main.file.not.found.title", mainFile?.path ?: ""),
+            TexifyBundle.message("run.notification.main.file.not.found.message"),
+            NotificationType.ERROR
+        ).notify(project)
         return mapOf()
     }
 

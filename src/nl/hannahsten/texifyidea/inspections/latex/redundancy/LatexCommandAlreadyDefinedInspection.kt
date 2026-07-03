@@ -35,7 +35,7 @@ class LatexCommandAlreadyDefinedInspection : TexifyInspectionBase() {
         MagicCommentScope.GROUP
     )!!
 
-    override fun getDisplayName() = "Command is already defined"
+    override fun getDisplayName(): String = "Command is already defined"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         val descriptors = descriptorList()
@@ -51,7 +51,7 @@ class LatexCommandAlreadyDefinedInspection : TexifyInspectionBase() {
                     descriptors.add(
                         manager.createProblemDescriptor(
                             command,
-                            "Command may already be defined in a LaTeX package",
+                            nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.command.already.defined.in.package"),
                             true,
                             // Warning because may not be true: command may be defined in a LaTeX package which is not actually imported
                             ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
@@ -68,7 +68,7 @@ class LatexCommandAlreadyDefinedInspection : TexifyInspectionBase() {
                     descriptors.add(
                         manager.createProblemDescriptor(
                             command,
-                            "Command may already be defined in a LaTeX package",
+                            nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.command.already.defined.in.package"),
                             true,
                             ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                             isOntheFly
@@ -83,7 +83,7 @@ class LatexCommandAlreadyDefinedInspection : TexifyInspectionBase() {
 
     object RenewCommandFix : LocalQuickFix {
 
-        override fun getFamilyName() = "Convert to \\renewcommand"
+        override fun getFamilyName() = nl.hannahsten.texifyidea.TexifyBundle.message("inspection.quickfix.convert.to.renewcommand")
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val element = descriptor.psiElement as? LatexCommands ?: return

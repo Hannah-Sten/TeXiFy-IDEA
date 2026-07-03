@@ -7,6 +7,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.action.wizard.graphic.InsertGraphicWizardAction
 import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.file.SaveImageDialog
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.util.focusedTextEditor
 import org.apache.commons.io.FilenameUtils
 import org.jsoup.nodes.Element
@@ -42,7 +43,12 @@ open class ImageHtmlToLatexConverter : HtmlToLatexConverter {
     override fun convertHtmlToLatex(htmlIn: Element, file: LatexFile): String {
         val url = URI(htmlIn.attr("src")).toURL()
         fun sendNotification(e: Exception) {
-            Notification("LaTeX", "Could not download image from $url", e.message ?: "", NotificationType.ERROR).notify(file.project)
+            Notification(
+                "LaTeX",
+                TexifyBundle.message("notification.image.download.failed.title", url.toString()),
+                e.message ?: "",
+                NotificationType.ERROR
+            ).notify(file.project)
         }
 
         val image = try {

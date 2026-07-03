@@ -53,7 +53,7 @@ class LatexNoExtensionInspection : AbstractTexifyCommandBasedInspection(
                         manager.createProblemDescriptor(
                             command,
                             TextRange(offset, offset + parameter.length),
-                            "File argument should not include the extension",
+                            nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.file.argument.should.not.include.extension"),
                             ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                             isOnTheFly,
                             RemoveExtensionFix
@@ -66,7 +66,7 @@ class LatexNoExtensionInspection : AbstractTexifyCommandBasedInspection(
     }
 
     object RemoveExtensionFix : LocalQuickFix {
-        override fun getFamilyName() = "Remove file extension from parameters"
+        override fun getFamilyName() = nl.hannahsten.texifyidea.TexifyBundle.message("inspection.quickfix.remove.file.extension.from.parameters")
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands

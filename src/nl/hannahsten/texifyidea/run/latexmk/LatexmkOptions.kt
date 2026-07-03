@@ -1,23 +1,25 @@
 package nl.hannahsten.texifyidea.run.latexmk
 
-enum class LatexmkCompileMode(private val displayName: String, val extension: String) {
-    AUTO("AUTO", "pdf"),
-    PDFLATEX_PDF("pdfLaTeX (PDF)", "pdf"),
-    LUALATEX_PDF("LuaLaTeX (PDF)", "pdf"),
-    XELATEX_PDF("XeLaTeX (PDF)", "pdf"),
-    LATEX_DVI("LaTeX (DVI)", "dvi"),
-    XELATEX_XDV("XeLaTeX (XDV)", "xdv"),
-    LATEX_PS("LaTeX (PS)", "ps"),
-    CUSTOM("Custom command", "pdf");
+import nl.hannahsten.texifyidea.TexifyBundle
 
-    override fun toString(): String = displayName
+enum class LatexmkCompileMode(private val messageKey: String, val extension: String) {
+    AUTO("run.latexmk.compile.mode.auto", "pdf"),
+    PDFLATEX_PDF("run.latexmk.compile.mode.pdflatex.pdf", "pdf"),
+    LUALATEX_PDF("run.latexmk.compile.mode.lualatex.pdf", "pdf"),
+    XELATEX_PDF("run.latexmk.compile.mode.xelatex.pdf", "pdf"),
+    LATEX_DVI("run.latexmk.compile.mode.latex.dvi", "dvi"),
+    XELATEX_XDV("run.latexmk.compile.mode.xelatex.xdv", "xdv"),
+    LATEX_PS("run.latexmk.compile.mode.latex.ps", "ps"),
+    CUSTOM("run.latexmk.compile.mode.custom.command", "pdf");
+
+    override fun toString(): String = TexifyBundle.message(messageKey)
 }
 
-enum class LatexmkCitationTool(private val displayName: String) {
-    AUTO("Auto"),
-    BIBTEX("BibTeX"),
-    BIBER("Biber"),
-    DISABLED("Disabled");
+enum class LatexmkCitationTool(private val messageKey: String) {
+    AUTO("run.latexmk.citation.tool.auto"),
+    BIBTEX("run.latexmk.citation.tool.bibtex"),
+    BIBER("run.latexmk.citation.tool.biber"),
+    DISABLED("run.latexmk.citation.tool.disabled");
 
-    override fun toString(): String = displayName
+    override fun toString(): String = TexifyBundle.message(messageKey)
 }

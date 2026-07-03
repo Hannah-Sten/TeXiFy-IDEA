@@ -4,6 +4,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.runCommand
@@ -16,7 +17,7 @@ import java.nio.file.Paths
 /**
  * MiKTeX on Windows.
  */
-class MiktexWindowsSdk : LatexSdk("MiKTeX Windows SDK") {
+class MiktexWindowsSdk : LatexSdk(TexifyBundle.message("settings.sdk.miktex.windows.name")) {
 
     object Cache {
         // Cache version
@@ -82,13 +83,14 @@ class MiktexWindowsSdk : LatexSdk("MiKTeX Windows SDK") {
         return LatexSdkUtil.isPdflatexPresent(directory)
     }
 
-    override fun getInvalidHomeMessage(path: String) = "Could not find $path/miktex/bin/*/pdflatex, please make sure you selected the MiKTeX installation directory."
+    override fun getInvalidHomeMessage(path: String) =
+        TexifyBundle.message("settings.sdk.error.could.not.find.miktex.pdflatex", path)
 
     override fun getVersionString(sdk: Sdk): String? {
         return getVersionString(sdk.homePath ?: return null)
     }
 
-    override fun getVersionString(sdkHome: String) = "MiKTeX " + getVersion(sdkHome).toString()
+    override fun getVersionString(sdkHome: String) = TexifyBundle.message("settings.sdk.version.miktex", getVersion(sdkHome).toString())
 
     fun getVersion(sdkHome: String?): DefaultArtifactVersion {
         Cache.version?.let { return it }

@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.run.latex
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdk
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 
@@ -9,15 +10,15 @@ import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
  * Options for the run configuration.
  * See [LatexSdk].
  */
-enum class LatexDistributionType(val displayName: String) {
+enum class LatexDistributionType(private val messageKey: String) {
 
-    TEXLIVE("TeX Live"),
-    MIKTEX("MiKTeX"),
-    WSL_TEXLIVE("TeX Live using WSL"),
-    DOCKER_MIKTEX("Dockerized MiKTeX"),
-    DOCKER_TEXLIVE("Dockerized TeX Live"),
-    PROJECT_SDK("Use project SDK"),
-    MODULE_SDK("Use module SDK");
+    TEXLIVE("run.latex.distribution.texlive"),
+    MIKTEX("run.latex.distribution.miktex"),
+    WSL_TEXLIVE("run.latex.distribution.wsl.texlive"),
+    DOCKER_MIKTEX("run.latex.distribution.docker.miktex"),
+    DOCKER_TEXLIVE("run.latex.distribution.docker.texlive"),
+    PROJECT_SDK("run.latex.distribution.project.sdk"),
+    MODULE_SDK("run.latex.distribution.module.sdk");
 
     private fun isMiktex() = this == MIKTEX || this == DOCKER_MIKTEX
 
@@ -43,7 +44,7 @@ enum class LatexDistributionType(val displayName: String) {
 
     fun isAvailable(project: Project) = LatexSdkUtil.isAvailable(this, project)
 
-    override fun toString() = displayName
+    override fun toString() = TexifyBundle.message(messageKey)
 
     companion object {
 

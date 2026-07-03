@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.run.latex.step
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.process.ProcessHandler
 import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.run.latex.LatexPathResolver
 import nl.hannahsten.texifyidea.run.common.createCompilationHandler
 import java.nio.file.Path
@@ -19,7 +20,7 @@ internal class CommandLineRunStep(
         val commandLine = commandLineSupplier(context)
         val command = CommandLineRunStepParser.parse(commandLine)
         if (command.isEmpty()) {
-            throw ExecutionException("Step $id has an empty command line.")
+            throw ExecutionException(TexifyBundle.message("run.error.step.empty.command.line", id))
         }
 
         return createCompilationHandler(

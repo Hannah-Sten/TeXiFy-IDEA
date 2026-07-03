@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.ui
 
 import com.intellij.openapi.ui.DialogBuilder
+import nl.hannahsten.texifyidea.TexifyBundle
 import java.awt.BorderLayout
 import javax.swing.JLabel
 import javax.swing.JPanel
@@ -14,9 +15,9 @@ class SkimConfigureInverseSearchDialog {
 
     init {
         DialogBuilder().apply {
-            setTitle("Configure Inverse Search")
+            setTitle(TexifyBundle.message("ui.dialog.configure.inverse.search.title"))
 
-            val body = JLabel("<html>In the Skim settings, go to the Sync tab. Select Custom as Preset, and as a command provide 'idea' and set arguments to '--line %line %file' <br><br>See the documentation for more information.</html>")
+            val body = JLabel(TexifyBundle.message("ui.dialog.configure.inverse.search.skim.body.html"))
             // Create panel.
             val panel = JPanel()
             panel.layout = BorderLayout()

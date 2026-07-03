@@ -49,7 +49,7 @@ open class LatexFigureNotReferencedInspection : AbstractTexifyContextAwareInspec
         label.findFirstChildOfType(LatexParameterText::class)?.let {
             manager.createProblemDescriptor(
                 it,
-                "Figure is not referenced",
+                nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.figure.not.referenced"),
                 RemoveFigureFix(it.createSmartPointer()),
                 ProblemHighlightType.LIKE_UNUSED_SYMBOL,
                 isOntheFly

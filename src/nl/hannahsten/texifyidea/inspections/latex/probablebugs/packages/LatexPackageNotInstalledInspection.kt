@@ -14,6 +14,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import com.intellij.psi.SmartPointerManager
 import com.intellij.psi.SmartPsiElementPointer
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.inspections.InsightGroup
 import nl.hannahsten.texifyidea.inspections.TexifyInspectionBase
@@ -77,7 +78,7 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
                     descriptors.add(
                         manager.createProblemDescriptor(
                             command,
-                            "Package is not installed or \\ProvidesPackage is missing",
+                            TexifyBundle.message("inspection.description.latex.package.not.installed.or.providespackage.missing"),
                             InstallPackage(
                                 SmartPointerManager.getInstance(file.project).createSmartPsiElementPointer(file),
                                 pack,
@@ -99,7 +100,7 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
 
     private class InstallPackage(val filePointer: SmartPsiElementPointer<PsiFile>, val packageName: String, val knownNotInstalledPackages: MutableSet<String>) : LocalQuickFix {
 
-        override fun getFamilyName(): String = "Install $packageName"
+        override fun getFamilyName(): String = TexifyBundle.message("inspection.quickfix.install.package", packageName)
 
         override fun generatePreview(project: Project, previewDescriptor: ProblemDescriptor): IntentionPreviewInfo {
             // Nothing is modified
@@ -125,8 +126,8 @@ class LatexPackageNotInstalledInspection : TexifyInspectionBase() {
                         if (tlname == null) {
                             Notification(
                                 "LaTeX",
-                                "Package $packageName not installed",
-                                "Package $packageName was not installed because tlmgr could not find $packageName.sty anywhere. Try to install the package manually.",
+                                TexifyBundle.message("notification.inspection.package.not.installed.title", packageName),
+                                TexifyBundle.message("notification.inspection.package.not.installed.content", packageName),
                                 NotificationType.ERROR
                             ).notify(project)
 

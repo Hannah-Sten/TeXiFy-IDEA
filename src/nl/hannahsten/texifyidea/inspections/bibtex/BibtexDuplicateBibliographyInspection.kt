@@ -29,7 +29,7 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
 
     override val inspectionId = "DuplicateBibliography"
 
-    override fun getDisplayName() = "Same bibliography is included multiple times"
+    override fun getDisplayName(): String = "Same bibliography is included multiple times"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         // Chapterbib allows multiple bibliographies
@@ -58,7 +58,7 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
                     descriptors.add(
                         manager.createProblemDescriptor(
                             command,
-                            "Bibliography file '${fileKey.second}' is included multiple times",
+                            nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.bibtex.bibliography.included.multiple.times", fileKey.second),
                             RemoveOtherCommandsFix(fileKey.second, commands.map { it.createSmartPointer() }),
                             ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                             isOntheFly
@@ -74,7 +74,7 @@ open class BibtexDuplicateBibliographyInspection : TexifyInspectionBase() {
      */
     class RemoveOtherCommandsFix(private val bibName: String, private val commandsToFix: List<SmartPsiElementPointer<LatexCommands>>) : LocalQuickFix {
 
-        override fun getFamilyName(): String = "Remove other includes of $bibName"
+        override fun getFamilyName(): String = nl.hannahsten.texifyidea.TexifyBundle.message("inspection.quickfix.remove.other.includes", bibName)
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val currentCommand = descriptor.psiElement as LatexCommands

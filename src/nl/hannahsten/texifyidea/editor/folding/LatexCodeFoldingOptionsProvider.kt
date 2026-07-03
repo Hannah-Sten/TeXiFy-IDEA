@@ -2,23 +2,27 @@ package nl.hannahsten.texifyidea.editor.folding
 
 import com.intellij.application.options.editor.CodeFoldingOptionsProvider
 import com.intellij.openapi.options.BeanConfigurable
+import nl.hannahsten.texifyidea.TexifyBundle
 
 /**
  * Settings > Editor > General > Code Folding settings for LaTeX.
  */
-class LatexCodeFoldingOptionsProvider : CodeFoldingOptionsProvider, BeanConfigurable<LatexCodeFoldingSettings>(LatexCodeFoldingSettings.getInstance(), "LaTeX") {
+class LatexCodeFoldingOptionsProvider : CodeFoldingOptionsProvider, BeanConfigurable<LatexCodeFoldingSettings>(
+    LatexCodeFoldingSettings.getInstance(),
+    TexifyBundle.message("settings.code.folding.title")
+) {
 
     init {
         val settings = instance
-        checkBox("Package imports", settings::collapseImports)
-        checkBox("Environments", settings::foldEnvironments)
-        checkBox("Escaped symbols", settings::foldEscapedSymbols)
-        checkBox("Footnotes", settings::foldFootnotes)
-        checkBox("Math symbols (\\alpha to α)", settings::foldMathSymbols)
-        checkBox("Math style (\\mathbb{R} to ℝ)", settings::foldMathStyle)
-        checkBox("Sections", settings::foldSections)
-        checkBox("Symbols", settings::foldSymbols)
-        checkBox("\\left ... \\right expressions", settings::foldLeftRightExpression)
-        checkBox("\\left( or \\right) commands", settings::foldLeftRightCommands)
+        checkBox(TexifyBundle.message("settings.code.folding.package.imports"), settings::collapseImports)
+        checkBox(TexifyBundle.message("settings.code.folding.environments"), settings::foldEnvironments)
+        checkBox(TexifyBundle.message("settings.code.folding.escaped.symbols"), settings::foldEscapedSymbols)
+        checkBox(TexifyBundle.message("settings.code.folding.footnotes"), settings::foldFootnotes)
+        checkBox(TexifyBundle.message("settings.code.folding.math.symbols"), settings::foldMathSymbols)
+        checkBox(TexifyBundle.message("settings.code.folding.math.style"), settings::foldMathStyle)
+        checkBox(TexifyBundle.message("settings.code.folding.sections"), settings::foldSections)
+        checkBox(TexifyBundle.message("settings.code.folding.symbols"), settings::foldSymbols)
+        checkBox(TexifyBundle.message("settings.code.folding.left.right.expressions"), settings::foldLeftRightExpression)
+        checkBox(TexifyBundle.message("settings.code.folding.left.right.commands"), settings::foldLeftRightCommands)
     }
 }

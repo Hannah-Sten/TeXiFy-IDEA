@@ -47,7 +47,7 @@ class LatexOverInsteadOfFracInspection : TexifyInspectionBase() {
                 descriptors.add(
                     manager.createProblemDescriptor(
                         command,
-                        "Use of \\over is discouraged",
+                        nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.use.of.over.discouraged"),
                         OverToFracFix(),
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly
@@ -61,7 +61,7 @@ class LatexOverInsteadOfFracInspection : TexifyInspectionBase() {
     private class OverToFracFix : LocalQuickFix {
 
         @Nls
-        override fun getFamilyName(): String = "Convert to \\frac"
+        override fun getFamilyName(): String = nl.hannahsten.texifyidea.TexifyBundle.message("inspection.quickfix.convert.to.frac")
 
         override fun applyFix(
             project: Project,

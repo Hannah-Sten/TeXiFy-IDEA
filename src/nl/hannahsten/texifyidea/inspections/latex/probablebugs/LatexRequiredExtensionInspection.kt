@@ -57,7 +57,7 @@ class LatexRequiredExtensionInspection : AbstractTexifyCommandBasedInspection(
                         manager.createProblemDescriptor(
                             command,
                             TextRange(offset, offset + parameter.length),
-                            "File argument should include the extension",
+                            nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.file.argument.should.include.extension"),
                             ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                             isOnTheFly,
                             AddExtensionFix
@@ -70,7 +70,7 @@ class LatexRequiredExtensionInspection : AbstractTexifyCommandBasedInspection(
     }
 
     object AddExtensionFix : LocalQuickFix {
-        override fun getFamilyName() = "Add file extension for parameters"
+        override fun getFamilyName() = nl.hannahsten.texifyidea.TexifyBundle.message("inspection.quickfix.add.file.extension.for.parameters")
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands

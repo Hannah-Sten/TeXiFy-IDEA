@@ -11,6 +11,7 @@ import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.run.bibtex.logtab.BibtexLogTabComponent
 import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
@@ -59,17 +60,22 @@ class BibtexRunConfiguration(
         super.createAdditionalTabComponents(manager, startedProcess)
 
         if (manager is LogConsoleManagerBase && startedProcess != null) {
-            manager.addAdditionalTabComponent(BibtexLogTabComponent(project, mainFile, startedProcess), "BibTeX-Log", AllIcons.Vcs.Changelist, false)
+            manager.addAdditionalTabComponent(
+                BibtexLogTabComponent(project, mainFile, startedProcess),
+                TexifyBundle.message("run.logtab.title.bibtex"),
+                AllIcons.Vcs.Changelist,
+                false
+            )
         }
     }
 
     override fun checkConfiguration() {
         if (compiler == null) {
-            throw RuntimeConfigurationError("No compiler specified.")
+            throw RuntimeConfigurationError(TexifyBundle.message("run.bibtex.error.no.compiler.specified"))
         }
 
         if (mainFile == null) {
-            throw RuntimeConfigurationError("No main file specified.")
+            throw RuntimeConfigurationError(TexifyBundle.message("run.bibtex.error.no.main.file.specified"))
         }
     }
 

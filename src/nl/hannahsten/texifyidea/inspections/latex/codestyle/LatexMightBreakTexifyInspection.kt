@@ -41,7 +41,7 @@ class LatexMightBreakTexifyInspection : TexifyInspectionBase() {
                     descriptors.add(
                         manager.createProblemDescriptor(
                             command,
-                            "Redefining ${newCommand?.name ?: "this command"} might break TeXiFy functionality",
+                            nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.redefining.might.break.texify", newCommand?.name ?: nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.this.command")),
                             null as LocalQuickFix?,
                             ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                             isOntheFly

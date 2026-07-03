@@ -10,6 +10,7 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.TexifyBundle
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
 import nl.hannahsten.texifyidea.run.latex.getMakeindexOptions
@@ -31,14 +32,14 @@ class MakeindexCommandLineState(
     @Throws(ExecutionException::class)
     override fun startProcess(): ProcessHandler {
         if (mainFile == null) {
-            throw ExecutionException("Main file to compile is not found or missing.")
+            throw ExecutionException(TexifyBundle.message("run.error.main.file.not.found.or.missing"))
         }
 
         var makeindexOptions: Map<String, String> = mapOf()
         // Similar to LatexCommandLineState, run slow operations synchronously
         ProgressManager.getInstance().runProcessWithProgressSynchronously(
             { makeindexOptions = getMakeindexOptions(mainFile, project) },
-            "Starting Makeindex Run Configuration...",
+            TexifyBundle.message("run.makeindex.progress.starting"),
             false,
             project,
         )
@@ -55,7 +56,7 @@ class MakeindexCommandLineState(
                 add(indexFilename)
             }
         }
-        val workingDirectory = workingDirectory?.path ?: throw ExecutionException("Working directory is not given.")
+        val workingDirectory = workingDirectory?.path ?: throw ExecutionException(TexifyBundle.message("run.error.working.directory.not.given"))
         val commandLine = GeneralCommandLine(command).withWorkingDirectory(Path(workingDirectory))
 
         val handler: ProcessHandler = KillableProcessHandler(commandLine)

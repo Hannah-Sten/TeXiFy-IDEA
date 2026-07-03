@@ -73,7 +73,7 @@ class LatexUnresolvedReferenceInspection : AbstractTexifyContextAwareInspection(
                     manager.createProblemDescriptor(
                         element,
                         range,
-                        "Unresolved reference '$label'",
+                        nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.unresolved.reference", label),
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOnTheFly
                     )

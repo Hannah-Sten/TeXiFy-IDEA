@@ -5,6 +5,7 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task.Backgroundable
 import com.intellij.openapi.project.Project
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.run.compiler.LatexCompilePrograms
 import nl.hannahsten.texifyidea.util.remove
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
@@ -46,7 +47,7 @@ object LatexCommandLineOptionsCache {
     }
 
     private fun fillCache(project: Project): List<Pair<String, String>> {
-        ProgressManager.getInstance().run(object : Backgroundable(project, "Retrieving available command line options for LaTeX compilers...") {
+        ProgressManager.getInstance().run(object : Backgroundable(project, TexifyBundle.message("run.progress.retrieving.command.line.options")) {
             override fun run(indicator: ProgressIndicator) {
                 try {
                     for (compiler in LatexCompilePrograms.allExecutableNames) {

@@ -9,6 +9,7 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.project.Project
 import kotlinx.coroutines.delay
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.settings.TexifySettings
 import nl.hannahsten.texifyidea.util.runInBackgroundWithoutProgress
@@ -66,7 +67,12 @@ object AutoCompileState {
     private fun scheduleCompilation() {
         val proj = this.project
         if (proj == null) {
-            Notification("LaTeX", "Could not auto-compile", "Please make sure you have compiled the document first.", NotificationType.WARNING).notify(null)
+            Notification(
+                "LaTeX",
+                TexifyBundle.message("notification.autocompile.failed.title"),
+                TexifyBundle.message("notification.autocompile.compile.first.content"),
+                NotificationType.WARNING
+            ).notify(null)
             return
         }
         if (!TexifySettings.getInstance().isAutoCompileEnabled()) {
@@ -79,7 +85,12 @@ object AutoCompileState {
 
         val runConfig = runConfigSettings?.configuration
         if (runConfig !is LatexRunConfiguration) {
-            Notification("LaTeX", "Could not auto-compile", "Please make sure you have a valid LaTeX run configuration selected.", NotificationType.WARNING).notify(null)
+            Notification(
+                "LaTeX",
+                TexifyBundle.message("notification.autocompile.failed.title"),
+                TexifyBundle.message("notification.autocompile.select.configuration.content"),
+                NotificationType.WARNING
+            ).notify(null)
             return
         }
 

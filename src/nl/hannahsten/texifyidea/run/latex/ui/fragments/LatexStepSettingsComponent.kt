@@ -5,6 +5,7 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.latex.*
 import nl.hannahsten.texifyidea.run.latex.step.BibtexRunStep
@@ -33,10 +34,6 @@ internal class LatexStepSettingsComponent(
         private const val CARD_XINDY = "xindy"
         private const val CARD_FILE_CLEANUP = "fileCleanup"
         private const val CARD_UNSUPPORTED = "unsupported"
-
-        private const val NO_SELECTION_MESSAGE = "Select a step in Compile sequence to configure it."
-        private const val MIXED_SELECTION_MESSAGE =
-            "Batch editing is available only when all selected steps have the same type."
     }
 
     private enum class StepSelectionMode {
@@ -171,12 +168,12 @@ internal class LatexStepSettingsComponent(
     private fun refreshForCurrentSelection() {
         when (val selectionMode = selectionMode()) {
             StepSelectionMode.NONE -> {
-                unsupportedSettings.setMessage(NO_SELECTION_MESSAGE)
+                unsupportedSettings.setMessage(TexifyBundle.message("run.step.ui.step.settings.select.step"))
                 showCard(CARD_UNSUPPORTED)
             }
 
             StepSelectionMode.MULTI_MIXED_TYPE -> {
-                unsupportedSettings.setMessage(MIXED_SELECTION_MESSAGE)
+                unsupportedSettings.setMessage(TexifyBundle.message("run.step.ui.step.settings.mixed.selection"))
                 showCard(CARD_UNSUPPORTED)
             }
 
@@ -204,8 +201,8 @@ internal class LatexStepSettingsComponent(
             LatexStepType.FILE_CLEANUP -> showCard(CARD_FILE_CLEANUP)
             else -> {
                 val message = when {
-                    type.isNullOrBlank() -> NO_SELECTION_MESSAGE
-                    else -> "${LatexStepUiSupport.description(type)} settings are not available yet."
+                    type.isNullOrBlank() -> TexifyBundle.message("run.step.ui.step.settings.select.step")
+                    else -> TexifyBundle.message("run.step.ui.step.settings.unsupported", LatexStepUiSupport.description(type))
                 }
                 unsupportedSettings.setMessage(message)
                 showCard(CARD_UNSUPPORTED)

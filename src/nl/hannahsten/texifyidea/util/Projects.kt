@@ -17,6 +17,7 @@ import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.search.ProjectScope
 import com.intellij.util.concurrency.annotations.RequiresReadLock
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.modules.LatexModuleType
@@ -133,7 +134,12 @@ fun Project.selectedTextEditors(): List<TextEditor> = FileEditorManager.getInsta
 
 fun Project.selectedTextEditorOrWarning(): TextEditor? {
     selectedTextEditor()?.let { return it }
-    Notification("LaTeX", "Could not find an open editor to insert text", "Put your caret in a LaTeX file first. Please report an issue on GitHub if you believe this is incorrect", NotificationType.ERROR).notify(this)
+    Notification(
+        "LaTeX",
+        TexifyBundle.message("notification.project.open.editor.not.found.title"),
+        TexifyBundle.message("notification.project.open.editor.not.found.content"),
+        NotificationType.ERROR
+    ).notify(this)
     return null
 }
 

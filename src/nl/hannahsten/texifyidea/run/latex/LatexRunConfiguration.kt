@@ -9,6 +9,7 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.Sdk
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
 import nl.hannahsten.texifyidea.run.bibtex.BibtexRunConfiguration
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
@@ -163,13 +164,13 @@ class LatexRunConfiguration(
     override fun checkConfiguration() {
         resolvePendingLegacyAuxStepsIfNeeded()
         if (mainFilePath.isNullOrBlank()) {
-            throw RuntimeConfigurationError("Run configuration is invalid: no main LaTeX file path selected")
+            throw RuntimeConfigurationError(TexifyBundle.message("run.error.run.config.invalid.no.main.latex.file"))
         }
         if (LatexRunConfigurationStaticSupport.resolveMainFile(this) == null) {
-            throw RuntimeConfigurationError("Run configuration is invalid: no valid main LaTeX file selected")
+            throw RuntimeConfigurationError(TexifyBundle.message("run.error.run.config.invalid.no.main.latex.file"))
         }
         if (configOptions.steps.isEmpty()) {
-            throw RuntimeConfigurationError("Run configuration is invalid: no compile steps")
+            throw RuntimeConfigurationError(TexifyBundle.message("run.error.run.config.invalid.no.compile.steps"))
         }
     }
 
@@ -181,14 +182,14 @@ class LatexRunConfiguration(
         resolvePendingLegacyAuxStepsIfNeeded()
         val configuredSteps = configOptions.steps
         if (configuredSteps.isEmpty()) {
-            throw ExecutionException("No executable compile steps were configured.")
+            throw ExecutionException(TexifyBundle.message("run.error.no.executable.compile.steps.configured"))
         }
 
         val hasExecutableStep = configuredSteps.any { step ->
             LatexRunStepProviders.find(step.type) != null
         }
         if (!hasExecutableStep) {
-            throw ExecutionException("No executable compile steps were configured.")
+            throw ExecutionException(TexifyBundle.message("run.error.no.executable.compile.steps.configured"))
         }
 
         return LatexStepRunState(this, environment, configuredSteps)

@@ -108,7 +108,7 @@ class LatexMissingLabelInspection : AbstractTexifyContextAwareInspection(
         descriptors.add(
             manager.createProblemDescriptor(
                 command,
-                "Missing label",
+                nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.missing.label"),
                 fixes.toTypedArray(),
                 ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                 isOnTheFly,
@@ -127,7 +127,7 @@ class LatexMissingLabelInspection : AbstractTexifyContextAwareInspection(
         descriptors.add(
             manager.createProblemDescriptor(
                 environment,
-                "Missing label",
+                nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.missing.label"),
                 arrayOf(InsertLabelInEnvironmentFix()),
                 ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                 isOnTheFly,
@@ -142,7 +142,7 @@ class LatexMissingLabelInspection : AbstractTexifyContextAwareInspection(
     private class ChangeMinimumLabelLevelFix : LocalQuickFix {
 
         @Nls
-        override fun getFamilyName(): String = "Change label conventions"
+        override fun getFamilyName(): String = nl.hannahsten.texifyidea.TexifyBundle.message("inspection.quickfix.change.label.conventions")
 
         override fun startInWriteAction() = false
 
@@ -158,7 +158,7 @@ class LatexMissingLabelInspection : AbstractTexifyContextAwareInspection(
     private class InsertLabelForCommandFix : LocalQuickFix {
 
         // It has to appear in alphabetical order before the other quickfix
-        override fun getFamilyName() = "Add label for this command"
+        override fun getFamilyName() = nl.hannahsten.texifyidea.TexifyBundle.message("inspection.quickfix.add.label.for.command")
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands
@@ -172,7 +172,7 @@ class LatexMissingLabelInspection : AbstractTexifyContextAwareInspection(
 
     private class InsertLabelInEnvironmentFix : LocalQuickFix {
 
-        override fun getFamilyName() = "Add label for this environment"
+        override fun getFamilyName() = nl.hannahsten.texifyidea.TexifyBundle.message("inspection.quickfix.add.label.for.environment")
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexEnvironment

@@ -29,7 +29,7 @@ open class LatexMultipleIncludesInspection : TexifyInspectionBase() {
 
     override val outerSuppressionScopes = EnumSet.of(MagicCommentScope.GROUP)!!
 
-    override fun getDisplayName() = "Package has been imported multiple times"
+    override fun getDisplayName(): String = "Package has been imported multiple times"
 
     override fun inspectFile(file: PsiFile, manager: InspectionManager, isOntheFly: Boolean): List<ProblemDescriptor> {
         // Find all explicit imported packages in the fileset
@@ -52,7 +52,7 @@ open class LatexMultipleIncludesInspection : TexifyInspectionBase() {
                 manager.createProblemDescriptor(
                     it,
                     null,
-                    "Package has already been included",
+                    nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.package.already.included"),
                     ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                     isOntheFly
                 )

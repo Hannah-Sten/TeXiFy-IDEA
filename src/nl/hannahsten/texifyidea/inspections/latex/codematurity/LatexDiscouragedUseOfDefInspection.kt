@@ -29,14 +29,14 @@ class LatexDiscouragedUseOfDefInspection : AbstractTexifyCommandBasedInspection(
     inspectionId = "DiscouragedUseOfDef",
 ) {
 
-    override fun getDisplayName() = "Use \\(re)newcommand instead of \\let and \\def"
+    override fun getDisplayName(): String = nl.hannahsten.texifyidea.TexifyBundle.message("inspection.display.use.re.newcommand.instead.of.let.and.def")
 
     override fun inspectCommand(command: LatexCommands, contexts: LContextSet, defBundle: DefinitionBundle, file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean, descriptors: MutableList<ProblemDescriptor>) {
         val name = command.nameWithoutSlash ?: return
         if (name != "let" && name != "def") return
         val descriptor = manager.createDescriptor(
             command,
-            "The use of TeX primitive \\$name is discouraged",
+            nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.use.of.tex.primitive.with.backslash.discouraged", name),
             rangeInElement = TextRange(0, command.textLength),
             isOnTheFly = isOnTheFly,
             highlightType = ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
@@ -52,7 +52,7 @@ class LatexDiscouragedUseOfDefInspection : AbstractTexifyCommandBasedInspection(
 
         constructor() : this("\\newcommand")
 
-        override fun getFamilyName() = "Convert to $commandName"
+        override fun getFamilyName() = nl.hannahsten.texifyidea.TexifyBundle.message("inspection.quickfix.convert.to.command", commandName)
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val command = descriptor.psiElement as LatexCommands

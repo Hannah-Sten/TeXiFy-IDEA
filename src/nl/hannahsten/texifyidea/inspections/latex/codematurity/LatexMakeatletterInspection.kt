@@ -34,7 +34,7 @@ class LatexMakeatletterInspection : AbstractTexifyCommandBasedInspection(
         if (name != "makeatletter" && name != "makeatother") return
         val descriptor = manager.createProblemDescriptor(
             command,
-            "${command.name} should only be used when necessary",
+            nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.command.should.only.be.used.when.necessary", command.name ?: ""),
             null as? com.intellij.codeInspection.LocalQuickFix?,
             ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
             isOnTheFly

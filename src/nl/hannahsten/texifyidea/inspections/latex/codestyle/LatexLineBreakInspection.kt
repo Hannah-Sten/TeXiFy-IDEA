@@ -29,7 +29,7 @@ open class LatexLineBreakInspection : TexifyInspectionBase() {
 
     override val inspectionGroup = InsightGroup.LATEX
 
-    override fun getDisplayName() = "Start sentences on a new line"
+    override fun getDisplayName(): String = "Start sentences on a new line"
 
     override val inspectionId = "LineBreak"
 
@@ -71,7 +71,7 @@ open class LatexLineBreakInspection : TexifyInspectionBase() {
                     manager.createProblemDescriptor(
                         text,
                         TextRange(startOffset, min(text.textLength, endOffset)),
-                        "Sentence does not start on a new line",
+                        nl.hannahsten.texifyidea.TexifyBundle.message("inspection.description.latex.sentence.not.on.new.line"),
                         ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                         isOntheFly,
                         *fixes
@@ -88,7 +88,7 @@ open class LatexLineBreakInspection : TexifyInspectionBase() {
      */
     private class InspectionFix : LocalQuickFix {
 
-        override fun getFamilyName() = "Insert line feed"
+        override fun getFamilyName() = nl.hannahsten.texifyidea.TexifyBundle.message("inspection.quickfix.insert.line.feed")
 
         override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
             val textElement = descriptor.psiElement

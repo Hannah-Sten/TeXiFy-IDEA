@@ -6,6 +6,7 @@ import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
+import nl.hannahsten.texifyidea.TexifyBundle
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.common.DockerCommandSupport
@@ -31,19 +32,34 @@ object LatexmkCleanUtil {
 
     fun run(project: Project, runConfig: LatexRunConfiguration, mode: Mode) {
         if (!runConfig.hasEnabledLatexmkStep()) {
-            Notification("LaTeX", "Latexmk clean failed", "Selected run configuration is not using latexmk.", NotificationType.ERROR).notify(project)
+            Notification(
+                "LaTeX",
+                TexifyBundle.message("run.latexmk.clean.failed.title"),
+                TexifyBundle.message("run.latexmk.clean.failed.not.latexmk"),
+                NotificationType.ERROR
+            ).notify(project)
             return
         }
 
         val mainFile = LatexRunConfigurationStaticSupport.resolveMainFile(runConfig)
         if (mainFile == null) {
-            Notification("LaTeX", "Latexmk clean failed", "No main file is configured.", NotificationType.ERROR).notify(project)
+            Notification(
+                "LaTeX",
+                TexifyBundle.message("run.latexmk.clean.failed.title"),
+                TexifyBundle.message("run.latexmk.clean.failed.no.main.file"),
+                NotificationType.ERROR
+            ).notify(project)
             return
         }
 
         val command = buildCleanCommandForModel(runConfig, mainFile, mode == Mode.CLEAN_ALL)
         if (command == null) {
-            Notification("LaTeX", "Latexmk clean failed", "Could not build latexmk clean command.", NotificationType.ERROR).notify(project)
+            Notification(
+                "LaTeX",
+                TexifyBundle.message("run.latexmk.clean.failed.title"),
+                TexifyBundle.message("run.latexmk.clean.failed.command.not.built"),
+                NotificationType.ERROR
+            ).notify(project)
             return
         }
 
@@ -71,13 +87,32 @@ object LatexmkCleanUtil {
                 val exitCode = process.waitFor()
 
                 if (exitCode == 0) {
-                    Notification("LaTeX", "Latexmk clean completed", "Finished ${mode.label.lowercase()} for ${mainFile.name}.", NotificationType.INFORMATION).notify(project)
+                    val modeText = when (mode) {
+                        Mode.CLEAN -> TexifyBundle.message("run.latexmk.clean.mode.auxiliary")
+                        Mode.CLEAN_ALL -> TexifyBundle.message("run.latexmk.clean.mode.all.generated")
+                    }
+                    Notification(
+                        "LaTeX",
+                        TexifyBundle.message("run.latexmk.clean.completed.title"),
+                        TexifyBundle.message("run.latexmk.clean.completed.message", modeText, mainFile.name),
+                        NotificationType.INFORMATION
+                    ).notify(project)
                 }
                 else {
-                    Notification("LaTeX", "Latexmk clean failed", "latexmk exited with code $exitCode.", NotificationType.ERROR).notify(project)
+                    Notification(
+                        "LaTeX",
+                        TexifyBundle.message("run.latexmk.clean.failed.title"),
+                        TexifyBundle.message("run.latexmk.clean.failed.exit.code", exitCode),
+                        NotificationType.ERROR
+                    ).notify(project)
                 }
             }.onFailure {
-                Notification("LaTeX", "Latexmk clean failed", it.message ?: "Unknown error.", NotificationType.ERROR).notify(project)
+                Notification(
+                    "LaTeX",
+                    TexifyBundle.message("run.latexmk.clean.failed.title"),
+                    it.message ?: TexifyBundle.message("run.error.unknown"),
+                    NotificationType.ERROR
+                ).notify(project)
             }
         }
     }
