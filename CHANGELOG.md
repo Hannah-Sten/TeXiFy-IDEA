@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Provide Chinese translations for all plugin text and messages, by @Ezrnest
 
 ### Fixed
 
