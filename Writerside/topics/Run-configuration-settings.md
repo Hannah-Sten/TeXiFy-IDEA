@@ -194,8 +194,13 @@ Argument autocompletion is available for:
 
 You can pass environment variables to the command that is run to compile the LaTeX file.
 There is an option to include system variables.
+
+#### Including LaTeX files from a different directory
 You can use for example the `TEXINPUTS` environment variable to include LaTeX files in a different directory anywhere on your system.
-For example `TEXINPUTS=/path/to/directory//:`, where `//` means that LaTeX (and TeXiFy) will search in any subdirectory of `/path/to/directory` for the file to be included, and `:` means to include the standard content of `TEXINPUTS`. For Windows, it is similar: `TEXINPUTS=C:...\path\to\directory\\;` (note the semicolon, which adds the default value of TEXINPUTS).
+For example `TEXINPUTS=/path/to/directory//:`, where `//` means that LaTeX (and TeXiFy) will search in any subdirectory of `/path/to/directory` for the file to be included, and `:` means to include the standard content of `TEXINPUTS`. 
+
+For Windows, it is similar: `TEXINPUTS=C:...\path\to\directory\\;` (note the semicolon, which adds the default value of TEXINPUTS).
+
 Similarly, you can also set `TEXMFHOME` to some other path than the default `~/texmf`, so that sty and cls files will be searched in the `tex/latex` subdirectory or any child directory of it.
 For more information about paths resolving, see [https://www.tug.org/texinfohtml/kpathsea.html#Path-searching](https://www.tug.org/texinfohtml/kpathsea.html#Path-searching)
 
