@@ -32,6 +32,7 @@
 
     <!-- Dependencies (must be defined to ensure compatibility with other IDEs) -->
     <depends>com.intellij.modules.lang</depends>
+    <depends>com.intellij.modules.jcef</depends>
     <depends optional="true" config-file="grazie.xml">tanvd.grazi</depends>
     <depends optional="true" config-file="java.xml">com.intellij.modules.java</depends>
     <xi:include href="/META-INF/description-changenotes.xml" xpointer="xpointer(/idea-plugin/*)"/>

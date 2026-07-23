@@ -62,7 +62,7 @@ sourceSets {
     }
 }
 
-val targetVersion = "21"
+val targetVersion = "25"
 
 val kotlinJvmTarget = JvmTarget.fromTarget(targetVersion)
 
@@ -70,7 +70,7 @@ java {
     sourceCompatibility = JavaVersion.toVersion(targetVersion)
 
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(25)
     }
 }
 
@@ -107,7 +107,7 @@ dependencies {
         testFramework(TestFrameworkType.Platform)
         testFramework(TestFrameworkType.Plugin.Java)
 
-        intellijIdea("2026.1")
+        intellijIdea("2026.2")
 
         // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
         // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
@@ -122,6 +122,7 @@ dependencies {
 
         bundledPlugin("com.intellij.java")
         bundledPlugin("tanvd.grazi")
+        bundledPlugin("com.intellij.modules.jcef")
         // https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html#non-bundled-plugin
         plugin("com.firsttimeinforever.intellij.pdf.viewer.intellij-pdf-viewer:0.18.0")
         plugin("com.jetbrains.hackathon.indices.viewer:1.32")
@@ -163,6 +164,7 @@ dependencies {
 
     // Comparing versions
     implementation("org.apache.maven:maven-artifact:4.0.0-rc-2")
+    implementation("org.apache.commons:commons-collections4:4.5.0")
 
     // LaTeX rendering for preview
     implementation("org.scilab.forge:jlatexmath:1.0.7")
