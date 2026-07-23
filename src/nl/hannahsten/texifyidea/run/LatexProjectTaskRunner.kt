@@ -25,7 +25,7 @@ import org.jetbrains.concurrency.Promise
  */
 class LatexProjectTaskRunner : ProjectTaskRunner() {
 
-    override fun canRun(projectTask: ProjectTask): Boolean {
+    override fun canRun(project: Project, projectTask: ProjectTask, projectTaskContext: ProjectTaskContext?): Boolean {
         // Only run if we're only going to build LaTeX run configurations: don't interfere with other languages (e.g. maven tasks)
         return projectTask is ModuleBuildTask &&
             (

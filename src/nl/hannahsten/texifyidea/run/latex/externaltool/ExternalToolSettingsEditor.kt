@@ -81,7 +81,7 @@ class ExternalToolSettingsEditor(private val project: Project) : SettingsEditor<
             workingDirectory = LabeledComponent.create(workDirField, TexifyBundle.message("run.external.tool.settings.working.directory"))
             add(workingDirectory)
 
-            environmentVariables = EnvironmentVariablesComponent()
+            environmentVariables = EnvironmentVariablesComponent(project)
             add(environmentVariables)
         }
     }

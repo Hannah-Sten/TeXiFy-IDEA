@@ -21,9 +21,9 @@ import nl.hannahsten.texifyidea.util.files.findFile
 import nl.hannahsten.texifyidea.util.remove
 import nl.hannahsten.texifyidea.util.removeAll
 import nl.hannahsten.texifyidea.util.runInBackgroundWithoutProgress
-import org.apache.commons.collections.Buffer
-import org.apache.commons.collections.BufferUtils
-import org.apache.commons.collections.buffer.CircularFifoBuffer
+import org.apache.commons.collections4.QueueUtils.synchronizedQueue
+import org.apache.commons.collections4.queue.CircularFifoQueue
+import java.util.Queue
 
 class LatexOutputListener(
     val project: Project,
@@ -55,7 +55,7 @@ class LatexOutputListener(
     /**
      * Window of the last two log output messages.
      */
-    val window: Buffer = BufferUtils.synchronizedBuffer(CircularFifoBuffer(2))
+    var window: Queue<String> = synchronizedQueue(CircularFifoQueue(2))
 
     // For latexmk, collect the bibtex/biber messages in a separate list, so
     // we don't lose them when resetting on each new (pdfla)tex run.
@@ -161,7 +161,7 @@ class LatexOutputListener(
         }
         else {
             // Skip line if it is irrelevant.
-            if (LatexLogMessageExtractor.skip(window.firstOrNull() as? String)) {
+            if (LatexLogMessageExtractor.skip(window.firstOrNull())) {
                 // The first line might be irrelevant, but the new text could
                 // contain useful information about the file stack.
                 fileStack.update(newText)

@@ -185,8 +185,8 @@ internal object LatexBasicFragments {
         return fragment
     }
 
-    fun createEnvironmentVariablesFragment(group: String): RunConfigurationEditorFragment<LatexRunConfiguration, JComponent> {
-        val panel = EnvironmentFragmentPanel()
+    fun createEnvironmentVariablesFragment(group: String, project: Project): RunConfigurationEditorFragment<LatexRunConfiguration, JComponent> {
+        val panel = EnvironmentFragmentPanel(project)
 
         val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, JComponent>(
             "environmentVariables",
@@ -219,9 +219,9 @@ internal object LatexBasicFragments {
         return fragment
     }
 
-    private class EnvironmentFragmentPanel : JPanel(BorderLayout()) {
+    private class EnvironmentFragmentPanel(project: Project) : JPanel(BorderLayout()) {
 
-        val environmentVariables = EnvironmentVariablesComponent()
+        val environmentVariables = EnvironmentVariablesComponent(project)
         val expandMacros = JBCheckBox(TexifyBundle.message("run.latex.settings.expand.macros.in.env"))
 
         init {
