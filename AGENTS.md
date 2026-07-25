@@ -8,7 +8,6 @@ This document provides specialized guidance for AI agents contributing to this p
 The project uses the `org.jetbrains.intellij.platform` Gradle plugin.
 - Plugin dependencies are managed in `build.gradle.kts` within the `intellijPlatform` block.
 - If certain platform features (like `com.intellij.java`) fail to load in tests, ensure all required platform modules are included using `bundledModule()` or `bundledPlugin()`.
-- Use relative paths in `xi:include` tags within `plugin.xml` (e.g., `href="extensions/index.xml"`) to avoid issues in some environments.
 
 ### Project Structure
 - `src/`: Main source code (Kotlin).
@@ -24,7 +23,7 @@ Metadata for autocompletion, inspections, etc., is defined in `src/nl/hannahsten
 Refer to `Contributing-to-the-source-code.md` in the Writerside documentation for examples of how to use the DSL to add new definitions.
 
 ### Working with Lexers and Parsers
-- Grammar files (`.bnf`) and Lexer files (`.flex`) are located in `src/nl/hannahsten/texifyidea/grammar/` and `src/nl/hannahsten/texifyidea/lexer/`.
+- Grammar files (`.bnf`) and Lexer files (`.flex`) are located in `src/nl/hannahsten/texifyidea/grammar/`.
 - After modifying these files, run the corresponding Gradle tasks (e.g., `generateLatexParser`, `generateLatexLexer`) to update the generated code in `gen/`.
 
 ## Testing
