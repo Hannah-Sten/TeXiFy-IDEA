@@ -11,11 +11,17 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
+import com.intellij.openapi.module.ModuleUtil
+import com.intellij.openapi.project.rootManager
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Companion.toWslPathIfNeeded
+import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepContext
 import nl.hannahsten.texifyidea.util.Log
+import nl.hannahsten.texifyidea.util.containsAny
+import java.io.File
 import java.nio.file.Path
 import kotlin.io.path.exists
 
@@ -87,5 +93,41 @@ fun expandEnvironmentVariables(
             expandMacros()
         }
     }
-    return envVariables
+    val result = envVariables.toMutableMap()
+
+    // Add source roots to TEXINPUTS.
+    val distributionType = runConfig.getLatexDistributionType()
+    if (mainFile != null && !distributionType.isDocker()) {
+        val allRoots = ModuleUtil.findModuleForFile(mainFile, runConfig.project)?.rootManager?.sourceRoots ?: emptyArray()
+        if (allRoots.isNotEmpty()) {
+            val texinputs = result["TEXINPUTS"] ?: ""
+
+            // Limit the number of roots, in case the user has hundreds of roots it can exceed the maximum length on Windows.
+            // We use 10,000 as a safe limit, similar to the command line length limit.
+            var totalLength = texinputs.length
+            val rootsToAdd = mutableListOf<String>()
+            for (root in allRoots) {
+                val path = root.path.toWslPathIfNeeded(distributionType)
+                totalLength += path.length + 1
+                if (SystemInfo.isWindows && totalLength > 10_000) {
+                    // Including a random subset would be a confusing user experience, so we just try to guess something that maybe works
+                    Log.debug("Too many source roots to add to TEXINPUTS: found ${allRoots.size} roots.")
+                    rootsToAdd.clear()
+                    rootsToAdd.addAll(allRoots.filter { it.name.lowercase().containsAny(setOf("tex", "latex", "bib", "bibtex")) }.map { it.path.toWslPathIfNeeded(distributionType) })
+                    break
+                }
+                rootsToAdd.add(path)
+            }
+
+            if (rootsToAdd.isNotEmpty()) {
+                val separator = if (distributionType == LatexDistributionType.WSL_TEXLIVE) ":" else File.pathSeparator
+                val joinedRoots = rootsToAdd.joinToString(separator)
+                // Append the source roots to TEXINPUTS.
+                // We also add a trailing separator to make sure the original TEXINPUTS (or default) is still included.
+                result["TEXINPUTS"] = if (texinputs.isBlank()) "$joinedRoots$separator" else "$texinputs$separator$joinedRoots$separator"
+            }
+        }
+    }
+
+    return result
 }
