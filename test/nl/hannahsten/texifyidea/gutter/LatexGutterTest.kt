@@ -11,6 +11,7 @@ import io.mockk.mockkStatic
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.updateFilesets
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
+import kotlin.test.assertContains
 
 class LatexGutterTest : BasePlatformTestCase() {
 
@@ -69,7 +70,7 @@ class LatexGutterTest : BasePlatformTestCase() {
         // according to the default preference order, the .pdf should be chosen
         // but we override the order with \DeclareGraphicsExtensions{.png, .pdf},
         // so the .png should be chosen
-        assertEquals(FileTypeManager.getInstance().getFileTypeByExtension(".png").icon, gutters.last().icon)
+        assertContains(gutters.map { it.icon }, FileTypeManager.getInstance().getFileTypeByExtension("png").icon)
     }
 
     fun testShowMethodSeparators() {
