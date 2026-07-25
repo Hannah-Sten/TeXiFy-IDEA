@@ -9,8 +9,11 @@ import com.intellij.execution.util.ProgramParametersConfigurator
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.util.SystemInfo
+import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepContext
 import nl.hannahsten.texifyidea.util.Log
 import java.nio.file.Path
@@ -38,19 +41,7 @@ internal fun createCompilationHandler(
         throw ExecutionException("Could not find working directory $resolvedWorkingDirectory for file $mainFile")
     }
 
-    val envVariables = if (!runConfig.expandMacrosEnvVariables) {
-        runConfig.environmentVariables.envs
-    }
-    else {
-        val programParamsConfigurator = ProgramParametersConfigurator()
-        ExecutionManagerImpl.withEnvironmentDataContext(
-            SimpleDataContext.getSimpleContext(CommonDataKeys.VIRTUAL_FILE, mainFile, environment.dataContext),
-        ).use {
-            runConfig.environmentVariables.envs.mapValues { (_, value) ->
-                programParamsConfigurator.expandPathAndMacros(value, null, runConfig.project) ?: value
-            }
-        }
-    }
+    val envVariables = expandEnvironmentVariables(runConfig, mainFile, environment.dataContext)
 
     if (SystemInfo.isWindows && command.sumOf { it.length } > 10_000) {
         throw ExecutionException("The following command was too long to run: ${command.joinToString(" ")}")
@@ -67,4 +58,34 @@ internal fun createCompilationHandler(
     ProcessTerminatedListener.attach(handler, environment.project)
 
     return handler
+}
+
+fun expandEnvironmentVariables(
+    runConfig: LatexRunConfiguration,
+    mainFile: VirtualFile?,
+    context: DataContext?
+): Map<String?, String?> {
+    val envVariables = if (!runConfig.expandMacrosEnvVariables) {
+        runConfig.environmentVariables.envs
+    }
+    else {
+        val programParamsConfigurator = ProgramParametersConfigurator()
+        val expandMacros = {
+            runConfig.environmentVariables.envs.mapValues { (_, value) ->
+                programParamsConfigurator.expandPathAndMacros(value, null, runConfig.project) ?: value
+            }
+        }
+
+        if (mainFile != null) {
+            ExecutionManagerImpl.withEnvironmentDataContext(
+                SimpleDataContext.getSimpleContext(CommonDataKeys.VIRTUAL_FILE, mainFile, context),
+            ).use {
+                expandMacros()
+            }
+        }
+        else {
+            expandMacros()
+        }
+    }
+    return envVariables
 }

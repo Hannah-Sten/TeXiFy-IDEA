@@ -9,6 +9,7 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.rd.util.ConcurrentHashMap
+import nl.hannahsten.texifyidea.run.common.expandEnvironmentVariables
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationStaticSupport
 import nl.hannahsten.texifyidea.util.files.allChildDirectories
@@ -111,7 +112,9 @@ fun getTexinputsPaths(
         project.latexTemplateRunConfig()?.let { selectedConfigurations.add(it) }
     }
 
-    val runConfigVariables = selectedConfigurations.map { it.environmentVariables.envs }
+    val runConfigVariables = selectedConfigurations.map {
+        expandEnvironmentVariables(it, null, null)
+    }
 
     val configurationTexinputsVariables = runConfigVariables.mapNotNull { it.getOrDefault("TEXINPUTS", null) }
     val configurationTexmfhomeVariables = runConfigVariables.mapNotNull { it.getOrDefault("TEXMFHOME", null) }
