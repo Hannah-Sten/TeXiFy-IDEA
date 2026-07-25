@@ -4,6 +4,7 @@ import com.intellij.execution.configuration.EnvironmentVariablesComponent
 import com.intellij.execution.impl.RunnerAndConfigurationSettingsImpl
 import com.intellij.execution.ui.RunConfigurationEditorFragment
 import com.intellij.ide.macro.MacrosDialog
+import com.intellij.ide.setToolTipText
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.project.Project
@@ -12,6 +13,7 @@ import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.openapi.ui.TextBrowseFolderListener
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
+import com.intellij.openapi.util.text.HtmlChunk
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.fields.ExtendableTextComponent
 import com.intellij.ui.components.fields.ExtendableTextField
@@ -185,8 +187,8 @@ internal object LatexBasicFragments {
         return fragment
     }
 
-    fun createEnvironmentVariablesFragment(group: String): RunConfigurationEditorFragment<LatexRunConfiguration, JComponent> {
-        val panel = EnvironmentFragmentPanel()
+    fun createEnvironmentVariablesFragment(group: String, project: Project): RunConfigurationEditorFragment<LatexRunConfiguration, JComponent> {
+        val panel = EnvironmentFragmentPanel(project)
 
         val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, JComponent>(
             "environmentVariables",
@@ -219,9 +221,9 @@ internal object LatexBasicFragments {
         return fragment
     }
 
-    private class EnvironmentFragmentPanel : JPanel(BorderLayout()) {
+    private class EnvironmentFragmentPanel(project: Project) : JPanel(BorderLayout()) {
 
-        val environmentVariables = EnvironmentVariablesComponent()
+        val environmentVariables = EnvironmentVariablesComponent(project)
         val expandMacros = JBCheckBox(TexifyBundle.message("run.latex.settings.expand.macros.in.env"))
 
         init {
@@ -334,9 +336,9 @@ internal object LatexBasicFragments {
     }
 
     private fun applyTooltip(component: JComponent, tooltip: String) {
-        component.toolTipText = tooltip
+        component.setToolTipText(HtmlChunk.text(tooltip))
         if (component is LabeledComponent<*>) {
-            component.component.toolTipText = tooltip
+            component.component.setToolTipText(HtmlChunk.text(tooltip))
         }
     }
 }

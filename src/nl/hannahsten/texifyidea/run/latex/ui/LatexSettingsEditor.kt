@@ -68,7 +68,7 @@ class LatexSettingsEditor(
         fragments.add(LatexBasicFragments.createWorkingDirectoryFragment(commonGroupName, project))
         fragments.add(LatexBasicFragments.createOutputDirectoryFragment(commonGroupName, project))
         fragments.add(LatexBasicFragments.createAuxiliaryDirectoryFragment(commonGroupName, project))
-        fragments.add(LatexBasicFragments.createEnvironmentVariablesFragment(commonGroupName))
+        fragments.add(LatexBasicFragments.createEnvironmentVariablesFragment(commonGroupName, project))
         fragments.add(LatexCompileSequenceFragment(compileSequenceComponent))
         fragments.add(LatexStepSettingsFragment(stepSettingsComponent, ::onStepSettingsChanged))
 

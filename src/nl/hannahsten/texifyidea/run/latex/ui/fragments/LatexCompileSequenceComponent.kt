@@ -3,12 +3,8 @@ package nl.hannahsten.texifyidea.run.latex.ui.fragments
 import com.intellij.execution.ui.TagButton
 import com.intellij.icons.AllIcons
 import com.intellij.ide.DataManager
-import com.intellij.ide.dnd.DnDAction
-import com.intellij.ide.dnd.DnDDragStartBean
-import com.intellij.ide.dnd.DnDEvent
-import com.intellij.ide.dnd.DnDManager
-import com.intellij.ide.dnd.DnDSource
-import com.intellij.ide.dnd.DnDTarget
+import com.intellij.ide.dnd.*
+import com.intellij.ide.setToolTipText
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -17,6 +13,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.util.Conditions
 import com.intellij.openapi.util.Disposer
+import com.intellij.openapi.util.text.HtmlChunk
 import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.ui.InplaceButton
 import com.intellij.ui.JBColor
@@ -34,11 +31,11 @@ import java.awt.Rectangle
 import java.awt.event.InputEvent
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
-import kotlin.math.max
-import kotlin.math.min
 import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JPanel
+import kotlin.math.max
+import kotlin.math.min
 
 internal class LatexCompileSequenceComponent(
     private val editor: LatexSettingsEditor,
@@ -61,7 +58,7 @@ internal class LatexCompileSequenceComponent(
         autoConfigureSteps()
     }.apply {
         border = JBUI.Borders.emptyRight(5)
-        toolTipText = TexifyBundle.message("run.step.ui.compile.sequence.auto.configure.tooltip")
+        setToolTipText(HtmlChunk.text(TexifyBundle.message("run.step.ui.compile.sequence.auto.configure.tooltip")))
     }
 
     private val addPanel = JPanel().apply {
@@ -710,7 +707,7 @@ internal class LatexCompileSequenceComponent(
 
         fun updateFromStepConfig() {
             updateButton(stepConfig.displayName(), LatexStepUiSupport.icon(stepConfig.type))
-            myButton.toolTipText = TexifyBundle.message("run.step.ui.compile.sequence.step.tooltip")
+            myButton.setToolTipText(HtmlChunk.text(TexifyBundle.message("run.step.ui.compile.sequence.step.tooltip")))
         }
 
         fun labelTextForTest(): String = myButton.text ?: ""

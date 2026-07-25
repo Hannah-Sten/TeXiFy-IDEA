@@ -19,13 +19,74 @@ class GrazieInspectionTest : BasePlatformTestCase() {
 
     override fun getTestDataPath(): String = "test/resources/inspections/grazie"
 
+    companion object {
+        @Volatile
+        private var germanSetupDone = false
+    }
+
     override fun setUp() {
         super.setUp()
-        myFixture.enableInspections(GrazieInspection(), GrazieSpellCheckingInspection(), GrazieInspection.Grammar(), GrazieInspection.Style())
         (myFixture as? CodeInsightTestFixtureImpl)?.canChangeDocumentDuringHighlighting(true)
 
-        while (ApplicationManager.getApplication().messageBus.hasUndeliveredEvents(Topic(GrazieStateLifecycle::class.java))) {
-            Thread.sleep(100)
+        setupLanguages()
+
+        myFixture.enableInspections(GrazieInspection(), GrazieSpellCheckingInspection(), GrazieInspection.Grammar(), GrazieInspection.Style())
+
+        // Reset rules to default for each test
+        updateConfig { it.copy(userEnabledRules = emptySet()) }
+    }
+
+    private fun waitForGrazie() {
+        val topic = Topic(GrazieStateLifecycle::class.java)
+        var tries = 0
+        while (tries < 10) {
+            if (ApplicationManager.getApplication().messageBus.hasUndeliveredEvents(topic)) {
+                tries = 0
+                Thread.sleep(100)
+            }
+            else {
+                tries++
+                Thread.sleep(100)
+            }
+        }
+    }
+
+    private fun updateConfig(change: (GrazieConfig.State) -> GrazieConfig.State) {
+        GrazieConfig.update(change)
+        waitForGrazie()
+    }
+
+    private fun setupLanguages() {
+        if (germanSetupDone) return
+        synchronized(GrazieInspectionTest::class.java) {
+            if (germanSetupDone) return
+
+            repeat(3) { attempt ->
+                try {
+                    GrazieRemote.downloadWithoutLicenseCheck(Lang.GERMANY_GERMAN)
+                    // Try to access it to ensure it's loaded
+                    Lang.GERMANY_GERMAN.jLanguage
+                    return@repeat
+                }
+                catch (e: Throwable) {
+                    if (attempt == 2) {
+                        System.err.println("Failed to setup German after 3 attempts: ${e.message}")
+                        e.printStackTrace()
+                    }
+                    Thread.sleep(2000)
+                }
+            }
+
+            updateConfig { state ->
+                val langs = state.enabledLanguages + Lang.GERMANY_GERMAN + Lang.AMERICAN_ENGLISH
+                state.copy(enabledLanguages = langs)
+            }
+
+            // Force load in this thread to avoid CME during inspections
+            Lang.AMERICAN_ENGLISH.jLanguage
+            Lang.GERMANY_GERMAN.jLanguage
+
+            germanSetupDone = true
         }
     }
 
@@ -100,8 +161,6 @@ class GrazieInspectionTest : BasePlatformTestCase() {
     }
 
     fun testGerman() {
-        GrazieRemote.downloadWithoutLicenseCheck(Lang.GERMANY_GERMAN)
-        GrazieConfig.update { it.copy(enabledLanguages = it.enabledLanguages + Lang.GERMANY_GERMAN) }
         myFixture.configureByText(
             LatexFileType,
             """
@@ -119,8 +178,6 @@ class GrazieInspectionTest : BasePlatformTestCase() {
     }
 
     fun testGermanList() {
-        GrazieRemote.downloadWithoutLicenseCheck(Lang.GERMANY_GERMAN)
-        GrazieConfig.update { it.copy(enabledLanguages = it.enabledLanguages + Lang.GERMANY_GERMAN) }
         myFixture.configureByText(
             LatexFileType,
             """
@@ -132,8 +189,6 @@ class GrazieInspectionTest : BasePlatformTestCase() {
     }
 
     fun testGermanCommandSpacing() {
-        GrazieRemote.downloadWithoutLicenseCheck(Lang.GERMANY_GERMAN)
-        GrazieConfig.update { it.copy(enabledLanguages = it.enabledLanguages + Lang.GERMANY_GERMAN) }
         myFixture.configureByText(
             LatexFileType,
             $$"""
@@ -144,8 +199,6 @@ class GrazieInspectionTest : BasePlatformTestCase() {
     }
 
     fun testGermanGlossaries() {
-        GrazieRemote.downloadWithoutLicenseCheck(Lang.GERMANY_GERMAN)
-        GrazieConfig.update { it.copy(enabledLanguages = it.enabledLanguages + Lang.GERMANY_GERMAN) }
         myFixture.configureByText(
             LatexFileType,
             """
@@ -156,8 +209,6 @@ class GrazieInspectionTest : BasePlatformTestCase() {
     }
 
     fun testTabular() {
-        GrazieRemote.downloadWithoutLicenseCheck(Lang.GERMANY_GERMAN)
-        GrazieConfig.update { it.copy(enabledLanguages = it.enabledLanguages + Lang.GERMANY_GERMAN) }
         myFixture.configureByText(
             LatexFileType,
             $$"""
@@ -178,19 +229,19 @@ class GrazieInspectionTest : BasePlatformTestCase() {
      */
 
     fun testCommaInSentence() {
-        GrazieConfig.update { it.copy(userEnabledRules = setOf("LanguageTool.EN.COMMA_PARENTHESIS_WHITESPACE")) }
+        updateConfig { it.copy(userEnabledRules = setOf("LanguageTool.EN.COMMA_PARENTHESIS_WHITESPACE")) }
         myFixture.configureByText(LatexFileType, """\label{fig} Similar to the structure presented in \autoref{fig}, it is.""")
         myFixture.checkHighlighting()
     }
 
     fun testCommandsInSentence() {
-        GrazieConfig.update { it.copy(userEnabledRules = setOf("LanguageTool.EN.CONSECUTIVE_SPACES")) }
+        updateConfig { it.copy(userEnabledRules = setOf("LanguageTool.EN.CONSECUTIVE_SPACES")) }
         myFixture.configureByText(LatexFileType, """The principles of a generic \ac{PID} controller.""")
         myFixture.checkHighlighting()
     }
 
     fun testCustomCommand() {
-        GrazieConfig.update { it.copy(userEnabledRules = setOf("LanguageTool.EN.DT_JJ_NO_NOUN", "LanguageTool.EN.DT_JJ_NO_NOUN [1]", "LanguageTool.EN.DT_JJ_NO_NOUN [2]", "LanguageTool.EN.MISSING_NOUN [1]", "LanguageTool.EN.MISSING_NOUN")) }
+        updateConfig { it.copy(userEnabledRules = setOf("LanguageTool.EN.DT_JJ_NO_NOUN", "LanguageTool.EN.DT_JJ_NO_NOUN [1]", "LanguageTool.EN.DT_JJ_NO_NOUN [2]", "LanguageTool.EN.MISSING_NOUN [1]", "LanguageTool.EN.MISSING_NOUN")) }
         myFixture.configureByText(
             LatexFileType,
             """

@@ -1,14 +1,12 @@
 package nl.hannahsten.texifyidea.settings
 
 import com.intellij.execution.configurations.RuntimeConfigurationError
+import com.intellij.ide.setToolTipText
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.options.SearchableConfigurable
-import com.intellij.openapi.ui.Messages
-import com.intellij.openapi.ui.ComboBox
-import com.intellij.openapi.ui.TextBrowseFolderListener
-import com.intellij.openapi.ui.TextFieldWithBrowseButton
-import com.intellij.openapi.ui.showOkCancelDialog
+import com.intellij.openapi.ui.*
 import com.intellij.openapi.util.SystemInfo
+import com.intellij.openapi.util.text.HtmlChunk
 import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBLabel
@@ -18,8 +16,8 @@ import nl.hannahsten.texifyidea.run.pdfviewer.SumatraViewer
 import nl.hannahsten.texifyidea.util.files.LatexIgnoredFileMasks
 import java.awt.Dimension
 import java.awt.FlowLayout
-import javax.swing.JButton
 import javax.swing.BoxLayout
+import javax.swing.JButton
 import javax.swing.JComponent
 import javax.swing.JPanel
 import kotlin.enums.EnumEntries
@@ -205,7 +203,7 @@ class TexifyConfigurable : SearchableConfigurable {
 
     private fun JPanel.addIgnoredLatexMasksAction() {
         val button = JButton(TexifyBundle.message("settings.ignored.masks.action.text")).apply {
-            toolTipText = TexifyBundle.message("settings.ignored.masks.action.tooltip")
+            setToolTipText(HtmlChunk.text(TexifyBundle.message("settings.ignored.masks.action.tooltip")))
             addActionListener {
                 promptAndApplyIgnoredLatexMasks()
             }
@@ -295,12 +293,12 @@ class TexifyConfigurable : SearchableConfigurable {
         subPanel.add(label)
         val tips = TexifyBundle.message("settings.fileset.refresh.period.tooltip")
 
-        label.toolTipText = tips
+        label.setToolTipText(HtmlChunk.text(tips))
         filesetExpirationTimeMs = IntegerField(TexifyBundle.message("settings.fileset.expiration.time.ms"), 0, Int.MAX_VALUE).apply {
             defaultValue = TexifySettings.DEFAULT_FILESET_EXPIRATION_TIME_MS
             value = settings.filesetExpirationTimeMs
             preferredSize = Dimension(150, preferredSize.height)
-            toolTipText = tips
+            setToolTipText(HtmlChunk.text(tips))
             subPanel.add(this)
         }
         panel.add(subPanel)

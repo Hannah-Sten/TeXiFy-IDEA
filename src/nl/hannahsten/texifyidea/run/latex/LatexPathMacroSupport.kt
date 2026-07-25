@@ -32,7 +32,7 @@ internal object LatexPathMacroSupport {
             return configuratorExpanded
         }
 
-        val pathExpanded = PathMacroManager.getInstance(project).expandPath(configuratorExpanded)
+        val pathExpanded = PathMacroManager.getInstance(project).expandPath(configuratorExpanded) ?: return configuratorExpanded
         if (!pathExpanded.contains('$')) {
             return pathExpanded
         }

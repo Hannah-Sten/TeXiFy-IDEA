@@ -1,11 +1,13 @@
 package nl.hannahsten.texifyidea.ui.symbols
 
+import com.intellij.ide.setToolTipText
 import com.intellij.openapi.application.readAction
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.util.IconLoader
+import com.intellij.openapi.util.text.HtmlChunk
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.DocumentAdapter
@@ -121,11 +123,15 @@ open class SymbolToolWindowFactory : ToolWindowFactory, DumbAware {
 
             // Create a nice tooltip.
             val packageInfo = if (dependency == LatexLib.BASE) "" else """<b>Package:</b> ${dependency.name}<br>"""
-            toolTipText = """<html>
+            setToolTipText(
+                HtmlChunk.raw(
+                    """<html>
                 <p><b>Command:</b> ${generatedLatex.replace("<cursor>", "")}<br>
                 $packageInfo
                 <p><i>$description</i></p>
             </html>"""
+                )
+            )
 
             // Insert symbol when pressed.
             addActionListener { insertSymbol(this@createButton) }

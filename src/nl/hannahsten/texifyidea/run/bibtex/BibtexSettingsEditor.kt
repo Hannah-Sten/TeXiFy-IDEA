@@ -106,7 +106,7 @@ class BibtexSettingsEditor(private val project: Project) : SettingsEditor<Bibtex
             compilerArguments = LabeledComponent.create(argumentsField, argumentsTitle)
             add(compilerArguments)
 
-            environmentVariables = EnvironmentVariablesComponent()
+            environmentVariables = EnvironmentVariablesComponent(project)
             add(environmentVariables)
 
             add(SeparatorComponent())

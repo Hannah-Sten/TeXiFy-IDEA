@@ -1,9 +1,10 @@
 package nl.hannahsten.texifyidea.run.latex.ui.fragments
 
 import com.intellij.execution.ui.FragmentedSettings
-import com.intellij.execution.ui.FragmentedSettingsEditor
 import com.intellij.execution.ui.FragmentedSettingsBuilder
+import com.intellij.execution.ui.FragmentedSettingsEditor
 import com.intellij.execution.ui.SettingsEditorFragment
+import com.intellij.ide.setToolTipText
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
@@ -11,6 +12,7 @@ import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.openapi.ui.TextBrowseFolderListener
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.util.NlsContexts
+import com.intellij.openapi.util.text.HtmlChunk
 import com.intellij.util.ui.ComponentWithEmptyText
 import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.run.latex.LatexStepRunConfigurationOptions
@@ -97,9 +99,9 @@ internal abstract class AbstractStepFragmentedEditor<TStep : LatexStepRunConfigu
     )
 
     protected fun applyTooltip(component: JComponent, tooltip: String) {
-        component.toolTipText = tooltip
+        component.setToolTipText(HtmlChunk.text(tooltip))
         if (component is LabeledComponent<*>) {
-            component.component.toolTipText = tooltip
+            component.component.setToolTipText(HtmlChunk.text(tooltip))
         }
     }
 }

@@ -10,9 +10,9 @@ import nl.hannahsten.texifyidea.run.bibtex.logtab.messagehandlers.errors.*
 import nl.hannahsten.texifyidea.run.bibtex.logtab.messagehandlers.warnings.*
 import nl.hannahsten.texifyidea.run.latex.logtab.ui.LatexCompileMessageTreeView
 import nl.hannahsten.texifyidea.util.files.findFile
-import org.apache.commons.collections.Buffer
-import org.apache.commons.collections.BufferUtils
-import org.apache.commons.collections.buffer.CircularFifoBuffer
+import org.apache.commons.collections4.QueueUtils.synchronizedQueue
+import org.apache.commons.collections4.queue.CircularFifoQueue
+import java.util.Queue
 
 /**
  *
@@ -34,7 +34,7 @@ class BibtexOutputListener(
 ) : ProcessListener {
 
     // Assume the window size is large enough to hold any message at once
-    var window: Buffer = BufferUtils.synchronizedBuffer(CircularFifoBuffer(5))
+    var window: Queue<String> = synchronizedQueue(CircularFifoQueue(5))
 
     /** Currently open bib file. */
     var currentFile: String = ""
