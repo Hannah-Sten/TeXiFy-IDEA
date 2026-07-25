@@ -12,7 +12,7 @@ fun properties(key: String) = project.findProperty(key).toString()
 
 // NOTE: when updating versions, also update Qodana in qodana.yaml
 plugins {
-    id("org.jetbrains.intellij.platform") version "2.16.0"
+    id("org.jetbrains.intellij.platform") version "2.18.1"
     kotlin("jvm") version ("2.4.0")
     kotlin("plugin.serialization") version ("2.4.0")
 
@@ -26,7 +26,7 @@ plugins {
     id("de.undercouch.download") version "5.7.0"
 
     // Test coverage
-    id("org.jetbrains.kotlinx.kover") version "0.9.8"
+    id("org.jetbrains.kotlinx.kover") version "0.9.9"
 
     // Linting
     id("org.jlleitschuh.gradle.ktlint") version "14.0.1"
@@ -36,7 +36,7 @@ plugins {
 
     id("org.jetbrains.changelog") version "2.5.0"
     id("org.jetbrains.grammarkit") version "2023.3.0.3"
-    id("io.sentry.jvm.gradle") version "6.12.0"
+    id("io.sentry.jvm.gradle") version "6.16.0"
 }
 
 group = "nl.hannahsten"
@@ -121,6 +121,7 @@ dependencies {
 //    localPath.set("/home/thomas/.local/share/JetBrains/Toolbox/apps/PyCharm-P/ch-0/213.6777.50/")
 
         bundledPlugin("com.intellij.java")
+        bundledModule("intellij.platform.structureView")
         bundledPlugin("tanvd.grazi")
         bundledPlugin("com.intellij.modules.jcef")
         // https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html#non-bundled-plugin
@@ -147,19 +148,19 @@ dependencies {
     implementation("com.beust:klaxon:5.6")
 
     // Parsing xml
-    implementation("com.fasterxml.jackson.core:jackson-core:2.22.0")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.22.0")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-toml:2.22.0")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.22.0")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.22.1")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.22.1")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-toml:2.22.1")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.22.1")
 
     // Http requests
-    implementation("io.ktor:ktor-client-core:3.5.0")
-    implementation("io.ktor:ktor-client-cio:3.5.0")
-    implementation("io.ktor:ktor-client-auth:3.5.0")
-    implementation("io.ktor:ktor-client-content-negotiation:3.5.0")
-    implementation("io.ktor:ktor-server-core:3.5.0")
-    implementation("io.ktor:ktor-server-jetty-jakarta:3.5.0")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:3.5.0")
+    implementation("io.ktor:ktor-client-core:3.5.1")
+    implementation("io.ktor:ktor-client-cio:3.5.1")
+    implementation("io.ktor:ktor-client-auth:3.5.1")
+    implementation("io.ktor:ktor-client-content-negotiation:3.5.1")
+    implementation("io.ktor:ktor-server-core:3.5.1")
+    implementation("io.ktor:ktor-server-jetty-jakarta:3.5.1")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:3.5.1")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
 
     // Comparing versions
@@ -180,11 +181,11 @@ dependencies {
 
     // Also implementation junit 4, just in case
     testImplementation("junit:junit:4.13.2")
-    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:6.1.0")
+    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:6.1.2")
 
     // Use junit 5 for test cases
-    testImplementation("org.junit.jupiter:junit-jupiter-api:6.1.0")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:6.1.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:6.1.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:6.1.2")
 
     // Enable use of the JUnitPlatform Runner within the IDE
     testImplementation("org.junit.platform:junit-platform-runner:1.14.4")
