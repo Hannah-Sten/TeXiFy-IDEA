@@ -2,6 +2,8 @@ package nl.hannahsten.texifyidea.run.latex.ui.fragments
 
 import com.intellij.execution.impl.RunnerAndConfigurationSettingsImpl
 import com.intellij.execution.ui.RunConfigurationEditorFragment
+import com.intellij.ide.setToolTipText
+import com.intellij.openapi.util.text.HtmlChunk
 import com.intellij.util.ui.JBUI
 import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
@@ -43,12 +45,12 @@ internal class LatexCompileSequenceFragment(
         private fun wrap(component: LatexCompileSequenceComponent): JComponent {
             val tooltip = TexifyBundle.message("run.step.ui.compile.sequence.tooltip")
             val panel = JPanel(BorderLayout())
-            panel.toolTipText = tooltip
+            panel.setToolTipText(HtmlChunk.text(tooltip))
             val headerAction = component.headerActionComponent()
 
             val label = JLabel(TexifyBundle.message("run.step.ui.compile.sequence.title")).apply {
                 font = JBUI.Fonts.label().deriveFont(Font.BOLD)
-                toolTipText = tooltip
+                setToolTipText(HtmlChunk.text(tooltip))
             }
             val header = JPanel(BorderLayout()).apply {
                 add(label, BorderLayout.WEST)
@@ -61,9 +63,9 @@ internal class LatexCompileSequenceFragment(
                     BorderLayout.EAST,
                 )
             }
-            component.toolTipText = tooltip
+            component.setToolTipText(HtmlChunk.text(tooltip))
             if (headerAction.toolTipText.isNullOrBlank()) {
-                headerAction.toolTipText = tooltip
+                headerAction.setToolTipText(HtmlChunk.text(tooltip))
             }
 
             panel.add(header, BorderLayout.NORTH)

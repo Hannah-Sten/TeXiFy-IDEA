@@ -4,6 +4,7 @@ import com.intellij.execution.configuration.EnvironmentVariablesComponent
 import com.intellij.execution.impl.RunnerAndConfigurationSettingsImpl
 import com.intellij.execution.ui.RunConfigurationEditorFragment
 import com.intellij.ide.macro.MacrosDialog
+import com.intellij.ide.setToolTipText
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.project.Project
@@ -12,6 +13,7 @@ import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.LabeledComponent
 import com.intellij.openapi.ui.TextBrowseFolderListener
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
+import com.intellij.openapi.util.text.HtmlChunk
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.fields.ExtendableTextComponent
 import com.intellij.ui.components.fields.ExtendableTextField
@@ -334,9 +336,9 @@ internal object LatexBasicFragments {
     }
 
     private fun applyTooltip(component: JComponent, tooltip: String) {
-        component.toolTipText = tooltip
+        component.setToolTipText(HtmlChunk.text(tooltip))
         if (component is LabeledComponent<*>) {
-            component.component.toolTipText = tooltip
+            component.component.setToolTipText(HtmlChunk.text(tooltip))
         }
     }
 }

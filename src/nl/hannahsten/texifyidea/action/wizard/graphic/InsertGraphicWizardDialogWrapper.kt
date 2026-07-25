@@ -1,10 +1,12 @@
 package nl.hannahsten.texifyidea.action.wizard.graphic
 
+import com.intellij.ide.setToolTipText
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.TextBrowseFolderListener
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
+import com.intellij.openapi.util.text.HtmlChunk
 import com.intellij.ui.TitledSeparator
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBTextField
@@ -96,7 +98,7 @@ open class InsertGraphicWizardDialogWrapper(val initialFilePath: String = "") : 
      * The angle option for the graphic. When empty, no angle. Not necessarily a number.
      */
     private val txtAngle = JBTextField("").apply {
-        toolTipText = "Degrees, anticlockwise"
+        setToolTipText(HtmlChunk.text("Degrees, anticlockwise"))
         addTextChangeListener {
             updateGraphicsOptions("angle")
         }
