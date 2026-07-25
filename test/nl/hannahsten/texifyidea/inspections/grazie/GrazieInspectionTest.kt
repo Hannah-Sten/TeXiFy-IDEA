@@ -60,7 +60,23 @@ class GrazieInspectionTest : BasePlatformTestCase() {
         if (germanSetupDone) return
         synchronized(GrazieInspectionTest::class.java) {
             if (germanSetupDone) return
-            GrazieRemote.downloadWithoutLicenseCheck(Lang.GERMANY_GERMAN)
+
+            repeat(3) { attempt ->
+                try {
+                    GrazieRemote.downloadWithoutLicenseCheck(Lang.GERMANY_GERMAN)
+                    // Try to access it to ensure it's loaded
+                    Lang.GERMANY_GERMAN.jLanguage
+                    return@repeat
+                }
+                catch (e: Throwable) {
+                    if (attempt == 2) {
+                        System.err.println("Failed to setup German after 3 attempts: ${e.message}")
+                        e.printStackTrace()
+                    }
+                    Thread.sleep(2000)
+                }
+            }
+
             updateConfig { state ->
                 val langs = state.enabledLanguages + Lang.GERMANY_GERMAN + Lang.AMERICAN_ENGLISH
                 state.copy(enabledLanguages = langs)
