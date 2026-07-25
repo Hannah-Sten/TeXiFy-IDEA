@@ -4,6 +4,9 @@
 
 ### Added
 * Provide Chinese translations for all plugin text and messages, by @Ezrnest
+* Include environment variables from template run configurations when resolving file references
+* Resolve macros in environment variables
+* Add source roots to TEXINPUTS
 
 ### Fixed
 

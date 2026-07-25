@@ -9,9 +9,9 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.rd.util.ConcurrentHashMap
+import nl.hannahsten.texifyidea.run.common.expandEnvironmentVariables
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationStaticSupport
-import nl.hannahsten.texifyidea.util.SystemEnvironment.Companion.isAvailable
 import nl.hannahsten.texifyidea.util.files.allChildDirectories
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import java.io.File
@@ -101,14 +101,25 @@ fun getTexinputsPaths(
     val runManager = RunManagerImpl.getInstanceImpl(project) as RunManager
     val allConfigurations = runManager.allConfigurationsList
         .filterIsInstance<LatexRunConfiguration>()
-    val selectedConfiguratios = if (rootFiles.isEmpty()) allConfigurations
-    else allConfigurations.filter { LatexRunConfigurationStaticSupport.resolveMainFile(it) in rootFiles }
-    val runConfigVariables = selectedConfiguratios.map { it.environmentVariables.envs }
+    val selectedConfigurations = (
+        if (rootFiles.isEmpty()) allConfigurations
+        else allConfigurations.filter { LatexRunConfigurationStaticSupport.resolveMainFile(it) in rootFiles }
+        )
+        .toMutableList()
+    // In case the file has not been run yet, but would use variables from the template
+    // if it would be run, use those variables as if they were set.
+    if (rootFiles.isEmpty() || selectedConfigurations.isEmpty()) {
+        project.latexTemplateRunConfig()?.let { selectedConfigurations.add(it) }
+    }
+
+    val runConfigVariables = selectedConfigurations.map {
+        expandEnvironmentVariables(it, null, null)
+    }
 
     val configurationTexinputsVariables = runConfigVariables.mapNotNull { it.getOrDefault("TEXINPUTS", null) }
     val configurationTexmfhomeVariables = runConfigVariables.mapNotNull { it.getOrDefault("TEXMFHOME", null) }
 
-    val latexmkTexinputs = selectedConfiguratios.map { LatexmkRcFileFinder.getTexinputsVariable(latexmkSearchDirectory ?: project.guessProjectDir() ?: return@map null, it, project) }
+    val latexmkTexinputs = selectedConfigurations.map { LatexmkRcFileFinder.getTexinputsVariable(latexmkSearchDirectory ?: project.guessProjectDir() ?: return@map null, it, project) }
 
     val systemTexinputs = listOf(if (expandPaths) SystemEnvironment.texinputs else System.getenv("TEXINPUTS"))
     val systemTexmfhome = listOf(if (expandPaths) SystemEnvironment.texmfhome else System.getenv("TEXMFHOME"))

@@ -1,6 +1,7 @@
 package nl.hannahsten.texifyidea.util
 
 import com.intellij.execution.RunManager
+import com.intellij.execution.configurations.runConfigurationType
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.ApplicationManager
@@ -21,7 +22,6 @@ import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.modules.LatexModuleType
-import nl.hannahsten.texifyidea.run.latex.LatexConfigurationFactory
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationType
 import nl.hannahsten.texifyidea.util.files.allChildFiles
@@ -117,7 +117,9 @@ fun Project?.selectedRunConfig(): LatexRunConfiguration? = this?.let {
  */
 fun Project?.latexTemplateRunConfig(): LatexRunConfiguration? = this?.let {
     val runManager = RunManager.getInstance(it)
-    runManager.getConfigurationTemplate(LatexConfigurationFactory(LatexRunConfigurationType())).configuration as? LatexRunConfiguration
+    val latexType = runConfigurationType<LatexRunConfigurationType>()
+    val factory = latexType.configurationFactories[0]
+    runManager.getConfigurationTemplate(factory).configuration as? LatexRunConfiguration
 }
 
 /**

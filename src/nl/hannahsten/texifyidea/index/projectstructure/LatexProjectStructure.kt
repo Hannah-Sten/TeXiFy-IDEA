@@ -9,6 +9,7 @@ import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.IndexNotReadyException
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectFileIndex
+import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
@@ -17,8 +18,6 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.search.FilenameIndex
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.search.ProjectScope
-import kotlin.time.Clock
-import kotlin.time.Instant
 import nl.hannahsten.texifyidea.action.debug.SimplePerformanceTracker
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
@@ -30,8 +29,10 @@ import java.io.File
 import java.nio.file.InvalidPathException
 import java.nio.file.Path
 import kotlin.io.path.Path
+import kotlin.time.Clock
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Instant
 
 /**
  * Provides methods to build and manage the fileset structure for LaTeX files.
@@ -91,14 +92,9 @@ object LatexProjectStructure {
         }.toMutableSet()
         val texInputPaths = getTexinputsPaths(project, emptySet()).mapNotNull { LocalFileSystem.getInstance().findFileByPath(it) }.toMutableSet()
 
-        /*
-        // "Try content roots, also for non-MiKTeX situations to allow using this as a workaround in case references can't be resolved the regular way"
-        // But it may resolve to some file while latex cannot find it, leading to hidden warnings.
-
+        // Source roots are added to TEXINPUTS in CompilationProcessFactory
         val contentSourceRoots = ProjectRootManager.getInstance(project).contentSourceRoots
         texInputPaths += contentSourceRoots
-        bibInputPaths += contentSourceRoots
-         */
 
         return ProjectInfo(
             project, texInputPaths, bibInputPaths
