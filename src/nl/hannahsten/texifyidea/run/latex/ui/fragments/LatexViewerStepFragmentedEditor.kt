@@ -2,9 +2,9 @@ package nl.hannahsten.texifyidea.run.latex.ui.fragments
 
 import com.intellij.execution.ui.CommonParameterFragments
 import com.intellij.execution.ui.SettingsEditorFragment
-import com.intellij.openapi.util.text.TextWithMnemonic
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.LabeledComponent
+import com.intellij.openapi.util.text.TextWithMnemonic
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBTextField
 import nl.hannahsten.texifyidea.TexifyBundle
@@ -146,7 +146,7 @@ internal class LatexViewerStepFragmentedEditor(
     }
 
     private fun JBCheckBox.setTextWithMnemonic(value: String) {
-        val mnemonicText = TextWithMnemonic.fromMnemonicText(value) ?: TextWithMnemonic.parse(value)
+        val mnemonicText = TextWithMnemonic.parse(value)
         text = mnemonicText.text
         mnemonic = mnemonicText.mnemonicCode
         displayedMnemonicIndex = mnemonicText.mnemonicIndex

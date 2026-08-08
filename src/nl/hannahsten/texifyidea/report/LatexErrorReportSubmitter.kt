@@ -8,7 +8,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
 import com.intellij.ide.DataManager
 import com.intellij.ide.plugins.IdeaPluginDescriptor
-import com.intellij.ide.plugins.PluginManagerCore
+import com.intellij.ide.plugins.PluginDetailsService
 import com.intellij.idea.IdeaLogger
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.application.ApplicationInfo
@@ -154,7 +154,7 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
         }
 
         val currentVersion by lazy {
-            PluginManagerCore.getPlugin(PluginId.getId("nl.rubensten.texifyidea"))?.version
+            PluginDetailsService.getInstance().findDetails(PluginId.getId("nl.rubensten.texifyidea"))?.version
         }
 
         /**

@@ -1,9 +1,10 @@
 package nl.hannahsten.texifyidea.ui
 
-import com.intellij.ide.plugins.PluginManager
+import com.intellij.ide.plugins.PluginDetailsService
 import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.projectView.ProjectViewNode
 import com.intellij.ide.projectView.ProjectViewNodeDecorator
+import com.intellij.openapi.extensions.PluginId
 import nl.hannahsten.texifyidea.TexifyIcons
 import java.util.*
 
@@ -29,7 +30,7 @@ class TeXiFyProjectViewNodeDecorator : ProjectViewNodeDecorator {
 
         // Allow Material design plugins to take over the icons
         // For file types registered in plugin.xml this happens automatically
-        if (PluginManager.getLoadedPlugins().none { it.name.contains("Material") }) {
+        if (setOf("com.mallowigi", "com.chrisrm.idea.MaterialThemeUI").none { PluginDetailsService.getInstance().isLoaded(PluginId(it)) }) {
             // Make sure to not override non-LaTeX extensions with the default icon (from FileTypeManager#getFileTypeByExtension), but allow plugin-provided icons
             val icon = TexifyIcons.getIconFromExtension(extension.lowercase(Locale.getDefault()), default = null) ?: return
             presentationData.setIcon(icon)
