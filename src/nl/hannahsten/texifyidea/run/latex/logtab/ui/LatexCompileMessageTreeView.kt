@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.run.latex.logtab.ui
 
 import com.intellij.icons.AllIcons
-import com.intellij.ide.IdeBundle
 import com.intellij.ide.errorTreeView.ErrorTreeElement
 import com.intellij.ide.errorTreeView.GroupingElement
 import com.intellij.ide.errorTreeView.NewErrorTreeViewPanel
@@ -32,7 +31,8 @@ class LatexCompileMessageTreeView(
 
         // Search for the information action toggle so we can remove it (as we don't use it).
         val informationAction = group.childActionsOrStubs.find {
-            it.templateText?.contains(IdeBundle.messagePointer("action.show.infos").get()) == true
+            // It would be better to use IdeBundle.messagePointer("action.show.infos").get(), but that is internal api
+            it.templateText?.contains("Show information messages") == true
         }
         if (informationAction != null) {
             group.remove(informationAction)

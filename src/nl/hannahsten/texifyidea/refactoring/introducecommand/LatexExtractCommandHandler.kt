@@ -1,6 +1,5 @@
 package nl.hannahsten.texifyidea.refactoring.introducecommand
 
-import com.intellij.ide.plugins.PluginManagerCore.isUnitTestMode
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
@@ -12,11 +11,11 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil.findCommonParent
 import com.intellij.psi.util.elementType
 import com.intellij.psi.util.parents
+import com.intellij.psi.util.startOffset
 import com.intellij.refactoring.IntroduceTargetChooser
 import com.intellij.refactoring.RefactoringActionHandler
 import com.intellij.refactoring.RefactoringBundle
 import com.intellij.refactoring.introduce.inplace.OccurrencesChooser
-import com.intellij.psi.util.startOffset
 import com.intellij.refactoring.util.CommonRefactoringUtil
 import nl.hannahsten.texifyidea.file.LatexFile
 import nl.hannahsten.texifyidea.psi.*
@@ -24,6 +23,7 @@ import nl.hannahsten.texifyidea.psi.LatexTypes.NORMAL_TEXT_WORD
 import nl.hannahsten.texifyidea.util.files.findExpressionAtCaret
 import nl.hannahsten.texifyidea.util.files.findExpressionInRange
 import nl.hannahsten.texifyidea.util.insertCommandDefinition
+import nl.hannahsten.texifyidea.util.isTestProject
 import nl.hannahsten.texifyidea.util.parser.*
 import nl.hannahsten.texifyidea.util.runWriteCommandAction
 import org.jetbrains.annotations.TestOnly
@@ -75,7 +75,7 @@ fun showExpressionChooser(
     candidates: List<LatexExtractablePSI>,
     callback: (LatexExtractablePSI) -> Unit
 ) {
-    if (isUnitTestMode) {
+    if (isTestProject()) {
         callback(MOCK!!.chooseTarget(candidates))
     }
     else
@@ -167,7 +167,7 @@ fun showOccurrencesChooser(
     occurrences: List<LatexExtractablePSI>,
     callback: (List<LatexExtractablePSI>) -> Unit
 ) {
-    if (isUnitTestMode && occurrences.size > 1) {
+    if (isTestProject() && occurrences.size > 1) {
         callback(MOCK!!.chooseOccurrences(expr, occurrences))
     }
     else {
