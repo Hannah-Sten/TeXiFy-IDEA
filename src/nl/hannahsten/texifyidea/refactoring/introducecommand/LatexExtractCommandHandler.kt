@@ -167,7 +167,7 @@ fun showOccurrencesChooser(
     occurrences: List<LatexExtractablePSI>,
     callback: (List<LatexExtractablePSI>) -> Unit
 ) {
-    if (isUnitTestMode && occurrences.size > 1) {
+    if (isTestProject() && occurrences.size > 1) {
         callback(MOCK!!.chooseOccurrences(expr, occurrences))
     }
     else {
