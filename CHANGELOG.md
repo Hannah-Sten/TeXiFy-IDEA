@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Add run configuration setting to run code before the main file
 
 ### Fixed
 

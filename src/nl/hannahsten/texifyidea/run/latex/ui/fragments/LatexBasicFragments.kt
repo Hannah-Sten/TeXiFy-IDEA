@@ -15,6 +15,7 @@ import com.intellij.openapi.ui.TextBrowseFolderListener
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.util.text.HtmlChunk
 import com.intellij.ui.components.JBCheckBox
+import com.intellij.ui.components.JBTextField
 import com.intellij.ui.components.fields.ExtendableTextComponent
 import com.intellij.ui.components.fields.ExtendableTextField
 import com.intellij.util.ui.ComponentWithEmptyText
@@ -218,6 +219,44 @@ internal object LatexBasicFragments {
         fragment.isRemovable = true
         fragment.isCanBeHidden = true
         fragment.actionHint = TexifyBundle.message("run.step.ui.action.set.custom.environment.variables")
+        return fragment
+    }
+
+    /**
+     * Run code before inputting the main file. Applies to all latex steps, so is a general setting.
+     */
+    fun createBeforeRunFragment(group: String, project: Project): RunConfigurationEditorFragment<LatexRunConfiguration, JComponent> {
+        val beforeRunCode = JBTextField()
+        val component = LabeledComponent.create(beforeRunCode, TexifyBundle.message("run.step.ui.field.before.run"))
+
+        val fragment = object : RunConfigurationEditorFragment<LatexRunConfiguration, JComponent>(
+            "beforeRun",
+            TexifyBundle.message("run.step.ui.field.before.run"),
+            group,
+            component,
+            0,
+            { s ->
+                (s.configuration as? LatexRunConfiguration)?.let {
+                    !it.beforeRunCode.isNullOrBlank()
+                } == true
+            }
+        ) {
+            override fun doReset(s: RunnerAndConfigurationSettingsImpl) {
+                val runConfig = s.configuration as LatexRunConfiguration
+                beforeRunCode.text = runConfig.beforeRunCode ?: ""
+            }
+
+            override fun applyEditorTo(s: RunnerAndConfigurationSettingsImpl) {
+                val runConfig = s.configuration as LatexRunConfiguration
+                runConfig.beforeRunCode = beforeRunCode.text
+            }
+        }.apply {
+            isRemovable = true
+            isCanBeHidden = true
+            applyTooltip(component, TexifyBundle.message("run.step.ui.field.before.run.tooltip"))
+            actionHint = TexifyBundle.message("run.step.ui.action.set.before.run")
+        }
+
         return fragment
     }
 

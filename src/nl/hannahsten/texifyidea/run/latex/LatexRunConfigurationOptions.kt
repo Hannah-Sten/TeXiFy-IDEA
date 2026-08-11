@@ -11,12 +11,12 @@ import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.run.compiler.BibliographyCompiler
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
 import nl.hannahsten.texifyidea.run.compiler.MakeindexProgram
+import nl.hannahsten.texifyidea.run.latex.step.LatexStepPresentation
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCitationTool
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCompileMode
 import nl.hannahsten.texifyidea.run.pdfviewer.CustomPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
-import nl.hannahsten.texifyidea.run.latex.step.LatexStepPresentation
-import java.util.UUID
+import java.util.*
 
 /**
  * Canonical identifiers for supported LaTeX step kinds in run configuration storage.
@@ -50,6 +50,7 @@ class LatexRunConfigurationOptions : LocatableRunConfigurationOptions() {
     var latexDistribution by enum(LatexDistributionType.MODULE_SDK)
     var expandMacrosEnvVariables by property(false)
     var passParentEnvironmentVariables by property(true)
+    var beforeRunCode by string("")
 
     /**
      * Serializable key/value pair for a single environment variable.

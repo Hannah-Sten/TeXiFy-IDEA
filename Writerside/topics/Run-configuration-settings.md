@@ -155,6 +155,9 @@ Use a `pdf-viewer` step to control viewer behavior.
 
 ### Before-run LaTeX code
 
+For the regular LaTeX compile step, use the 'Run code before compilation' setting in the common settings, so it applies to all LaTeX compile steps.
+With the example main file below, just put `\newcommand{\waarde}{false}` in the text field.
+
 For latexmk, use the `-usepretex` command line argument to run code before the main document.
 For example:
 

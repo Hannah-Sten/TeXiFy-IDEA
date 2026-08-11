@@ -126,6 +126,12 @@ class LatexRunConfiguration(
             configOptions.expandMacrosEnvVariables = value
         }
 
+    var beforeRunCode: String?
+        get() = configOptions.beforeRunCode
+        set(value) {
+            configOptions.beforeRunCode = value
+        }
+
     var latexDistribution: LatexDistributionType
         get() = configOptions.latexDistribution
         set(value) {

@@ -1,24 +1,14 @@
 package nl.hannahsten.texifyidea.run.latex.ui
 
 import com.intellij.execution.impl.RunnerAndConfigurationSettingsImpl
-import com.intellij.execution.ui.BeforeRunFragment
-import com.intellij.execution.ui.BeforeRunComponent
-import com.intellij.execution.ui.CommonParameterFragments
-import com.intellij.execution.ui.CommonTags
-import com.intellij.execution.ui.RunConfigurationFragmentedEditor
-import com.intellij.execution.ui.SettingsEditorFragment
-import nl.hannahsten.texifyidea.TexifyBundle
+import com.intellij.execution.ui.*
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.latex.LatexStepRunConfigurationOptions
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationStaticSupport
+import nl.hannahsten.texifyidea.run.latex.LatexStepRunConfigurationOptions
 import nl.hannahsten.texifyidea.run.latex.step.LatexStepAutoConfigurator
-import nl.hannahsten.texifyidea.run.latex.ui.fragments.LatexBasicFragments
-import nl.hannahsten.texifyidea.run.latex.ui.fragments.LatexCompileSequenceComponent
-import nl.hannahsten.texifyidea.run.latex.ui.fragments.LatexCompileSequenceFragment
-import nl.hannahsten.texifyidea.run.latex.ui.fragments.LatexStepSelectionState
-import nl.hannahsten.texifyidea.run.latex.ui.fragments.LatexStepSettingsComponent
-import nl.hannahsten.texifyidea.run.latex.ui.fragments.LatexStepSettingsFragment
+import nl.hannahsten.texifyidea.run.latex.ui.fragments.*
 import nl.hannahsten.texifyidea.util.files.psiFile
 
 /**
@@ -69,6 +59,7 @@ class LatexSettingsEditor(
         fragments.add(LatexBasicFragments.createOutputDirectoryFragment(commonGroupName, project))
         fragments.add(LatexBasicFragments.createAuxiliaryDirectoryFragment(commonGroupName, project))
         fragments.add(LatexBasicFragments.createEnvironmentVariablesFragment(commonGroupName, project))
+        fragments.add(LatexBasicFragments.createBeforeRunFragment(commonGroupName, project))
         fragments.add(LatexCompileSequenceFragment(compileSequenceComponent))
         fragments.add(LatexStepSettingsFragment(stepSettingsComponent, ::onStepSettingsChanged))
 
