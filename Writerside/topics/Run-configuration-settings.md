@@ -161,7 +161,7 @@ With the example main file below, just put `\newcommand{\waarde}{false}` in the 
 For latexmk, use the `-usepretex` command line argument to run code before the main document.
 For example:
 
-```latex
+```
 \documentclass{article}
 \usepackage{etoolbox}
 
