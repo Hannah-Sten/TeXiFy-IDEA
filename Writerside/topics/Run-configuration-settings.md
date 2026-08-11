@@ -155,7 +155,23 @@ Use a `pdf-viewer` step to control viewer behavior.
 
 ### Before-run LaTeX code
 
-Compile steps support injecting LaTeX code before main file compilation.
+For latexmk, use the `-usepretex` command line argument to run code before the main document.
+For example:
+
+```latex
+\documentclass{article}
+\usepackage{etoolbox}
+
+\providecommand{\waarde}{true}
+\newbool{binair}
+\setbool{binair}{\waarde}
+
+\begin{document}
+    \ifbool{binair}{waar}{onwaar}
+\end{document}
+```
+
+Then provide `-usepretex="\newcommand{\waarde}{false}" -g` as arguments (the `-g` is to force recompilation after updating the pretex code).
 
 ### Custom latexmk executable path
 
