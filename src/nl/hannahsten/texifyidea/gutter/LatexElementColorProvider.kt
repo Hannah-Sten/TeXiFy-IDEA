@@ -7,8 +7,8 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.impl.source.tree.LeafPsiElement
 import nl.hannahsten.texifyidea.index.LatexDefinitionService
-import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.lang.LatexContexts
+import nl.hannahsten.texifyidea.lang.predefined.CommandNames
 import nl.hannahsten.texifyidea.lang.predefined.PredefinedCmdGeneric
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.psi.LatexPsiHelper
@@ -76,64 +76,53 @@ class LatexElementColorProvider : ElementColorProvider {
         val semantics = LatexDefinitionService.resolveCommand(command) ?: return null
         LatexPsiUtil.processArgumentsWithSemantics(command, semantics) process@{ param, arg ->
             arg ?: return@process
-            if (arg.contextSignature.introduces(LatexContexts.ColorReference) || arg.contextSignature.introduces(LatexContexts.ColorDefinition)) {
-                return findColor(param.contentText(), element.containingFile)
+            if (arg.contextSignature.introduces(LatexContexts.ColorReference)) {
+                return findColor(param.contentText(), element.containingFile, command = command)
             }
         }
         return null
     }
 
-    fun findColor(colorName: String, file: PsiFile, recursionDepth: Int = 0): Color? {
+    fun findColor(colorName: String, file: PsiFile, recursionDepth: Int = 0, command: LatexCommands): Color? {
         val defaultHex = ColorMagic.defaultXcolors[colorName]
 
         @Suppress("UseJBColor") // Should show actual color also in dark mode
         if (defaultHex != null) return Color(defaultHex)
 
-        val colorDefiningCommands = NewCommandsIndex.getByNames(
-            ColorMagic.colorDefinitions.keys,
-            file,
-        )
-        // If this color is a single color (not a mix, and thus does not contain a !)
-        // and we did not find it in the default colors (above), it should be in the
-        // first parameter of a color definition command. If not, we can not find the
-        // color (and return null in the end).
-        if (!colorName.contains('!') && !colorDefiningCommands.map { it.getRequiredArgumentValueByName("name") }.contains(colorName)) return null
-
-        val colorDefinitionCommand = colorDefiningCommands.find { it.getRequiredArgumentValueByName("name") == colorName }
-        return when (colorDefinitionCommand?.name?.substring(1)) {
-            "colorlet" -> {
-                getColorFromColorParameter(file, colorDefinitionCommand.getRequiredArgumentValueByName("color"), recursionDepth)
+        return when (command.name) {
+            CommandNames.COLORLET -> {
+                getColorFromColorParameter(file, command.getRequiredArgumentValueByName("color"), recursionDepth, command)
             }
 
-            "definecolor", "providecolor" -> {
+            CommandNames.DEFINECOLOR, CommandNames.PROVIDE_COLOR -> {
                 getColorFromDefineColor(
-                    colorDefinitionCommand.getRequiredArgumentValueByName("model-list"),
-                    colorDefinitionCommand.getRequiredArgumentValueByName("spec-list")
+                    command.getRequiredArgumentValueByName("model-list"),
+                    command.getRequiredArgumentValueByName("spec-list")
                 )
             }
 
-            "definecolorseries" -> {
+            CommandNames.DEFINECOLORSERIES -> {
                 getColorFromDefineColor(
-                    colorDefinitionCommand.getOptionalArgumentValueByName("b-model") ?: colorDefinitionCommand.getRequiredArgumentValueByName("core model"),
-                    colorDefinitionCommand.getRequiredArgumentValueByName("b-spec")
+                    command.getOptionalArgumentValueByName("b-model") ?: command.getRequiredArgumentValueByName("core model"),
+                    command.getRequiredArgumentValueByName("b-spec")
                 )
             }
 
-            else -> getColorFromColorParameter(file, colorName, recursionDepth)
+            else -> getColorFromColorParameter(file, colorName, recursionDepth, command)
         }
     }
 
     /**
      * Given the color parameter [definitionText] of a command, compute the defined color.
      */
-    private fun getColorFromColorParameter(file: PsiFile, definitionText: String?, recursionDepth: Int): Color? {
+    private fun getColorFromColorParameter(file: PsiFile, definitionText: String?, recursionDepth: Int, command: LatexCommands): Color? {
         // Infinite loops can occur with invalid color definitions.
         if (recursionDepth > 42) return null
 
         definitionText ?: return null
         val colorParts = definitionText.split("!").filter { it.isNotBlank() }
         val colors = colorParts.filter { it.all { c -> c.isLetter() } }
-            .map { findColor(it, file, recursionDepth + 1) ?: return null }
+            .map { findColor(it, file, recursionDepth + 1, command) ?: return null }
         if (colors.isEmpty()) return null
         val numbers = colorParts.filter { it.all { c -> c.isDigit() } }
             .map { it.toInt() }

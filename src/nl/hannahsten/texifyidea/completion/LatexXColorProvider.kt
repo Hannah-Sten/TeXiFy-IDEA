@@ -32,7 +32,7 @@ object LatexXColorProvider : LatexContextAgnosticCompletionProvider() {
         val colorDefinitions = NewCommandsIndex.getByNames(ColorMagic.colorDefinitions.keys, file.project)
         for (cmd in colorDefinitions) {
             val colorName = cmd.getRequiredArgumentValueByName("name") ?: continue
-            val color = LatexElementColorProvider().findColor(colorName, file)
+            val color = LatexElementColorProvider().findColor(colorName, file, command = cmd)
             val lookupElement = if (color != null) {
                 LookupElementBuilder.create(colorName).withIcon(ColorIcon(12, color))
             }

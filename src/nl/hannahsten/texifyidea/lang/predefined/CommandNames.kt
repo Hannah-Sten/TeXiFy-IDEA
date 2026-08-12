@@ -204,4 +204,10 @@ object CommandNames {
     const val NEW_ACRO = "\\newacro"
     const val ACRO_DEF = "\\acrodef"
     const val DECLARE_ACRONYM = "\\DeclareAcronym"
+
+    // Color
+    const val COLORLET = "\\colorlet"
+    const val DEFINECOLOR = "\\definecolor"
+    const val PROVIDE_COLOR = "\\providecolor"
+    const val DEFINECOLORSERIES = "\\definecolorseries"
 }
