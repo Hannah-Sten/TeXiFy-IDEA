@@ -20,7 +20,7 @@ internal class LatexCompileRunStep(
         val session = context.session
         LatexSessionInitializer.updateOutputFilePath(session, stepConfig)
 
-        val command = stepConfig.compiler.buildCommand(session, stepConfig)
+        val command = stepConfig.compiler.buildCommand(session, stepConfig, context.runConfig.beforeRunCode)
 
         return createCompilationHandler(
             context = context,

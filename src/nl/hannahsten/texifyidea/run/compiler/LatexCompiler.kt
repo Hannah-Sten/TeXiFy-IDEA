@@ -13,7 +13,7 @@ import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.files.hasTectonicTomlFile
 import nl.hannahsten.texifyidea.util.runCommand
-import java.util.Locale
+import java.util.*
 
 @Suppress("DuplicatedCode")
 enum class LatexCompiler(private val displayName: String, val executableName: String) {
@@ -199,6 +199,7 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
     fun buildCommand(
         session: LatexRunSessionState,
         stepConfig: LatexCompileStepOptions,
+        beforeRunCode: String?,
     ): List<String> {
         val mainFile = session.mainFile
         val moduleRoots = if (session.distributionType.isDocker()) {
@@ -262,8 +263,11 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
                 ParametersListUtil.parse(arguments).forEach(command::add)
             }
 
-        if (stepConfig.beforeRunCommand?.isNotBlank() == true) {
-            command.add(stepConfig.beforeRunCommand + " \\input{${mainFile.name}}")
+        // Legacy migration
+        val beforeRunCommand = beforeRunCode ?: stepConfig.beforeRunCommand
+
+        if (beforeRunCommand?.isNotBlank() == true) {
+            command.add(beforeRunCommand + " \\input{${mainFile.name}}")
         }
         else if (this != TECTONIC || !mainFile.hasTectonicTomlFile()) {
             if (session.usesDefaultWorkingDirectory) {
