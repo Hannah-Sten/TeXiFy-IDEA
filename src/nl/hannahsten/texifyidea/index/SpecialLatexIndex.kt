@@ -10,6 +10,7 @@ import com.intellij.util.indexing.IdFilter
 import nl.hannahsten.texifyidea.index.projectstructure.LatexProjectStructure
 import nl.hannahsten.texifyidea.lang.predefined.PredefinedCmdDefinitions
 import nl.hannahsten.texifyidea.lang.predefined.PredefinedCmdFiles
+import nl.hannahsten.texifyidea.lang.predefined.PredefinedCmdGeneric
 import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
@@ -17,6 +18,7 @@ object SpecialKeys {
     const val FILE_INPUTS = "file_inputs"
     const val COMMAND_DEFINITIONS = "command_def"
     const val ENV_DEFINITIONS = "env_def"
+    const val COLOR_DEFINITIONS = "color_def"
     const val ALL_DEFINITIONS = "all_def"
     const val PACKAGE_INCLUDES = "package_includes"
     const val GLOSSARY_ENTRY = "glossary_entry"
@@ -29,12 +31,13 @@ object SpecialKeys {
 class NewSpecialCommandsIndexEx : SpecialKeyStubIndexWrapper<LatexCommands>(LatexCommands::class.java) {
     override fun getKey(): StubIndexKey<String, LatexCommands> = LatexStubIndexKeys.COMMANDS_SPECIAL
 
-    override fun getVersion(): Int = 106
+    override fun getVersion(): Int = 107
 
     val mappingPairs = listOf(
         PredefinedCmdFiles.namesOfAllFileIncludeCommands to SpecialKeys.FILE_INPUTS,
         PredefinedCmdDefinitions.namesOfAllCommandDef to SpecialKeys.COMMAND_DEFINITIONS,
         PredefinedCmdDefinitions.namesOfAllEnvironmentDef to SpecialKeys.ENV_DEFINITIONS,
+        PredefinedCmdGeneric.colorDefinitionCommands.map { it.name } to SpecialKeys.COLOR_DEFINITIONS,
         PredefinedCmdDefinitions.namesOfAllDef to SpecialKeys.ALL_DEFINITIONS,
         CommandMagic.packageInclusionCommands to SpecialKeys.PACKAGE_INCLUDES,
         CommandMagic.glossaryEntry.keys to SpecialKeys.GLOSSARY_ENTRY
@@ -86,6 +89,11 @@ class NewSpecialCommandsIndexEx : SpecialKeyStubIndexWrapper<LatexCommands>(Late
     fun forEachGlossaryEntry(originalFile: PsiFile, action: (LatexCommands) -> Unit) {
         val scope = LatexProjectStructure.getFilesetScopeFor(originalFile, onlyTexFiles = true)
         forEachByName(SpecialKeys.GLOSSARY_ENTRY, originalFile.project, scope, null, action)
+    }
+
+    fun getAllColorDef(originalFile: PsiFile): Collection<LatexCommands> {
+        val scope = LatexProjectStructure.getFilesetScopeFor(originalFile, onlyTexFiles = true)
+        return getByName(SpecialKeys.COLOR_DEFINITIONS, scope)
     }
 }
 
