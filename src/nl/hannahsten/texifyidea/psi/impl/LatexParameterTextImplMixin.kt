@@ -8,6 +8,7 @@ import com.intellij.psi.PsiReference
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.reference.BibtexIdReference
+import nl.hannahsten.texifyidea.reference.LatexColorReference
 import nl.hannahsten.texifyidea.reference.LatexGlossaryReference
 import nl.hannahsten.texifyidea.reference.LatexLabelParameterReference
 import nl.hannahsten.texifyidea.util.existsIntersection
@@ -38,6 +39,9 @@ abstract class LatexParameterTextImplMixin(node: ASTNode) : LatexParameterText, 
         if (name in CommandMagic.glossaryReference) {
             // If the command is a glossary reference, we return a reference to the glossary label
             return LatexGlossaryReference(this)
+        }
+        if (name in CommandMagic.colorReference) {
+            return LatexColorReference(this)
         }
         if (name in CommandMagic.reference) {
             // If the command is a reference, we return a reference to the label parameter

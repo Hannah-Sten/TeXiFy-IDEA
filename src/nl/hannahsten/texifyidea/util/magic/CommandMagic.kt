@@ -89,6 +89,12 @@ object CommandMagic {
         allCommandsWithContext(LatexContexts.GlossaryReference)
 
     /**
+     * All commands which refer to a color, which may be user-defined.
+     */
+    val colorReference: Map<String, LSemanticCommand> =
+        allCommandsWithContext(LatexContexts.ColorReference)
+
+    /**
      * All commands that represent some kind of reference (think \ref and \cite).
      */
     val reference: Set<String> = labelReference.keys + bibliographyReference.keys

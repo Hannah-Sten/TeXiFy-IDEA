@@ -4,9 +4,9 @@ import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.util.ui.ColorIcon
-import nl.hannahsten.texifyidea.gutter.LatexElementColorProvider
 import nl.hannahsten.texifyidea.index.NewCommandsIndex
 import nl.hannahsten.texifyidea.util.Kindness
+import nl.hannahsten.texifyidea.util.findColor
 import nl.hannahsten.texifyidea.util.magic.ColorMagic
 import nl.hannahsten.texifyidea.util.parser.getRequiredArgumentValueByName
 import java.awt.Color
@@ -32,7 +32,7 @@ object LatexXColorProvider : LatexContextAgnosticCompletionProvider() {
         val colorDefinitions = NewCommandsIndex.getByNames(ColorMagic.colorDefinitions.keys, file.project)
         for (cmd in colorDefinitions) {
             val colorName = cmd.getRequiredArgumentValueByName("name") ?: continue
-            val color = LatexElementColorProvider().findColor(colorName, file)
+            val color = findColor(colorName, file, command = cmd)
             val lookupElement = if (color != null) {
                 LookupElementBuilder.create(colorName).withIcon(ColorIcon(12, color))
             }

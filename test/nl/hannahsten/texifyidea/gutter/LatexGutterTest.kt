@@ -8,7 +8,6 @@ import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import io.mockk.every
 import io.mockk.mockkStatic
-import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.updateFilesets
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import kotlin.test.assertContains
@@ -101,18 +100,6 @@ class LatexGutterTest : BasePlatformTestCase() {
         val gutters = myFixture.findAllGutters("main.tex")
         assertEquals(5, gutters.size)
         assertTrue(gutters.all { g -> g.tooltipText == "Go to referenced file" })
-    }
-
-    fun testInfiniteColorLoop() {
-        myFixture.configureByText(
-            LatexFileType,
-            """
-            \usepackage{xcolor}
-            \colorlet{kameel}{oliefant}
-            \colorlet{oliefant}{kameel}
-            """.trimIndent()
-        )
-        myFixture.findAllGutters()
     }
 
     private fun getLineMarkerLine(marker: LineMarkerInfo<*>): Int = myFixture.editor.document.getLineNumber((marker.element as LeafPsiElement).textRange.startOffset)

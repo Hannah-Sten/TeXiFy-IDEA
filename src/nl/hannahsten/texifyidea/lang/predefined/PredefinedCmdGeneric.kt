@@ -749,7 +749,7 @@ object PredefinedCmdGeneric : PredefinedCommandSet() {
             val typeOpt = "type".optional
             val nameReq = "name".required(LatexContexts.ColorDefinition)
             val modelListReq = "model-list".required(LatexContexts.Literal)
-            val specListReq = "spec-list".required(LatexContexts.Literal)
+            val specListReq = "spec-list".required(LatexContexts.ColorReference)
 
             packageOf("color")
             "definecolor".cmd(typeOpt, nameReq, modelListReq, specListReq) { "Define a color" }
