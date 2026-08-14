@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Improve UI of the "Delete auxiliary files" action
 * Add reference resolve support to color commands
 * The color gutter icon now shows the correct color for color definitions
 * Add run configuration setting to run code before the main file

@@ -39,9 +39,9 @@ internal object FileCleanupSupport {
         return targets
     }
 
-    fun collectProjectTemporaryBuildTargets(projectRoot: Path): Set<Path> {
+    fun collectProjectTemporaryBuildTargets(root: Path): Set<Path> {
         val targets = linkedSetOf<Path>()
-        collectRecursiveMatches(projectRoot, targets)
+        collectRecursiveMatches(root, targets)
         return targets
     }
 
