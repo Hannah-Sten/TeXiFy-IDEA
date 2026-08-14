@@ -640,7 +640,7 @@ internal class LatexCompileSequenceComponent(
         init {
             Disposer.register(this@LatexCompileSequenceComponent, this)
             dropPlace = JLabel(AllIcons.General.DropPlace)
-            add(dropPlace, DRAG_LAYER)
+            add(dropPlace)
             dropPlace?.isVisible = false
             border = JBUI.Borders.empty(1)
 
