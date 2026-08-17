@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Automatically detect jobname parameter when opening pdf
 * Improve UI of the "Delete auxiliary files" action
 * Add reference resolve support to color commands
 * The color gutter icon now shows the correct color for color definitions

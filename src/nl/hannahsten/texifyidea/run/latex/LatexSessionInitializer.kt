@@ -7,9 +7,11 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.SmartPointerManager
-import nl.hannahsten.texifyidea.TexifyBundle
 import com.intellij.psi.SmartPsiElementPointer
+import com.intellij.util.execution.ParametersListUtil
+import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
+import nl.hannahsten.texifyidea.run.latex.step.LatexmkCompileRunStep.Companion.effectiveCompileMode
 import java.nio.file.Path
 import java.util.*
 
@@ -89,9 +91,40 @@ internal object LatexSessionInitializer {
                     step.outputFormat.toString().lowercase(Locale.getDefault())
                 }
             }
-            is LatexmkCompileStepOptions -> "pdf"
+            is LatexmkCompileStepOptions -> {
+                val effectiveCompileMode = effectiveCompileMode(session.project, session, step)
+                effectiveCompileMode.extension.lowercase(Locale.getDefault())
+            }
             else -> "pdf"
         }
-        session.resolvedOutputFilePath = "${session.outputDir.path}/$baseName.$extension"
+
+        val arguments = when (step) {
+            is LatexCompileStepOptions -> step.compilerArguments
+            is LatexmkCompileStepOptions -> step.latexmkExtraArguments
+            else -> null
+        }
+        val jobnameArgument = if (arguments != null) {
+            val tokens = ParametersListUtil.parse(arguments)
+            val jobnameIndex = tokens.indexOfFirst { it.contains("jobname") }
+            if (jobnameIndex != -1) {
+                val token = tokens[jobnameIndex]
+                if (token.contains("=")) {
+                    token.substringAfter("=")
+                } else if (jobnameIndex + 1 < tokens.size) {
+                    tokens[jobnameIndex + 1]
+                } else {
+                    baseName
+                }
+            } else {
+                baseName
+            }
+        }
+        else {
+            baseName
+        }
+
+        val jobname = jobnameArgument ?: baseName
+
+        session.resolvedOutputFilePath = "${session.outputDir.path}/$jobname.$extension"
     }
 }

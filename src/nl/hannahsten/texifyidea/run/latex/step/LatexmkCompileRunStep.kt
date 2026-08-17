@@ -4,6 +4,7 @@ import com.intellij.execution.ExecutionException
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.openapi.application.ReadAction
+import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiManager
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.lang.magic.DefaultMagicKeys
@@ -24,7 +25,6 @@ import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.util.LatexmkRcFileFinder
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.includedPackagesInFileset
-import java.util.*
 
 internal class LatexmkCompileRunStep(
     private val stepConfig: LatexmkCompileStepOptions,
@@ -38,9 +38,8 @@ internal class LatexmkCompileRunStep(
     @Throws(ExecutionException::class)
     override fun createProcess(context: LatexRunStepContext): ProcessHandler {
         val session = context.session
-        val effectiveMode = effectiveCompileMode(context.runConfig, session, stepConfig)
+        val effectiveMode = effectiveCompileMode(context.runConfig.project, session, stepConfig)
         val effectiveArguments = buildArguments(context.runConfig, session, stepConfig, effectiveMode)
-        session.resolvedOutputFilePath = outputFilePath(session, effectiveMode)
         val command = buildCommand(session, stepConfig, effectiveArguments)
 
         return createCompilationHandler(
@@ -130,7 +129,7 @@ internal class LatexmkCompileRunStep(
                 extraArguments = step.latexmkExtraArguments,
                 workingDirectory = session.workingDirectory,
             )
-            val effectiveCompileMode = effectiveCompileModeOverride ?: effectiveCompileMode(runConfig, session, step)
+            val effectiveCompileMode = effectiveCompileModeOverride ?: effectiveCompileMode(runConfig.project, session, step)
             val structuredArguments = buildLatexmkStructuredArguments(
                 hasRcFile = hasRcFile,
                 compileMode = effectiveCompileMode,
@@ -146,7 +145,7 @@ internal class LatexmkCompileRunStep(
         }
 
         fun effectiveCompileMode(
-            runConfig: LatexRunConfiguration,
+            project: Project,
             session: LatexRunSessionState,
             step: LatexmkCompileStepOptions,
         ): LatexmkCompileMode {
@@ -155,7 +154,7 @@ internal class LatexmkCompileRunStep(
             }
 
             return ReadAction.computeBlocking<LatexmkCompileMode, RuntimeException> {
-                val psi = PsiManager.getInstance(runConfig.project).findFile(session.mainFile) ?: session.psiFile?.element
+                val psi = PsiManager.getInstance(project).findFile(session.mainFile) ?: session.psiFile?.element
                 val magicComments = psi?.allParentMagicComments()
                 val magicMode = compileModeFromMagicCommand(
                     magicComments?.value(DefaultMagicKeys.COMPILER) ?: magicComments?.value(DefaultMagicKeys.PROGRAM),
@@ -163,14 +162,6 @@ internal class LatexmkCompileRunStep(
                 val packageMode = psi?.let { preferredCompileModeForPackages(it.includedPackagesInFileset()) }
                 magicMode ?: packageMode ?: LatexmkCompileMode.PDFLATEX_PDF
             }
-        }
-
-        fun outputFilePath(
-            session: LatexRunSessionState,
-            effectiveCompileMode: LatexmkCompileMode,
-        ): String {
-            val extension = effectiveCompileMode.extension.lowercase(Locale.getDefault())
-            return "${session.outputDir.path}/${session.mainFile.nameWithoutExtension}.$extension"
         }
     }
 }

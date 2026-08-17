@@ -2,11 +2,7 @@ package nl.hannahsten.texifyidea.run.latexmk
 
 import nl.hannahsten.texifyidea.index.projectstructure.pathOrNull
 import nl.hannahsten.texifyidea.run.compiler.LatexCompiler
-import nl.hannahsten.texifyidea.run.latex.LatexCompileStepOptions
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationStaticSupport
-import nl.hannahsten.texifyidea.run.latex.LatexRunSessionState
-import nl.hannahsten.texifyidea.run.latex.LatexmkCompileStepOptions
+import nl.hannahsten.texifyidea.run.latex.*
 import nl.hannahsten.texifyidea.run.latex.step.LatexmkCompileRunStep
 
 /**
@@ -24,7 +20,7 @@ fun unicodeEngineCompatibility(runConfig: LatexRunConfiguration?): Boolean? {
             val effectiveMode = when (step.latexmkCompileMode) {
                 LatexmkCompileMode.AUTO -> runCatching {
                     val session = compileModeSession(runConfig) ?: return@runCatching LatexmkCompileMode.PDFLATEX_PDF
-                    LatexmkCompileRunStep.effectiveCompileMode(runConfig, session, step)
+                    LatexmkCompileRunStep.effectiveCompileMode(runConfig.project, session, step)
                 }.getOrElse { LatexmkCompileMode.PDFLATEX_PDF }
                 else -> step.latexmkCompileMode
             }
