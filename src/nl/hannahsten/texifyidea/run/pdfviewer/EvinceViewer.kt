@@ -1,9 +1,6 @@
 package nl.hannahsten.texifyidea.run.pdfviewer
 
-import com.intellij.notification.Notification
-import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
-import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.TexifyBundle
 import org.freedesktop.dbus.connections.impl.DBusConnectionBuilder
 import org.freedesktop.dbus.errors.NoReply
@@ -46,17 +43,17 @@ object EvinceViewer : SystemPdfViewer("Evince", "evince") {
      */
     private var processOwner: String? = null
 
-    override fun openFile(pdfPath: String, project: Project, newWindow: Boolean, focusAllowed: Boolean, forceRefresh: Boolean) {
+    override fun openFile(pdfPath: String, project: Project, newWindow: Boolean, focusAllowed: Boolean, forceRefresh: Boolean, raiseOnError: Boolean): Pair<Boolean, String> {
         // Opening the file when not already open will lose focus, so we don't want to do that. However, we have to, otherwise manual forward search will not work
-        openFile(pdfPath, project)
+        return openFile(pdfPath, project)
     }
 
     /**
      * Open a file in Evince, starting it if it is not running yet. This also finds the process owner of the pdf, so we can execute forward search later.
      */
-    fun openFile(pdfFilePath: String, project: Project) {
+    fun openFile(pdfFilePath: String, project: Project): Pair<Boolean, String> {
         // Will do nothing if file is already open in Evince
-        findProcessOwner(pdfFilePath, project)
+        return findProcessOwner(pdfFilePath, project)
     }
 
     // This is not really correct since Evince will always focus on forward search, but we still want to show the option to users so that they can use it to disable forward search if they don't want to lose focus after compilation.
@@ -70,10 +67,10 @@ object EvinceViewer : SystemPdfViewer("Evince", "evince") {
      * @param sourceFilePath Full path to the LaTeX source file.
      * @param line Line number in the source file to highlight in the pdf.
      */
-    override fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
+    override fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean, raiseOnError: Boolean): Pair<Boolean, String> {
         // If we are not allowed to change focus, we cannot open the pdf or do forward search because this will always change focus with Evince
         if (!focusAllowed) {
-            return
+            return Pair(false, "")
         }
 
         if (outputPath != null) {
@@ -90,39 +87,27 @@ object EvinceViewer : SystemPdfViewer("Evince", "evince") {
                     // Sync the Evince view to the current position
                     try {
                         window.SyncView(sourceFilePath, SyncViewSourcePointStruct(line, -1), UInt32(0))
+                        return Pair(true, "")
                     }
-                    catch (ignored: NoReply) {}
+                    catch (ignored: NoReply) {
+                        return Pair(true, "")
+                    }
                     catch (e: ServiceUnknown) {
-                        Notification(
-                            "LaTeX",
-                            TexifyBundle.message("run.notification.evince.sync.position.failed.title"),
-                            TexifyBundle.message("run.notification.evince.update.and.retry"),
-                            NotificationType.ERROR
-                        ).notify(project)
+                        return Pair(false, TexifyBundle.message("run.notification.evince.update.and.retry"))
                     }
                 }
             }
             catch (e: DBusException) {
-                Notification(
-                    "LaTeX",
-                    TexifyBundle.message("run.notification.evince.sync.position.failed.title"),
-                    TexifyBundle.message("run.notification.connection.not.established"),
-                    NotificationType.ERROR
-                ).notify(project)
+                return Pair(false, TexifyBundle.message("run.notification.connection.not.established"))
             }
         }
         else {
             // If the user used the forward search menu action
-            if (outputPath == null) {
-                Notification(
-                    "LaTeX",
-                    TexifyBundle.message("run.notification.forward.search.failed.title"),
-                    TexifyBundle.message("run.notification.forward.search.failed.compile.first.and.no.spaces"),
-                    NotificationType.ERROR
-                ).notify(project)
+            return if (outputPath == null) {
+                Pair(false, TexifyBundle.message("run.notification.forward.search.failed.compile.first.and.no.spaces"))
             }
             else {
-                throw TeXception(TexifyBundle.message("run.error.evince.forward.search.failed.detail", outputPath))
+                Pair(false, TexifyBundle.message("run.error.evince.forward.search.failed.detail", outputPath))
             }
         }
     }
@@ -134,7 +119,7 @@ object EvinceViewer : SystemPdfViewer("Evince", "evince") {
      *
      * @param pdfFilePath Full path to the pdf file to find the owner of.
      */
-    private fun findProcessOwner(pdfFilePath: String, project: Project) {
+    private fun findProcessOwner(pdfFilePath: String, project: Project): Pair<Boolean, String> {
         try {
             // Get DBusConnection
             DBusConnectionBuilder.forSessionBus().build().use { connection ->
@@ -148,22 +133,13 @@ object EvinceViewer : SystemPdfViewer("Evince", "evince") {
                 }
                 catch (ignored: NoReply) {}
                 catch (e: ServiceUnknown) {
-                    Notification(
-                        "LaTeX",
-                        TexifyBundle.message("run.notification.evince.communication.failed.title"),
-                        TexifyBundle.message("run.notification.evince.update.and.retry"),
-                        NotificationType.ERROR
-                    ).notify(project)
+                    return Pair(false, TexifyBundle.message("run.notification.evince.update.and.retry"))
                 }
             }
+            return Pair(true, "")
         }
         catch (e: DBusException) {
-            Notification(
-                "LaTeX",
-                TexifyBundle.message("run.notification.evince.communication.failed.title"),
-                TexifyBundle.message("run.notification.connection.not.established.lowercase"),
-                NotificationType.ERROR
-            ).notify(project)
+            return Pair(false, TexifyBundle.message("run.notification.connection.not.established"))
         }
     }
 }

@@ -20,6 +20,7 @@ object SystemDefaultViewer : PdfViewer {
 
     override fun isAvailable(): Boolean = !SystemInfo.isWindows
 
+    @Deprecated("Use openFile to return error info")
     override fun openFile(pdfPath: String, project: Project, newWindow: Boolean, focusAllowed: Boolean, forceRefresh: Boolean) {
         if (SystemInfo.isMac) {
             // Open default system viewer, source: https://ss64.com/osx/open.html

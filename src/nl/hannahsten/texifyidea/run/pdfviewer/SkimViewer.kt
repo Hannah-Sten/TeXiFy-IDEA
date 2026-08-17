@@ -1,7 +1,5 @@
 package nl.hannahsten.texifyidea.run.pdfviewer
 
-import com.intellij.notification.Notification
-import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
 import nl.hannahsten.texifyidea.TexifyBundle
 
@@ -18,6 +16,7 @@ object SkimViewer : SystemPdfViewer("Skim", "skim") {
     override val isFocusSupported: Boolean
         get() = true
 
+    @Deprecated("Use openFile to return error info")
     override fun openFile(pdfPath: String, project: Project, newWindow: Boolean, focusAllowed: Boolean, forceRefresh: Boolean) {
         if (pdfFilePath == null || pdfFilePath != pdfPath) {
             pdfFilePath = pdfPath
@@ -31,22 +30,17 @@ object SkimViewer : SystemPdfViewer("Skim", "skim") {
      * @param sourceFilePath Full path of the tex file.
      * @param line Line number in the source file to navigate to in the pdf.
      */
-    override fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
+    override fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean, raiseOnError: Boolean): Pair<Boolean, String> {
         if (outputPath != null) {
             pdfFilePath = outputPath
         }
         if (pdfFilePath == null) {
-            Notification(
-                "LaTeX",
-                TexifyBundle.message("run.notification.forward.search.failed.title"),
-                TexifyBundle.message("run.notification.forward.search.failed.compile.first"),
-                NotificationType.ERROR
-            ).notify(project)
-            return
+            return Pair(false, TexifyBundle.message("run.notification.forward.search.failed.compile.first"))
         }
         // This command opens the pdf file using the destination coming from the line in the tex file.
         val backgroundParameter = if (focusAllowed) "" else "-g"
         val command = "/Applications/Skim.app/Contents/SharedSupport/displayline $backgroundParameter -r $line '$pdfFilePath' '$sourceFilePath'"
         Runtime.getRuntime().exec(arrayOf("bash", "-c", command))
+        return Pair(true, "")
     }
 }

@@ -210,6 +210,7 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
     /**
      * Open a file in SumatraPDF, starting it if it is not running yet.
      */
+    @Deprecated("Use openFile to return error info")
     override fun openFile(pdfPath: String, project: Project, newWindow: Boolean, focusAllowed: Boolean, forceRefresh: Boolean) {
         if (!isAvailable()) return
         val quotedPdfPath = "\"$pdfPath\""
@@ -235,9 +236,15 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
             .start()
     }
 
-    override fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
-        if (!isAvailable()) return
-        forwardSearch(outputPath, sourceFilePath, line, focus = focusAllowed)
+    override fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean, raiseOnError: Boolean): Pair<Boolean, String> {
+        if (!isAvailable()) return Pair(false, TexifyBundle.message("run.notification.sumatra.not.found.message"))
+        return try {
+            forwardSearch(outputPath, sourceFilePath, line, focus = focusAllowed)
+            Pair(true, "")
+        }
+        catch (e: TeXception) {
+            Pair(false, e.message ?: "Unknown error.")
+        }
     }
 
     /**
