@@ -3,12 +3,7 @@ package nl.hannahsten.texifyidea.run.latexmk
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.lang.LatexLib
 import nl.hannahsten.texifyidea.run.compiler.LatexCompilePrograms
-import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
-import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationProducer
-import nl.hannahsten.texifyidea.run.latex.LatexRunSessionState
-import nl.hannahsten.texifyidea.run.latex.LatexSessionInitializer
-import nl.hannahsten.texifyidea.run.latex.LatexmkCompileStepOptions
+import nl.hannahsten.texifyidea.run.latex.*
 import nl.hannahsten.texifyidea.run.latex.step.LatexmkCompileRunStep
 import nl.hannahsten.texifyidea.updateFilesets
 import nl.hannahsten.texifyidea.util.SystemEnvironment
@@ -24,7 +19,7 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
 
     private fun latexmkCommand(runConfig: LatexRunConfiguration, session: LatexRunSessionState): List<String> {
         val step = latexmkStep(runConfig)
-        val effectiveMode = LatexmkCompileRunStep.effectiveCompileMode(runConfig, session, step)
+        val effectiveMode = LatexmkCompileRunStep.effectiveCompileMode(runConfig.project, session, step)
         val effectiveArguments = LatexmkCompileRunStep.buildArguments(runConfig, session, step, effectiveMode)
         return LatexmkCompileRunStep(step).buildCommand(session, step, effectiveArguments)
     }
@@ -186,12 +181,12 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
         step.latexmkExtraArguments = null
 
         val session = initializeSessionState(runConfig)
-        val effectiveMode = LatexmkCompileRunStep.effectiveCompileMode(runConfig, session, step)
+        val effectiveMode = LatexmkCompileRunStep.effectiveCompileMode(runConfig.project, session, step)
         val arguments = LatexmkCompileRunStep.buildArguments(runConfig, session, step, effectiveMode)
 
         assertTrue(arguments.contains("-xelatex"))
         assertTrue(arguments.contains("-xdv"))
-        assertTrue(LatexmkCompileRunStep.outputFilePath(session, effectiveMode).endsWith(".xdv"))
+        assertTrue(session.resolvedOutputFilePath?.endsWith(".xdv") == true)
     }
 
     fun testLatexRunConfigurationAutoModeUsesPackageHeuristics() {
@@ -219,7 +214,7 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
         step.latexmkExtraArguments = null
 
         val session = initializeSessionState(runConfig)
-        assertEquals(LatexmkCompileMode.LUALATEX_PDF, LatexmkCompileRunStep.effectiveCompileMode(runConfig, session, step))
+        assertEquals(LatexmkCompileMode.LUALATEX_PDF, LatexmkCompileRunStep.effectiveCompileMode(runConfig.project, session, step))
         assertTrue(LatexmkCompileRunStep.buildArguments(runConfig, session, step).contains("-lualatex"))
     }
 
@@ -247,7 +242,7 @@ class LatexmkRunConfigurationTest : BasePlatformTestCase() {
         step.latexmkExtraArguments = null
 
         val session = initializeSessionState(runConfig)
-        assertEquals(LatexmkCompileMode.PDFLATEX_PDF, LatexmkCompileRunStep.effectiveCompileMode(runConfig, session, step))
+        assertEquals(LatexmkCompileMode.PDFLATEX_PDF, LatexmkCompileRunStep.effectiveCompileMode(runConfig.project, session, step))
         assertTrue(LatexmkCompileRunStep.buildArguments(runConfig, session, step).contains("-pdf"))
     }
 
