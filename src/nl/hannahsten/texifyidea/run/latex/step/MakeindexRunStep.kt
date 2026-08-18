@@ -19,8 +19,9 @@ internal class MakeindexRunStep(
     override val configId: String = stepConfig.id
     override val id: String = stepConfig.type
 
-    override fun beforeStart(context: LatexRunStepContext) {
+    override fun beforeStart(context: LatexRunStepContext): Pair<Boolean, String> {
         StepArtifactSync(context, stepConfig).beforeStep()
+        return Pair(true, "")
     }
 
     override fun afterFinish(context: LatexRunStepContext, exitCode: Int) {

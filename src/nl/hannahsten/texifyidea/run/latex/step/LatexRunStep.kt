@@ -17,7 +17,10 @@ internal interface LatexRunStep {
     @Throws(ExecutionException::class)
     fun createProcess(context: LatexRunStepContext): ProcessHandler? = null
 
-    fun beforeStart(context: LatexRunStepContext) {}
+    /**
+     * Return success and message
+     */
+    fun beforeStart(context: LatexRunStepContext): Pair<Boolean, String> = Pair(true, "")
 
     fun afterFinish(context: LatexRunStepContext, exitCode: Int) {}
 }

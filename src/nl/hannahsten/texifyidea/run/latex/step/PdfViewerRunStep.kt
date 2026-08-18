@@ -2,15 +2,12 @@ package nl.hannahsten.texifyidea.run.latex.step
 
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.process.ProcessHandler
-import com.intellij.notification.Notification
-import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.TeXception
-import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.action.ForwardSearchAction
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.run.common.createCompilationHandler
@@ -32,17 +29,18 @@ internal class PdfViewerRunStep(
     override val displayName: String
         get() = stepConfig.displayName()
 
-    override fun beforeStart(context: LatexRunStepContext) {
+    override fun beforeStart(context: LatexRunStepContext): Pair<Boolean, String> {
         if (shouldSkipInlineViewer(context)) {
-            return
+            return Pair(true, "")
         }
 
-        val resolved = resolveStandardViewerContext(context) ?: return
+        val resolved = resolveStandardViewerContext(context) ?: return Pair(true, "")
         try {
-            openStandardViewer(resolved, context)
+            return openStandardViewer(resolved, context)
         }
         catch (_: TeXception) {
         }
+        return Pair(true, "")
     }
 
     @Throws(ExecutionException::class)
@@ -131,11 +129,14 @@ internal class PdfViewerRunStep(
         return SourceContext(file, line)
     }
 
+    /***
+     * Return success and message
+     */
     private fun openStandardViewer(
         resolved: ResolvedViewerContext,
         context: LatexRunStepContext,
-    ) {
-        // Backwards compatibility
+    ): Pair<Boolean, String> {
+        // Backwards compatibility for the pdf viewer plugin
         resolved.viewer.openFile(
             resolved.outputFilePath,
             context.environment.project,
@@ -164,16 +165,8 @@ internal class PdfViewerRunStep(
             raiseOnError = false,
         )
 
-        // todo show in treeview
-        if (!forwardSearchResult.first || !openFileResult.first) {
-            Notification(
-                "LaTeX",
-                TexifyBundle.message("run.notification.forward.search.failed.title"),
-                forwardSearchResult.second + openFileResult.second,
-                NotificationType.ERROR
-            ).notify(context.environment.project)
-        }
         (ActionManager.getInstance().getAction("texify.ForwardSearch") as? ForwardSearchAction)?.viewer = resolved.viewer
+        return Pair(forwardSearchResult.first && openFileResult.first, openFileResult.second + " " + forwardSearchResult.second)
     }
 
     private fun buildCustomViewerCommand(outputFilePath: String): List<String> {

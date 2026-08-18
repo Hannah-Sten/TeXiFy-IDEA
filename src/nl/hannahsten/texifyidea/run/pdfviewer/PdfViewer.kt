@@ -61,7 +61,7 @@ interface PdfViewer {
         raiseOnError: Boolean = false
     ): Pair<Boolean, String> {
         // Default implementation does nothing.
-        return Pair(false, "")
+        return Pair(true, "")
     }
 
     // Backwards compatibility

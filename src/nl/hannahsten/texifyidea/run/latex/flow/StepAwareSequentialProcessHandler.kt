@@ -158,7 +158,12 @@ internal class StepAwareSequentialProcessHandler(
         currentProcess = null
 
         fire(StepLogEvent.StepStarted(index, step))
-        step.beforeStart(context)
+        val beforeStartResult = step.beforeStart(context)
+        if (!beforeStartResult.first) {
+            emitStepOutput(index, step, beforeStartResult.second, ProcessOutputTypes.STDERR)
+            completeStep(index, step, -1)
+            return
+        }
         val processHandler = step.createProcess(context)
         if (processHandler == null) {
             completeStep(index, step, 0)
