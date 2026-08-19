@@ -397,8 +397,9 @@ class StepAwareSequentialProcessHandlerTest : BasePlatformTestCase() {
         private val after: (LatexRunStepContext, Int) -> Unit = { _, _ -> },
     ) : ProcessLatexRunStep {
 
-        override fun beforeStart(context: LatexRunStepContext) {
+        override fun beforeStart(context: LatexRunStepContext): Pair<Boolean, String> {
             before(context)
+            return Pair(true, "")
         }
 
         override fun createProcess(context: LatexRunStepContext): ProcessHandler = process
@@ -416,8 +417,9 @@ class StepAwareSequentialProcessHandlerTest : BasePlatformTestCase() {
         private val after: (LatexRunStepContext, Int) -> Unit = { _, _ -> },
     ) : LatexRunStep {
 
-        override fun beforeStart(context: LatexRunStepContext) {
+        override fun beforeStart(context: LatexRunStepContext): Pair<Boolean, String> {
             before(context)
+            return Pair(true, "")
         }
 
         override fun createProcess(context: LatexRunStepContext): ProcessHandler? = create(context)
