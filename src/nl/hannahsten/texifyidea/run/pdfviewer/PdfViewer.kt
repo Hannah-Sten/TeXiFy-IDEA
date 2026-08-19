@@ -64,7 +64,7 @@ interface PdfViewer {
         return Pair(true, "")
     }
 
-    // Backwards compatibility
+    // Backwards compatibility for PDF Viewer <= 0.18.5
     @Deprecated("Use forwardSearch to return result.")
     fun forwardSearch(
         outputPath: String?,
@@ -92,14 +92,6 @@ interface PdfViewer {
     fun openFile(pdfPath: String, project: Project, newWindow: Boolean = false, focusAllowed: Boolean = true, forceRefresh: Boolean = false, raiseOnError: Boolean = false): Pair<Boolean, String> {
         // Default implementation does nothing.
         return Pair(true, "")
-    }
-
-    /**
-     * Backwards compatibility.
-     */
-    @Deprecated("Use openFile to return error info", replaceWith = ReplaceWith("openFile(pdfPath, project, newWindow, focusAllowed, forceRefresh, false)"))
-    fun openFile(pdfPath: String, project: Project, newWindow: Boolean = false, focusAllowed: Boolean = true, forceRefresh: Boolean = false) {
-        // Default implementation does nothing.
     }
 
     companion object {

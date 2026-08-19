@@ -3,13 +3,12 @@
 ## [Unreleased]
 
 ### Added
+
 * Automatically detect jobname parameter when opening pdf
 * Improve UI of the "Delete auxiliary files" action
 * Add reference resolve support to color commands
 * The color gutter icon now shows the correct color for color definitions
 * Add run configuration setting to run code before the main file
-
-### Fixed
 
 ## [1.1.0] - 2026-08-08
 
@@ -811,7 +810,8 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v1.1.1-alpha.5...HEAD
+[1.1.1-alpha.5]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v1.1.0...v1.1.1-alpha.5
 [1.1.0]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v1.0.0...v1.0.1
 [1.0.1-alpha.5]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/1.0.0...1.0.1-alpha.5

@@ -16,11 +16,11 @@ object SkimViewer : SystemPdfViewer("Skim", "skim") {
     override val isFocusSupported: Boolean
         get() = true
 
-    @Deprecated("Use openFile to return error info")
-    override fun openFile(pdfPath: String, project: Project, newWindow: Boolean, focusAllowed: Boolean, forceRefresh: Boolean) {
+    override fun openFile(pdfPath: String, project: Project, newWindow: Boolean, focusAllowed: Boolean, forceRefresh: Boolean, raiseOnError: Boolean): Pair<Boolean, String> {
         if (pdfFilePath == null || pdfFilePath != pdfPath) {
             pdfFilePath = pdfPath
         }
+        return Pair(true, "")
     }
 
     /**

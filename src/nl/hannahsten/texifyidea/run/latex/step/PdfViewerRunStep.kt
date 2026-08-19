@@ -136,12 +136,7 @@ internal class PdfViewerRunStep(
         resolved: ResolvedViewerContext,
         context: LatexRunStepContext,
     ): Pair<Boolean, String> {
-        // Backwards compatibility for the pdf viewer plugin
-        resolved.viewer.openFile(
-            resolved.outputFilePath,
-            context.environment.project,
-            focusAllowed = stepConfig.requireFocus,
-        )
+        // Backwards compatibility for the pdf viewer plugin <= 0.18.5
         resolved.viewer.forwardSearch(
             outputPath = resolved.outputFilePath,
             sourceFilePath = resolved.sourceFilePath,
