@@ -33,10 +33,11 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
                 session.latexSdk,
                 session.distributionType,
             )
+            val userArguments = getUserArguments(stepConfig)
             return mutableListOf(executable).apply {
-                add("-file-line-error")
-                add("-interaction=nonstopmode")
-                add("-synctex=1")
+                if (userArguments.none { it.startsWith("-file-line-error") }) add("-file-line-error")
+                if (userArguments.none { it.startsWith("-interaction") }) add("-interaction=nonstopmode")
+                if (userArguments.none { it.startsWith("-synctex") }) add("-synctex=1")
                 add("-output-format=${stepConfig.outputFormat.name.lowercase(Locale.getDefault())}")
                 add("-output-directory=$outputPath")
 
@@ -71,10 +72,11 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
                 session.latexSdk,
                 session.distributionType,
             )
+            val userArguments = getUserArguments(stepConfig)
             return mutableListOf(executable).apply {
-                add("-file-line-error")
-                add("-interaction=nonstopmode")
-                add("-synctex=1")
+                if (userArguments.none { it.startsWith("-file-line-error") }) add("-file-line-error")
+                if (userArguments.none { it.startsWith("-interaction") }) add("-interaction=nonstopmode")
+                if (userArguments.none { it.startsWith("-synctex") }) add("-synctex=1")
                 add("-output-format=${stepConfig.outputFormat.name.lowercase(Locale.getDefault())}")
                 add("-output-directory=$outputPath")
             }
@@ -98,10 +100,11 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
                 session.latexSdk,
                 session.distributionType,
             )
+            val userArguments = getUserArguments(stepConfig)
             return mutableListOf(executable).apply {
-                add("-file-line-error")
-                add("-interaction=nonstopmode")
-                add("-synctex=1")
+                if (userArguments.none { it.startsWith("-file-line-error") }) add("-file-line-error")
+                if (userArguments.none { it.startsWith("-interaction") }) add("-interaction=nonstopmode")
+                if (userArguments.none { it.startsWith("-synctex") }) add("-synctex=1")
 
                 if (stepConfig.outputFormat == Format.XDV) {
                     add("-no-pdf")
@@ -164,9 +167,10 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
             moduleRoots: Array<VirtualFile>,
         ): MutableList<String> {
             val executable = stepConfig.compilerPath ?: executableName
+            val userArguments = getUserArguments(stepConfig)
             return mutableListOf(executable).apply {
                 if (!session.mainFile.hasTectonicTomlFile()) {
-                    add("--synctex")
+                    if (userArguments.none { it.startsWith("--synctex") }) add("--synctex")
                     add("--outfmt=${stepConfig.outputFormat.name.lowercase(Locale.getDefault())}")
                     add("--outdir=$outputPath")
                 }
@@ -296,6 +300,9 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
     open val outputFormats: Array<Format> = arrayOf(Format.PDF, Format.DVI)
 
     override fun toString() = this.displayName
+
+    fun getUserArguments(stepConfig: LatexCompileStepOptions): List<String> =
+        stepConfig.compilerArguments?.takeIf(String::isNotBlank)?.let { ParametersListUtil.parse(it) } ?: emptyList()
 
     companion object {
 
