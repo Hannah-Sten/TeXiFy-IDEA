@@ -4,6 +4,7 @@ import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.run.latex.LatexPathResolver
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationStaticSupport
@@ -43,7 +44,10 @@ internal object ForwardSearchSupport {
         val document = editor.document
         val line = document.getLineNumber(editor.caretModel.offset) + 1
         val outputPath = resolveOutputPath(project, file)
-        viewer.forwardSearch(outputPath, file.path, line, project, focusAllowed)
+        val result = viewer.forwardSearch(outputPath, file.path, line, project, focusAllowed, raiseOnError = false)
+        if (!result.first) {
+            throw TeXception(result.second)
+        }
         return viewer
     }
 

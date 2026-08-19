@@ -20,7 +20,7 @@ object SystemDefaultViewer : PdfViewer {
 
     override fun isAvailable(): Boolean = !SystemInfo.isWindows
 
-    override fun openFile(pdfPath: String, project: Project, newWindow: Boolean, focusAllowed: Boolean, forceRefresh: Boolean) {
+    override fun openFile(pdfPath: String, project: Project, newWindow: Boolean, focusAllowed: Boolean, forceRefresh: Boolean, raiseOnError: Boolean): Pair<Boolean, String> {
         if (SystemInfo.isMac) {
             // Open default system viewer, source: https://ss64.com/osx/open.html
             runCommand("open", pdfPath)
@@ -29,5 +29,6 @@ object SystemDefaultViewer : PdfViewer {
             // Open default system viewer using xdg-open, since this is available in almost all desktop environments
             runCommand("xdg-open", pdfPath)
         }
+        return Pair(true, "")
     }
 }

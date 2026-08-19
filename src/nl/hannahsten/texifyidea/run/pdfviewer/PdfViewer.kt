@@ -58,6 +58,20 @@ interface PdfViewer {
         line: Int,
         project: Project,
         focusAllowed: Boolean,
+        raiseOnError: Boolean = false
+    ): Pair<Boolean, String> {
+        // Default implementation does nothing.
+        return Pair(true, "")
+    }
+
+    // Backwards compatibility for PDF Viewer <= 0.18.5
+    @Deprecated("Use forwardSearch to return result.")
+    fun forwardSearch(
+        outputPath: String?,
+        sourceFilePath: String,
+        line: Int,
+        project: Project,
+        focusAllowed: Boolean,
     ) {
         // Default implementation does nothing.
     }
@@ -71,9 +85,13 @@ interface PdfViewer {
      * @param focusAllowed Indicates whether the viewer should take focus when opening the file.
      * **If false, the viewer should not take focus anyway, even if it has to abort the operation.** (In order to not disturb the user.)
      * @param forceRefresh Indicates whether the viewer should force a refresh of the file content.
+     * @param raiseOnError Whether to raise an exception in case of issues.
+     *
+     * @return Whether it was successful, and a message to show in the compile step.
      */
-    fun openFile(pdfPath: String, project: Project, newWindow: Boolean = false, focusAllowed: Boolean = true, forceRefresh: Boolean = false) {
+    fun openFile(pdfPath: String, project: Project, newWindow: Boolean = false, focusAllowed: Boolean = true, forceRefresh: Boolean = false, raiseOnError: Boolean = false): Pair<Boolean, String> {
         // Default implementation does nothing.
+        return Pair(true, "")
     }
 
     companion object {

@@ -3,8 +3,8 @@ package nl.hannahsten.texifyidea.run.latex.step
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.process.ProcessHandler
 import nl.hannahsten.texifyidea.run.common.createCompilationHandler
-import nl.hannahsten.texifyidea.run.latex.FileCleanupSupport
 import nl.hannahsten.texifyidea.run.latex.FileCleanupStepOptions
+import nl.hannahsten.texifyidea.run.latex.FileCleanupSupport
 import nl.hannahsten.texifyidea.run.latex.LatexmkCompileStepOptions
 import nl.hannahsten.texifyidea.run.latexmk.LatexmkCleanUtil
 
@@ -15,13 +15,19 @@ internal class FileCleanupRunStep(
     override val configId: String = stepConfig.id
     override val id: String = stepConfig.type
 
-    override fun beforeStart(context: LatexRunStepContext) {
+    override fun beforeStart(context: LatexRunStepContext): Pair<Boolean, String> {
         if (usesLatexmkCleanup(context)) {
-            return
+            return Pair(true, "")
         }
 
         try {
-            FileCleanupSupport.delete(FileCleanupSupport.collectRunTargets(context))
+            val result = FileCleanupSupport.delete(FileCleanupSupport.collectRunTargets(context))
+            return if (result.failedPaths.isNotEmpty()) {
+                Pair(false, "Failed to delete files: ${result.failedPaths.joinToString(", ")}")
+            }
+            else {
+                Pair(true, "")
+            }
         }
         finally {
             context.session.filesToCleanUp.clear()

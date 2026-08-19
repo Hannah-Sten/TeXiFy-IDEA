@@ -14,8 +14,9 @@ class RecordingForwardSearchViewer : PdfViewer {
 
     override fun isAvailable(): Boolean = true
 
-    override fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
+    override fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean, raiseOnError: Boolean): Pair<Boolean, String> {
         forwardSearchCalls += ForwardSearchCall(outputPath, sourceFilePath, line, project, focusAllowed)
+        return Pair(true, "")
     }
 
     data class ForwardSearchCall(

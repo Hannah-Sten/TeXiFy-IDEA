@@ -302,13 +302,15 @@ class PdfViewerRunStepTest : BasePlatformTestCase() {
 
         override fun isAvailable(): Boolean = true
 
-        override fun openFile(pdfPath: String, project: Project, newWindow: Boolean, focusAllowed: Boolean, forceRefresh: Boolean) {
+        override fun openFile(pdfPath: String, project: Project, newWindow: Boolean, focusAllowed: Boolean, forceRefresh: Boolean, raiseOnError: Boolean): Pair<Boolean, String> {
             openFileCalls += OpenFileCall(pdfPath, project, newWindow, focusAllowed, forceRefresh)
             openFileError?.let { throw it }
+            return Pair(true, "")
         }
 
-        override fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
+        override fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean, raiseOnError: Boolean): Pair<Boolean, String> {
             forwardSearchCalls += ForwardSearchCall(outputPath, sourceFilePath, line, project, focusAllowed)
+            return Pair(true, "")
         }
     }
 

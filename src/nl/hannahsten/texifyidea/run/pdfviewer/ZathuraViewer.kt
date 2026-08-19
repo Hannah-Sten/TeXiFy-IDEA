@@ -2,8 +2,6 @@ package nl.hannahsten.texifyidea.run.pdfviewer
 
 import com.intellij.execution.RunManager
 import com.intellij.execution.impl.RunManagerImpl
-import com.intellij.notification.Notification
-import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.project.Project
@@ -23,27 +21,23 @@ object ZathuraViewer : SystemPdfViewer("Zathura", "zathura") {
     override val isFocusSupported: Boolean
         get() = true
 
-    override fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
+    override fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean, raiseOnError: Boolean): Pair<Boolean, String> {
         val pdfPathGuess = outputPath ?: guessPdfPath(project, sourceFilePath)
 
         if (pdfPathGuess != null) {
             if(!focusAllowed) {
                 // The following command will take focus, so we have to abort
-                return
+                return Pair(false, "")
             }
             val path = PathManager.getBinPath()
             val name = ApplicationNamesInfo.getInstance().scriptName
             val command =
                 """zathura --synctex-forward="$line:1:$sourceFilePath" --synctex-editor-command="$path/$name.sh --line %{line} %{input}" $pdfPathGuess"""
             Runtime.getRuntime().exec(arrayOf("bash", "-c", command))
+            return Pair(true, "")
         }
         else {
-            Notification(
-                "LaTeX",
-                TexifyBundle.message("run.notification.forward.search.failed.title"),
-                TexifyBundle.message("run.notification.forward.search.failed.compile.first"),
-                NotificationType.ERROR
-            ).notify(project)
+            return Pair(false, TexifyBundle.message("run.notification.forward.search.failed.compile.first"))
         }
     }
 

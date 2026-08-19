@@ -29,17 +29,18 @@ internal class PdfViewerRunStep(
     override val displayName: String
         get() = stepConfig.displayName()
 
-    override fun beforeStart(context: LatexRunStepContext) {
+    override fun beforeStart(context: LatexRunStepContext): Pair<Boolean, String> {
         if (shouldSkipInlineViewer(context)) {
-            return
+            return Pair(true, "")
         }
 
-        val resolved = resolveStandardViewerContext(context) ?: return
+        val resolved = resolveStandardViewerContext(context) ?: return Pair(true, "")
         try {
-            openStandardViewer(resolved, context)
+            return openStandardViewer(resolved, context)
         }
         catch (_: TeXception) {
         }
+        return Pair(true, "")
     }
 
     @Throws(ExecutionException::class)
@@ -128,15 +129,14 @@ internal class PdfViewerRunStep(
         return SourceContext(file, line)
     }
 
+    /***
+     * Return success and message
+     */
     private fun openStandardViewer(
         resolved: ResolvedViewerContext,
         context: LatexRunStepContext,
-    ) {
-        resolved.viewer.openFile(
-            resolved.outputFilePath,
-            context.environment.project,
-            focusAllowed = stepConfig.requireFocus,
-        )
+    ): Pair<Boolean, String> {
+        // Backwards compatibility for the pdf viewer plugin <= 0.18.5
         resolved.viewer.forwardSearch(
             outputPath = resolved.outputFilePath,
             sourceFilePath = resolved.sourceFilePath,
@@ -144,7 +144,24 @@ internal class PdfViewerRunStep(
             project = context.environment.project,
             focusAllowed = stepConfig.requireFocus,
         )
+
+        val openFileResult = resolved.viewer.openFile(
+            resolved.outputFilePath,
+            context.environment.project,
+            focusAllowed = stepConfig.requireFocus,
+            raiseOnError = false,
+        )
+        val forwardSearchResult = resolved.viewer.forwardSearch(
+            outputPath = resolved.outputFilePath,
+            sourceFilePath = resolved.sourceFilePath,
+            line = resolved.line,
+            project = context.environment.project,
+            focusAllowed = stepConfig.requireFocus,
+            raiseOnError = false,
+        )
+
         (ActionManager.getInstance().getAction("texify.ForwardSearch") as? ForwardSearchAction)?.viewer = resolved.viewer
+        return Pair(forwardSearchResult.first && openFileResult.first, openFileResult.second + " " + forwardSearchResult.second)
     }
 
     private fun buildCustomViewerCommand(outputFilePath: String): List<String> {

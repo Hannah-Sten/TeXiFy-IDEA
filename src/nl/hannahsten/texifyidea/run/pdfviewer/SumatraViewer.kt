@@ -210,14 +210,14 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
     /**
      * Open a file in SumatraPDF, starting it if it is not running yet.
      */
-    override fun openFile(pdfPath: String, project: Project, newWindow: Boolean, focusAllowed: Boolean, forceRefresh: Boolean) {
-        if (!isAvailable()) return
+    override fun openFile(pdfPath: String, project: Project, newWindow: Boolean, focusAllowed: Boolean, forceRefresh: Boolean, raiseOnError: Boolean): Pair<Boolean, String> {
+        if (!isAvailable()) return Pair(false, "SumatraPDF is not available.")
         val quotedPdfPath = "\"$pdfPath\""
 
         if (conversation != null) {
             try {
                 execute("Open($quotedPdfPath, ${newWindow.int}, ${focusAllowed.int}, ${forceRefresh.int})")
-                return
+                return Pair(true, "")
             }
             catch (ignored: TeXception) {
                 // If the DDE command fails, we fall back to the command line.
@@ -225,7 +225,7 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
         }
         if(!focusAllowed) {
             // The following command will always take focus, we have to abort
-            return
+            return Pair(true, "Taking focus is disallowed in the run configuration, so SumatraPDF is not opened explicitly.")
         }
         val sumatraRunnable = this.sumatraPath
         val sumatraCommand = sumatraRunnable?.pathString ?: "SumatraPDF"
@@ -233,11 +233,18 @@ object SumatraViewer : SystemPdfViewer("SumatraPDF", "SumatraPDF") {
             .withWorkingDirectory(sumatraRunnable?.parent)
             .toProcessBuilder()
             .start()
+        return Pair(true, "")
     }
 
-    override fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean) {
-        if (!isAvailable()) return
-        forwardSearch(outputPath, sourceFilePath, line, focus = focusAllowed)
+    override fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean, raiseOnError: Boolean): Pair<Boolean, String> {
+        if (!isAvailable()) return Pair(false, TexifyBundle.message("run.notification.sumatra.not.found.message"))
+        return try {
+            forwardSearch(outputPath, sourceFilePath, line, focus = focusAllowed)
+            Pair(true, "")
+        }
+        catch (e: TeXception) {
+            Pair(false, e.message ?: "Unknown error.")
+        }
     }
 
     /**
