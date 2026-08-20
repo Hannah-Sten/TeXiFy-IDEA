@@ -105,7 +105,12 @@ class LatexErrorReportSubmitter : ErrorReportSubmitter() {
     }
 
     private fun createEvents(events: Array<out IdeaLoggingEvent>, additionalInfo: String?): List<SentryEvent> = events
-        .map { ideaEvent ->
+        .mapNotNull { ideaEvent ->
+            // Sometimes, platform issues are for some reason attributed to TeXiFy, and spam Sentry
+            if (!ideaEvent.throwableText.contains("texify")) {
+                return@mapNotNull null
+            }
+
             SentryEvent().apply {
                 this.message = Message().apply { this.message = additionalInfo ?: ideaEvent.throwableText }
                 this.level = SentryLevel.ERROR
