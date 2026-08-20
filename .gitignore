@@ -13,3 +13,4 @@ gen/
 .intellijPlatform
 .kotlin
 .DS_Store
+.junie

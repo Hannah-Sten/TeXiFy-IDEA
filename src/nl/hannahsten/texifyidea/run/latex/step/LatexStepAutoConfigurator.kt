@@ -50,13 +50,21 @@ internal object LatexStepAutoConfigurator {
         val commandSpec = resolveCommandSpec(runConfig, contextPsiFile)
         if (commandSpec.isLatexmk) {
             val step = ensurePrimaryCompileStepLatexmk(baseSteps)
-            step.latexmkExtraArguments = commandSpec.arguments ?: LatexRunConfiguration.DEFAULT_LATEXMK_EXTRA_ARGUMENTS
+            // Avoid overwriting arguments the user has changed in the template
+            if (commandSpec.arguments != null) {
+                step.latexmkExtraArguments = commandSpec.arguments
+            }
+            else if (step.latexmkExtraArguments.isNullOrBlank()) {
+                step.latexmkExtraArguments = LatexRunConfiguration.DEFAULT_LATEXMK_EXTRA_ARGUMENTS
+            }
             step.latexmkCompileMode = LatexmkCompileMode.AUTO
         }
         else {
             val step = ensurePrimaryCompileStepClassic(baseSteps)
             step.compiler = commandSpec.compiler ?: LatexCompiler.PDFLATEX
-            step.compilerArguments = commandSpec.arguments
+            if (commandSpec.arguments != null) {
+                step.compilerArguments = commandSpec.arguments
+            }
         }
 
         runConfig.workingDirectory = resolveWorkingDirectory(commandSpec.compiler, mainVirtualFile)

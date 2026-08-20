@@ -4,11 +4,15 @@
 
 ### Added
 
+* Fail the pdf viewer step if the pdf is not found
 * Automatically detect jobname parameter when opening pdf
 * Improve UI of the "Delete auxiliary files" action
 * Add reference resolve support to color commands
-* The color gutter icon now shows the correct color for color definitions
 * Add run configuration setting to run code before the main file
+
+### Fixed
+* Do not override user-defined arguments in the template run configuration
+* The color gutter icon now shows the correct color for color definitions
 
 ## [1.1.0] - 2026-08-08
 

@@ -64,6 +64,21 @@ class LatexStepAutoConfiguratorTest : BasePlatformTestCase() {
         assertEquals(BibliographyCompiler.BIBER, bibStep.bibliographyCompiler)
     }
 
+    fun testConfigureFromContextPreservesCustomLatexmkArguments() {
+        val mainPsi = myFixture.addFileToProject("main.tex", "\\documentclass{article}\n\\begin{document}\nHello\n\\end{document}")
+        val runConfig = LatexRunConfiguration(myFixture.project, LatexRunConfigurationProducer().configurationFactory, "Test")
+        val compileStep = LatexmkCompileStepOptions().apply {
+            id = "s1"
+            latexmkExtraArguments = "-synctex=0"
+        }
+        runConfig.configOptions.steps = mutableListOf(compileStep)
+
+        LatexStepAutoConfigurator.configureFromContext(runConfig, mainPsi, mainPsi.virtualFile)
+
+        val updatedStep = runConfig.configOptions.steps.filterIsInstance<LatexmkCompileStepOptions>().single()
+        assertEquals("-synctex=0", updatedStep.latexmkExtraArguments)
+    }
+
     fun testCompleteStepsStoresOutputDirectoryForInferredBiberStep() {
         val mainPsi = myFixture.addFileToProject(
             "main-biber-working-dir.tex",
