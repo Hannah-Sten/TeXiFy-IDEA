@@ -154,13 +154,14 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.22.1")
 
     // Http requests
-    implementation("io.ktor:ktor-client-core:3.5.1")
-    implementation("io.ktor:ktor-client-cio:3.5.1")
-    implementation("io.ktor:ktor-client-auth:3.5.1")
-    implementation("io.ktor:ktor-client-content-negotiation:3.5.1")
-    implementation("io.ktor:ktor-server-core:3.5.1")
-    implementation("io.ktor:ktor-server-jetty-jakarta:3.5.1")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:3.5.1")
+    val ktorVersion = "3.4.1" // When updating, make sure it matches the IntelliJ bundled version, because we use bundled IntelliJ platform coroutines, which needs to match the ktor coroutines version
+    implementation("io.ktor:ktor-client-core:$ktorVersion")
+    implementation("io.ktor:ktor-client-cio:$ktorVersion")
+    implementation("io.ktor:ktor-client-auth:$ktorVersion")
+    implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+    implementation("io.ktor:ktor-server-core:$ktorVersion")
+    implementation("io.ktor:ktor-server-jetty-jakarta:$ktorVersion")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
 
     // Comparing versions
@@ -337,6 +338,8 @@ tasks.useLatestVersions {
         "org.jlleitschuh.gradle.ktlint",
         // Takes a lot of time because it will download all IDE poms
         "com.jetbrains.intellij.platform",
+        // Needs to be updated manually to match IntelliJ coroutines bundled version
+        "io.ktor"
     )
 }
 
