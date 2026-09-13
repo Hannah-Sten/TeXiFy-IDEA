@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.editor
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.testFoldingWithDefinitions
+import nl.hannahsten.texifyidea.updateCommandDef
 
 /**
  * Note that folding builders need to implement DumbAware.
@@ -35,9 +36,10 @@ class LatexFoldingTest : BasePlatformTestCase() {
 
     fun testMathSymbolFoldingInEnvironment() {
         // Unicode issues on windows
-        if (!SystemInfo.isWindows) {
-            myFixture.testFolding("$testDataPath/math-symbols-environment.tex")
-        }
+        if (SystemInfo.isWindows) return
+        myFixture.configureByFile("math-symbols-environment.tex")
+        myFixture.updateCommandDef()
+        myFixture.testFolding("$testDataPath/math-symbols-environment.tex")
     }
 
     fun testSectionFolding() {
