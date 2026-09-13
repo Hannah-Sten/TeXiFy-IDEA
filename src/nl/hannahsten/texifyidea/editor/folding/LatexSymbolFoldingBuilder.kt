@@ -11,7 +11,6 @@ import com.intellij.psi.tree.TokenSet
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.psi.LatexTypes.NORMAL_TEXT_WORD
-import nl.hannahsten.texifyidea.util.files.psiFile
 import nl.hannahsten.texifyidea.util.parser.forEachChildTyped
 import nl.hannahsten.texifyidea.util.parser.inContext
 import nl.hannahsten.texifyidea.util.shiftRight
