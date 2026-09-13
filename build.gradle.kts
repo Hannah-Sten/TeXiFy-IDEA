@@ -12,7 +12,7 @@ fun properties(key: String) = project.findProperty(key).toString()
 
 // NOTE: when updating versions, also update Qodana in qodana.yaml
 plugins {
-    id("org.jetbrains.intellij.platform") version "2.18.1"
+    id("org.jetbrains.intellij.platform")
     kotlin("jvm") version ("2.4.0")
     kotlin("plugin.serialization") version ("2.4.0")
 
@@ -107,7 +107,7 @@ dependencies {
         testFramework(TestFrameworkType.Platform)
         testFramework(TestFrameworkType.Plugin.Java)
 
-        intellijIdea("2026.2")
+        intellijIdea("263.3889.65")
 
         // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
         // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
@@ -154,6 +154,7 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.22.1")
 
     // Http requests
+    // NOTE: Before updating ktor, check if the coroutines dependency matches the IntelliJ Platform version
     implementation("io.ktor:ktor-client-core:3.5.1")
     implementation("io.ktor:ktor-client-cio:3.5.1")
     implementation("io.ktor:ktor-client-auth:3.5.1")
@@ -219,7 +220,6 @@ changelog {
 
 intellijPlatform {
     pluginConfiguration {
-        name = "TeXiFy-IDEA"
         // Get the latest available change notes from the changelog file
         changeNotes = (
             provider {

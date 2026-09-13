@@ -18,7 +18,7 @@ class LatexSyntaxHighlighter : SyntaxHighlighterBase() {
 
     override fun getHighlightingLexer(): Lexer = LatexLexerAdapter()
 
-    override fun getTokenHighlights(tokenType: IElementType): Array<out TextAttributesKey?> = if (tokenType == LatexTypes.OPEN_BRACE || tokenType == LatexTypes.CLOSE_BRACE) {
+    override fun getTokenHighlights(tokenType: IElementType): Array<out TextAttributesKey> = if (tokenType == LatexTypes.OPEN_BRACE || tokenType == LatexTypes.CLOSE_BRACE) {
         BRACES_KEYS
     }
     else if (tokenType == LatexTypes.OPEN_BRACKET || tokenType == LatexTypes.CLOSE_BRACKET) {
@@ -97,7 +97,7 @@ class LatexSyntaxHighlighter : SyntaxHighlighterBase() {
         private val COMMENT_KEYS = keys(COMMENT)
         private val MAGIC_COMMENT_KEYS = keys(MAGIC_COMMENT)
         private val STAR_KEYS = keys(STAR)
-        private val EMPTY_KEYS = arrayOfNulls<TextAttributesKey>(0)
+        private val EMPTY_KEYS = arrayOf<TextAttributesKey>()
         private fun createKey(externalName: String, defaultStyle: TextAttributesKey): TextAttributesKey = TextAttributesKey.createTextAttributesKey(externalName, defaultStyle)
 
         private fun keys(vararg keys: TextAttributesKey): Array<out TextAttributesKey> = keys

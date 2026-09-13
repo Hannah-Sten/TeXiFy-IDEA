@@ -1,7 +1,6 @@
 package nl.hannahsten.texifyidea.navigation
 
 import com.intellij.navigation.NavigationItem
-import com.intellij.util.xml.model.gotosymbol.GoToSymbolProvider
 import nl.hannahsten.texifyidea.TexifyIcons
 import nl.hannahsten.texifyidea.psi.LatexCommands
 
@@ -22,6 +21,6 @@ object NavigationItemUtil {
             // Also catches \section.
             else -> TexifyIcons.DOT_SECTION
         }
-        return GoToSymbolProvider.BaseNavigationItem(psiElement, sectionName, icon)
+        return TexifyNavigationItem(psiElement, sectionName, icon)
     }
 }
