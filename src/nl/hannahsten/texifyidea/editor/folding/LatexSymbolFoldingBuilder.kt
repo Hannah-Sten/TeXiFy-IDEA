@@ -8,9 +8,11 @@ import com.intellij.openapi.editor.FoldingGroup
 import com.intellij.openapi.project.DumbAware
 import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.TokenSet
+import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.psi.LatexNormalText
 import nl.hannahsten.texifyidea.psi.LatexTypes.NORMAL_TEXT_WORD
 import nl.hannahsten.texifyidea.util.parser.forEachChildTyped
+import nl.hannahsten.texifyidea.util.parser.inContext
 import nl.hannahsten.texifyidea.util.shiftRight
 import nl.hannahsten.texifyidea.util.toTextRange
 
@@ -35,6 +37,8 @@ class LatexSymbolFoldingBuilder : FoldingBuilderEx(), DumbAware {
             for (child in it.node.getChildren(tokenFilter)) {
                 dashRegex.findAll(child.text).forEach { matchResult ->
                     val range = matchResult.range.shiftRight(child.startOffset).toTextRange()
+                    // Dashes in TikZ have a special meaning
+                    if (it.inContext(LatexContexts.TikzPicture)) return@forEachChildTyped
                     descriptors.add(FoldingDescriptor(child, range, group, getPlaceholderText(matchResult.value)))
                 }
             }
