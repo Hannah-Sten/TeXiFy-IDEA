@@ -13,6 +13,7 @@ import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.module.ModuleType
 import com.intellij.openapi.project.IndexNotReadyException
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
@@ -168,3 +169,11 @@ fun Project.isLatexProject(): Boolean = hasLatexModule() ||
  * True if we are probably in a unit test.
  */
 fun isTestProject() = ApplicationManager.getApplication().isUnitTestMode
+
+/**
+ * Whether the project is located inside WSL, but IntelliJ itself is not.
+ */
+fun Project.isWsl(): Boolean {
+    val path = basePath ?: guessProjectDir()?.path ?: return false
+    return path.startsWith("//wsl") || path.startsWith("\\\\wsl")
+}

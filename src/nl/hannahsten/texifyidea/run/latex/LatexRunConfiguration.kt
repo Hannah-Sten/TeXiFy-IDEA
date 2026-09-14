@@ -23,6 +23,7 @@ import nl.hannahsten.texifyidea.run.pdfviewer.CustomPdfViewer
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdk
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
+import nl.hannahsten.texifyidea.util.isWsl
 import org.jdom.Element
 import java.nio.file.Path
 import kotlin.io.path.pathString
@@ -230,7 +231,7 @@ class LatexRunConfiguration(
         val sdk = getLatexSdk()
         val type = (sdk?.sdkType as? LatexSdk?)?.getLatexDistributionType(sdk) ?: latexDistribution
         return if (type == LatexDistributionType.MODULE_SDK || type == LatexDistributionType.PROJECT_SDK) {
-            LatexDistributionType.TEXLIVE
+            if (project.isWsl()) LatexDistributionType.WSL_TEXLIVE else LatexDistributionType.TEXLIVE
         }
         else {
             type

@@ -2,6 +2,7 @@ package nl.hannahsten.texifyidea.run.latex
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.runWriteAction
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.ProjectJdkTable
 import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.projectRoots.impl.ProjectJdkImpl
@@ -11,6 +12,7 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.run.latex.ui.LatexDistributionSelection
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
+import nl.hannahsten.texifyidea.util.isWsl
 import org.jdom.Element
 
 /**
@@ -326,6 +328,21 @@ class LatexRunConfigurationSdkTest : BasePlatformTestCase() {
             "Expected no SDK configured message",
             "<no SDK configured>",
             displayName
+        )
+    }
+
+    @Suppress("NonExtendableApiUsage")
+    fun testWslProjectDefaultDistribution() {
+        val wslProject = object : Project by project {
+            override fun getBasePath(): String = "//wsl$/Ubuntu/home/user/project"
+        }
+        val runConfig = LatexRunConfiguration(wslProject, LatexConfigurationFactory(latexRunConfigurationType()), "Test")
+        runConfig.latexDistribution = LatexDistributionType.MODULE_SDK
+
+        assertEquals(
+            "Expected default distribution to be WSL TeX Live for WSL project",
+            LatexDistributionType.WSL_TEXLIVE,
+            runConfig.getLatexDistributionType()
         )
     }
 }
