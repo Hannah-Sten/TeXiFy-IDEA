@@ -43,7 +43,7 @@ class BibtexRunStepTest : BasePlatformTestCase() {
 
         assertEquals(expectedHandler, process)
         assertEquals(Path.of(auxDirectory), capturedWorkingDirectory)
-        assertTrue(capturedCommand!!.contains("--input-directory=${Path.of(auxDirectory)}"))
+        assertTrue(capturedCommand!!.contains("--input-directory=${context.session.mainFile.parent.path}"))
         assertTrue(capturedCommand!!.contains("--output-directory=${Path.of(auxDirectory)}"))
         assertEquals(context.session.mainFile.parent.path, capturedEnvironment!!["BIBINPUTS"])
         assertEquals(context.session.mainFile.parent.path + File.pathSeparator, capturedEnvironment!!["BSTINPUTS"])
