@@ -60,7 +60,7 @@ internal fun createCompilationHandler(
     val distributionType = runConfig.getLatexDistributionType()
     // The GeneralCommandLine requires a Windows working directory and cannot handle //wsl paths, so we need to set the working directory within WSL
     // This holds for any command run through WSL, hence we apply the fix here
-    val compilerWorkingDirectory = if (distributionType == LatexDistributionType.WSL_TEXLIVE && resolvedWorkingDirectory.toString().inWsl() && commandList.first() == "wsl" && commandList.getOrNull(1) == "bash") {
+    val compilerWorkingDirectory = if (distributionType == LatexDistributionType.WSL_TEXLIVE && resolvedWorkingDirectory.toString().inWsl() && commandList.first() == "wsl" && commandList.getOrNull(2) == "bash") {
         commandList.removeLast()
         commandList.add("cd " + windowsPathToWsl(resolvedWorkingDirectory.toString()) + " && " + command.last())
         Path.of(System.getProperty("user.home"))

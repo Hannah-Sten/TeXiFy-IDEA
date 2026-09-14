@@ -216,6 +216,25 @@ class BibtexRunStepTest : BasePlatformTestCase() {
         assertEquals("\$PROJECT_DIR\$/out", hint)
     }
 
+    fun testBibtexUsesWslWrapperWhenUsingWslDistribution() {
+        val context = createContext(outputDirPath = Path.of("out"), distributionType = LatexDistributionType.WSL_TEXLIVE)
+        val stepOptions = BibtexStepOptions().apply {
+            bibliographyCompiler = BibliographyCompiler.BIBTEX
+        }
+        val expectedHandler = mockk<KillableProcessHandler>(relaxed = true)
+        var capturedCommand: List<String>? = null
+        mockkStatic("nl.hannahsten.texifyidea.run.common.CompilationProcessFactoryKt")
+        every { createCompilationHandler(any(), any(), any(), any()) } answers {
+            capturedCommand = secondArg()
+            expectedHandler
+        }
+
+        BibtexRunStep(stepOptions).createProcess(context)
+
+        assertTrue(capturedCommand!!.contains("wsl.exe") || capturedCommand!!.contains("wsl"))
+        assertTrue(capturedCommand!!.any { it.contains("bibtex") && it.contains("main") })
+    }
+
     private fun createContext(): LatexRunStepContext = createContext(outputDirPath = Path.of("out"))
 
     private fun createRunConfig(

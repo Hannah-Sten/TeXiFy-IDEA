@@ -1,12 +1,16 @@
 package nl.hannahsten.texifyidea.run.latex.step
 
 import com.intellij.execution.ExecutionException
+import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.util.execution.ParametersListUtil
 import nl.hannahsten.texifyidea.run.common.createCompilationHandler
+import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Companion.toWslPathIfNeeded
 import nl.hannahsten.texifyidea.run.latex.BibtexStepOptions
+import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
+import nl.hannahsten.texifyidea.util.SystemEnvironment
 import java.io.File
 import java.nio.file.Path
 
@@ -32,19 +36,32 @@ internal class BibtexRunStep(
     }
 
     internal fun buildCommand(context: LatexRunStepContext, workingDirectory: Path): List<String> {
-        val command = mutableListOf(stepConfig.compilerPath ?: stepConfig.bibliographyCompiler.executableName)
         val session = context.session
         val distributionType = session.distributionType
-        val mainFileDirectory = session.mainFile.parent.path
+        val mainFileDirectory = session.mainFile.parent.path.toWslPathIfNeeded(distributionType)
+        val workingDirectoryPath = workingDirectory.toString().toWslPathIfNeeded(distributionType)
+        val command = mutableListOf(stepConfig.compilerPath ?: stepConfig.bibliographyCompiler.executableName)
         if (stepConfig.bibliographyCompiler.name == "BIBER") {
-            command += "--input-directory=$workingDirectory"
-            command += "--output-directory=$workingDirectory"
+            command += "--input-directory=$mainFileDirectory"
+            command += "--output-directory=$workingDirectoryPath"
         }
         else if (distributionType.isMiktex(session.project, session.mainFile)) {
             command += "-include-directory=$mainFileDirectory"
             command += ProjectRootManager.getInstance(session.project).contentSourceRoots
-                .map { "-include-directory=${it.path}" }
+                .map { "-include-directory=${it.path.toWslPathIfNeeded(distributionType)}" }
         }
+
+        if (distributionType == LatexDistributionType.WSL_TEXLIVE) {
+            var wslCommand = GeneralCommandLine(command).commandLineString
+            stepConfig.compilerArguments
+                ?.takeIf(String::isNotBlank)
+                ?.let { arguments ->
+                    ParametersListUtil.parse(arguments).forEach { wslCommand += " $it" }
+                }
+            wslCommand += " ${session.mainFile.nameWithoutExtension}"
+            return mutableListOf(*SystemEnvironment.wslCommand, wslCommand)
+        }
+
         stepConfig.compilerArguments
             ?.takeIf(String::isNotBlank)
             ?.let { command += ParametersListUtil.parse(it) }
