@@ -175,5 +175,7 @@ fun isTestProject() = ApplicationManager.getApplication().isUnitTestMode
  */
 fun Project.isWsl(): Boolean {
     val path = basePath ?: guessProjectDir()?.path ?: return false
-    return path.startsWith("//wsl") || path.startsWith("\\\\wsl")
+    return path.inWsl()
 }
+
+fun String.inWsl(): Boolean = startsWith("//wsl") || startsWith("\\\\wsl")

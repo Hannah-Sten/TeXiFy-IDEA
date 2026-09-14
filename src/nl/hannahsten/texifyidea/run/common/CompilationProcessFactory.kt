@@ -19,8 +19,10 @@ import nl.hannahsten.texifyidea.run.compiler.LatexCompiler.Companion.toWslPathIf
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.step.LatexRunStepContext
+import nl.hannahsten.texifyidea.settings.sdk.WslPathUtil.windowsPathToWsl
 import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.containsAny
+import nl.hannahsten.texifyidea.util.inWsl
 import java.io.File
 import java.nio.file.Path
 import kotlin.io.path.exists
@@ -53,8 +55,22 @@ internal fun createCompilationHandler(
         throw ExecutionException("The following command was too long to run: ${command.joinToString(" ")}")
     }
 
-    val commandLine = GeneralCommandLine(command)
-        .withWorkingDirectory(resolvedWorkingDirectory)
+    val commandList = command.toMutableList()
+
+    val distributionType = runConfig.getLatexDistributionType()
+    // The GeneralCommandLine requires a Windows working directory and cannot handle //wsl paths, so we need to set the working directory within WSL
+    // This holds for any command run through WSL, hence we apply the fix here
+    val compilerWorkingDirectory = if (distributionType == LatexDistributionType.WSL_TEXLIVE && resolvedWorkingDirectory.toString().inWsl() && commandList.first() == "wsl" && commandList.getOrNull(1) == "bash") {
+        commandList.removeLast()
+        commandList.add("cd " + windowsPathToWsl(resolvedWorkingDirectory.toString()) + " && " + command.last())
+        Path.of(System.getProperty("user.home"))
+    }
+    else {
+        resolvedWorkingDirectory
+    }
+
+    val commandLine = GeneralCommandLine(commandList)
+        .withWorkingDirectory(compilerWorkingDirectory)
         .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE)
         .withEnvironment(envVariables + extraEnvironment)
 
