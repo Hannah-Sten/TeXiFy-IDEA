@@ -4,6 +4,8 @@
 
 ### Added
 
+* Add WSL support to bibtex run configuration step
+* Improve support for using WSL with a project within WSL
 * Fail the pdf viewer step if the pdf is not found
 * Automatically detect jobname parameter when opening pdf
 * Improve UI of the "Delete auxiliary files" action

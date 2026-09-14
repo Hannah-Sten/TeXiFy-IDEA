@@ -12,7 +12,6 @@ import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import nl.hannahsten.texifyidea.run.latex.ui.LatexDistributionSelection
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
 import nl.hannahsten.texifyidea.settings.sdk.TexliveSdk
-import nl.hannahsten.texifyidea.util.isWsl
 import org.jdom.Element
 
 /**
