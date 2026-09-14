@@ -13,6 +13,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.util.getLatexRunConfigurations
+import nl.hannahsten.texifyidea.util.isWsl
 import nl.hannahsten.texifyidea.util.runCommand
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import java.io.File
@@ -100,7 +101,7 @@ object LatexSdkUtil {
         if (type == LatexDistributionType.TEXLIVE && TexliveSdk.Cache.isAvailable) return true
         if (type == LatexDistributionType.DOCKER_MIKTEX && DockerSdk.Availability.isAvailable) return true
         if (type == LatexDistributionType.DOCKER_TEXLIVE && DockerSdk.Availability.isAvailable) return true
-        if (type == LatexDistributionType.WSL_TEXLIVE && isWslTexliveAvailable) return true
+        if (type == LatexDistributionType.WSL_TEXLIVE && (isWslTexliveAvailable || project.isWsl())) return true
         return false
     }
 
