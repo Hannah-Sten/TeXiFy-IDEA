@@ -11,6 +11,22 @@ class LatexMissingGlossaryReferenceInspectionTest : TexifyInspectionTestBase(Lat
         myFixture.checkHighlighting()
     }
 
+    fun testNoWarningInsideWord() {
+        myFixture.configureByText(
+            LatexFileType,
+            """\newacronym{ai}{ai}{artificial intelligence} paid ailment chai"""
+        )
+        myFixture.checkHighlighting()
+    }
+
+    fun testWarningForStandaloneAcronym() {
+        myFixture.configureByText(
+            LatexFileType,
+            """\newacronym{ai}{ai}{artificial intelligence} the <warning descr="Missing glossary or acronym reference">ai</warning>-revolution (<warning descr="Missing glossary or acronym reference">ai</warning>)"""
+        )
+        myFixture.checkHighlighting()
+    }
+
     fun testAddGls() {
         testQuickFix(
             """
