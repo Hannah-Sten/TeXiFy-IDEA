@@ -107,7 +107,7 @@ dependencies {
         testFramework(TestFrameworkType.Platform)
         testFramework(TestFrameworkType.Plugin.Java)
 
-        intellijIdea("2026.2")
+        intellijIdea("2026.2.2")
 
         // Docs: https://github.com/JetBrains/gradle-intellij-plugin#intellij-platform-properties
         // All snapshot versions: https://www.jetbrains.com/intellij-repository/snapshots/
