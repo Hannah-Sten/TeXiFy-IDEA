@@ -4,6 +4,7 @@
 
 ### Added
 
+* Add option for PDF Viewer to support synctex in WSL
 * Add WSL support to bibtex run configuration step
 * Improve support for using WSL with a project within WSL
 * Fail the pdf viewer step if the pdf is not found
