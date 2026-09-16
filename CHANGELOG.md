@@ -18,7 +18,7 @@
 * Fix exception when adding Zotero library
 * Do not override user-defined arguments in the template run configuration
 * The color gutter icon now shows the correct color for color definitions
-* Fix false positive missing glossary reference warnings when a glossary name appears inside another word
+* Fix false positive missing glossary reference warnings when a glossary name appears inside another word, by @wrmthorne
 
 ## [1.1.0] - 2026-08-08
 
