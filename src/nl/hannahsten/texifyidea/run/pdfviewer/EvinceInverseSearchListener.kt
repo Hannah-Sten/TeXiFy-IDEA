@@ -2,9 +2,11 @@ package nl.hannahsten.texifyidea.run.pdfviewer
 
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.wm.WindowManager
 import kotlinx.coroutines.delay
 import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.util.Log
@@ -14,6 +16,7 @@ import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import org.freedesktop.dbus.connections.impl.DBusConnection
 import org.freedesktop.dbus.connections.impl.DBusConnectionBuilder
 import org.gnome.evince.Window
+import java.awt.Frame
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
@@ -113,6 +116,25 @@ object EvinceInverseSearchListener {
                 "Error: \"${result.first}\" Command executed: ${command.joinToString(" ")}",
                 NotificationType.ERROR
             ).notify(project)
+        }
+        else {
+            bringProjectToFront(project)
+        }
+    }
+
+    /**
+     * Try to steal focus, may not work depending on Window manager.
+     */
+    private fun bringProjectToFront(project: Project) {
+        ApplicationManager.getApplication().invokeLater {
+            val frame = WindowManager.getInstance().getFrame(project) ?: return@invokeLater
+
+            if ((frame.extendedState and Frame.ICONIFIED) != 0) {
+                frame.extendedState = frame.extendedState and Frame.ICONIFIED.inv()
+            }
+
+            frame.toFront()
+            frame.requestFocus()
         }
     }
 
