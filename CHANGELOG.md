@@ -4,6 +4,7 @@
 
 ### Added
 
+* Try to steal focus on Evince inverse search
 * Add option for PDF Viewer to support synctex in WSL
 * Add WSL support to bibtex run configuration step
 * Improve support for using WSL with a project within WSL
@@ -14,11 +15,12 @@
 * Add run configuration setting to run code before the main file
 
 ### Fixed
+* Show any error for Evince inverse search as notification
 * Fix incorrect folding of dashes in tikzpicture
 * Fix exception when adding Zotero library
 * Do not override user-defined arguments in the template run configuration
 * The color gutter icon now shows the correct color for color definitions
-* Fix false positive missing glossary reference warnings when a glossary name appears inside another word
+* Fix false positive missing glossary reference warnings when a glossary name appears inside another word, by @wrmthorne
 
 ## [1.1.0] - 2026-08-08
 

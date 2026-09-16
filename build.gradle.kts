@@ -12,7 +12,7 @@ fun properties(key: String) = project.findProperty(key).toString()
 
 // NOTE: when updating versions, also update Qodana in qodana.yaml
 plugins {
-    id("org.jetbrains.intellij.platform") version "2.18.1"
+    id("org.jetbrains.intellij.platform") version "2.19.0"
     kotlin("jvm") version ("2.4.0")
     kotlin("plugin.serialization") version ("2.4.0")
 
