@@ -14,6 +14,7 @@
 * Add run configuration setting to run code before the main file
 
 ### Fixed
+* Show any error for Evince inverse search as notification
 * Fix incorrect folding of dashes in tikzpicture
 * Fix exception when adding Zotero library
 * Do not override user-defined arguments in the template run configuration

@@ -10,10 +10,10 @@ import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.TexifyCoroutine
+import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import org.freedesktop.dbus.connections.impl.DBusConnection
 import org.freedesktop.dbus.connections.impl.DBusConnectionBuilder
 import org.gnome.evince.Window
-import java.io.IOException
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
@@ -72,12 +72,12 @@ object EvinceInverseSearchListener {
             // Delay execution and hope everything is ready (#3995)
             delay(1000.milliseconds)
             try {
-                startListening()
+                startListening(project)
             }
             catch (e: Exception) {
                 // See e.g. #3955, #4030, let's try again
                 sessionConnection?.register()
-                startListening()
+                startListening(project)
             }
         }
     }
@@ -85,11 +85,11 @@ object EvinceInverseSearchListener {
     /**
      * Start listening for backward search calls on the D-Bus.
      */
-    private fun startListening() {
+    private fun startListening(project: Project) {
         Log.debug("Starting Evince inverse search listener")
         syncSourceHandler = sessionConnection?.addSigHandler(Window.SyncSource::class.java) { signal ->
             val filename = signal.sourceFile.replaceFirst("file://".toRegex(), "")
-            syncSource(filename, signal.sourcePoint.line)
+            syncSource(filename, signal.sourcePoint.line, project)
         }
     }
 
@@ -99,17 +99,20 @@ object EvinceInverseSearchListener {
      * @param filePath Full to a file.
      * @param lineNumber Line number in the file.
      */
-    private fun syncSource(filePath: String, lineNumber: Int) {
+    private fun syncSource(filePath: String, lineNumber: Int, project: Project) {
         val path = PathManager.getBinPath()
         val name = ApplicationNamesInfo.getInstance().scriptName
 
         val command = arrayOf("$path/$name.sh", "--line", lineNumber.toString(), "\"$filePath\"")
 
-        try {
-            Runtime.getRuntime().exec(command)
-        }
-        catch (e: IOException) {
-            e.printStackTrace()
+        val result = runCommandWithExitCode(*command)
+        if (result.second != 0) {
+            Notification(
+                "LaTeX",
+                "Failed to sync source",
+                "Error: \"${result.first}\" Command executed: ${command.joinToString(" ")}",
+                NotificationType.ERROR
+            ).notify(project)
         }
     }
 
