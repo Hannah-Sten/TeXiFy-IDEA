@@ -4,7 +4,7 @@
 
 ### Added
 
-* Try to steal focus on Evince inverse search
+* Use native launcher to gain focus on Evince inverse search, by @Moryavendil
 * Add option for PDF Viewer to support synctex in WSL
 * Add WSL support to bibtex run configuration step
 * Improve support for using WSL with a project within WSL

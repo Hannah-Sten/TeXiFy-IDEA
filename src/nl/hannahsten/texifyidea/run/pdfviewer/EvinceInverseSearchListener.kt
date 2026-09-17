@@ -122,9 +122,7 @@ object EvinceInverseSearchListener {
      * @param lineNumber Line number in the file.
      */
 
-
     private fun syncSource(filePath: String, lineNumber: Int, project: Project) {
-
         val command = arrayOf(ideLauncherPath(), "--line", lineNumber.toString(), "\"$filePath\"")
 
         val result = runCommandWithExitCode(*command)
