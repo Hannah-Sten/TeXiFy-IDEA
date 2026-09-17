@@ -97,16 +97,33 @@ object EvinceInverseSearchListener {
     }
 
     /**
+     * Prefer the native launcher (bin/pycharm, bin/idea, ...) over the .sh script.
+     * The native launcher forwards the request to the running IDE, which also
+     * raises its window. The .sh script can crash when a user .vmoptions file exists.
+     */
+    private fun ideLauncherPath(): String {
+        val bin = java.nio.file.Path.of(PathManager.getBinPath())
+        val name = ApplicationNamesInfo.getInstance().scriptName
+        val native = bin.resolve(name)
+        val launcher = if (java.nio.file.Files.isRegularFile(native) && java.nio.file.Files.isExecutable(native)) {
+            native
+        }
+        else {
+            bin.resolve("$name.sh")
+        }
+        Log.debug("Evince inverse search: using launcher $launcher")
+        return launcher.toString()
+    }
+
+    /**
      * Sync the IDE on the given source file and line number.
      *
      * @param filePath Full to a file.
      * @param lineNumber Line number in the file.
      */
-    private fun syncSource(filePath: String, lineNumber: Int, project: Project) {
-        val path = PathManager.getBinPath()
-        val name = ApplicationNamesInfo.getInstance().scriptName
 
-        val command = arrayOf("$path/$name.sh", "--line", lineNumber.toString(), "\"$filePath\"")
+    private fun syncSource(filePath: String, lineNumber: Int, project: Project) {
+        val command = arrayOf(ideLauncherPath(), "--line", lineNumber.toString(), "\"$filePath\"")
 
         val result = runCommandWithExitCode(*command)
         if (result.second != 0) {
