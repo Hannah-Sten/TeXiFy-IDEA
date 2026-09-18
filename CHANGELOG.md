@@ -4,6 +4,17 @@
 
 ### Added
 
+### Fixed
+
+## [1.1.1] - 2026-09-18
+
+Welcome to TeXiFy IDEA 1.1.1! This release supports improved forward search and error handling for PDF Viewer 0.18.6, plus a lot more improvements.
+
+We thank everyone who submitted issues and provided feedback to make TeXiFy IDEA better.
+Your input is valuable and well appreciated.
+
+### Added
+
 * Use native launcher to gain focus on Evince inverse search, by @Moryavendil
 * Add option for PDF Viewer to support synctex in WSL
 * Add WSL support to bibtex run configuration step
@@ -15,6 +26,7 @@
 * Add run configuration setting to run code before the main file
 
 ### Fixed
+
 * Show any error for Evince inverse search as notification
 * Fix incorrect folding of dashes in tikzpicture
 * Fix exception when adding Zotero library
@@ -822,7 +834,8 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v1.1.1-alpha.5...HEAD
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v1.1.0...v1.1.1
 [1.1.1-alpha.5]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v1.1.0...v1.1.1-alpha.5
 [1.1.0]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v1.0.0...v1.0.1
