@@ -5,6 +5,7 @@
 ### Added
 
 ### Fixed
+* Fix IDE freeze caused by eager PdfViewer resolution, by @EnderGamingz
 
 ## [1.1.1] - 2026-09-18
 
