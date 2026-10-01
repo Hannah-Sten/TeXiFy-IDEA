@@ -198,7 +198,9 @@ class PdfViewerStepOptions : LatexStepRunConfigurationOptions() {
 
     override var type: String = LatexStepType.PDF_VIEWER
 
-    var pdfViewerName by string(PdfViewer.firstAvailableViewer.name)
+    // Leave unresolved here, PdfViewer.firstAvailableViewer shells out (xdg-mime, which) and this default
+    // would otherwise run on every construction, including on the EDT. Resolved lazily at actual use time instead.
+    var pdfViewerName by string(null)
     var requireFocus by property(true)
     var customViewerCommand by string(null)
 
@@ -219,8 +221,10 @@ class PdfViewerStepOptions : LatexStepRunConfigurationOptions() {
         }
         val configuredName = pdfViewerName?.trim().orEmpty()
         val matchingViewer = (PdfViewer.allViewers + CustomPdfViewer).firstOrNull { it.name == configuredName }
+        // Same reason as pdfViewerName's default: avoid shelling out to PdfViewer.firstAvailableViewer here,
+        // this can be called on the EDT while rendering the step's display name.
         return matchingViewer?.displayName
-            ?: configuredName.ifBlank { PdfViewer.firstAvailableViewer.displayName ?: TexifyBundle.message("run.step.display.pdf.viewer") }
+            ?: configuredName.ifBlank { TexifyBundle.message("run.step.display.pdf.viewer") }
     }
 
     override fun newInstance(): LatexStepRunConfigurationOptions = PdfViewerStepOptions()
