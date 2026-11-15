@@ -65,7 +65,10 @@ class LatexTextExtractor : TextExtractor() {
         // Keep these standalone tokens too, otherwise Grazie repeatedly suggests commas
         // that already exist, e.g. in \textbf{Thus, ....}.
         // Do not collect commas inside normal_text: their ranges are already included.
-        val relatedElements = root.collectSubtree { it is LatexNormalText || it is PsiWhiteSpace || it is LatexCommands ||
+        val relatedElements = root.collectSubtree {
+            it is LatexNormalText ||
+                it is PsiWhiteSpace ||
+                it is LatexCommands ||
                 // A parameter_text can contain commands and other parameter_text nodes.
                 // Collect its text leaves to avoid overlapping ranges and leaking command syntax.
                 (it.parent is LatexParameterText && it.firstChild == null) ||
