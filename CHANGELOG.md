@@ -5,6 +5,8 @@
 ### Added
 
 ### Fixed
+* Fix IDE freeze/deadlock during indexing by avoiding coroutine dispatcher blocking in synchronous commands and caching guessed SDK roots (#4504)
+* Fix commas not detected by Grazie, by @hendrikschippers
 * Fix IDE freeze caused by eager PdfViewer resolution, by @EnderGamingz
 
 ## [1.1.1] - 2026-09-18
@@ -835,7 +837,8 @@ Thanks to @jojo2357 and @MisterDeenis for contributing to this release!
 * Fix some intention previews. ([#2796](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2796))
 * Other small bug fixes and improvements. ([#2776](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2776), [#2774](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2774), [#2765](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2765)-[#2773](https://github.com/Hannah-Sten/TeXiFy-IDEA/issues/2773))
 
-[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v1.1.2-alpha.1...HEAD
+[1.1.2-alpha.1]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v1.1.1...v1.1.2-alpha.1
 [1.1.1]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v1.1.0...v1.1.1
 [1.1.1-alpha.5]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v1.1.0...v1.1.1-alpha.5
 [1.1.0]: https://github.com/Hannah-Sten/TeXiFy-IDEA/compare/v1.0.1...v1.1.0
