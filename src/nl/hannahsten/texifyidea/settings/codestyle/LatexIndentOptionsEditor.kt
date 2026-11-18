@@ -14,53 +14,61 @@ import javax.swing.JCheckBox
  */
 class LatexIndentOptionsEditor(provider: LatexLanguageCodeStyleSettingsProvider) : SmartIndentOptionsEditor(provider) {
 
-    private val sectionIndents = JCheckBox(TexifyBundle.message("settings.codestyle.indent.nested.sections"))
-    private val environmentIndent = JCheckBox(TexifyBundle.message("settings.codestyle.indent.environments"))
-    private val documentIndent = JCheckBox(TexifyBundle.message("settings.codestyle.indent.document.environment"))
-
-    init {
-        // (De)select the document environment checkbox whenever the environment checkbox is (de)selected.
-        environmentIndent.addItemListener { event -> documentIndent.isSelected = event.stateChange == ItemEvent.SELECTED }
-    }
+    private var sectionIndents: JCheckBox? = null
+    private var environmentIndent: JCheckBox? = null
+    private var documentIndent: JCheckBox? = null
 
     override fun addComponents() {
         super.addComponents()
-        add(sectionIndents)
-        add(environmentIndent)
-        add(documentIndent, true)
+
+        val section = JCheckBox(TexifyBundle.message("settings.codestyle.indent.nested.sections")).also { sectionIndents = it }
+        val env = JCheckBox(TexifyBundle.message("settings.codestyle.indent.environments")).also { environmentIndent = it }
+        val doc = JCheckBox(TexifyBundle.message("settings.codestyle.indent.document.environment")).also { documentIndent = it }
+
+        // (De)select the document environment checkbox whenever the environment checkbox is (de)selected.
+        env.addItemListener { event -> doc.isSelected = event.stateChange == ItemEvent.SELECTED }
+
+        add(section)
+        add(env)
+        add(doc, true)
     }
 
     override fun setEnabled(enabled: Boolean) {
         super.setEnabled(enabled)
-        sectionIndents.isEnabled = enabled
-        environmentIndent.isEnabled = enabled
-        documentIndent.isEnabled = enabled
+        sectionIndents?.isEnabled = enabled
+        environmentIndent?.isEnabled = enabled
+        documentIndent?.isEnabled = enabled
     }
 
     override fun isModified(settings: CodeStyleSettings?, options: CommonCodeStyleSettings.IndentOptions?): Boolean {
         val isModified = super.isModified(settings, options)
         val latexSettings = settings?.getCustomSettings(LatexCodeStyleSettings::class.java) ?: return false
+
+        val section = sectionIndents ?: return isModified
+        val env = environmentIndent ?: return isModified
+        val doc = documentIndent ?: return isModified
+
         return isModified ||
-            isFieldModified(sectionIndents, latexSettings.INDENT_SECTIONS) ||
-            isFieldModified(environmentIndent, latexSettings.INDENT_ENVIRONMENTS) ||
-            isFieldModified(documentIndent, latexSettings.INDENT_DOCUMENT_ENVIRONMENT)
+            isFieldModified(section, latexSettings.INDENT_SECTIONS) ||
+            isFieldModified(env, latexSettings.INDENT_ENVIRONMENTS) ||
+            isFieldModified(doc, latexSettings.INDENT_DOCUMENT_ENVIRONMENT)
     }
 
     override fun apply(settings: CodeStyleSettings?, options: CommonCodeStyleSettings.IndentOptions?) {
         super.apply(settings, options)
 
-        val latexSettings = settings?.getCustomSettings(LatexCodeStyleSettings::class.java)
-        latexSettings?.INDENT_SECTIONS = sectionIndents.isSelected
-        latexSettings?.INDENT_ENVIRONMENTS = environmentIndent.isSelected
-        latexSettings?.INDENT_DOCUMENT_ENVIRONMENT = documentIndent.isSelected
+        val latexSettings = settings?.getCustomSettings(LatexCodeStyleSettings::class.java) ?: return
+        sectionIndents?.let { latexSettings.INDENT_SECTIONS = it.isSelected }
+        environmentIndent?.let { latexSettings.INDENT_ENVIRONMENTS = it.isSelected }
+        documentIndent?.let { latexSettings.INDENT_DOCUMENT_ENVIRONMENT = it.isSelected }
     }
 
     override fun reset(settings: CodeStyleSettings, options: CommonCodeStyleSettings.IndentOptions) {
         super.reset(settings, options)
 
         val latexSettings = settings.getCustomSettings(LatexCodeStyleSettings::class.java)
-        sectionIndents.isSelected = latexSettings.INDENT_SECTIONS
-        environmentIndent.isSelected = latexSettings.INDENT_ENVIRONMENTS
-        documentIndent.isSelected = latexSettings.INDENT_DOCUMENT_ENVIRONMENT
+        sectionIndents?.isSelected = latexSettings.INDENT_SECTIONS
+        environmentIndent?.isSelected = latexSettings.INDENT_ENVIRONMENTS
+        documentIndent?.isSelected = latexSettings.INDENT_DOCUMENT_ENVIRONMENT
     }
 }

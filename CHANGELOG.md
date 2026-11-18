@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+* Delay UI initialization of the Indent Options Editor to avoid IDE deadlocks
 
 ### Fixed
 * Fix IDE freeze/deadlock during indexing by avoiding coroutine dispatcher blocking in synchronous commands and caching guessed SDK roots (#4504)
