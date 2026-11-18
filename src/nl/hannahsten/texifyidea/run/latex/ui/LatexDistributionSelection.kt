@@ -5,6 +5,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
+import nl.hannahsten.texifyidea.util.isWsl
 
 /**
  * UI helper for the LaTeX distribution dropdown in run configurations.
@@ -79,9 +80,9 @@ data class LatexDistributionSelection(val distributionType: LatexDistributionTyp
                 .filter { it.isAvailable(project) }
                 .forEach { selections.add(LatexDistributionSelection(it)) }
 
-            // If nothing is available, at least show TeX Live as an option
+            // If nothing is available, at least show TeX Live or WSL TeX Live as an option
             if (selections.isEmpty()) {
-                selections.add(LatexDistributionSelection(LatexDistributionType.TEXLIVE))
+                selections.add(LatexDistributionSelection(if (project.isWsl()) LatexDistributionType.WSL_TEXLIVE else LatexDistributionType.TEXLIVE))
             }
 
             return selections

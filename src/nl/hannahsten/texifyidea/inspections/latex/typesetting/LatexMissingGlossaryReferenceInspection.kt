@@ -41,7 +41,8 @@ class LatexMissingGlossaryReferenceInspection : TexifyInspectionBase() {
         }
         val descriptors = descriptorList()
         val regexes = extractedNames.map { nameLetters ->
-            val nameLetterRegex = nameLetters.toRegex()
+            // Only match standalone words, so that e.g. the acronym 'ai' does not match the 'ai' in 'paid'
+            val nameLetterRegex = "\\b${Regex.escape(nameLetters)}\\b".toRegex()
             // Both glossaries and acronym packages provide acronymsh
             val glsRegex = "\\\\(?:gls|ac)[^{]+\\{($nameLetters)}".toRegex()
             nameLetterRegex to glsRegex

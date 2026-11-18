@@ -11,6 +11,7 @@ import nl.hannahsten.texifyidea.TeXception
 import nl.hannahsten.texifyidea.action.ForwardSearchAction
 import nl.hannahsten.texifyidea.file.LatexFileType
 import nl.hannahsten.texifyidea.run.common.createCompilationHandler
+import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.PdfViewerStepOptions
 import nl.hannahsten.texifyidea.run.latex.TextEditorSnapshot
 import nl.hannahsten.texifyidea.run.pdfviewer.ForwardSearchSupport
@@ -158,6 +159,7 @@ internal class PdfViewerRunStep(
             project = context.environment.project,
             focusAllowed = stepConfig.requireFocus,
             raiseOnError = false,
+            runInWsl = context.session.distributionType == LatexDistributionType.WSL_TEXLIVE,
         )
 
         (ActionManager.getInstance().getAction("texify.ForwardSearch") as? ForwardSearchAction)?.viewer = resolved.viewer

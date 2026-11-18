@@ -94,6 +94,8 @@ You can also do the reverse: press <shortcut>Ctrl</shortcut> and click in Evince
 
 Note you need at least Evince 2.32 for this, you can check your version with `evince --version`. Especially on Linux Mint it may be that your version is too old, in which case simply `apt install evince` to update.
 
+For people using stacking windows managers, this will not put the focus back on IntelliJ if it runs as a native Wayland client. To benefit form focus shifting, IntelliJ has to run under XWayland (Help->Edit Custom VM Options...-> add "-Dawt.toolkit.name=XToolkit" to the .vmoptions file).
+
 ## Okular
 
 _Since b0.6.7_

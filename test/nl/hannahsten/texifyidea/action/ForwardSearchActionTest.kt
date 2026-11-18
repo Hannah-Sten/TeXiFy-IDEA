@@ -3,6 +3,7 @@ package nl.hannahsten.texifyidea.action
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.pdfviewer.PdfViewer
 import nl.hannahsten.texifyidea.testutils.RecordingForwardSearchViewer
 import nl.hannahsten.texifyidea.testutils.addLatexRunConfig
@@ -43,7 +44,9 @@ class ForwardSearchActionTest : BasePlatformTestCase() {
         myFixture.addFileToProject("b/chapter.tex", "B content")
         myFixture.updateFilesets()
 
-        project.addLatexRunConfig("A", "a/root-a.tex", Path.of("{projectDir}", "out-a"))
+        project.addLatexRunConfig("A", "a/root-a.tex", Path.of("{projectDir}", "out-a")).apply {
+            latexDistribution = LatexDistributionType.WSL_TEXLIVE
+        }
         project.addLatexRunConfig("B", "b/root-b.tex", Path.of("{projectDir}", "out-b"))
 
         // Using a mockk object would give an exception: java.lang.UnsupportedOperationException: class redefinition failed: attempted to change the schema
@@ -59,9 +62,10 @@ class ForwardSearchActionTest : BasePlatformTestCase() {
 
         assertEquals(1, viewer.forwardSearchCalls.size)
         val call = viewer.forwardSearchCalls.single()
-        assertTrue(call.outputPath?.endsWith("/a/root-a.pdf") == true)
+        assertTrue(call.outputPath?.replace('\\', '/')?.endsWith("/root-a.pdf") == true)
         assertEquals(aChapter.virtualFile.path, call.sourceFilePath)
         assertEquals(project, call.project)
         assertTrue(call.focusAllowed)
+        assertTrue(call.runInWsl)
     }
 }

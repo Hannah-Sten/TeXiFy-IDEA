@@ -4,6 +4,7 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.PsiTreeUtil
+import nl.hannahsten.texifyidea.lang.LatexContext
 import nl.hannahsten.texifyidea.lang.LatexContexts
 import nl.hannahsten.texifyidea.psi.LatexCommandWithParams
 import nl.hannahsten.texifyidea.psi.LatexRequiredParam
@@ -103,6 +104,8 @@ fun PsiElement.textRangeInAncestor(ancestor: PsiElement): TextRange? {
  * @return `true` when the element is in math mode, `false` when the element is in no math mode.
  */
 fun PsiElement.inMathContext(): Boolean = LatexPsiUtil.resolveContextUpward(this).contains(LatexContexts.Math)
+
+fun PsiElement.inContext(context: LatexContext): Boolean = LatexPsiUtil.resolveContextUpward(this).contains(context)
 
 /**
  * Iterate through all direct children of the PsiElement and apply the action to each child

@@ -5,6 +5,7 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import nl.hannahsten.texifyidea.TeXception
+import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexPathResolver
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfiguration
 import nl.hannahsten.texifyidea.run.latex.LatexRunConfigurationStaticSupport
@@ -38,20 +39,31 @@ internal object ForwardSearchSupport {
         fallbackViewer: PdfViewer? = null,
         focusAllowed: Boolean = true,
     ): PdfViewer? {
-        val viewer = resolveViewer(project, file, fallbackViewer) ?: return null
+        val runConfig = resolveRunConfig(project, file)
+        val viewer = resolveViewer(runConfig, project, fallbackViewer) ?: return null
         if (!viewer.isAvailable() || !viewer.isForwardSearchSupported) return null
 
         val document = editor.document
         val line = document.getLineNumber(editor.caretModel.offset) + 1
         val outputPath = resolveOutputPath(project, file)
-        val result = viewer.forwardSearch(outputPath, file.path, line, project, focusAllowed, raiseOnError = false)
+        val result = viewer.forwardSearch(
+            outputPath = outputPath,
+            sourceFilePath = file.path,
+            line = line,
+            project = project,
+            focusAllowed = focusAllowed,
+            raiseOnError = false,
+            runInWsl = runConfig?.getLatexDistributionType() == LatexDistributionType.WSL_TEXLIVE,
+        )
         if (!result.first) {
             throw TeXception(result.second)
         }
         return viewer
     }
 
-    private fun resolveViewer(project: Project, sourceFile: VirtualFile, fallback: PdfViewer? = null): PdfViewer? = resolveRunConfig(project, sourceFile)?.pdfViewer
+    private fun resolveViewer(project: Project, sourceFile: VirtualFile, fallback: PdfViewer? = null): PdfViewer? = resolveViewer(resolveRunConfig(project, sourceFile), project, fallback)
+
+    private fun resolveViewer(runConfig: LatexRunConfiguration?, project: Project, fallback: PdfViewer? = null): PdfViewer? = runConfig?.pdfViewer
         ?: fallback
         ?: project.selectedRunConfig()?.pdfViewer
         ?: project.latexTemplateRunConfig()?.pdfViewer

@@ -6,11 +6,13 @@ import com.intellij.ide.macro.MacroManager
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.PathMacros
 import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.components.PathMacroManager
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
+import com.intellij.platform.ide.progress.runWithModalProgressBlocking
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
 
@@ -26,20 +28,33 @@ internal object LatexPathMacroSupport {
             return raw
         }
 
-        val module = moduleForFile(mainFile, project)
-        val configuratorExpanded = expandWithProgramParameters(raw, project, module, mainFile)
-        if (!configuratorExpanded.contains('$')) {
-            return configuratorExpanded
+        val expandAction: () -> String = {
+            val module = moduleForFile(mainFile, project)
+            val configuratorExpanded = expandWithProgramParameters(raw, project, module, mainFile)
+            if (!configuratorExpanded.contains('$')) {
+                configuratorExpanded
+            }
+            else {
+                val pathExpanded = PathMacroManager.getInstance(project).expandPath(configuratorExpanded) ?: configuratorExpanded
+                if (!pathExpanded.contains('$')) {
+                    pathExpanded
+                }
+                else {
+                    val macros = PathMacros.getInstance()
+                    macroPattern.replace(pathExpanded) { match ->
+                        macros.getValue(match.groupValues[1]) ?: match.value
+                    }
+                }
+            }
         }
 
-        val pathExpanded = PathMacroManager.getInstance(project).expandPath(configuratorExpanded) ?: return configuratorExpanded
-        if (!pathExpanded.contains('$')) {
-            return pathExpanded
+        return if (ApplicationManager.getApplication().isDispatchThread) {
+            runWithModalProgressBlocking(project, "Resolving Paths") {
+                expandAction()
+            }
         }
-
-        val macros = PathMacros.getInstance()
-        return macroPattern.replace(pathExpanded) { match ->
-            macros.getValue(match.groupValues[1]) ?: match.value
+        else {
+            expandAction()
         }
     }
 

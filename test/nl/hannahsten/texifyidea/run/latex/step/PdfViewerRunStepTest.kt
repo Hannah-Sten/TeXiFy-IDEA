@@ -74,6 +74,21 @@ class PdfViewerRunStepTest : BasePlatformTestCase() {
         }
     }
 
+    fun testStandardViewerRunsSynctexInWslForWslDistribution() {
+        val context = createContext(distributionType = LatexDistributionType.WSL_TEXLIVE)
+        val step = PdfViewerRunStep(
+            PdfViewerStepOptions().apply {
+                pdfViewerName = NoViewer.name
+            }
+        )
+        val viewer = mockNoViewer()
+
+        step.beforeStart(context)
+
+        assertEquals(1, viewer.forwardSearchCalls.size)
+        assertTrue(viewer.forwardSearchCalls.single().runInWsl)
+    }
+
     fun testStandardViewerSwallowsTeXception() {
         val context = createContext()
         val step = PdfViewerRunStep(
@@ -308,8 +323,8 @@ class PdfViewerRunStepTest : BasePlatformTestCase() {
             return Pair(true, "")
         }
 
-        override fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean, raiseOnError: Boolean): Pair<Boolean, String> {
-            forwardSearchCalls += ForwardSearchCall(outputPath, sourceFilePath, line, project, focusAllowed)
+        override fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean, raiseOnError: Boolean, runInWsl: Boolean): Pair<Boolean, String> {
+            forwardSearchCalls += ForwardSearchCall(outputPath, sourceFilePath, line, project, focusAllowed, runInWsl)
             return Pair(true, "")
         }
     }
@@ -328,9 +343,10 @@ class PdfViewerRunStepTest : BasePlatformTestCase() {
         val line: Int,
         val project: Project,
         val focusAllowed: Boolean,
+        val runInWsl: Boolean,
     )
 
-    private fun createContext(outputFilePath: String? = "main.pdf"): LatexRunStepContext {
+    private fun createContext(outputFilePath: String? = "main.pdf", distributionType: LatexDistributionType = LatexDistributionType.TEXLIVE): LatexRunStepContext {
         val root = Files.createTempDirectory("texify-pdf-viewer-step")
         val mainFilePath = root.resolve("main.tex")
         val outputDirPath = Files.createDirectories(root.resolve("out"))
@@ -355,7 +371,7 @@ class PdfViewerRunStepTest : BasePlatformTestCase() {
             mainFile = mainFile,
             outputDir = outputDir,
             workingDirectory = Path.of(mainFile.parent.path),
-            distributionType = LatexDistributionType.TEXLIVE,
+            distributionType = distributionType,
             usesDefaultWorkingDirectory = true,
             latexSdk = null,
             auxDir = outputDir,

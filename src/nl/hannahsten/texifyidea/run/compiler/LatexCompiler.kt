@@ -10,9 +10,9 @@ import nl.hannahsten.texifyidea.run.latex.LatexCompileStepOptions
 import nl.hannahsten.texifyidea.run.latex.LatexDistributionType
 import nl.hannahsten.texifyidea.run.latex.LatexRunSessionState
 import nl.hannahsten.texifyidea.settings.sdk.LatexSdkUtil
+import nl.hannahsten.texifyidea.settings.sdk.WslPathUtil
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.files.hasTectonicTomlFile
-import nl.hannahsten.texifyidea.util.runCommand
 import java.util.*
 
 @Suppress("DuplicatedCode")
@@ -306,9 +306,12 @@ enum class LatexCompiler(private val displayName: String, val executableName: St
 
     companion object {
 
+        /**
+         * Convert a Windows path to a path valid from within WSL
+         */
         fun String.toWslPathIfNeeded(distributionType: LatexDistributionType): String =
             if (distributionType == LatexDistributionType.WSL_TEXLIVE) {
-                runCommand("wsl", "wslpath", "-a", this) ?: this
+                WslPathUtil.windowsPathToWsl(this) ?: this
             }
             else this
     }

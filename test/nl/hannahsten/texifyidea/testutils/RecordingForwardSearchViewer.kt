@@ -19,11 +19,17 @@ class RecordingForwardSearchViewer : PdfViewer {
         return Pair(true, "")
     }
 
+    override fun forwardSearch(outputPath: String?, sourceFilePath: String, line: Int, project: Project, focusAllowed: Boolean, raiseOnError: Boolean, runInWsl: Boolean): Pair<Boolean, String> {
+        forwardSearchCalls += ForwardSearchCall(outputPath, sourceFilePath, line, project, focusAllowed, runInWsl)
+        return Pair(true, "")
+    }
+
     data class ForwardSearchCall(
         val outputPath: String?,
         val sourceFilePath: String,
         val line: Int,
         val project: Project,
         val focusAllowed: Boolean,
+        val runInWsl: Boolean = false,
     )
 }

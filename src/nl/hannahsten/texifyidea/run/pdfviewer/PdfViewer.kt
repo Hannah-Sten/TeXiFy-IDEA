@@ -64,6 +64,21 @@ interface PdfViewer {
         return Pair(true, "")
     }
 
+    /**
+     * Performs a forward search, optionally executing SyncTeX in WSL.
+     *
+     * The default implementation delegates to the existing method so PDF Viewer <= 0.18.5 should still work.
+     */
+    fun forwardSearch(
+        outputPath: String?,
+        sourceFilePath: String,
+        line: Int,
+        project: Project,
+        focusAllowed: Boolean,
+        raiseOnError: Boolean,
+        runInWsl: Boolean,
+    ): Pair<Boolean, String> = forwardSearch(outputPath, sourceFilePath, line, project, focusAllowed, raiseOnError)
+
     // Backwards compatibility for PDF Viewer <= 0.18.5
     @Deprecated("Use forwardSearch to return result.")
     fun forwardSearch(

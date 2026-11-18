@@ -27,7 +27,7 @@ class LatexOutputPathTest : BasePlatformTestCase() {
         runConfig.outputPath = Path.of("${LatexPathResolver.PROJECT_DIR_PLACEHOLDER}/out")
         val outPath = LatexPathResolver.resolveOutputDir(runConfig)
         assertNotNull(outPath)
-        assertTrue(outPath!!.path.startsWith("/src"))
+        assertTrue(Path.of(outPath!!.path).isAbsolute)
     }
 
     fun testDefaultOutputPathResolvesUnderProjectDirAndImplicitAuxHintUsesOutputPath() {
@@ -77,7 +77,7 @@ class LatexOutputPathTest : BasePlatformTestCase() {
             project
         )
 
-        assertEquals(expectedPath, resolved?.toString())
+        assertEquals(Path.of(expectedPath).toString(), resolved?.toString())
     }
 
     fun testUnresolvedRelativeOutputPathFallsBackWithoutCrash() {

@@ -23,12 +23,14 @@ The braces themselves can also fold, so for example `\left\{` will fold to `{`.
 
 For more information, see [https://www.jetbrains.com/help/idea/code-folding-settings.html](https://www.jetbrains.com/help/idea/code-folding-settings.html).
 
-### Unicode math preview
+### Unicode math preview (editor folding)
 
 TeXiFy can show a unicode preview of some math characters like greek letters.
 You can trigger this with your cursor on a math command and clicking <ui-path>Code | Folding | Collapse</ui-path> or using <shortcut>Ctrl + NumPad -</shortcut>.
 Clicking on it will expand it again.
+
 TeXiFy shows these previews automatically when a project is opened.
+To disable that, go to <ui-path>File | Settings | Editor | General | Code Folding | LaTeX</ui-path>.
 
 ## Line markers
 

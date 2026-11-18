@@ -2,18 +2,21 @@ package nl.hannahsten.texifyidea.run.pdfviewer
 
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.wm.WindowManager
 import kotlinx.coroutines.delay
 import nl.hannahsten.texifyidea.TexifyBundle
 import nl.hannahsten.texifyidea.util.Log
 import nl.hannahsten.texifyidea.util.SystemEnvironment
 import nl.hannahsten.texifyidea.util.TexifyCoroutine
+import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import org.freedesktop.dbus.connections.impl.DBusConnection
 import org.freedesktop.dbus.connections.impl.DBusConnectionBuilder
 import org.gnome.evince.Window
-import java.io.IOException
+import java.awt.Frame
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
@@ -72,12 +75,12 @@ object EvinceInverseSearchListener {
             // Delay execution and hope everything is ready (#3995)
             delay(1000.milliseconds)
             try {
-                startListening()
+                startListening(project)
             }
             catch (e: Exception) {
                 // See e.g. #3955, #4030, let's try again
                 sessionConnection?.register()
-                startListening()
+                startListening(project)
             }
         }
     }
@@ -85,12 +88,31 @@ object EvinceInverseSearchListener {
     /**
      * Start listening for backward search calls on the D-Bus.
      */
-    private fun startListening() {
+    private fun startListening(project: Project) {
         Log.debug("Starting Evince inverse search listener")
         syncSourceHandler = sessionConnection?.addSigHandler(Window.SyncSource::class.java) { signal ->
             val filename = signal.sourceFile.replaceFirst("file://".toRegex(), "")
-            syncSource(filename, signal.sourcePoint.line)
+            syncSource(filename, signal.sourcePoint.line, project)
         }
+    }
+
+    /**
+     * Prefer the native launcher (bin/pycharm, bin/idea, ...) over the .sh script.
+     * The native launcher forwards the request to the running IDE, which also
+     * raises its window. The .sh script can crash when a user .vmoptions file exists.
+     */
+    private fun ideLauncherPath(): String {
+        val bin = java.nio.file.Path.of(PathManager.getBinPath())
+        val name = ApplicationNamesInfo.getInstance().scriptName
+        val native = bin.resolve(name)
+        val launcher = if (java.nio.file.Files.isRegularFile(native) && java.nio.file.Files.isExecutable(native)) {
+            native
+        }
+        else {
+            bin.resolve("$name.sh")
+        }
+        Log.debug("Evince inverse search: using launcher $launcher")
+        return launcher.toString()
     }
 
     /**
@@ -99,17 +121,37 @@ object EvinceInverseSearchListener {
      * @param filePath Full to a file.
      * @param lineNumber Line number in the file.
      */
-    private fun syncSource(filePath: String, lineNumber: Int) {
-        val path = PathManager.getBinPath()
-        val name = ApplicationNamesInfo.getInstance().scriptName
 
-        val command = arrayOf("$path/$name.sh", "--line", lineNumber.toString(), "\"$filePath\"")
+    private fun syncSource(filePath: String, lineNumber: Int, project: Project) {
+        val command = arrayOf(ideLauncherPath(), "--line", lineNumber.toString(), "\"$filePath\"")
 
-        try {
-            Runtime.getRuntime().exec(command)
+        val result = runCommandWithExitCode(*command)
+        if (result.second != 0) {
+            Notification(
+                "LaTeX",
+                "Failed to sync source",
+                "Error: \"${result.first}\" Command executed: ${command.joinToString(" ")}",
+                NotificationType.ERROR
+            ).notify(project)
         }
-        catch (e: IOException) {
-            e.printStackTrace()
+        else {
+            bringProjectToFront(project)
+        }
+    }
+
+    /**
+     * Try to steal focus, may not work depending on Window manager.
+     */
+    private fun bringProjectToFront(project: Project) {
+        ApplicationManager.getApplication().invokeLater {
+            val frame = WindowManager.getInstance().getFrame(project) ?: return@invokeLater
+
+            if ((frame.extendedState and Frame.ICONIFIED) != 0) {
+                frame.extendedState = frame.extendedState and Frame.ICONIFIED.inv()
+            }
+
+            frame.toFront()
+            frame.requestFocus()
         }
     }
 
