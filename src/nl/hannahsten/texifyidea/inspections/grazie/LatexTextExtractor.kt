@@ -61,8 +61,19 @@ class LatexTextExtractor : TextExtractor() {
         // Getting text takes time, so we only do it once
         val rootText = root.text
 
-        // Only keep normaltext, assuming other things (like inline math) need to be ignored.
-        val relatedElements = root.collectSubtree { it is LatexNormalText || it is LatexParameterText || it is PsiWhiteSpace || it is LatexCommands }
+        // Commas in required arguments are siblings of parameter_text, not part of it.
+        // Keep these standalone tokens too, otherwise Grazie repeatedly suggests commas
+        // that already exist, e.g. in \textbf{Thus, ....}.
+        // Do not collect commas inside normal_text: their ranges are already included.
+        val relatedElements = root.collectSubtree {
+            it is LatexNormalText ||
+                it is PsiWhiteSpace ||
+                it is LatexCommands ||
+                // A parameter_text can contain commands and other parameter_text nodes.
+                // Collect its text leaves to avoid overlapping ranges and leaking command syntax.
+                (it.parent is LatexParameterText && it.firstChild == null) ||
+                (it.node.elementType == LatexTypes.COMMA && (it.parent is LatexRequiredParamContent || it.parent is LatexParameterGroupText))
+        }
         val ranges = relatedElements
             .asSequence()
             .filter { !it.inMathContext() && it.isNotInSquareBrackets() }
