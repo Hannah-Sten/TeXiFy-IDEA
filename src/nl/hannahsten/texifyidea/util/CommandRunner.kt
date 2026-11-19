@@ -43,7 +43,7 @@ suspend fun runCommandNonBlocking(
     try {
         Log.debug("isEDT=${SwingUtilities.isEventDispatchThread()} Executing in ${workingDirectory ?: "current working directory"} ${GeneralCommandLine(*commands).commandLineString}")
 
-        val (isCacheable, cachedResult) = getCachedResult(commands)
+        val (_, cachedResult) = getCachedResult(commands)
 
         if (cachedResult != null) return@withContext cachedResult
 
@@ -138,7 +138,7 @@ fun runCommandSync(
     returnExceptionMessageAsErrorOutput: Boolean = false,
     timeout: Long = 3
 ): CommandResult {
-    val (isCacheable, cachedResult) = getCachedResult(commands)
+    val (_, cachedResult) = getCachedResult(commands)
     if (cachedResult != null) return cachedResult
 
     return try {
