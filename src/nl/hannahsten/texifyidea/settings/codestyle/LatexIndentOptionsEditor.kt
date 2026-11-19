@@ -4,8 +4,12 @@ import com.intellij.application.options.SmartIndentOptionsEditor
 import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import nl.hannahsten.texifyidea.TexifyBundle
+import java.awt.BorderLayout
 import java.awt.event.ItemEvent
+import javax.swing.BorderFactory
+import javax.swing.BoxLayout
 import javax.swing.JCheckBox
+import javax.swing.JPanel
 
 /**
  * Customizing the 'Tabs and Indents' settings cannot be done via [LatexLanguageCodeStyleSettingsProvider.customizeSettings] using INDENT_SETTINGS but has to be done here.
@@ -18,8 +22,8 @@ class LatexIndentOptionsEditor(provider: LatexLanguageCodeStyleSettingsProvider)
     private var environmentIndent: JCheckBox? = null
     private var documentIndent: JCheckBox? = null
 
-    override fun addComponents() {
-        super.addComponents()
+    override fun createPanel(): JPanel {
+        val basePanel = super.createPanel()
 
         val section = JCheckBox(TexifyBundle.message("settings.codestyle.indent.nested.sections")).also { sectionIndents = it }
         val env = JCheckBox(TexifyBundle.message("settings.codestyle.indent.environments")).also { environmentIndent = it }
@@ -28,9 +32,17 @@ class LatexIndentOptionsEditor(provider: LatexLanguageCodeStyleSettingsProvider)
         // (De)select the document environment checkbox whenever the environment checkbox is (de)selected.
         env.addItemListener { event -> doc.isSelected = event.stateChange == ItemEvent.SELECTED }
 
-        add(section)
-        add(env)
-        add(doc, true)
+        val extraPanel = JPanel().apply {
+            layout = BoxLayout(this, BoxLayout.Y_AXIS)
+            add(section)
+            add(env)
+            add(doc.apply { border = BorderFactory.createEmptyBorder(0, 20, 0, 0) })
+        }
+
+        return JPanel(BorderLayout()).apply {
+            add(basePanel, BorderLayout.NORTH)
+            add(extraPanel, BorderLayout.CENTER)
+        }
     }
 
     override fun setEnabled(enabled: Boolean) {
