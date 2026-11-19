@@ -392,6 +392,24 @@ object LatexSdkUtil {
     }
 
     /**
+     * Cache guessed SDK home paths to avoid repeating external CLI commands during indexing or SDK lookups.
+     */
+    private var guessedHomePathsCache: Map<LatexSdk, Collection<String>>? = null
+
+    fun getGuessedSdkHomePaths(project: Project? = null): Map<LatexSdk, Collection<String>> {
+        guessedHomePathsCache?.let { return it }
+        val map = mutableMapOf<LatexSdk, Collection<String>>()
+        for (sdkType in listOf(TexliveSdk(), NativeTexliveSdk(), MiktexWindowsSdk())) {
+            val paths = sdkType.suggestHomePaths(project)
+            if (paths.isNotEmpty()) {
+                map[sdkType] = paths
+            }
+        }
+        guessedHomePathsCache = map
+        return map
+    }
+
+    /**
      * Collect SDK source paths, so paths to texmf-dist/source/latex, based on Project SDK if available (combining the default
      * for the SDK type and any user-added source roots) and otherwise on a random guess (ok not really).
      *
@@ -406,9 +424,9 @@ object LatexSdkUtil {
             return userProvided + default
         }
 
-        // If no sdk is known, guess something
-        for (sdkType in setOf(TexliveSdk(), NativeTexliveSdk(), MiktexWindowsSdk())) {
-            val roots = sdkType.suggestHomePaths(project).mapNotNull { homePath -> getRoots(sdkType, homePath) }.toSet()
+        // If no sdk is known, use cached guessed paths
+        for ((sdkType, homePaths) in getGuessedSdkHomePaths(project)) {
+            val roots = homePaths.mapNotNull { homePath -> getRoots(sdkType, homePath) }.toSet()
             if (roots.isNotEmpty()) return roots
         }
         return emptySet()
