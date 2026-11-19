@@ -377,4 +377,20 @@ class LatexSdkUtilTest : BasePlatformTestCase() {
             result.contains("/fake/texlive/project") || result == "pdflatex"
         )
     }
+
+    fun testGetGuessedSdkHomePathsReturnsMap() {
+        val guessedPaths = LatexSdkUtil.getGuessedSdkHomePaths(project)
+        assertNotNull(guessedPaths)
+        // Should return the cached map on subsequent calls
+        val guessedPaths2 = LatexSdkUtil.getGuessedSdkHomePaths(project)
+        assertSame(guessedPaths, guessedPaths2)
+    }
+
+    fun testGetSdkSourceRootsWithProjectSdk() {
+        val projectSdk = createTestLatexSdk("Project TeX Live SDK")
+        setProjectSdk(projectSdk)
+
+        val roots = LatexSdkUtil.getSdkSourceRoots(project) { _, _ -> null }
+        assertNotNull(roots)
+    }
 }
