@@ -78,7 +78,7 @@ fun TextRange.toIntRange() = startOffset until endOffset
 /**
  * Easy access to [java.util.regex.Matcher.matches].
  */
-fun Pattern.matches(sequence: CharSequence?) = if (sequence != null) matcher(sequence).matches() else false
+fun Pattern.matches(sequence: CharSequence?) = sequence != null && matcher(sequence).matches()
 
 const val PROGRESS_SIZE = 1000
 

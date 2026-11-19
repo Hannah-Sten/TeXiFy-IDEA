@@ -15,7 +15,6 @@ import nl.hannahsten.texifyidea.util.containsAny
 import nl.hannahsten.texifyidea.util.remove
 import java.util.*
 
-@Suppress("UnstableApiUsage") // As far as I know, there is no alternative
 class LatexCompileMessageTreeView(
     project: Project,
     private val latexMessageList: MutableList<LatexLogMessage>,

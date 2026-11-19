@@ -14,12 +14,7 @@ import javax.swing.Icon
  */
 class LabelFilter : FileStructureFilter {
 
-    override fun isVisible(treeElement: TreeElement): Boolean {
-        if (treeElement !is LatexStructureViewCommandElement) {
-            return true
-        }
-        return !CommandMagic.labels.contains(treeElement.commandName)
-    }
+    override fun isVisible(treeElement: TreeElement): Boolean = treeElement !is LatexStructureViewCommandElement || !CommandMagic.labels.contains(treeElement.commandName)
 
     override fun isReverted(): Boolean = true
 

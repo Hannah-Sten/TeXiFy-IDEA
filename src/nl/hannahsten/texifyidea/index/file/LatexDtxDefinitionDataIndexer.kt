@@ -1,11 +1,6 @@
 package nl.hannahsten.texifyidea.index.file
 
-import com.intellij.util.indexing.DataIndexer
-import com.intellij.util.indexing.DefaultFileTypeSpecificInputFilter
-import com.intellij.util.indexing.FileBasedIndex
-import com.intellij.util.indexing.FileBasedIndexExtension
-import com.intellij.util.indexing.FileContent
-import com.intellij.util.indexing.ID
+import com.intellij.util.indexing.*
 import com.intellij.util.io.DataExternalizer
 import com.intellij.util.io.EnumeratorStringDescriptor
 import com.intellij.util.io.IOUtil
@@ -320,9 +315,9 @@ class LatexDtxDefinitionIndexEx : FileBasedIndexExtension<String, List<LatexSimp
                 out.writeUTF(def.name)
                 out.writeBoolean(def.isEnv)
                 out.writeInt(def.arguments.size)
-                for (arg in def.arguments) {
-                    out.writeUTF(arg.name)
-                    out.writeBoolean(arg.type == LArgumentType.OPTIONAL)
+                for ((argName, argType) in def.arguments) {
+                    out.writeUTF(argName)
+                    out.writeBoolean(argType == LArgumentType.OPTIONAL)
                 }
                 IOUtil.writeUTFFast(buffer, out, def.description)
             }

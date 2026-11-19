@@ -13,13 +13,8 @@ import java.util.*
  */
 object StringFilter : Filter {
 
-    override fun isVisible(treeElement: TreeElement?): Boolean {
-        if (treeElement !is BibtexStructureViewEntryElement) {
-            return true
-        }
-
-        return treeElement.entry.tokenName().lowercase(Locale.getDefault()) != "string"
-    }
+    override fun isVisible(treeElement: TreeElement?): Boolean = treeElement !is BibtexStructureViewEntryElement ||
+        treeElement.entry.tokenName().lowercase(Locale.getDefault()) != "string"
 
     override fun isReverted() = true
 

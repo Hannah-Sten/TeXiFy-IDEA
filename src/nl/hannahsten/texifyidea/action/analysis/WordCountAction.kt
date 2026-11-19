@@ -52,7 +52,7 @@ internal sealed class CountScope(val renderOrder: Int) {
 typealias ErrorMessage = String
 
 internal sealed class CountMethod {
-    internal class TexCount : CountMethod() {
+    internal data object TexCount : CountMethod() {
         override fun renderString(): String = TexifyBundle.message("ui.word.count.render.texcount")
 
         fun count(root: VirtualFile, workingDirectory: @NonNls String, psiFile: PsiFile): DialogBuilder {
@@ -128,7 +128,7 @@ internal sealed class CountMethod {
         }
     }
 
-    internal class DefaultCount : CountMethod() {
+    internal data object DefaultCount : CountMethod() {
         object Util {
             /**
              * Commands that should be ignored by the word counter.
@@ -391,8 +391,8 @@ internal sealed class CountMethod {
     }
 
     companion object {
-        val DEFAULT_COUNT = DefaultCount()
-        val TEX_COUNT = TexCount()
+        val DEFAULT_COUNT = DefaultCount
+        val TEX_COUNT = TexCount
     }
 }
 

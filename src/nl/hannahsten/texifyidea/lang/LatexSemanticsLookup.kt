@@ -58,15 +58,15 @@ abstract class CachedLatexSemanticsLookup : LatexSemanticsLookup {
             for (entity in entities) {
                 when (entity) {
                     is LSemanticCommand -> {
-                        for (arg in entity.arguments) {
-                            append(arg.contextSignature.introducedContexts, entity)
+                        for ((_, _, contextSignature) in entity.arguments) {
+                            append(contextSignature.introducedContexts, entity)
                         }
                     }
 
                     is LSemanticEnv -> {
                         append(entity.contextSignature.introducedContexts, entity)
-                        for (arg in entity.arguments) {
-                            append(arg.contextSignature.introducedContexts, entity)
+                        for ((_, _, contextSignature) in entity.arguments) {
+                            append(contextSignature.introducedContexts, entity)
                         }
                     }
                 }

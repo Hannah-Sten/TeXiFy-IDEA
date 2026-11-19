@@ -1,17 +1,8 @@
 package nl.hannahsten.texifyidea.lang.predefined
 
 import com.intellij.openapi.application.ApplicationManager
-import nl.hannahsten.texifyidea.lang.CachedLatexSemanticsLookup
-import nl.hannahsten.texifyidea.lang.LSemanticCommand
-import nl.hannahsten.texifyidea.lang.LSemanticEntity
-import nl.hannahsten.texifyidea.lang.LSemanticEnv
-import nl.hannahsten.texifyidea.lang.LatexContext
-import nl.hannahsten.texifyidea.lang.LatexContextIntro
-import nl.hannahsten.texifyidea.lang.LatexLib
+import nl.hannahsten.texifyidea.lang.*
 import nl.hannahsten.texifyidea.util.Log
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.iterator
 
 object AllPredefined : CachedLatexSemanticsLookup() {
 
@@ -64,8 +55,8 @@ object AllPredefined : CachedLatexSemanticsLookup() {
     private val commandContextInverseSearch: Map<LatexContext, List<LSemanticCommand>> by lazy {
         buildMap<LatexContext, MutableList<LSemanticCommand>> {
             for(entity in allCommands) {
-                for (arg in entity.arguments) {
-                    val contexts = when (val intro = arg.contextSignature) {
+                for ((_, _, contextSignature) in entity.arguments) {
+                    val contexts = when (val intro = contextSignature) {
                         is LatexContextIntro.Assign -> intro.contexts
                         is LatexContextIntro.Modify -> intro.toAdd
                         LatexContextIntro.Clear, LatexContextIntro.Inherit -> continue

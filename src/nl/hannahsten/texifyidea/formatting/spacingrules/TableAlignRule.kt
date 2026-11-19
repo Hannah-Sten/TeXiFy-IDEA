@@ -108,7 +108,7 @@ fun getAmpersandOffsets(contentTextOffset: Int, indent: String, contentLines: Mu
         line.withIndex().forEach { (i, it) ->
             // Do not count escaped ampersands: \&
             if ((it == '&') && (i == 0 || line[i - 1] != '\\')) indices.add(currentOffset)
-            if (it == '\\' && if (i < line.length - 1) line[i + 1] == '\\' else false) indices.add(currentOffset)
+            if (it == '\\' && (i < line.length - 1 && line[i + 1] == '\\')) indices.add(currentOffset)
             currentOffset++
         }
         indices.toList()
@@ -162,11 +162,11 @@ private fun removeExtraSpaces(contentLinesWithoutRules: MutableList<String>): Li
     line.withIndex().forEach { (i, value) ->
         when (value) {
             // Ignore escaped ampersands
-            '&' if if (i > 0) line[i - 1] != '\\' else true -> {
+            '&' if i == 0 || line[i - 1] != '\\' -> {
                 indices += i - removedSpaces
             }
 
-            '\\' if if (i < line.length - 1) line[i + 1] == '\\' else false -> {
+            '\\' if i < line.length - 1 && line[i + 1] == '\\' -> {
                 indices += i - removedSpaces
             }
 
@@ -256,10 +256,11 @@ private fun getSpacesForRightBlock(
             if (absoluteIndices[level] == rightElementOffset) {
                 // For very long lines, it's a lot more readable to start & on a new line instead of inserting a whole bunch of spaces
                 // Make sure not to only put the \\ on a new line
-                val didPreviousCellGetNewline = if (level == 0) true else (
-                    relativeIndices.getOrNull(i)?.getOrNull(level - 1)
-                        ?: 0
-                    ) > LINE_LENGTH
+                val didPreviousCellGetNewline = level == 0 ||
+                    (
+                        relativeIndices.getOrNull(i)?.getOrNull(level - 1)
+                            ?: 0
+                        ) > LINE_LENGTH
                 if ((
                         relativeIndices.getOrNull(i)?.getOrNull(level)
                             ?: 0
