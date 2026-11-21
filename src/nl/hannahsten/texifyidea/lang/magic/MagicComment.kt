@@ -168,10 +168,7 @@ open class MutableMagicComment<Key, Value> : MagicComment<Key, Value>() {
      */
     operator fun plusAssign(mergeWith: MagicComment<Key, Value>) = mergeModify(mergeWith)
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        return other is MutableMagicComment<*, *>
-    }
+    override fun equals(other: Any?): Boolean = this === other || other is MutableMagicComment<*, *>
 
     override fun hashCode(): Int = javaClass.hashCode()
 }

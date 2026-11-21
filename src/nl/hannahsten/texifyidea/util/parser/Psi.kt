@@ -239,13 +239,7 @@ fun PsiElement.inDirectEnvironment(validNames: Set<String>): Boolean {
  * @return `true` when the element is a child of `parent`, `false` when the element is not a child of `parent` or when
  *          `parent` is `null`
  */
-fun PsiElement.isChildOf(parent: PsiElement?): Boolean {
-    if (parent == null) {
-        return false
-    }
-
-    return hasParentMatching(1000) { it == parent }
-}
+fun PsiElement.isChildOf(parent: PsiElement?): Boolean = parent != null && hasParentMatching(1000) { it == parent }
 
 /**
  * Finds the first child of the PsiElement that is not whitespace.

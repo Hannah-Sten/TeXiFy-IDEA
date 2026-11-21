@@ -101,10 +101,7 @@ fun Project.getLatexRunConfigurations(): Collection<LatexRunConfiguration> {
     return RunManager.getInstance(this).allConfigurationsList.filterIsInstance<LatexRunConfiguration>()
 }
 
-fun Project.hasLatexRunConfigurations(): Boolean {
-    if (isDisposed) return false
-    return RunManager.getInstance(this).allConfigurationsList.any { it is LatexRunConfiguration }
-}
+fun Project.hasLatexRunConfigurations(): Boolean = !isDisposed && RunManager.getInstance(this).allConfigurationsList.any { it is LatexRunConfiguration }
 
 /**
  * Get the run configuration that is currently selected.

@@ -16,8 +16,5 @@ class LatexLanguageFormattingRestriction : LanguageFormattingRestriction {
 
     override fun isFormatterAllowed(context: PsiElement): Boolean = !isFormatterNotAllowed(context)
 
-    private fun isFormatterNotAllowed(context: PsiElement): Boolean {
-        if(context !is LatexEnvironment) return false
-        return context.getEnvironmentName() in EnvironmentMagic.verbatim
-    }
+    private fun isFormatterNotAllowed(context: PsiElement): Boolean = context is LatexEnvironment && context.getEnvironmentName() in EnvironmentMagic.verbatim
 }

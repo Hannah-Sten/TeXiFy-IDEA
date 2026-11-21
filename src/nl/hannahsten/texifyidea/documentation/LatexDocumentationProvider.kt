@@ -44,12 +44,7 @@ class LatexDocumentationProvider : DocumentationProvider {
     /**
      * Check if this is a command which includes a package, in which case we should show docs for the package that is included instead of the command itself.
      */
-    private fun isPackageInclusionCommand(element: PsiElement?): Boolean {
-        if (element !is LatexCommands) {
-            return false
-        }
-        return element.nameWithSlash in CommandMagic.packageInclusionCommands
-    }
+    private fun isPackageInclusionCommand(element: PsiElement?): Boolean = element is LatexCommands && element.nameWithSlash in CommandMagic.packageInclusionCommands
 
     override fun getUrlFor(element: PsiElement?, originalElement: PsiElement?): List<String>? {
         val bundle = originalElement?.containingFile?.let {

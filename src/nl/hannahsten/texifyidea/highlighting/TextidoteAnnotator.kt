@@ -118,9 +118,8 @@ class TextidoteAnnotator : DumbAware, ExternalAnnotator<TextidoteAnnotatorInitia
 
     override fun apply(file: PsiFile, annotationResult: TextidoteAnnotationResult?, holder: AnnotationHolder) {
         if (annotationResult == null) return
-        for (warning in annotationResult.warnings) {
-            val document = annotationResult.document
-
+        val (warnings, document) = annotationResult
+        for (warning in warnings) {
             // Don't show obsolete warnings out of range
             if (warning.endLine.value > document.lineCount) {
                 continue

@@ -41,9 +41,9 @@ val LatexCommandsStub.requiredParams: List<String>
 
 fun LatexCommandsStub.parameterOfTypeAt(index: Int, type: Int): String? {
     var pos = 0
-    for (param in parameters) {
-        if (param.type == type) {
-            if (pos == index) return param.content
+    for ((paramType, content) in parameters) {
+        if (paramType == type) {
+            if (pos == index) return content
             pos++
         }
     }

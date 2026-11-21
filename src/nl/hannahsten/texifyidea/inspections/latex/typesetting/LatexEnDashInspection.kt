@@ -34,8 +34,5 @@ class LatexEnDashInspection : AbstractTexifyRegexBasedInspection(
 
     override fun shouldInspectElement(element: PsiElement, lookup: LatexSemanticsLookup): Boolean = element is LatexNormalText
 
-    override fun shouldInspectChildrenOf(element: PsiElement, state: LContextSet, lookup: LatexSemanticsLookup): Boolean {
-        if (element is LatexNormalText) return false
-        return super.shouldInspectChildrenOf(element, state, lookup)
-    }
+    override fun shouldInspectChildrenOf(element: PsiElement, state: LContextSet, lookup: LatexSemanticsLookup): Boolean = element !is LatexNormalText && super.shouldInspectChildrenOf(element, state, lookup)
 }

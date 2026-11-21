@@ -13,7 +13,6 @@ import nl.hannahsten.texifyidea.lang.predefined.AllPredefined
 import nl.hannahsten.texifyidea.lang.predefined.EnvironmentNames
 import nl.hannahsten.texifyidea.psi.*
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
-import nl.hannahsten.texifyidea.util.parser.LatexPsiUtil.getDefinedCommandName
 
 /**
  * Finds the [LatexEndCommand] that matches the begin command.
