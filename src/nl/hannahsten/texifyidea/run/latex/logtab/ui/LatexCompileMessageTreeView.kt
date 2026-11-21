@@ -15,7 +15,7 @@ import nl.hannahsten.texifyidea.util.containsAny
 import nl.hannahsten.texifyidea.util.remove
 import java.util.*
 
-@Suppress("InternalApiUsage")
+@Suppress("InternalApiUsage", "JetBrainsInternalApiUsage")
 class LatexCompileMessageTreeView(
     project: Project,
     private val latexMessageList: MutableList<LatexLogMessage>,

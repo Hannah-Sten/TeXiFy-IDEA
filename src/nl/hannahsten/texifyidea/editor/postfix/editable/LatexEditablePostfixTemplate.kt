@@ -29,6 +29,7 @@ class LatexEditablePostfixTemplate(templateId: String, templateName: String, tem
     companion object {
         private fun createTemplateFromText(templateText: String): TemplateImpl = TemplateImpl("fakeKey", templateText, "").apply {
             isToReformat = true
+            @Suppress("JetBrainsInternalApiUsage")
             parseSegments()
         }
     }

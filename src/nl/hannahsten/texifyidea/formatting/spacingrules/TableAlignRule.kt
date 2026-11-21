@@ -162,7 +162,7 @@ private fun removeExtraSpaces(contentLinesWithoutRules: MutableList<String>): Li
     line.withIndex().forEach { (i, value) ->
         when (value) {
             // Ignore escaped ampersands
-            '&' if i == 0 || line[i - 1] != '\\' -> {
+            '&' if (i == 0 || line[i - 1] != '\\') -> {
                 indices += i - removedSpaces
             }
 

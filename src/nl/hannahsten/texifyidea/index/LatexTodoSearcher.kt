@@ -15,7 +15,7 @@ import nl.hannahsten.texifyidea.util.matches
 /**
  * Provides the "to do" item in the toolwindow.
  */
-@Suppress("InternalApiUsage")
+@Suppress("InternalApiUsage", "JetBrainsInternalApiUsage")
 class LatexTodoSearcher : QueryExecutorBase<IndexPatternOccurrence, IndexPatternSearch.SearchParameters>() {
     override fun processQuery(queryParameters: IndexPatternSearch.SearchParameters, consumer: Processor<in IndexPatternOccurrence>) {
         val file = queryParameters.file as? LatexFile ?: return
