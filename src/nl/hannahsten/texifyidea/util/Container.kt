@@ -18,5 +18,5 @@ open class Container<T> @JvmOverloads constructor(
         return item == other.item
     }
 
-    override fun hashCode() = item?.hashCode() ?: 0
+    override fun hashCode() = item.hashCode()
 }

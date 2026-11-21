@@ -27,12 +27,7 @@ class LatexLabelParameterReference(element: LatexParameterText) : PsiReferenceBa
         return TextRange.create(prefixLength + fullRange.startOffset, fullRange.endOffset)
     }
 
-    override fun isReferenceTo(element: PsiElement): Boolean {
-        if (element !is LatexParameterText) {
-            return false
-        }
-        return multiResolve(false).any { it.element == element }
-    }
+    override fun isReferenceTo(element: PsiElement): Boolean = element is LatexParameterText && multiResolve(false).any { it.element == element }
 
     override fun resolve(): PsiElement? {
         val resolveResults = multiResolve(false)

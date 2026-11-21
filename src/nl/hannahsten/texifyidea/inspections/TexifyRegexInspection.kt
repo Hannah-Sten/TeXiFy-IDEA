@@ -249,13 +249,7 @@ abstract class TexifyRegexInspection(
      *
      * @return `true` if the inspection is allowed in the context, `false` otherwise.
      */
-    open fun checkContext(matcher: Matcher, element: PsiElement): Boolean {
-        if (element.isComment()) {
-            return false
-        }
-
-        return mathMode == element.inMathContext() && checkContext(element)
-    }
+    open fun checkContext(matcher: Matcher, element: PsiElement): Boolean = !element.isComment() && mathMode == element.inMathContext() && checkContext(element)
 
     /**
      * We assume the quickfix of this inspection replaces text (like <<) by

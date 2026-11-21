@@ -2,15 +2,16 @@ package nl.hannahsten.texifyidea.editor
 
 import com.intellij.application.options.CodeStyle
 import com.intellij.codeInsight.editorActions.fillParagraph.ParagraphFillHandler
-import com.intellij.formatting.FormatterTagHandler
 import com.intellij.openapi.command.CommandProcessor
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.UnfairTextRange
 import com.intellij.openapi.util.text.StringUtil
+import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
+import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.nextLeaf
 import com.intellij.psi.util.prevLeaf
 import com.intellij.psi.util.startOffset
@@ -39,11 +40,16 @@ class LatexParagraphFillHandler : ParagraphFillHandler() {
      *
      * Based on the super implementation, which wasn't custom enough. We now have finer control over when an element ends.
      */
-    override fun performOnElement(element: PsiElement, editor: Editor) {
+    public override fun performOnElement(element: PsiElement, editor: Editor) {
         val document = editor.document
 
         val (textRange, preFix, postFix) = getParagraphTextRange(element)
         if (textRange.isEmpty) return
+
+        val file = element.containingFile
+        val enabledRanges = getEnabledRanges(file, document.textLength)
+        if (enabledRanges.none { it.contains(textRange) }) return
+
         val text = textRange.substring(element.containingFile.text)
 
         val subStrings = StringUtil.split(text, "\n", true)
@@ -55,9 +61,6 @@ class LatexParagraphFillHandler : ParagraphFillHandler() {
                 textRange.startOffset, textRange.endOffset,
                 replacementText
             )
-            val file = element.containingFile
-            val formatterTagHandler = FormatterTagHandler(CodeStyle.getSettings(file))
-            val enabledRanges = formatterTagHandler.getEnabledRanges(file.node, TextRange.create(0, document.textLength))
 
             // Don't simulate enter to wrap lines like EditorFacade does, as it has side effects (source: Yann)
             LatexLineWrapper.doWrapLongLinesIfNecessary(
@@ -67,6 +70,52 @@ class LatexParagraphFillHandler : ParagraphFillHandler() {
                 CodeStyle.getSettings(file).getRightMargin(element.language)
             )
         }, null, document)
+    }
+
+    private fun getEnabledRanges(file: PsiFile, documentLength: Int): List<TextRange> {
+        val settings = CodeStyle.getSettings(file)
+        if (!settings.FORMATTER_TAGS_ENABLED) {
+            return listOf(TextRange(0, documentLength))
+        }
+
+        val offPattern = if (settings.FORMATTER_TAGS_ACCEPT_REGEXP) settings.formatterOffPattern else null
+        val onPattern = if (settings.FORMATTER_TAGS_ACCEPT_REGEXP) settings.formatterOnPattern else null
+        val offTag = settings.FORMATTER_OFF_TAG
+        val onTag = settings.FORMATTER_ON_TAG
+
+        fun isOffTag(text: String): Boolean =
+            if (offPattern != null) offPattern.matcher(text).find()
+            else offTag.isNotEmpty() && text.contains(offTag)
+
+        fun isOnTag(text: String): Boolean =
+            if (onPattern != null) onPattern.matcher(text).find()
+            else onTag.isNotEmpty() && text.contains(onTag)
+
+        val comments = PsiTreeUtil.findChildrenOfType(file, PsiComment::class.java)
+        val enabledRanges = mutableListOf<TextRange>()
+        var currentEnabledStart = 0
+        var isEnabled = true
+
+        for (comment in comments) {
+            val text = comment.text ?: continue
+            if (isEnabled && isOffTag(text)) {
+                val endOffset = comment.textRange.startOffset
+                if (endOffset > currentEnabledStart) {
+                    enabledRanges.add(TextRange(currentEnabledStart, endOffset))
+                }
+                isEnabled = false
+            }
+            else if (!isEnabled && isOnTag(text)) {
+                currentEnabledStart = comment.textRange.endOffset
+                isEnabled = true
+            }
+        }
+
+        if (isEnabled && currentEnabledStart <= documentLength) {
+            enabledRanges.add(TextRange(currentEnabledStart, documentLength))
+        }
+
+        return enabledRanges
     }
 
     /**
@@ -112,6 +161,7 @@ class LatexParagraphFillHandler : ParagraphFillHandler() {
      */
     private fun separatesParagraph(element: PsiElement): Boolean = when {
         element is PsiWhiteSpace -> element.text.count { it == '\n' } >= 2
+        element is PsiComment || element.parent is PsiComment -> true
         element.hasParent(LatexBeginCommand::class) -> true
         element.hasParent(LatexEndCommand::class) -> true
         element.hasParent(LatexDisplayMath::class) -> true

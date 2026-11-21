@@ -3,10 +3,10 @@ package nl.hannahsten.texifyidea.run.latex.steplog
 import com.intellij.diagnostic.logging.AdditionalTabComponent
 import com.intellij.execution.filters.TextConsoleBuilderFactory
 import com.intellij.execution.process.ProcessOutputTypes
-import com.intellij.execution.ui.ExecutionConsole
 import com.intellij.execution.ui.ConsoleView
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.execution.ui.ConsoleViewContentType.NORMAL_OUTPUT
+import com.intellij.execution.ui.ExecutionConsole
 import com.intellij.icons.AllIcons
 import com.intellij.ide.OccurenceNavigator
 import com.intellij.ide.actions.NextOccurenceToolbarAction
@@ -15,15 +15,9 @@ import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.util.treeView.AbstractTreeStructure
 import com.intellij.ide.util.treeView.NodeDescriptor
 import com.intellij.ide.util.treeView.PresentableNodeDescriptor
-import com.intellij.openapi.actionSystem.ActionUpdateThread
-import com.intellij.openapi.actionSystem.AnAction
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.ActionGroup
-import com.intellij.openapi.actionSystem.ActionManager
-import com.intellij.openapi.actionSystem.DefaultActionGroup
-import com.intellij.openapi.actionSystem.ToggleAction
-import com.intellij.openapi.editor.actions.ScrollToTheEndToolbarAction
+import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.editor.actions.ScrollToTheEndToolbarAction
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
@@ -47,7 +41,7 @@ import nl.hannahsten.texifyidea.run.latex.step.LatexRunStep
 import java.awt.BorderLayout
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
-import java.util.Locale
+import java.util.*
 import javax.swing.JComponent
 import javax.swing.JPanel
 import javax.swing.event.TreeSelectionEvent
@@ -538,12 +532,8 @@ internal class LatexStepLogTabComponent(
         structureTreeModel.invalidate(node, structureChanged)
     }
 
-    private fun shouldShowMessageInTree(message: ParsedStepMessage): Boolean {
-        if (!showBibtexMessages && message.source == ParsedStepMessageSource.BIBTEX) {
-            return false
-        }
-        return showOverfullUnderfullMessages || !isOverfullUnderfullMessage(message.message)
-    }
+    private fun shouldShowMessageInTree(message: ParsedStepMessage): Boolean = (showBibtexMessages || message.source != ParsedStepMessageSource.BIBTEX) &&
+        (showOverfullUnderfullMessages || !isOverfullUnderfullMessage(message.message))
 
     private fun recomputeStepMessageLevels(stepIndex: Int) {
         stepHasWarnings.remove(stepIndex)

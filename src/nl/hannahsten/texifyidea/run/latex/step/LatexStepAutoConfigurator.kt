@@ -335,12 +335,7 @@ internal object LatexStepAutoConfigurator {
     private fun canInferAux(
         steps: List<LatexStepRunConfigurationOptions>,
         disableForLatexmk: Boolean = false,
-    ): Boolean {
-        if (!disableForLatexmk) {
-            return true
-        }
-        return steps.none { it.type == LatexStepType.LATEXMK_COMPILE }
-    }
+    ): Boolean = !disableForLatexmk || steps.none { it.type == LatexStepType.LATEXMK_COMPILE }
 
     private fun collectPsiSignals(mainPsiFile: PsiFile): PsiSignals = ReadAction.computeBlocking<PsiSignals, RuntimeException> {
         val usedPackages = mainPsiFile.includedPackagesInFileset()
@@ -397,12 +392,7 @@ internal object LatexStepAutoConfigurator {
                 ?: LatexCompiler.PDFLATEX
         }
 
-        val commandArguments = if (command != null) {
-            command.removePrefix(compilerExecutable ?: "").trim().ifBlank { null }
-        }
-        else {
-            null
-        }
+        val commandArguments = command?.removePrefix(compilerExecutable ?: "")?.trim()?.ifBlank { null }
 
         return CommandSpec(selectedCompiler, commandArguments, useLatexmk)
     }

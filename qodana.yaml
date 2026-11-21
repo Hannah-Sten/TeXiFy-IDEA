@@ -1,5 +1,5 @@
 version: "1.0"
-linter: jetbrains/qodana-jvm-community:2026.1
+linter: jetbrains/qodana-jvm-community:2026.2
 profile:
   path: .idea/inspectionProfiles/Project_Default.xml
 failThreshold: 0
@@ -39,3 +39,4 @@ exclude: # Some of these are valid inspections but not important or accurate eno
   - name: KDocUnresolvedReference
   - name: KotlinDeprecation
   - name: unused
+  - name: UsePropertyAccessSyntax

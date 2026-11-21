@@ -2,12 +2,14 @@ package nl.hannahsten.texifyidea.gutter
 
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzerSettings
 import com.intellij.codeInsight.daemon.LineMarkerInfo
-import com.intellij.codeInsight.daemon.impl.DaemonCodeAnalyzerImpl
 import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.psi.impl.source.tree.LeafPsiElement
+import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import io.mockk.every
 import io.mockk.mockkStatic
+import nl.hannahsten.texifyidea.editor.LatexLineMarkerProvider
+import nl.hannahsten.texifyidea.psi.LatexCommands
 import nl.hannahsten.texifyidea.updateFilesets
 import nl.hannahsten.texifyidea.util.runCommandWithExitCode
 import kotlin.test.assertContains
@@ -77,8 +79,9 @@ class LatexGutterTest : BasePlatformTestCase() {
         withLineMarkersEnabled {
             myFixture.configureByFile("$testName.tex")
             myFixture.doHighlighting()
-            val lineMarkers = DaemonCodeAnalyzerImpl
-                .getLineMarkers(myFixture.editor.document, myFixture.project)
+            val provider = LatexLineMarkerProvider()
+            val lineMarkers = PsiTreeUtil.findChildrenOfType(myFixture.file, LatexCommands::class.java)
+                .mapNotNull { provider.getLineMarkerInfo(it) }
                 .filter { l -> l.separatorPlacement != null }
             assertTrue(lineMarkers.any { l -> getLineMarkerLine(l) == 1 })
             assertTrue(lineMarkers.any { l -> getLineMarkerLine(l) == 4 })

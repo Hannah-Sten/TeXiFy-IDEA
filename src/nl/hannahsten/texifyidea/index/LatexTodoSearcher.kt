@@ -15,7 +15,7 @@ import nl.hannahsten.texifyidea.util.matches
 /**
  * Provides the "to do" item in the toolwindow.
  */
-@Suppress("UnstableApiUsage")
+@Suppress("InternalApiUsage", "JetBrainsInternalApiUsage")
 class LatexTodoSearcher : QueryExecutorBase<IndexPatternOccurrence, IndexPatternSearch.SearchParameters>() {
     override fun processQuery(queryParameters: IndexPatternSearch.SearchParameters, consumer: Processor<in IndexPatternOccurrence>) {
         val file = queryParameters.file as? LatexFile ?: return
@@ -29,6 +29,7 @@ class LatexTodoSearcher : QueryExecutorBase<IndexPatternOccurrence, IndexPattern
     }
 }
 
+@Suppress("InternalApiUsage")
 private data class LatexTodoOccurrence(private val file: LatexFile, private val textRange: TextRange, private val pattern: IndexPattern) : IndexPatternOccurrence {
     override fun getFile(): PsiFile = file
     override fun getTextRange(): TextRange = textRange

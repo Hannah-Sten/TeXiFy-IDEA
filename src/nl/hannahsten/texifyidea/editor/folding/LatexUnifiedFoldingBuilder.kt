@@ -87,8 +87,7 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
         val nameWithoutSlash = nameWithSlash.removePrefix("\\")
         if (nameWithoutSlash in escapedSymbols) return true
         val cmd = lookup.lookupCommand(nameWithoutSlash) ?: return false
-        if (cmd.arguments.isNotEmpty()) return false
-        return cmd.display != null
+        return cmd.arguments.isEmpty() && cmd.display != null
     }
 
     private fun findCommandFoldedSymbol(nameWithSlash: String, lookup: LatexSemanticsLookup): String? {
@@ -270,11 +269,11 @@ class LatexUnifiedFoldingBuilder : FoldingBuilderEx(), DumbAware {
             // now we jump to the front of the interruptions
             endOffset = interruptingEnd?.prevContextualSiblingIgnoreWhitespace()?.endOffset ?: endOffset
 
-            for (s in interruptedSections) {
-                if (s.level >= endLevel) {
+            for ((sCommand, _, sLevel) in interruptedSections) {
+                if (sLevel >= endLevel) {
                     // these sections are not interrupted by the current command
-                    val foldingRange = TextRange(s.command.startOffset, endOffset)
-                    val descriptor = foldingDescriptorSection(s.command, foldingRange)
+                    val foldingRange = TextRange(sCommand.startOffset, endOffset)
+                    val descriptor = foldingDescriptorSection(sCommand, foldingRange)
                     descriptors.add(descriptor)
                 }
             }

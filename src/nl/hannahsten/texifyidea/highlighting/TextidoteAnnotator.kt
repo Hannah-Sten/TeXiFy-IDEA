@@ -69,7 +69,11 @@ class TextidoteAnnotator : DumbAware, ExternalAnnotator<TextidoteAnnotatorInitia
         }
 
         val arguments = TexifySettings.getState().textidoteOptions ?: ""
-        val command = listOf("textidote") + ParametersListUtil.parse(arguments) + listOf(collectedInfo.fileName)
+        val command = buildList {
+            addAll(listOf("textidote"))
+            addAll(ParametersListUtil.parse(arguments))
+            addAll(listOf(collectedInfo.fileName))
+        }
         val (output, exitCode) = runCommandWithExitCode(
             *command.toTypedArray(),
             workingDirectory = collectedInfo.workingDirectory,
@@ -118,24 +122,23 @@ class TextidoteAnnotator : DumbAware, ExternalAnnotator<TextidoteAnnotatorInitia
 
     override fun apply(file: PsiFile, annotationResult: TextidoteAnnotationResult?, holder: AnnotationHolder) {
         if (annotationResult == null) return
-        for (warning in annotationResult.warnings) {
-            val document = annotationResult.document
-
+        val (warnings, document) = annotationResult
+        for ((_, startLine, startColumn, endLine, endColumn, message) in warnings) {
             // Don't show obsolete warnings out of range
-            if (warning.endLine.value > document.lineCount) {
+            if (endLine.value > document.lineCount) {
                 continue
             }
 
             // In Textidote, everything is 1-based, and here everything is 0-based
-            val lineStartOffset1 = document.getLineStartOffset(warning.startLine.value - 1)
-            val lineStartOffset2 = document.getLineStartOffset(warning.endLine.value - 1)
+            val lineStartOffset1 = document.getLineStartOffset(startLine.value - 1)
+            val lineStartOffset2 = document.getLineStartOffset(endLine.value - 1)
 
-            val startOffset = lineStartOffset1 + warning.startColumn.value - 1
-            val endOffset = lineStartOffset2 + warning.endColumn.value - 1
+            val startOffset = lineStartOffset1 + startColumn.value - 1
+            val endOffset = lineStartOffset2 + endColumn.value - 1
 
             // Check if computed range falls in the document range.
             if (startOffset < document.textLength && endOffset < document.textLength) {
-                holder.newAnnotation(HighlightSeverity.WARNING, warning.message + " (Textidote)")
+                holder.newAnnotation(HighlightSeverity.WARNING, "$message (Textidote)")
                     .range(TextRange(startOffset, endOffset))
                     .create()
             }

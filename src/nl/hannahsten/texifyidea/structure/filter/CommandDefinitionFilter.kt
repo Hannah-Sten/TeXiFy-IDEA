@@ -5,7 +5,6 @@ import com.intellij.ide.util.treeView.smartTree.ActionPresentation
 import com.intellij.ide.util.treeView.smartTree.TreeElement
 import com.intellij.openapi.actionSystem.Shortcut
 import nl.hannahsten.texifyidea.TexifyIcons
-import nl.hannahsten.texifyidea.structure.latex.LatexOtherCommandPresentation
 import nl.hannahsten.texifyidea.structure.latex.LatexStructureViewCommandElement
 import nl.hannahsten.texifyidea.util.magic.CommandMagic
 
@@ -14,13 +13,12 @@ import nl.hannahsten.texifyidea.util.magic.CommandMagic
  */
 class CommandDefinitionFilter : FileStructureFilter {
 
-    override fun isVisible(treeElement: TreeElement): Boolean = if (treeElement !is LatexStructureViewCommandElement) {
-        true
-    }
-    else !(
-        treeElement.commandName in CommandMagic.commandDefinitionsAndRedefinitions ||
-            treeElement.presentation is LatexOtherCommandPresentation
-        )
+    override fun isVisible(treeElement: TreeElement): Boolean =
+        treeElement !is LatexStructureViewCommandElement ||
+            !(
+                treeElement.commandName in CommandMagic.commandDefinitionsAndRedefinitions ||
+                    treeElement.commandName in CommandMagic.packageInclusionCommands
+                )
 
     override fun isReverted() = true
 

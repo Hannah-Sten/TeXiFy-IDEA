@@ -11,7 +11,6 @@ import nl.hannahsten.texifyidea.settings.sdk.SdkPath
 import nl.hannahsten.texifyidea.settings.sdk.TectonicSdk
 import nl.hannahsten.texifyidea.util.AbstractBlockingCacheService
 import nl.hannahsten.texifyidea.util.Log
-import nl.hannahsten.texifyidea.util.files.LatexPackageLocation.computeValue
 import nl.hannahsten.texifyidea.util.isTestProject
 import nl.hannahsten.texifyidea.util.runCommand
 import java.nio.file.Path

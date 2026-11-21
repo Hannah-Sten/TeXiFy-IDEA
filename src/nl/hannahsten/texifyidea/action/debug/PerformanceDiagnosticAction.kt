@@ -15,7 +15,7 @@ import nl.hannahsten.texifyidea.index.projectstructure.LatexProjectFilesets
 import nl.hannahsten.texifyidea.index.projectstructure.LatexProjectStructure
 import nl.hannahsten.texifyidea.inspections.AbstractTexifyContextAwareInspection
 import java.lang.management.ManagementFactory
-import java.util.Locale
+import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicLong
 import javax.swing.JLabel
@@ -113,25 +113,25 @@ class PerformanceDiagnosticAction : AnAction() {
                         td { +TexifyBundle.message("ui.performance.diagnostic.column.average.time") }
                         td { +TexifyBundle.message("ui.performance.diagnostic.column.additional.info") }
                     }
-                    for (data in tableData) {
+                    for ((name, count, totalTime, additionalInfo) in tableData) {
                         tr {
-                            td { +data.name }
-                            td { +formatDurationMillis(data.totalTime) }
+                            td { +name }
+                            td { +formatDurationMillis(totalTime) }
                             td {
-                                val percent = (data.totalTime.toDouble() / totalRunningTime * 100).toInt()
+                                val percent = (totalTime.toDouble() / totalRunningTime * 100).toInt()
                                 +"$percent%"
                             }
-                            td { +formatRuns(data.count) }
+                            td { +formatRuns(count) }
                             td {
-                                if (data.count > 0) {
-                                    +formatDurationMillis(data.totalTime / data.count)
+                                if (count > 0) {
+                                    +formatDurationMillis(totalTime / count)
                                 }
                                 else {
                                     +TexifyBundle.message("ui.performance.diagnostic.na")
                                 }
                             }
                             td {
-                                data.additionalInfo.lines().forEach {
+                                additionalInfo.lines().forEach {
                                     +it
                                     br
                                 }

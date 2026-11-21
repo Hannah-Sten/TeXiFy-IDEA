@@ -1,11 +1,10 @@
 package nl.hannahsten.texifyidea.completion
 
+import com.intellij.codeInsight.completion.InsertHandler
+import com.intellij.codeInsight.completion.InsertionContext
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementPresentation
 import com.intellij.codeInsight.lookup.LookupElementRenderer
-
-import com.intellij.codeInsight.completion.InsertHandler
-import com.intellij.codeInsight.completion.InsertionContext
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiElement
 import nl.hannahsten.texifyidea.index.SourcedDefinition
@@ -98,7 +97,7 @@ data class SimpleWithDefLookupElement(
     override fun hashCode(): Int {
         var result = def.hashCode()
         result = 31 * result + lookupString.hashCode()
-        result = 31 * result + (insertHandler?.hashCode() ?: 0)
+        result = 31 * result + insertHandler.hashCode()
         return result
     }
 }

@@ -313,8 +313,8 @@ class TexifyConfigurable : SearchableConfigurable {
         filesetExpirationTimeMs?.value != settings.filesetExpirationTimeMs
 
     override fun apply() {
-        for (setting in booleanSettings) {
-            setting.second.set(setting.first.get()?.isSelected == true)
+        for ((component, property) in booleanSettings) {
+            property.set(component.get()?.isSelected == true)
         }
         val ss = settings
         ss.textidoteOptions = textidoteOptions?.text
@@ -334,15 +334,15 @@ class TexifyConfigurable : SearchableConfigurable {
     }
 
     override fun reset() {
-        for (setting in booleanSettings) {
-            setting.first.get()?.isSelected = setting.second.get()
+        for ((component, property) in booleanSettings) {
+            component.get()?.isSelected = property.get()
         }
         val state = settings
         textidoteOptions?.text = state.textidoteOptions
         latexIndentOptions?.text = state.latexIndentOptions
         bibtexTidyOptions?.text = state.bibtexTidyOptions
-        for (setting in enumSettings) {
-            setting.comboBox.get()?.selectedIndex = setting.setting.get().ordinal
+        for ((comboBox, setting) in enumSettings) {
+            comboBox.get()?.selectedIndex = setting.get().ordinal
         }
         sumatraPath?.text = state.pathToSumatra ?: ""
         filesetExpirationTimeMs?.value = state.filesetExpirationTimeMs

@@ -40,7 +40,7 @@ abstract class ExternalReformatAction(val isValidFile: (file: PsiFile) -> Boolea
 
         // Only show when in a valid file
         val file = PsiDocumentManager.getInstance(project).getPsiFile(editor.document)
-        if (file == null || file.virtualFile == null || (!isValidFile(file))) {
+        if (file?.virtualFile == null || (!isValidFile(file))) {
             presentation.isEnabledAndVisible = false
             return
         }
