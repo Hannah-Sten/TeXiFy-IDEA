@@ -39,3 +39,4 @@ exclude: # Some of these are valid inspections but not important or accurate eno
   - name: KDocUnresolvedReference
   - name: KotlinDeprecation
   - name: unused
+  - name: UsePropertyAccessSyntax
