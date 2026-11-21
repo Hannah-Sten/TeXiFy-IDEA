@@ -122,6 +122,9 @@ dependencies {
 
         bundledPlugin("com.intellij.java")
         bundledModule("intellij.platform.structureView")
+        bundledModule("intellij.platform.structureView.impl")
+        bundledModule("intellij.platform.execution")
+        bundledModule("intellij.platform.execution.impl")
         bundledPlugin("tanvd.grazi")
         bundledPlugin("com.intellij.modules.jcef")
         // https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html#non-bundled-plugin
