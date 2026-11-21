@@ -79,30 +79,30 @@ object AutoCompileState {
             return
         }
 
-        // Get run configuration selected in the combobox and run that one
-        if (proj.isDisposed) return
-        val runConfigSettings = RunManager.getInstance(proj).selectedConfiguration
-
-        val runConfig = runConfigSettings?.configuration
-        if (runConfig !is LatexRunConfiguration) {
-            Notification(
-                "LaTeX",
-                TexifyBundle.message("notification.autocompile.failed.title"),
-                TexifyBundle.message("notification.autocompile.select.configuration.content"),
-                NotificationType.WARNING
-            ).notify(null)
-            return
-        }
-
-        // Ensure we only trigger one compilation at a time
-        if (isCompiling.getAndSet(true)) return
-
-        recentRequest = false
-        // Remember that it is auto compiling so we won't interrupt the user during typing
-        runConfig.isAutoCompiling = true
-
         // If the run config is already running, this may trigger a dialog asking the user whether to stop and rerun
         runInEdt {
+            // Get run configuration selected in the combobox and run that one
+            if (proj.isDisposed) return@runInEdt
+            val runConfigSettings = RunManager.getInstance(proj).selectedConfiguration
+
+            val runConfig = runConfigSettings?.configuration
+            if (runConfig !is LatexRunConfiguration) {
+                Notification(
+                    "LaTeX",
+                    TexifyBundle.message("notification.autocompile.failed.title"),
+                    TexifyBundle.message("notification.autocompile.select.configuration.content"),
+                    NotificationType.WARNING
+                ).notify(null)
+                return@runInEdt
+            }
+
+            // Ensure we only trigger one compilation at a time
+            if (isCompiling.getAndSet(true)) return@runInEdt
+
+            recentRequest = false
+            // Remember that it is auto compiling so we won't interrupt the user during typing
+            runConfig.isAutoCompiling = true
+
             ExecutionManager.getInstance(proj).restartRunProfile(
                 proj,
                 DefaultRunExecutor.getRunExecutorInstance(),

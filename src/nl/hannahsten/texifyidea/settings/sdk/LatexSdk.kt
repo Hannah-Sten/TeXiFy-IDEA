@@ -39,10 +39,6 @@ abstract class LatexSdk(name: String) : SdkType(name) {
         }
     }
 
-    // We have to implement it
-    @Deprecated("Deprecated", ReplaceWith("suggestHomePath(path)"))
-    override fun suggestHomePath() = null
-
     // Just a path on the same file system, not used probably
     fun defaultSuggestedHomePath() = suggestHomePath(Path.of(System.getProperty("user.home")))
 
