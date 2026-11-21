@@ -176,6 +176,26 @@ class LatexParagraphFillHandlerTest : BasePlatformTestCase() {
         )
     }
 
+    fun `test formatter tags off disables paragraph filling`() {
+        val text = """
+            % @formatter:off
+            Lorem <caret>ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            % @formatter:on
+        """.trimIndent()
+        myFixture.configureByText(LatexFileType, text)
+        val settings = CodeStyle.getSettings(myFixture.file)
+        val originalEnabled = settings.FORMATTER_TAGS_ENABLED
+        try {
+            settings.FORMATTER_TAGS_ENABLED = true
+            CodeStyle.getLanguageSettings(myFixture.file).RIGHT_MARGIN = 50
+            myFixture.performEditorAction("FillParagraph")
+            myFixture.checkResult(text.replace("<caret>", ""), true)
+        }
+        finally {
+            settings.FORMATTER_TAGS_ENABLED = originalEnabled
+        }
+    }
+
     private fun testFillParagraph(input: String, expectedOutput: String) {
         myFixture.configureByText(LatexFileType, input)
         CodeStyle.getLanguageSettings(myFixture.file).RIGHT_MARGIN = 50
